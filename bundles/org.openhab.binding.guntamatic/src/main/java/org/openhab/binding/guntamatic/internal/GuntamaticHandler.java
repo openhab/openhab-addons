@@ -15,13 +15,13 @@ package org.openhab.binding.guntamatic.internal;
 import static org.openhab.binding.guntamatic.internal.GuntamaticBindingConstants.*;
 
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -30,16 +30,25 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 
 //import java.util.ArrayList;
 //import org.openhab.core.thing.type.ChannelTypeBuilder;
@@ -63,173 +72,182 @@ public class GuntamaticHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private Boolean initalized = false;
     private final HttpClient httpClient;
-    private HashMap<Integer, String[]> channels = new HashMap<Integer, String[]>();
+    private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
+    private HashMap<Integer, String> channels = new HashMap<Integer, String>();
+    private HashMap<Integer, String> types = new HashMap<Integer, String>();
+    private HashMap<Integer, String> units = new HashMap<Integer, String>();
 
-    public GuntamaticHandler(Thing thing, HttpClient httpClient) {
+    public GuntamaticHandler(Thing thing, HttpClient httpClient,
+            GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_Betrieb.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
+        /*
+         * if (CHANNEL_Betrieb.equals(channelUID.getId())) {
+         * if (command instanceof RefreshType) {
+         * // TODO: handle data refresh
+         * }
+         * 
+         * // TODO: handle command
+         * 
+         * // Note: if communication with thing fails for some reason,
+         * // indicate that by setting the status with detail information:
+         * // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+         * // "Could not control device at IP address x.x.x.x");
+         * }
+         */
     }
 
     private void parseAndUpdate(String html) {
         String[] daqdata = html.split("\\n");
 
         for (Integer i : channels.keySet()) {
-            String[] channel = channels.get(i);
-            State newState = new StringType(daqdata[i].trim() + channel[1]);
-            updateState((@NonNull String) channel[0], newState);
+            String channel = channels.get(i);
+            if (channel != null) {
+                String unit = units.get(i);
+                /*
+                 * if (i == 1)
+                 * logger.warn("Supported Channel: Name: {}, Data: {}, Unit: {}", channel[0], daqdata[i].trim(),
+                 * channel[1]);
+                 */
+                String value = daqdata[i].trim();
+                if ("Switch".equals(thing.getChannel(channel).getAcceptedItemType())) {
+                    // Guntamatic uses German OnOff when configred to German, and English OnOff for all other languages
+                    value = value.replace("AUS", "OFF").replace("EIN", "ON");
+                }
+                State newState = new StringType(value + unit);
+                updateState(channel, newState);
+            } else {
+                logger.warn("Data for not intialized ChannelId received: {}", i);
+            }
+            // TypeParser.parseState(this.acceptedDataTypes, sensorValue);
         }
-
-        /*
-         * State newState = new StringType(daqdata[0].trim());
-         * updateState(CHANNEL_Betrieb, newState);
-         * newState = new StringType(daqdata[1].trim());
-         * updateState(CHANNEL_Aussentemperatur, newState);
-         */
     }
 
-    /*
-     * protected List<Channel> createDynamicChannels() {
-     * List<Channel> channels = new ArrayList<>();
-     * channels.add(buildChannel("test2", "String"));
-     * return channels;
-     * }
-     * 
-     * private Channel buildChannel(String channelType, String itemType) {
-     * return ChannelBuilder.create(new ChannelUID(getThing().getUID(), channelType), itemType).withType(new
-     * ChannelTypeUID("guntamatic", "test")).build();
-     * }
-     */
+    private void parseAndJsonInit(String html) {
+        try {
+            // remove non JSON compliant empty element ",,"
+            JsonArray json = JsonParser.parseString(html.replace(",,", ",")).getAsJsonArray();
+            for (int i = 1; i < json.size(); i++) {
+                JsonObject points = json.get(i).getAsJsonObject();
+                int id = points.get("id").getAsInt();
+                String type = points.get("type").getAsString();
+                // logger.warn("TypeId: {}, Type {}", id, type);
+                types.put(id, type);
+            }
+        } catch (JsonParseException e) {
+            logger.warn("Invalid JSON data will be ignored: '{}'", html.replace(",,", ","));
+        }
+    }
+
     private void parseAndInit(String html) {
         String[] daqdesc = html.split("\\n");
+        ArrayList<Channel> channelList = new ArrayList<Channel>();
+        ArrayList<String> channelIdList = new ArrayList<String>();
         for (int i = 0; i < daqdesc.length; i++) {
             String[] param = daqdesc[i].split(";");
             if (!"reserved".equals(param[0])) {
-                String[] channel = new String[] { null, null };
-                channel[0] = param[0].replaceAll("[^\\w]", "");
-                if ((param.length == 1) || (param[1].trim().isEmpty())) {
-                    channel[1] = "";
+                String channel = param[0].replaceAll("[^\\w]", "").toLowerCase();
+                String unit;
+                if ((param.length == 1) || (param[1].isEmpty())) {
+                    unit = "";
                 } else {
-                    channel[1] = param[1].trim().replace("m3", "m³");
+                    unit = param[1].trim().replace("m3", "m³");
                 }
-                if (CHANNELS.contains(channel[0])) {
+
+                boolean channelInitialized = (channelIdList.contains(channel));
+                if (!channelInitialized) {
+                    String itemType;
+                    String pattern;
+                    String type;
+                    if (types.containsKey(i)) {
+                        type = types.get(i);
+                    } else {
+                        type = "";
+                    }
+
+                    if (type.equals("boolean")) {
+                        itemType = "Switch";
+                        pattern = "";
+                    } else if (type.equals("integer")) {
+                        pattern = "%d";
+                        if (unit.isEmpty()) {
+                            itemType = "Number";
+                        } else {
+                            itemType = guessQuantityType("Number", unit);
+                            pattern += " %unit%";
+                        }
+                    } else if (type.equals("float")) {
+                        pattern = "%.2f";
+                        if (unit.isEmpty()) {
+                            itemType = "Number";
+                        } else {
+                            itemType = guessQuantityType("Number", unit);
+                            pattern += " %unit%";
+                        }
+                    } else if (type.equals("string")) {
+                        itemType = "String";
+                        pattern = "";
+                    } else {
+                        if (unit.isEmpty()) {
+                            itemType = "String";
+                            pattern = "";
+                        } else {
+                            itemType = guessQuantityType("", unit);
+                            pattern = "%.2f %unit%";
+                        }
+                    }
+
+                    ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channel);
+                    guntamaticChannelTypeProvider.addChannelType(channelTypeUID, channel, itemType,
+                            "Guntamatic " + param[0], false, pattern);
+                    Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channel), itemType)
+                            .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(param[0]).build();
+                    channelList.add(newChannel);
+                    channelIdList.add(channel);
+                    /*
+                     * logger.warn(
+                     * "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Pattern '{}', Unit: '{}'",
+                     * String.format("%03d", i), param[0], channel, type, itemType, pattern, unit);
+                     */
+                    logger.warn("Supported Channel: Idx: {}, Name: {}, Type: {}", String.format("%03d", i), channel,
+                            itemType);
                     channels.put(i, channel);
-                    logger.warn("Supported Channel: ID: {}, Name: {}, Unit: {}", String.format("%03d", i), channel[0],
-                            channel[1]);
-                } else {
-                    logger.warn("Unsupported Channel: ID: {}, Name: {}, Unit: {}", String.format("%03d", i), channel[0],
-                            channel[1]);
+                    units.put(i, unit);
                 }
             }
         }
-        /*
-         * ThingBuilder builder = editThing();
-         * boolean changed = false;
-         * for (Channel channel : createDynamicChannels()) {
-         * // we only want to add each channel, not replace all of them
-         * //if (getThing().getChannel(channel.getUID()) == null)
-         * {
-         * builder.withChannel(channel);
-         * changed = true;
-         * }
-         * }
-         * if (changed) {
-         * updateThing(builder.build());
-         * }
-         */
-        /*
-         * ThingBuilder thingBuilder = editThing();
-         * ChannelType type = ChannelTypeBuilder.state("test", "test", "String");
-         * Channel channel = ChannelBuilder
-         * .create(new ChannelUID(thing.getUID(), "test"), "String").withType(type).build();
-         * //ChannelUID channelId = channel.getUID();
-         * //List<Channel> channelss = new ArrayList<>(getThing().getChannels());
-         * //if (channelss.stream().filter((element) -> element.getUID().equals(channelId)).count() == 0) {
-         * thingBuilder.withChannel(channel);
-         * updateThing(thingBuilder.build());
-         * 
-         * //thingBuilder.withChannel(channel);
-         * initalized = true;
-         * //updateThing(thingBuilder.build());
-         */
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withoutChannels(channelList);
+        thingBuilder.withChannels(channelList);
+        updateThing(thingBuilder.build());
+        initalized = true;
+    }
 
-        /*
-         * for (Integer i : channels.keySet()) {
-         * String[] line = channels.get(i);
-         * String name = line[0].replaceAll("[^\\w]", "");
-         * String unit;
-         * if ((line.length == 1) || ("".equals(line[1].trim())))
-         * {
-         * unit = "n/a";
-         * }
-         * else
-         * {
-         * unit = line[1].replace("m3", "m³");
-         * }
-         * logger.warn("ID: {}, Name: {}, Unit: {}", String.format("%03d", i), name, unit);
-         */
-        /*
-         * Channel channel = ChannelBuilder
-         * .create(new ChannelUID(thing.getUID(), String.format("ch%03d_%s", i, channels.get(i)[0].replaceAll("[^\\w-]",
-         * ""))
-         * ), "String")
-         * .build();
-         * thingBuilder.withChannel(channel);
-         */
-        /*
-         * 
-         * logger.warn(
-         * "key: " + i.toString() + " value: " + (channels.get(i))[0].toString().replaceAll("[^\\w-]", ""));
-         * 
-         * // logger.warn("Adding channel: {} with item type: {}", obisChannelString, itemType);
-         * 
-         * // channel has not been created yet
-         * ChannelBuilder channelBuilder = ChannelBuilder
-         * .create(new ChannelUID(thing.getUID(), channels.get(i)[0].replaceAll("[^\\w-]", "")), "String");
-         * // .withType(channelTypeId);
-         * /*
-         * Configuration configuration = new Configuration();
-         * configuration.put(SmartMeterBindingConstants.CONFIGURATION_CONVERSION, 1);
-         * channelBuilder.withConfiguration(configuration);
-         * channelBuilder.withLabel(obis);
-         * Map<String, String> channelProps = new HashMap<>();
-         * channelProps.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
-         * channelBuilder.withProperties(channelProps);
-         * channelBuilder.withDescription(
-         * MessageFormat.format("Value for OBIS code: {0} with Unit: {1}", obis, value.getUnit()));
-         */
+    private static String guessQuantityType(String type, String unit) {
+        String quantityType;
 
-        /*
-         * Channel channel = channelBuilder.build();
-         * ChannelUID channelId = channel.getUID();
-         * 
-         * // add all valid channels to the thing builder
-         * List<Channel> channels = new ArrayList<>(getThing().getChannels());
-         * if (channels.stream().filter((element) -> element.getUID().equals(channelId)).count() == 0) {
-         * channels.add(channel);
-         * ThingBuilder thingBuilder = editThing();
-         * thingBuilder.withChannels(channels);
-         * updateThing(thingBuilder.build());
-         * }
-         */
-        // }
+        if (type.isEmpty()) {
+            type = "Number";
+        }
 
-        // logger.warn(channels.toString());
+        if ("%".equals(unit)) {
+            quantityType = type + ":Dimensionless";
+        } else if ("°C".equals(unit) || "°F".equals(unit)) {
+            quantityType = type + ":Temperature";
+        } else if ("m³".equals(unit)) {
+            quantityType = type + ":Volume";
+        } else if ("d".equals(unit) || "h".equals(unit)) {
+            quantityType = type + ":Time";
+        } else {
+            quantityType = type;
+        }
+
+        return quantityType;
     }
 
     private static String replaceUmlaut(String input) {
@@ -262,17 +280,15 @@ public class GuntamaticHandler extends BaseThingHandler {
                 if (!this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                     updateStatus(ThingStatus.ONLINE);
                 }
-                // Byte[] response = ;
-
-                String response = null;
                 try {
-                    response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
+                    String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
                     response = replaceUmlaut(response);
-
-                    if (url == DAQDATA_URL) {
-                        parseAndUpdate(response);// contentResponse.getContentAsString());
+                    if (url == DAQEXTDESC_URL) {
+                        parseAndJsonInit(response);
+                    } else if (url == DAQDATA_URL) {
+                        parseAndUpdate(response);
                     } else if (url == DAQDESC_URL) {
-                        parseAndInit(response);// contentResponse.getContentAsString());
+                        parseAndInit(response);
                     }
                     return;
                 } catch (IllegalArgumentException e) {
@@ -294,29 +310,21 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private void pollGuntamatic() {
-        sendGetRequest(DAQDATA_URL);
+        // logger.warn("pollGuntamatic: initalized: {}", initalized);
+        if (initalized == false) {
+            sendGetRequest(DAQEXTDESC_URL);
+            sendGetRequest(DAQDESC_URL);
+        } else {
+            sendGetRequest(DAQDATA_URL);
+        }
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(GuntamaticConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-        // if (initalized == false)
-        {
-            logger.warn("init");
-            sendGetRequest(DAQDESC_URL);
-            pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
-                    TimeUnit.SECONDS);
-            logger.warn("initialized");
-        }
-        // else
-        {
-
-        }
-        /*
-         * pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
-         * TimeUnit.SECONDS);
-         */
+        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
+                TimeUnit.SECONDS);
 
         // These logging types should be primarily used by bindings
         /*
@@ -330,8 +338,8 @@ public class GuntamaticHandler extends BaseThingHandler {
      * @Override
      * public void thingUpdated(Thing thing) {
      * this.thing = thing;
-     * if (initalized == false)
-     * {
+     * logger.warn("thingUpdated: initalized: {}", initalized);
+     * if (initalized == false) {
      * initialize();
      * }
      * }
