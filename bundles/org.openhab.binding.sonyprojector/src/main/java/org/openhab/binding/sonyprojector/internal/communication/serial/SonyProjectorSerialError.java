@@ -77,7 +77,7 @@ public enum SonyProjectorSerialError {
      *
      * @return the error associated to the searched data code
      *
-     * @throws CommunicationException - If no error is associated to the searched data code
+     * @throws CommunicationException if no error is associated to the searched data code
      */
     public static SonyProjectorSerialError getFromDataCode(byte[] dataCode) throws CommunicationException {
         for (SonyProjectorSerialError value : SonyProjectorSerialError.values()) {

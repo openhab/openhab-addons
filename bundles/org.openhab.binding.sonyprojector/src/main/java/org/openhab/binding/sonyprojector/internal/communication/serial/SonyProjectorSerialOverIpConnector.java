@@ -106,7 +106,7 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
      * @param dataBuffer the buffer into which the data is read.
      * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
      *         stream has been reached.
-     * @throws CommunicationException - If the input stream is null, if the first byte cannot be read for any reason
+     * @throws CommunicationException if the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
      */

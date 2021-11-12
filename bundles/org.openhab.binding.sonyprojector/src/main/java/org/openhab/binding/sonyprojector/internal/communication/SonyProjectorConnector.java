@@ -88,7 +88,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current power status
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public SonyProjectorStatusPower getStatusPower() throws SonyProjectorException {
         return SonyProjectorStatusPower.getFromDataCode(getSetting(SonyProjectorItem.STATUS_POWER));
@@ -97,7 +97,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Power ON the projector
      *
-     * @throws SonyProjectorException - In case the projector is not ready for a power ON command or any other problem
+     * @throws SonyProjectorException in case the projector is not ready for a power ON command or any other problem
      */
     public void powerOn() throws SonyProjectorException {
         SonyProjectorStatusPower status = null;
@@ -123,7 +123,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Power OFF the projector
      *
-     * @throws SonyProjectorException - In case the projector is not ready for a power OFF command or any other problem
+     * @throws SonyProjectorException in case the projector is not ready for a power OFF command or any other problem
      */
     public void powerOff() throws SonyProjectorException {
         SonyProjectorStatusPower status = null;
@@ -148,7 +148,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current calibration preset
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getCalibrationPreset() throws SonyProjectorException {
         return model.getCalibrPresetNameFromDataCode(getSetting(SonyProjectorItem.CALIBRATION_PRESET));
@@ -159,7 +159,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the calibration preset to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setCalibrationPreset(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.CALIBRATION_PRESET, model.getCalibrPresetDataCodeFromName(value));
@@ -170,7 +170,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current video input
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getInput() throws SonyProjectorException {
         return model.getInputNameFromDataCode(getSetting(SonyProjectorItem.INPUT));
@@ -181,7 +181,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the video input to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setInput(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.INPUT, model.getInputDataCodeFromName(value));
@@ -192,7 +192,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current contrast value
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public int getContrast() throws SonyProjectorException {
         return convertDataToInt(getSetting(SonyProjectorItem.CONTRAST));
@@ -203,7 +203,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the contrast value to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setContrast(int value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.CONTRAST, convertIntToData(value));
@@ -214,7 +214,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current brightness value
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public int getBrightness() throws SonyProjectorException {
         return convertDataToInt(getSetting(SonyProjectorItem.BRIGHTNESS));
@@ -225,7 +225,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the brightness value to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setBrightness(int value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.BRIGHTNESS, convertIntToData(value));
@@ -236,7 +236,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current color value
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public int getColor() throws SonyProjectorException {
         return convertDataToInt(getSetting(SonyProjectorItem.COLOR));
@@ -247,7 +247,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the color value to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setColor(int value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.COLOR, convertIntToData(value));
@@ -258,7 +258,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current hue value
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public int getHue() throws SonyProjectorException {
         return convertDataToInt(getSetting(SonyProjectorItem.HUE));
@@ -269,7 +269,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the hue value to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setHue(int value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.HUE, convertIntToData(value));
@@ -280,7 +280,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current sharpness value
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public int getSharpness() throws SonyProjectorException {
         return convertDataToInt(getSetting(SonyProjectorItem.SHARPNESS));
@@ -291,7 +291,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the sharpness value to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setSharpness(int value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.SHARPNESS, convertIntToData(value));
@@ -302,7 +302,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current contrast enhancer mode
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getContrastEnhancer() throws SonyProjectorException {
         return model.getContrastEnhancerNameFromDataCode(getSetting(SonyProjectorItem.CONTRAST_ENHANCER));
@@ -313,7 +313,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the contrast enhancer mode to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setContrastEnhancer(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.CONTRAST_ENHANCER, model.getContrastEnhancerDataCodeFromName(value));
@@ -324,7 +324,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current film mode
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getFilmMode() throws SonyProjectorException {
         if (!model.isFilmModeAvailable()) {
@@ -339,7 +339,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the film mode to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setFilmMode(String value) throws SonyProjectorException {
         if (!model.isFilmModeAvailable()) {
@@ -354,7 +354,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the lamp use time
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public int getLampUseTime() throws SonyProjectorException {
         return convertDataToInt(getSetting(SonyProjectorItem.LAMP_USE_TIME));
@@ -365,7 +365,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current mode for the lamp control setting
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getLampControl() throws SonyProjectorException {
         if (!model.isLampControlAvailable()) {
@@ -380,7 +380,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the mode to set for the lamp control setting
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setLampControl(String value) throws SonyProjectorException {
         if (!model.isLampControlAvailable()) {
@@ -395,7 +395,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return OnOffType.ON if the picture is muted, OnOffType.OFF if not
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public OnOffType getPictureMuting() throws SonyProjectorException {
         return Arrays.equals(getSetting(SonyProjectorItem.PICTURE_MUTING), PICTURE_ON) ? OnOffType.ON : OnOffType.OFF;
@@ -404,7 +404,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Request the projector to mute the picture
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void mutePicture() throws SonyProjectorException {
         setSetting(SonyProjectorItem.PICTURE_MUTING, PICTURE_ON);
@@ -413,7 +413,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Request the projector to unmute the picture
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void unmutePicture() throws SonyProjectorException {
         setSetting(SonyProjectorItem.PICTURE_MUTING, PICTURE_OFF);
@@ -424,7 +424,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current mode for the picture position setting
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getPicturePosition() throws SonyProjectorException {
         if (!model.isPicturePositionAvailable()) {
@@ -439,7 +439,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the mode to set for the picture position setting
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setPicturePosition(String value) throws SonyProjectorException {
         if (!model.isPicturePositionAvailable()) {
@@ -454,7 +454,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return OnOffType.ON if the overscan is enabled, OnOffType.OFF if not
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public OnOffType getOverscan() throws SonyProjectorException {
         if (!model.isOverscanAvailable()) {
@@ -467,7 +467,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Request the projector to enable the overscan
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void enableOverscan() throws SonyProjectorException {
         if (!model.isOverscanAvailable()) {
@@ -480,7 +480,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Request the projector to disable the overscan
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void disableOverscan() throws SonyProjectorException {
         if (!model.isOverscanAvailable()) {
@@ -495,7 +495,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current current aspect ratio mode
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getAspect() throws SonyProjectorException {
         return model.getAspectNameFromDataCode(getSetting(SonyProjectorItem.ASPECT));
@@ -506,7 +506,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the aspect ratio mode to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setAspect(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.ASPECT, model.getAspectCodeFromName(value));
@@ -517,7 +517,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current color temperature value
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getColorTemperature() throws SonyProjectorException {
         return model.getColorTempNameFromDataCode(getSetting(SonyProjectorItem.COLOR_TEMP));
@@ -528,7 +528,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the color temperature value to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setColorTemperature(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.COLOR_TEMP, model.getColorTempCodeFromName(value));
@@ -539,7 +539,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current iris mode
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getIrisMode() throws SonyProjectorException {
         if (!model.isIrisModeAvailable()) {
@@ -554,7 +554,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the iris mode to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setIrisMode(String value) throws SonyProjectorException {
         if (!model.isIrisModeAvailable()) {
@@ -569,7 +569,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current value for the iris manual setting
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public int getIrisManual() throws SonyProjectorException {
         if (!model.isIrisManualAvailable()) {
@@ -584,7 +584,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the iris manual value to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setIrisManual(int value) throws SonyProjectorException {
         if (!model.isIrisManualAvailable()) {
@@ -599,7 +599,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current iris sensitivity
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getIrisSensitivity() throws SonyProjectorException {
         if (!model.isIrisSensitivityAvailable()) {
@@ -614,7 +614,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the iris sensitivity to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setIrisSensitivity(String value) throws SonyProjectorException {
         if (!model.isIrisSensitivityAvailable()) {
@@ -629,7 +629,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current film projection mode
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getFilmProjection() throws SonyProjectorException {
         if (!model.isFilmProjectionAvailable()) {
@@ -644,7 +644,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the film projection mode to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setFilmProjection(String value) throws SonyProjectorException {
         if (!model.isFilmProjectionAvailable()) {
@@ -659,7 +659,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current motion enhancer mode
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getMotionEnhancer() throws SonyProjectorException {
         if (!model.isMotionEnhancerAvailable()) {
@@ -674,7 +674,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the motion enhancer mode to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setMotionEnhancer(String value) throws SonyProjectorException {
         if (!model.isMotionEnhancerAvailable()) {
@@ -689,7 +689,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current gamma correction
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getGammaCorrection() throws SonyProjectorException {
         return model.getGammaCorrectionNameFromDataCode(getSetting(SonyProjectorItem.GAMMA_CORRECTION));
@@ -700,7 +700,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the gamma correction to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setGammaCorrection(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.GAMMA_CORRECTION, model.getGammaCorrectionCodeFromName(value));
@@ -711,7 +711,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current color space
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getColorSpace() throws SonyProjectorException {
         return model.getColorSpaceNameFromDataCode(getSetting(SonyProjectorItem.COLOR_SPACE));
@@ -722,7 +722,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the color space to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setColorSpace(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.COLOR_SPACE, model.getColorSpaceCodeFromName(value));
@@ -733,7 +733,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current noise reduction mode
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getNr() throws SonyProjectorException {
         return model.getNrNameFromDataCode(getSetting(SonyProjectorItem.NR));
@@ -744,7 +744,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the noise reduction mode to set
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public void setNr(String value) throws SonyProjectorException {
         setSetting(SonyProjectorItem.NR, model.getNrCodeFromName(value));
@@ -755,7 +755,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current block noise reduction mode
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getBlockNr() throws SonyProjectorException {
         if (!model.isBlockNrAvailable()) {
@@ -770,7 +770,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the block noise reduction mode to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setBlockNr(String value) throws SonyProjectorException {
         if (!model.isBlockNrAvailable()) {
@@ -785,7 +785,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current mosquito noise reduction mode
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getMosquitoNr() throws SonyProjectorException {
         if (!model.isMosquitoNrAvailable()) {
@@ -800,7 +800,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the mosquito noise reduction mode to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setMosquitoNr(String value) throws SonyProjectorException {
         if (!model.isMosquitoNrAvailable()) {
@@ -815,7 +815,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current MPEG noise reduction mode
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public String getMpegNr() throws SonyProjectorException {
         if (!model.isMpegNrAvailable()) {
@@ -830,7 +830,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param value the MPEG noise reduction mode to set
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void setMpegNr(String value) throws SonyProjectorException {
         if (!model.isMpegNrAvailable()) {
@@ -845,7 +845,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current value for xvColor
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public OnOffType getXvColor() throws SonyProjectorException {
         if (!model.isXvColorAvailable()) {
@@ -858,7 +858,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Request the projector to set xvColor to ON
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void enableXvColor() throws SonyProjectorException {
         if (!model.isXvColorAvailable()) {
@@ -871,7 +871,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Request the projector to set xvColor to OFF
      *
-     * @throws SonyProjectorException - In case this setting is not available for the projector or any other problem
+     * @throws SonyProjectorException in case this setting is not available for the projector or any other problem
      */
     public void disableXvColor() throws SonyProjectorException {
         if (!model.isXvColorAvailable()) {
@@ -888,7 +888,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the current value for the setting
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     protected byte[] getSetting(SonyProjectorItem item) throws SonyProjectorException {
         logger.debug("Get setting {}", item.getName());
@@ -910,7 +910,7 @@ public abstract class SonyProjectorConnector {
      * @param item the projector setting to set
      * @param data the value to set for the setting
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     private void setSetting(SonyProjectorItem item, byte[] data) throws SonyProjectorException {
         logger.debug("Set setting {} data {}", item.getName(), HexUtils.bytesToHex(data));
@@ -929,7 +929,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param item the IR information to send
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     private synchronized void sendIR(SonyProjectorItem item) throws SonyProjectorException {
         logger.debug("Send IR {}", item.getName());
@@ -969,8 +969,8 @@ public abstract class SonyProjectorConnector {
      *
      * @return the buffer containing the returned message
      *
-     * @throws ConnectionException - In case of any connection problem
-     * @throws CommunicationException - In case of any communication problem
+     * @throws ConnectionException in case of any connection problem
+     * @throws CommunicationException in case of any communication problem
      */
     private synchronized byte[] executeCommand(SonyProjectorItem item, boolean getCommand, byte[] data)
             throws ConnectionException, CommunicationException {
@@ -997,7 +997,7 @@ public abstract class SonyProjectorConnector {
     /**
      * Open the connection with the projector if not yet opened
      *
-     * @throws ConnectionException - In case of any problem
+     * @throws ConnectionException in case of any problem
      */
     public abstract void open() throws ConnectionException;
 
@@ -1044,7 +1044,7 @@ public abstract class SonyProjectorConnector {
      * @param dataBuffer the buffer into which the data is read.
      * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
      *         stream has been reached.
-     * @throws CommunicationException - If the input stream is null, if the first byte cannot be read for any reason
+     * @throws CommunicationException if the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
      */
@@ -1069,7 +1069,7 @@ public abstract class SonyProjectorConnector {
      *
      * @param message the buffer containing the message to be sent
      *
-     * @throws CommunicationException - In case of any communication problem
+     * @throws CommunicationException in case of any communication problem
      */
     protected void writeCommand(byte[] message) throws CommunicationException {
         logger.debug("writeCommand: {}", HexUtils.bytesToHex(message));
@@ -1094,7 +1094,7 @@ public abstract class SonyProjectorConnector {
      *
      * @return the buffer containing the returned message
      *
-     * @throws CommunicationException - In case of any communication problem
+     * @throws CommunicationException in case of any communication problem
      */
     protected abstract byte[] readResponse() throws CommunicationException;
 
@@ -1104,7 +1104,7 @@ public abstract class SonyProjectorConnector {
      * @param responseMessage the buffer containing the returned message
      * @param the projector setting to get or set
      *
-     * @throws CommunicationException - If the message has unexpected content
+     * @throws CommunicationException if the message has unexpected content
      */
     protected abstract void validateResponse(byte[] responseMessage, SonyProjectorItem item)
             throws CommunicationException;

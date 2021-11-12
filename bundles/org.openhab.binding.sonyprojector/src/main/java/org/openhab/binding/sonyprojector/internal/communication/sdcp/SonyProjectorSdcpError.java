@@ -89,7 +89,7 @@ public enum SonyProjectorSdcpError {
      *
      * @return the error associated to the data code
      *
-     * @throws CommunicationException - If no error is associated to the data code
+     * @throws CommunicationException if no error is associated to the data code
      */
     public static SonyProjectorSdcpError getFromDataCode(byte[] dataCode) throws CommunicationException {
         for (SonyProjectorSdcpError value : SonyProjectorSdcpError.values()) {
