@@ -107,15 +107,16 @@ public class GuntamaticHandler extends BaseThingHandler {
 
         for (Integer i : channels.keySet()) {
             String channel = channels.get(i);
-            if (channel != null) {
-                String unit = units.get(i);
+            String unit = units.get(i);
+            if ((channel != null) && (unit != null)) {
                 /*
                  * if (i == 1)
                  * logger.warn("Supported Channel: Name: {}, Data: {}, Unit: {}", channel[0], daqdata[i].trim(),
                  * channel[1]);
                  */
                 String value = daqdata[i].trim();
-                if ("Switch".equals(thing.getChannel(channel).getAcceptedItemType())) {
+                Channel chn = thing.getChannel(channel);
+                if ((chn != null) && ("Switch".equals(chn.getAcceptedItemType()))) {
                     // Guntamatic uses German OnOff when configred to German, and English OnOff for all other languages
                     value = value.replace("AUS", "OFF").replace("EIN", "ON");
                 }
@@ -163,17 +164,15 @@ public class GuntamaticHandler extends BaseThingHandler {
                 if (!channelInitialized) {
                     String itemType;
                     String pattern;
-                    String type;
-                    if (types.containsKey(i)) {
-                        type = types.get(i);
-                    } else {
+                    String type = types.get(i);
+                    if (type == null) {
                         type = "";
                     }
 
-                    if (type.equals("boolean")) {
+                    if ("boolean".equals(type)) {
                         itemType = "Switch";
                         pattern = "";
-                    } else if (type.equals("integer")) {
+                    } else if ("integer".equals(type)) {
                         pattern = "%d";
                         if (unit.isEmpty()) {
                             itemType = "Number";
@@ -181,7 +180,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                             itemType = guessQuantityType("Number", unit);
                             pattern += " %unit%";
                         }
-                    } else if (type.equals("float")) {
+                    } else if ("float".equals(type)) {
                         pattern = "%.2f";
                         if (unit.isEmpty()) {
                             itemType = "Number";
@@ -189,7 +188,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                             itemType = guessQuantityType("Number", unit);
                             pattern += " %unit%";
                         }
-                    } else if (type.equals("string")) {
+                    } else if ("string".equals(type)) {
                         itemType = "String";
                         pattern = "";
                     } else {
@@ -266,45 +265,52 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private void sendGetRequest(String url) {
-        String req = "http://" + config.hostname + url;
-        if ((config.key != null)) {
-            req += "?key=" + config.key;
-        }
-
-        Request request = httpClient.newRequest(req);
-        request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
         String errorReason = "";
-        try {
-            ContentResponse contentResponse = request.send();
-            if (contentResponse.getStatus() == 200) {
-                if (!this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-                try {
-                    String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
-                    response = replaceUmlaut(response);
-                    if (url == DAQEXTDESC_URL) {
-                        parseAndJsonInit(response);
-                    } else if (url == DAQDATA_URL) {
-                        parseAndUpdate(response);
-                    } else if (url == DAQDESC_URL) {
-                        parseAndInit(response);
-                    }
-                    return;
-                } catch (IllegalArgumentException e) {
-                    errorReason = String.format("IllegalArgumentException: %s", e.getMessage());
-                }
-            } else {
-                errorReason = String.format("Guntamatic request failed with %d: %s", contentResponse.getStatus(),
-                        contentResponse.getReason());
+        if (config == null) {
+            errorReason = "Invalid Binding configuration";
+        } else if ((config.hostname == null) || (config.hostname.isEmpty())) {
+            errorReason = "Invalid hostname configuration";
+        } else {
+            String req = "http://" + config.hostname + url;
+            if ((config.key != null) && (!config.key.isEmpty())) {
+                req += "?key=" + config.key;
             }
-        } catch (TimeoutException e) {
-            errorReason = "TimeoutException: Guntamatic was not reachable on your network";
-        } catch (ExecutionException e) {
-            errorReason = String.format("ExecutionException: %s", e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            errorReason = String.format("InterruptedException: %s", e.getMessage());
+
+            Request request = httpClient.newRequest(req);
+            request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
+
+            try {
+                ContentResponse contentResponse = request.send();
+                if (contentResponse.getStatus() == 200) {
+                    if (!this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                    try {
+                        String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
+                        response = replaceUmlaut(response);
+                        if (url == DAQEXTDESC_URL) {
+                            parseAndJsonInit(response);
+                        } else if (url == DAQDATA_URL) {
+                            parseAndUpdate(response);
+                        } else if (url == DAQDESC_URL) {
+                            parseAndInit(response);
+                        }
+                        return;
+                    } catch (IllegalArgumentException e) {
+                        errorReason = String.format("IllegalArgumentException: %s", e.getMessage());
+                    }
+                } else {
+                    errorReason = String.format("Guntamatic request failed with %d: %s", contentResponse.getStatus(),
+                            contentResponse.getReason());
+                }
+            } catch (TimeoutException e) {
+                errorReason = "TimeoutException: Guntamatic was not reachable on your network";
+            } catch (ExecutionException e) {
+                errorReason = String.format("ExecutionException: %s", e.getMessage());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                errorReason = String.format("InterruptedException: %s", e.getMessage());
+            }
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
     }
@@ -312,7 +318,9 @@ public class GuntamaticHandler extends BaseThingHandler {
     private void pollGuntamatic() {
         // logger.warn("pollGuntamatic: initalized: {}", initalized);
         if (initalized == false) {
-            sendGetRequest(DAQEXTDESC_URL);
+            if ((config.key != null) && (!config.key.isEmpty())) {
+                sendGetRequest(DAQEXTDESC_URL);
+            }
             sendGetRequest(DAQDESC_URL);
         } else {
             sendGetRequest(DAQDATA_URL);

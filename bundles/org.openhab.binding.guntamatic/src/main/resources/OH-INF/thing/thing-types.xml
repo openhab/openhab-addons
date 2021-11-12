@@ -32,5 +32,32 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="non-biostar">
 
+		<label>Guntamatic Powerchip, Powercorn, Biocom, Pro or Therm</label>
+		<description>Guntamatic Powerchip, Powercorn, Biocom, Pro or Therm Heating System. Untested. Please provide feedback!</description>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 </thing:thing-descriptions>

@@ -28,6 +28,7 @@ public class GuntamaticBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BIOSTAR = new ThingTypeUID(BINDING_ID, "biostar");
+    public static final ThingTypeUID THING_TYPE_NONBIOSTAR = new ThingTypeUID(BINDING_ID, "non-biostar");
 
     public static final String DAQDATA_URL = "/daqdata.cgi";
     public static final String DAQDESC_URL = "/daqdesc.cgi";

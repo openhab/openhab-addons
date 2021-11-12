@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.guntamatic.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link GuntamaticConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Weger Michael - Initial contribution
  */
+@NonNullByDefault
 public class GuntamaticConfiguration {
 
     /**
      * Configuration parameters
      */
-    public String hostname;
-    public String key;
+    public String hostname = "";
+    public String key = "";
     public int refreshInterval = 60;
     public String encoding = "windows-1252";
 }
