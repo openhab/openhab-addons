@@ -14,8 +14,6 @@ Fragment-Host: org.openhab.binding.feed
 -runblacklist: \
 	bnd.identity;id='org.openhab.core.storage.json'
 
--runvm: -Dorg.osgi.service.http.port=${org.osgi.service.http.port}
-
 #
 # done
 #

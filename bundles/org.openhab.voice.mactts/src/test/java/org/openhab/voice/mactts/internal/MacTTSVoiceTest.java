@@ -82,7 +82,7 @@ public class MacTTSVoiceTest {
      */
     @Test
     public void getLocaleTest() throws IOException {
-        assumeTrue("Mac OS X" == System.getProperty("os.name"));
+        assumeTrue("Mac OS X".equals(System.getProperty("os.name")));
         Process process = Runtime.getRuntime().exec("say -v ?");
         try (InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {

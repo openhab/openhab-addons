@@ -135,6 +135,7 @@ public class Thing2VeluxActuator {
      *
      * @return <b>bridgeProductIndex</B> for accessing the Velux device (or ProductBridgeIndex.UNKNOWN if not found).
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public ProductBridgeIndex getProductBridgeIndex() {
         if (thisProduct == VeluxProduct.UNKNOWN) {
             mapThing2Velux();
@@ -151,6 +152,7 @@ public class Thing2VeluxActuator {
      *
      * @return <b>isKnown</B> as boolean.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean isKnown() {
         return (!(this.getProductBridgeIndex() == ProductBridgeIndex.UNKNOWN));
     }
@@ -162,6 +164,7 @@ public class Thing2VeluxActuator {
      *
      * @return <b>isInverted</B> for handling of values of the Velux device (or false if not found)..
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean isInverted() {
         if (thisProduct == VeluxProduct.UNKNOWN) {
             mapThing2Velux();

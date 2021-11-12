@@ -128,7 +128,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 String currentPlanning = "-";
                 if (thermostat.isPresent()) {
                     for (NAThermProgram program : nonNullList(thermostat.get().getThermProgramList())) {
-                        if (program.isSelected() == Boolean.TRUE) {
+                        if (Boolean.TRUE.equals(program.isSelected())) {
                             currentPlanning = program.getProgramId();
                         }
                     }

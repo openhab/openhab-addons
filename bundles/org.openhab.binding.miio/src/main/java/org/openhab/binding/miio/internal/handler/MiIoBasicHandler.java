@@ -52,6 +52,7 @@ import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -620,6 +621,17 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         updateState(basicChannel.getChannel(),
                                 "on".equals(strVal) || "true".equals(strVal) || "1".equals(strVal) ? OnOffType.ON
                                         : OnOffType.OFF);
+                    }
+                    break;
+                case "contact":
+                    if (val.getAsJsonPrimitive().isNumber()) {
+                        updateState(basicChannel.getChannel(),
+                                val.getAsInt() > 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                    } else {
+                        String strVal = val.getAsString().toLowerCase();
+                        updateState(basicChannel.getChannel(),
+                                "on".equals(strVal) || "true".equals(strVal) || "1".equals(strVal) ? OpenClosedType.OPEN
+                                        : OpenClosedType.CLOSED);
                     }
                     break;
                 case "color":

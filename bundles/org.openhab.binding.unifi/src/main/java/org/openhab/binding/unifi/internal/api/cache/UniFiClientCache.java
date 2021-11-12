@@ -26,12 +26,14 @@ import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 public class UniFiClientCache extends UniFiCache<UniFiClient> {
 
     public UniFiClientCache() {
-        super(PREFIX_MAC, PREFIX_IP, PREFIX_HOSTNAME, PREFIX_ALIAS);
+        super(PREFIX_ID, PREFIX_MAC, PREFIX_IP, PREFIX_HOSTNAME, PREFIX_ALIAS);
     }
 
     @Override
     protected String getSuffix(UniFiClient client, String prefix) {
         switch (prefix) {
+            case PREFIX_ID:
+                return client.getId();
             case PREFIX_MAC:
                 return client.getMac();
             case PREFIX_IP:

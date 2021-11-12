@@ -190,7 +190,7 @@ public class Device {
      * @return
      */
     public boolean hasSerialNumber() {
-        return (serialnumber != null && serialnumber != "");
+        return serialnumber != null && !serialnumber.isEmpty();
     }
 
     /**

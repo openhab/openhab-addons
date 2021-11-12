@@ -28,6 +28,8 @@ public enum CommandParameterType {
     ONOFFBOOL("onoffbool"),
     ONOFFBOOLSTRING("onoffboolstring"),
     ONOFFNUMBER("onoffnumber"),
+    OPENCLOSENUMBER("openclosenumber"),
+    OPENCLOSE("openclose"),
     STRING("string"),
     CUSTOMSTRING("customstring"),
     NUMBER("number"),

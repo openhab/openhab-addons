@@ -319,6 +319,7 @@ public class SocketChannelSession implements SocketSession {
          * Stops the reader. Will wait 5 seconds for the runnable to stop (should stop within 1 second based on the poll
          * timeout below)
          */
+        @SuppressWarnings("PMD.CompareObjectsWithEquals")
         public void stopRunning() {
             if (isRunning.getAndSet(false)) {
                 // only wait if stopRunning didn't get called as part of processing a message

@@ -521,10 +521,8 @@ public class LGWebOSTVSocket {
     }
 
     private Float volumeFromResponse(JsonObject jsonObj) {
-        final String VOLUME_STATUS = "volumeStatus";
-        final String VOLUME = "volume";
-        JsonObject parent = jsonObj.has(VOLUME_STATUS) ? jsonObj.getAsJsonObject(VOLUME_STATUS) : jsonObj;
-        return parent.get(VOLUME).getAsInt() >= 0 ? (float) (parent.get(VOLUME).getAsInt() / 100.0) : Float.NaN;
+        JsonObject parent = jsonObj.has("volumeStatus") ? jsonObj.getAsJsonObject("volumeStatus") : jsonObj;
+        return parent.get("volume").getAsInt() >= 0 ? (float) (parent.get("volume").getAsInt() / 100.0) : Float.NaN;
     }
 
     public ServiceSubscription<Float> subscribeVolume(ResponseListener<Float> listener) {
