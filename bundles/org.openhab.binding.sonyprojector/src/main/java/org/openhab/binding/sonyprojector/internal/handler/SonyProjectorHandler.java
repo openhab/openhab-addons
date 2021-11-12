@@ -33,6 +33,8 @@ import org.openhab.binding.sonyprojector.internal.configuration.SonyProjectorEth
 import org.openhab.binding.sonyprojector.internal.configuration.SonyProjectorSerialConfiguration;
 import org.openhab.binding.sonyprojector.internal.configuration.SonyProjectorSerialOverIpConfiguration;
 import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.i18n.ConnectionException;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -47,6 +49,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,10 +64,18 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SonyProjectorHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SonyProjectorHandler.class);
-
     private static final SonyProjectorModel DEFAULT_MODEL = SonyProjectorModel.VW520;
     private static final long POLLING_INTERVAL = TimeUnit.SECONDS.toSeconds(15);
+
+    private final Logger logger = LoggerFactory.getLogger(SonyProjectorHandler.class);
+
+    private final SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
+    private final SerialPortManager serialPortManager;
+    private final TranslationProvider i18nProvider;
+
+    private final Bundle bundle;
+
+    private final ExpiringCacheMap<String, State> cache;
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -71,20 +83,17 @@ public class SonyProjectorHandler extends BaseThingHandler {
     private SonyProjectorModel projectorModel = DEFAULT_MODEL;
     private SonyProjectorConnector connector = new SonyProjectorSdcpSimuConnector(DEFAULT_MODEL);
 
-    private SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
-    private SerialPortManager serialPortManager;
-
     private boolean simu;
 
     private final Object commandLock = new Object();
 
-    private final ExpiringCacheMap<String, State> cache;
-
     public SonyProjectorHandler(Thing thing, SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider,
-            SerialPortManager serialPortManager) {
+            SerialPortManager serialPortManager, TranslationProvider i18nProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.serialPortManager = serialPortManager;
+        this.i18nProvider = i18nProvider;
+        this.bundle = FrameworkUtil.getBundle(this.getClass());
         this.cache = new ExpiringCacheMap<>(TimeUnit.SECONDS.toMillis(POLLING_INTERVAL));
     }
 
@@ -102,9 +111,10 @@ public class SonyProjectorHandler extends BaseThingHandler {
         synchronized (commandLock) {
             try {
                 connector.open();
-            } catch (SonyProjectorException e) {
-                logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (ConnectionException e) {
+                logger.debug("Command {} from channel {} failed: {}", command, channel,
+                        e.getMessage(bundle, i18nProvider));
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
                 return;
             }
             try {
@@ -405,9 +415,9 @@ public class SonyProjectorHandler extends BaseThingHandler {
 
             try {
                 connector.open();
-            } catch (SonyProjectorException e) {
-                logger.debug("Poll projector failed: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (ConnectionException e) {
+                logger.debug("Poll projector failed: {}", e.getMessage(bundle, i18nProvider), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
                 return;
             }
 
