@@ -50,7 +50,7 @@ import com.google.gson.JsonParseException;
  * Unit tests for HD PowerView binding
  *
  * @author Andrew Fiddian-Green - Initial contribution
- * @author Jacob Laursen - Add support for scene collections
+ * @author Jacob Laursen - Add support for scene groups
  */
 @NonNullByDefault
 public class HDPowerViewJUnitTests {

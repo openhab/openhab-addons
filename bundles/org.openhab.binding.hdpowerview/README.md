@@ -60,12 +60,13 @@ However, the configuration parameters are described below:
 
 ### Channels for PowerView Hub
 
-Scene and scene collection channels will be added dynamically to the binding as they are discovered in the hub.
-Each scene/scene collection channel will have an entry in the hub as shown below, whereby different scenes have different `id` values:
+Scene and scene group channels will be added dynamically to the binding as they are discovered in the hub.
+Each scene/scene group channel will have an entry in the hub as shown below, whereby different scenes/scene groups
+have different `id` values:
 
 | Channel  | Item Type | Description |
 |----------|-----------| ------------|
-| id       | Switch    | Turning this to ON will activate the scene/scene collection. Scenes/scene collections are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
+| id       | Switch    | Turning this to ON will activate the scene/scene group. Scenes/scene groups are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
 
 ### Channels for PowerView Shade
 

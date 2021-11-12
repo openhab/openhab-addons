@@ -62,7 +62,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * @author Jacob Laursen - Add support for scene collections
+ * @author Jacob Laursen - Add support for scene groups
  */
 @NonNullByDefault
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
@@ -84,7 +84,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
     private final ChannelTypeUID sceneCollectionChannelTypeUID = new ChannelTypeUID(
-            HDPowerViewBindingConstants.BINDING_ID, HDPowerViewBindingConstants.CHANNELTYPE_SCENE_COLLECTION_ACTIVATE);
+            HDPowerViewBindingConstants.BINDING_ID, HDPowerViewBindingConstants.CHANNELTYPE_SCENE_GROUP_ACTIVATE);
 
     public HDPowerViewHubHandler(Bridge bridge, HttpClient httpClient,
             HDPowerViewTranslationProvider translationProvider) {
@@ -343,7 +343,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 // create a new scene collection channel
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), sceneCollectionId);
                 String description = translationProvider.getText(
-                        "channel-type.hdpowerview.scene-collection-activate.description", sceneCollection.getName());
+                        "channel-type.hdpowerview.scene-group-activate.description", sceneCollection.getName());
                 Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneCollectionChannelTypeUID)
                         .withLabel(sceneCollection.getName()).withDescription(description).build();
                 updateThing(editThing().withChannel(channel).build());

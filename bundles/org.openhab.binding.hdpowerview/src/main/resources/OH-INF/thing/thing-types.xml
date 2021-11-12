@@ -91,7 +91,7 @@
 		<label>Activate</label>
 	</channel-type>
 
-	<channel-type id="scene-collection-activate">
+	<channel-type id="scene-group-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
 	</channel-type>

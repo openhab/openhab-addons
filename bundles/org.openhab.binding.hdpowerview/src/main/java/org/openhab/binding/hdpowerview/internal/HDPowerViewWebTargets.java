@@ -43,7 +43,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * @author Jacob Laursen - Add support for scene collections
+ * @author Jacob Laursen - Add support for scene groups
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
