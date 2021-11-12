@@ -39,13 +39,16 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.guntamatic", service = ThingHandlerFactory.class)
 public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GUNTAMATIC);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOSTAR);
 
     protected final HttpClient httpClient;
+    private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
 
     @Activate
-    public GuntamaticHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public GuntamaticHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
     }
 
     protected HttpClient getHttpClient() {
@@ -61,8 +64,8 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_GUNTAMATIC.equals(thingTypeUID)) {
-            return new GuntamaticHandler(thing, httpClient);
+        if (THING_TYPE_BIOSTAR.equals(thingTypeUID)) {
+            return new GuntamaticHandler(thing, httpClient, guntamaticChannelTypeProvider);
         }
 
         return null;
