@@ -26,7 +26,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * Custom deserializer for {@link LightType}
+ * Custom deserializer
  *
  * @author Gwendal Roulleau - Initial contribution
  */

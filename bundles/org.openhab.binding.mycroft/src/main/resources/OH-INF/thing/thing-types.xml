@@ -14,7 +14,7 @@
 			<channel id="speak" typeId="speak-channel"/>
 			<channel id="utterance" typeId="utterance-channel"/>
 			<channel id="player" typeId="player-channel"/>
-			<channel id="volume" typeId="volume-channel"/>
+			<!-- <channel id="volume" typeId="volume-channel"/> -->
 			<channel id="volume_mute" typeId="volume-mute-channel"/>
 			<channel id="volume_duck" typeId="volume-duck-channel"/>
 			<channel id="full_message" typeId="full-message-channel"/>
@@ -43,16 +43,18 @@
 	<channel-type id="speak-channel">
 		<item-type>String</item-type>
 		<label>TTS</label>
-		<description>The last sentence Mycroft speaks, or ask Mycroft to say something.</description>
+		<description>The last sentence Mycroft speaks.</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="utterance-channel">
 		<item-type>String</item-type>
 		<label>Utterance</label>
-		<description>The last utterance Mycroft receive, or ask Mycroft something.</description>
+		<description>The last utterance Mycroft receive.</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="full-message-channel">
+	<channel-type id="full-message-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Full Bus Message</label>
 		<description>The last full message seen on the Mycroft Bus.</description>
@@ -71,11 +73,11 @@
 		<description>The music player Mycroft is currently controlling.</description>
 	</channel-type>
 
-	<channel-type id="volume-channel">
+	<!-- <channel-type id="volume-channel">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>The volume of the Mycroft speaker</description>
-	</channel-type>
+		</channel-type> -->
 
 	<channel-type id="volume-mute-channel">
 		<item-type>Switch</item-type>

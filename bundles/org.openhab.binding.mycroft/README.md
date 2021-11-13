@@ -1,12 +1,12 @@
 # Mycroft Binding
 
-This binding will connect to Mycroft A.I. in order to control it or react to event by listening on the message bus.
+This binding will connect to Mycroft A.I. in order to control it or react to events by listening on the message bus.
 
 Possibilies include :
 
 - Press a button in OpenHAB to wake Mycroft without using a wake word.
 - Simulate a voice command to launch a skill, as if you just spoke it
-- Send some text that Mycroft will say (Using its Text To Speach service)
+- Send some text that Mycroft will say (Using its Text To Speech service)
 - Control the music player
 - Control the sound volume of Mycroft
 - React to all the aforementioned events ...
@@ -46,10 +46,9 @@ The Mycroft thing supports the following channels :
 | channel type id              | Item type | description                                                                                    |
 |------------------------------|-----------|------------------------------------------------------------------------------------------------|
 | listen                       | Switch    | Switch to ON when Mycroft is listening. Can simulate a wake word detection to trigger the STT  |
-| speak                        | String    | The last sentence Mycroft speaks, or ask Mycroft to say something                              |
-| utterance                    | String    | The last utterance Mycroft receive, or ask Mycroft something                                   |
+| speak                        | String    | The last sentence Mycroft speaks                                                               |
+| utterance                    | String    | The last utterance Mycroft receive                                                             |
 | player                       | Player    | The music player Mycroft is currently controlling                                              |
-| volume                       | Dimmer    | The volume of the Mycroft speaker. NOT FUNCTIONNAL. [SEE THIS POST TO SEE EVOLUTION](https://community.mycroft.ai/t/openhab-plugin-development-audio-volume-message-types-missing/10576) |
 | volume_mute                  | Switch    | Mute the Mycroft speaker                                                                       |
 | volume_duck                  | Switch    | Duck the volume of the Mycroft speaker                                                         |
 | full_message                 | String    | The last message (full json) seen on the Mycroft Bus. Filtered by the messageTypes properties  |
@@ -94,7 +93,7 @@ String myMycroft_fullmessage           "Full JSON message"         { channel="my
 
 A `demo.sitemap` file :
 
-```perl
+```
 sitemap demo label="myMycroft"
 {
     Frame label="myMycroft" {
@@ -141,7 +140,6 @@ The following actions are supported.
 | Action                     | Description  |
 |----------------------------|--------------|
 | speak(String message) | Mycroft will say this. |
-| listen()          | Trigger Mycroft as if the wake word was detected |
 | utterance(String utterance) | Ask Mycroft something|
 
 ## Full Example

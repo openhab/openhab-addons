@@ -34,6 +34,8 @@ import org.openhab.core.types.State;
 
 /**
  * The channel responsible for handling the volume of the Mycroft speaker
+ * NOT FUNCTIONAL
+ * (see https://community.mycroft.ai/t/openhab-plugin-development-audio-volume-message-types-missing/10576)
  *
  * @author Gwendal ROULLEAU - Initial contribution
  */
