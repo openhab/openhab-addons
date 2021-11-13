@@ -81,4 +81,53 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-type id="stringType">
+		<item-type>String</item-type>
+		<label>Teleinfo String Type</label>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energyType">
+		<item-type>Number:Energy</item-type>
+		<label>Teleinfo Energy Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Teleinfo Current Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="potentialType">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Teleinfo Potential Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerType">
+		<item-type>Number:Power</item-type>
+		<label>Teleinfo Power Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switchType">
+		<item-type>Switch</item-type>
+		<label>Teleinfo Switch Type</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dateTimeType">
+		<item-type>DateTime</item-type>
+		<label>Teleinfo DateTime Type</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>
