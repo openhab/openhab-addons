@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>org.openhab.addons.bom.test-index</artifactId>
+  <packaging>pom</packaging>
 
   <name>openHAB Add-ons :: BOM :: Test Index</name>
 
