@@ -35,10 +35,12 @@ The poll and timeout parameters are optional.
 
 Parameters:
 
-* `user` (required) Your SensorPush cloud service user name (email address)
-* `password` (required) Your SensorPush cloud service password
-* `poll` (2-60, default = 5) Polling interval in minutes
-* `timeout` (1-120, default = 30) Timeout period for API requests in seconds.
+| Name         | Required | Type          | Default | Description              |
+|--------------|----------|---------------|---------|--------------------------|
+| `user`     | Yes      |text           | n/a | Your SensorPush cloud service user name (email address) |
+| `password`| Yes      |text           | n/a | Your SensorPush cloud service password |
+| `poll`     | No       |integer, 2-60  |  5  | Polling interval in minutes |
+| `timeout` | No       |integer, 1-120 | 30  | Timeout period for API requests in seconds. |
 
 **Note:** To activate your API access, you must log in to the [Gateway Cloud Dashboard](https://dashboard.sensorpush.com/) and agree to the terms of service.
 Once you've logged in that initial time, your account will have access.
@@ -54,15 +56,17 @@ The id parameter must be supplied.
 
 Parameters:
 
-* `id` (required) The unique ID number of the sensor
-* `pressureMode` The reporting mode for barometric pressure. Must be set to either "station" or "meteorological". The station mode reports the pressure as recorded by the sensor, while the meteorological mode adjusts the reported pressure to mean sea level as is common for weather reporting. Defaults to "station".
-* `altitude` The altitude of the sensor in feet above MSL. It is only necessary to set this parameter if you selected the "meteorological" option for pressureMode and have not set the sensor altitude in the SensorPush app. The altitude set in the SensorPush app will override this value.
+| Name              | Required | Type          | Default | Description                        |
+|-------------------|----------|---------------|---------|------------------------------------|
+| `id`             | Yes      | text          | n/a     | The unique ID number of the sensor |
+| `pressureMode`| No       | text          | station | The reporting mode for barometric pressure. Must be set to either "station" or "meteorological". The station mode reports the pressure as recorded by the sensor, while the meteorological mode adjusts the reported pressure to mean sea level as is common for weather reporting.|
+| `altitude`     | No       | integer       | n/a     | The altitude of the sensor in feet above MSL. It is only necessary to set this parameter if you selected the "meteorological" option for pressureMode and have not set the sensor altitude in the SensorPush app. The altitude set in the SensorPush app will override this value.|
 
 ## Channels
 
 The following channels are provided by the `sensor` thing:
 
-| channel     | type                     | description              |
+| Channel     | Type                     | Description              |
 |-------------|--------------------------|--------------------------|
 | temperature | Number:Temperature       | Temperature              |
 | humidity    | Number:Dimensionless     | Relative humidity        |
