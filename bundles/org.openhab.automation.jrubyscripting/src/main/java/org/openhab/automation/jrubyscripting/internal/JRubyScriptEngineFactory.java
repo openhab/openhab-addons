@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
+import org.openhab.core.config.core.ConfigurableService;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -36,9 +37,12 @@ import org.osgi.service.component.annotations.Modified;
  */
 @NonNullByDefault
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting")
+@ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = JRubyScriptEngineFactory.CONFIG_URI)
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
+
+    protected static final String CONFIG_URI = "automation:jruby";
 
     // Filter out the File entry to prevent shadowing the Ruby File class which breaks Ruby in spectacularly
     // difficult ways to debug.

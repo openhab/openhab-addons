@@ -53,7 +53,7 @@ public class JRubyScriptEngineConfiguration {
     private final static Map<String, OptionalConfigurationElement> CONFIGURATION_PARAMETERS = Map.ofEntries(
             Map.entry("local_context",
                     new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.SYSTEM_PROPERTY)
-                            .mappedTo("org.jruby.embed.localcontext.scope").defaultValue("threadsafe").build()),
+                            .mappedTo("org.jruby.embed.localcontext.scope").defaultValue("singlethread").build()),
 
             Map.entry("local_variable",
                     new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.SYSTEM_PROPERTY)
