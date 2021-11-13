@@ -27,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
+ * @author Giovanni Fabiani - Aux support
  */
 
 @NonNullByDefault
@@ -65,6 +66,8 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
             "bus_cenplus_scenario_control");
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
+    public static final ThingTypeUID THING_TYPE_AUX_ON_OFF_SWITCH=new ThingTypeUID(BINDING_ID,"aux_on_off_switch");
+    public static final String THING_LABEL_AUX_ON_OFF_SWITCH="Auxiliary";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -95,11 +98,13 @@ public class OpenWebNetBindingConstants {
     // ## CEN/CEN+ Scenario
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_CEN_SCENARIO_CONTROL,
             THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL);
+    //## Aux
+    public static final Set<ThingTypeUID>AUX_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AUX_ON_OFF_SWITCH);
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
                     THERMOREGULATION_SUPPORTED_THING_TYPES, ENERGY_MANAGEMENT_SUPPORTED_THING_TYPES,
-                    SCENARIO_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
+                    SCENARIO_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES,AUX_SUPPORTED_THING_TYPES)
             .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ZB_GATEWAY,
             THING_TYPE_BUS_GATEWAY);
