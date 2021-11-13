@@ -292,7 +292,7 @@ public class ReadmeHelper {
         }
         if (sb.length() > 0) {
             LOGGER.info("Model(s) not found. Suggested lines to add to MiIoDevices.java\r\n{}", sb.toString());
-            LOGGER.info("Model(s) not found. Suggested lines to add to change log\r\n{}", commentSb.toString());
+            LOGGER.info("Model(s) not found. Suggested lines to add to the change log\r\n{}", commentSb.toString());
         }
     }
 

@@ -97,9 +97,9 @@ public enum MiIoCommand {
     GET_MULTI_MAP_LIST("get_multi_maps_list"),
     GET_ROOM_MAPPING("get_room_mapping"),
 
+    // Gateway & child device commands
     GET_ARMING("get_arming"),
     GET_ARMING_TIME("get_arming_time"),
-
     GET_DOORBEL_VOLUME("get_doorbell_volume"),
     GET_GATEWAY_VOLUME("get_gateway_volume"),
     GET_ALARMING_VOLUME("get_alarming_volume"),
@@ -113,6 +113,7 @@ public enum MiIoCommand {
     GET_RGB("get_rgb"),
     GET_NIGHTLIGHT_RGB("get_night_light_rgb"),
     GET_LUMI_BIND("get_lumi_bind"),
+    GET_PROP_PLUG("get_prop_plug"),
 
     UNKNOWN("");
 

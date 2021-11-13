@@ -68,7 +68,7 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
         }
 
         bridgeHandler = null;
-        bridgeHandler = getBridgeHandler();
+        // bridgeHandler = getBridgeHandler();
         if (ThingStatus.ONLINE != bridge.getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
@@ -92,18 +92,20 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                     this.bridgeHandler = bridgeHandler;
                     return bridgeHandler;
                 } else {
-                    logger.debug("Bridge is defined, but bridge handler not found.");
+                    logger.debug("Bridge is defined, but bridge handler not found for {} {}.", getThing().getUID(),
+                            getThing().getLabel());
                 }
             }
-            logger.debug("Bridge is missing.");
+            logger.debug("Bridge is missing for {} {}", getThing().getUID(), getThing().getLabel());
         }
         return this.bridgeHandler;
     }
 
     @Override
     public String getCloudServer() {
-        if (bridgeHandler != null) {
-            return bridgeHandler.getCloudServer();
+        final MiIoGatewayHandler bh = this.bridgeHandler;
+        if (bh != null) {
+            return bh.getCloudServer();
         } else {
             final MiIoBindingConfiguration config = this.configuration;
             return config != null ? config.cloudServer : "";
@@ -136,13 +138,14 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
             if (midevice != null && configuration != null && config != null) {
                 Bridge bridge = getBridge();
                 if (bridge == null || !bridge.getStatus().equals(ThingStatus.ONLINE)) {
-                    logger.debug("Bridge offline, skipping regular refresh");
+                    logger.debug("Bridge {} offline, skipping regular refresh for {}", getThing().getBridgeUID(),
+                            getThing().getUID());
                     refreshCustomProperties(midevice, true);
                     return;
                 }
-                logger.debug("Refresh properties for lumi device {}", getThing().getLabel());
+                logger.debug("Refresh properties for child device {}", getThing().getLabel());
                 refreshProperties(midevice, config.deviceId);
-                logger.debug("Refresh Custom for lumidevice {}", getThing().getLabel());
+                logger.debug("Refresh custom commands for child device {}", getThing().getLabel());
                 refreshCustomProperties(midevice, false);
             } else {
                 logger.debug("Null value occured for device {}: {}", midevice, config);

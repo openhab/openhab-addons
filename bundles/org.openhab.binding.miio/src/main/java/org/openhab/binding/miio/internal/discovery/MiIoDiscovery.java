@@ -269,12 +269,6 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         if (!country.isEmpty() && isOnline) {
             dr = dr.withProperty(PROPERTY_CLOUDSERVER, country);
         }
-        // if (!parent.isEmpty()) {
-        // ThingUID bridgeUID = new ThingUID(THING_TYPE_GATEWAY, Utils.toHEX(parent));
-        // does not work this way. Throws a java.lang.IllegalArgumentException: Thing UID 'miio:lumi:lumi_158d0'
-        // does not match bridge UID 'miio:gateway:164EAAA' though both seem valid UID's
-        // dr = dr.withBridge(bridgeUID);
-        // }
         thingDiscovered(dr.build());
     }
 

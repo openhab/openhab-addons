@@ -64,13 +64,15 @@ public class MiIoGatewayHandler extends MiIoBasicHandler implements BridgeHandle
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        logger.info("Child initialized : {}  {}", childThing.getUID(), childThing.getLabel());
-        childDevices.put(childThing, (MiIoAbstractHandler) childHandler);
+        logger.info("Child registered with gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
+                getThing().getUID(), getThing().getLabel());
+        childDevices.put(childThing, (MiIoLumiHandler) childHandler);
     }
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        logger.info("Childhandler Disposed : {}  {}", childThing.getUID(), childThing.getLabel());
+        logger.info("Child released from gateway: {}  {} -> {} {}", childThing.getUID(), childThing.getLabel(),
+                getThing().getUID(), getThing().getLabel());
         childDevices.remove(childThing);
     }
 

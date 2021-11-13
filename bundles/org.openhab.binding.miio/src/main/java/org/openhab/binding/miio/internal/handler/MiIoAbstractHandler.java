@@ -88,7 +88,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected final Bundle bundle;
     protected final TranslationProvider i18nProvider;
     protected final LocaleProvider localeProvider;
-    protected final Map<Thing, MiIoAbstractHandler> childDevices = new ConcurrentHashMap<>();
+    protected final Map<Thing, MiIoLumiHandler> childDevices = new ConcurrentHashMap<>();
 
     protected ScheduledExecutorService miIoScheduler = new ScheduledThreadPoolExecutor(3,
             new NamedThreadFactory("binding-" + getThing().getUID().getAsString(), true));
@@ -161,15 +161,16 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
         if (!getThing().getThingTypeUID().equals(THING_TYPE_LUMI)) {
-        if (configuration.host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-ip");
-            return;
-        }
-        if (!tokenCheckPass(configuration.token)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-token");
-            return;
-        }
+            if (configuration.host.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-ip");
+                return;
+            }
+            if (!tokenCheckPass(configuration.token)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-token");
+                return;
+            }
         }
         this.cloudServer = configuration.cloudServer;
         this.deviceId = configuration.deviceId;
@@ -307,7 +308,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected int sendCommand(String command, String params, String cloudServer, String sender) {
         try {
             if (!sender.isBlank()) {
-                logger.debug("received {} command from {} : {} - {}", getThing().getUID(), sender, command, params);
+                logger.debug("Received child command from {} : {} - {} (via: {})", sender, command, params,
+                        getThing().getUID());
             }
             final MiIoAsyncCommunication connection = getConnection();
             return (connection != null) ? connection.queueCommand(command, params, cloudServer, sender) : 0;
@@ -630,7 +632,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
         if (!response.getSender().isBlank() && !response.getSender().contentEquals(getThing().getUID().getAsString())) {
-            for (Entry<Thing, MiIoAbstractHandler> entry : childDevices.entrySet()) {
+            for (Entry<Thing, MiIoLumiHandler> entry : childDevices.entrySet()) {
                 if (entry.getKey().getUID().getAsString().contentEquals(response.getSender())) {
                     // TODO: change to trace
                     logger.debug("Submit response to to child {} -> {}", response.getSender(), entry.getKey().getUID());
