@@ -56,20 +56,17 @@ public class CloudrainBindingConstants {
     public static final String CHANNEL_ID_CHANGE_CMD = "changeIrrigation";
     public static final String CHANNEL_ID_STOP_CMD = "stopIrrigation";
 
-    public static final String CHANNEL_STATE_VALUE_ON = "ON";
-    public static final String CHANNEL_STATE_VALUE_OFF = "OFF";
-
     public static final String ERROR_MSG_CONFIG_PARAMS = "Mandatory configuration parameters missing for authenticating. Please check the account configuration page.";
-    public static final String ERROR_MSG_API_AUTH = "Failed to authenticate at the Cloudrain API. Please check the configuration. API response: {}";
+    public static final String ERROR_MSG_API_AUTH = "Failed to authenticate at the Cloudrain API. Please check the configuration. API response: %s";
     public static final String ERROR_MSG_GET_ZONES = "Failed to discover zones from the Cloudrain API. Details: {}";
     public static final String ERROR_MSG_GET_IRRIGATION_ZONE_ID = "Retrieved invalid irrigation from the Cloudrain API. The zone ID is missing.";
-    public static final String ERROR_MSG_STATUS_UPDATE = "Failed to retrieve the status for zone {}. Details: {}";
-    public static final String ERROR_MSG_ZONE_STATUS_UPDATE = "Failed to retrieve zones. API response: {}";
-    public static final String ERROR_MSG_STATUS_UPDATE_IRRIGATION = "Failed to retrieve irrigation information. Details: {}";
-    public static final String ERROR_MSG_ZONE_NOT_FOUND = "Zone with id {} is unknown by the API. Maybe the zone got deleted in the app or this is due to test mode. Test Mode is: {}";
-    public static final String ERROR_MSG_IRRIGATION_COMMAND = "Failed to execute irrigation command for zone {}. Details: {}";
-    public static final String ERROR_MSG_ZONE_REGISTRATION = "Could not register zone {} for updates. AccountHandler not found";
-    public static final String ERROR_MSG_ACCOUNTHANDLER_NOT_FOUND = "Failed to retrieve AccountHandler. Bridge not yet initialized. Please try again later.";
+    public static final String ERROR_MSG_STATUS_UPDATE = "Failed to retrieve the status for zone %s. Details: %s";
+    public static final String ERROR_MSG_ZONE_STATUS_UPDATE = "Failed to retrieve zones. API response: %s";
+    public static final String ERROR_MSG_STATUS_UPDATE_IRRIGATION = "Failed to retrieve irrigation information. Details: %s";
+    public static final String ERROR_MSG_ZONE_NOT_FOUND = "Zone with id %s is unknown by the API. Maybe the zone got deleted in the app or this is due to test mode. Test Mode is: %s";
+    public static final String ERROR_MSG_IRRIGATION_COMMAND = "Failed to execute irrigation command for zone %s. Details: %s";
+    public static final String ERROR_MSG_ZONE_REGISTRATION = "Could not register zone %s for updates.";
+    public static final String ERROR_MSG_ACCOUNTHANDLER_NOT_FOUND = "Bridge not yet initialized. Please try again later.";
     public static final String ERROR_MSG_DISCOVERY_SCAN = "Error waiting for discovery scan: {}";
     public static final String ERROR_MSG_DISCOVERY_FAILED = "Discovery scan failed. Bridge not yet initialized. Please re-run scan later.";
     public static final String ERROR_MSG_DISCOVERY_FAILED_ZONE = "Discovery of zone {} failed. Bridge not yet initialized. Please re-run scan later.";

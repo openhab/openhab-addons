@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link Token} class represents a Cloudrain API access token.
- * It contains an access and a refreh token and their validity.
+ * It contains an access and a refresh token and their validity.
  *
  * @author Till Koellmann - Initial contribution
  */

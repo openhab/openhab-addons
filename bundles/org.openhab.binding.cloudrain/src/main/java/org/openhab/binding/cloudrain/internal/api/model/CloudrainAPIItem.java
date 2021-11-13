@@ -84,7 +84,7 @@ public abstract class CloudrainAPIItem {
      *
      * @return a non-null String representing the ClontrollerId or a default value
      */
-    public String getControlleIdWithDefault() {
+    public String getControllerIdWithDefault() {
         String localId = getControllerId();
         if (localId == null || localId.isBlank()) {
             return CONTROLLER_ID_DEFAULT;

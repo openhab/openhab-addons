@@ -12,8 +12,8 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>Cloudrain Zone</label>
-		<description>Represents a Watering Zone as defined in Cloudrain</description>
+		<label>Irrigation Zone</label>
+		<description>Represents an irrigation zone as defined in Cloudrain</description>
 
 		<channel-groups>
 			<channel-group id="irrigation" typeId="irrigation"/>
@@ -62,7 +62,7 @@
 			</channel>
 			<channel id="startIrrigation" typeId="cloudrainCommand">
 				<label>Start irrigation</label>
-				<description>Start an irrigation with the define duration. Behaves like changing the irrigation if one is active
+				<description>Start an irrigation with the defined duration. Behaves like changing the irrigation if one is active
 					exists in the zone.</description>
 			</channel>
 			<channel id="changeIrrigation" typeId="cloudrainCommand">
@@ -92,15 +92,10 @@
 	</channel-type>
 
 	<channel-type id="state">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>State</label>
 		<description>The state of an irrigation</description>
-		<state readOnly="true">
-			<options>
-				<option value="ON">ON</option>
-				<option value="OFF">OFF</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timestamp">

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.cloudrain.internal.api.model.Zone;
-import org.openhab.binding.cloudrain.internal.handler.CloudrainAccountHanlder;
+import org.openhab.binding.cloudrain.internal.handler.CloudrainAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -52,7 +52,7 @@ public class CloudrainDiscoveryService extends AbstractDiscoveryService
     /**
      * A reference to the account handler to retrieve zones
      */
-    private @Nullable CloudrainAccountHanlder accountHandler;
+    private @Nullable CloudrainAccountHandler accountHandler;
 
     /**
      * The scan future handle created by the scheduler for the discovery job
@@ -66,8 +66,8 @@ public class CloudrainDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler != null && handler instanceof CloudrainAccountHanlder) {
-            CloudrainAccountHanlder accountHandlerLocal = (CloudrainAccountHanlder) handler;
+        if (handler != null && handler instanceof CloudrainAccountHandler) {
+            CloudrainAccountHandler accountHandlerLocal = (CloudrainAccountHandler) handler;
             accountHandlerLocal.setDiscoveryService(this);
             this.accountHandler = accountHandlerLocal;
         }
@@ -120,7 +120,7 @@ public class CloudrainDiscoveryService extends AbstractDiscoveryService
      * Starts a thread which loads all Cloudrain Zones registered in the account.
      */
     private void loadZones() {
-        CloudrainAccountHanlder handler = accountHandler;
+        CloudrainAccountHandler handler = accountHandler;
         if (scanFuture == null) {
             scanFuture = scheduler.submit(() -> {
                 if (handler != null) {
@@ -147,7 +147,7 @@ public class CloudrainDiscoveryService extends AbstractDiscoveryService
         String zoneId = zone.getId();
 
         if (zoneId != null && !zoneId.isBlank()) {
-            CloudrainAccountHanlder handler = accountHandler;
+            CloudrainAccountHandler handler = accountHandler;
             if (handler != null) {
                 ThingUID accountUID = handler.getThing().getUID();
                 ThingUID thingUID = new ThingUID(THING_TYPE_ZONE, accountUID, zone.getUID());
@@ -155,7 +155,7 @@ public class CloudrainDiscoveryService extends AbstractDiscoveryService
                 try {
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(accountUID)
                             .withLabel(LABEL_ZONE + zoneName)
-                            .withProperty(PROPERTY_CTRL_ID, zone.getControlleIdWithDefault())
+                            .withProperty(PROPERTY_CTRL_ID, zone.getControllerIdWithDefault())
                             .withProperty(PROPERTY_CTRL_NAME, zone.getControllerNameWithDefault())
                             .withProperty(PROPERTY_ZONE_NAME, zoneName).withProperty(PROPERTY_ZONE_ID, zoneId)
                             .withProperty(PROPERTY_UID, zone.getUID()).withRepresentationProperty(PROPERTY_UID).build();

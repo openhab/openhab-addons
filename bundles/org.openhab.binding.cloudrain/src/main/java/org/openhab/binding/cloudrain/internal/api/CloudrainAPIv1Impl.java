@@ -14,6 +14,7 @@ package org.openhab.binding.cloudrain.internal.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -62,7 +63,7 @@ public class CloudrainAPIv1Impl implements CloudrainAPI {
     private static final String API_ERROR_NO_VALID_TOKEN_RECEIVED = "Unable to obtain a valid Token from API authentication";
     private static final String API_ERROR_HTTP_CLIENT_START = "HTTP Client is not starting correclty. Details: {}";
     private static final String API_ERROR_DEBUG_RESPONSE = "Endpoint: '{}', status: '{}', resonse (excerpt): '{}'. Trace for full response.";
-    private static final String API_ERROR_TRACE_RESPONSE = "Ful Cloudrain API resonse: '{}'";
+    private static final String API_ERROR_TRACE_RESPONSE = "Full Cloudrain API response: '{}'";
 
     private static final String API_HEADER_ACCEPT_ENCODING = "gzip, deflate, br";
 
@@ -87,7 +88,7 @@ public class CloudrainAPIv1Impl implements CloudrainAPI {
     private static final String API_URL_ZONES = API_URL_CLOUDRAIN + "/zones";
     private static final String API_URL_ZONE_COMMAND = API_URL_ZONES + "/%s/irrigation";
 
-    private static final List<Integer> VALID_RETURN_STATUS_LIST = List.of(200, 201, 202, 204);
+    private static final Set<Integer> VALID_RETURN_STATUS_LIST = Set.of(200, 201, 202, 204);
 
     /**
      * A reference to the {@link HttpClient} fir the API communication

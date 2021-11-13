@@ -23,7 +23,7 @@ import org.openhab.binding.cloudrain.internal.api.CloudrainAPI;
 import org.openhab.binding.cloudrain.internal.api.CloudrainAPIMockup;
 import org.openhab.binding.cloudrain.internal.api.CloudrainAPIProxy;
 import org.openhab.binding.cloudrain.internal.api.CloudrainAPIv1Impl;
-import org.openhab.binding.cloudrain.internal.handler.CloudrainAccountHanlder;
+import org.openhab.binding.cloudrain.internal.handler.CloudrainAccountHandler;
 import org.openhab.binding.cloudrain.internal.handler.CloudrainZoneHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -73,7 +73,7 @@ public class CloudrainHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (THING_TYPE_ACCOUNT.equals(thing.getThingTypeUID())) {
-            return new CloudrainAccountHanlder((Bridge) thing, cloudrainAPI);
+            return new CloudrainAccountHandler((Bridge) thing, cloudrainAPI);
         } else if (THING_TYPE_ZONE.equals(thing.getThingTypeUID())) {
             CloudrainZoneHandler zoneHanlder = new CloudrainZoneHandler(thing, cloudrainAPI, timeZoneProvider,
                     itemChannelLinkRegistry);

@@ -54,7 +54,8 @@
 			<parameter name="realtimeUpdates" type="boolean">
 				<label>Realtime Updates</label>
 				<description>Updates the remaining seconds of active irrigations in realtime without waiting for the polling
-					interval. This update does not access the Cloudrain API. Offers more acurate status, but may increase overhead e.g.
+					interval. This update does not access the Cloudrain API. Offers more accurate status, but may increase overhead
+					e.g.
 					log entries.</description>
 				<default>true</default>
 				<advanced>true</advanced>

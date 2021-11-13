@@ -53,7 +53,7 @@ public class Irrigation extends CloudrainAPIItem {
      *
      * @param zoneId the ID of the zone in which the irrigation is active
      * @param remainingSeconds the remaining seconds of the active irrigation
-     * @param durationInMins the total duration in seconds
+     * @param duration the total duration in seconds
      * @param startTime the start time of the active irrigation
      * @param plannedEndTime the planned end time of the active irrigation
      * @param controllerId the ID of the controller managing this zone

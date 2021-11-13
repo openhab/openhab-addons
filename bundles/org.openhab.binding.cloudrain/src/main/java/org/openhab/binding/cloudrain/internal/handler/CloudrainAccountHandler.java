@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +39,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -45,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The CloudrainAccountHanlder is responsible for handling the user's Cloudrain account. It acts as bridge in
+ * The CloudrainAccountHandler is responsible for handling the user's Cloudrain account. It acts as bridge in
  * the Cloudrain ecosystem and offers access to the user's Controllers, Zones and Irrigations. This handler
  * authenticates with the Cloudrain Developer API using the user-defined authentication parameters and is responsible
  * for polling the overall irrigation status.
@@ -53,9 +55,9 @@ import org.slf4j.LoggerFactory;
  * @author Till Koellmann - Initial contribution
  */
 @NonNullByDefault
-public class CloudrainAccountHanlder extends BaseBridgeHandler {
+public class CloudrainAccountHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(CloudrainAccountHanlder.class);
+    private final Logger logger = LoggerFactory.getLogger(CloudrainAccountHandler.class);
 
     /**
      * The CloudrainDiscoveryService responsible for automatic zone discovery
@@ -85,25 +87,25 @@ public class CloudrainAccountHanlder extends BaseBridgeHandler {
     /**
      * The zoneRegistry contains all zoneIds and active zone things
      */
-    private Map<String, Thing> zoneRegistry;
+    private ConcurrentHashMap<String, Thing> zoneRegistry;
 
     /**
      * The statusUpdateRegistry contains all zoneIds and zone things which register for updates from the statusUpdateJob
      */
-    private Map<String, Thing> statusUpdateRegistry;
+    private ConcurrentHashMap<String, Thing> statusUpdateRegistry;
 
     /**
-     * Creates this {@link CloudrainAccountHanlder}
+     * Creates this {@link CloudrainAccountHandler}
      *
      * @param bridge the bridge thing (the Cloudrain account)
      * @param cloudrainAPI the uninitialized Cloudrain API created by the CloudrainHandlerFactory
      */
-    public CloudrainAccountHanlder(Bridge bridge, CloudrainAPI cloudrainAPI) {
+    public CloudrainAccountHandler(Bridge bridge, CloudrainAPI cloudrainAPI) {
         super(bridge);
         this.cloudrainAPI = cloudrainAPI;
         this.config = getThing().getConfiguration().as(CloudrainConfig.class);
-        this.statusUpdateRegistry = new HashMap<String, Thing>();
-        this.zoneRegistry = new HashMap<String, Thing>();
+        this.statusUpdateRegistry = new ConcurrentHashMap<String, Thing>();
+        this.zoneRegistry = new ConcurrentHashMap<String, Thing>();
     }
 
     @Override
@@ -134,12 +136,11 @@ public class CloudrainAccountHanlder extends BaseBridgeHandler {
                 updateStatus(ThingStatus.ONLINE);
             } catch (CloudrainAPIException ex) {
                 // In case of failure log and go into offline status
-                logger.warn(ERROR_MSG_API_AUTH, ex.getError().getMessage());
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format(ERROR_MSG_API_AUTH, ex.getMessage()));
             } catch (CloudrainException ex) {
                 // In case of failure log and go into offline status
-                logger.warn(ERROR_MSG_CONFIG_PARAMS);
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ERROR_MSG_CONFIG_PARAMS);
             } finally {
                 // In any case update the zone's status so that they reflect any issue with the bridge as well. On first
                 // initialization this has no effect as no zone is registered yet, but during changes on the account
@@ -176,11 +177,11 @@ public class CloudrainAccountHanlder extends BaseBridgeHandler {
             try {
                 // Find all currently known zones from API
                 List<Zone> zones = cloudrainAPI.getZones();
-                Map<String, Zone> knwonZones = new HashMap<String, Zone>();
+                Map<String, Zone> knownZones = new HashMap<String, Zone>();
                 for (Zone zone : zones) {
                     String id = zone.getId();
                     if (id != null) {
-                        knwonZones.put(id, zone);
+                        knownZones.put(id, zone);
                     }
                 }
                 // Iterate all registered zones and check each
@@ -191,21 +192,19 @@ public class CloudrainAccountHanlder extends BaseBridgeHandler {
                 for (String zoneId : registeredZonesIdsCopy) {
                     Thing zoneThing = zoneRegistry.get(zoneId);
                     if (zoneThing != null) {
-                        // if the zone is known by the API update its properties
-                        if (knwonZones.containsKey(zoneId)) {
-                            Zone zone = knwonZones.get(zoneId);
-                            if (zone != null) {
-                                updateFromZone(zoneThing, zone);
-                            }
-                            // if the zone is not known by the API force a status update
+                        Zone zone = knownZones.get(zoneId);
+                        if (zone != null) {
+                            // if the zone is known by the API update its properties
+                            updateFromZone(zoneThing, zone);
                         } else {
+                            // if the zone is not known by the API force a status update
                             forceUpdate(zoneThing);
                         }
                     }
                 }
             } catch (CloudrainAPIException e) {
-                logger.warn(ERROR_MSG_ZONE_STATUS_UPDATE, e.getError().getMessage());
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format(ERROR_MSG_ZONE_STATUS_UPDATE, e.getMessage()));
             }
         }
     }
@@ -227,7 +226,9 @@ public class CloudrainAccountHanlder extends BaseBridgeHandler {
                     for (Irrigation irrigation : irrigations) {
                         String zoneId = irrigation.getZoneId();
                         if (zoneId == null || zoneId.isBlank()) {
-                            throw new CloudrainAPIException(ERROR_MSG_GET_IRRIGATION_ZONE_ID);
+                            // Skip this irrigation. No processing possible without zoneId.
+                            logger.warn(ERROR_MSG_GET_IRRIGATION_ZONE_ID);
+                            continue;
                         }
                         Thing zoneThing = statusUpdateRegistry.get(zoneId);
                         if (zoneThing != null) {
@@ -247,8 +248,8 @@ public class CloudrainAccountHanlder extends BaseBridgeHandler {
                     }
                 }
             } catch (CloudrainAPIException e) {
-                logger.warn(ERROR_MSG_STATUS_UPDATE_IRRIGATION, e.getMessage());
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format(ERROR_MSG_STATUS_UPDATE_IRRIGATION, e.getMessage()));
             }
         }
     }
