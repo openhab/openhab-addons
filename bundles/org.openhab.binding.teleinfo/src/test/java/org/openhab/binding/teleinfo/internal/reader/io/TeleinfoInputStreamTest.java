@@ -19,6 +19,7 @@ import java.time.Month;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants;
 import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.data.FrameType;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
@@ -193,6 +194,16 @@ public class TeleinfoInputStreamTest {
             assertEquals(8, dateTime.getZonedDateTime().getHour());
             assertEquals(26, dateTime.getZonedDateTime().getMinute());
             assertEquals(25, dateTime.getZonedDateTime().getSecond());
+
+            assertNotEquals(TeleinfoBindingConstants.NOT_A_CHANNEL, Label.CCASN.getTimestampChannelName());
+            assertEquals("2021-04-14T08:00:00", frame.getAsDateTime(Label.CCASN));
+            dateTime = DateTimeType.valueOf(frame.getAsDateTime(Label.CCASN));
+            assertEquals(2021, dateTime.getZonedDateTime().getYear());
+            assertEquals(Month.APRIL, dateTime.getZonedDateTime().getMonth());
+            assertEquals(14, dateTime.getZonedDateTime().getDayOfMonth());
+            assertEquals(8, dateTime.getZonedDateTime().getHour());
+            assertEquals(0, dateTime.getZonedDateTime().getMinute());
+            assertEquals(0, dateTime.getZonedDateTime().getSecond());
         }
     }
 
