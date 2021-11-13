@@ -15,11 +15,7 @@
   <name>openHAB Add-ons :: Automation :: JRuby Scripting</name>
 
   <properties>
-    <bnd.importpackage>
-      com.ibm.icu.*;resolution:=optional,
-      org.abego.treelayout.*;resolution:=optional,
-      org.apache.ivy.*;resolution:=optional,
-      org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>com.sun.nio.*;resolution:=optional,com.sun.security.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.bouncycastle.*;resolution:=optional,org.joda.*;resolution:=optional,sun.management.*;resolution:=optional,sun.nio.*;resolution:=optional</bnd.importpackage>
     <jruby.version>9.3.1.0</jruby.version>
   </properties>
 
