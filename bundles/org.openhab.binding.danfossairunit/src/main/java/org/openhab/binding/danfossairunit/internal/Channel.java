@@ -69,7 +69,7 @@ public enum Channel {
     @Nullable
     private final DanfossAirUnitWriteAccessor writeAccessor;
 
-    static Channel getByName(String name) {
+    public static Channel getByName(String name) {
         for (Channel channel : values()) {
             if (channel.getChannelName().equals(name)) {
                 return channel;
