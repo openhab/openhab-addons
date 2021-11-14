@@ -129,8 +129,9 @@ public class PAAudioSink implements AudioSink, ThingHandlerService {
 
     @Override
     public PercentType getVolume() throws IOException {
-        if (volume != null) {
-            return volume;
+        PercentType vol = volume;
+        if (vol != null) {
+            return vol;
         } else {
             throw new IOException("Audio sink does not support reporting the volume.");
         }
