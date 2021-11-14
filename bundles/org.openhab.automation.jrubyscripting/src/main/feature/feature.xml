@@ -5,6 +5,5 @@
 	<feature name="openhab-automation-jrubyscripting" description="JRuby Scripting" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.automation.jrubyscripting/${project.version}</bundle>
-		<configfile finalname="${openhab.conf}/services/jruby.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/jruby</configfile>
 	</feature>
 </features>
