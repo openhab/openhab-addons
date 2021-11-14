@@ -67,6 +67,7 @@
 /bundles/org.openhab.binding.digitalstrom/ @MichaelOchel @msiegele
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.dominoswiss/ @Friesoch
 /bundles/org.openhab.binding.doorbird/ @mhilbush
 /bundles/org.openhab.binding.draytonwiser/ @andrew-schofield
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
