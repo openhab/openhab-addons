@@ -30,7 +30,7 @@ public enum CommandParameterType {
     ONOFFNUMBER("onoffnumber"),
     OPENCLOSE("openclose"),
     OPENCLOSENUMBER("openclosenumber"),
-    OPENCLOSESWITCH("openclose"),
+    OPENCLOSESWITCH("opencloseswitch"),
     STRING("string"),
     CUSTOMSTRING("customstring"),
     NUMBER("number"),
