@@ -32,8 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * Processes JRuby Configuration Parameters
+ * Processes JRuby Configuration Parameters.
  *
  * @author Brian O'Connell - Initial contribution
  */
