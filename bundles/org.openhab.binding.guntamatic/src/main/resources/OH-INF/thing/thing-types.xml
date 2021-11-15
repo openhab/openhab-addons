@@ -484,22 +484,22 @@
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
 			<channel id="setwwheat0" typeId="setwwheat">
-				<label>Set Warm Wather Circle 0</label>
+				<label>Trigger Warm Wather Circle 0</label>
 			</channel>
 			<channel id="setwwheat1" typeId="setwwheat">
-				<label>Set Warm Wather Circle 1</label>
+				<label>Trigger Warm Wather Circle 1</label>
 			</channel>
 			<channel id="setwwheat2" typeId="setwwheat">
-				<label>Set Warm Wather Circle 2</label>
+				<label>Trigger Warm Wather Circle 2</label>
 			</channel>
 			<channel id="setextrawwheat0" typeId="setextrawwheat">
-				<label>Set Extra Warm Wather Circle 0</label>
+				<label>Trigger Extra Warm Wather Circle 0</label>
 			</channel>
 			<channel id="setextrawwheat1" typeId="setextrawwheat">
-				<label>Set Extra Warm Wather Circle 1</label>
+				<label>Trigger Extra Warm Wather Circle 1</label>
 			</channel>
 			<channel id="setextrawwheat2" typeId="setextrawwheat">
-				<label>Set Extra Warm Wather Circle 2</label>
+				<label>Trigger Extra Warm Wather Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
@@ -574,8 +574,8 @@
 	</channel-type>
 	<channel-type id="setwwheat" advanced="true">
 		<item-type>String</item-type>
-		<label>Set Warm Wather Circle 0...2</label>
-		<description>Set Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<label>Trigger Warm Wather Circle 0...2</label>
+		<description>Trigger Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
 		<state>
 			<options>
 				<option value="0">RECHARGE</option>
@@ -584,8 +584,8 @@
 	</channel-type>
 	<channel-type id="setextrawwheat" advanced="true">
 		<item-type>String</item-type>
-		<label>Set Extra Warm Wather Circle 0...2</label>
-		<description>Set Extra Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<label>Trigger Extra Warm Wather Circle 0...2</label>
+		<description>Trigger Extra Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
 		<state>
 			<options>
 				<option value="0">RECHARGE</option>
