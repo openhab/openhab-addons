@@ -18,18 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Base class for extensible state objects
  *
  * @author Ron Isaacson - Initial contribution
  */
+@NonNullByDefault
 public abstract class PowermaxStateContainer {
 
     protected final TimeZoneProvider timeZoneProvider;
@@ -46,7 +49,7 @@ public abstract class PowermaxStateContainer {
             parent.getValues().add(this);
         }
 
-        public T getValue() {
+        public @Nullable T getValue() {
             return value;
         }
 
@@ -67,10 +70,10 @@ public abstract class PowermaxStateContainer {
     }
 
     public class DynamicValue<T> extends Value<T> {
-        Supplier<T> valueFunction;
+        Supplier<@Nullable T> valueFunction;
         Supplier<State> stateFunction;
 
-        public DynamicValue(PowermaxStateContainer parent, String channel, Supplier<T> valueFunction,
+        public DynamicValue(PowermaxStateContainer parent, String channel, Supplier<@Nullable T> valueFunction,
                 Supplier<State> stateFunction) {
             super(parent, channel);
             this.valueFunction = valueFunction;
@@ -80,7 +83,7 @@ public abstract class PowermaxStateContainer {
         // Note: setValue() is still valid, but the saved value will be ignored
 
         @Override
-        public T getValue() {
+        public @Nullable T getValue() {
             return valueFunction.get();
         }
 
@@ -106,7 +109,8 @@ public abstract class PowermaxStateContainer {
 
         @Override
         public State getState() {
-            return value ? trueState : falseState;
+            Boolean val = value;
+            return val == null ? UnDefType.NULL : (val ? trueState : falseState);
         }
     }
 
@@ -117,7 +121,8 @@ public abstract class PowermaxStateContainer {
 
         @Override
         public State getState() {
-            return new StringType(value);
+            String val = value;
+            return val == null ? UnDefType.NULL : new StringType(val);
         }
     }
 
@@ -128,7 +133,11 @@ public abstract class PowermaxStateContainer {
 
         @Override
         public State getState() {
-            ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(value), timeZoneProvider.getTimeZone());
+            Long val = value;
+            if (val == null) {
+                return UnDefType.NULL;
+            }
+            ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(val), timeZoneProvider.getTimeZone());
             return new DateTimeType(zoned);
         }
     }

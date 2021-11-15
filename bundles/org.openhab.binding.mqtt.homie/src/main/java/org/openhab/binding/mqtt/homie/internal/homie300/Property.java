@@ -177,7 +177,7 @@ public class Property implements AttributeChanged {
         Value value;
         Boolean isDecimal = null;
 
-        if (attributes.name == "") {
+        if (attributes.name.isEmpty()) {
             attributes.name = propertyID;
         }
 

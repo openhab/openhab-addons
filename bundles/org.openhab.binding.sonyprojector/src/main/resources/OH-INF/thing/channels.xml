@@ -12,7 +12,19 @@
 			<tag>Status</tag>
 			<tag>Power</tag>
 		</tags>
-		<state readOnly="true"></state>
+		<state readOnly="true">
+			<options>
+				<option value="STANDBY">Standby</option>
+				<option value="START_UP">Start Up</option>
+				<option value="STARTUP_LAMP">Sartup Lamp</option>
+				<option value="POWER_ON">Power On</option>
+				<option value="COOLING1">Cooling 1</option>
+				<option value="COOLING2">Cooling 2</option>
+				<option value="SAVING_COOLING1">Saving Cooling 1</option>
+				<option value="SAVING_COOLING2">Saving Cooling 2</option>
+				<option value="SAVING_STANDBY">Saving Standby</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="input">

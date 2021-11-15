@@ -103,7 +103,7 @@ public class LocationMessage {
      * @return Conversion result
      */
     public State getTrackerLocation() {
-        if (latitude != BigDecimal.ZERO && longitude != BigDecimal.ZERO) {
+        if (!BigDecimal.ZERO.equals(latitude) && !BigDecimal.ZERO.equals(longitude)) {
             return new PointType(new DecimalType(latitude), new DecimalType(longitude));
         }
         return UnDefType.UNDEF;

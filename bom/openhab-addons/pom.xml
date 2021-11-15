@@ -23,6 +23,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.automation.jrubyscripting</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.automation.jsscripting</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -288,6 +293,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.dbquery</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.deconz</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -354,6 +364,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.ecotouch</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.ekey</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -741,13 +756,11 @@
       <artifactId>org.openhab.binding.lifx</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- linky binding suppressed from the distribution until it is fixed
-      <dependency>
+    <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.linky</artifactId>
       <version>${project.version}</version>
-      </dependency>
-    -->
+    </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.linuxinput</artifactId>
@@ -1175,6 +1188,11 @@
     </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.proteusecometer</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.pulseaudio</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -1386,6 +1404,11 @@
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.sonyprojector</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.souliss</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

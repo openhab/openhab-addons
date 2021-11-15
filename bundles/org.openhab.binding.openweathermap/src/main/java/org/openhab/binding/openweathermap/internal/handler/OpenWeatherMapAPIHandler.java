@@ -14,6 +14,7 @@ package org.openhab.binding.openweathermap.internal.handler;
 
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -151,21 +152,29 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
     }
 
     private void determineBridgeStatus() {
-        ThingStatus status = ThingStatus.OFFLINE;
-        for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE.equals(thing.getStatus())) {
-                status = ThingStatus.ONLINE;
-                break;
+        ThingStatus status = ThingStatus.ONLINE;
+        List<Thing> childs = getThing().getThings();
+        if (!childs.isEmpty()) {
+            status = ThingStatus.OFFLINE;
+            for (Thing thing : childs) {
+                if (ThingStatus.ONLINE.equals(thing.getStatus())) {
+                    status = ThingStatus.ONLINE;
+                    break;
+                }
             }
         }
         updateStatus(status);
     }
 
     private void updateThings() {
-        ThingStatus status = ThingStatus.OFFLINE;
-        for (Thing thing : getThing().getThings()) {
-            if (ThingStatus.ONLINE.equals(updateThing((AbstractOpenWeatherMapHandler) thing.getHandler(), thing))) {
-                status = ThingStatus.ONLINE;
+        ThingStatus status = ThingStatus.ONLINE;
+        List<Thing> childs = getThing().getThings();
+        if (!childs.isEmpty()) {
+            status = ThingStatus.OFFLINE;
+            for (Thing thing : childs) {
+                if (ThingStatus.ONLINE.equals(updateThing((AbstractOpenWeatherMapHandler) thing.getHandler(), thing))) {
+                    status = ThingStatus.ONLINE;
+                }
             }
         }
         updateStatus(status);

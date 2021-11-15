@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 
 /**
@@ -19,6 +21,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxTimeoutMessage extends PowermaxBaseMessage {
 
     /**
@@ -32,7 +35,7 @@ public class PowermaxTimeoutMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
+    protected @Nullable PowermaxState handleMessageInternal(@Nullable PowermaxCommManager commManager) {
         if (commManager != null) {
             commManager.sendMessage(PowermaxSendType.EXIT);
         }

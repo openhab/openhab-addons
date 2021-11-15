@@ -12,21 +12,24 @@
  */
 package org.openhab.binding.powermax.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PowermaxIpConfiguration} is responsible for holding
  * configuration informations associated to a Powermax IP thing type
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxIpConfiguration {
 
-    public String ip;
-    public Integer tcpPort;
-    public Integer motionOffDelay;
-    public Boolean allowArming;
-    public Boolean allowDisarming;
-    public String pinCode;
-    public Boolean forceStandardMode;
-    public String panelType;
-    public Boolean autoSyncTime;
+    public String ip = "";
+    public int tcpPort = 0;
+    public int motionOffDelay = 3;
+    public boolean allowArming = false;
+    public boolean allowDisarming = false;
+    public String pinCode = "";
+    public boolean forceStandardMode = false;
+    public String panelType = "PowerMaxPro";
+    public boolean autoSyncTime = false;
 }

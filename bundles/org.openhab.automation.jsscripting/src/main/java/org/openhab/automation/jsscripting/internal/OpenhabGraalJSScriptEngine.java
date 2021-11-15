@@ -30,6 +30,7 @@ import javax.script.ScriptContext;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Engine;
 import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocable;
@@ -65,11 +66,16 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
      */
     public OpenhabGraalJSScriptEngine() {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-        delegate = GraalJSScriptEngine.create(null,
+        delegate = GraalJSScriptEngine.create(
+                Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
+                        .build(),
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
                         .option("js.commonjs-require-cwd", MODULE_DIR).option("js.nashorn-compat", "true") // to ease
                                                                                                            // migration
+                        .option("js.ecmascript-version", "2021") // nashorn compat will enforce es5 compatibility, we
+                                                                 // want ecma2021
                         .option("js.commonjs-require", "true") // enable CommonJS module support
+                        .hostClassLoader(getClass().getClassLoader())
                         .fileSystem(new DelegatingFileSystem(FileSystems.getDefault().provider()) {
                             @Override
                             public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options,

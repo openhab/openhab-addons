@@ -38,7 +38,7 @@
 			</parameter>
 
 			<parameter name="where" type="text" required="true">
-				<label>OpenWebNet Device Address (where)</label>
+				<label>OpenWebNet Address (where)</label>
 				<description>Example: A/PL address: A=1 PL=3 --> where=13. On local bus: where=13#4#01</description>
 			</parameter>
 		</config-description>

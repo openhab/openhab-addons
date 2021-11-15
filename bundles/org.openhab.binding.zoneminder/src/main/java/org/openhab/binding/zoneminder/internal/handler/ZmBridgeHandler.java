@@ -318,11 +318,12 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         monitorList.add(monitor);
                         options.add(new StateOption(monitorDTO.id, "Monitor " + monitorDTO.id));
                     }
-                    stateDescriptionProvider
-                            .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_IMAGE_MONITOR_ID), options);
-                    stateDescriptionProvider
-                            .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_VIDEO_MONITOR_ID), options);
                 }
+                // Update state options
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_IMAGE_MONITOR_ID),
+                        options);
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_VIDEO_MONITOR_ID),
+                        options);
                 // Only update alarm and event info for monitors whose handlers are initialized
                 Set<String> ids = monitorHandlers.keySet();
                 for (Monitor m : monitorList) {

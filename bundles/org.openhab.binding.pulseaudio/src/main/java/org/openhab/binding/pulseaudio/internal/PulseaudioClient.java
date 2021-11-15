@@ -60,6 +60,11 @@ public class PulseaudioClient {
     private List<Module> modules;
 
     /**
+     * Corresponding to the global binding configuration
+     */
+    private PulseAudioBindingConfiguration configuration;
+
+    /**
      * corresponding name to execute actions on sink items
      */
     private static final String ITEM_SINK = "sink";
@@ -119,13 +124,10 @@ public class PulseaudioClient {
      */
     private static final String MODULE_COMBINE_SINK = "module-combine-sink";
 
-    public PulseaudioClient() throws IOException {
-        this("localhost", 4712);
-    }
-
-    public PulseaudioClient(String host, int port) throws IOException {
+    public PulseaudioClient(String host, int port, PulseAudioBindingConfiguration configuration) throws IOException {
         this.host = host;
         this.port = port;
+        this.configuration = configuration;
 
         items = new ArrayList<>();
         modules = new ArrayList<>();
@@ -147,19 +149,19 @@ public class PulseaudioClient {
 
         List<AbstractAudioDeviceConfig> newItems = new ArrayList<>(); // prepare new list before assigning it
         newItems.clear();
-        if (Optional.ofNullable(TYPE_FILTERS.get(SINK_THING_TYPE.getId())).orElse(false)) {
+        if (configuration.sink) {
             logger.debug("reading sinks");
             newItems.addAll(Parser.parseSinks(listSinks(), this));
         }
-        if (Optional.ofNullable(TYPE_FILTERS.get(SOURCE_THING_TYPE.getId())).orElse(false)) {
+        if (configuration.source) {
             logger.debug("reading sources");
             newItems.addAll(Parser.parseSources(listSources(), this));
         }
-        if (Optional.ofNullable(TYPE_FILTERS.get(SINK_INPUT_THING_TYPE.getId())).orElse(false)) {
+        if (configuration.sinkInput) {
             logger.debug("reading sink-inputs");
             newItems.addAll(Parser.parseSinkInputs(listSinkInputs(), this));
         }
-        if (Optional.ofNullable(TYPE_FILTERS.get(SOURCE_OUTPUT_THING_TYPE.getId())).orElse(false)) {
+        if (configuration.sourceOutput) {
             logger.debug("reading source-outputs");
             newItems.addAll(Parser.parseSourceOutputs(listSourceOutputs(), this));
         }

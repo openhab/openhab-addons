@@ -18,11 +18,6 @@
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description>
-			<parameter name="lightId" type="text" required="true">
-				<label>Light ID</label>
-				<description>The identifier that is used within the hue bridge.</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:plugwithoutfade"/>
 	</thing-type>
 </thing:thing-descriptions>

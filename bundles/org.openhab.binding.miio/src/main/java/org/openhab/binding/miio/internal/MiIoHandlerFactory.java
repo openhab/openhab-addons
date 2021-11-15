@@ -82,7 +82,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         cloudConnector.setCredentials(username, password, country);
         try {
             if (!scheduler.isShutdown()) {
-                scheduledTask = scheduler.submit(() -> cloudConnector.isConnected());
+                scheduledTask = scheduler.submit(() -> cloudConnector.isConnected(true));
             } else {
                 logger.debug("Unexpected: ScheduledExecutorService is shutdown.");
             }

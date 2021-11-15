@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 
@@ -20,6 +22,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxEventLogMessage extends PowermaxBaseMessage {
 
     /**
@@ -33,7 +36,7 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
+    protected @Nullable PowermaxState handleMessageInternal(@Nullable PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }

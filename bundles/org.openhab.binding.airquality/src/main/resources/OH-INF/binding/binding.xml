@@ -4,6 +4,5 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Air Quality Binding</name>
-	<description>Measure Air Quality Index and details about pollution particles for a given location</description>
 
 </binding:binding>
