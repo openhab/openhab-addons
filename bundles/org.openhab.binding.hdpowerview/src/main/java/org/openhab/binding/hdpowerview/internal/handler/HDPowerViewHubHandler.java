@@ -288,6 +288,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         logger.debug("Received data for {} scenes", sceneData.size());
 
         Map<String, Channel> idChannelMap = getIdSceneChannelMap();
+        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+        boolean isChannelListChanged = false;
         for (Scene scene : sceneData) {
             // remove existing scene channel from the map
             String sceneId = Integer.toString(scene.id);
@@ -301,7 +303,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                         scene.getName());
                 Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneChannelTypeUID)
                         .withLabel(scene.getName()).withDescription(description).build();
-                updateThing(editThing().withChannel(channel).build());
+                allChannels.add(channel);
+                isChannelListChanged = true;
                 logger.debug("Creating new channel for scene '{}'", sceneId);
             }
         }
@@ -309,8 +312,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         // remove any previously created channels that no longer exist
         if (!idChannelMap.isEmpty()) {
             logger.debug("Removing {} orphan scene channels", idChannelMap.size());
-            List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
             allChannels.removeAll(idChannelMap.values());
+            isChannelListChanged = true;
+        }
+
+        if (isChannelListChanged) {
             updateThing(editThing().withChannels(allChannels).build());
         }
     }
@@ -333,6 +339,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         logger.debug("Received data for {} sceneCollections", sceneCollectionData.size());
 
         Map<String, Channel> idChannelMap = getIdSceneCollectionChannelMap();
+        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+        boolean isChannelListChanged = false;
         for (SceneCollection sceneCollection : sceneCollectionData) {
             // remove existing scene collection channel from the map
             String sceneCollectionId = Integer.toString(sceneCollection.id);
@@ -342,11 +350,12 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             } else {
                 // create a new scene collection channel
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), sceneCollectionId);
-                String description = translationProvider.getText(
-                        "dynamic-channel.scene-group-activate.description", sceneCollection.getName());
+                String description = translationProvider.getText("dynamic-channel.scene-group-activate.description",
+                        sceneCollection.getName());
                 Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneCollectionChannelTypeUID)
                         .withLabel(sceneCollection.getName()).withDescription(description).build();
-                updateThing(editThing().withChannel(channel).build());
+                allChannels.add(channel);
+                isChannelListChanged = true;
                 logger.debug("Creating new channel for scene collection '{}'", sceneCollectionId);
             }
         }
@@ -354,8 +363,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         // remove any previously created channels that no longer exist
         if (!idChannelMap.isEmpty()) {
             logger.debug("Removing {} orphan scene collection channels", idChannelMap.size());
-            List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
             allChannels.removeAll(idChannelMap.values());
+            isChannelListChanged = true;
+        }
+
+        if (isChannelListChanged) {
             updateThing(editThing().withChannels(allChannels).build());
         }
     }
