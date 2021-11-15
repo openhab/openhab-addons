@@ -21,6 +21,8 @@ import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewShadeDiscov
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewShadeHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -28,6 +30,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -43,10 +46,16 @@ import org.osgi.service.component.annotations.Reference;
 public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
+    private final HDPowerViewTranslationProvider translationProvider;
 
     @Activate
-    public HDPowerViewHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public HDPowerViewHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
+            ComponentContext componentContext) {
+        super.activate(componentContext);
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.translationProvider = new HDPowerViewTranslationProvider(getBundleContext().getBundle(), i18nProvider,
+                localeProvider);
     }
 
     @Override
@@ -59,7 +68,7 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_HUB)) {
-            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient);
+            HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient, translationProvider);
             registerService(new HDPowerViewShadeDiscoveryService(handler));
             return handler;
         } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SHADE)) {
