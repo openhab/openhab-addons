@@ -38,30 +38,30 @@ public class GuntamaticBindingConstants {
     public static final ThingTypeUID THING_TYPE_THERM = new ThingTypeUID(BINDING_ID, "therm");
 
     // List of all Channel ids
-    public static final String CHANNEL_SETBOILERAPPROVAL = "setboilerapproval";
-    public static final String CHANNEL_SETPROGRAM = "setprogram";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM0 = "setheatcircprogram0";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM1 = "setheatcircprogram1";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM2 = "setheatcircprogram2";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM3 = "setheatcircprogram3";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM4 = "setheatcircprogram4";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM5 = "setheatcircprogram5";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM6 = "setheatcircprogram6";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM7 = "setheatcircprogram7";
-    public static final String CHANNEL_SETHEATCIRCPROGRAM8 = "setheatcircprogram8";
-    public static final String CHANNEL_SETWWHEAT0 = "setwwheat0";
-    public static final String CHANNEL_SETWWHEAT1 = "setwwheat1";
-    public static final String CHANNEL_SETWWHEAT2 = "setwwheat2";
-    public static final String CHANNEL_SETEXTRAWWHEAT0 = "setextrawwheat0";
-    public static final String CHANNEL_SETEXTRAWWHEAT1 = "setextrawwheat1";
-    public static final String CHANNEL_SETEXTRAWWHEAT2 = "setextrawwheat2";
+    public static final String CHANNEL_CONTROLBOILERAPPROVAL = "controlboilerapproval";
+    public static final String CHANNEL_CONTROLPROGRAM = "controlprogram";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM0 = "controlheatcircprogram0";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM1 = "controlheatcircprogram1";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM2 = "controlheatcircprogram2";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM3 = "controlheatcircprogram3";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM4 = "controlheatcircprogram4";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM5 = "controlheatcircprogram5";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM6 = "controlheatcircprogram6";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM7 = "controlheatcircprogram7";
+    public static final String CHANNEL_CONTROLHEATCIRCPROGRAM8 = "controlheatcircprogram8";
+    public static final String CHANNEL_CONTROLWWHEAT0 = "controlwwheat0";
+    public static final String CHANNEL_CONTROLWWHEAT1 = "controlwwheat1";
+    public static final String CHANNEL_CONTROLWWHEAT2 = "controlwwheat2";
+    public static final String CHANNEL_CONTROLEXTRAWWHEAT0 = "controlextrawwheat0";
+    public static final String CHANNEL_CONTROLEXTRAWWHEAT1 = "controlextrawwheat1";
+    public static final String CHANNEL_CONTROLEXTRAWWHEAT2 = "controlextrawwheat2";
 
-    public static final List<String> CHANNELIDS = Arrays.asList(CHANNEL_SETBOILERAPPROVAL, CHANNEL_SETPROGRAM,
-            CHANNEL_SETHEATCIRCPROGRAM0, CHANNEL_SETHEATCIRCPROGRAM1, CHANNEL_SETHEATCIRCPROGRAM2,
-            CHANNEL_SETHEATCIRCPROGRAM3, CHANNEL_SETHEATCIRCPROGRAM4, CHANNEL_SETHEATCIRCPROGRAM5,
-            CHANNEL_SETHEATCIRCPROGRAM6, CHANNEL_SETHEATCIRCPROGRAM7, CHANNEL_SETHEATCIRCPROGRAM8, CHANNEL_SETWWHEAT0,
-            CHANNEL_SETWWHEAT1, CHANNEL_SETWWHEAT2, CHANNEL_SETEXTRAWWHEAT0, CHANNEL_SETEXTRAWWHEAT1,
-            CHANNEL_SETEXTRAWWHEAT2);
+    public static final List<String> CHANNELIDS = Arrays.asList(CHANNEL_CONTROLBOILERAPPROVAL, CHANNEL_CONTROLPROGRAM,
+            CHANNEL_CONTROLHEATCIRCPROGRAM0, CHANNEL_CONTROLHEATCIRCPROGRAM1, CHANNEL_CONTROLHEATCIRCPROGRAM2,
+            CHANNEL_CONTROLHEATCIRCPROGRAM3, CHANNEL_CONTROLHEATCIRCPROGRAM4, CHANNEL_CONTROLHEATCIRCPROGRAM5,
+            CHANNEL_CONTROLHEATCIRCPROGRAM6, CHANNEL_CONTROLHEATCIRCPROGRAM7, CHANNEL_CONTROLHEATCIRCPROGRAM8,
+            CHANNEL_CONTROLWWHEAT0, CHANNEL_CONTROLWWHEAT1, CHANNEL_CONTROLWWHEAT2, CHANNEL_CONTROLEXTRAWWHEAT0,
+            CHANNEL_CONTROLEXTRAWWHEAT1, CHANNEL_CONTROLEXTRAWWHEAT2);
 
     public static final String PARAMETER_BOILERAPPROVAL = "boilerapproval";
     public static final String PARAMETER_PROGRAM = "program";
