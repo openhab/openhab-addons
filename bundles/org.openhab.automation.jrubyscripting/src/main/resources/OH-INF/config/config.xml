@@ -19,8 +19,8 @@
 		</parameter-group>
 
 		<parameter-group name="gems">
-			<label>Gems</label>
-			<description>This group defines the list of GEMS to install.</description>
+			<label>Ruby Gems</label>
+			<description>This group defines the list of Ruby Gems to install.</description>
 			<advanced>false</advanced>
 		</parameter-group>
 
@@ -51,7 +51,7 @@
 
 		<parameter name="gem_home" type="text" required="false" groupName="environment">
 			<label>GEM_HOME</label>
-			<description>Location ruby gems will be installed and loaded, directory will be created if missing and gem installs
+			<description>Location Ruby Gems will be installed and loaded, directory will be created if missing and gem installs
 				are specified</description>
 			<default></default>
 		</parameter>
@@ -62,7 +62,7 @@
 		</parameter>
 
 		<parameter name="gems" type="text" required="false" groupName="gems">
-			<label>Gems</label>
+			<label>Ruby Gems</label>
 			<description>Comma separated list of Ruby Gems to install.</description>
 		</parameter>
 
