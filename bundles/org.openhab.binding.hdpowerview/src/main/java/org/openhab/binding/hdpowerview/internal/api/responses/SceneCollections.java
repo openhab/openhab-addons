@@ -22,13 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * State of all Scenes in an HD PowerView hub
  *
- * @author Andy Lintner - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class Scenes {
+public class SceneCollections {
 
-    public @Nullable List<Scene> sceneData;
-    public @Nullable List<Integer> sceneIds;
+    public @Nullable List<SceneCollection> sceneCollectionData;
+    public @Nullable List<Integer> sceneCollectionIds;
 
     /*
      * the following SuppressWarnings annotation is because the Eclipse compiler
@@ -38,10 +38,9 @@ public class Scenes {
      */
     @SuppressWarnings("null")
     @NonNullByDefault
-    public static class Scene {
+    public static class SceneCollection {
         public int id;
         public @Nullable String name;
-        public int roomId;
         public int order;
         public int colorId;
         public int iconId;
