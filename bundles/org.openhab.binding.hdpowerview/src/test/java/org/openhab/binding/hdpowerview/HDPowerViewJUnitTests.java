@@ -293,9 +293,7 @@ public class HDPowerViewJUnitTests {
         final Gson gson = new Gson();
         @Nullable
         Shades shades;
-        @Nullable
         String json = loadJson("shades");
-        assertNotNull(json);
         assertNotEquals("", json);
         shades = gson.fromJson(json, Shades.class);
         assertNotNull(shades);
@@ -307,9 +305,7 @@ public class HDPowerViewJUnitTests {
     @Test
     public void sceneResponseIsParsedCorrectly() throws JsonParseException {
         final Gson gson = new Gson();
-        @Nullable
         String json = loadJson("scenes");
-        assertNotNull(json);
         assertNotEquals("", json);
 
         @Nullable
@@ -333,9 +329,7 @@ public class HDPowerViewJUnitTests {
     @Test
     public void sceneCollectionResponseIsParsedCorrectly() throws JsonParseException {
         final Gson gson = new Gson();
-        @Nullable
         String json = loadJson("sceneCollections");
-        assertNotNull(json);
         assertNotEquals("", json);
 
         @Nullable
@@ -359,7 +353,6 @@ public class HDPowerViewJUnitTests {
     public void duetteTopDownBottomUpShadeIsParsedCorrectly() throws JsonParseException {
         final Gson gson = new Gson();
         String json = loadJson("duette");
-        assertNotNull(json);
         assertNotEquals("", json);
 
         @Nullable
