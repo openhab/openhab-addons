@@ -142,6 +142,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
         for (Entry<Label, String> entry : frame.getLabelToValues().entrySet()) {
             Label label = entry.getKey();
             if (!label.getChannelName().equals(NOT_A_CHANNEL)) {
+                logger.trace("Update channel {} to value {}", label.getChannelName(), entry.getValue());
                 if (label == Label.PTEC) {
                     updateState(label.getChannelName(), StringType.valueOf(entry.getValue().replace(".", "")));
                 } else if (label.getType() == ValueType.STRING) {
@@ -154,6 +155,7 @@ public class TeleinfoElectricityMeterHandler extends BaseThingHandler implements
             if (!label.getTimestampChannelName().equals(NOT_A_CHANNEL)) {
                 String timestamp = frame.getAsDateTime(label);
                 if (!timestamp.isEmpty()) {
+                    logger.trace("Update channel {} to value {}", label.getTimestampChannelName(), timestamp);
                     updateState(label.getTimestampChannelName(), DateTimeType.valueOf(timestamp));
                 }
             }
