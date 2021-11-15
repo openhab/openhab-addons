@@ -9,6 +9,66 @@
 		<label>Guntamatic Biostar</label>
 		<description>Guntamatic Biostar Heating System</description>
 
+		<channels>
+			<channel id="setboilerapproval" typeId="setboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="setprogram" typeId="setprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="setheatcircprogram0" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="setheatcircprogram1" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="setheatcircprogram2" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="setheatcircprogram3" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="setheatcircprogram4" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="setheatcircprogram5" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="setheatcircprogram6" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="setheatcircprogram7" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="setheatcircprogram8" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="setwwheat0" typeId="setwwheat">
+				<label>Set Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setwwheat1" typeId="setwwheat">
+				<label>Set Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setwwheat2" typeId="setwwheat">
+				<label>Set Warm Wather Circle 2</label>
+			</channel>
+			<channel id="setextrawwheat0" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setextrawwheat1" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setextrawwheat2" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">K0010</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
@@ -32,11 +92,71 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<thing-type id="non-biostar">
+	<thing-type id="powerchip">
 
-		<label>Guntamatic Powerchip, Powercorn, Biocom, Pro or Therm</label>
-		<description>Guntamatic Powerchip, Powercorn, Biocom, Pro or Therm Heating System. Untested. Please provide feedback!</description>
+		<label>Guntamatic Powerchip</label>
+		<description>Guntamatic Powerchip Heating System. Untested! Please provide Feedback!</description>
 
+		<channels>
+			<channel id="setboilerapproval" typeId="setboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="setprogram" typeId="setprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="setheatcircprogram0" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="setheatcircprogram1" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="setheatcircprogram2" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="setheatcircprogram3" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="setheatcircprogram4" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="setheatcircprogram5" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="setheatcircprogram6" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="setheatcircprogram7" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="setheatcircprogram8" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="setwwheat0" typeId="setwwheat">
+				<label>Set Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setwwheat1" typeId="setwwheat">
+				<label>Set Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setwwheat2" typeId="setwwheat">
+				<label>Set Warm Wather Circle 2</label>
+			</channel>
+			<channel id="setextrawwheat0" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setextrawwheat1" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setextrawwheat2" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
@@ -60,4 +180,417 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="powercorn">
+
+		<label>Guntamatic Powercorn</label>
+		<description>Guntamatic Powercorn Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="setboilerapproval" typeId="setboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="setprogram" typeId="setprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="setheatcircprogram0" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="setheatcircprogram1" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="setheatcircprogram2" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="setheatcircprogram3" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="setheatcircprogram4" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="setheatcircprogram5" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="setheatcircprogram6" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="setheatcircprogram7" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="setheatcircprogram8" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="setwwheat0" typeId="setwwheat">
+				<label>Set Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setwwheat1" typeId="setwwheat">
+				<label>Set Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setwwheat2" typeId="setwwheat">
+				<label>Set Warm Wather Circle 2</label>
+			</channel>
+			<channel id="setextrawwheat0" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setextrawwheat1" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setextrawwheat2" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="biocom">
+
+		<label>Guntamatic Biocom</label>
+		<description>Guntamatic Biocom Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="setboilerapproval" typeId="setboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="setprogram" typeId="setprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="setheatcircprogram0" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="setheatcircprogram1" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="setheatcircprogram2" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="setheatcircprogram3" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="setheatcircprogram4" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="setheatcircprogram5" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="setheatcircprogram6" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="setheatcircprogram7" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="setheatcircprogram8" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="setwwheat0" typeId="setwwheat">
+				<label>Set Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setwwheat1" typeId="setwwheat">
+				<label>Set Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setwwheat2" typeId="setwwheat">
+				<label>Set Warm Wather Circle 2</label>
+			</channel>
+			<channel id="setextrawwheat0" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setextrawwheat1" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setextrawwheat2" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="pro">
+
+		<label>Guntamatic Pro</label>
+		<description>Guntamatic Pro Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="setboilerapproval" typeId="setboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="setprogram" typeId="setprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="setheatcircprogram0" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="setheatcircprogram1" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="setheatcircprogram2" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="setheatcircprogram3" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="setheatcircprogram4" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="setheatcircprogram5" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="setheatcircprogram6" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="setheatcircprogram7" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="setheatcircprogram8" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="setwwheat0" typeId="setwwheat">
+				<label>Set Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setwwheat1" typeId="setwwheat">
+				<label>Set Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setwwheat2" typeId="setwwheat">
+				<label>Set Warm Wather Circle 2</label>
+			</channel>
+			<channel id="setextrawwheat0" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setextrawwheat1" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setextrawwheat2" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="therm">
+
+		<label>Guntamatic Therm</label>
+		<description>Guntamatic Therm Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="setboilerapproval" typeId="setboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="setprogram" typeId="setprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="setheatcircprogram0" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="setheatcircprogram1" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="setheatcircprogram2" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="setheatcircprogram3" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="setheatcircprogram4" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="setheatcircprogram5" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="setheatcircprogram6" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="setheatcircprogram7" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="setheatcircprogram8" typeId="setheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="setwwheat0" typeId="setwwheat">
+				<label>Set Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setwwheat1" typeId="setwwheat">
+				<label>Set Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setwwheat2" typeId="setwwheat">
+				<label>Set Warm Wather Circle 2</label>
+			</channel>
+			<channel id="setextrawwheat0" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="setextrawwheat1" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="setextrawwheat2" typeId="setextrawwheat">
+				<label>Set Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">K0010</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<channel-type id="setprogram" advanced="false">
+		<item-type>String</item-type>
+		<label>Set Program</label>
+		<description>Set Program of the Guntamatic Heating System (OFF, NORMAL, WARMWATER, MANUAL)</description>
+		<state>
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">NORMAL</option>
+				<option value="2">WARMWATER</option>
+				<option value="8">MANUAL</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="setboilerapproval" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Boiler Approval</label>
+		<description>Set Boiler Approval of the Guntamatic Heating System (AUTO, OFF, ON)</description>
+		<state>
+			<options>
+				<option value="0">AUTO</option>
+				<option value="1">OFF</option>
+				<option value="2">ON</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="setheatcircprogram" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Program of Heat Circle 0...8</label>
+		<description>Set Program of Heat Circle 0...8 of the Guntamatic Heating System (OFF, NORMAL, HEAT, LOWER)</description>
+		<state>
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">NORMAL</option>
+				<option value="2">HEAT</option>
+				<option value="3">LOWER</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="setwwheat" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Warm Wather Circle 0...2</label>
+		<description>Set Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<state>
+			<options>
+				<option value="0">RECHARGE</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="setextrawwheat" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Extra Warm Wather Circle 0...2</label>
+		<description>Set Extra Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<state>
+			<options>
+				<option value="0">RECHARGE</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>
