@@ -41,6 +41,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,20 +87,52 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        /*
-         * if (CHANNEL_Betrieb.equals(channelUID.getId())) {
-         * if (command instanceof RefreshType) {
-         * // TODO: handle data refresh
-         * }
-         * 
-         * // TODO: handle command
-         * 
-         * // Note: if communication with thing fails for some reason,
-         * // indicate that by setting the status with detail information:
-         * // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-         * // "Could not control device at IP address x.x.x.x");
-         * }
-         */
+        if (!(command instanceof RefreshType)) {
+            if (!config.key.isEmpty()) {
+                String param;
+                String channelID = channelUID.getId();
+                switch (channelID) {
+                    case CHANNEL_SETBOILERAPPROVAL:
+                        param = getThing().getProperties().get(PARAMETER_BOILERAPPROVAL);
+                        break;
+                    case CHANNEL_SETPROGRAM:
+                        param = getThing().getProperties().get(PARAMETER_PROGRAM);
+                        break;
+                    case CHANNEL_SETHEATCIRCPROGRAM0:
+                    case CHANNEL_SETHEATCIRCPROGRAM1:
+                    case CHANNEL_SETHEATCIRCPROGRAM2:
+                    case CHANNEL_SETHEATCIRCPROGRAM3:
+                    case CHANNEL_SETHEATCIRCPROGRAM4:
+                    case CHANNEL_SETHEATCIRCPROGRAM5:
+                    case CHANNEL_SETHEATCIRCPROGRAM6:
+                    case CHANNEL_SETHEATCIRCPROGRAM7:
+                    case CHANNEL_SETHEATCIRCPROGRAM8:
+                        param = getThing().getProperties().get(PARAMETER_HEATCIRCPROGRAM).replace("x",
+                                channelID.substring(channelID.length() - 1));
+                        break;
+                    case CHANNEL_SETWWHEAT0:
+                    case CHANNEL_SETWWHEAT1:
+                    case CHANNEL_SETWWHEAT2:
+                        param = getThing().getProperties().get(PARAMETER_WWHEAT).replace("x",
+                                channelID.substring(channelID.length() - 1));
+                        break;
+                    case CHANNEL_SETEXTRAWWHEAT0:
+                    case CHANNEL_SETEXTRAWWHEAT1:
+                    case CHANNEL_SETEXTRAWWHEAT2:
+                        param = getThing().getProperties().get(PARAMETER_EXTRAWWHEAT).replace("x",
+                                channelID.substring(channelID.length() - 1));
+                        break;
+                    default:
+                        return;
+                }
+                String response = sendGetRequest(PARSET_URL, "syn=" + param + "&value=" + command.toString());
+                // logger.warn("{} syn={}&value={}", PARSET_URL, param, command.toString());
+                State newState = new StringType(response);
+                updateState(channelID, newState);
+            } else {
+                logger.warn("A 'key' needs to be configured in order to control the Guntamatic Heating System");
+            }
+        }
     }
 
     private void parseAndUpdate(String html) {
@@ -109,21 +142,18 @@ public class GuntamaticHandler extends BaseThingHandler {
             String channel = channels.get(i);
             String unit = units.get(i);
             if ((channel != null) && (unit != null)) {
-                /*
-                 * if (i == 1)
-                 * logger.warn("Supported Channel: Name: {}, Data: {}, Unit: {}", channel[0], daqdata[i].trim(),
-                 * channel[1]);
-                 */
                 String value = daqdata[i].trim();
                 Channel chn = thing.getChannel(channel);
                 if ((chn != null) && ("Switch".equals(chn.getAcceptedItemType()))) {
-                    // Guntamatic uses German OnOff when configred to German, and English OnOff for all other languages
+                    // Guntamatic uses German OnOff when configured to German, and English OnOff for all other languages
                     value = value.replace("AUS", "OFF").replace("EIN", "ON");
                 }
                 State newState = new StringType(value + unit);
                 updateState(channel, newState);
+                // if ("CLS".equals(value))
+                // logger.warn("Supported Channel: Name: {}, Data: {}, Unit: {}", channel, value, unit);
             } else {
-                logger.warn("Data for not intialized ChannelId received: {}", i);
+                logger.warn("Data for not intialized ChannelId '{}' received", i);
             }
             // TypeParser.parseState(this.acceptedDataTypes, sensorValue);
         }
@@ -148,11 +178,21 @@ public class GuntamaticHandler extends BaseThingHandler {
     private void parseAndInit(String html) {
         String[] daqdesc = html.split("\\n");
         ArrayList<Channel> channelList = new ArrayList<Channel>();
-        ArrayList<String> channelIdList = new ArrayList<String>();
+
+        for (String channelID : CHANNELIDS) {
+            Channel channel = thing.getChannel(channelID);
+            if (channel == null) {
+                logger.warn("Static Channel '{}' is not present: remove and re-add Thing", channelID);
+            } else {
+                channelList.add(channel);
+            }
+        }
+
         for (int i = 0; i < daqdesc.length; i++) {
             String[] param = daqdesc[i].split(";");
             if (!"reserved".equals(param[0])) {
                 String channel = param[0].replaceAll("[^\\w]", "").toLowerCase();
+
                 String unit;
                 if ((param.length == 1) || (param[1].isEmpty())) {
                     unit = "";
@@ -160,7 +200,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                     unit = param[1].trim().replace("m3", "m³");
                 }
 
-                boolean channelInitialized = (channelIdList.contains(channel));
+                boolean channelInitialized = (channels.containsValue(channel));
                 if (!channelInitialized) {
                     String itemType;
                     String pattern;
@@ -207,16 +247,17 @@ public class GuntamaticHandler extends BaseThingHandler {
                     Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channel), itemType)
                             .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(param[0]).build();
                     channelList.add(newChannel);
-                    channelIdList.add(channel);
+                    channels.put(i, channel);
+                    units.put(i, unit);
                     /*
                      * logger.warn(
                      * "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Pattern '{}', Unit: '{}'",
                      * String.format("%03d", i), param[0], channel, type, itemType, pattern, unit);
                      */
-                    logger.warn("Supported Channel: Idx: {}, Name: {}, Type: {}", String.format("%03d", i), channel,
+                    logger.debug("Supported Channel: Idx: {}, Name: {}, Type: {}", String.format("%03d", i), channel,
                             itemType);
-                    channels.put(i, channel);
-                    units.put(i, unit);
+                    // thingBuilder.withoutChannel(newChannel.getUID());
+                    // thingBuilder.withChannel(newChannel);
                 }
             }
         }
@@ -264,16 +305,19 @@ public class GuntamaticHandler extends BaseThingHandler {
         return output;
     }
 
-    private void sendGetRequest(String url) {
+    private @Nullable String sendGetRequest(String url, String... params) {
         String errorReason = "";
         if (config == null) {
             errorReason = "Invalid Binding configuration";
-        } else if ((config.hostname == null) || (config.hostname.isEmpty())) {
+        } else if (config.hostname.isEmpty()) {
             errorReason = "Invalid hostname configuration";
         } else {
             String req = "http://" + config.hostname + url;
-            if ((config.key != null) && (!config.key.isEmpty())) {
+            if (!config.key.isEmpty()) {
                 req += "?key=" + config.key;
+            }
+            for (int i = 0; i < params.length; i++) {
+                req += "&" + params[i];
             }
 
             Request request = httpClient.newRequest(req);
@@ -294,8 +338,10 @@ public class GuntamaticHandler extends BaseThingHandler {
                             parseAndUpdate(response);
                         } else if (url == DAQDESC_URL) {
                             parseAndInit(response);
+                        } else if (url == PARSET_URL) {
+                            // via return
                         }
-                        return;
+                        return response;
                     } catch (IllegalArgumentException e) {
                         errorReason = String.format("IllegalArgumentException: %s", e.getMessage());
                     }
@@ -313,12 +359,13 @@ public class GuntamaticHandler extends BaseThingHandler {
             }
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
+        return null;
     }
 
     private void pollGuntamatic() {
         // logger.warn("pollGuntamatic: initalized: {}", initalized);
         if (initalized == false) {
-            if ((config.key != null) && (!config.key.isEmpty())) {
+            if (!config.key.isEmpty()) {
                 sendGetRequest(DAQEXTDESC_URL);
             }
             sendGetRequest(DAQDESC_URL);

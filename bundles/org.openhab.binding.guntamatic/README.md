@@ -14,16 +14,14 @@ It should work for all other Guntamatic Heating Systems as well, that support th
 - Pro (untested)
 - Therm (untested)
 
-Control of the Guntamatic Heating System is technical possible but not yet implemented.
-
 ## Thing Configuration
 
 | Parameter     | Description                                                               | Default       |
 |---------------|---------------------------------------------------------------------------|---------------|
 | Hostname      | Hostname or IP address of the Guntamatic Heating System                   |               |
 | Key           | Optional, but required to read protected parameters and to control the Guntamatic Heating System. The key needs to be reqested from Guntamatic support, e.g. via https://www.guntamatic.com/en/contact/                                    |               |
-| Refresh Interval    | Interval the Guntamatic Heating System is polled in seconds.        | 60            |
-| Encoding      | Code page used by the Guntamatic Heating System.                          | windows-1252  |
+| Refresh Interval    | Interval the Guntamatic Heating System is polled in seconds         | 60            |
+| Encoding      | Code page used by the Guntamatic Heating System                           | windows-1252  |
 
 ## Channels
 
@@ -31,116 +29,134 @@ The Binding dynamically generates Channels, derived from the data provided from 
 
 Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System running firmware 3.2d and Guntamatic System Language configured to English:
 
-|	ID	|	Channel	|	Type	|	Unit	|	Security Access Level	|
-|-------|-----------|-----------|-----------|---------------------------|
-|	0	|	running	|	String	|		|	🔓 W0	|
-|	1	|	outsidetemp	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	2	|	blrtargettemp	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	3	|	boilertemperature	|	Number:Tempera	|	°C	|	🔓 W0	|
-|	4	|	fluegasutilisation	|	Number:Dimens	|	%	|	🔐 W1	|
-|	5	|	output	|	Number:Dimensionless	|	%	|	🔓 W0	|
-|	6	|	returntemp	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	7	|	co2target	|	Number:Dimensionless	|	%	|	🔐 W1	|
-|	8	|	c02content	|	Number:Dimensionless	|	%	|	🔓 W0	|
-|	9	|	returntemptarget	|	Number:Temperat	|	°C	|	🔐 W1	|
-|	10	|	statuscode	|	Number	|		|	🔐 W1	|
-|	11	|	efficiency	|	Number:Dimensionless	|	%	|	🔐 W1	|
-|	13	|	extractorsystem	|	Number:Dimension	|	%	|	🔓 W0	|
-|	14	|	feedturbine	|	String	|		|	🔐 W1	|
-|	15	|	dischargemotor	|	Number:Dimensionl	|	%	|	🔓 W0	|
-|	16	|	g1target	|	Number:Dimensionless	|	%	|	🔓 W0	|
-|	17	|	buffertop	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	18	|	buffermid	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	19	|	bufferbtm	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	20	|	pumphp0	|	Switch	|		|	🔓 W0	|
-|	21	|	dhw0	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	22	|	bdhw0	|	Switch	|		|	🔓 W0	|
-|	23	|	dhw1	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	24	|	bdhw1	|	Switch	|		|	🔓 W0	|
-|	25	|	dhw2	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	26	|	bdhw2	|	Switch	|		|	🔓 W0	|
-|	27	|	roomtemphc0	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	28	|	heatcirc0	|	Switch	|		|	🔓 W0	|
-|	29	|	roomtemphc1	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	30	|	flowtarget1	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	31	|	flowis1	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	32	|	mixer1	|	String	|		|	🔐 W1	|
-|	33	|	heatcirc1	|	Switch	|		|	🔐 W1	|
-|	34	|	roomtemphc2	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	35	|	flowtarget2	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	36	|	flowis2	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	37	|	mixer2	|	String	|		|	🔐 W1	|
-|	38	|	heatcirc2	|	Switch	|		|	🔓 W0	|
-|	39	|	roomtemphc3	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	40	|	heatcirc3	|	Switch	|		|	🔓 W0	|
-|	41	|	roomtemphc4	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	42	|	flowtarget4	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	43	|	flowis4	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	44	|	mixer4	|	String	|		|	🔐 W1	|
-|	45	|	heatcirc4	|	Switch	|		|	🔓 W0	|
-|	46	|	roomtemphc5	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	47	|	flowtarget5	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	48	|	flowis5	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	49	|	mixer5	|	String	|		|	🔐 W1	|
-|	50	|	heatcirc5	|	Switch	|		|	🔓 W0	|
-|	51	|	roomtemphc6	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	52	|	heatcirc6	|	Switch	|		|	🔓 W0	|
-|	53	|	roomtemphc7	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	54	|	flowtarget7	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	55	|	flowis7	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	56	|	mixer7	|	String	|		|	🔐 W1	|
-|	57	|	heatcirc7	|	Switch	|		|	🔓 W0	|
-|	58	|	roomtemphc8	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	59	|	flowtarget8	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	60	|	flowis8	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	61	|	mixer8	|	String	|		|	🔐 W1	|
-|	62	|	heatcirc8	|	Switch	|		|	🔓 W0	|
-|	65	|	fuellevel	|	String	|		|	🔐 W1	|
-|	66	|	stb	|	String	|		|	🔐 W1	|
-|	67	|	tks	|	String	|		|	🔐 W1	|
-|	68	|	boilerapproval	|	Switch	|		|	🔐 W1	|
-|	69	|	programme	|	String	|		|	🔓 W0	|
-|	70	|	programhc0	|	String	|		|	🔓 W0	|
-|	71	|	programhc1	|	String	|		|	🔓 W0	|
-|	72	|	programhc2	|	String	|		|	🔓 W0	|
-|	73	|	programhc3	|	String	|		|	🔓 W0	|
-|	74	|	programhc4	|	String	|		|	🔓 W0	|
-|	75	|	programhc5	|	String	|		|	🔓 W0	|
-|	76	|	programhc6	|	String	|		|	🔓 W0	|
-|	77	|	programhc7	|	String	|		|	🔓 W0	|
-|	78	|	programhc8	|	String	|		|	🔓 W0	|
-|	79	|	interuption0	|	String	|		|	🔓 W0	|
-|	80	|	interuption1	|	String	|		|	🔓 W0	|
-|	81	|	serial	|	Number	|		|	🔓 W0	|
-|	82	|	version	|	String	|		|	🔓 W0	|
-|	83	|	runningtime	|	Number:Time	|	h	|	🔓 W0	|
-|	84	|	servicehrs	|	Number:Time	|	d	|	🔓 W0	|
-|	85	|	emptyashin	|	Number:Time	|	h	|	🔓 W0	|
-|	86	|	flowis0	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	87	|	flowis3	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	88	|	flowis6	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	89	|	fuelcounter	|	Number:Volume	|	m³	|	🔐 W1	|
-|	90	|	bufferload	|	Number:Dimensionless	|	%	|	🔓 W0	|
-|	91	|	buffertop0	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	92	|	bufferbtm0	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	93	|	buffertop1	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	94	|	bufferbtm1	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	95	|	buffertop2	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	96	|	bufferbtm2	|	Number:Temperature	|	°C	|	🔐 W1	|
-|	97	|	bextraww0	|	Switch	|		|	🔐 W1	|
-|	98	|	bextraww1	|	Switch	|		|	🔐 W1	|
-|	99	|	bextraww2	|	Switch	|		|	🔐 W1	|
-|	100	|	auxiliarypump0	|	Switch	|		|	🔐 W1	|
-|	101	|	auxiliarypump1	|	Switch	|		|	🔐 W1	|
-|	102	|	auxiliarypump2	|	Switch	|		|	🔐 W1	|
-|	104	|	boilersconditionno	|	String	|		|	🔐 W1	|
-|	108	|	buffert5	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	109	|	buffert6	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	110	|	buffert7	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	111	|	extraww0	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	112	|	extraww1	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	113	|	extraww2	|	Number:Temperature	|	°C	|	🔓 W0	|
-|	114	|	grate	|	Number:Dimensionless	|	%	|	🔓 W0	|
+|	Channel             |	Type	|	Unit	|	Security Access Level	| ReadOnly | Advanced |
+|-----------------------|-----------|-----------|---------------------------|----------|----------|
+|	setboilerapproval	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setprogram	        |	String	|		|	🔐 W1	|	R/W	|	false	|
+|	setheatcircprogram0	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram1	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram2	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram3	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram4	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram5	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram6	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram7	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setheatcircprogram8	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setwwheat0	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setwwheat1	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setwwheat2	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setextrawwheat0	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setextrawwheat1	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	setextrawwheat2	|	String	|		|	🔐 W1	|	R/W	|	true	|
+|	running	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	outsidetemp	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	blrtargettemp	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	boilertemperature	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	fluegasutilisation	|	Number:Dimensionless	|	%	|	🔐 W1	|	R/O	|	false	|
+|	output	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
+|	returntemp	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	co2target	|	Number:Dimensionless	|	%	|	🔐 W1	|	R/O	|	false	|
+|	c02content	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
+|	returntemptarget	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	statuscode	|	Number	|		|	🔐 W1	|	R/O	|	false	|
+|	efficiency	|	Number:Dimensionless	|	%	|	🔐 W1	|	R/O	|	false	|
+|	extractorsystem	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
+|	feedturbine	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	dischargemotor	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
+|	g1target	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
+|	buffertop	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	buffermid	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	bufferbtm	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	pumphp0	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	dhw0	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	bdhw0	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	dhw1	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	bdhw1	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	dhw2	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	bdhw2	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc0	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	heatcirc0	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc1	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowtarget1	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	flowis1	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	mixer1	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	heatcirc1	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	roomtemphc2	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowtarget2	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	flowis2	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	mixer2	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	heatcirc2	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc3	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	heatcirc3	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc4	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowtarget4	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	flowis4	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	mixer4	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	heatcirc4	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc5	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowtarget5	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	flowis5	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	mixer5	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	heatcirc5	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc6	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	heatcirc6	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc7	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowtarget7	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	flowis7	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	mixer7	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	heatcirc7	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	roomtemphc8	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowtarget8	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	flowis8	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	mixer8	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	heatcirc8	|	Switch	|		|	🔓 W0	|	R/O	|	false	|
+|	fuellevel	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	stb	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	tks	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	boilerapproval	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	programme	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc0	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc1	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc2	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc3	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc4	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc5	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc6	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc7	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	programhc8	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	interuption0	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	interuption1	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	serial	|	Number	|		|	🔓 W0	|	R/O	|	false	|
+|	version	|	String	|		|	🔓 W0	|	R/O	|	false	|
+|	runningtime	|	Number:Time	|	h	|	🔓 W0	|	R/O	|	false	|
+|	servicehrs	|	Number:Time	|	d	|	🔓 W0	|	R/O	|	false	|
+|	emptyashin	|	Number:Time	|	h	|	🔓 W0	|	R/O	|	false	|
+|	flowis0	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowis3	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	flowis6	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	fuelcounter	|	Number:Volume	|	m³	|	🔐 W1	|	R/O	|	false	|
+|	bufferload	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
+|	buffertop0	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	bufferbtm0	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	buffertop1	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	bufferbtm1	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	buffertop2	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	bufferbtm2	|	Number:Temperature	|	°C	|	🔐 W1	|	R/O	|	false	|
+|	bextraww0	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	bextraww1	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	bextraww2	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	auxiliarypump0	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	auxiliarypump1	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	auxiliarypump2	|	Switch	|		|	🔐 W1	|	R/O	|	false	|
+|	boilersconditionno	|	String	|		|	🔐 W1	|	R/O	|	false	|
+|	buffert5	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	buffert6	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	buffert7	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	extraww0	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	extraww1	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	extraww2	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
+|	grate	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
+
 
 Security Access Levels:
 
@@ -152,7 +168,6 @@ Security Access Levels:
 
 t.b.d.
 
-## TODOs
+## Open - Your feedback is required
 
-- Control of the Guntamatic Heating System
-- Testing with / Support of other Guntamatic Heating Systems except from Biostar running firmware 3.2d: please provide feedback
+- Testing, using other Guntamatic Heating Systems except from Biostar running firmware 3.2d: Please provide feedback!
