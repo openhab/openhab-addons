@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.module.script.AbstractScriptEngineFactory;
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
 import org.openhab.core.config.core.ConfigurableService;
-import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -37,18 +36,16 @@ import org.osgi.service.component.annotations.Modified;
  */
 @NonNullByDefault
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jrubyscripting")
-@ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = JRubyScriptEngineFactory.CONFIG_URI)
+@ConfigurableService(category = "automation", label = "JRuby Scripting", description_uri = "automation:jruby")
 public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     private final JRubyScriptEngineConfiguration configuration = new JRubyScriptEngineConfiguration();
 
-    protected static final String CONFIG_URI = "automation:jruby";
-
     // Filter out the File entry to prevent shadowing the Ruby File class which breaks Ruby in spectacularly
     // difficult ways to debug.
-    private final static Set<String> FILTERED_PRESETS = Set.of("File");
-    private final static Set<String> INSTANCE_PRESETS = Set.of();
-    private final static Set<String> GLOBAL_PRESETS = Set.of("scriptExtension", "automationManager", "ruleRegistry",
+    private static final Set<String> FILTERED_PRESETS = Set.of("File");
+    private static final Set<String> INSTANCE_PRESETS = Set.of();
+    private static final Set<String> GLOBAL_PRESETS = Set.of("scriptExtension", "automationManager", "ruleRegistry",
             "items", "voice", "rules", "things", "events", "itemRegistry", "ir", "actions", "se", "audio",
             "lifecycleTracker");
 
@@ -76,13 +73,13 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         }
     }
 
-    // The activate call is activate binding and set the bindings configuration
+    // The activate call activates the automation and sets its configuration
     @Activate
-    protected void activate(ComponentContext componentContext, Map<String, Object> config) {
+    protected void activate(Map<String, Object> config) {
         configuration.update(config, factory);
     }
 
-    // The modified call updates configuration for binding
+    // The modified call updates configuration for the automation
     @Modified
     protected void modified(Map<String, Object> config) {
         configuration.update(config, factory);

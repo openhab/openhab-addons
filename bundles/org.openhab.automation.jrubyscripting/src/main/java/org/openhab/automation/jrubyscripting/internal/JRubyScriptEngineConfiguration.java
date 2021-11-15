@@ -41,15 +41,15 @@ public class JRubyScriptEngineConfiguration {
 
     private final Logger logger = LoggerFactory.getLogger(JRubyScriptEngineConfiguration.class);
 
-    private final static Path DEFAULT_GEM_HOME = Paths.get(OpenHAB.getConfigFolder(), "scripts", "lib", "ruby",
+    private static final Path DEFAULT_GEM_HOME = Paths.get(OpenHAB.getConfigFolder(), "scripts", "lib", "ruby",
             "gem_home");
 
-    private final static Path DEFAULT_RUBYLIB = Paths.get(OpenHAB.getConfigFolder(), "automation", "lib", "ruby");
+    private static final Path DEFAULT_RUBYLIB = Paths.get(OpenHAB.getConfigFolder(), "automation", "lib", "ruby");
 
-    private final static String GEM_HOME = "gem_home";
+    private static final String GEM_HOME = "gem_home";
 
     // Map of configuration parameters
-    private final static Map<String, OptionalConfigurationElement> CONFIGURATION_PARAMETERS = Map.ofEntries(
+    private static final Map<String, OptionalConfigurationElement> CONFIGURATION_PARAMETERS = Map.ofEntries(
             Map.entry("local_context",
                     new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.SYSTEM_PROPERTY)
                             .mappedTo("org.jruby.embed.localcontext.scope").defaultValue("singlethread").build()),
@@ -68,7 +68,7 @@ public class JRubyScriptEngineConfiguration {
 
             Map.entry("gems", new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.GEM).build()));
 
-    private final static Map<OptionalConfigurationElement.Type, List<OptionalConfigurationElement>> CONFIGURATION_TYPE_MAP = CONFIGURATION_PARAMETERS
+    private static final Map<OptionalConfigurationElement.Type, List<OptionalConfigurationElement>> CONFIGURATION_TYPE_MAP = CONFIGURATION_PARAMETERS
             .values().stream().collect(Collectors.groupingBy(v -> v.type));
 
     /**
@@ -104,7 +104,6 @@ public class JRubyScriptEngineConfiguration {
      * @param factory Script Engine to configure
      */
     void configureScriptEngine(ScriptEngineFactory factory) {
-
         configureSystemProperties(CONFIGURATION_TYPE_MAP.getOrDefault(OptionalConfigurationElement.Type.SYSTEM_PROPERTY,
                 Collections.<OptionalConfigurationElement> emptyList()));
 
@@ -121,16 +120,14 @@ public class JRubyScriptEngineConfiguration {
      * Makes Gem home directory if it does not exist
      */
     private void ensureGemHomeExists() {
-
         OptionalConfigurationElement gemHomeConfigElement = CONFIGURATION_PARAMETERS.get(GEM_HOME);
         if (gemHomeConfigElement != null) {
             Optional<String> gemHome = gemHomeConfigElement.getValue();
             if (gemHome.isPresent()) {
                 File gemHomeDirectory = new File(gemHome.get());
-                if (gemHomeDirectory.exists() == false) {
+                if (!gemHomeDirectory.exists()) {
                     logger.debug("gem_home directory does not exist, creating");
-                    boolean created = gemHomeDirectory.mkdirs();
-                    if (created == false) {
+                    if (!gemHomeDirectory.mkdirs()) {
                         logger.debug("Error creating gem_home direcotry");
                     }
                 }
@@ -149,7 +146,6 @@ public class JRubyScriptEngineConfiguration {
     private synchronized void configureGems(List<OptionalConfigurationElement> gemDirectives, ScriptEngine engine) {
         for (OptionalConfigurationElement gemDirective : gemDirectives) {
             if (gemDirective.getValue().isPresent()) {
-
                 ensureGemHomeExists();
 
                 String[] gems = gemDirective.getValue().get().split(",");
