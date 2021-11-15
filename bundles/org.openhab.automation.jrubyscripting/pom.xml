@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.automation.jrubyscripting</artifactId>
 
-  <name>openHAB Add-ons :: Automation :: JRuby Scripting</name>
+  <name>openHAB Add-ons :: Bundles :: Automation :: JRuby Scripting</name>
 
   <properties>
     <bnd.importpackage>com.sun.nio.*;resolution:=optional,com.sun.security.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.bouncycastle.*;resolution:=optional,org.joda.*;resolution:=optional,sun.management.*;resolution:=optional,sun.nio.*;resolution:=optional</bnd.importpackage>
