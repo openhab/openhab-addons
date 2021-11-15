@@ -165,7 +165,162 @@ Security Access Levels:
 
 ## Full Example
 
-t.b.d.
+**Thing File**
+
+```java
+Thing   guntamatic:biostar:mybiostar   "Guntamatic Biostar"    [ hostname="192.168.1.100", key="0123456789ABCDEF0123456789ABCDEF0123", refreshInterval=60, encoding="windows-1252" ]
+```
+
+**Item File**
+
+```java
+String                Biostar_SetBoilerApproval              "Set Boiler Approval"                 { channel="guntamatic:biostar:mybiostar:setboilerapproval" }  
+String                Biostar_SetProgram                     "Set Program"                         { channel="guntamatic:biostar:mybiostar:setprogram" }         
+String                Biostar_SetProgramofHeatCircle0        "Set Program of Heat Circle 0"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram0" }
+String                Biostar_SetProgramofHeatCircle1        "Set Program of Heat Circle 1"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram1" }
+String                Biostar_SetProgramofHeatCircle2        "Set Program of Heat Circle 2"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram2" }
+String                Biostar_SetProgramofHeatCircle3        "Set Program of Heat Circle 3"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram3" }
+String                Biostar_SetProgramofHeatCircle4        "Set Program of Heat Circle 4"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram4" }
+String                Biostar_SetProgramofHeatCircle5        "Set Program of Heat Circle 5"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram5" }
+String                Biostar_SetProgramofHeatCircle6        "Set Program of Heat Circle 6"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram6" }
+String                Biostar_SetProgramofHeatCircle7        "Set Program of Heat Circle 7"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram7" }
+String                Biostar_SetProgramofHeatCircle8        "Set Program of Heat Circle 8"        { channel="guntamatic:biostar:mybiostar:setheatcircprogram8" }
+String                Biostar_TriggerWarmWatherCircle0       "Trigger Warm Wather Circle 0"        { channel="guntamatic:biostar:mybiostar:setwwheat0" }         
+String                Biostar_TriggerWarmWatherCircle1       "Trigger Warm Wather Circle 1"        { channel="guntamatic:biostar:mybiostar:setwwheat1" }         
+String                Biostar_TriggerWarmWatherCircle2       "Trigger Warm Wather Circle 2"        { channel="guntamatic:biostar:mybiostar:setwwheat2" }         
+String                Biostar_TriggerExtraWarmWatherCircle0  "Trigger Extra Warm Wather Circle 0"  { channel="guntamatic:biostar:mybiostar:setextrawwheat0" }    
+String                Biostar_TriggerExtraWarmWatherCircle1  "Trigger Extra Warm Wather Circle 1"  { channel="guntamatic:biostar:mybiostar:setextrawwheat1" }    
+String                Biostar_TriggerExtraWarmWatherCircle2  "Trigger Extra Warm Wather Circle 2"  { channel="guntamatic:biostar:mybiostar:setextrawwheat2" }    
+String                Biostar_Running                        "Running"                             { channel="guntamatic:biostar:mybiostar:running" }            
+Number:Temperature    Biostar_OutsideTemp                    "OutsideTemp"                         { channel="guntamatic:biostar:mybiostar:outsidetemp" }        
+Number:Temperature    Biostar_BoilerTargetTemp               "BoilerTargetTemp"                    { channel="guntamatic:biostar:mybiostar:blrtargettemp" }      
+Number:Temperature    Biostar_BoilerTemperature              "BoilerTemperature"                   { channel="guntamatic:biostar:mybiostar:boilertemperature" }  
+Number:Dimensionless  Biostar_Fluegasutilisation             "Fluegasutilisation"                  { channel="guntamatic:biostar:mybiostar:fluegasutilisation" } 
+Number:Dimensionless  Biostar_Output                         "Output"                              { channel="guntamatic:biostar:mybiostar:output" }             
+Number:Temperature    Biostar_Returntemp                     "Returntemp"                          { channel="guntamatic:biostar:mybiostar:returntemp" }         
+Number:Dimensionless  Biostar_CO2Target                      "CO2Target"                           { channel="guntamatic:biostar:mybiostar:co2target" }          
+Number:Dimensionless  Biostar_C02Content                     "C02Content"                          { channel="guntamatic:biostar:mybiostar:c02content" }         
+Number:Temperature    Biostar_Returntemptarget               "Returntemptarget"                    { channel="guntamatic:biostar:mybiostar:returntemptarget" }   
+Number                Biostar_Statuscode                     "Statuscode"                          { channel="guntamatic:biostar:mybiostar:statuscode" }         
+Number:Dimensionless  Biostar_Efficiency                     "Efficiency"                          { channel="guntamatic:biostar:mybiostar:efficiency" }         
+Number:Dimensionless  Biostar_ExtractorSystem                "ExtractorSystem"                     { channel="guntamatic:biostar:mybiostar:extractorsystem" }    
+String                Biostar_FeedTurbine                    "FeedTurbine"                         { channel="guntamatic:biostar:mybiostar:feedturbine" }        
+Number:Dimensionless  Biostar_Dischargemotor                 "Dischargemotor"                      { channel="guntamatic:biostar:mybiostar:dischargemotor" }     
+Number:Dimensionless  Biostar_G1Target                       "G1Target"                            { channel="guntamatic:biostar:mybiostar:g1target" }           
+Number:Temperature    Biostar_BufferTop                      "BufferTop"                           { channel="guntamatic:biostar:mybiostar:buffertop" }          
+Number:Temperature    Biostar_BufferMid                      "BufferMid"                           { channel="guntamatic:biostar:mybiostar:buffermid" }          
+Number:Temperature    Biostar_BufferBtm                      "BufferBtm"                           { channel="guntamatic:biostar:mybiostar:bufferbtm" }          
+Switch                Biostar_PumpHP0                        "PumpHP0"                             { channel="guntamatic:biostar:mybiostar:pumphp0" }            
+Number:Temperature    Biostar_DHW0                           "DHW0"                                { channel="guntamatic:biostar:mybiostar:dhw0" }               
+Switch                Biostar_BDHW0                          "BDHW0"                               { channel="guntamatic:biostar:mybiostar:bdhw0" }              
+Number:Temperature    Biostar_DHW1                           "DHW1"                                { channel="guntamatic:biostar:mybiostar:dhw1" }               
+Switch                Biostar_BDHW1                          "BDHW1"                               { channel="guntamatic:biostar:mybiostar:bdhw1" }              
+Number:Temperature    Biostar_DHW2                           "DHW2"                                { channel="guntamatic:biostar:mybiostar:dhw2" }               
+Switch                Biostar_BDHW2                          "BDHW2"                               { channel="guntamatic:biostar:mybiostar:bdhw2" }              
+Number:Temperature    Biostar_RoomTempHC0                    "RoomTempHC0"                         { channel="guntamatic:biostar:mybiostar:roomtemphc0" }        
+Switch                Biostar_HeatCirc0                      "HeatCirc0"                           { channel="guntamatic:biostar:mybiostar:heatcirc0" }          
+Number:Temperature    Biostar_RoomTempHC1                    "RoomTempHC1"                         { channel="guntamatic:biostar:mybiostar:roomtemphc1" }        
+Number:Temperature    Biostar_FlowTarget1                    "FlowTarget1"                         { channel="guntamatic:biostar:mybiostar:flowtarget1" }        
+Number:Temperature    Biostar_Flowis1                        "Flowis1"                             { channel="guntamatic:biostar:mybiostar:flowis1" }            
+String                Biostar_Mixer1                         "Mixer1"                              { channel="guntamatic:biostar:mybiostar:mixer1" }             
+Switch                Biostar_HeatCirc1                      "HeatCirc1"                           { channel="guntamatic:biostar:mybiostar:heatcirc1" }          
+Number:Temperature    Biostar_RoomTempHC2                    "RoomTempHC2"                         { channel="guntamatic:biostar:mybiostar:roomtemphc2" }        
+Number:Temperature    Biostar_FlowTarget2                    "FlowTarget2"                         { channel="guntamatic:biostar:mybiostar:flowtarget2" }        
+Number:Temperature    Biostar_Flowis2                        "Flowis2"                             { channel="guntamatic:biostar:mybiostar:flowis2" }            
+String                Biostar_Mixer2                         "Mixer2"                              { channel="guntamatic:biostar:mybiostar:mixer2" }             
+Switch                Biostar_HeatCirc2                      "HeatCirc2"                           { channel="guntamatic:biostar:mybiostar:heatcirc2" }          
+Number:Temperature    Biostar_RoomTempHC3                    "RoomTempHC3"                         { channel="guntamatic:biostar:mybiostar:roomtemphc3" }        
+Switch                Biostar_HeatCirc3                      "HeatCirc3"                           { channel="guntamatic:biostar:mybiostar:heatcirc3" }          
+Number:Temperature    Biostar_RoomTempHC4                    "RoomTempHC4"                         { channel="guntamatic:biostar:mybiostar:roomtemphc4" }        
+Number:Temperature    Biostar_FlowTarget4                    "FlowTarget4"                         { channel="guntamatic:biostar:mybiostar:flowtarget4" }        
+Number:Temperature    Biostar_Flowis4                        "Flowis4"                             { channel="guntamatic:biostar:mybiostar:flowis4" }            
+String                Biostar_Mixer4                         "Mixer4"                              { channel="guntamatic:biostar:mybiostar:mixer4" }             
+Switch                Biostar_HeatCirc4                      "HeatCirc4"                           { channel="guntamatic:biostar:mybiostar:heatcirc4" }          
+Number:Temperature    Biostar_RoomTempHC5                    "RoomTempHC5"                         { channel="guntamatic:biostar:mybiostar:roomtemphc5" }        
+Number:Temperature    Biostar_FlowTarget5                    "FlowTarget5"                         { channel="guntamatic:biostar:mybiostar:flowtarget5" }        
+Number:Temperature    Biostar_Flowis5                        "Flowis5"                             { channel="guntamatic:biostar:mybiostar:flowis5" }            
+String                Biostar_Mixer5                         "Mixer5"                              { channel="guntamatic:biostar:mybiostar:mixer5" }             
+Switch                Biostar_HeatCirc5                      "HeatCirc5"                           { channel="guntamatic:biostar:mybiostar:heatcirc5" }          
+Number:Temperature    Biostar_RoomTempHC6                    "RoomTempHC6"                         { channel="guntamatic:biostar:mybiostar:roomtemphc6" }        
+Switch                Biostar_HeatCirc6                      "HeatCirc6"                           { channel="guntamatic:biostar:mybiostar:heatcirc6" }          
+Number:Temperature    Biostar_RoomTempHC7                    "RoomTempHC7"                         { channel="guntamatic:biostar:mybiostar:roomtemphc7" }        
+Number:Temperature    Biostar_FlowTarget7                    "FlowTarget7"                         { channel="guntamatic:biostar:mybiostar:flowtarget7" }        
+Number:Temperature    Biostar_Flowis7                        "Flowis7"                             { channel="guntamatic:biostar:mybiostar:flowis7" }            
+String                Biostar_Mixer7                         "Mixer7"                              { channel="guntamatic:biostar:mybiostar:mixer7" }             
+Switch                Biostar_HeatCirc7                      "HeatCirc7"                           { channel="guntamatic:biostar:mybiostar:heatcirc7" }          
+Number:Temperature    Biostar_RoomTempHC8                    "RoomTempHC8"                         { channel="guntamatic:biostar:mybiostar:roomtemphc8" }        
+Number:Temperature    Biostar_FlowTarget8                    "FlowTarget8"                         { channel="guntamatic:biostar:mybiostar:flowtarget8" }        
+Number:Temperature    Biostar_Flowis8                        "Flowis8"                             { channel="guntamatic:biostar:mybiostar:flowis8" }            
+String                Biostar_Mixer8                         "Mixer8"                              { channel="guntamatic:biostar:mybiostar:mixer8" }             
+Switch                Biostar_HeatCirc8                      "HeatCirc8"                           { channel="guntamatic:biostar:mybiostar:heatcirc8" }          
+String                Biostar_FuelLevel                      "FuelLevel"                           { channel="guntamatic:biostar:mybiostar:fuellevel" }          
+String                Biostar_STB                            "STB"                                 { channel="guntamatic:biostar:mybiostar:stb" }                
+String                Biostar_TKS                            "TKS"                                 { channel="guntamatic:biostar:mybiostar:tks" }                
+Switch                Biostar_Boilerapproval                 "Boilerapproval"                      { channel="guntamatic:biostar:mybiostar:boilerapproval" }     
+String                Biostar_Programme                      "Programme"                           { channel="guntamatic:biostar:mybiostar:programme" }          
+String                Biostar_ProgramHC0                     "ProgramHC0"                          { channel="guntamatic:biostar:mybiostar:programhc0" }         
+String                Biostar_ProgramHC1                     "ProgramHC1"                          { channel="guntamatic:biostar:mybiostar:programhc1" }         
+String                Biostar_ProgramHC2                     "ProgramHC2"                          { channel="guntamatic:biostar:mybiostar:programhc2" }         
+String                Biostar_ProgramHC3                     "ProgramHC3"                          { channel="guntamatic:biostar:mybiostar:programhc3" }         
+String                Biostar_ProgramHC4                     "ProgramHC4"                          { channel="guntamatic:biostar:mybiostar:programhc4" }         
+String                Biostar_ProgramHC5                     "ProgramHC5"                          { channel="guntamatic:biostar:mybiostar:programhc5" }         
+String                Biostar_ProgramHC6                     "ProgramHC6"                          { channel="guntamatic:biostar:mybiostar:programhc6" }         
+String                Biostar_ProgramHC7                     "ProgramHC7"                          { channel="guntamatic:biostar:mybiostar:programhc7" }         
+String                Biostar_ProgramHC8                     "ProgramHC8"                          { channel="guntamatic:biostar:mybiostar:programhc8" }         
+String                Biostar_Interuption0                   "Interuption0"                        { channel="guntamatic:biostar:mybiostar:interuption0" }       
+String                Biostar_Interuption1                   "Interuption1"                        { channel="guntamatic:biostar:mybiostar:interuption1" }       
+Number                Biostar_Serial                         "Serial"                              { channel="guntamatic:biostar:mybiostar:serial" }             
+String                Biostar_Version                        "Version"                             { channel="guntamatic:biostar:mybiostar:version" }            
+Number:Time           Biostar_RunningTime                    "RunningTime"                         { channel="guntamatic:biostar:mybiostar:runningtime" }        
+Number:Time           Biostar_ServiceHrs                     "ServiceHrs"                          { channel="guntamatic:biostar:mybiostar:servicehrs" }         
+Number:Time           Biostar_Emptyashin                     "Emptyashin"                          { channel="guntamatic:biostar:mybiostar:emptyashin" }         
+Number:Temperature    Biostar_Flowis0                        "Flowis0"                             { channel="guntamatic:biostar:mybiostar:flowis0" }            
+Number:Temperature    Biostar_Flowis3                        "Flowis3"                             { channel="guntamatic:biostar:mybiostar:flowis3" }            
+Number:Temperature    Biostar_Flowis6                        "Flowis6"                             { channel="guntamatic:biostar:mybiostar:flowis6" }            
+Number:Volume         Biostar_Fuelcounter                    "Fuelcounter"                         { channel="guntamatic:biostar:mybiostar:fuelcounter" }        
+Number:Dimensionless  Biostar_Bufferload                     "Bufferload"                          { channel="guntamatic:biostar:mybiostar:bufferload" }         
+Number:Temperature    Biostar_BufferTop0                     "BufferTop0"                          { channel="guntamatic:biostar:mybiostar:buffertop0" }         
+Number:Temperature    Biostar_BufferBtm0                     "BufferBtm0"                          { channel="guntamatic:biostar:mybiostar:bufferbtm0" }         
+Number:Temperature    Biostar_BufferTop1                     "BufferTop1"                          { channel="guntamatic:biostar:mybiostar:buffertop1" }         
+Number:Temperature    Biostar_BufferBtm1                     "BufferBtm1"                          { channel="guntamatic:biostar:mybiostar:bufferbtm1" }         
+Number:Temperature    Biostar_BufferTop2                     "BufferTop2"                          { channel="guntamatic:biostar:mybiostar:buffertop2" }         
+Number:Temperature    Biostar_BufferBtm2                     "BufferBtm2"                          { channel="guntamatic:biostar:mybiostar:bufferbtm2" }         
+Switch                Biostar_BextraWW0                      "BextraWW0"                           { channel="guntamatic:biostar:mybiostar:bextraww0" }          
+Switch                Biostar_BextraWW1                      "BextraWW1"                           { channel="guntamatic:biostar:mybiostar:bextraww1" }          
+Switch                Biostar_BextraWW2                      "BextraWW2"                           { channel="guntamatic:biostar:mybiostar:bextraww2" }          
+Switch                Biostar_Auxiliarypump0                 "Auxiliarypump0"                      { channel="guntamatic:biostar:mybiostar:auxiliarypump0" }     
+Switch                Biostar_Auxiliarypump1                 "Auxiliarypump1"                      { channel="guntamatic:biostar:mybiostar:auxiliarypump1" }     
+Switch                Biostar_Auxiliarypump2                 "Auxiliarypump2"                      { channel="guntamatic:biostar:mybiostar:auxiliarypump2" }     
+String                Biostar_Boilersconditionno             "BoilersConditionNo"                  { channel="guntamatic:biostar:mybiostar:boilersconditionno" } 
+Number:Temperature    Biostar_BufferT5                       "BufferT5"                            { channel="guntamatic:biostar:mybiostar:buffert5" }           
+Number:Temperature    Biostar_BufferT6                       "BufferT6"                            { channel="guntamatic:biostar:mybiostar:buffert6" }           
+Number:Temperature    Biostar_BufferT7                       "BufferT7"                            { channel="guntamatic:biostar:mybiostar:buffert7" }           
+Number:Temperature    Biostar_ExtraWW0                       "ExtraWW0"                            { channel="guntamatic:biostar:mybiostar:extraww0" }           
+Number:Temperature    Biostar_ExtraWW1                       "ExtraWW1"                            { channel="guntamatic:biostar:mybiostar:extraww1" }           
+Number:Temperature    Biostar_ExtraWW2                       "ExtraWW2"                            { channel="guntamatic:biostar:mybiostar:extraww2" }           
+Number:Dimensionless  Biostar_Grate                          "Grate"                               { channel="guntamatic:biostar:mybiostar:grate" }              
+```
+
+**Rule**
+
+```javascript
+rule "Example Guntamatic Rule"
+when
+    Item Season changed
+then
+    if ( (Season.state != NULL) && (Season.state != UNDEF) )
+    {
+        if ( Season.state.toString == "WINTER" )
+        {
+            Biostar_SetProgram.sendCommand("NORMAL")
+        }
+        else
+        {
+            Biostar_SetProgram.sendCommand("OFF")
+        }
+    }
+end
+```
 
 ## Open - Your feedback is required
 
