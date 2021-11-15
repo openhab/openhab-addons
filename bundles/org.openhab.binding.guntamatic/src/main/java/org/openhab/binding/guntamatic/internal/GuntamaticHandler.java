@@ -92,33 +92,33 @@ public class GuntamaticHandler extends BaseThingHandler {
                 String param;
                 String channelID = channelUID.getId();
                 switch (channelID) {
-                    case CHANNEL_SETBOILERAPPROVAL:
+                    case CHANNEL_CONTROLBOILERAPPROVAL:
                         param = getThing().getProperties().get(PARAMETER_BOILERAPPROVAL);
                         break;
-                    case CHANNEL_SETPROGRAM:
+                    case CHANNEL_CONTROLPROGRAM:
                         param = getThing().getProperties().get(PARAMETER_PROGRAM);
                         break;
-                    case CHANNEL_SETHEATCIRCPROGRAM0:
-                    case CHANNEL_SETHEATCIRCPROGRAM1:
-                    case CHANNEL_SETHEATCIRCPROGRAM2:
-                    case CHANNEL_SETHEATCIRCPROGRAM3:
-                    case CHANNEL_SETHEATCIRCPROGRAM4:
-                    case CHANNEL_SETHEATCIRCPROGRAM5:
-                    case CHANNEL_SETHEATCIRCPROGRAM6:
-                    case CHANNEL_SETHEATCIRCPROGRAM7:
-                    case CHANNEL_SETHEATCIRCPROGRAM8:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM0:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM1:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM2:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM3:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM4:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM5:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM6:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM7:
+                    case CHANNEL_CONTROLHEATCIRCPROGRAM8:
                         param = getThing().getProperties().get(PARAMETER_HEATCIRCPROGRAM).replace("x",
                                 channelID.substring(channelID.length() - 1));
                         break;
-                    case CHANNEL_SETWWHEAT0:
-                    case CHANNEL_SETWWHEAT1:
-                    case CHANNEL_SETWWHEAT2:
+                    case CHANNEL_CONTROLWWHEAT0:
+                    case CHANNEL_CONTROLWWHEAT1:
+                    case CHANNEL_CONTROLWWHEAT2:
                         param = getThing().getProperties().get(PARAMETER_WWHEAT).replace("x",
                                 channelID.substring(channelID.length() - 1));
                         break;
-                    case CHANNEL_SETEXTRAWWHEAT0:
-                    case CHANNEL_SETEXTRAWWHEAT1:
-                    case CHANNEL_SETEXTRAWWHEAT2:
+                    case CHANNEL_CONTROLEXTRAWWHEAT0:
+                    case CHANNEL_CONTROLEXTRAWWHEAT1:
+                    case CHANNEL_CONTROLEXTRAWWHEAT2:
                         param = getThing().getProperties().get(PARAMETER_EXTRAWWHEAT).replace("x",
                                 channelID.substring(channelID.length() - 1));
                         break;
