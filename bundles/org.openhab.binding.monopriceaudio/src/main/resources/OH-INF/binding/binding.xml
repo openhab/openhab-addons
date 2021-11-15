@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Monoprice Whole House Audio Binding</name>
-	<description>Controls Monoprice 10761 &amp; Dayton DAX66, Monoprice 31028, or Xantech 4x4 &amp; 8x8 Amplifiers</description>
+	<description>Controls Monoprice, Dayton Audio and Xantech Whole House Amplifiers.</description>
 
 </binding:binding>
