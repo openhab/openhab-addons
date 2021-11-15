@@ -8,13 +8,13 @@ After installing this add-on, you will find configuration options in the openHAB
 
 Alternatively, JRuby configuration parameters may be set by creating a `jruby.cfg` file in `conf/services/`
 
-| Parameter       | Default                                 | Description                                                                                                                                                                                                 |
-| --------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| gem_home        | $OPENHAB_CONF/scripts/lib/ruby/gem_home | Location ruby gems will be installed and loaded, directory will be created if missing and gem installs are specified                                                                                        |
-| rubylib         | $OPENHAB_CONF/automation/lib/ruby/      | Search path for user libraries. Separate each path with a colon (semicolon in Windows).                                                                                                                     |
-| local_context   | singlethread                            | The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby. See [this](https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type) for options and details |
-| local_variables | transient                               | Defines how variables are shared between Ruby and Java. See [this](https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options) for options and details                                   |
-| gems            |                                         | Comma separated list of [Ruby Gems](https://rubygems.org/) to install.                                                                                                                                      |
+| Parameter                                             | Default                                 | Description                                                                                                                                                                                                 |
+| ----------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| org.openhab.automation.jrubyscripting:gem_home        | $OPENHAB_CONF/scripts/lib/ruby/gem_home | Location ruby gems will be installed and loaded, directory will be created if missing and gem installs are specified                                                                                        |
+| org.openhab.automation.jrubyscripting:rubylib         | $OPENHAB_CONF/automation/lib/ruby/      | Search path for user libraries. Separate each path with a colon (semicolon in Windows).                                                                                                                     |
+| org.openhab.automation.jrubyscripting:local_context   | singlethread                            | The local context holds Ruby runtime, name-value pairs for sharing variables between Java and Ruby. See [this](https://github.com/jruby/jruby/wiki/RedBridge#Context_Instance_Type) for options and details |
+| org.openhab.automation.jrubyscripting:local_variables | transient                               | Defines how variables are shared between Ruby and Java. See [this](https://github.com/jruby/jruby/wiki/RedBridge#local-variable-behavior-options) for options and details                                   |
+| org.openhab.automation.jrubyscripting:gems            |                                         | Comma separated list of [Ruby Gems](https://rubygems.org/) to install.                                                                                                                                      |
 
 ## Ruby Gems
 
@@ -25,7 +25,7 @@ The version number follows the [pessimistic version constraint](https://guides.r
 For example this configuration will install version 4 or higher of the [openHAB JRuby Scripting Library](https://boc-tothefuture.github.io/openhab-jruby/).
 
 ```text
-gems=openhab-scripting=~>4.0
+org.openhab.automation.jrubyscripting:gems=openhab-scripting=~>4.0
 ```
 
 ## Creating JRuby Scripts
