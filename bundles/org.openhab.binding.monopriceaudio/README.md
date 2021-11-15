@@ -1,8 +1,8 @@
 # Monoprice Whole House Audio Binding
 
-This binding can be used to control the Monoprice MPR-SG6Z (10761) or Dayton Audio DAX66 whole house multi-zone amplifier.
+This binding can be used to control a Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261) & Dayton Audio DAX66 whole house multi-zone amplifier system.
 All controller functions available through the serial port interface can be controlled by the binding.
-Up to 18 zones can be controlled when 3 amplifiers are connected together (if not all zones on the amp are used they can be excluded via configuration).
+Up to 18 zones can be controlled when 3 units are connected together (if not all zones on the amp are used they can be excluded via configuration).
 Activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 
 The binding supports two different kinds of connections:
@@ -10,10 +10,10 @@ The binding supports two different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without serial connector on the server side, you can add a serial to USB adapter.
+For users without a serial port on the server side, you can use a USB to serial adapter.
 
-You don't need to have your Monoprice whole house amplifier device directly connected to your openHAB server.
-You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+You don't need to have your whole house amplifier device directly connected to your openHAB server.
+You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
 
 ## Supported Things
 
@@ -56,7 +56,7 @@ Some notes:
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. MonopriceAudio and RFXcom.
 * See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is specific to the Monoprice amplifier):
+* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/):
 
 ```
 4444:raw:0:/dev/ttyUSB0:9600 8DATABITS NONE 1STOPBIT LOCAL
@@ -87,8 +87,8 @@ The following channels are available:
 
 monoprice.things:
 
-```java
-//serial port connection
+```
+// serial port connection
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono"]
 
 // serial over IP connection
@@ -98,7 +98,7 @@ monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=4444,
 
 monoprice.items:
 
-```java
+```
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
 Dimmer all_volume "Volume [%d %%]" { channel="monopriceaudio:amplifier:myamp:all#allvolume" }
@@ -115,12 +115,12 @@ Switch z1_dnd "Do Not Disturb" { channel="monopriceaudio:amplifier:myamp:zone1#d
 Switch z1_page "Page Active: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#page" }
 Switch z1_keypad "Keypad Connected: [%s]" { channel="monopriceaudio:amplifier:myamp:zone1#keypad" }
 
-//repeat for zones 2-18 (substitute z1 and zone1)
+// repeat for zones 2-18 (substitute z1 and zone1)
 ```
 
 monoprice.sitemap:
 
-```perl
+```
 sitemap monoprice label="Audio Control" {
     Frame label="All Zones" {
         Switch item=all_allpower label="All Zones On" mappings=[ON=" "]
@@ -133,7 +133,7 @@ sitemap monoprice label="Audio Control" {
     Frame label="Zone 1" {
         Switch item=z1_power
         Selection item=z1_source visibility=[z1_power==ON]
-        //Volume can be a Slider also
+        // Volume can be a Slider also
         Setpoint item=z1_volume minValue=0 maxValue=100 step=1 visibility=[z1_power==ON]
         Switch item=z1_mute visibility=[z1_power==ON]
         Setpoint item=z1_treble label="Treble Adjustment [%d]" minValue=-7 maxValue=7 step=1 visibility=[z1_power==ON]
@@ -144,6 +144,6 @@ sitemap monoprice label="Audio Control" {
         Text item=z1_keypad label="Keypad Connected: [%s]" visibility=[z1_power==ON]
     }
     
-    //repeat for zones 2-18 (substitute z1)
+    // repeat for zones 2-18 (substitute z1)
 }
 ```

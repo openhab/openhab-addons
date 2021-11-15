@@ -6,7 +6,7 @@
 
 	<!-- Monoprice Whole House Amplifier Thing -->
 	<thing-type id="amplifier">
-		<label>Whole House Amplifier</label>
+		<label>Monoprice 10761 Amplifier, 39261 Matrix or Dayton DAX66 Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
