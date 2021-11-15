@@ -89,7 +89,11 @@
 	<channel-type id="scene-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
-		<description>Activates the scene</description>
+	</channel-type>
+
+	<channel-type id="scene-group-activate">
+		<item-type>Switch</item-type>
+		<label>Activate</label>
 	</channel-type>
 
 	<channel-type id="battery-voltage" advanced="true">
