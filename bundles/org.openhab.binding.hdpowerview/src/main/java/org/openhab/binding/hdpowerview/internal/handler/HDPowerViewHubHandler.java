@@ -297,7 +297,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             } else {
                 // create a new scene channel
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), sceneId);
-                String description = translationProvider.getText("channel-type.hdpowerview.scene-activate.description",
+                String description = translationProvider.getText("dynamic-channel.scene-activate.description",
                         scene.getName());
                 Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneChannelTypeUID)
                         .withLabel(scene.getName()).withDescription(description).build();
@@ -343,7 +343,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 // create a new scene collection channel
                 ChannelUID channelUID = new ChannelUID(getThing().getUID(), sceneCollectionId);
                 String description = translationProvider.getText(
-                        "channel-type.hdpowerview.scene-group-activate.description", sceneCollection.getName());
+                        "dynamic-channel.scene-group-activate.description", sceneCollection.getName());
                 Channel channel = ChannelBuilder.create(channelUID, "Switch").withType(sceneCollectionChannelTypeUID)
                         .withLabel(sceneCollection.getName()).withDescription(description).build();
                 updateThing(editThing().withChannel(channel).build());
