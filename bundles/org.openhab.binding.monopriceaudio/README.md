@@ -2,7 +2,7 @@
 
 This binding can be used to control a Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261) & Dayton Audio DAX66 whole house multi-zone amplifier system.
 All controller functions available through the serial port interface can be controlled by the binding.
-Up to 18 zones can be controlled when 3 units are connected together (if not all zones on the amp are used they can be excluded via configuration).
+Up to 18 zones can be controlled when 3 amps are connected together (if not all zones on the amp are used they can be excluded via configuration).
 Activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
 
 The binding supports two different kinds of connections:
