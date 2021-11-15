@@ -91,10 +91,10 @@ The following channels are available (dnd, page and keypad not available on all 
 monoprice.things:
 
 ```
-// Monoprice 10761 / DAX66 (serial port connection)
+// Monoprice 10761, 39261 / DAX66 (serial port connection)
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
 
-// Monoprice 10761 / DAX66 (serial over IP connection)
+// Monoprice 10761, 39261 / DAX66 (serial over IP connection)
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=4444, pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
 
 // Monoprice 31028
