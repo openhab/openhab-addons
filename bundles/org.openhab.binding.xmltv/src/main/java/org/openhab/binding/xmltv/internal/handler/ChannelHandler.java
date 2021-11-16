@@ -35,7 +35,6 @@ import org.openhab.binding.xmltv.internal.jaxb.WithLangType;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -61,14 +60,16 @@ import org.slf4j.LoggerFactory;
 public class ChannelHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(ChannelHandler.class);
 
-    private @NonNullByDefault({}) ScheduledFuture<?> globalJob;
+    private @Nullable ScheduledFuture<?> globalJob;
     private @Nullable MediaChannel mediaChannel;
-    private @Nullable RawType mediaIcon = new RawType(new byte[0], RawType.DEFAULT_MIME_TYPE);
+    private State mediaIcon = UnDefType.UNDEF;
 
     public final List<Programme> programmes = new ArrayList<>();
+    private final ZoneId zoneId;
 
-    public ChannelHandler(Thing thing) {
+    public ChannelHandler(Thing thing, ZoneId zoneId) {
         super(thing);
+        this.zoneId = zoneId;
     }
 
     @Override
@@ -77,14 +78,14 @@ public class ChannelHandler extends BaseThingHandler {
 
         logger.debug("Initializing Broadcast Channel handler for uid '{}'", getThing().getUID());
 
-        if (globalJob == null || globalJob.isCancelled()) {
+        ScheduledFuture<?> job = globalJob;
+        if (job == null || job.isCancelled()) {
             globalJob = scheduler.scheduleWithFixedDelay(() -> {
                 if (programmes.size() < 2) {
                     refreshProgramList();
                 }
                 if (programmes.isEmpty()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                            "No programmes to come in the current XML file for this channel");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-more-programs");
                 } else if (Instant.now().isAfter(programmes.get(0).getProgrammeStop())) {
                     programmes.remove(0);
                 }
@@ -120,7 +121,7 @@ public class ChannelHandler extends BaseThingHandler {
 
                     updateStatus(ThingStatus.ONLINE);
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "No file available");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-file-available");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -132,8 +133,9 @@ public class ChannelHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (globalJob != null && !globalJob.isCancelled()) {
-            globalJob.cancel(true);
+        ScheduledFuture<?> job = globalJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
             globalJob = null;
         }
     }
@@ -153,6 +155,7 @@ public class ChannelHandler extends BaseThingHandler {
      *
      */
     private void updateChannel(ChannelUID channelUID) {
+        // TODO : usage extraction of groupname
         String[] uidElements = channelUID.getId().split("#");
         if (uidElements.length == 2) {
             int target = GROUP_NEXT_PROGRAMME.equals(uidElements[0]) ? 1 : 0;
@@ -161,29 +164,22 @@ public class ChannelHandler extends BaseThingHandler {
 
                 switch (uidElements[1]) {
                     case CHANNEL_ICON:
-                        State icon = null;
-                        if (GROUP_CHANNEL_PROPERTIES.equals(uidElements[0])) {
-                            icon = mediaIcon;
-                        } else {
-                            icon = downloadIcon(programme.getIcons());
-                        }
-                        updateState(channelUID, icon != null ? icon : UnDefType.UNDEF);
+                        State icon = GROUP_CHANNEL_PROPERTIES.equals(uidElements[0]) ? mediaIcon
+                                : downloadIcon(programme.getIcons());
+                        updateState(channelUID, icon);
                         break;
                     case CHANNEL_CHANNEL_URL:
+                        MediaChannel channel = mediaChannel;
                         updateState(channelUID,
-                                mediaChannel != null ? !mediaChannel.getIcons().isEmpty()
-                                        ? new StringType(mediaChannel.getIcons().get(0).getSrc())
+                                channel != null ? !channel.getIcons().isEmpty()
+                                        ? new StringType(channel.getIcons().get(0).getSrc())
                                         : UnDefType.UNDEF : UnDefType.UNDEF);
                         break;
                     case CHANNEL_PROGRAMME_START:
-                        Instant is = programme.getProgrammeStart();
-                        ZonedDateTime zds = ZonedDateTime.ofInstant(is, ZoneId.systemDefault());
-                        updateState(channelUID, new DateTimeType(zds));
+                        updateDateTimeChannel(channelUID, programme.getProgrammeStart());
                         break;
                     case CHANNEL_PROGRAMME_END:
-                        ZonedDateTime zde = ZonedDateTime.ofInstant(programme.getProgrammeStop(),
-                                ZoneId.systemDefault());
-                        updateState(channelUID, new DateTimeType(zde));
+                        updateDateTimeChannel(channelUID, programme.getProgrammeStop());
                         break;
                     case CHANNEL_PROGRAMME_TITLE:
                         List<WithLangType> titles = programme.getTitles();
@@ -212,14 +208,11 @@ public class ChannelHandler extends BaseThingHandler {
                         updateState(channelUID, getDurationInSeconds(Instant.now(), programme.getProgrammeStart()));
                         break;
                     case CHANNEL_PROGRAMME_PROGRESS:
-                        Duration totalLength = Duration.between(programme.getProgrammeStart(),
-                                programme.getProgrammeStop());
-                        Duration elapsed1 = Duration.between(programme.getProgrammeStart(), Instant.now());
+                        long totalLength = Duration.between(programme.getProgrammeStart(), programme.getProgrammeStop())
+                                .toSeconds();
+                        long elapsed1 = Duration.between(programme.getProgrammeStart(), Instant.now()).toSeconds();
 
-                        long secondsElapsed1 = elapsed1.toMillis() / 1000;
-                        long secondsLength = totalLength.toMillis() / 1000;
-
-                        double progress = 100.0 * secondsElapsed1 / secondsLength;
+                        double progress = 100.0 * elapsed1 / totalLength;
                         if (progress > 100 || progress < 0) {
                             logger.debug("Outstanding process");
                         }
@@ -233,17 +226,21 @@ public class ChannelHandler extends BaseThingHandler {
         }
     }
 
-    private QuantityType<?> getDurationInSeconds(Instant from, Instant to) {
-        Duration elapsed = Duration.between(from, to);
-        long secondsElapsed = TimeUnit.MILLISECONDS.toSeconds(elapsed.toMillis());
-        return new QuantityType<>(secondsElapsed, Units.SECOND);
+    private void updateDateTimeChannel(ChannelUID channelUID, Instant instant) {
+        ZonedDateTime zds = ZonedDateTime.ofInstant(instant, zoneId);
+        updateState(channelUID, new DateTimeType(zds));
     }
 
-    private @Nullable RawType downloadIcon(List<Icon> icons) {
+    private QuantityType<?> getDurationInSeconds(Instant from, Instant to) {
+        long elapsed = Duration.between(from, to).toSeconds();
+        return new QuantityType<>(elapsed, Units.SECOND);
+    }
+
+    private State downloadIcon(List<Icon> icons) {
         if (!icons.isEmpty()) {
             String url = icons.get(0).getSrc();
             return HttpUtil.downloadImage(url);
         }
-        return null;
+        return UnDefType.NULL;
     }
 }

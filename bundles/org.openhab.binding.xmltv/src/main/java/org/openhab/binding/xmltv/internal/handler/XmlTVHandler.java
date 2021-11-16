@@ -21,7 +21,6 @@ import java.util.Comparator;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
@@ -51,16 +50,16 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class XmlTVHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(XmlTVHandler.class);
-    private final XMLInputFactory xif = XMLInputFactory.newFactory();
-    private final JAXBContext jc;
+    private final XMLInputFactory xif;
+    private final Unmarshaller unmarshaller;
 
     private @Nullable Tv currentXmlFile;
     private @NonNullByDefault({}) ScheduledFuture<?> reloadJob;
 
-    public XmlTVHandler(Bridge thing) throws JAXBException {
+    public XmlTVHandler(Bridge thing, XMLInputFactory xif, Unmarshaller unmarshaller) {
         super(thing);
-        xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-        jc = JAXBContext.newInstance(Tv.class);
+        this.xif = xif;
+        this.unmarshaller = unmarshaller;
     }
 
     @Override
@@ -74,9 +73,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
             try {
                 // This can take some seconds depending upon weight of the XmlTV source file
                 xsr = xif.createXMLStreamReader(new FileInputStream(new File(config.filePath)), config.encoding);
-
                 try {
-                    Unmarshaller unmarshaller = jc.createUnmarshaller();
                     Tv xmlFile = (Tv) unmarshaller.unmarshal(xsr);
                     // Remove all finished programmes
                     xmlFile.getProgrammes().removeIf(programme -> Instant.now().isAfter(programme.getProgrammeStop()));
@@ -88,7 +85,7 @@ public class XmlTVHandler extends BaseBridgeHandler {
                         currentXmlFile = xmlFile;
                         updateStatus(ThingStatus.ONLINE);
                     } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "XMLTV file seems outdated");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, "@text/file-outdated");
                     }
                     xsr.close();
                 } catch (JAXBException e) {

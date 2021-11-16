@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.xmltv.internal.discovery;
 
-import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.XMLTV_CHANNEL_THING_TYPE;
+import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.xmltv.internal.XmlTVBindingConstants;
 import org.openhab.binding.xmltv.internal.configuration.XmlChannelConfiguration;
 import org.openhab.binding.xmltv.internal.handler.XmlTVHandler;
 import org.openhab.binding.xmltv.internal.jaxb.Tv;
@@ -35,17 +34,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class XmlTVDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(XmlTVDiscoveryService.class);
-
     private static final int SEARCH_TIME = 10;
 
+    private final Logger logger = LoggerFactory.getLogger(XmlTVDiscoveryService.class);
     private XmlTVHandler bridgeHandler;
 
     /**
      * Creates a XmlTVDiscoveryService with background discovery disabled.
      */
     public XmlTVDiscoveryService(XmlTVHandler bridgeHandler) {
-        super(XmlTVBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
+        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
         this.bridgeHandler = bridgeHandler;
     }
 
