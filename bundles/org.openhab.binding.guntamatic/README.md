@@ -1,6 +1,6 @@
 # Guntamatic Binding
 
-The Guntamatic Binding can be used to monitor and control Guntamatic Heating Systems.
+The Guntamatic Binding can be used to monitor and control Guntamatic Heating Systems (https://www.guntamatic.com/en/).
 
 ## Supported Things
 
