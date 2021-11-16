@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The configuration of a Mill thing.
  *
- * @author Wouter Born - Add Mill configuration object
+ * @author Wouter Born - Initial contribution, add Mill configuration object
  */
 @NonNullByDefault
 public class MillConfig {
