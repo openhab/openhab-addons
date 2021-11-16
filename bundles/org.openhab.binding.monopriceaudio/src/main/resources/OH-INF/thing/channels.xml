@@ -103,7 +103,8 @@
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port for Serial over IP connection to the Amplifier (Default 8080 for amps with built-in Serial over IP)</description>
+				<description>Communication Port for Serial over IP connection to the Amplifier (Default 8080 for amps with built-in
+					Serial over IP)</description>
 				<default>8080</default>
 			</parameter>
 			<parameter name="numZones" type="integer" min="1" max="18" required="true">
