@@ -4,10 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Guntamatic Binding</name>
-<<<<<<< HEAD
 	<description>Binding for Guntamatic Heating Systems.</description>
-=======
-	<description>This is the binding for Guntamatic.</description>
->>>>>>> inital commit of skeleton
 
 </binding:binding>

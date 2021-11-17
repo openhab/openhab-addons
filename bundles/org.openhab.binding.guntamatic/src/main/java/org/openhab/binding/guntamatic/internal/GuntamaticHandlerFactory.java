@@ -18,23 +18,16 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-<<<<<<< HEAD
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.io.net.http.HttpClientFactory;
-=======
->>>>>>> inital commit of skeleton
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-<<<<<<< HEAD
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-=======
-import org.osgi.service.component.annotations.Component;
->>>>>>> inital commit of skeleton
 
 /**
  * The {@link GuntamaticHandlerFactory} is responsible for creating things and thing
@@ -46,7 +39,6 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.guntamatic", service = ThingHandlerFactory.class)
 public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
 
-<<<<<<< HEAD
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOSTAR, THING_TYPE_POWERCHIP,
             THING_TYPE_POWERCORN, THING_TYPE_BIOCOM, THING_TYPE_PRO, THING_TYPE_THERM);
 
@@ -63,9 +55,6 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     protected HttpClient getHttpClient() {
         return httpClient;
     }
-=======
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
->>>>>>> inital commit of skeleton
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -76,13 +65,8 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-<<<<<<< HEAD
         if (supportsThingType(thingTypeUID)) {
             return new GuntamaticHandler(thing, httpClient, guntamaticChannelTypeProvider);
-=======
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new GuntamaticHandler(thing);
->>>>>>> inital commit of skeleton
         }
 
         return null;

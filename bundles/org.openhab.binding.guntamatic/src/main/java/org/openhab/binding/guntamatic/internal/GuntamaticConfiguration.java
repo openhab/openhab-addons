@@ -12,17 +12,13 @@
  */
 package org.openhab.binding.guntamatic.internal;
 
-<<<<<<< HEAD
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-=======
->>>>>>> inital commit of skeleton
 /**
  * The {@link GuntamaticConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Weger Michael - Initial contribution
  */
-<<<<<<< HEAD
 @NonNullByDefault
 public class GuntamaticConfiguration {
 
@@ -33,14 +29,4 @@ public class GuntamaticConfiguration {
     public String key = "";
     public int refreshInterval = 60;
     public String encoding = "windows-1252";
-=======
-public class GuntamaticConfiguration {
-
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname;
-    public String password;
-    public int refreshInterval;
->>>>>>> inital commit of skeleton
 }

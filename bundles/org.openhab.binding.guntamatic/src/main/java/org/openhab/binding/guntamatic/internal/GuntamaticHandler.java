@@ -14,7 +14,6 @@ package org.openhab.binding.guntamatic.internal;
 
 import static org.openhab.binding.guntamatic.internal.GuntamaticBindingConstants.*;
 
-<<<<<<< HEAD
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,19 +57,6 @@ import com.google.gson.JsonParser;
 //import org.openhab.core.thing.type.ChannelTypeUID;
 //import java.io.UnsupportedEncodingException;
 
-=======
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
->>>>>>> inital commit of skeleton
 /**
  * The {@link GuntamaticHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -84,7 +70,6 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     private @Nullable GuntamaticConfiguration config;
 
-<<<<<<< HEAD
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     private Boolean initalized = false;
     private final HttpClient httpClient;
@@ -98,15 +83,10 @@ public class GuntamaticHandler extends BaseThingHandler {
         super(thing);
         this.httpClient = httpClient;
         this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
-=======
-    public GuntamaticHandler(Thing thing) {
-        super(thing);
->>>>>>> inital commit of skeleton
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-<<<<<<< HEAD
         if (!(command instanceof RefreshType)) {
             if (!config.key.isEmpty()) {
                 String param;
@@ -211,7 +191,7 @@ public class GuntamaticHandler extends BaseThingHandler {
         for (int i = 0; i < daqdesc.length; i++) {
             String[] param = daqdesc[i].split(";");
             if (!"reserved".equals(param[0])) {
-                String channel = param[0].replaceAll("[^\\w]", "").toLowerCase();
+                String channel = toLowerCamelCase(param[0]);
 
                 String unit;
                 if ((param.length == 1) || (param[1].isEmpty())) {
@@ -325,6 +305,27 @@ public class GuntamaticHandler extends BaseThingHandler {
         return output;
     }
 
+    private String toLowerCamelCase(String string) {
+        char delimiter = ' ';
+        string = string.replace("´", "").replace("C02", "CO2").replaceAll("[^\\w]", String.valueOf(delimiter));
+
+        StringBuilder builder = new StringBuilder();
+        boolean nextCharLow = true;
+
+        for (int i = 0; i < string.length(); i++) {
+            char currentChar = string.charAt(i);
+            if (delimiter == currentChar) {
+                nextCharLow = false;
+            } else if (nextCharLow) {
+                builder.append(Character.toLowerCase(currentChar));
+            } else {
+                builder.append(Character.toUpperCase(currentChar));
+                nextCharLow = true;
+            }
+        }
+        return builder.toString();
+    }
+
     private @Nullable String sendGetRequest(String url, String... params) {
         String errorReason = "";
         if (config == null) {
@@ -391,26 +392,12 @@ public class GuntamaticHandler extends BaseThingHandler {
             sendGetRequest(DAQDESC_URL);
         } else {
             sendGetRequest(DAQDATA_URL);
-=======
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
->>>>>>> inital commit of skeleton
         }
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(GuntamaticConfiguration.class);
-<<<<<<< HEAD
         updateStatus(ThingStatus.UNKNOWN);
         pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
                 TimeUnit.SECONDS);
@@ -441,42 +428,5 @@ public class GuntamaticHandler extends BaseThingHandler {
             pollingFuture = null;
         }
         initalized = false;
-=======
-
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
-
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
-
-        // These logging types should be primarily used by bindings
-        // logger.trace("Example trace message");
-        // logger.debug("Example debug message");
-        // logger.warn("Example warn message");
-
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
->>>>>>> inital commit of skeleton
     }
 }

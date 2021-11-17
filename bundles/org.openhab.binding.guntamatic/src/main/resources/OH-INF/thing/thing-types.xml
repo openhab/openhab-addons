@@ -4,71 +4,70 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-<<<<<<< HEAD
 	<thing-type id="biostar">
 
 		<label>Guntamatic Biostar</label>
 		<description>Guntamatic Biostar Heating System</description>
 
 		<channels>
-			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+			<channel id="controlBoilerApproval" typeId="controlBoilerApproval">
 				<label>Set Boiler Approval</label>
 			</channel>
-			<channel id="controlprogram" typeId="controlprogram">
+			<channel id="controlProgram" typeId="controlProgram">
 				<label>Set Program</label>
 			</channel>
-			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram0" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 0</label>
 			</channel>
-			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram1" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 1</label>
 			</channel>
-			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram2" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 2</label>
 			</channel>
-			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram3" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 3</label>
 			</channel>
-			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram4" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 4</label>
 			</channel>
-			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram5" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 5</label>
 			</channel>
-			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram6" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 6</label>
 			</channel>
-			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram7" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 7</label>
 			</channel>
-			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram8" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
-			<channel id="controlwwheat0" typeId="controlwwheat">
+			<channel id="controlWwHeat0" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlwwheat1" typeId="controlwwheat">
+			<channel id="controlWwHeat1" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlwwheat2" typeId="controlwwheat">
+			<channel id="controlWwHeat2" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 2</label>
 			</channel>
-			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
-			<property name="boilerapproval">K0010</property>
+			<property name="boilerApproval">K0010</property>
 			<property name="program">PR001</property>
-			<property name="heatcircprogram">HKx01</property>
-			<property name="wwheat">BKx06</property>
-			<property name="extrawwheat">ZKx06</property>
+			<property name="heatCircProgram">HKx01</property>
+			<property name="wwHeat">BKx06</property>
+			<property name="extraWwHeat">ZKx06</property>
 		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -99,87 +98,69 @@
 		<description>Guntamatic Powerchip Heating System. Untested! Please provide Feedback!</description>
 
 		<channels>
-			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+			<channel id="controlBoilerApproval" typeId="controlBoilerApproval">
 				<label>Set Boiler Approval</label>
 			</channel>
-			<channel id="controlprogram" typeId="controlprogram">
+			<channel id="controlProgram" typeId="controlProgram">
 				<label>Set Program</label>
 			</channel>
-			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram0" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 0</label>
 			</channel>
-			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram1" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 1</label>
 			</channel>
-			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram2" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 2</label>
 			</channel>
-			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram3" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 3</label>
 			</channel>
-			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram4" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 4</label>
 			</channel>
-			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram5" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 5</label>
 			</channel>
-			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram6" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 6</label>
 			</channel>
-			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram7" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 7</label>
 			</channel>
-			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram8" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
-			<channel id="controlwwheat0" typeId="controlwwheat">
+			<channel id="controlWwHeat0" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlwwheat1" typeId="controlwwheat">
+			<channel id="controlWwHeat1" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlwwheat2" typeId="controlwwheat">
+			<channel id="controlWwHeat2" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 2</label>
 			</channel>
-			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
-			<property name="boilerapproval">PK002</property>
+			<property name="boilerApproval">PK002</property>
 			<property name="program">PR001</property>
-			<property name="heatcircprogram">HKx01</property>
-			<property name="wwheat">BKx06</property>
-			<property name="extrawwheat">ZKx06</property>
+			<property name="heatCircProgram">HKx01</property>
+			<property name="wwHeat">BKx06</property>
+			<property name="extraWwHeat">ZKx06</property>
 		</properties>
-=======
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="GuntamaticBridge" />
-			</supported-bridge-type-refs>
-		-->
-
-		<label>Guntamatic Binding Thing</label>
-		<description>Sample thing for Guntamatic Binding</description>
-
-		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
-		</channels>
-
->>>>>>> inital commit of skeleton
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>
 				<label>Hostname</label>
-<<<<<<< HEAD
 				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
@@ -205,64 +186,64 @@
 		<description>Guntamatic Powercorn Heating System. Untested! Please provide Feedback!</description>
 
 		<channels>
-			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+			<channel id="controlBoilerApproval" typeId="controlBoilerApproval">
 				<label>Set Boiler Approval</label>
 			</channel>
-			<channel id="controlprogram" typeId="controlprogram">
+			<channel id="controlProgram" typeId="controlProgram">
 				<label>Set Program</label>
 			</channel>
-			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram0" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 0</label>
 			</channel>
-			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram1" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 1</label>
 			</channel>
-			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram2" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 2</label>
 			</channel>
-			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram3" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 3</label>
 			</channel>
-			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram4" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 4</label>
 			</channel>
-			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram5" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 5</label>
 			</channel>
-			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram6" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 6</label>
 			</channel>
-			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram7" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 7</label>
 			</channel>
-			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram8" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
-			<channel id="controlwwheat0" typeId="controlwwheat">
+			<channel id="controlWwHeat0" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlwwheat1" typeId="controlwwheat">
+			<channel id="controlWwHeat1" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlwwheat2" typeId="controlwwheat">
+			<channel id="controlWwHeat2" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 2</label>
 			</channel>
-			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
-			<property name="boilerapproval">PK002</property>
+			<property name="boilerApproval">PK002</property>
 			<property name="program">PR001</property>
-			<property name="heatcircprogram">HKx01</property>
-			<property name="wwheat">BKx06</property>
-			<property name="extrawwheat">ZKx06</property>
+			<property name="heatCircProgram">HKx01</property>
+			<property name="wwHeat">BKx06</property>
+			<property name="extraWwHeat">ZKx06</property>
 		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -293,64 +274,64 @@
 		<description>Guntamatic Biocom Heating System. Untested! Please provide Feedback!</description>
 
 		<channels>
-			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+			<channel id="controlBoilerApproval" typeId="controlBoilerApproval">
 				<label>Set Boiler Approval</label>
 			</channel>
-			<channel id="controlprogram" typeId="controlprogram">
+			<channel id="controlProgram" typeId="controlProgram">
 				<label>Set Program</label>
 			</channel>
-			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram0" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 0</label>
 			</channel>
-			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram1" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 1</label>
 			</channel>
-			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram2" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 2</label>
 			</channel>
-			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram3" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 3</label>
 			</channel>
-			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram4" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 4</label>
 			</channel>
-			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram5" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 5</label>
 			</channel>
-			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram6" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 6</label>
 			</channel>
-			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram7" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 7</label>
 			</channel>
-			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram8" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
-			<channel id="controlwwheat0" typeId="controlwwheat">
+			<channel id="controlWwHeat0" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlwwheat1" typeId="controlwwheat">
+			<channel id="controlWwHeat1" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlwwheat2" typeId="controlwwheat">
+			<channel id="controlWwHeat2" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 2</label>
 			</channel>
-			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
-			<property name="boilerapproval">PK002</property>
+			<property name="boilerApproval">PK002</property>
 			<property name="program">PR001</property>
-			<property name="heatcircprogram">HKx01</property>
-			<property name="wwheat">BKx06</property>
-			<property name="extrawwheat">ZKx06</property>
+			<property name="heatCircProgram">HKx01</property>
+			<property name="wwHeat">BKx06</property>
+			<property name="extraWwHeat">ZKx06</property>
 		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -381,64 +362,64 @@
 		<description>Guntamatic Pro Heating System. Untested! Please provide Feedback!</description>
 
 		<channels>
-			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+			<channel id="controlBoilerApproval" typeId="controlBoilerApproval">
 				<label>Set Boiler Approval</label>
 			</channel>
-			<channel id="controlprogram" typeId="controlprogram">
+			<channel id="controlProgram" typeId="controlProgram">
 				<label>Set Program</label>
 			</channel>
-			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram0" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 0</label>
 			</channel>
-			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram1" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 1</label>
 			</channel>
-			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram2" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 2</label>
 			</channel>
-			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram3" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 3</label>
 			</channel>
-			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram4" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 4</label>
 			</channel>
-			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram5" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 5</label>
 			</channel>
-			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram6" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 6</label>
 			</channel>
-			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram7" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 7</label>
 			</channel>
-			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram8" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
-			<channel id="controlwwheat0" typeId="controlwwheat">
+			<channel id="controlWwHeat0" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlwwheat1" typeId="controlwwheat">
+			<channel id="controlWwHeat1" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlwwheat2" typeId="controlwwheat">
+			<channel id="controlWwHeat2" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 2</label>
 			</channel>
-			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
-			<property name="boilerapproval">PK002</property>
+			<property name="boilerApproval">PK002</property>
 			<property name="program">PR001</property>
-			<property name="heatcircprogram">HKx01</property>
-			<property name="wwheat">BKx06</property>
-			<property name="extrawwheat">ZKx06</property>
+			<property name="heatCircProgram">HKx01</property>
+			<property name="wwHeat">BKx06</property>
+			<property name="extraWwHeat">ZKx06</property>
 		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -469,64 +450,64 @@
 		<description>Guntamatic Therm Heating System. Untested! Please provide Feedback!</description>
 
 		<channels>
-			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+			<channel id="controlBoilerApproval" typeId="controlBoilerApproval">
 				<label>Set Boiler Approval</label>
 			</channel>
-			<channel id="controlprogram" typeId="controlprogram">
+			<channel id="controlProgram" typeId="controlProgram">
 				<label>Set Program</label>
 			</channel>
-			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram0" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 0</label>
 			</channel>
-			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram1" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 1</label>
 			</channel>
-			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram2" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 2</label>
 			</channel>
-			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram3" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 3</label>
 			</channel>
-			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram4" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 4</label>
 			</channel>
-			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram5" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 5</label>
 			</channel>
-			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram6" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 6</label>
 			</channel>
-			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram7" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 7</label>
 			</channel>
-			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+			<channel id="controlHeatCircProgram8" typeId="controlHeatCircProgram">
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
-			<channel id="controlwwheat0" typeId="controlwwheat">
+			<channel id="controlWwHeat0" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlwwheat1" typeId="controlwwheat">
+			<channel id="controlWwHeat1" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlwwheat2" typeId="controlwwheat">
+			<channel id="controlWwHeat2" typeId="controlWwHeat">
 				<label>Trigger Warm Wather Circle 2</label>
 			</channel>
-			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 0</label>
 			</channel>
-			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 1</label>
 			</channel>
-			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
 				<label>Trigger Extra Warm Wather Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
-			<property name="boilerapproval">K0010</property>
+			<property name="boilerApproval">K0010</property>
 			<property name="program">PR001</property>
-			<property name="heatcircprogram">HKx01</property>
-			<property name="wwheat">BKx06</property>
-			<property name="extrawwheat">ZKx06</property>
+			<property name="heatCircProgram">HKx01</property>
+			<property name="wwHeat">BKx06</property>
+			<property name="extraWwHeat">ZKx06</property>
 		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -553,7 +534,7 @@
 	</thing-type>
 
 
-	<channel-type id="controlprogram" advanced="false">
+	<channel-type id="controlProgram" advanced="false">
 		<item-type>String</item-type>
 		<label>Set Program</label>
 		<description>Set Program of the Guntamatic Heating System (OFF, NORMAL, WARMWATER, MANUAL)</description>
@@ -566,7 +547,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="controlboilerapproval" advanced="true">
+	<channel-type id="controlBoilerApproval" advanced="true">
 		<item-type>String</item-type>
 		<label>Set Boiler Approval</label>
 		<description>Set Boiler Approval of the Guntamatic Heating System (AUTO, OFF, ON)</description>
@@ -578,7 +559,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="controlheatcircprogram" advanced="true">
+	<channel-type id="controlHeatCircProgram" advanced="true">
 		<item-type>String</item-type>
 		<label>Set Program of Heat Circle 0...8</label>
 		<description>Set Program of Heat Circle 0...8 of the Guntamatic Heating System (OFF, NORMAL, HEAT, LOWER)</description>
@@ -591,7 +572,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="controlwwheat" advanced="true">
+	<channel-type id="controlWwHeat" advanced="true">
 		<item-type>String</item-type>
 		<label>Trigger Warm Wather Circle 0...2</label>
 		<description>Trigger Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
@@ -601,7 +582,7 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="controlextrawwheat" advanced="true">
+	<channel-type id="controlExtraWwHeat" advanced="true">
 		<item-type>String</item-type>
 		<label>Trigger Extra Warm Wather Circle 0...2</label>
 		<description>Trigger Extra Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
@@ -612,26 +593,4 @@
 		</state>
 	</channel-type>
 
-=======
-				<description>Hostname or IP address of the device</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Passwort to access the device</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
-				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
-			</parameter>
-		</config-description>
-	</thing-type>
-
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for Guntamatic Binding</description>
-	</channel-type>
->>>>>>> inital commit of skeleton
 </thing:thing-descriptions>
