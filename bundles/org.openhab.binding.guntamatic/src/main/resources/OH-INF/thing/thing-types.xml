@@ -1,0 +1,637 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="guntamatic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+<<<<<<< HEAD
+	<thing-type id="biostar">
+
+		<label>Guntamatic Biostar</label>
+		<description>Guntamatic Biostar Heating System</description>
+
+		<channels>
+			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="controlprogram" typeId="controlprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="controlwwheat0" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlwwheat1" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlwwheat2" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 2</label>
+			</channel>
+			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">K0010</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="powerchip">
+
+		<label>Guntamatic Powerchip</label>
+		<description>Guntamatic Powerchip Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="controlprogram" typeId="controlprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="controlwwheat0" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlwwheat1" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlwwheat2" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 2</label>
+			</channel>
+			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+=======
+	<!-- Sample Thing Type -->
+	<thing-type id="sample">
+		<!-- Comment this in for Things which need a Bridge to function.
+			<supported-bridge-type-refs>
+			<bridge-type-ref id="GuntamaticBridge" />
+			</supported-bridge-type-refs>
+		-->
+
+		<label>Guntamatic Binding Thing</label>
+		<description>Sample thing for Guntamatic Binding</description>
+
+		<channels>
+			<channel id="channel1" typeId="sample-channel"/>
+		</channels>
+
+>>>>>>> inital commit of skeleton
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+<<<<<<< HEAD
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="powercorn">
+
+		<label>Guntamatic Powercorn</label>
+		<description>Guntamatic Powercorn Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="controlprogram" typeId="controlprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="controlwwheat0" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlwwheat1" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlwwheat2" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 2</label>
+			</channel>
+			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="biocom">
+
+		<label>Guntamatic Biocom</label>
+		<description>Guntamatic Biocom Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="controlprogram" typeId="controlprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="controlwwheat0" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlwwheat1" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlwwheat2" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 2</label>
+			</channel>
+			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="pro">
+
+		<label>Guntamatic Pro</label>
+		<description>Guntamatic Pro Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="controlprogram" typeId="controlprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="controlwwheat0" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlwwheat1" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlwwheat2" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 2</label>
+			</channel>
+			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">PK002</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="therm">
+
+		<label>Guntamatic Therm</label>
+		<description>Guntamatic Therm Heating System. Untested! Please provide Feedback!</description>
+
+		<channels>
+			<channel id="controlboilerapproval" typeId="controlboilerapproval">
+				<label>Set Boiler Approval</label>
+			</channel>
+			<channel id="controlprogram" typeId="controlprogram">
+				<label>Set Program</label>
+			</channel>
+			<channel id="controlheatcircprogram0" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 0</label>
+			</channel>
+			<channel id="controlheatcircprogram1" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 1</label>
+			</channel>
+			<channel id="controlheatcircprogram2" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 2</label>
+			</channel>
+			<channel id="controlheatcircprogram3" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 3</label>
+			</channel>
+			<channel id="controlheatcircprogram4" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 4</label>
+			</channel>
+			<channel id="controlheatcircprogram5" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 5</label>
+			</channel>
+			<channel id="controlheatcircprogram6" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 6</label>
+			</channel>
+			<channel id="controlheatcircprogram7" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 7</label>
+			</channel>
+			<channel id="controlheatcircprogram8" typeId="controlheatcircprogram">
+				<label>Set Program of Heat Circle 8</label>
+			</channel>
+			<channel id="controlwwheat0" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlwwheat1" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlwwheat2" typeId="controlwwheat">
+				<label>Trigger Warm Wather Circle 2</label>
+			</channel>
+			<channel id="controlextrawwheat0" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 0</label>
+			</channel>
+			<channel id="controlextrawwheat1" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 1</label>
+			</channel>
+			<channel id="controlextrawwheat2" typeId="controlextrawwheat">
+				<label>Trigger Extra Warm Wather Circle 2</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="boilerapproval">K0010</property>
+			<property name="program">PR001</property>
+			<property name="heatcircprogram">HKx01</property>
+			<property name="wwheat">BKx06</property>
+			<property name="extrawwheat">ZKx06</property>
+		</properties>
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the Guntamatic Heating System</description>
+			</parameter>
+			<parameter name="key" type="text" required="false">
+				<context>key</context>
+				<label>Key</label>
+				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
+					The
+					key needs to be reqested from Guntamatic support.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<label>Refresh Interval</label>
+				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
+			</parameter>
+			<parameter name="encoding" type="text" required="false">
+				<label>Encoding</label>
+				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<channel-type id="controlprogram" advanced="false">
+		<item-type>String</item-type>
+		<label>Set Program</label>
+		<description>Set Program of the Guntamatic Heating System (OFF, NORMAL, WARMWATER, MANUAL)</description>
+		<state>
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">NORMAL</option>
+				<option value="2">WARMWATER</option>
+				<option value="8">MANUAL</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="controlboilerapproval" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Boiler Approval</label>
+		<description>Set Boiler Approval of the Guntamatic Heating System (AUTO, OFF, ON)</description>
+		<state>
+			<options>
+				<option value="0">AUTO</option>
+				<option value="1">OFF</option>
+				<option value="2">ON</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="controlheatcircprogram" advanced="true">
+		<item-type>String</item-type>
+		<label>Set Program of Heat Circle 0...8</label>
+		<description>Set Program of Heat Circle 0...8 of the Guntamatic Heating System (OFF, NORMAL, HEAT, LOWER)</description>
+		<state>
+			<options>
+				<option value="0">OFF</option>
+				<option value="1">NORMAL</option>
+				<option value="2">HEAT</option>
+				<option value="3">LOWER</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="controlwwheat" advanced="true">
+		<item-type>String</item-type>
+		<label>Trigger Warm Wather Circle 0...2</label>
+		<description>Trigger Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<state>
+			<options>
+				<option value="0">RECHARGE</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="controlextrawwheat" advanced="true">
+		<item-type>String</item-type>
+		<label>Trigger Extra Warm Wather Circle 0...2</label>
+		<description>Trigger Extra Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<state>
+			<options>
+				<option value="0">RECHARGE</option>
+			</options>
+		</state>
+	</channel-type>
+
+=======
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Passwort to access the device</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="sample-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>Sample channel for Guntamatic Binding</description>
+	</channel-type>
+>>>>>>> inital commit of skeleton
+</thing:thing-descriptions>
