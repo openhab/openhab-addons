@@ -191,7 +191,7 @@ public class GuntamaticHandler extends BaseThingHandler {
         for (int i = 0; i < daqdesc.length; i++) {
             String[] param = daqdesc[i].split(";");
             if (!"reserved".equals(param[0])) {
-                String channel = param[0].replaceAll("[^\\w]", "").toLowerCase();
+                String channel = toLowerCamelCase(param[0]);
 
                 String unit;
                 if ((param.length == 1) || (param[1].isEmpty())) {
@@ -303,6 +303,27 @@ public class GuntamaticHandler extends BaseThingHandler {
         output = output.replace("Ü", "UE").replace("Ö", "OE").replace("Ä", "AE");
 
         return output;
+    }
+
+    private String toLowerCamelCase(String string) {
+        char delimiter = ' ';
+        string = string.replace("´", "").replace("C02", "CO2").replaceAll("[^\\w]", String.valueOf(delimiter));
+
+        StringBuilder builder = new StringBuilder();
+        boolean nextCharLow = true;
+
+        for (int i = 0; i < string.length(); i++) {
+            char currentChar = string.charAt(i);
+            if (delimiter == currentChar) {
+                nextCharLow = false;
+            } else if (nextCharLow) {
+                builder.append(Character.toLowerCase(currentChar));
+            } else {
+                builder.append(Character.toUpperCase(currentChar));
+                nextCharLow = true;
+            }
+        }
+        return builder.toString();
     }
 
     private @Nullable String sendGetRequest(String url, String... params) {
