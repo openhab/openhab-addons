@@ -43,6 +43,7 @@ class LxControlFactory {
         add(new LxControlMeter.Factory());
         add(new LxControlPushbutton.Factory());
         add(new LxControlRadio.Factory());
+        add(new LxControlSauna.Factory());
         add(new LxControlSlider.Factory());
         add(new LxControlSwitch.Factory());
         add(new LxControlTextState.Factory());
