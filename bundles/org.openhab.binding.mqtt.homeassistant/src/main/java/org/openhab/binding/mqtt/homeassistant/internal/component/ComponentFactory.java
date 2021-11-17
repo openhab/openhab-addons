@@ -77,6 +77,8 @@ public class ComponentFactory {
                 return new Sensor(componentConfiguration);
             case "switch":
                 return new Switch(componentConfiguration);
+            case "vacuum":
+                return new Vacuum(componentConfiguration);
             default:
                 throw new UnsupportedComponentException("Component '" + haID + "' is unsupported!");
         }

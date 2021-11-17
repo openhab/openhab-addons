@@ -129,6 +129,7 @@ public class ComponentChannel {
         private @Nullable String commandTopic;
         private boolean retain;
         private boolean trigger;
+        private boolean isAdvanced;
         private @Nullable Integer qos;
         private @Nullable Predicate<Command> commandFilter;
 
@@ -141,6 +142,7 @@ public class ComponentChannel {
             this.channelID = channelID;
             this.valueState = valueState;
             this.label = label;
+            this.isAdvanced = false;
             this.channelStateUpdateListener = channelStateUpdateListener;
         }
 
@@ -194,6 +196,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder isAdvanced(boolean advanced) {
+            this.isAdvanced = advanced;
+            return this;
+        }
+
         public Builder commandFilter(@Nullable Predicate<Command> commandFilter) {
             this.commandFilter = commandFilter;
             return this;
@@ -221,12 +228,13 @@ public class ComponentChannel {
             String localStateTopic = stateTopic;
             if (localStateTopic == null || localStateTopic.isBlank() || this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
-                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
+                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
+                        .isAdvanced(isAdvanced).build();
             } else {
                 StateDescriptionFragment description = valueState.createStateDescription(commandTopic == null).build();
                 type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescriptionFragment(description).build();
+                        .withStateDescriptionFragment(description).isAdvanced(isAdvanced).build();
             }
 
             Configuration configuration = new Configuration();

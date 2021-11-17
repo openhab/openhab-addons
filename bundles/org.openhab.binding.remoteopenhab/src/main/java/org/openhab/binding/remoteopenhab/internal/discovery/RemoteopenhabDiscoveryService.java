@@ -93,7 +93,7 @@ public class RemoteopenhabDiscoveryService extends AbstractDiscoveryService
                     createDiscoveryResult(thing, bridgeUID);
                 }
             } catch (RemoteopenhabException e) {
-                logger.debug("{}", e.getMessage());
+                logger.debug("Scan for remote things failed", e);
             }
         }
     }

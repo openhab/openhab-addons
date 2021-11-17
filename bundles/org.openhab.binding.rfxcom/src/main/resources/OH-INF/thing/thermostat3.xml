@@ -25,12 +25,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Sensor Id. Example 106411</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="MERTIK__G6R_H4T1">Mertik (G6R H4T1)</option>
 					<option value="MERTIK__G6R_H4TB__G6R_H4T__G6R_H4T21_Z22">Mertik (G6R H4TB, G6R H4T, or G6R
