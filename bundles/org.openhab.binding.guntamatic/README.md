@@ -312,11 +312,11 @@ then
     {
         if ( Season.state.toString == "WINTER" )
         {
-            Biostar_SetProgram.sendCommand("NORMAL")
+            Biostar_ControlProgram.sendCommand("NORMAL")
         }
         else
         {
-            Biostar_SetProgram.sendCommand("OFF")
+            Biostar_ControlProgram.sendCommand("OFF")
         }
     }
 end
