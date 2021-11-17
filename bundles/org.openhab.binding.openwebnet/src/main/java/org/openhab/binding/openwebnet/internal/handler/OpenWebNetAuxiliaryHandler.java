@@ -1,11 +1,14 @@
 package org.openhab.binding.openwebnet.internal.handler;
-
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
+import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.Where;
 import org.slf4j.*;
 import java.util.Set;
@@ -30,15 +33,35 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
 
     protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another
                                                                           // all devices refresh request
-
-
     public OpenWebNetAuxiliaryHandler(Thing thing) {
         super(thing);
     }
 
+    /**
+     * Handles Auxiliary switch command for a channel
+     *
+     * @param channel the channel
+     * @param command the Command
+     */
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
+        if (channel.getId().equals(CHANNEL_SWITCH)) {
+            if (command instanceof OnOffType) {
+                try {
+                    if (OnOffType.ON.equals(command)) {
+                        send(Auxiliary.requestTurnOn(toWhere(channel.getId())));
+                    } else if (OnOffType.OFF.equals(channel)) {
+                        send(Auxiliary.requestTurnOff(toWhere(channel.getId())));
+                    }
 
+                } catch (OWNException e) {
+                    logger.warn("Exception while processing command {}: {}", command, e.getMessage());
+                }
+
+            }
+        } else {
+            logger.warn("Unsupported ChannelUID {}", channel);
+        }
     }
 
     @Override
