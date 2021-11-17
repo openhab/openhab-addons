@@ -16,8 +16,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +33,7 @@ import javax.xml.stream.XMLStreamReader;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.xmltv.internal.configuration.XmlTVConfiguration;
+import org.openhab.binding.xmltv.internal.discovery.XmlTVDiscoveryService;
 import org.openhab.binding.xmltv.internal.jaxb.Programme;
 import org.openhab.binding.xmltv.internal.jaxb.Tv;
 import org.openhab.core.thing.Bridge;
@@ -37,6 +41,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,8 +124,12 @@ public class XmlTVHandler extends BaseBridgeHandler {
         // nothing to do
     }
 
-    @Nullable
-    public Tv getXmlFile() {
-        return currentXmlFile;
+    public Optional<Tv> getXmlFile() {
+        return Optional.ofNullable(currentXmlFile);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(XmlTVDiscoveryService.class);
     }
 }

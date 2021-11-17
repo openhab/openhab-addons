@@ -30,7 +30,6 @@ import org.openhab.binding.xmltv.internal.configuration.XmlChannelConfiguration;
 import org.openhab.binding.xmltv.internal.jaxb.Icon;
 import org.openhab.binding.xmltv.internal.jaxb.MediaChannel;
 import org.openhab.binding.xmltv.internal.jaxb.Programme;
-import org.openhab.binding.xmltv.internal.jaxb.Tv;
 import org.openhab.binding.xmltv.internal.jaxb.WithLangType;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
@@ -102,8 +101,7 @@ public class ChannelHandler extends BaseThingHandler {
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
             XmlTVHandler handler = (XmlTVHandler) bridge.getHandler();
             if (handler != null) {
-                Tv tv = handler.getXmlFile();
-                if (tv != null) {
+                handler.getXmlFile().ifPresentOrElse(tv -> {
                     String channelId = (String) getConfig().get(XmlChannelConfiguration.CHANNEL_ID);
 
                     if (mediaChannel == null) {
@@ -121,9 +119,7 @@ public class ChannelHandler extends BaseThingHandler {
                             .forEach(p -> programmes.add(p));
 
                     updateStatus(ThingStatus.ONLINE);
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-file-available");
-                }
+                }, () -> updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/no-file-available"));
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
@@ -217,7 +213,7 @@ public class ChannelHandler extends BaseThingHandler {
                         if (progress > 100 || progress < 0) {
                             logger.debug("Outstanding process");
                         }
-                        updateState(channelUID, new QuantityType<>(progress, Units.PERCENT));
+                        updateState(channelUID, new QuantityType<>((int) progress, Units.PERCENT));
 
                         break;
                 }
