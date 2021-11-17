@@ -120,6 +120,8 @@ public class XmlTVHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void unregisterDeviceDiscoveryService(Thing thing) {
         ServiceRegistration<?> serviceReg = discoveryServiceRegs.remove(thing.getUID());
-        serviceReg.unregister();
+        if (serviceReg != null) {
+            serviceReg.unregister();
+        }
     }
 }

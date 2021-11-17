@@ -35,6 +35,7 @@ import org.openhab.binding.xmltv.internal.jaxb.WithLangType;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -239,7 +240,10 @@ public class ChannelHandler extends BaseThingHandler {
     private State downloadIcon(List<Icon> icons) {
         if (!icons.isEmpty()) {
             String url = icons.get(0).getSrc();
-            return HttpUtil.downloadImage(url);
+            RawType result = HttpUtil.downloadImage(url);
+            if (result != null) {
+                return result;
+            }
         }
         return UnDefType.NULL;
     }
