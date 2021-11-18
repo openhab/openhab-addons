@@ -23,10 +23,12 @@ import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -47,7 +49,6 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.FormContentProvider;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
@@ -57,7 +58,8 @@ import org.jsoup.nodes.Element;
 import org.openhab.binding.myq.internal.MyQDiscoveryService;
 import org.openhab.binding.myq.internal.config.MyQAccountConfiguration;
 import org.openhab.binding.myq.internal.dto.AccountDTO;
-import org.openhab.binding.myq.internal.dto.ActionDTO;
+import org.openhab.binding.myq.internal.dto.AccountsDTO;
+import org.openhab.binding.myq.internal.dto.DeviceDTO;
 import org.openhab.binding.myq.internal.dto.DevicesDTO;
 import org.openhab.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -106,9 +108,13 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     // this should never happen, but lets be safe and give up after so many redirects
     private static final int LOGIN_MAX_REDIRECTS = 30;
     /*
-     * MyQ device and account API endpoint
+     * MyQ device and account API endpoints
      */
-    private static final String BASE_URL = "https://api.myqdevice.com/api";
+    private static final String ACCOUNTS_URL = "https://accounts.myq-cloud.com/api/v6.0/accounts";
+    private static final String DEVICES_URL = "https://devices.myq-cloud.com/api/v5.2/Accounts/%s/Devices";
+    private static final String CMD_LAMP_URL = "https://account-devices-lamp.myq-cloud.com/api/v5.2/Accounts/%s/lamps/%s/%s";
+    private static final String CMD_DOOR_URL = "https://account-devices-gdo.myq-cloud.com/api/v5.2/Accounts/%s/door_openers/%s/%s";
+
     private static final Integer RAPID_REFRESH_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(MyQAccountHandler.class);
     private final Gson gsonUpperCase = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
@@ -118,8 +124,9 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     private final OAuthFactory oAuthFactory;
     private @Nullable Future<?> normalPollFuture;
     private @Nullable Future<?> rapidPollFuture;
-    private @Nullable AccountDTO account;
-    private @Nullable DevicesDTO devicesCache;
+    private @Nullable AccountsDTO accounts;
+
+    private List<DeviceDTO> devicesCache = new ArrayList<DeviceDTO>();
     private @Nullable OAuthClientService oAuthService;
     private Integer normalRefreshSeconds = 60;
     private HttpClient httpClient;
@@ -167,10 +174,10 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        DevicesDTO localDeviceCaches = devicesCache;
+        List<DeviceDTO> localDeviceCaches = devicesCache;
         if (localDeviceCaches != null && childHandler instanceof MyQDeviceHandler) {
             MyQDeviceHandler handler = (MyQDeviceHandler) childHandler;
-            localDeviceCaches.items.stream()
+            localDeviceCaches.stream()
                     .filter(d -> ((MyQDeviceHandler) childHandler).getSerialNumber().equalsIgnoreCase(d.serialNumber))
                     .findFirst().ifPresent(handler::handleDeviceUpdate);
         }
@@ -182,33 +189,42 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     }
 
     /**
-     * Sends an action to the MyQ API
+     * Sends a door action to the MyQ API
      *
      * @param serialNumber
      * @param action
      */
-    public void sendAction(String serialNumber, String action) {
+    public void sendDoorAction(DeviceDTO devivce, String action) {
+        sendAction(devivce, action, CMD_DOOR_URL);
+    }
+
+    /**
+     * Sends a lamp action to the MyQ API
+     *
+     * @param serialNumber
+     * @param action
+     */
+    public void sendLampAction(DeviceDTO devivce, String action) {
+        sendAction(devivce, action, CMD_LAMP_URL);
+    }
+
+    private void sendAction(DeviceDTO device, String action, String urlFormat) {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Account offline, ignoring action {}", action);
             return;
         }
 
-        AccountDTO localAccount = account;
-        if (localAccount != null) {
-            try {
-                ContentResponse response = sendRequest(
-                        String.format("%s/v5.1/Accounts/%s/Devices/%s/actions", BASE_URL, localAccount.account.id,
-                                serialNumber),
-                        HttpMethod.PUT, new StringContentProvider(gsonLowerCase.toJson(new ActionDTO(action))),
-                        "application/json");
-                if (HttpStatus.isSuccess(response.getStatus())) {
-                    restartPolls(true);
-                } else {
-                    logger.debug("Failed to send action {} : {}", action, response.getContentAsString());
-                }
-            } catch (InterruptedException | MyQCommunicationException | MyQAuthenticationException e) {
-                logger.debug("Could not send action", e);
+        try {
+            ContentResponse response = sendRequest(
+                    String.format(urlFormat, device.accountId, device.serialNumber, action), HttpMethod.PUT, null,
+                    null);
+            if (HttpStatus.isSuccess(response.getStatus())) {
+                restartPolls(true);
+            } else {
+                logger.debug("Failed to send action {} : {}", action, response.getContentAsString());
             }
+        } catch (InterruptedException | MyQCommunicationException | MyQAuthenticationException e) {
+            logger.debug("Could not send action", e);
         }
     }
 
@@ -217,7 +233,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
      *
      * @return cached MyQ devices
      */
-    public @Nullable DevicesDTO devicesCache() {
+    public @Nullable List<DeviceDTO> devicesCache() {
         return devicesCache;
     }
 
@@ -266,8 +282,8 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
     private synchronized void fetchData() {
         try {
-            if (account == null) {
-                getAccount();
+            if (accounts == null) {
+                getAccounts();
             }
             getDevices();
         } catch (MyQCommunicationException e) {
@@ -338,33 +354,37 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         }
     }
 
-    private void getAccount() throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
-        ContentResponse response = sendRequest(BASE_URL + "/v5/My?expand=account", HttpMethod.GET, null, null);
-        account = parseResultAndUpdateStatus(response, gsonUpperCase, AccountDTO.class);
+    private void getAccounts() throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
+        ContentResponse response = sendRequest(ACCOUNTS_URL, HttpMethod.GET, null, null);
+        accounts = parseResultAndUpdateStatus(response, gsonLowerCase, AccountsDTO.class);
     }
 
     private void getDevices() throws InterruptedException, MyQCommunicationException, MyQAuthenticationException {
-        AccountDTO localAccount = account;
-        if (localAccount == null) {
+        AccountsDTO localAccounts = accounts;
+        if (localAccounts == null) {
             return;
         }
-        ContentResponse response = sendRequest(
-                String.format("%s/v5.1/Accounts/%s/Devices", BASE_URL, localAccount.account.id), HttpMethod.GET, null,
-                null);
-        DevicesDTO devices = parseResultAndUpdateStatus(response, gsonLowerCase, DevicesDTO.class);
-        devicesCache = devices;
-        devices.items.forEach(device -> {
-            ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceFamily);
-            if (SUPPORTED_DISCOVERY_THING_TYPES_UIDS.contains(thingTypeUID)) {
-                for (Thing thing : getThing().getThings()) {
-                    ThingHandler handler = thing.getHandler();
-                    if (handler != null
-                            && ((MyQDeviceHandler) handler).getSerialNumber().equalsIgnoreCase(device.serialNumber)) {
-                        ((MyQDeviceHandler) handler).handleDeviceUpdate(device);
+
+        List<DeviceDTO> currentDevices = new ArrayList<DeviceDTO>();
+
+        for (AccountDTO account : localAccounts.accounts) {
+            ContentResponse response = sendRequest(String.format(DEVICES_URL, account.id), HttpMethod.GET, null, null);
+            DevicesDTO devices = parseResultAndUpdateStatus(response, gsonLowerCase, DevicesDTO.class);
+            currentDevices.addAll(devices.items);
+            devices.items.forEach(device -> {
+                ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceFamily);
+                if (SUPPORTED_DISCOVERY_THING_TYPES_UIDS.contains(thingTypeUID)) {
+                    for (Thing thing : getThing().getThings()) {
+                        ThingHandler handler = thing.getHandler();
+                        if (handler != null && ((MyQDeviceHandler) handler).getSerialNumber()
+                                .equalsIgnoreCase(device.serialNumber)) {
+                            ((MyQDeviceHandler) handler).handleDeviceUpdate(device);
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+        devicesCache = currentDevices;
     }
 
     private synchronized ContentResponse sendRequest(String url, HttpMethod method, @Nullable ContentProvider content,
