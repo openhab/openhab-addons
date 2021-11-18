@@ -17,6 +17,8 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 
+import org.openhab.binding.miele.internal.DeviceUtil;
+import org.openhab.binding.miele.internal.MieleTranslationProvider;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -39,13 +41,22 @@ public enum HoodChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            State state = DeviceUtil.getStateTextState(s, dmd, translationProvider);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd, translationProvider);
+        }
+    },
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
     VENTILATION("ventilationPower", "ventilation", DecimalType.class, false),
     LIGHT("lightingStatus", "light", OnOffType.class, false) {
         @Override
 
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
                 return getState("ON");
             }
@@ -96,6 +107,11 @@ public enum HoodChannelSelector implements ApplianceChannelSelector {
     @Override
     public boolean isExtendedState() {
         return false;
+    }
+
+    @Override
+    public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        return this.getState(s, dmd);
     }
 
     @Override

@@ -12,12 +12,20 @@
  */
 package org.openhab.binding.miele.internal;
 
-import java.nio.charset.StandardCharsets;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+
+import com.google.gson.JsonElement;
 
 /**
  * The {@link DeviceUtil} class contains utility methods for extracting
@@ -28,6 +36,13 @@ import org.openhab.core.types.UnDefType;
 public class DeviceUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
     private static final String TEMPERATURE_UNDEFINED = "32768";
+
+    private static final Map<String, String> states = Map.ofEntries(Map.entry("1", "off"), Map.entry("2", "stand-by"),
+            Map.entry("3", "programmed"), Map.entry("4", "waiting-to-start"), Map.entry("5", "running"),
+            Map.entry("6", "paused"), Map.entry("7", "end"), Map.entry("8", "failure"), Map.entry("9", "abort"),
+            Map.entry("10", "idle"), Map.entry("11", "rinse-hold"), Map.entry("12", "service"),
+            Map.entry("13", "super-freezing"), Map.entry("14", "super-cooling"), Map.entry("15", "super-heating"),
+            Map.entry("144", "default"), Map.entry("145", "locked"), Map.entry("255", "not-connected"));
 
     /**
      * Convert byte array to hex representation.
@@ -62,5 +77,46 @@ public class DeviceUtil {
         }
         int temperature = Integer.parseInt(s);
         return new QuantityType<>(temperature, SIUnits.CELSIUS);
+    }
+
+    public static State getStateTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        return getTextState(s, dmd, translationProvider, states, MISSING_STATE_TEXT_PREFIX, "");
+    }
+
+    public static State getTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider,
+            Map<String, String> valueMap, String propertyPrefix, String appliancePrefix) {
+        if ("0".equals(s)) {
+            return UnDefType.UNDEF;
+        }
+
+        String gatewayText = null;
+        if (dmd != null) {
+            if (dmd.LocalizedValue != null && !dmd.LocalizedValue.isEmpty()) {
+                gatewayText = dmd.LocalizedValue;
+            } else {
+                gatewayText = getMieleEnum(s, dmd);
+            }
+        }
+
+        String value = valueMap.get(s);
+        if (value != null) {
+            String key = "miele." + propertyPrefix + appliancePrefix + value;
+            return new StringType(
+                    translationProvider.getText(key, gatewayText != null ? gatewayText : propertyPrefix + s));
+        }
+
+        return new StringType(propertyPrefix + s);
+    }
+
+    public static String getMieleEnum(String s, DeviceMetaData dmd) {
+        if (dmd.MieleEnum != null) {
+            for (Entry<String, JsonElement> enumEntry : dmd.MieleEnum.entrySet()) {
+                if (enumEntry.getValue().getAsString().trim().equals(s.trim())) {
+                    return enumEntry.getKey();
+                }
+            }
+        }
+
+        return null;
     }
 }

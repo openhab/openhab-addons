@@ -38,6 +38,10 @@
 				<label>Password</label>
 				<description>Password for the registered Miele@home user.</description>
 			</parameter>
+			<parameter name="language" type="text" required="false">
+				<label>Language</label>
+				<description>Language for state, program and phase texts. Leave blank for system language.</description>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
