@@ -20,5 +20,5 @@ package org.openhab.binding.myq.internal.dto;
 public class AccountDTO {
     public String id;
     public String name;
-    public String created_by;
+    public String createdBy;
 }

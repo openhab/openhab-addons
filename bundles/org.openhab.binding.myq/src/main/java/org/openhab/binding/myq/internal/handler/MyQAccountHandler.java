@@ -117,8 +117,6 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
 
     private static final Integer RAPID_REFRESH_SECONDS = 5;
     private final Logger logger = LoggerFactory.getLogger(MyQAccountHandler.class);
-    private final Gson gsonUpperCase = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
-            .create();
     private final Gson gsonLowerCase = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     private final OAuthFactory oAuthFactory;
@@ -162,6 +160,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     @Override
     public void dispose() {
         stopPolls();
+        OAuthClientService oAuthService = this.oAuthService;
         if (oAuthService != null) {
             oAuthService.close();
         }
@@ -175,7 +174,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         List<DeviceDTO> localDeviceCaches = devicesCache;
-        if (localDeviceCaches != null && childHandler instanceof MyQDeviceHandler) {
+        if (childHandler instanceof MyQDeviceHandler) {
             MyQDeviceHandler handler = (MyQDeviceHandler) childHandler;
             localDeviceCaches.stream()
                     .filter(d -> ((MyQDeviceHandler) childHandler).getSerialNumber().equalsIgnoreCase(d.serialNumber))
