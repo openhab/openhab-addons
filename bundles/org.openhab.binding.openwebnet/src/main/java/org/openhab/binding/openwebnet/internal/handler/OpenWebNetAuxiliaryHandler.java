@@ -99,7 +99,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
             OpenWebNetBridgeHandler brH = bridgeHandler;
             if (brH != null) {
                 return w.value();
-            }else if (channelId.equals(CHANNEL_SWITCH)){
+            } else if (channelId.equals(CHANNEL_SWITCH)){
                 return w.value();
             }
         }
