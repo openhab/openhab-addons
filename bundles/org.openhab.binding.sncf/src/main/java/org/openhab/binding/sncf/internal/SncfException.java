@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Exception for errors when using the VolvoOnCall API
+ * Exception for errors when using the SNCF API
  *
  * @author Gaël L'hopital - Initial contribution
  */

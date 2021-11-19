@@ -68,8 +68,3 @@ Bridge sncf:api:main "Bridge" [apiID="xxx-yyy-zzz"] {
     station MyHouse "Krakow"[stopPointId="stop_point:SNCF:87561951:Bus"]
 }
 ```
-
-sncf.items:
-
-```
-```

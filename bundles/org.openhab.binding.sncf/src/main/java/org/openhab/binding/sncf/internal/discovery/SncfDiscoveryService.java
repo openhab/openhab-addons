@@ -72,7 +72,7 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
                 searchRange += 500;
                 try {
                     List<PlaceNearby> places = handler.discoverNearby(location, searchRange);
-                    if (places != null && places.size() > 0) {
+                    if (places != null && !places.isEmpty()) {
                         places.forEach(place -> {
                             String placeId = place.id;
                             String thingId = placeId.replace(":", "_").replace("-", "_").replace("stop_point_", "");
@@ -87,7 +87,7 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
                         startScan();
                     }
                 } catch (SncfException e) {
-                    logger.warn("Error calling Sncf Api : {}", e);
+                    logger.warn("Error calling Sncf Api : {}", e.getMessage());
                 }
             } else {
                 logger.info("Please set a system location to enable station discovery");
