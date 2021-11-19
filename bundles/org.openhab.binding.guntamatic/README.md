@@ -5,16 +5,22 @@ The Guntamatic Binding can be used to monitor and control Guntamatic Heating Sys
 ## Supported Things
 
 The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System running Firmware 3.2d.
-It should work for all other Guntamatic Heating Systems as well, that support the same web interface:
+It should work for all other Guntamatic Heating Systems as well, that support the same web interface.
 
-- Biostar (tested via 15kW, firmware 3.2d)
-- Powerchip (untested)
-- Powercorn (untested)
-- Biocom (untested)
-- Pro (untested)
-- Therm (untested)
+## Things
 
-## Thing Configuration
+Guntamatic Heating Systems supported as Thing Types:
+
+| Name          | Thing Type ID | Status                            |
+|---------------|---------------|-----------------------------------|
+| Biostar       | `biostar`     | tested via 15kW, firmware 3.2d    |
+| Powerchip     | `powerchip`   | untested                          |
+| Powercorn     | `powercorn`   | untested                          |
+| Biocom        | `biocom`      | untested                          |
+| Pro           | `pro`         | untested                          |
+| Therm         | `therm`       | untested                          |
+
+### Thing Configuration
 
 | Parameter     | Description                                                               | Default       |
 |---------------|---------------------------------------------------------------------------|---------------|
@@ -22,6 +28,16 @@ It should work for all other Guntamatic Heating Systems as well, that support th
 | Key           | Optional, but required to read protected parameters and to control the Guntamatic Heating System. The key needs to be reqested from Guntamatic support, e.g. via https://www.guntamatic.com/en/contact/                                    |               |
 | Refresh Interval    | Interval the Guntamatic Heating System is polled in seconds         | 60            |
 | Encoding      | Code page used by the Guntamatic Heating System                           | windows-1252  |
+
+### Properties
+
+| Property          | Description                                                   |
+|-------------------|---------------------------------------------------------------|
+| extraWwHeat       | Parameter used by `controlExtraWwHeat` channels               |
+| boilerApproval    | Parameter used by `controlBoilerApproval` channel             |
+| heatCircProgram   | Parameter used by `controlHeatCircProgram` channels           |
+| program           | Parameter used by `controlProgram` channel                    |
+| wwHeat            | Parameter used by `controlWwHeat` channels                    |
 
 ## Channels
 
@@ -157,11 +173,16 @@ Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System 
 |	extraWw2	|	extra-WW. 2	|	Number:Temperature	|	°C	|	🔓 W0	|	R/O	|	false	|
 |	grate	|	grate	|	Number:Dimensionless	|	%	|	🔓 W0	|	R/O	|	false	|
 
-Security Access Levels:
+**Security Access Levels**
 
 - 🔓 W0 ... Open
 - 🔐 W1 ... End Customer Key
 - 🔒 W2 ... Service Partner
+
+**Response of Control Channels**
+
+- `{"ack":"confirmation message"}` ... in case of success
+- `{"err":"error message"}`        ... in case of error
 
 ## Full Example
 
