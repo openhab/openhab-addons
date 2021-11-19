@@ -190,21 +190,21 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     /**
      * Sends a door action to the MyQ API
      *
-     * @param devivce
+     * @param device
      * @param action
      */
-    public void sendDoorAction(DeviceDTO devivce, String action) {
-        sendAction(devivce, action, CMD_DOOR_URL);
+    public void sendDoorAction(DeviceDTO device, String action) {
+        sendAction(device, action, CMD_DOOR_URL);
     }
 
     /**
      * Sends a lamp action to the MyQ API
      *
-     * @param devivce
+     * @param device
      * @param action
      */
-    public void sendLampAction(DeviceDTO devivce, String action) {
-        sendAction(devivce, action, CMD_LAMP_URL);
+    public void sendLampAction(DeviceDTO device, String action) {
+        sendAction(device, action, CMD_LAMP_URL);
     }
 
     private void sendAction(DeviceDTO device, String action, String urlFormat) {
