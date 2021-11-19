@@ -97,7 +97,7 @@
               <resources>
                 <resource>
                   <directory>javascript/dist</directory>
-                  <targetPath>.</targetPath>
+                  <targetPath>node_modules</targetPath>
                 </resource>
               </resources>
             </configuration>

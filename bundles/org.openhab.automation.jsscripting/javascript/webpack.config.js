@@ -40,9 +40,9 @@ module.exports = {
   ],
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'oh.js',
+    filename: '@oh.js',
     library: {
-      name: "oh",
+      name: "@oh",
       type: "umd"
     },
     globalObject: 'this',

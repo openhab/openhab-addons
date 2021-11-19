@@ -6,20 +6,20 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="automation:jsscripting">
 		<parameter name="injectionEnabled" type="boolean" required="true">
-			<label>Inject Helper Variables</label>
-			<description><![CDATA[ Inject variables from the OH scripting library into all rules for common services like items, things, actions, log, etc... <br>
-			Helper libraries can be imported manually using "<i>require(@oh)</i>"
+			<label>Use Built-in Global Variables </label>
+			<description><![CDATA[ Import all variables from the OH scripting library into all rules for common services like items, things, actions, log, etc... <br>
+			If disabled, the OH scriptig library can be imported manually using "<i>require(@oh)</i>"
 			]]></description>
 			<options>
-				<option value="true">Inject Helper Variables</option>
-				<option value="false">Do Not Inject Helper Variables</option>
+				<option value="true">Use Built-in Variables</option>
+				<option value="false">Do Not Use Built-in Variables</option>
 			</options>
 			<default>true</default>
 		</parameter>
 		<parameter name="injectionCode" type="text" required="true">
 			<label>Injection code</label>
 			<description>Injection code used to expose helper variables</description>
-			<default>Object.assign(this, require('@oh')); this.log = require("@oh").log("default");</default>
+			<default>Object.assign(this, require('@oh'));</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
