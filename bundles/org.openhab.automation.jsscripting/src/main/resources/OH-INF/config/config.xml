@@ -8,7 +8,7 @@
 		<parameter name="injectionEnabled" type="boolean" required="true">
 			<label>Use Built-in Global Variables </label>
 			<description><![CDATA[ Import all variables from the OH scripting library into all rules for common services like items, things, actions, log, etc... <br>
-			If disabled, the OH scriptig library can be imported manually using "<i>require(@oh)</i>"
+			If disabled, the OH scripting library can be imported manually using "<i>require(@oh)</i>"
 			]]></description>
 			<options>
 				<option value="true">Use Built-in Variables</option>
