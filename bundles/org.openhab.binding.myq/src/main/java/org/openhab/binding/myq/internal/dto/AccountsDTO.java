@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.myq.internal.dto;
 
+import java.util.List;
+
 /**
- * The {@link AccountInfoDTO} entity from the MyQ API
+ * The {@link AccountsDTO} entity from the MyQ API
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class AccountInfoDTO {
-
-    public String href;
-    public String id;
+public class AccountsDTO {
+    public List<AccountDTO> accounts;
 }
