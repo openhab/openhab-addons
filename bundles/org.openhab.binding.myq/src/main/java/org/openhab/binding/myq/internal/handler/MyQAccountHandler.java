@@ -190,7 +190,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     /**
      * Sends a door action to the MyQ API
      *
-     * @param serialNumber
+     * @param devivce
      * @param action
      */
     public void sendDoorAction(DeviceDTO devivce, String action) {
@@ -200,7 +200,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
     /**
      * Sends a lamp action to the MyQ API
      *
-     * @param serialNumber
+     * @param devivce
      * @param action
      */
     public void sendLampAction(DeviceDTO devivce, String action) {
