@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sncf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="station">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Station</label>
+
+		<channel-groups>
+			<channel-group id="arrivals" typeId="passage">
+				<label>Next Arrival</label>
+			</channel-group>
+			<channel-group id="departures" typeId="passage">
+				<label>Next Departure</label>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>stopPointId</representation-property>
+
+		<config-description>
+			<parameter name="stopPointId" type="text" required="true">
+				<label>Station ID</label>
+				<description>Identifier of the station</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="passage">
+		<label>Other</label>
+		<channels>
+			<channel id="direction" typeId="direction"/>
+			<channel id="code" typeId="code"/>
+			<channel id="commercialMode" typeId="commercialMode"/>
+			<channel id="name" typeId="name"/>
+			<channel id="network" typeId="network"/>
+			<channel id="timestamp" typeId="timestamp">
+				<label>Horodatage</label>
+				<description>Date et heure de l'évènement</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="direction">
+		<item-type>String</item-type>
+		<label>Direction</label>
+		<description>The direction of this route</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="code">
+		<item-type>String</item-type>
+		<label>Code</label>
+		<description>Code name of the line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>Name of the line</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="network">
+		<item-type>String</item-type>
+		<label>Network</label>
+		<description>Name of the network</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="commercialMode">
+		<item-type>String</item-type>
+		<label>Commercial Mode</label>
+		<description>Commercial modes are close from physical modes, but not normalized and can refer to a brand, something
+			that can be specific to a network, and known to the traveler.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Data timestamp</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
