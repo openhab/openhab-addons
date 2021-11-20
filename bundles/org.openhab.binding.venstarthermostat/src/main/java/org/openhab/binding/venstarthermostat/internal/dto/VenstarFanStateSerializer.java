@@ -20,12 +20,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link VenstarSystemModeSerializer} parses system mode values
+ * The {@link VenstarFanStateSerializer} parses system mode values
  * from the REST API JSON.
  *
  * @author Matthew Davies - Initial contribution
  */
-
 public class VenstarFanStateSerializer implements JsonDeserializer<VenstarFanState> {
     @Override
     public VenstarFanState deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)

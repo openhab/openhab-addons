@@ -187,44 +187,61 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
                 setCoolingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_SYSTEM_MODE)) {
                 VenstarSystemMode value;
-                if (command instanceof StringType) {
-                    value = VenstarSystemMode.valueOf(((StringType) command).toString().toUpperCase());
-                } else {
-                    value = VenstarSystemMode.fromInt(((DecimalType) command).intValue());
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarSystemMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarSystemMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting system mode to  {}", value);
+                    setSystemMode(value);
+                    updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid System Mode");
                 }
-                log.debug("Setting system mode to  {}", value);
-                setSystemMode(value);
-                updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new StringType(value.toString()));
             } else if (channelUID.getId().equals(CHANNEL_AWAY_MODE)) {
                 VenstarAwayMode value;
-                if (command instanceof StringType) {
-                    value = VenstarAwayMode.valueOf(((StringType) command).toString().toUpperCase());
-                } else {
-                    value = VenstarAwayMode.fromInt(((DecimalType) command).intValue());
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarAwayMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarAwayMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting away mode to  {}", value);
+                    setAwayMode(value);
+                    updateIfChanged(CHANNEL_AWAY_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid Away Mode");
                 }
-                log.debug("Setting away mode to  {}", value);
-                setAwayMode(value);
-                updateIfChanged(CHANNEL_AWAY_MODE_RAW, new StringType(value.toString()));
+
             } else if (channelUID.getId().equals(CHANNEL_FAN_MODE)) {
                 VenstarFanMode value;
-                if (command instanceof StringType) {
-                    value = VenstarFanMode.valueOf(((StringType) command).toString().toUpperCase());
-                } else {
-                    value = VenstarFanMode.fromInt(((DecimalType) command).intValue());
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarFanMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarFanMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting fan mode to  {}", value);
+                    setFanMode(value);
+                    updateIfChanged(CHANNEL_FAN_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid Fan Mode");
                 }
-                log.debug("Setting fan mode to  {}", value);
-                setFanMode(value);
-                updateIfChanged(CHANNEL_FAN_MODE_RAW, new StringType(value.toString()));
             } else if (channelUID.getId().equals(CHANNEL_SCHEDULE_MODE)) {
                 VenstarScheduleMode value;
-                if (command instanceof StringType) {
-                    value = VenstarScheduleMode.valueOf(((StringType) command).toString().toUpperCase());
-                } else {
-                    value = VenstarScheduleMode.fromInt(((DecimalType) command).intValue());
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarScheduleMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarScheduleMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting schedule mode to  {}", value);
+                    setScheduleMode(value);
+                    updateIfChanged(CHANNEL_SCHEDULE_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid Schedule Mode");
                 }
-                log.debug("Setting schedule mode to  {}", value);
-                setScheduleMode(value);
-                updateIfChanged(CHANNEL_SCHEDULE_MODE_RAW, new StringType(value.toString()));
             }
 
             startUpdatesTask(UPDATE_AFTER_COMMAND_SECONDS);

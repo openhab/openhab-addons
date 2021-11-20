@@ -20,7 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link VenstarSystemModeSerializer} parses system mode values
+ * The {@link VenstarScheduleModeSerializer} parses schedule mode values
  * from the REST API JSON.
  *
  * @author Matthew Davies - Initial contribution

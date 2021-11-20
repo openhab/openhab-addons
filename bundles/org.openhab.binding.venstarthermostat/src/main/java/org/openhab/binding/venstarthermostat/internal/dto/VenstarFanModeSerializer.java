@@ -25,6 +25,7 @@ import com.google.gson.JsonParseException;
  *
  * @author Matthew Davies - Initial contribution
  */
+
 public class VenstarFanModeSerializer implements JsonDeserializer<VenstarFanMode> {
     @Override
     public VenstarFanMode deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)

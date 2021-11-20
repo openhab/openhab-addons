@@ -14,16 +14,20 @@ package org.openhab.binding.venstarthermostat.internal.dto;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link VenstarSensorData} represents sensor data returned from the REST API.
+ * The {@link VenstarRunTimeData} represents the list of runtimes returned from the REST API.
  *
  * @author Matthew Davies - Initial contribution
  */
+@NonNullByDefault
 public class VenstarRuntimeData {
-    List<VenstarRuntime> runtimes;
+    private List<VenstarRuntime> runtimes;
 
     public VenstarRuntimeData() {
         super();
+        runtimes = List.of();
     }
 
     public VenstarRuntimeData(List<VenstarRuntime> runtimes) {

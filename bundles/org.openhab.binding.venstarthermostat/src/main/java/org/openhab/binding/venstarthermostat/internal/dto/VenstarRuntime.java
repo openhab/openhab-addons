@@ -12,20 +12,23 @@
  */
 package org.openhab.binding.venstarthermostat.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link VenstarSensor} represents a sensor returned from the REST API.
+ * The {@link VenstarRunTime} represents one Runtime from the RuntimeData returned from the REST API
  *
  * @author Matthew Davies - Initial contribution
  */
+@NonNullByDefault
 public class VenstarRuntime {
-    long ts;
-    int heat1;
-    int heat2;
-    int cool1;
-    int cool2;
-    int aux1;
-    int aux2;
-    int fc;
+    private long ts;
+    private int heat1;
+    private int heat2;
+    private int cool1;
+    private int cool2;
+    private int aux1;
+    private int aux2;
+    private int fc;
 
     public long getTimeStamp() {
         return ts;

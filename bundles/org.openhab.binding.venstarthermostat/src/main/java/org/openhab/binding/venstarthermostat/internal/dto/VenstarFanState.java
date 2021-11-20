@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.venstarthermostat.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VenstarFanState} represents the state of the fan returned
  * from the REST API.
  *
  * @author Matthew Davies - Initial contribution
  */
+@NonNullByDefault
 public enum VenstarFanState {
     OFF(0, "off", "Off"),
     ON(1, "on", "On");
@@ -44,7 +47,7 @@ public enum VenstarFanState {
         return friendlyName;
     }
 
-    public static VenstarFanState fromInt(int state) {
+    public static VenstarFanState fromInt(int state) throws IllegalArgumentException {
         for (VenstarFanState fs : values()) {
             if (fs.state == state) {
                 return fs;

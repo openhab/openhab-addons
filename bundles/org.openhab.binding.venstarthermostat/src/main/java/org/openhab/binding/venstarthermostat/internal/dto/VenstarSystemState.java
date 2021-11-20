@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.venstarthermostat.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VenstarSystemState} represents the value of the system state
  * returneda from the REST API.
  *
  * @author William Welliver - Initial contribution
  */
+@NonNullByDefault
 public enum VenstarSystemState {
     IDLE(0, "idle", "Idle"),
     HEATING(1, "heating", "Heating"),
@@ -47,7 +50,7 @@ public enum VenstarSystemState {
         return friendlyName;
     }
 
-    public static VenstarSystemState fromInt(int state) {
+    public static VenstarSystemState fromInt(int state) throws IllegalArgumentException {
         for (VenstarSystemState ss : values()) {
             if (ss.state == state) {
                 return ss;

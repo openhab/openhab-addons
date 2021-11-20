@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.venstarthermostat.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VenstarSystemMode} represents the value of the system mode returned
  * from the REST API.
  *
  * @author William Welliver - Initial contribution
  */
+@NonNullByDefault
 public enum VenstarSystemMode {
     OFF(0, "off", "Off"),
     HEAT(1, "heat", "Heat"),
@@ -46,7 +49,7 @@ public enum VenstarSystemMode {
         return friendlyName;
     }
 
-    public static VenstarSystemMode fromInt(int mode) {
+    public static VenstarSystemMode fromInt(int mode) throws IllegalArgumentException {
         for (VenstarSystemMode sm : values()) {
             if (sm.mode == mode) {
                 return sm;

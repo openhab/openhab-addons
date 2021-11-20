@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.venstarthermostat.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * The {@link VenstarSystemMode} represents the value of the system mode returned
+ * The {@link VenstarSchedulePart} represents the schedule part (part of day) returned
  * from the REST API.
  *
  * @author Matthew Davies - Initial contribution
  */
+@NonNullByDefault
 public enum VenstarSchedulePart {
     MORNING(0, "morning", "Morning"),
     DAY(1, "day", "Day"),
@@ -47,7 +50,7 @@ public enum VenstarSchedulePart {
         return friendlyName;
     }
 
-    public static VenstarSchedulePart fromInt(int part) {
+    public static VenstarSchedulePart fromInt(int part) throws IllegalArgumentException {
         for (VenstarSchedulePart sp : values()) {
             if (sp.part == part) {
                 return sp;

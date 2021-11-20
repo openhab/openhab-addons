@@ -57,6 +57,12 @@
 			<channel id="cool1RuntimeDay5" typeId="cool1Runtime"/>
 			<channel id="cool1RuntimeDay6" typeId="cool1Runtime"/>
 			<channel id="cool2RuntimeDay0" typeId="cool2Runtime"/>
+			<channel id="cool2RuntimeDay1" typeId="cool2Runtime"/>
+			<channel id="cool2RuntimeDay2" typeId="cool2Runtime"/>
+			<channel id="cool2RuntimeDay3" typeId="cool2Runtime"/>
+			<channel id="cool2RuntimeDay4" typeId="cool2Runtime"/>
+			<channel id="cool2RuntimeDay5" typeId="cool2Runtime"/>
+			<channel id="cool2RuntimeDay6" typeId="cool2Runtime"/>
 			<channel id="aux1RuntimeDay0" typeId="aux1Runtime"/>
 			<channel id="aux1RuntimeDay1" typeId="aux1Runtime"/>
 			<channel id="aux1RuntimeDay2" typeId="aux1Runtime"/>
@@ -233,52 +239,52 @@
 	</channel-type>
 
 	<channel-type id="heat1Runtime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Heat1 Runtime Minutes</label>
 		<description>Run time in heat1 mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>
-		<state readOnly="true" pattern="%d mins"/>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="heat2Runtime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Heat2 Runtime Minutes</label>
 		<description>Run time in heat2 mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>
-		<state readOnly="true" pattern="%d mins"/>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="cool1Runtime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Cool1 Runtime Minutes</label>
 		<description>Run time in cool1 mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>
-		<state readOnly="true" pattern="%d mins"/>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="cool2Runtime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Cool2 Runtime Minutes</label>
 		<description>Run time in cool2 mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>
-		<state readOnly="true" pattern="%d mins"/>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="aux1Runtime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Aux1 Runtime Minutes</label>
 		<description>Run time in aux1 mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>
-		<state readOnly="true" pattern="%d mins"/>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="aux2Runtime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Aux2 Runtime Minutes</label>
 		<description>Run time in aux2 mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>
-		<state readOnly="true" pattern="%d mins"/>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="freeCoolRuntime" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Free Cool Runtime Minutes</label>
 		<description>Run time in Free Cool mode in minutes (Day 0 = TODAY, Day 6 = 6 days ago)</description>
-		<state readOnly="true" pattern="%d mins"/>
+		<state readOnly="true" pattern="%d min"/>
 	</channel-type>
 
 	<channel-type id="systemState">
