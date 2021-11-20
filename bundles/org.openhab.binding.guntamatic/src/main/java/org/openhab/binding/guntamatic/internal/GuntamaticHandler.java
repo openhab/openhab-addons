@@ -51,12 +51,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
-//import java.util.ArrayList;
-//import org.openhab.core.thing.type.ChannelTypeBuilder;
-//import java.util.List;
-//import org.openhab.core.thing.type.ChannelTypeUID;
-//import java.io.UnsupportedEncodingException;
-
 /**
  * The {@link GuntamaticHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -145,13 +139,11 @@ public class GuntamaticHandler extends BaseThingHandler {
                 String value = daqdata[i].trim();
                 Channel chn = thing.getChannel(channel);
                 if ((chn != null) && ("Switch".equals(chn.getAcceptedItemType()))) {
-                    // Guntamatic uses German OnOff when configured to German, and English OnOff for all other languages
+                    // Guntamatic uses German OnOff when configured to German and English OnOff for all other languages
                     value = value.replace("AUS", "OFF").replace("EIN", "ON");
                 }
                 State newState = new StringType(value + unit);
                 updateState(channel, newState);
-                // if ("CLS".equals(value))
-                // logger.warn("Supported Channel: Name: {}, Data: {}, Unit: {}", channel, value, unit);
             } else {
                 logger.warn("Data for not intialized ChannelId '{}' received", i);
             }
@@ -161,7 +153,7 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     private void parseAndJsonInit(String html) {
         try {
-            // remove non JSON compliant empty element ",,"
+            // remove non JSON compliant, empty element ",,"
             JsonArray json = JsonParser.parseString(html.replace(",,", ",")).getAsJsonArray();
             for (int i = 1; i < json.size(); i++) {
                 JsonObject points = json.get(i).getAsJsonObject();
@@ -190,8 +182,11 @@ public class GuntamaticHandler extends BaseThingHandler {
 
         for (int i = 0; i < daqdesc.length; i++) {
             String[] param = daqdesc[i].split(";");
-            if (!"reserved".equals(param[0])) {
-                String channel = toLowerCamelCase(param[0]);
+            String label = param[0].replace("C02", "CO2");
+
+            if (!"reserved".equals(label)) {
+                String channel = toLowerCamelCase(replaceUmlaut(label));
+                label = label.substring(0, 1).toUpperCase() + label.substring(1);
 
                 String unit;
                 if ((param.length == 1) || (param[1].isEmpty())) {
@@ -243,21 +238,21 @@ public class GuntamaticHandler extends BaseThingHandler {
 
                     ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channel);
                     guntamaticChannelTypeProvider.addChannelType(channelTypeUID, channel, itemType,
-                            "Guntamatic " + param[0], false, pattern);
+                            "Guntamatic " + label, false, pattern);
                     Channel newChannel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channel), itemType)
-                            .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(param[0]).build();
+                            .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
                     channelList.add(newChannel);
                     channels.put(i, channel);
                     units.put(i, unit);
+
+                    logger.debug(
+                            "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
+                            String.format("%03d", i), label, channel, type, itemType, unit, pattern);
+
                     /*
-                     * logger.warn(
-                     * "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Pattern '{}', Unit: '{}'",
-                     * String.format("%03d", i), param[0], channel, type, itemType, pattern, unit);
+                     * logger.debug("Supported Channel: Idx: {}, Name: {}, Type: {}", String.format("%03d", i), channel,
+                     * itemType);
                      */
-                    logger.debug("Supported Channel: Idx: {}, Name: {}, Type: {}", String.format("%03d", i), channel,
-                            itemType);
-                    // thingBuilder.withoutChannel(newChannel.getUID());
-                    // thingBuilder.withChannel(newChannel);
                 }
             }
         }
@@ -307,7 +302,7 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     private String toLowerCamelCase(String string) {
         char delimiter = ' ';
-        string = string.replace("´", "").replace("C02", "CO2").replaceAll("[^\\w]", String.valueOf(delimiter));
+        string = string.replace("´", "").replaceAll("[^\\w]", String.valueOf(delimiter));
 
         StringBuilder builder = new StringBuilder();
         boolean nextCharLow = true;
@@ -352,7 +347,6 @@ public class GuntamaticHandler extends BaseThingHandler {
                     }
                     try {
                         String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
-                        response = replaceUmlaut(response);
                         if (url == DAQEXTDESC_URL) {
                             parseAndJsonInit(response);
                         } else if (url == DAQDATA_URL) {
