@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.miele.internal;
 
+import java.util.Map.Entry;
+
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -26,4 +29,18 @@ public class DeviceMetaData {
     public String LocalizedValue;
     public JsonObject MieleEnum;
     public String access;
+
+    public String getMieleEnum(String s) {
+        if (this.MieleEnum == null) {
+            return null;
+        }
+
+        for (Entry<String, JsonElement> enumEntry : this.MieleEnum.entrySet()) {
+            if (enumEntry.getValue().getAsString().trim().equals(s.trim())) {
+                return enumEntry.getKey();
+            }
+        }
+
+        return null;
+    }
 }

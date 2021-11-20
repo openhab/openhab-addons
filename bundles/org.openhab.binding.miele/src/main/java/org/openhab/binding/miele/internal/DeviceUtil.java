@@ -16,15 +16,12 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-
-import com.google.gson.JsonElement;
 
 /**
  * The {@link DeviceUtil} class contains utility methods for extracting
@@ -93,7 +90,7 @@ public class DeviceUtil {
             if (dmd.LocalizedValue != null && !dmd.LocalizedValue.isEmpty()) {
                 gatewayText = dmd.LocalizedValue;
             } else {
-                gatewayText = getMieleEnum(s, dmd);
+                gatewayText = dmd.getMieleEnum(s);
             }
         }
 
@@ -109,17 +106,5 @@ public class DeviceUtil {
         }
 
         return new StringType(propertyPrefix + s);
-    }
-
-    public static String getMieleEnum(String s, DeviceMetaData dmd) {
-        if (dmd.MieleEnum != null) {
-            for (Entry<String, JsonElement> enumEntry : dmd.MieleEnum.entrySet()) {
-                if (enumEntry.getValue().getAsString().trim().equals(s.trim())) {
-                    return enumEntry.getKey();
-                }
-            }
-        }
-
-        return null;
     }
 }

@@ -17,7 +17,6 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.openhab.binding.miele.internal.DeviceMetaData;
 import org.openhab.binding.miele.internal.DeviceUtil;
@@ -31,8 +30,6 @@ import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonElement;
 
 /**
  * The {@link ApplianceChannelSelector} for coffee machines
@@ -149,7 +146,7 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
     @Override
     public State getState(String s, DeviceMetaData dmd) {
         if (dmd != null) {
-            String localizedValue = getMieleEnum(s, dmd);
+            String localizedValue = dmd.getMieleEnum(s);
             if (localizedValue == null) {
                 localizedValue = dmd.LocalizedValue;
             }
@@ -172,18 +169,6 @@ public enum CoffeeMachineChannelSelector implements ApplianceChannelSelector {
             }
         } catch (Exception e) {
             logger.error("An exception occurred while converting '{}' into a State", s);
-        }
-
-        return null;
-    }
-
-    public String getMieleEnum(String s, DeviceMetaData dmd) {
-        if (dmd.MieleEnum != null) {
-            for (Entry<String, JsonElement> enumEntry : dmd.MieleEnum.entrySet()) {
-                if (enumEntry.getValue().getAsString().trim().equals(s.trim())) {
-                    return enumEntry.getKey();
-                }
-            }
         }
 
         return null;
