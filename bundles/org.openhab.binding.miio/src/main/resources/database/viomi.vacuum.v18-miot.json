@@ -12,7 +12,6 @@
 				"channel": "vacuumaction",
 				"type": "String",
 				"stateDescription": {
-					"readOnly": true,
 					"options": [
 						{
 							"value": "start-sweep",

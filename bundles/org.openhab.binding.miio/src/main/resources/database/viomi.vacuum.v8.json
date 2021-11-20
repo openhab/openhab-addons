@@ -10,8 +10,23 @@
 				"property": "",
 				"friendlyName": "Vacuum Action",
 				"channel": "vacuumaction",
-				"channelType": "vacuumaction",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Start"
+						},
+						{
+							"value": "0",
+							"label": "Stop"
+						},
+						{
+							"value": "2",
+							"label": "Pause"
+						}
+					]
+				},
 				"refresh": false,
 				"actions": [
 					{
@@ -23,13 +38,13 @@
 							0
 						]
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Start\",\"0\"\u003d\"Stop\",\"2\"\u003d\"Pause\"]`"
 			},
 			{
 				"property": "run_state",
 				"friendlyName": "State",
 				"channel": "state",
-				"channelType": "state",
 				"type": "Number",
 				"refresh": true,
 				"actions": []
@@ -38,7 +53,6 @@
 				"property": "mode",
 				"friendlyName": "Mode",
 				"channel": "mode",
-				"channelType": "mode",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
