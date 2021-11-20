@@ -811,7 +811,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| airFreshMode         | String               | Mode                                     |            |
+| airFreshMode         | String               | Mode                                     | Value mapping `["auto"="Auto","sleep"="Sleep","favourite"="Favorite"]` |
 | airFreshPTCPower     | Switch               | PTC                                      |            |
 | airFreshPTCStatus    | Switch               | PTC Status                               |            |
 | airFreshDisplay      | Switch               | Display                                  |            |
@@ -831,11 +831,11 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | power                | Switch               | Power                                    |            |
-| airFreshMode         | String               | Mode                                     |            |
+| airFreshMode         | String               | Mode                                     | Value mapping `["auto"="Auto","sleep"="Sleep","favourite"="Favorite"]` |
 | airFreshPTCPower     | Switch               | PTC                                      |            |
-| airFreshPtcLevel     | String               | PTC Level                                |            |
+| airFreshPtcLevel     | String               | PTC Level                                | Value mapping `["low"="Low","medium"="Medium","high"="High"]` |
 | airFreshPTCStatus    | Switch               | PTC Status                               |            |
-| airFreshDisplayDirection | String               | Screen direction                         |            |
+| airFreshDisplayDirection | String               | Screen direction                         | Value mapping `["forward"="Normal","left"="Left","right"="Right"]` |
 | airFreshDisplay      | Switch               | Display                                  |            |
 | airFreshChildLock    | Switch               | Child Lock                               |            |
 | airFreshSound        | Switch               | Sound                                    |            |
@@ -1427,14 +1427,16 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
 | fault                | Number               | Curtain - Device Fault                   | Value mapping `["0"="No faults"]` |
-| current-position     | Number               | Curtain - Current Position               |            |
+| motor_control        | Number               | Curtain - Motor Control                  | Value mapping `["0"="Pause","1"="Open","2"="Close","3"="auto"]` |
+| current-position     | Number:Dimensionless | Curtain - Current Position               |            |
 | status               | Number               | Curtain - Status                         | Value mapping `["0"="Stopped","1"="Opening","2"="Closing"]` |
-| target-position      | Number               | Curtain - Target Position                |            |
+| target-position      | Number:Dimensionless | Curtain - Target Position                |            |
 | manual-enabled       | Number               | curtain_cfg - Manual Enabled             | Value mapping `["0"="Disable","1"="Enable"]` |
-| polarity             | Number               | curtain_cfg - Polarity                   | Value mapping `["0"="Positive","1"="Reverse"]` |
+| polarity             | Number               | Curtain_cfg - Polarity                   | Value mapping `["0"="Positive","1"="Reverse"]` |
 | pos-limit            | Number               | curtain_cfg - Position Limit             | Value mapping `["0"="Unlimit","1"="Limit"]` |
-| en-night-tip-light   | Switch               | Set Night Tip Light                      | Value mapping `["0"="Disable","1"="Enable"]` |
-| run-time             | Number               | curtain_cfg - Run-time                   |            |
+| en_night_tip_light   | Number               | Curtain_cfg - En_night_tip_light         | Value mapping `["0"="Disable","1"="Enable"]` |
+| run-time             | Number               | Curtain_cfg - Run-time                   |            |
+| adjust_value         | Number               | Motor_controller - Adjust_value          |            |
 
 ### Mi Air Purifier virtual (<a name="lumi-gateway-mgl03">lumi.gateway.mgl03</a>) Channels
 
@@ -1772,6 +1774,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Philips ZhiRui Downlight (<a name="philips-light-downlight">philips.light.downlight</a>) Channels
 
@@ -1875,6 +1878,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Zhirui Ceiling Lamp Nordic 40W (<a name="philips-light-mceilm">philips.light.mceilm</a>) Channels
 
@@ -1890,6 +1894,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Zhirui Ceiling Lamp Nordic 28W (<a name="philips-light-mceils">philips.light.mceils</a>) Channels
 
@@ -1905,6 +1910,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Philips Smart Lamp (<a name="philips-light-mono1">philips.light.mono1</a>) Channels
 
@@ -1941,6 +1947,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ###  Zhirui Ceiling Lamp Black 40W (<a name="philips-light-obceim">philips.light.obceim</a>) Channels
 
@@ -1956,6 +1963,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Zhirui Ceiling Lamp Black 28W (<a name="philips-light-obceis">philips.light.obceis</a>) Channels
 
@@ -1971,6 +1979,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Mijia Philips Study Desk Lamp (<a name="philips-light-rwread">philips.light.rwread</a>) Channels
 
@@ -1996,6 +2005,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Zhirui Ceiling Lamp Starry 40W (<a name="philips-light-sceilm">philips.light.sceilm</a>) Channels
 
@@ -2011,6 +2021,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Zhirui Ceiling Lamp Starry 28W (<a name="philips-light-sceils">philips.light.sceils</a>) Channels
 
@@ -2026,6 +2037,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Philips EyeCare Connected Desk Lamp gen2. (<a name="philips-light-sread1">philips.light.sread1</a>) Channels
 
@@ -2077,6 +2089,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Zhirui Ceiling Lamp Gorgeous 40W (<a name="philips-light-xzceim">philips.light.xzceim</a>) Channels
 
@@ -2092,6 +2105,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Zhirui Ceiling Lamp Gorgeous 28W (<a name="philips-light-xzceis">philips.light.xzceis</a>) Channels
 
@@ -2107,6 +2121,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | autoCct              | String               | Auto CCT                                 |            |
 | dimmingPeriod        | Number               | Dimming Period                           |            |
 | MibandStatus         | String               | Mi Band Status                           |            |
+| actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
 ### Philips ZhiYi Ceiling lamp (<a name="philips-light-zyceiling">philips.light.zyceiling</a>) Channels
 
@@ -2209,7 +2224,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
 | state                | Number               | State                                    |            |
 | mode                 | Number               | Mode                                     |            |
 | err_state            | Number               | Error                                    |            |
@@ -2229,7 +2244,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
 | state                | Number               | State                                    |            |
 | mode                 | Number               | Mode                                     |            |
 | err_state            | Number               | Error                                    |            |
@@ -2249,7 +2264,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
 | state                | Number               | State                                    |            |
 | mode                 | Number               | Mode                                     |            |
 | err_state            | Number               | Error                                    |            |
@@ -4976,7 +4991,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | speedLevel           | Number               | Speed Level                              |            |
 | speed                | Number               | Speed                                    |            |
 | naturalLevel         | Number               | Natural Level                            |            |
-| move                 | String               | Move Direction                           |            |
+| move                 | String               | Move Direction                           | Value mapping `[""="None","left"="Left","right"="Right"]` |
 
 ### Smartmi Standing Fan 2S (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
 
@@ -4993,7 +5008,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | speedLevel           | Number               | Speed Level                              |            |
 | speed                | Number               | Speed                                    |            |
 | naturalLevel         | Number               | Natural Level                            |            |
-| move                 | String               | Move Direction                           |            |
+| move                 | String               | Move Direction                           | Value mapping `[""="None","left"="Left","right"="Right"]` |
 
 ### Smartmi Standing Fan 3  (<a name="zhimi-fan-za5">zhimi.fan.za5</a>) Channels
 
@@ -6320,14 +6335,16 @@ note: Autogenerated example. Replace the id (curtain) in the channel with your o
 ```
 Group G_curtain "Xiaomiyoupin Curtain Controller (Wi-Fi)" <status>
 Number fault "Curtain - Device Fault" (G_curtain) {channel="miio:basic:curtain:fault"}
-Number current_position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
+Number motor_control "Curtain - Motor Control" (G_curtain) {channel="miio:basic:curtain:motor_control"}
+Number:Dimensionless current_position "Curtain - Current Position" (G_curtain) {channel="miio:basic:curtain:current-position"}
 Number status "Curtain - Status" (G_curtain) {channel="miio:basic:curtain:status"}
-Number target_position "Curtain - Target Position" (G_curtain) {channel="miio:basic:curtain:target-position"}
+Number:Dimensionless target_position "Curtain - Target Position" (G_curtain) {channel="miio:basic:curtain:target-position"}
 Number manual_enabled "curtain_cfg - Manual Enabled" (G_curtain) {channel="miio:basic:curtain:manual-enabled"}
-Number polarity "curtain_cfg - Polarity" (G_curtain) {channel="miio:basic:curtain:polarity"}
+Number polarity "Curtain_cfg - Polarity" (G_curtain) {channel="miio:basic:curtain:polarity"}
 Number pos_limit "curtain_cfg - Position Limit" (G_curtain) {channel="miio:basic:curtain:pos-limit"}
-Switch en_night_tip_light "Set Night Tip Light" (G_curtain) {channel="miio:basic:curtain:en-night-tip-light"}
-Number run_time "curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
+Number en_night_tip_light "Curtain_cfg - En_night_tip_light" (G_curtain) {channel="miio:basic:curtain:en_night_tip_light"}
+Number run_time "Curtain_cfg - Run-time" (G_curtain) {channel="miio:basic:curtain:run-time"}
+Number adjust_value "Motor_controller - Adjust_value" (G_curtain) {channel="miio:basic:curtain:adjust_value"}
 ```
 
 ### Mi Air Purifier virtual (lumi.gateway.mgl03) item file lines
@@ -6737,6 +6754,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips ZhiRui Downlight (philips.light.downlight) item file lines
@@ -6861,6 +6879,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Nordic 40W (philips.light.mceilm) item file lines
@@ -6879,6 +6898,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Nordic 28W (philips.light.mceils) item file lines
@@ -6897,6 +6917,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips Smart Lamp (philips.light.mono1) item file lines
@@ -6942,6 +6963,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ###  Zhirui Ceiling Lamp Black 40W (philips.light.obceim) item file lines
@@ -6960,6 +6982,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Black 28W (philips.light.obceis) item file lines
@@ -6978,6 +7001,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Mijia Philips Study Desk Lamp (philips.light.rwread) item file lines
@@ -7009,6 +7033,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Starry 40W (philips.light.sceilm) item file lines
@@ -7027,6 +7052,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Starry 28W (philips.light.sceils) item file lines
@@ -7045,6 +7071,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips EyeCare Connected Desk Lamp gen2. (philips.light.sread1) item file lines
@@ -7108,6 +7135,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Gorgeous 40W (philips.light.xzceim) item file lines
@@ -7126,6 +7154,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Zhirui Ceiling Lamp Gorgeous 28W (philips.light.xzceis) item file lines
@@ -7144,6 +7173,7 @@ String WallScene "Wall Scene" (G_light) {channel="miio:basic:light:WallScene"}
 String autoCct "Auto CCT" (G_light) {channel="miio:basic:light:autoCct"}
 Number dimmingPeriod "Dimming Period" (G_light) {channel="miio:basic:light:dimmingPeriod"}
 String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:MibandStatus"}
+String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
 ### Philips ZhiYi Ceiling lamp (philips.light.zyceiling) item file lines
