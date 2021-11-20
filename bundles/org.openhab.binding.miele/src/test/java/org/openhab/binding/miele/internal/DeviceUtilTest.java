@@ -77,12 +77,12 @@ public class DeviceUtilTest extends JavaTest {
 
     @Test
     public void getStateTextStateGatewayTextIsReturnedWhenKeyIsUnknown() {
-        assertEquals("Running", this.getStateTextState("-1", "Running", "miele.state.running", "I brug"));
+        assertEquals("Running", this.getStateTextState("-1", "Running", "key.unknown", "I brug"));
     }
 
     @Test
     public void getStateTextStateKeyIsReturnedWhenUnknownByGatewayAndProvider() {
-        assertEquals("state.99", this.getStateTextState("99", null, "miele.state.running", "I brug"));
+        assertEquals("state.99", this.getStateTextState("99", null, "key.unknown", "I brug"));
     }
 
     private String getStateTextState(String value, String localizedValue, String mockedKey, String mockedValue) {

@@ -32,6 +32,7 @@ import org.openhab.core.types.UnDefType;
 public class DeviceUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
     private static final String TEMPERATURE_UNDEFINED = "32768";
+    private static final String TEXT_PREFIX = "miele.";
 
     private static final Map<String, String> states = Map.ofEntries(Map.entry("1", "off"), Map.entry("2", "stand-by"),
             Map.entry("3", "programmed"), Map.entry("4", "waiting-to-start"), Map.entry("5", "running"),
@@ -75,10 +76,26 @@ public class DeviceUtil {
         return new QuantityType<>(temperature, SIUnits.CELSIUS);
     }
 
+    /**
+     * Get state text for provided string taking into consideration {@link DeviceMetaData}
+     * as well as built-in/translated strings.
+     */
     public static State getStateTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
         return getTextState(s, dmd, translationProvider, states, MISSING_STATE_TEXT_PREFIX, "");
     }
 
+    /**
+     * Get text for provided string taking into consideration {@link DeviceMetaData}
+     * as well as built-in/translated strings.
+     * 
+     * @param s Raw string to be processed
+     * @param dmd {@link DeviceMetaData} possibly containing LocalizedValue and/or enum from gateway
+     * @param translationProvider {@link MieleTranslationProvider} for localization support
+     * @param valueMap Map of numeric values with corresponding text keys
+     * @param propertyPrefix Property prefix appended to text key (including dot)
+     * @param appliancePrefix Appliance prefix appended to text key (including dot)
+     * @return Text string as State
+     */
     public static State getTextState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider,
             Map<String, String> valueMap, String propertyPrefix, String appliancePrefix) {
         if ("0".equals(s)) {
@@ -96,7 +113,7 @@ public class DeviceUtil {
 
         String value = valueMap.get(s);
         if (value != null) {
-            String key = "miele." + propertyPrefix + appliancePrefix + value;
+            String key = TEXT_PREFIX + propertyPrefix + appliancePrefix + value;
             return new StringType(
                     translationProvider.getText(key, gatewayText != null ? gatewayText : propertyPrefix + s));
         }
