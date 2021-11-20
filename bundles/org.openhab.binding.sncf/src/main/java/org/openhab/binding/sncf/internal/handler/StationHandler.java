@@ -130,7 +130,7 @@ public class StationHandler extends BaseThingHandler {
         SncfBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             try {
-                bridgeHandler.getNextPassage(stationId, GROUP_DEPARTURE).ifPresent(departure -> {
+                bridgeHandler.getNextPassage(stationId, GROUP_DEPARTURE).ifPresentOrElse(departure -> {
                     getThing().getChannels().stream().map(Channel::getUID).filter(
                             channelUID -> isLinked(channelUID) && GROUP_DEPARTURE.equals(channelUID.getGroupId()))
                             .forEach(channelUID -> {
@@ -138,8 +138,11 @@ public class StationHandler extends BaseThingHandler {
                                 updateState(channelUID, state);
                             });
                     scheduleRefresh(fromDTO(departure.stopDateTime.departureDateTime));
+                }, () -> {
+                    logger.debug("No {} available", GROUP_DEPARTURE);
+                    scheduleRefresh(ZonedDateTime.now().plusMinutes(5));
                 });
-                bridgeHandler.getNextPassage(stationId, GROUP_ARRIVAL).ifPresent(arrival -> {
+                bridgeHandler.getNextPassage(stationId, GROUP_ARRIVAL).ifPresentOrElse(arrival -> {
                     getThing().getChannels().stream().map(Channel::getUID)
                             .filter(channelUID -> isLinked(channelUID) && GROUP_ARRIVAL.equals(channelUID.getGroupId()))
                             .forEach(channelUID -> {
@@ -147,6 +150,9 @@ public class StationHandler extends BaseThingHandler {
                                 updateState(channelUID, state);
                             });
                     scheduleRefresh(fromDTO(arrival.stopDateTime.arrivalDateTime));
+                }, () -> {
+                    logger.debug("No {} available", GROUP_ARRIVAL);
+                    scheduleRefresh(ZonedDateTime.now().plusMinutes(5));
                 });
                 updateStatus(ThingStatus.ONLINE);
             } catch (SncfException e) {

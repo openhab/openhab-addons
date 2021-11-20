@@ -13,6 +13,7 @@
 package org.openhab.binding.sncf.internal.dto;
 
 /**
+ * The {@link StopPoint} class holds informations for a train station
  *
  * @author Gaël L'hopital - Initial contribution
  */

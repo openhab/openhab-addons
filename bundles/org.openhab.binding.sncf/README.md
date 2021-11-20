@@ -3,24 +3,27 @@
 The SNCF binding provides real-time data for each train, bus, tramway... station in France.
 This is based on live API provided by DIGITALSNCF.
 
-Get you API key at https://www.digital.sncf.com/startup/api/token-developpeur
+Get your API key on [DIGITALSNCF web site](https://www.digital.sncf.com/startup/api/token-developpeur)
 
-Note : SNCF Api is based on the open [API Navitia](https://doc.navitia.io/#getting-started). This binding uses a very small subset of it, restricted to its primary purpose.
+Note : SNCF Api is based on the open [API Navitia](https://doc.navitia.io/#getting-started). 
+This binding uses a very small subset of it, restricted to its primary purpose.
 
 ## Supported Things
 
-Bridge: The binding supports a bridge to connect to the [DIGITALSNCF service](https://www.digital.sncf.com/startup/api/token-developpeur). A bridge uses the thing ID "api".
+Bridge: The binding supports a bridge to connect to the [DIGITALSNCF service](https://www.digital.sncf.com/startup/api/token developpeur). 
+A bridge uses the thing ID "api".
 
 Station: Represents a given bus, train station.
 
-Of course, you can add multiple as many stations as needed.
+Of course, you can add as many stations as needed.
 
 
 ## Discovery
 
-This binding takes care of auto discovery. This method is strongly recommended as its the only way to get proper station ID depending upon transportation type.
+This binding takes care of auto discovery. This method is strongly recommended as it is the only way to get proper station ID depending upon transportation type.
 
-To enable auto-discovery, your location system setting must be defined. Once done, at first launch discovery will search every station in a radius of 2500 m around the system, extending it by step of 500 m until it finds a first set of results.
+To enable auto-discovery, your location system setting must be defined. 
+Once done, at first launch, discovery will search every station in a radius of 2000 m around the system, extending it by step of 500 m until it finds a first set of results.
 Every following manual successive launch will extend this radius by 500 m, increasing the number of stations discovered.
 
 

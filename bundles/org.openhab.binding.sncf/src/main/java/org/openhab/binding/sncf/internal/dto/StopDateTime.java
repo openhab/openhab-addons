@@ -13,6 +13,7 @@
 package org.openhab.binding.sncf.internal.dto;
 
 /**
+ * The {@link StopDateTime} class holds informations for a transportation stop
  *
  * @author Gaël L'hopital - Initial contribution
  */

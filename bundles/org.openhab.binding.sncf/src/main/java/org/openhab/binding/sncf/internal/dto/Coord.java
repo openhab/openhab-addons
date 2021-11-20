@@ -13,6 +13,7 @@
 package org.openhab.binding.sncf.internal.dto;
 
 /**
+ * The {@link Coord} class holds latitude and longitude of a point
  *
  * @author Gaël L'hopital - Initial contribution
  */

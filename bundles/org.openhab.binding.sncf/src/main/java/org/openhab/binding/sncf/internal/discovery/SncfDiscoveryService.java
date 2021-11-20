@@ -42,9 +42,9 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerService.class)
 @NonNullByDefault
 public class SncfDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private final Logger logger = LoggerFactory.getLogger(SncfDiscoveryService.class);
-
     private static final int SEARCH_TIME = 2;
+
+    private final Logger logger = LoggerFactory.getLogger(SncfDiscoveryService.class);
 
     private @Nullable LocationProvider locationProvider;
     private @Nullable SncfBridgeHandler bridgeHandler;
@@ -68,7 +68,7 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
         if (provider != null && handler != null) {
             PointType location = provider.getLocation();
             if (location != null) {
-                ThingUID bridgeId = handler.getThing().getUID();
+                ThingUID bridgeUID = handler.getThing().getUID();
                 searchRange += 500;
                 try {
                     List<PlaceNearby> places = handler.discoverNearby(location, searchRange);
@@ -77,8 +77,8 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
                             String placeId = place.id;
                             String thingId = placeId.replace(":", "_").replace("-", "_").replace("stop_point_", "");
                             thingDiscovered(
-                                    DiscoveryResultBuilder.create(new ThingUID(STATION_THING_TYPE, bridgeId, thingId))
-                                            .withLabel(place.stopPoint.name).withBridge(bridgeId)
+                                    DiscoveryResultBuilder.create(new ThingUID(STATION_THING_TYPE, bridgeUID, thingId))
+                                            .withLabel(place.stopPoint.name).withBridge(bridgeUID)
                                             .withRepresentationProperty(STOP_POINT_ID)
                                             .withProperty(STOP_POINT_ID, placeId).build());
                         });
@@ -93,7 +93,6 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
                 logger.info("Please set a system location to enable station discovery");
             }
         }
-        stopScan();
     }
 
     @Override

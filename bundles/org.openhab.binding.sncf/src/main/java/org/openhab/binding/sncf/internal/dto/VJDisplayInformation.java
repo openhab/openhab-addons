@@ -13,6 +13,8 @@
 package org.openhab.binding.sncf.internal.dto;
 
 /**
+ * The {@link VJDisplayInformation} class holds informations displayed
+ * to traveller regarding a stop in the station
  *
  * @author Gaël L'hopital - Initial contribution
  */

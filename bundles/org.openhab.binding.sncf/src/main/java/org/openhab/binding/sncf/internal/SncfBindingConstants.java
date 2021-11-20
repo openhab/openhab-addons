@@ -50,6 +50,6 @@ public class SncfBindingConstants {
     public static final ThingTypeUID APIBRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, "api");
     public static final ThingTypeUID STATION_THING_TYPE = new ThingTypeUID(BINDING_ID, "station");
 
-    // List of all adressable things in OH = SUPPORTED_DEVICE_THING_TYPES_UIDS + the virtual bridge
+    // List of all adressable things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(APIBRIDGE_THING_TYPE, STATION_THING_TYPE);
 }

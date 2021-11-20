@@ -13,6 +13,7 @@
 package org.openhab.binding.sncf.internal.dto;
 
 /**
+ * The {@link Route} class holds Route details
  *
  * @author Gaël L'hopital - Initial contribution
  */

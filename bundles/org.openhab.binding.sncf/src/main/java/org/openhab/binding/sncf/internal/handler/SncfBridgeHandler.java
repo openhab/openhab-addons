@@ -28,7 +28,6 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.sncf.internal.SncfException;
 import org.openhab.binding.sncf.internal.discovery.SncfDiscoveryService;
@@ -45,6 +44,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -84,7 +84,11 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing SNCF API bridge handler.");
         apiId = (String) getConfig().get("apiID");
-        updateStatus(ThingStatus.ONLINE);
+        if (apiId != null && apiId.length() != 0) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
+        }
     }
 
     @Override
@@ -130,16 +134,7 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
                     logger.debug("SNCF Api server responded with status code {}: {}", httpStatus, content);
                     throw new SncfException(content);
             }
-        } catch (ExecutionException e) {
-            String errorMessage = e.getLocalizedMessage();
-            logger.trace("Exception occurred during execution: {}", errorMessage, e);
-            if (e.getCause() instanceof HttpResponseException) {
-                logger.debug("SNCF Api server responded with status code {}: Invalid API key.", UNAUTHORIZED_401);
-                throw new SncfException("@text/offline.conf-error-invalid-apikey", e.getCause());
-            } else {
-                throw new SncfException(errorMessage, e.getCause());
-            }
-        } catch (TimeoutException e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
             throw new SncfException(e.getLocalizedMessage(), e.getCause());
         } catch (InterruptedException e) {
@@ -167,7 +162,8 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
         String URL = String.format(Locale.US, "%s/stop_points/%s/%s?disable_geojson=true&count=1", SERVICE_URL,
                 stopPointId, expected);
         List<Passage> passages = getResponseFromCache(URL, Passages.class).passages;
-        return passages != null ? Optional.ofNullable(passages.get(0)) : Optional.empty();
+        return passages != null ? passages.size() > 0 ? Optional.ofNullable(passages.get(0)) : Optional.empty()
+                : Optional.empty();
     }
 
     public LocationProvider getLocationProvider() {

@@ -13,6 +13,8 @@
 package org.openhab.binding.sncf.internal.dto;
 
 /**
+ * The {@link StopArea} class holds informations for a Stop Area
+ * (usually a train station)
  *
  * @author Gaël L'hopital - Initial contribution
  */
