@@ -162,7 +162,7 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
         String URL = String.format(Locale.US, "%s/stop_points/%s/%s?disable_geojson=true&count=1", SERVICE_URL,
                 stopPointId, expected);
         List<Passage> passages = getResponseFromCache(URL, Passages.class).passages;
-        return passages != null ? passages.size() > 0 ? Optional.ofNullable(passages.get(0)) : Optional.empty()
+        return passages != null ? !passages.isEmpty() ? Optional.ofNullable(passages.get(0)) : Optional.empty()
                 : Optional.empty();
     }
 

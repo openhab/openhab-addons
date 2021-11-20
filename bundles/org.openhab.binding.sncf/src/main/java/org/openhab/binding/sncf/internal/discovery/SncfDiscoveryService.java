@@ -99,7 +99,7 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof SncfBridgeHandler) {
             this.bridgeHandler = (SncfBridgeHandler) handler;
-            this.locationProvider = bridgeHandler.getLocationProvider();
+            this.locationProvider = ((SncfBridgeHandler) handler).getLocationProvider();
         }
     }
 
