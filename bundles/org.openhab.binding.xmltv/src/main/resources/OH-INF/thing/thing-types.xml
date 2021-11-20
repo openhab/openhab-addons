@@ -6,7 +6,7 @@
 
 	<bridge-type id="xmltvfile">
 		<label>XmlTVFile</label>
-<description>This is the interface to a XmlTV file</description>
+		<description>This is the interface to a XmlTV file</description>
 
 		<config-description>
 			<parameter name="filePath" type="text" required="true">
@@ -31,7 +31,7 @@
 			<bridge-type-ref id="xmltvfile"/>
 		</supported-bridge-type-refs>
 		<label>Channel</label>
-<description>This represent a channel on a given TV file</description>
+		<description>This represent a channel on a given TV file</description>
 
 		<channel-groups>
 			<channel-group id="channelprops" typeId="channelprops"/>
