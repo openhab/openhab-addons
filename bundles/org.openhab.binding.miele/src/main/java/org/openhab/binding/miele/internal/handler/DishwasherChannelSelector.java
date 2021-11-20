@@ -160,12 +160,12 @@ public enum DishwasherChannelSelector implements ApplianceChannelSelector {
 
     private final Logger logger = LoggerFactory.getLogger(DishwasherChannelSelector.class);
 
-    private static final Map<String, String> programs = Map.ofEntries(entry("26", "pots-and-pans"),
-            entry("27", "clean-machine"), entry("28", "economy"), entry("30", "normal"), entry("32", "sensor-wash"),
-            entry("34", "energy-saver"), entry("35", "china-and-crystal"), entry("36", "extra-quiet"),
-            entry("37", "saniwash"), entry("38", "quickpowerwash"), entry("42", "tall-items"));
+    private static final Map<String, String> programs = Map.ofEntries(entry("26", "intensive"),
+            entry("27", "maintenance-programme"), entry("28", "eco"), entry("30", "normal"), entry("32", "automatic"),
+            entry("34", "solarsave"), entry("35", "gentle"), entry("36", "extra-quiet"),
+            entry("37", "hygiene"), entry("38", "quickpowerwash"), entry("42", "tall-items"));
 
-    private static final Map<String, String> phases = Map.ofEntries(entry("2", "pre-Wash"), entry("3", "main-wash"),
+    private static final Map<String, String> phases = Map.ofEntries(entry("2", "pre-wash"), entry("3", "main-wash"),
             entry("4", "rinses"), entry("6", "final-rinse"), entry("7", "drying"), entry("8", "finished"));
 
     private final String mieleID;

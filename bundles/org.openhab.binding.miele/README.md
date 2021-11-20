@@ -128,15 +128,15 @@ Channels available for each appliance type are listed below.
 
 | Program | Description                         |
 |---------|-------------------------------------|
-| 26      | Pots & Pans                         |
-| 27      | Clean Machine                       |
-| 28      | Economy                             |
+| 26      | Intensive                           |
+| 27      | Maintenance programme               |
+| 28      | ECO                                 |
 | 30      | Normal                              |
-| 32      | Sensor Wash                         |
-| 34      | Energy Saver                        |
-| 35      | China & Crystal                     |
+| 32      | Automatic                           |
+| 34      | SolarSave                           |
+| 35      | Gentle                              |
 | 36      | Extra Quiet                         |
-| 37      | SaniWash                            |
+| 37      | Hygiene                             |
 | 38      | QuickPowerWash                      |
 | 42      | Tall items                          |
 
