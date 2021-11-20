@@ -241,6 +241,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 headers = new HashMap<>();
 
                 onUpdate();
+                lastBridgeConnectionState = false;
                 updateStatus(ThingStatus.UNKNOWN);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
