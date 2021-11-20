@@ -13,6 +13,8 @@
 package org.openhab.binding.miele.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.QuantityType;
@@ -66,5 +68,29 @@ public class DeviceUtilTest extends JavaTest {
     @Test
     public void getTemperatureStateNullValueThrowsNumberFormatException() {
         assertThrows(NumberFormatException.class, () -> DeviceUtil.getTemperatureState(null));
+    }
+
+    @Test
+    public void getStateTextStateProviderHasPrecedence() {
+        assertEquals("I brug", this.getStateTextState("5", "Running", "miele.state.running", "I brug"));
+    }
+
+    @Test
+    public void getStateTextStateGatewayTextIsReturnedWhenKeyIsUnknown() {
+        assertEquals("Running", this.getStateTextState("-1", "Running", "miele.state.running", "I brug"));
+    }
+
+    @Test
+    public void getStateTextStateKeyIsReturnedWhenUnknownByGatewayAndProvider() {
+        assertEquals("state.99", this.getStateTextState("99", null, "miele.state.running", "I brug"));
+    }
+
+    private String getStateTextState(String value, String localizedValue, String mockedKey, String mockedValue) {
+        var metaData = new DeviceMetaData();
+        metaData.LocalizedValue = localizedValue;
+        var translationProvider = mock(MieleTranslationProvider.class);
+        when(translationProvider.getText(mockedKey, metaData.LocalizedValue)).thenReturn(mockedValue);
+
+        return DeviceUtil.getStateTextState(value, metaData, translationProvider).toString();
     }
 }

@@ -104,6 +104,10 @@ public class DeviceUtil {
                     translationProvider.getText(key, gatewayText != null ? gatewayText : propertyPrefix + s));
         }
 
+        if (gatewayText != null) {
+            return new StringType(gatewayText);
+        }
+
         return new StringType(propertyPrefix + s);
     }
 
