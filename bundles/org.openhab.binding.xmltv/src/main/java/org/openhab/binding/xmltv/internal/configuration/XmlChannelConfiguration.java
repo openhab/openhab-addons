@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.xmltv.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link XmlChannelConfiguration} class contains fields mapping
  * Channel thing configuration parameters.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class XmlChannelConfiguration {
     public static final String CHANNEL_ID = "channelId";
 
-    public String channelId;
-    public Integer offset;
-    public Integer refresh;
+    public String channelId = "";
+    public int offset = 0;
+    public int refresh = 60;
 }
