@@ -6,9 +6,11 @@ import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereAuxiliary;
@@ -30,6 +32,8 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetAuxiliaryHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUX_SUPPORTED_THING_TYPES;
+    private long lastStatusRequestSentTS = 0;
+
 
     private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
     // for this handler
@@ -69,13 +73,36 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected void requestChannelState(ChannelUID channel) {
+    protected void requestChannelState(ChannelUID channel)  {
+        logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
+        requestStatus(channel.getId());
+    }
 
+    /** helper method to request auxiliary status based on channel */
+    private void requestStatus(String channelId) {
+        Where w = deviceWhere;
+        if (w != null) {
+            try {
+                lastStatusRequestSentTS = System.currentTimeMillis();
+                Response res = send(Auxiliary.requestStatus(toWhere(channelId)));
+                if (res != null && res.isSuccess()) {
+                    // set thing online, if not already
+                    ThingStatus ts = getThing().getStatus();
+                    if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
+                }
+            } catch (OWNException e) {
+                logger.warn("requestStatus() Exception while requesting light state: {}", e.getMessage());
+            }
+        } else {
+            logger.warn("Could not requestStatus(): deviceWhere is null");
+        }
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-
+        //TODO: To be implemented
     }
 
     @Override
