@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.openhab.binding.miele.internal.DeviceMetaData;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.MieleTranslationProvider;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;

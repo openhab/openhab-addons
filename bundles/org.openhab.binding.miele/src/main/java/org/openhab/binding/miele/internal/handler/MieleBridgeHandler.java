@@ -209,15 +209,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public class DeviceMetaData {
-        public String Filter;
-        public String description;
-        public String LocalizedID;
-        public String LocalizedValue;
-        public JsonObject MieleEnum;
-        public String access;
-    }
-
     public MieleBridgeHandler(Bridge bridge) {
         super(bridge);
     }

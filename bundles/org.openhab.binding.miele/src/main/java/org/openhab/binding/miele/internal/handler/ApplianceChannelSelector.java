@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import org.openhab.binding.miele.internal.DeviceMetaData;
 import org.openhab.binding.miele.internal.MieleTranslationProvider;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.types.State;
 
 /**

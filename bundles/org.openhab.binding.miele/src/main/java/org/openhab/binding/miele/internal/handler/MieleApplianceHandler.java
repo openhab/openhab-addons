@@ -23,11 +23,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.miele.internal.DeviceMetaData;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.binding.miele.internal.MieleTranslationProvider;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.openhab.core.i18n.LocaleProvider;

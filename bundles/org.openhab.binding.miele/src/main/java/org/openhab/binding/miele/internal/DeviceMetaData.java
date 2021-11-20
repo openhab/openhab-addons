@@ -10,14 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.miele.internal.handler;
+package org.openhab.binding.miele.internal;
+
+import com.google.gson.JsonObject;
 
 /**
- * Appliance handlers can implement the {@link ExtendedDeviceStateListener} interface
- * to extract additional information from the ExtendedDeviceState property.
+ * The {@link DeviceMetaData} class represents the Metadata node in the response JSON.
  *
  * @author Jacob Laursen - Initial contribution
  */
-public interface ExtendedDeviceStateListener {
-    void onApplianceExtendedStateChanged(byte[] extendedDeviceState);
+public class DeviceMetaData {
+    public String Filter;
+    public String description;
+    public String LocalizedID;
+    public String LocalizedValue;
+    public JsonObject MieleEnum;
+    public String access;
 }

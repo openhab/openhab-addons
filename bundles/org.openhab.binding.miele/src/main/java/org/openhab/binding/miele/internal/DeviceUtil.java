@@ -18,7 +18,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
