@@ -41,29 +41,43 @@ Guntamatic Heating Systems supported as Thing Types:
 
 ## Channels
 
+### Control Channels
+
+The Guntamatic Heating System can be controlled using the following channels:
+
+|	Channel             |	Description                                             | Type	|	Unit	|	Security Access Level	| ReadOnly | Advanced |
+|-----------------------|-----------------------------------------------------------|-------|:---------:|:-------------------------:|:--------:|:--------:|
+|	`controlBoilerApproval`	|	Set Boiler Approval (`AUTO`, `OFF`, `ON`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlProgram`	|	Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)	|	`String`	|		|	🔐 W1	|	R/W	|	false	|
+|	`controlHeatCircProgram0`	|	Set Program of Heat Circle 0 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram1`	|	Set Program of Heat Circle 1 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram2`	|	Set Program of Heat Circle 2 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram3`	|	Set Program of Heat Circle 3 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram4`	|	Set Program of Heat Circle 4 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram5`	|	Set Program of Heat Circle 5 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram6`	|	Set Program of Heat Circle 6 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram7`	|	Set Program of Heat Circle 7 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram8`	|	Set Program of Heat Circle 8 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat0`	|	Trigger Warm Wather Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat1`	|	Trigger Warm Wather Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat2`	|	Trigger Warm Wather Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat0`	|	Trigger Extra Warm Wather Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat1`	|	Trigger Extra Warm Wather Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat2`	|	Trigger Extra Warm Wather Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+
+#### Response of Control Channels
+
+- `{"ack":"confirmation message"}` ... in case of success
+- `{"err":"error message"}`        ... in case of error
+
+### Monitoring Channels
+
 The Binding dynamically generates Channels, derived from the data provided from the actual Guntamatic Heating System.
 
 Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System running firmware 3.2d and Guntamatic System Language configured to English:
 
 |	Channel             |	Description                                             | Type	|	Unit	|	Security Access Level	| ReadOnly | Advanced |
 |-----------------------|-----------------------------------------------------------|-------|:---------:|:-------------------------:|:--------:|:--------:|
-|	`controlBoilerApproval`	|	Set Boiler Approval (AUTO, OFF, ON)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlProgram`	|	Set Program (OFF, NORMAL, WARMWATER, MANUAL)	|	`String`	|		|	🔐 W1	|	R/W	|	false	|
-|	`controlHeatCircProgram0`	|	Set Program of Heat Circle 0 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram1`	|	Set Program of Heat Circle 1 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram2`	|	Set Program of Heat Circle 2 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram3`	|	Set Program of Heat Circle 3 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram4`	|	Set Program of Heat Circle 4 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram5`	|	Set Program of Heat Circle 5 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram6`	|	Set Program of Heat Circle 6 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram7`	|	Set Program of Heat Circle 7 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram8`	|	Set Program of Heat Circle 8 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat0`	|	Trigger Warm Wather Circle 0 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat1`	|	Trigger Warm Wather Circle 1 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat2`	|	Trigger Warm Wather Circle 2 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat0`	|	Trigger Extra Warm Wather Circle 0 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat1`	|	Trigger Extra Warm Wather Circle 1 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat2`	|	Trigger Extra Warm Wather Circle 2 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`running`	|	Running	|	`String`	|		|	🔓 W0	|	R/O	|	false	|
 |	`outsideTemp`	|	Outside Temp.	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
 |	`blrTargetTemp`	|	Blr.Target Temp	|	`Number:Temperature`	|	`°C`	|	🔐 W1	|	R/O	|	false	|
@@ -173,16 +187,11 @@ Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System 
 |	`extraWw2`	|	Extra-WW. 2	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
 |	`grate`	|	Grate	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
 
-### Security Access Levels
+#### Security Access Levels
 
 - 🔓 W0 ... Open
 - 🔐 W1 ... End Customer Key
 - 🔒 W2 ... Service Partner
-
-### Response of Control Channels
-
-- `{"ack":"confirmation message"}` ... in case of success
-- `{"err":"error message"}`        ... in case of error
 
 ## Full Example
 
@@ -346,7 +355,7 @@ end
 ## Your feedback is required
 
 The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pellets Heating System, running Firmware 3.2d.
-Please provide feedback (👍 as well as 👎) when using the binding for other Guntamatic Heating Systems.
+Please provide feedback (👍 as well as 👎) when using the Binding for other Guntamatic Heating Systems.
 
 Forum topic for feedback:
  - [openHAB community #128451](https://community.openhab.org/t/guntamatic-new-binding-for-guntamatic-heating-systems-biostar-powerchip-powercorn-biocom-pro-therm/128451 "openHAB community #128451")
