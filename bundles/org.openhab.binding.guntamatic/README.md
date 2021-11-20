@@ -47,38 +47,38 @@ Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System 
 
 |	Channel             |	Description                                             | Type	|	Unit	|	Security Access Level	| ReadOnly | Advanced |
 |-----------------------|-----------------------------------------------------------|-------|:---------:|:-------------------------:|:--------:|:--------:|
-|	`controlBoilerApproval`	|	Set Boiler Approval (`AUTO`, `OFF`, `ON`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlProgram`	|	Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)	|	`String`	|		|	🔐 W1	|	R/W	|	false	|
-|	`controlHeatCircProgram0`	|	Set Program of Heat Circle 0 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram1`	|	Set Program of Heat Circle 1 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram2`	|	Set Program of Heat Circle 2 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram3`	|	Set Program of Heat Circle 3 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram4`	|	Set Program of Heat Circle 4 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram5`	|	Set Program of Heat Circle 5 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram6`	|	Set Program of Heat Circle 6 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram7`	|	Set Program of Heat Circle 7 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram8`	|	Set Program of Heat Circle 8 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat0`	|	Trigger Warm Wather Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat1`	|	Trigger Warm Wather Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat2`	|	Trigger Warm Wather Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat0`	|	Trigger Extra Warm Wather Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat1`	|	Trigger Extra Warm Wather Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat2`	|	Trigger Extra Warm Wather Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlBoilerApproval`	|	Set Boiler Approval (AUTO, OFF, ON)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlProgram`	|	Set Program (OFF, NORMAL, WARMWATER, MANUAL)	|	`String`	|		|	🔐 W1	|	R/W	|	false	|
+|	`controlHeatCircProgram0`	|	Set Program of Heat Circle 0 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram1`	|	Set Program of Heat Circle 1 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram2`	|	Set Program of Heat Circle 2 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram3`	|	Set Program of Heat Circle 3 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram4`	|	Set Program of Heat Circle 4 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram5`	|	Set Program of Heat Circle 5 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram6`	|	Set Program of Heat Circle 6 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram7`	|	Set Program of Heat Circle 7 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram8`	|	Set Program of Heat Circle 8 (OFF, NORMAL, HEAT, LOWER)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat0`	|	Trigger Warm Wather Circle 0 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat1`	|	Trigger Warm Wather Circle 1 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat2`	|	Trigger Warm Wather Circle 2 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat0`	|	Trigger Extra Warm Wather Circle 0 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat1`	|	Trigger Extra Warm Wather Circle 1 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat2`	|	Trigger Extra Warm Wather Circle 2 (RECHARGE)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`running`	|	Running	|	`String`	|		|	🔓 W0	|	R/O	|	false	|
 |	`outsideTemp`	|	Outside Temp.	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
-|	`blrTargetTemp`	|	Boiler Target Temp	|	`Number:Temperature`	|	`°C`	|	🔐 W1	|	R/O	|	false	|
+|	`blrTargetTemp`	|	Blr.Target Temp	|	`Number:Temperature`	|	`°C`	|	🔐 W1	|	R/O	|	false	|
 |	`boilerTemperature`	|	Boiler Temperature	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
 |	`flueGasUtilisation`	|	Flue gas utilisation	|	`Number:Dimensionless`	|	`%`	|	🔐 W1	|	R/O	|	false	|
 |	`output`	|	Output	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
 |	`returnTemp`	|	Return temp	|	`Number:Temperature`	|	`°C`	|	🔐 W1	|	R/O	|	false	|
 |	`co2Target`	|	CO2 Target	|	`Number:Dimensionless`	|	`%`	|	🔐 W1	|	R/O	|	false	|
-|	`co2Content`	|	C02 Content	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
-|	`returnTempTarget`	|	return temp target	|	`Number:Temperature`	|	`°C`	|	🔐 W1	|	R/O	|	false	|
-|	`statusCode`	|	status code	|	`Number`	|		|	🔐 W1	|	R/O	|	false	|
+|	`co2Content`	|	CO2 Content	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
+|	`returnTempTarget`	|	Return temp target	|	`Number:Temperature`	|	`°C`	|	🔐 W1	|	R/O	|	false	|
+|	`statusCode`	|	Status code	|	`Number`	|		|	🔐 W1	|	R/O	|	false	|
 |	`efficiency`	|	Efficiency	|	`Number:Dimensionless`	|	`%`	|	🔐 W1	|	R/O	|	false	|
 |	`extractorSystem`	|	Extractor System	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
 |	`feedTurbine`	|	Feed Turbine	|	`String`	|		|	🔐 W1	|	R/O	|	false	|
-|	`dischargeMotor`	|	discharge motor	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
+|	`dischargeMotor`	|	Discharge motor	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
 |	`g1Target`	|	G1 Target	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
 |	`bufferTop`	|	Buffer Top	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
 |	`bufferMid`	|	Buffer Mid	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
@@ -168,10 +168,10 @@ Example list of Channels using a Guntamatic Biostar 15kW Pellets Heating System 
 |	`bufferT5`	|	Buffer T5	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
 |	`bufferT6`	|	Buffer T6	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
 |	`bufferT7`	|	Buffer T7	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
-|	`extraWw0`	|	extra-WW. 0	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
-|	`extraWw1`	|	extra-WW. 1	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
-|	`extraWw2`	|	extra-WW. 2	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
-|	`grate`	|	grate	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
+|	`extraWw0`	|	Extra-WW. 0	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
+|	`extraWw1`	|	Extra-WW. 1	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
+|	`extraWw2`	|	Extra-WW. 2	|	`Number:Temperature`	|	`°C`	|	🔓 W0	|	R/O	|	false	|
+|	`grate`	|	Grate	|	`Number:Dimensionless`	|	`%`	|	🔓 W0	|	R/O	|	false	|
 
 ### Security Access Levels
 
