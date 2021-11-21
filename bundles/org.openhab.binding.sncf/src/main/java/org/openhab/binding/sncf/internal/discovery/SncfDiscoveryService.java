@@ -87,7 +87,7 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
                         startScan();
                     }
                 } catch (SncfException e) {
-                    logger.warn("Error calling Sncf Api : {}", e.getMessage());
+                    logger.warn("Error calling SNCF Api : {}", e.getMessage());
                 }
             } else {
                 logger.info("Please set a system location to enable station discovery");

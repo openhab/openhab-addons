@@ -13,7 +13,7 @@
 package org.openhab.binding.sncf.internal.handler;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpHeader;
 import org.openhab.binding.sncf.internal.SncfException;
 import org.openhab.binding.sncf.internal.discovery.SncfDiscoveryService;
 import org.openhab.binding.sncf.internal.dto.Passage;
@@ -52,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link SncfBridgeHandler} is handles connection and communication toward
@@ -67,7 +69,7 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SncfBridgeHandler.class);
     private final LocationProvider locationProvider;
-    private final ExpiringCacheMap<String, String> cache = new ExpiringCacheMap<>(Duration.ofMinutes(1));
+    private final ExpiringCacheMap<String, @Nullable String> cache = new ExpiringCacheMap<>(Duration.ofMinutes(1));
     private final HttpClient httpClient;
 
     private final Gson gson;
@@ -84,7 +86,7 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing SNCF API bridge handler.");
         apiId = (String) getConfig().get("apiID");
-        if (apiId != null && apiId.length() != 0) {
+        if (apiId != null && !apiId.isBlank()) {
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-api-key");
@@ -97,51 +99,45 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
     }
 
     private <T extends SncfAnswer> T getResponseFromCache(String url, Class<T> objectClass) throws SncfException {
-        String answer = cache.get(url);
-        if (answer == null) {
-            final String newAnswer = getResponse(url);
-            cache.put(url, () -> newAnswer);
-            answer = newAnswer;
+        String answer = cache.putIfAbsentAndGet(url, () -> getResponse(url));
+        try {
+            if (answer != null) {
+                @Nullable
+                T response = gson.fromJson(answer, objectClass);
+                if (response == null) {
+                    throw new SncfException("Unable to deserialize API answer");
+                }
+                if (response.message != null) {
+                    throw new SncfException(response.message);
+                }
+                return response;
+            } else {
+                throw new SncfException(String.format("Unable to get api answer for url : %s", url));
+            }
+        } catch (JsonSyntaxException e) {
+            throw new SncfException(e);
         }
-        @Nullable
-        T response = gson.fromJson(answer, objectClass);
-        if (response == null) {
-            throw new SncfException("Unable to deserialize API answer");
-        }
-        if (response.message != null) {
-            throw new SncfException(response.message);
-        }
-        return response;
     }
 
-    private String getResponse(String url) throws SncfException {
+    private @Nullable String getResponse(String url) {
         try {
             logger.debug("SNCF Api request: URL = '{}'", url);
             ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS)
-                    .header("Authorization", apiId).send();
+                    .header(HttpHeader.AUTHORIZATION, apiId).send();
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
             logger.debug("SNCF Api response: status = {}, content = '{}'", httpStatus, content);
-            switch (httpStatus) {
-                case OK_200:
-                    return content;
-                case BAD_REQUEST_400:
-                case UNAUTHORIZED_401:
-                case NOT_FOUND_404:
-                    logger.debug("SNCF Api server responded with status code {}: {}", httpStatus, content);
-                    throw new SncfException(content);
-                default:
-                    logger.debug("SNCF Api server responded with status code {}: {}", httpStatus, content);
-                    throw new SncfException(content);
+            if (httpStatus == OK_200) {
+                return content;
             }
-        } catch (TimeoutException | ExecutionException e) {
-            logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new SncfException(e.getLocalizedMessage(), e.getCause());
-        } catch (InterruptedException e) {
-            logger.debug("Execution interrupted: {}", e.getLocalizedMessage(), e);
-            Thread.currentThread().interrupt();
-            throw new SncfException(e.getLocalizedMessage(), e.getCause());
+            logger.debug("SNCF Api server responded with status code {}: {}", httpStatus, content);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("Execution occured : {}", e.getMessage(), e);
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
         }
+        return null;
     }
 
     public @Nullable List<PlaceNearby> discoverNearby(PointType location, int distance) throws SncfException {
@@ -153,17 +149,16 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
     }
 
     public Optional<StopPoint> stopPointDetail(String stopPointId) throws SncfException {
-        String URL = String.format(Locale.US, "%s/stop_points/%s", SERVICE_URL, stopPointId);
+        String URL = String.format("%s/stop_points/%s", SERVICE_URL, stopPointId);
         List<StopPoint> points = getResponseFromCache(URL, StopPoints.class).stopPoints;
-        return points != null ? Optional.ofNullable(points.get(0)) : Optional.empty();
+        return points != null && !points.isEmpty() ? Optional.ofNullable(points.get(0)) : Optional.empty();
     }
 
     public Optional<Passage> getNextPassage(String stopPointId, String expected) throws SncfException {
-        String URL = String.format(Locale.US, "%s/stop_points/%s/%s?disable_geojson=true&count=1", SERVICE_URL,
-                stopPointId, expected);
+        String URL = String.format("%s/stop_points/%s/%s?disable_geojson=true&count=1", SERVICE_URL, stopPointId,
+                expected);
         List<Passage> passages = getResponseFromCache(URL, Passages.class).passages;
-        return passages != null ? !passages.isEmpty() ? Optional.ofNullable(passages.get(0)) : Optional.empty()
-                : Optional.empty();
+        return passages != null && !passages.isEmpty() ? Optional.ofNullable(passages.get(0)) : Optional.empty();
     }
 
     public LocationProvider getLocationProvider() {

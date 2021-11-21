@@ -6,9 +6,8 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:sncf:api">
-		<parameter name="apiID" type="text">
+		<parameter name="apiID" type="text" required="true">
 			<label>API ID</label>
-			<required>true</required>
 			<context>password</context>
 		</parameter>
 	</config-description>

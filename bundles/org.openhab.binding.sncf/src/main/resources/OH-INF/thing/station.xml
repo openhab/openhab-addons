@@ -37,9 +37,7 @@
 			<channel id="commercialMode" typeId="commercialMode"/>
 			<channel id="name" typeId="name"/>
 			<channel id="network" typeId="network"/>
-			<channel id="timestamp" typeId="timestamp">
-				<label>Horodatage</label>
-			</channel>
+			<channel id="timestamp" typeId="timestamp"/>
 		</channels>
 	</channel-group-type>
 
