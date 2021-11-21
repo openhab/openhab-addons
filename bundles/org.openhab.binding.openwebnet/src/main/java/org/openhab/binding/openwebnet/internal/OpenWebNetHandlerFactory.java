@@ -13,6 +13,7 @@
 package org.openhab.binding.openwebnet.internal;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.ALL_SUPPORTED_THING_TYPES;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAutomationHandler;

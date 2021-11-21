@@ -44,8 +44,10 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Lighting             | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers                                         | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 | Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 | Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455 |
+| Auxiliary support    | `9`          | `aux_on_off_switch`                    | AUX switches                                                  | Not tested yet 
 | CEN & CEN+ Scenarios  | `15` & `25`  | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | CEN/CEN+ scenarios events and virtual activation | Successfully tested: scenario buttons: HC/HD/HS/L/N/NT4680 |
-| Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
+| Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management| Successfully tested: F520, F521 |
+|
 
 ### For ZigBee (Radio)
 
