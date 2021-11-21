@@ -19,6 +19,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * Class containing the mappings for all message status codes.
+ * 
+ * chapter "2 List of all codes" in Technical Interface Description for external Developers
+ *
+ * @see https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData&#tab1
  *
  * @author Sönke Küper - initial contribution
  */

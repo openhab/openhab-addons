@@ -102,7 +102,7 @@ public final class TimetableLoader {
     }
 
     /**
-     * Updates the cache with current data from plan and changes und returns the {@link TimetableStop}.
+     * Updates the cache with current data from plan and changes and returns the {@link TimetableStop}.
      */
     public List<TimetableStop> getTimetableStops() throws IOException {
         this.updateCache();

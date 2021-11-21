@@ -1,55 +1,55 @@
 # DeutscheBahn Binding
 
-The DeutscheBahn Binding provides the latest timetable information for all trains that arrive or depart at an specific train station, including live information for delays and changes in timetable.
-The informations are requested from the timetable api of DeutscheBahn developer portal, so you'll need an (free) developer account to use this binding.
+The DeutscheBahn Binding provides the latest timetable information for all trains that arrive or depart at a specific train station, including live information for delays and changes in timetable.
+The informations are requested from the timetable api of DeutscheBahn developer portal, so you'll need a (free) developer account to use this binding.
 
 ## Supported Things
 
-- **timetable** The timetable bridge connects to the timetable api and provides the informations for the next trains that will arrive or depart at the configured station.
-- **train** The train thing represents one trains within the configured timetable. This may be an arrival or an departure.
+- **timetable** The timetable bridge connects to the timetable api and provides information for the next trains that will arrive or depart at the configured station.
+- **train** The train thing represents one trains within the configured timetable. This may be an arrival or a departure.
 
 ## Thing Configuration
 
 ### Generate Access-Key for timetable API
 
-To configure an timetable you first need to register at DeutscheBahn developer portal and register for timetable API to get an access key.
+To configure a timetable you first need to register at DeutscheBahn developer portal and register for timetable API to get an access key.
 
 1. Go to [DeutscheBahn Developer](https://developer.deutschebahn.com)
 2. Register new account or login with an existing one
-3. If no application is configured yet (check Tab "Meine Anwendungen") create an new application. Only the name is required, any other fields can be left blank.
-4. Go to APIs - Timetables v1 (may be on second page)
+3. If no application is configured yet (check Tab "Meine Anwendungen") create a new application. Only the name is required, any other fields can be left blank.
+4. Go to APIs - Timetables v1 (may be displayed on second page)
 5. Choose your previously created application and hit "Abonnieren"
 6. In confirmation-dialog choose "Wechsel zu meine Abonnements"
-7. Create am access key for the production environment by hitting "Schlüssel Erstellen"
+7. Create an access key for the production environment by hitting "Schlüssel Erstellen"
 8. Copy the "Zugangstoken". This is required to access the api from openhab.
 
 ### Determine the EVA-No of your station
 
-For the selection of the station you need the EVA Nr. of the station.
+For the selection of the station within openhab you need the eva nr. of the station.
 You can look up the number within the csv file available at [Haltestellendaten](https://data.deutschebahn.com/dataset.tags.EVA-Nr..html).
 
 ### Configure timetable bridge
 
-With access key for developer portal and eva nr of your station you'r ready to configure an timetable (bridge) for this station.
-In addition you can configure if only arrivals, only departures or all trains should be containd within the timetable.
+With access key for developer portal and eva nr. of your station you'r ready to configure a timetable (bridge) for this station.
+In addition you can configure if only arrivals, only departures or all trains should be contained within the timetable.
 
 **timetable** parameters:
 
 | Property | Default | Required | Description |
 |-|-|-|-|
 | `accessToken` | | Yes | The access token for the timetable api within the developer portal of DeutscheBahn. |
-| `evaNo` | | Yes | The eva Nr. of the train station for which the timetable will be requested.|
+| `evaNo` | | Yes | The eva nr. of the train station for which the timetable will be requested.|
 | `trainFilter` |  | Yes | Selects the trains that will be displayed in the timetable. Either only arrivals, only departures or all trains can be displayed. |
 
 
 ### Configuring the trains
 
 Once you've created the timetable you can add train-things that represent the trains within this timetable.
-Each train represents one position within the timetable. For example: If you configure an train with position 1 this will be
+Each train represents one position within the timetable. For example: If you configure a train with position 1 this will be
 the next train that arrives / departs at the given station. Position 2 will be the second one, and so on. If you want to
 show the next 4 trains for a station, create 4 things with positions 1 to 4.
 
-**Attention:** The timetable api only provides data for the next 18 hours. If the timetable contains less trains entires than you've created
+**Attention:** The timetable api only provides data for the next 18 hours. If the timetable contains less trains entries than you've created
 train things the channels of these trains will be undefined.
 
 **train** parameters:
@@ -61,11 +61,11 @@ train things the channels of these trains will be undefined.
 
 ## Channels
 
-Each train has a set of channels, that provides access to any information served by the timetable API. An detailed description of the values and their meaning can be found within
+Each train has a set of channels, that provides access to any information served by the timetable API. A detailed description of the values and their meaning can be found within
 the [Timetables V1 API Description](https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData&).
 The informations are grouped into three channel-groups:
-The first group (trip) contains all informations for the trip of the train, for example the category (like ICE, RE, S).
-The second and third group contains informations about the the arrival and the departure of the train at the given station. 
+The first channel group (trip) contains all informations for the trip of the train, for example the category (like ICE, RE, S).
+The second and third channel group contains informations about the the arrival and the departure of the train at the given station. 
 Both of the groups may provide an 'UNDEF' channel value, when the train does not arrive / depart at this station
 (due it starts or ends at the given station). If you have configured your timetable to contain only departures (with property trainFilter) the departure channel values will always be defined 
 and if you have selected only arrivals the arrival channel values will always be defined.

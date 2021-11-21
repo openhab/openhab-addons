@@ -21,8 +21,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 /**
  * Utility for merging timetable stops.
  * This is required, thus first only the plan is returned from the API and afterwards the loaded timetable-stops must be
- * merged
- * with the fetched changes.
+ * merged with the fetched changes.
  *
  * @author Sönke Küper - initial contribution
  */
