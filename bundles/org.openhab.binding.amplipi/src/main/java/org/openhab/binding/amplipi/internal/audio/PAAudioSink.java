@@ -51,9 +51,6 @@ public class PAAudioSink implements AudioSink, ThingHandlerService {
 
     private @Nullable PercentType volume;
 
-    public PAAudioSink() {
-    }
-
     @Override
     public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {

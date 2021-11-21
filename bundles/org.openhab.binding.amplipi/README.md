@@ -47,7 +47,10 @@ The `zone` and `group` Things have the following channels:
 
 ## Audio Sink
 
-For every AmpliPi controller, an audio sink is registered with the id of the thing. This audio sink accepts urls and audio files to be played. It uses the AmpliPi's PA feature for announcements on all available zones. If no volume value is passed, the current volume of each zone is used, otherwise the provided volume is temporarily set on all zones for the announcement.
+For every AmpliPi controller, an audio sink is registered with the id of the thing.
+This audio sink accepts urls and audio files to be played.
+It uses the AmpliPi's PA feature for announcements on all available zones.
+If no volume value is passed, the current volume of each zone is used, otherwise the provided volume is temporarily set on all zones for the announcement.
 
 ## Full Example
 
