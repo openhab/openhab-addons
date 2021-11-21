@@ -88,7 +88,7 @@ Finally, an SDM Account Thing can be created to access the SDM project using the
 1. Create an authorization code for the binding:
     1. Replace the **Project ID** and **Client ID** in the URL below with your SDM Project ID and SDM OAuth 2.0 Client ID and open the URL in a new browser tab:
        
-       `https://nestservices.google.com/partnerconnections/{{ProjectID}}/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id={{ClientID}}&response_type=code&scope=https://www.googleapis.com/auth/sdm.service`
+       `https://nestservices.google.com/partnerconnections/<ProjectID>/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id=<ClientID>&response_type=code&scope=https://www.googleapis.com/auth/sdm.service`
        
        For the example values used so far this is:
        
@@ -151,7 +151,7 @@ Finally, the existing SDM Account Thing can be updated so it can subscribe to SD
 1. Create an authorization code for the binding:
     1. Replace the **Client ID** in the URL below with your Pub/Sub OAuth 2.0 Client ID and open the URL in a new browser tab:
        
-       `https://accounts.google.com/o/oauth2/auth?client_id={{ClientID}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub`
+       `https://accounts.google.com/o/oauth2/auth?client_id=<ClientID>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub`
        
        For the example client this is:
        
