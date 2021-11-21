@@ -89,7 +89,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
      *
      * @param where the discovered device's address (WHERE)
      * @param deviceType {@link OpenDeviceType} of the discovered device
-     * @param message the OWN message received that identified the device (optional)
+     * @param baseMsg the OWN message received that identified the device (optional)
      */
     public void newDiscoveryResult(Where where, OpenDeviceType deviceType, @Nullable BaseOpenMessage baseMsg) {
         logger.info("newDiscoveryResult() WHERE={}, deviceType={}", where, deviceType);
@@ -164,6 +164,11 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL;
                 deviceWho = Who.CEN_PLUS_SCENARIO_SCHEDULER;
                 break;
+            }
+            case SCS_AUXILIARY_TOGGLE_CONTROL: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_AUX_ON_OFF_SWITCH;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_AUX_ON_OFF_SWITCH;
+                deviceWho = Who.AUX;
             }
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
