@@ -32,6 +32,7 @@ import org.openhab.core.types.UnDefType;
 public class DeviceUtil {
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
     private static final String TEMPERATURE_UNDEFINED = "32768";
+    private static final String TEMPERATURE_COLD = "-32760";
     private static final String TEXT_PREFIX = "miele.";
 
     private static final Map<String, String> states = Map.ofEntries(Map.entry("1", "off"), Map.entry("2", "stand-by"),
@@ -71,6 +72,9 @@ public class DeviceUtil {
     public static State getTemperatureState(String s) throws NumberFormatException {
         if (TEMPERATURE_UNDEFINED.equals(s)) {
             return UnDefType.UNDEF;
+        }
+        if (TEMPERATURE_COLD.equals(s)) {
+            return new QuantityType<>(10, SIUnits.CELSIUS);
         }
         int temperature = Integer.parseInt(s);
         return new QuantityType<>(temperature, SIUnits.CELSIUS);

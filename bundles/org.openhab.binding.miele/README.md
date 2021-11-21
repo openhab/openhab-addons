@@ -339,7 +339,7 @@ See oven.
 | finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
-| target              | Number:Temperature   | Read       | Temperature of the selected program                                 |
+| target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                  |
 | spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance              |
 | powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |

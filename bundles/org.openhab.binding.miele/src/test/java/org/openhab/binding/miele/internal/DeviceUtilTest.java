@@ -61,6 +61,11 @@ public class DeviceUtilTest extends JavaTest {
     }
 
     @Test
+    public void getTemperatureStateColdValueReturns10Degrees() throws NumberFormatException {
+        assertEquals(new QuantityType<>(10, SIUnits.CELSIUS), DeviceUtil.getTemperatureState("-32760"));
+    }
+
+    @Test
     public void getTemperatureStateNonNumericValueThrowsNumberFormatException() {
         assertThrows(NumberFormatException.class, () -> DeviceUtil.getTemperatureState("A"));
     }
