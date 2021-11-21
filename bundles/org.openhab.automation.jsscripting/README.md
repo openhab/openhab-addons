@@ -221,7 +221,7 @@ Import types from openHAB Core for type conversion and more.
 Import Units from openHAB Core for unit conversion and more.
 
 ```javascript
-let <typeOrUnit> = Java.type('org.openhab.core.library.types.<typeOrUnit>');
+let typeOrUnit = Java.type('org.openhab.core.library.types.typeOrUnit');
 
 // Example
 let HSBType = Java.type('org.openhab.core.library.types.HSBType');
