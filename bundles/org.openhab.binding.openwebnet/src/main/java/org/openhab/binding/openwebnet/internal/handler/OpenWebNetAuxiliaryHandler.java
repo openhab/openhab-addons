@@ -32,15 +32,12 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetAuxiliaryHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUX_SUPPORTED_THING_TYPES;
-    private long lastStatusRequestSentTS = 0;
-
 
     private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
     // for this handler
 
     protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another
 
-    // all devices refresh request
     public OpenWebNetAuxiliaryHandler(Thing thing) {
         super(thing);
     }
@@ -83,17 +80,15 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         Where w = deviceWhere;
         if (w != null) {
             try {
-                lastStatusRequestSentTS = System.currentTimeMillis();
                 Response res = send(Auxiliary.requestStatus(toWhere(channelId)));
                 if (res != null && res.isSuccess()) {
-                    // set thing online, if not already
                     ThingStatus ts = getThing().getStatus();
                     if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
                         updateStatus(ThingStatus.ONLINE);
                     }
                 }
             } catch (OWNException e) {
-                logger.warn("requestStatus() Exception while requesting light state: {}", e.getMessage());
+                logger.warn("requestStatus() Exception while requesting auxiliary state: {}", e.getMessage());
             }
         } else {
             logger.warn("Could not requestStatus(): deviceWhere is null");
@@ -102,7 +97,22 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-        //TODO: To be implemented
+        OpenWebNetBridgeHandler brH = bridgeHandler;
+        if (brH != null) {
+            if(brH.isBusGateway() && refreshAll){
+                long now = System.currentTimeMillis();
+                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC){
+                    try {
+                        send(Auxiliary.requestStatus(WhereAuxiliary.GENERAL.value()));
+                        lastAllDevicesRefreshTS = now;
+                    } catch (OWNException e) {
+                        logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
+                    }
+                } else {
+                    logger.debug("Refresh all devices just sent...");
+                }
+            }
+        }
     }
 
     @Override
