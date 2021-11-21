@@ -282,6 +282,7 @@ See oven.
 | Program | Description                         |
 |---------|-------------------------------------|
 | 10      | Automatic Plus                      |
+| 20      | Cottons                             |
 | 23      | Cottons hygiene                     |
 | 30      | Minimum iron                        |
 | 31      | Gentle minimum iron                 |

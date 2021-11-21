@@ -164,14 +164,14 @@ public enum TumbleDryerChannelSelector implements ApplianceChannelSelector {
     private final Logger logger = LoggerFactory.getLogger(TumbleDryerChannelSelector.class);
 
     private static final Map<String, String> programs = Map.ofEntries(entry("10", "automatic-plus"),
-            entry("23", "cottons-hygiene"), entry("30", "minimum-iron"), entry("31", "gentle-minimum-iron"),
-            entry("40", "woollens-handcare"), entry("50", "delicates"), entry("60", "warm-air"),
-            entry("70", "cool-air"), entry("80", "express"), entry("90", "cottons"), entry("100", "gentle-smoothing"),
-            entry("120", "proofing"), entry("130", "denim"), entry("131", "gentle-denim"), entry("140", "shirts"),
-            entry("141", "gentle-shirts"), entry("150", "sportswear"), entry("160", "outerwear"),
-            entry("170", "silks-handcare"), entry("190", "standard-pillows"), entry("220", "basket-programme"),
-            entry("240", "smoothing"), entry("65000", "cottons-auto-load-control"),
-            entry("65001", "minimum-iron-auto-load-control"));
+            entry("20", "cottons"), entry("23", "cottons-hygiene"), entry("30", "minimum-iron"),
+            entry("31", "gentle-minimum-iron"), entry("40", "woollens-handcare"), entry("50", "delicates"),
+            entry("60", "warm-air"), entry("70", "cool-air"), entry("80", "express"), entry("90", "cottons-eco"),
+            entry("100", "gentle-smoothing"), entry("120", "proofing"), entry("130", "denim"),
+            entry("131", "gentle-denim"), entry("140", "shirts"), entry("141", "gentle-shirts"),
+            entry("150", "sportswear"), entry("160", "outerwear"), entry("170", "silks-handcare"),
+            entry("190", "standard-pillows"), entry("220", "basket-programme"), entry("240", "smoothing"),
+            entry("65000", "cottons-auto-load-control"), entry("65001", "minimum-iron-auto-load-control"));
 
     private static final Map<String, String> phases = Map.ofEntries(entry("1", "programme-running"),
             entry("2", "drying"), entry("3", "drying-machine-iron"), entry("4", "drying-hand-iron"),
