@@ -31,8 +31,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IllformedLocaleException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -241,24 +243,34 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     private boolean validateConfig(Configuration config) {
         if (config.get(HOST) == null || ((String) config.get(HOST)).isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.communication-error.ip-address-not-set");
+                    "@text/offline.configuration-error.ip-address-not-set");
             return false;
         }
         if (config.get(INTERFACE) == null || ((String) config.get(INTERFACE)).isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.communication-error.ip-multicast-interface-not-set");
+                    "@text/offline.configuration-error.ip-multicast-interface-not-set");
             return false;
         }
         if (!IP_PATTERN.matcher((String) config.get(HOST)).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.communication-error.invalid-ip-gateway [\"" + config.get(HOST) + "\"]");
+                    "@text/offline.configuration-error.invalid-ip-gateway [\"" + config.get(HOST) + "\"]");
             return false;
         }
         if (!IP_PATTERN.matcher((String) config.get(INTERFACE)).matches()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "@text/offline.communication-error.invalid-ip-multicast-interface [\"" + config.get(INTERFACE)
+                    "@text/offline.configuration-error.invalid-ip-multicast-interface [\"" + config.get(INTERFACE)
                             + "\"]");
             return false;
+        }
+        String language = (String) config.get(LANGUAGE);
+        if (language != null && !language.isBlank()) {
+            try {
+                new Locale.Builder().setLanguageTag(language).build();
+            } catch (IllformedLocaleException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "@text/offline.configuration-error.invalid-language [\"" + language + "\"]");
+                return false;
+            }
         }
         return true;
     }
