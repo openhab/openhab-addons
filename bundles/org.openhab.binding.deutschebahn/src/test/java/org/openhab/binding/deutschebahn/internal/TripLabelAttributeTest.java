@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TripLabel;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TripType;
 import org.openhab.core.library.types.StringType;

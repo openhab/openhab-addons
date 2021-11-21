@@ -21,7 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.deutschebahn.internal.EventType;
 import org.openhab.binding.deutschebahn.internal.TimetableStopFilter;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;

@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.EventStatus;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Message;

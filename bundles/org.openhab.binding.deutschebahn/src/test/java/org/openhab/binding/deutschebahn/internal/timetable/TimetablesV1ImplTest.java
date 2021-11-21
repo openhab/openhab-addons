@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.deutschebahn.internal.timetable;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Timetable;
 
 /**

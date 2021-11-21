@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.deutschebahn.internal.timetable;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.net.URL;

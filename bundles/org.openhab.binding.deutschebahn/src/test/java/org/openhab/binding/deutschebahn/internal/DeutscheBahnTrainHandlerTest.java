@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
