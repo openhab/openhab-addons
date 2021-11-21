@@ -13,10 +13,16 @@
 package org.openhab.binding.openwebnet.internal;
 
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.ALL_SUPPORTED_THING_TYPES;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openwebnet.internal.handler.*;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAutomationHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetAuxiliaryHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetBridgeHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetEnergyHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetGenericHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetLightingHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetScenarioHandler;
+import org.openhab.binding.openwebnet.internal.handler.OpenWebNetThermoregulationHandler;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,6 +39,7 @@ import org.slf4j.LoggerFactory;
  * @author Massimo Valla - Initial contribution
  * @author Andrea Conte - Energy management, Thermoregulation
  * @author Gilberto Cocchi - Thermoregulation
+ * @author Giovanni Fabiani - Auxiliary support
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.openwebnet", service = ThingHandlerFactory.class)
@@ -68,7 +75,7 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         } else if (OpenWebNetScenarioHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("creating NEW SCENARIO Handler");
             return new OpenWebNetScenarioHandler(thing);
-        } else if (OpenWebNetAuxiliaryHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())){
+        } else if (OpenWebNetAuxiliaryHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Creating NEW AUXILIARY Handler");
             return new OpenWebNetAuxiliaryHandler(thing);
         }

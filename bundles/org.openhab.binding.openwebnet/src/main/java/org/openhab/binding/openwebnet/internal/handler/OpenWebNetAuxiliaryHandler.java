@@ -1,5 +1,8 @@
 package org.openhab.binding.openwebnet.internal.handler;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.*;
+
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_SWITCH;
+
+import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
@@ -15,8 +18,8 @@ import org.openwebnet4j.message.Auxiliary;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.Who;
-import org.slf4j.*;
-import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenWebNetAuxiliaryHandler} is responsible for handling Auxiliary (AUX) commands/messages
@@ -59,7 +62,6 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                     } else if (OnOffType.OFF.equals(command)) {
                         send(Auxiliary.requestTurnOff(toWhere(channel.getId())));
                     }
-
                 } catch (OWNException e) {
                     logger.warn("Exception while processing command {}: {}", command, e.getMessage());
                 }
@@ -70,7 +72,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected void requestChannelState(ChannelUID channel)  {
+    protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
         requestStatus(channel.getId());
     }
@@ -99,14 +101,14 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     protected void refreshDevice(boolean refreshAll) {
         OpenWebNetBridgeHandler brH = bridgeHandler;
         if (brH != null) {
-            if(brH.isBusGateway() && refreshAll){
+            if (brH.isBusGateway() && refreshAll) {
                 long now = System.currentTimeMillis();
-                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC){
+                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
                     try {
                         send(Auxiliary.requestStatus(WhereAuxiliary.GENERAL.value()));
                         lastAllDevicesRefreshTS = now;
                     } catch (OWNException e) {
-                        logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
+                        logger.warn("Exception while requesting all devices refresh: {}", e.getMessage());
                     }
                 } else {
                     logger.debug("Refresh all devices just sent...");
@@ -136,12 +138,10 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
             OpenWebNetBridgeHandler brH = bridgeHandler;
             if (brH != null) {
                 return w.value();
-            } else if (channelId.equals(CHANNEL_SWITCH)){
+            } else if (channelId.equals(CHANNEL_SWITCH)) {
                 return w.value();
             }
         }
         return null;
     }
 }
-
-
