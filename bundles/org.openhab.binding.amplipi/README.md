@@ -1,6 +1,6 @@
 # AmpliPi Binding
 
-This binding supports the multi room audio system [AmpliPi](http://www.amplipi.com/) from [MicroNova](http://www.micro-nova.com/).
+This binding supports the multi-room audio system [AmpliPi](http://www.amplipi.com/) from [MicroNova](http://www.micro-nova.com/).
 
 
 ## Supported Things
@@ -10,7 +10,7 @@ Every available zone as well as group is managed as an individual Thing of type 
 
 ## Discovery
 
-Once the AmpliPi announces itself through mDNS (still a pending feature), it will be automatically discovered on the network.
+The AmpliPi announces itself through mDNS, so that the bindings is able to find it automatically.
 
 As soon as the AmpliPi is online, its zones and groups are automatically retrieved and added as Things to the Inbox.
 
@@ -45,6 +45,12 @@ The `zone` and `group` Things have the following channels:
 | mute     | Switch | Mutes the zone/group                               |
 | source   | Number | The source (1-4) that this zone/group is playing   |
 
+## Audio Sink
+
+For every AmpliPi controller, an audio sink is registered with the id of the thing.
+This audio sink accepts urls and audio files to be played.
+It uses the AmpliPi's PA feature for announcements on all available zones.
+If no volume value is passed, the current volume of each zone is used, otherwise the provided volume is temporarily set on all zones for the announcement.
 
 ## Full Example
 
