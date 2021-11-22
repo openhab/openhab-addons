@@ -138,6 +138,8 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
     @Override
     public void initialize() {
 
+        thingDisposing = false;
+
         updateStatus(ThingStatus.UNKNOWN);
 
         logger.debug("Start initializing mycroft {}", thing.getUID());
