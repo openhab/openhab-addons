@@ -4,11 +4,11 @@ This binding will connect to Mycroft A.I. in order to control it or react to eve
 
 Possibilies include :
 
-- Press a button in OpenHAB to wake Mycroft without using a wake word.
+- Press a button in openHAB to wake Mycroft without using a wake word.
 - Simulate a voice command to launch a skill, as if you just spoke it
 - Send some text that Mycroft will say (Using its Text To Speech service)
 - Control the music player
-- Control the sound volume of Mycroft
+- Mute or duck the sound volume of Mycroft
 - React to all the aforementioned events ...
 - ... And send/receive all other kind of messages on the message bus
 
@@ -81,7 +81,6 @@ The `mycroft.item` file :
 ```java
 Switch myMycroft_mute                  "Mute"                      { channel="mycroft:mycroft:myMycroft:volume_mute" }
 Switch myMycroft_duck                  "Duck"                      { channel="mycroft:mycroft:myMycroft:volume_duck" }
-Dimmer myMycroft_volume                "Volume [%d]"               { channel="mycroft:mycroft:myMycroft:volume" }
 Player myMycroft_player                "Control"                   { channel="mycroft:mycroft:myMycroft:player" }
 Switch myMycroft_listen                "Wake and listen"           { channel="mycroft:mycroft:myMycroft:listen" }
 String myMycroft_speak                 "Speak STT"                 { channel="mycroft:mycroft:myMycroft:speak" }
@@ -99,7 +98,6 @@ sitemap demo label="myMycroft"
     Frame label="myMycroft" {
         Switch    item=myMycroft_mute
         Switch    item=myMycroft_duck
-        Slider    item=myMycroft_volume
         Default   item=myMycroft_player
         Switch    item=myMycroft_listen
         Text      item=myMycroft_speak
