@@ -13,23 +13,16 @@
 package org.openhab.binding.pulseaudio.internal;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import javazoom.spi.mpeg.sampled.convert.MpegFormatConversionProvider;
-import javazoom.spi.mpeg.sampled.file.MpegAudioFileReader;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,7 +37,6 @@ import org.openhab.core.audio.UnsupportedAudioStreamException;
 import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tritonus.share.sampled.file.TAudioFileFormat;
 
 /**
  * The audio sink for openhab, implemented by a connection to a pulseaudio sink
@@ -91,52 +83,6 @@ public class PulseAudioAudioSink implements AudioSink {
     }
 
     /**
-     * Convert MP3 to PCM, as this is the only possible format
-     *
-     * @param input
-     * @return
-     */
-    private @Nullable AudioStreamAndDuration getPCMStreamFromMp3Stream(InputStream input) {
-        try {
-
-            MpegAudioFileReader mpegAudioFileReader = new MpegAudioFileReader();
-
-            int duration = -1;
-            if (input instanceof FixedLengthAudioStream) {
-                final Long audioFileLength = ((FixedLengthAudioStream) input).length();
-                AudioFileFormat audioFileFormat = mpegAudioFileReader.getAudioFileFormat(input);
-                if (audioFileFormat instanceof TAudioFileFormat) {
-                    Map<String, Object> taudioFileFormatProperties = ((TAudioFileFormat) audioFileFormat).properties();
-                    if (taudioFileFormatProperties.containsKey("mp3.framesize.bytes")
-                            && taudioFileFormatProperties.containsKey("mp3.framerate.fps")) {
-                        Integer frameSize = (Integer) taudioFileFormatProperties.get("mp3.framesize.bytes");
-                        Float frameRate = (Float) taudioFileFormatProperties.get("mp3.framerate.fps");
-                        if (frameSize != null && frameRate != null) {
-                            duration = Math.round((audioFileLength / (frameSize * frameRate)) * 1000);
-                        }
-                    }
-                }
-                input.reset();
-            }
-
-            AudioInputStream sourceAIS = mpegAudioFileReader.getAudioInputStream(input);
-            javax.sound.sampled.AudioFormat sourceFormat = sourceAIS.getFormat();
-
-            MpegFormatConversionProvider mpegconverter = new MpegFormatConversionProvider();
-            javax.sound.sampled.AudioFormat convertFormat = new javax.sound.sampled.AudioFormat(
-                    javax.sound.sampled.AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16,
-                    sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
-
-            AudioInputStream audioInputStreamConverted = mpegconverter.getAudioInputStream(convertFormat, sourceAIS);
-            return new AudioStreamAndDuration(audioInputStreamConverted, duration);
-
-        } catch (IOException | UnsupportedAudioFileException e) {
-            logger.warn("Cannot convert this mp3 stream to pcm stream: {}", e.getMessage());
-        }
-        return null;
-    }
-
-    /**
      * Connect to pulseaudio with the simple protocol
      *
      * @throws IOException
@@ -168,23 +114,6 @@ public class PulseAudioAudioSink implements AudioSink {
         }
     }
 
-    private AudioStreamAndDuration getWavAudioAndDuration(AudioStream audioStream) {
-        int duration = -1;
-        if (audioStream instanceof FixedLengthAudioStream) {
-            final Long audioFileLength = ((FixedLengthAudioStream) audioStream).length();
-            try {
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(audioStream);
-                int frameSize = audioInputStream.getFormat().getFrameSize();
-                float frameRate = audioInputStream.getFormat().getFrameRate();
-                float durationInSeconds = (audioFileLength / (frameSize * frameRate));
-                duration = Math.round(durationInSeconds * 1000);
-            } catch (UnsupportedAudioFileException | IOException e) {
-                logger.warn("Error when getting duration information from AudioFile");
-            }
-        }
-        return new AudioStreamAndDuration(audioStream, duration);
-    }
-
     @Override
     public void process(@Nullable AudioStream audioStream)
             throws UnsupportedAudioFormatException, UnsupportedAudioStreamException {
@@ -193,34 +122,22 @@ public class PulseAudioAudioSink implements AudioSink {
             return;
         }
 
-        AudioStreamAndDuration audioInputStreamAndDuration = null;
-        try {
-
-            if (AudioFormat.MP3.isCompatible(audioStream.getFormat())) {
-                audioInputStreamAndDuration = getPCMStreamFromMp3Stream(audioStream);
-            } else if (AudioFormat.WAV.isCompatible(audioStream.getFormat())) {
-                audioInputStreamAndDuration = getWavAudioAndDuration(audioStream);
-            } else {
-                throw new UnsupportedAudioFormatException("pulseaudio audio sink can only play pcm or mp3 stream",
-                        audioStream.getFormat());
-            }
-
+        try (ConvertedInputStream normalizedPCMStream = new ConvertedInputStream(audioStream)) {
             for (int countAttempt = 1; countAttempt <= 2; countAttempt++) { // two attempts allowed
                 try {
                     connectIfNeeded();
                     final Socket clientSocketLocal = clientSocket;
-                    if (audioInputStreamAndDuration != null && clientSocketLocal != null) {
+                    if (clientSocketLocal != null) {
                         // send raw audio to the socket and to pulse audio
                         isIdle = false;
                         Instant start = Instant.now();
-                        audioInputStreamAndDuration.inputStream.transferTo(clientSocketLocal.getOutputStream());
-                        if (audioInputStreamAndDuration.duration != -1) { // ensure, if the sound has a duration
+                        normalizedPCMStream.transferTo(clientSocketLocal.getOutputStream());
+                        if (normalizedPCMStream.getDuration() != -1) { // ensure, if the sound has a duration
                             // that we let at least this time for the system to play
                             Instant end = Instant.now();
                             long millisSecondTimedToSendAudioData = Duration.between(start, end).toMillis();
-                            if (millisSecondTimedToSendAudioData < audioInputStreamAndDuration.duration) {
-                                long timeToSleep = audioInputStreamAndDuration.duration
-                                        - millisSecondTimedToSendAudioData;
+                            if (millisSecondTimedToSendAudioData < normalizedPCMStream.getDuration()) {
+                                long timeToSleep = normalizedPCMStream.getDuration() - millisSecondTimedToSendAudioData;
                                 logger.debug("Sleep time to let the system play sound : {}", timeToSleep);
                                 Thread.sleep(timeToSleep);
                             }
@@ -243,15 +160,11 @@ public class PulseAudioAudioSink implements AudioSink {
                     break;
                 }
             }
+        } catch (UnsupportedAudioFileException | IOException e) {
+            throw new UnsupportedAudioFormatException("Cannot send sound to the pulseaudio sink",
+                    audioStream.getFormat(), e);
         } finally {
-            try {
-                if (audioInputStreamAndDuration != null) {
-                    audioInputStreamAndDuration.inputStream.close();
-                }
-                audioStream.close();
-                scheduleDisconnect();
-            } catch (IOException e) {
-            }
+            scheduleDisconnect();
         }
         isIdle = true;
     }
@@ -285,16 +198,5 @@ public class PulseAudioAudioSink implements AudioSink {
     @Override
     public void setVolume(PercentType volume) {
         pulseaudioHandler.setVolume(volume.intValue());
-    }
-
-    private static class AudioStreamAndDuration {
-        private InputStream inputStream;
-        private int duration;
-
-        public AudioStreamAndDuration(InputStream inputStream, int duration) {
-            super();
-            this.inputStream = inputStream;
-            this.duration = duration + 200; // introduce some delay
-        }
     }
 }
