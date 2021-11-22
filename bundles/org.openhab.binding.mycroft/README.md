@@ -107,39 +107,6 @@ sitemap demo label="myMycroft"
 }
 ```
 
-## Rule Actions
-
-This binding includes a number of rule actions, which allow triggering Mycroft from within rules.
-
-
-```
-(Rule DSL)
-val mycroftAction = getActions("mycroft","mycroft:mycroft:<uid>")
-```
-
-```
-(javascript JSR)
-var mycroftAction = actions.get("mycroft", "mycroft:mycroft:<uid>");
-```
-
-
-Where uid is the Thing UID of the Mycroft thing.
-
-Once this action instance is retrieved, you can invoke the `speak' method on it:
-
-```
-mycroftAction.speak("Hello world!")
-```
-
-
-The following actions are supported.
-
-
-| Action                     | Description  |
-|----------------------------|--------------|
-| speak(String message) | Mycroft will say this. |
-| utterance(String utterance) | Ask Mycroft something|
-
 ## Full Example
 
 ### Ask Mycroft to say something
@@ -151,7 +118,6 @@ rule "Say Hello"
 when
    Item Presence_Isaac changed
 then
-   val mycroftAction = getActions("mycroft","mycroft:mycroft:2b155b22")
-   mycroftAction.speak("Hello Isaac")
+   myMycroft_speak.sendCommand("Hello Isaac")
 end
 ```

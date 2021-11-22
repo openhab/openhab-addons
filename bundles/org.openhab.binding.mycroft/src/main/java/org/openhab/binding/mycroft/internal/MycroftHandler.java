@@ -13,8 +13,6 @@
 package org.openhab.binding.mycroft.internal;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,7 +45,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -248,10 +245,5 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
             logger.warn("Cannot send message of type {}, for reason {}", message.getClass().getName(), e.getMessage());
             return false;
         }
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MycroftActions.class);
     }
 }
