@@ -24,10 +24,9 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-
-import tech.units.indriya.unit.Units;
 
 /**
  * Get updates for {@link AnelState}s.
@@ -177,7 +176,7 @@ public class AnelStateUpdater {
             return null;
         }
         final float floatValue = Float.parseFloat(value);
-        return QuantityType.valueOf(floatValue, Units.CELSIUS);
+        return QuantityType.valueOf(floatValue, SIUnits.CELSIUS);
     }
 
     private @Nullable State getSwitchState(@Nullable Boolean value) {
@@ -193,7 +192,7 @@ public class AnelStateUpdater {
     }
 
     private @Nullable State getNewTemperatureState(@Nullable String oldValue, @Nullable String newValue) {
-        return getNewState(oldValue, newValue, value -> QuantityType.valueOf(Float.parseFloat(value), Units.CELSIUS));
+        return getNewState(oldValue, newValue, value -> QuantityType.valueOf(Float.parseFloat(value), SIUnits.CELSIUS));
     }
 
     private @Nullable State getNewSwitchState(@Nullable Boolean oldValue, @Nullable Boolean newValue) {

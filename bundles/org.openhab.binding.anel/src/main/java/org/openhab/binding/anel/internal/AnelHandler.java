@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.anel.internal;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -97,7 +98,11 @@ public class AnelHandler extends BaseThingHandler {
             // request initial state, 3 attempts
             for (int attempt = 1; attempt <= IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS
                     && state == null; attempt++) {
-                newUdpConnector.send(IAnelConstants.BROADCAST_DISCOVERY_MSG);
+                try {
+                    newUdpConnector.send(IAnelConstants.BROADCAST_DISCOVERY_MSG);
+                } catch (IOException e) {
+                    // network or socket failure, also wait 2 sec and try again
+                }
 
                 // answer expected within 50-600ms on a regular network; wait up to 2sec just to make sure
                 for (int delay = 0; delay < 10 && state == null; delay++) {
@@ -125,14 +130,13 @@ public class AnelHandler extends BaseThingHandler {
 
         } catch (InterruptedException e) {
 
-            // OH shutdown - don't log anything, just clean up
-            dispose();
+            // OH shutdown - don't log anything, Framework will call dispose()
 
         } catch (Exception e) {
 
             logger.debug("Connection to '{}' failed", config, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Connection to '" + config
-                    + "' failed with " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                    + "' failed unexpectedly with " + e.getClass().getSimpleName() + ": " + e.getMessage());
             dispose();
         }
     }
@@ -226,10 +230,12 @@ public class AnelHandler extends BaseThingHandler {
                 updateState(channelUID, lockedState);
 
             } else if (anelCommand == null) {
-                logger.info("Channel {} received command {} which is (currently) not supported", channelUID, command);
+                logger.warn(
+                        "Channel {} received command {} which is (currently) not supported; please check channel configuration.",
+                        channelUID, command);
             }
         } else {
-            logger.info("Channel {} received command {} which is (currently) not supported", channelUID, command);
+            logger.warn("Channel {} received command {} which is not supported", channelUID, command);
         }
 
         if (anelCommand != null) {
