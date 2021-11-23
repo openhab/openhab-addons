@@ -315,11 +315,11 @@ See oven.
 | 513   | 1      | Programme running            |
 | 514   | 2      | Drying                       |
 | 515   | 3      | Drying Machine iron          |
-| 516   | 4      | Drying Hand iron (1)         |
+| 516   | 4      | Drying Hand iron (2)         |
 | 517   | 5      | Drying Normal                |
 | 518   | 6      | Drying Normal+               |
 | 519   | 7      | Cooling down                 |
-| 520   | 8      | Drying Hand iron (2)         |
+| 520   | 8      | Drying Hand iron (1)         |
 | 522   | 10     | Finished                     |
 
 #### Washing Machine
