@@ -24,6 +24,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
@@ -66,7 +67,7 @@ public class TapoUtils {
      * @param defaultValue defaut value
      * @return
      */
-    public static <T> T getValueOrDefault(T value, T defaultValue) {
+    public static <T> T getValueOrDefault(@Nullable T value, T defaultValue) {
         return value == null ? defaultValue : value;
     }
 
@@ -149,14 +150,24 @@ public class TapoUtils {
      * JSON-FORMATER
      ************************************/
 
+    public static boolean isValidJson(String json) {
+        try {
+            Gson gson = new Gson();
+            JsonObject jsnObject = gson.fromJson(json, JsonObject.class);
+            return jsnObject != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /**
      * 
      * @param name parameter name
      * @param defVal - default value;
      * @return string value
      */
-    public static String jsonObjectToString(JsonObject jsonObject, String name, String defVal) {
-        if (jsonObject.has(name)) {
+    public static String jsonObjectToString(@Nullable JsonObject jsonObject, String name, String defVal) {
+        if (jsonObject != null && jsonObject.has(name)) {
             return jsonObject.get(name).getAsString();
         } else {
             return defVal;
@@ -168,7 +179,7 @@ public class TapoUtils {
      * @param name parameter name
      * @return string value
      */
-    public static String jsonObjectToString(JsonObject jsonObject, String name) {
+    public static String jsonObjectToString(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToString(jsonObject, name, "");
     }
 
@@ -178,8 +189,8 @@ public class TapoUtils {
      * @param defVal - default value;
      * @return boolean value
      */
-    public static Boolean jsonObjectToBool(JsonObject jsonObject, String name, Boolean defVal) {
-        if (jsonObject.has(name)) {
+    public static Boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name, Boolean defVal) {
+        if (jsonObject != null && jsonObject.has(name)) {
             return jsonObject.get(name).getAsBoolean();
         } else {
             return false;
@@ -191,7 +202,7 @@ public class TapoUtils {
      * @param name parameter name
      * @return boolean value
      */
-    public static Boolean jsonObjectToBool(JsonObject jsonObject, String name) {
+    public static Boolean jsonObjectToBool(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToBool(jsonObject, name, false);
     }
 
@@ -201,8 +212,8 @@ public class TapoUtils {
      * @param defVal - default value;
      * @return integer value
      */
-    public static Integer jsonObjectToInt(JsonObject jsonObject, String name, Integer defVal) {
-        if (jsonObject.has(name)) {
+    public static Integer jsonObjectToInt(@Nullable JsonObject jsonObject, String name, Integer defVal) {
+        if (jsonObject != null && jsonObject.has(name)) {
             return jsonObject.get(name).getAsInt();
         } else {
             return defVal;
@@ -214,7 +225,7 @@ public class TapoUtils {
      * @param name parameter name
      * @return integer value
      */
-    public static Integer jsonObjectToInt(JsonObject jsonObject, String name) {
+    public static Integer jsonObjectToInt(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToInt(jsonObject, name, 0);
     }
 
@@ -224,8 +235,8 @@ public class TapoUtils {
      * @param defVal - default value;
      * @return number value
      */
-    public static Number jsonObjectToNumber(JsonObject jsonObject, String name, Number defVal) {
-        if (jsonObject.has(name)) {
+    public static Number jsonObjectToNumber(@Nullable JsonObject jsonObject, String name, Number defVal) {
+        if (jsonObject != null && jsonObject.has(name)) {
             return jsonObject.get(name).getAsNumber();
         } else {
             return defVal;
@@ -237,7 +248,7 @@ public class TapoUtils {
      * @param name parameter name
      * @return number value
      */
-    public static Number jsonObjectToNumber(JsonObject jsonObject, String name) {
+    public static Number jsonObjectToNumber(@Nullable JsonObject jsonObject, String name) {
         return jsonObjectToNumber(jsonObject, name, 0);
     }
 

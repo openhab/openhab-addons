@@ -84,9 +84,9 @@ All devices support some of the following channels:
 | actuator  | output           | Switch                 | Power device on or off       | P100, P105,L510, L530, L900     |
 |           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L900                |
 |           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L900                |
-|           | color            | Color                  | Color                        | L530, L900                       |
+|           | color            | Color                  | Color                        | L530, L900                      |
 | device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, L510, L530, L900    |
-|           | onTime           | QuantityType <Time>    | seconds output is on         | P100, P105, L510, L530, L900    |
+|           | onTime           | Number:Time            | seconds output is on         | P100, P105, L510, L530, L900    |
 
 
 ## Channel Refresh

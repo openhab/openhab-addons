@@ -21,7 +21,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,11 +40,11 @@ public class TapoCipher {
     protected static final String HANDSHAKE_ALGORITHM = "RSA";
     protected static final String HANDSHAKE_CHARSET = "UTF-8";
 
-    @Nullable
+    @NonNullByDefault({})
     private Cipher encodeCipher;
-    @Nullable
+    @NonNullByDefault({})
     private Cipher decodeCipher;
-    @Nullable
+    @NonNullByDefault({})
     private MimeEncode mimeEncode;
 
     /**
@@ -105,8 +104,8 @@ public class TapoCipher {
             SecretKeySpec secretKeySpec = new SecretKeySpec(bArr, CIPHER_ALGORITHM);
             IvParameterSpec ivParameterSpec = new IvParameterSpec(bArr2);
             this.encodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
-            this.encodeCipher.init(1, secretKeySpec, ivParameterSpec);
             this.decodeCipher = Cipher.getInstance(CIPHER_TRANSFORMATION);
+            this.encodeCipher.init(1, secretKeySpec, ivParameterSpec);
             this.decodeCipher.init(2, secretKeySpec, ivParameterSpec);
         } catch (Exception e) {
             logger.warn("initChiper failed: {}", e.getMessage());

@@ -30,6 +30,7 @@ import com.google.gson.JsonObject;
  */
 @NonNullByDefault
 public class TapoErrorHandler extends Exception {
+    private static final long serialVersionUID = 0L;
     private Integer errorCode = 0;
     private String errorMessage = "";
     private String infoMessage = "";
@@ -99,16 +100,12 @@ public class TapoErrorHandler extends Exception {
             String constName = f.getName();
             try {
                 Integer val = (Integer) f.get(this);
-                if (val.equals(errCode)) {
-                    /* get constan named by errorcode and _MSG (ERR_CODE_MSG) */
-                    try {
-                        String msg = TapoErrorConstants.class.getDeclaredField(constName + "_MSG").get(null).toString();
-                        if (msg.length() > 2) {
-                            return msg;
-                        } else {
-                            return infoMessage + " (" + constName + ")";
-                        }
-                    } catch (Exception e) {
+                if (val != null && val.equals(errCode)) {
+                    Field constantName = TapoErrorConstants.class.getDeclaredField(constName + "_MSG");
+                    String msg = getValueOrDefault(constantName.get(null), "").toString();
+                    if (msg.length() > 2) {
+                        return msg;
+                    } else {
                         return infoMessage + " (" + constName + ")";
                     }
                 }

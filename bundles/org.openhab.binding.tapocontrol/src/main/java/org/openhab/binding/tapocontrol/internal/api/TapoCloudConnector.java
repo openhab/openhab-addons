@@ -127,7 +127,7 @@ public class TapoCloudConnector {
         if (response.getStatus() == 200) {
             String rBody = response.getContentAsString();
             JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
-            try {
+            if (jsonObject != null) {
                 Integer errorCode = jsonObject.get("error_code").getAsInt();
                 if (errorCode == 0) {
                     token = jsonObject.getAsJsonObject("result").get("token").getAsString();
@@ -137,8 +137,8 @@ public class TapoCloudConnector {
                     handleError(new TapoErrorHandler(errorCode, msg));
                     logger.trace("cloud returns error: '{}'", rBody);
                 }
-            } catch (Exception e) {
-                handleError(new TapoErrorHandler(e, ERR_JSON_DECODE_FAIL_MSG));
+            } else {
+                handleError(new TapoErrorHandler(ERR_JSON_DECODE_FAIL));
                 logger.trace("unexpected json-response '{}'", rBody);
             }
         } else {
@@ -176,8 +176,8 @@ public class TapoCloudConnector {
         /* work with response */
         if (response.getStatus() == 200) {
             String rBody = response.getContentAsString();
-            try {
-                JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
+            JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
+            if (jsonObject != null) {
                 /* get errocode (0=success) */
                 Integer errorCode = jsonObject.get("error_code").getAsInt();
                 if (errorCode == 0) {
@@ -188,7 +188,7 @@ public class TapoCloudConnector {
                     handleError(new TapoErrorHandler(errorCode, "device answers with errorcode"));
                     logger.trace("cloud returns error: '{}'", rBody);
                 }
-            } catch (Exception e) {
+            } else {
                 logger.trace("enexpected json-response '{}'", rBody);
             }
         } else {

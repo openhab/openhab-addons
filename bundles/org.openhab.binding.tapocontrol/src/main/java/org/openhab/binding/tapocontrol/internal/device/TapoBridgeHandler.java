@@ -54,8 +54,8 @@ public class TapoBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> startupJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable ScheduledFuture<?> discoveryJob;
-    private @Nullable TapoCloudConnector cloudConnector;
-    private @Nullable TapoDiscoveryService discoveryService;
+    private @NonNullByDefault({}) TapoCloudConnector cloudConnector;
+    private @NonNullByDefault({}) TapoDiscoveryService discoveryService;
     private TapoCredentials credentials;
 
     private String uid;

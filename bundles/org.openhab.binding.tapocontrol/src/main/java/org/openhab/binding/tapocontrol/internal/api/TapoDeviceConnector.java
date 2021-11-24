@@ -14,12 +14,12 @@ package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorConstants.*;
+import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.*;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.device.TapoDevice;
 import org.openhab.binding.tapocontrol.internal.helpers.PayloadBuilder;
@@ -53,7 +53,7 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      *
      * @param config TapoControlConfiguration class
      */
-    public TapoDeviceConnector(TapoDevice device, @Nullable TapoBridgeHandler bridgeThingHandler) {
+    public TapoDeviceConnector(TapoDevice device, TapoBridgeHandler bridgeThingHandler) {
         super(device, bridgeThingHandler);
         this.device = device;
         this.gson = new Gson();
@@ -241,15 +241,11 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      */
     @Override
     protected void handleSuccessResponse(String responseBody) {
-        try {
-            JsonObject jsnResult = getJsonFromResponse(responseBody);
-            Integer errorCode = jsnResult.get("error_code").getAsInt();
-            if (errorCode != 0) {
-                logger.debug("({}) set deviceInfo not succesfull: {}", uid, jsnResult.toString());
-                this.device.handleConnectionState();
-            }
-        } catch (Exception e) {
-            logger.debug("({}) handleSuccessResponse exception {}", uid, e.toString());
+        JsonObject jsnResult = getJsonFromResponse(responseBody);
+        Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_JSON_DECODE_FAIL);
+        if (errorCode != 0) {
+            logger.debug("({}) set deviceInfo not succesfull: {}", uid, jsnResult);
+            this.device.handleConnectionState();
         }
         this.device.responsePasstrough(responseBody);
     }
@@ -299,20 +295,21 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      * @return JsonObject with result
      */
     private JsonObject getJsonFromResponse(String responseBody) {
-        try {
-            JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
-            /* get errocode (0=success) */
-            Integer errorCode = jsonObject.get("error_code").getAsInt();
+        JsonObject jsonObject = gson.fromJson(responseBody, JsonObject.class);
+        /* get errocode (0=success) */
+        if (jsonObject != null) {
+            Integer errorCode = jsonObjectToInt(jsonObject, "error_code");
             if (errorCode == 0) {
                 /* decrypt response */
                 jsonObject = gson.fromJson(responseBody, JsonObject.class);
                 logger.trace("({}) received result: {}", uid, responseBody);
-
-                /* return result if set / else request was successfull */
-                if (jsonObject.has("result")) {
-                    return jsonObject.getAsJsonObject("result");
-                } else {
-                    return jsonObject;
+                if (jsonObject != null) {
+                    /* return result if set / else request was successfull */
+                    if (jsonObject.has("result")) {
+                        return jsonObject.getAsJsonObject("result");
+                    } else {
+                        return jsonObject;
+                    }
                 }
             } else {
                 /* return errorcode from device */
@@ -321,11 +318,10 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
                 handleError(te);
                 return jsonObject;
             }
-        } catch (Exception e) {
-            logger.debug("({}) sendPayload exception {}", uid, e.toString());
-            handleError(new TapoErrorHandler(e));
-            return new JsonObject();
         }
+        logger.debug("({}) sendPayload exception {}", uid, responseBody);
+        handleError(new TapoErrorHandler(ERR_HTTP_RESPONSE));
+        return new JsonObject();
     }
 
     /***********************************

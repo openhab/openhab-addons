@@ -28,6 +28,7 @@ import org.openhab.binding.tapocontrol.internal.api.TapoDeviceConnector;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceConfiguration;
 import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -35,6 +36,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,15 +55,15 @@ public abstract class TapoDevice extends BaseThingHandler {
     protected TapoDeviceInfo deviceInfo;
     protected @Nullable ScheduledFuture<?> startupJob;
     protected @Nullable ScheduledFuture<?> pollingJob;
-    protected @Nullable TapoDeviceConnector connector;
-    protected @Nullable TapoBridgeHandler bridge;
+    protected @NonNullByDefault({}) TapoDeviceConnector connector;
+    protected @NonNullByDefault({}) TapoBridgeHandler bridge;
 
     /**
      * Constructor
      *
      * @param thing Thing object representing device
      */
-    public TapoDevice(Thing thing) {
+    protected TapoDevice(Thing thing) {
         super(thing);
         this.config = new TapoDeviceConfiguration(thing);
         this.deviceInfo = new TapoDeviceInfo();
@@ -80,8 +82,15 @@ public abstract class TapoDevice extends BaseThingHandler {
     @Override
     public void initialize() {
         try {
-            this.bridge = (TapoBridgeHandler) getBridge().getHandler();
             this.config.loadSettings();
+            Bridge bridgeThing = getBridge();
+            if (bridgeThing != null) {
+                BridgeHandler bridgeHandler = bridgeThing.getHandler();
+                if (bridgeHandler != null) {
+                    this.bridge = (TapoBridgeHandler) bridgeHandler;
+                    this.connector = new TapoDeviceConnector(this, bridge);
+                }
+            }
         } catch (Exception e) {
             logger.debug("({}) configuration error : {}", uid, e.getMessage());
         }
@@ -112,8 +121,6 @@ public abstract class TapoDevice extends BaseThingHandler {
      * ACTIVATE DEVICE
      */
     private void activateDevice() {
-        this.connector = new TapoDeviceConnector(this, bridge);
-
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -129,6 +136,7 @@ public abstract class TapoDevice extends BaseThingHandler {
      */
     protected TapoErrorHandler checkSettings() {
         TapoErrorHandler configErr = new TapoErrorHandler();
+
         /* check bridge */
         if (bridge == null || !(bridge instanceof TapoBridgeHandler)) {
             configErr.raiseError(ERR_NO_BRIDGE);

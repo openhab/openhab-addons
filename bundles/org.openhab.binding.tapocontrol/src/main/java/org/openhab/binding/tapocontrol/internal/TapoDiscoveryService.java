@@ -46,7 +46,7 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class TapoDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(TapoDiscoveryService.class);
-    protected @Nullable TapoBridgeHandler bridge;
+    protected @NonNullByDefault({}) TapoBridgeHandler bridge;
 
     /***********************************
      *
@@ -85,8 +85,9 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
         if (handler instanceof TapoBridgeHandler) {
-            this.bridge = (TapoBridgeHandler) handler;
-            bridge.setDiscoveryService(this);
+            TapoBridgeHandler tapoBridge = (TapoBridgeHandler) handler;
+            tapoBridge.setDiscoveryService(this);
+            this.bridge = tapoBridge;
         }
     }
 
@@ -107,11 +108,9 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
     @Override
     public void startScan() {
         removeOlderResults(getTimestampOfLastScan());
-        try {
+        if (bridge != null) {
             JsonArray jsonArray = bridge.getDeviceList();
             handleCloudDevices(jsonArray);
-        } catch (Exception e) {
-            logger.debug("Error scanning for devices", e);
         }
     }
 
@@ -129,12 +128,11 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
      * @return DiscoveryResult-Object
      */
     public DiscoveryResult createResult(JsonObject device) {
+        TapoBridgeHandler tapoBridge = this.bridge;
         String deviceModel = getDeviceModel(device);
         String label = getDeviceLabel(device);
         String deviceMAC = device.get(CLOUD_PROPERTY_MAC).getAsString();
-        ThingUID bridgeUID = bridge.getThing().getUID();
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, deviceModel);
-        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
 
         /* create properties */
         Map<String, Object> properties = new HashMap<>();
@@ -146,9 +144,17 @@ public class TapoDiscoveryService extends AbstractDiscoveryService implements Th
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.get(CLOUD_PROPERTY_ID).getAsString());
 
         logger.debug("device {} discovered", deviceModel);
-        return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withRepresentationProperty(DEVICE_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
-                .build();
+        if (tapoBridge != null) {
+            ThingUID bridgeUID = tapoBridge.getUID();
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, deviceMAC);
+            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withRepresentationProperty(DEVICE_REPRASENTATION_PROPERTY).withBridge(bridgeUID).withLabel(label)
+                    .build();
+        } else {
+            ThingUID thingUID = new ThingUID(BINDING_ID, deviceMAC);
+            return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withRepresentationProperty(DEVICE_REPRASENTATION_PROPERTY).withLabel(label).build();
+        }
     }
 
     /**
