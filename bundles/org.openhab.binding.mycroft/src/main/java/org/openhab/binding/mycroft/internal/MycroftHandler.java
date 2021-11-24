@@ -76,8 +76,9 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
         super(thing);
         String websocketID = thing.getUID().getAsString().replace(':', '-');
         if (websocketID.length() < 4) {
-            websocketID = "openHAB-mycroft-" + websocketID;
-        } else if (websocketID.length() > 20) {
+            websocketID = "mycroft-" + websocketID;
+        }
+        if (websocketID.length() > 20) {
             websocketID = websocketID.substring(websocketID.length() - 20);
         }
         this.connection = new MycroftConnection(this, webSocketFactory.createWebSocketClient(websocketID));
