@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * State of all Scenes in an HD PowerView hub
+ * State of all Scene Collections in an HD PowerView hub
  *
  * @author Jacob Laursen - Initial contribution
  */
