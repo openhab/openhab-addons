@@ -244,10 +244,13 @@ public class StationHandler extends BaseThingHandler {
             if (handler != null) {
                 if (handler.getThing().getStatus() == ThingStatus.ONLINE) {
                     return (SncfBridgeHandler) handler;
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                    return null;
                 }
             }
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         return null;
     }
 }
