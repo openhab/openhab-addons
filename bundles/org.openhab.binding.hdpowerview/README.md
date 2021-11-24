@@ -183,7 +183,7 @@ Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm 
 Scene items:
 
 ```
-Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:22663", autoupdate="false"}
+Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:scenes#22663", autoupdate="false"}
 ```
 
 ### `demo.sitemap` File
