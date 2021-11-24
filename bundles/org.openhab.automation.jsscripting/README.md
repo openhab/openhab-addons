@@ -45,12 +45,11 @@ Note that `console.log` will usually not work since the output has no terminal t
 The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 
 ```javascript
-let logger = Java.type('org.slf4j.LoggerFactory').getLogger('org.openhab.rule.<ruleId>');
+let logger = Java.type('org.slf4j.LoggerFactory').getLogger('org.openhab.rule.' + this.ruleUID);
 logger.info('Hello world!');
 logger.warn('Successfully logged warning.');
 logger.error('Successfully logged error.');
 ```
-Replace `<ruleId>` with your rule's or script's (unique-)id.
 
 The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logger.html) to obtain a named logger and then logs a message like:
 
