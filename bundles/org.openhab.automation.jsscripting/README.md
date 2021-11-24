@@ -61,16 +61,16 @@ The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logg
 
 ## Core Actions
 
-The basic openHAB services, which are pre-included in JavaScript actions when this Add-On is __not__ installed, allow the access to items and more.
+The openHAB services, which are pre-included in the integrated JavaScript engine, must explicitely be imported.
 
 ```javascript
-let { itemRegistry, things, rules, events, actions } = require('@runtime');
+let openhab = require('@runtime');
 ```
 
 ### itemRegistry
 
 ```javascript
-let state = itemRegistry.getItem(itemName).getState();
+let state = openhab.itemRegistry.getItem(itemName).getState();
 ```
 
 You can use `toString()` to convert an item's state to string or `toBigDecimal()` to convert to number.
@@ -78,29 +78,31 @@ You can use `toString()` to convert an item's state to string or `toBigDecimal()
 ### Event Bus Actions
 
 ```javascript
-events.sendCommand(itemName, command);
-events.postUpdate(itemName, state);
+openhab.events.sendCommand(itemName, command);
+openhab.events.postUpdate(itemName, state);
 ```
+
+`command` and `state` can be a string `'string'` or a number depending on the item.
 
 ### Exec Actions
 
 Execute a command line.
 
 ```javascript
-let Exec = Java.type('org.openhab.core.model.script.actions.Exec');
+openhab.Exec = Java.type('org.openhab.core.model.script.actions.Exec');
 let Duration = Java.type('java.time.Duration');
 
 // Execute command line.
-Exec.executeCommandLine('echo', 'Hello Wordl!');
+openhab.Exec.executeCommandLine('echo', 'Hello Wordl!');
 
 // Execute command line with timeout.
-Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello Wordl!');
+openhab.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello Wordl!');
 
 // Get response from command line.
-let response = Exec.executeCommandLine('echo', 'Hello Wordl!');
+let response = openhab.Exec.executeCommandLine('echo', 'Hello Wordl!');
 
 // Get response from command line with timeout.
-response = Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello Wordl!');
+response = openhab.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello Wordl!');
 ```
 
 ### HTTP Actions
@@ -108,10 +110,10 @@ response = Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello Wordl!
 For available actions have a look at the [HTTP Actions Docs](https://www.openhab.org/docs/configuration/actions.html#http-actions).
 
 ```javascript
-let HTTP = Java.type('org.openhab.core.model.script.actions.HTTP');
+openhab.HTTP = Java.type('org.openhab.core.model.script.actions.HTTP');
 
 // Example GET Request
-var response = HTTP.sendHttpGetRequest('<url>');
+var response = openhab.HTTP.sendHttpGetRequest('<url>');
 ```
 
 Replace `<url>` with the request url.
@@ -121,7 +123,7 @@ Replace `<url>` with the request url.
 ```javascript
 let ZonedDateTime = Java.type('java.time.ZonedDateTime');
 let now = ZonedDateTime.now();
-let ScriptExecution = Java.type('org.openhab.core.model.script.actions.ScriptExecution');
+openhab.ScriptExecution = Java.type('org.openhab.core.model.script.actions.ScriptExecution');
 
 // Function to run when the timer goes off.
 function timerOver () {
@@ -129,7 +131,7 @@ function timerOver () {
 }
 
 // Create the Timer.
-this.myTimer = ScriptExecution.createTimer(now.plusSeconds(10), timerOver);
+this.myTimer = openhab.ScriptExecution.createTimer(now.plusSeconds(10), timerOver);
 
 // Cancel the timer.
 this.myTimer.cancel();
@@ -146,22 +148,19 @@ this.myTimer.reschedule(now.plusSeconds(5));
 Call scripts created in the UI (Settings -> Scripts) with or without parameters.
 
 ```javascript
-let FrameworkUtil = Java.type('org.osgi.framework.FrameworkUtil');
-let scriptExtension = Java.type('org.openhab.core.automation.module.script.ScriptExtensionProvider');
-let _bundle = FrameworkUtil.getBundle(scriptExtension.class);
-let bundleContext = _bundle.getBundleContext();
-var RuleManagerRef = bundleContext.getServiceReference('org.openhab.core.automation.RuleManager');
-var RuleManager = bundleContext.getService(RuleManagerRef);
+openhab.scriptExtension = Java.type('org.openhab.core.automation.module.script.ScriptExtensionProvider');
+let bundleContext = Java.type('org.osgi.framework.FrameworkUtil').getBundle(openhab.scriptExtension.class).getBundleContext();
+openhab.RuleManager = bundleContext.getService(bundleContext.getServiceReference('org.openhab.core.automation.RuleManager'));
 
 // Simple call.
-RuleManager.runNow('<scriptToRun>');
+openhab.RuleManager.runNow('<scriptToRun>');
 
 // Advanced call with arguments.
-var map = new java.util.HashMap();
+let map = new java.util.HashMap();
 map.put('identifier1', 'value1');
 map.put('identifier2', 'value2');
 // Second argument is whether to consider the conditions, third is a Map<String, Object> (a way to pass data).
-RuleManager.runNow('<scriptToRun>', true, map);
+openhab.RuleManager.runNow('<scriptToRun>', true, map);
 ```
 
 Replace `<scriptToRun>` with your script's (unique-)id.
@@ -173,9 +172,11 @@ Notification actions may be placed in Rules to send alerts to mobile devices reg
 For available actions have a look at the [Cloud Notification Actions Docs](https://www.openhab.org/docs/configuration/actions.html#cloud-notification-actions).
 
 ```javascript
-let NotificationAction = Java.type('org.openhab.io.openhabcloud.NotificationAction')
-NotificationAction.sendNotification('<email>', '<message>'); // to a single myopenHAB user identified by e-mail
-NotificationAction.sendBroadcastNotification('<message>'); // to all myopenHAB users
+openhab.NotificationAction = Java.type('org.openhab.io.openhabcloud.NotificationAction')
+
+// Example
+openhab.NotificationAction.sendNotification('<email>', '<message>'); // to a single myopenHAB user identified by e-mail
+openhab.NotificationAction.sendBroadcastNotification('<message>'); // to all myopenHAB users
 ```
 
 Replace `<email>` with the e-mail address of the user.
@@ -188,12 +189,12 @@ For available commands have a look at [Persistence Extensions in Scripts ans Rul
 For deeper information have a look at the [Persistence Extensions JavaDoc](https://www.openhab.org/javadoc/latest/org/openhab/core/persistence/extensions/persistenceextensions).
 
 ```javascript
-let PersistenceExtensions = Java.type('org.openhab.core.persistence.extensions.PersistenceExtensions');
+openhab.PersistenceExtensions = Java.type('org.openhab.core.persistence.extensions.PersistenceExtensions');
 let ZonedDateTime = Java.type('java.time.ZonedDateTime');
 let now = ZonedDateTime.now();
 
 // Example
-var avg = PersistenceExtensions.averageSince(itemRegistry.getItem('<item>'), now.minusMinutes(5), "influxdb");
+var avg = openhab.PersistenceExtensions.averageSince(itemRegistry.getItem('<item>'), now.minusMinutes(5), "influxdb");
 ```
 
 Replace `<persistence>` with the persistence service to use.
@@ -208,10 +209,10 @@ For available actions, have a look at the [Ephemeris Actions Docs](https://www.o
 For deeper information have a look at the [Ephemeris JavaDoc](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/ephemeris).
 
 ```javascript
-let Ephemeris = Java.type('org.openhab.core.model.script.actions.Ephemeris');
+openhab.Ephemeris = Java.type('org.openhab.core.model.script.actions.Ephemeris');
 
 // Example
-let weekend = Ephemeris.isWeekend();
+let weekend = openhab.Ephemeris.isWeekend();
 ```
 
 ## Types and Units
@@ -220,11 +221,11 @@ Import types from openHAB Core for type conversion and more.
 Import Units from openHAB Core for unit conversion and more.
 
 ```javascript
-let typeOrUnit = Java.type('org.openhab.core.library.types.typeOrUnit');
+openhab.typeOrUnit = Java.type('org.openhab.core.library.types.typeOrUnit');
 
 // Example
-let HSBType = Java.type('org.openhab.core.library.types.HSBType');
-let hsb = HSBType.fromRGB(4, 6, 9);
+openhab.HSBType = Java.type('org.openhab.core.library.types.HSBType');
+let hsb = openhab.HSBType.fromRGB(4, 6, 9);
 ```
 
 Available types are:
