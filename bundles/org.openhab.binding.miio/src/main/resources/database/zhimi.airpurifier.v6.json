@@ -9,7 +9,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -27,7 +26,6 @@
 				"property": "mode",
 				"friendlyName": "Mode",
 				"channel": "mode",
-				"channelType": "mode",
 				"type": "String",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -60,7 +58,6 @@
 				"property": "aqi",
 				"friendlyName": "Air Quality Index",
 				"channel": "aqi",
-				"channelType": "aqi",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -73,7 +70,6 @@
 				"property": "average_aqi",
 				"friendlyName": "Average Air Quality Index",
 				"channel": "averageaqi",
-				"channelType": "averageaqi",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -86,7 +82,6 @@
 				"property": "led",
 				"friendlyName": "LED Status",
 				"channel": "led",
-				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -120,7 +115,6 @@
 				"property": "f1_hour",
 				"friendlyName": "Filter Max Life",
 				"channel": "filtermaxlife",
-				"channelType": "filtermaxlife",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",
@@ -130,9 +124,11 @@
 				"property": "f1_hour_used",
 				"friendlyName": "Filter Hours used",
 				"channel": "filterhours",
-				"channelType": "filterhours",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
@@ -143,9 +139,11 @@
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"channelType": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
@@ -156,8 +154,10 @@
 				"property": "motor1_speed",
 				"friendlyName": "Motor Speed",
 				"channel": "motorspeed",
-				"channelType": "motorspeed",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f rpm"
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
@@ -175,8 +175,10 @@
 				"property": "favorite_level",
 				"friendlyName": "Favorite Level",
 				"channel": "favoritelevel",
-				"channelType": "favoritelevel",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": [
@@ -210,8 +212,10 @@
 				"property": "purify_volume",
 				"friendlyName": "Purivied Volume",
 				"channel": "purifyvolume",
-				"channelType": "purifyvolume",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f m3"
+				},
 				"refresh": true,
 				"ChannelGroup": "Status",
 				"actions": []
@@ -220,7 +224,6 @@
 				"property": "child_lock",
 				"friendlyName": "Child Lock",
 				"channel": "childlock",
-				"channelType": "childlock",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "Status",

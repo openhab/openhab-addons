@@ -115,14 +115,21 @@ public final class RefreshService implements AutoCloseable {
                 if (!destroyed) {
                     if (result == null || result.isFailed()) {
                         handleConnectionLost();
-                    } else if (result.getResponse().getStatus() == HttpStatus.FORBIDDEN_403) {
-                        if (unauthorized != null) {
-                            unauthorized.run();
-                        }
-                    } else if (result.getResponse().getStatus() == HttpStatus.FORBIDDEN_403) {
-                        handleConnectionLost();
                     } else {
-                        handleRefreshDone(getContentAsString());
+                        int status = result.getResponse().getStatus();
+                        logger.trace("HTTP-Status {}", status);
+                        if (status == HttpStatus.FORBIDDEN_403) {
+                            if (unauthorized != null) {
+                                unauthorized.run();
+                            } else {
+                                handleConnectionLost();
+                            }
+                        } else if (status == HttpStatus.OK_200) {
+                            handleRefreshDone(getContentAsString());
+                        } else {
+                            logger.warn("unsupported HTTP-Status {}", status);
+                            handleConnectionLost();
+                        }
                     }
                 }
             }

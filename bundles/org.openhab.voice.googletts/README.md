@@ -38,7 +38,7 @@ Using your favorite configuration UI to edit **Settings / Other Services - Googl
 * **Client Secret** - Google Cloud Platform OAuth 2.0-Client Secret.
 * **Authorization Code** - The auth-code is a one-time code needed to retrieve the necessary access-codes from Google Cloud Platform.
 **Please go to your browser ...**
-[https://accounts.google.com/o/oauth2/auth?client_id={{clientId}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code](https://accounts.google.com/o/oauth2/auth?client_id={{clientId}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code) (replace `{{clientId}}` by your Client Id)
+[https://accounts.google.com/o/oauth2/auth?client_id=<clientId>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code](https://accounts.google.com/o/oauth2/auth?client_id=<clientId>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code) (replace `<clientId>` by your Client Id)
 **... to generate an auth-code and paste it here**.
 After initial authorization, this code is not needed anymore.
 It is recommended to clear this configuration parameter afterwards.

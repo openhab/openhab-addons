@@ -25,12 +25,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Sensor Id + unit code, separated by dot. Example 23455.1</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="T0">RollerTrol, Hasta new</option>
 					<option value="T1">Hasta old</option>

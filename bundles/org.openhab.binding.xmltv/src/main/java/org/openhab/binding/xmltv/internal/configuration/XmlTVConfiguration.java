@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.xmltv.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link XmlTVConfiguration} class contains fields mapping TV bridge
  * configuration parameters.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class XmlTVConfiguration {
-    public String filePath;
-    public Integer refresh;
-    public String encoding;
+    public String filePath = "";
+    public int refresh = 24;
+    public String encoding = "UTF8";
 }

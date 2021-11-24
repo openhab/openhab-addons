@@ -1057,7 +1057,7 @@
 
 
 	<channel-type id="pulse">
-		<kind>trigger</kind>
+		<item-type>Switch</item-type>
 		<label>Pulse</label>
 		<description>Set</description>
 		<category>Switch</category>

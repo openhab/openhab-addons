@@ -8,7 +8,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -55,7 +54,6 @@
 				"property": "scene_num",
 				"friendlyName": "Scene",
 				"channel": "scene",
-				"channelType": "scene",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",

@@ -12,15 +12,13 @@
  */
 package org.openhab.binding.myq.internal.dto;
 
+import java.util.List;
+
 /**
- * The {@link AddressDTO} entity from the MyQ API
+ * The {@link AccountsDTO} entity from the MyQ API
  *
  * @author Dan Cunningham - Initial contribution
  */
-public class AddressDTO {
-
-    public String addressLine1;
-    public String city;
-    public String postalCode;
-    public CountryDTO country;
+public class AccountsDTO {
+    public List<AccountDTO> accounts;
 }

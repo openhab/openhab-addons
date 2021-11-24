@@ -175,6 +175,30 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
                         }
                     }
+                    if (paramType == CommandParameterType.OPENCLOSE) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? "open" : "close");
+                        } else {
+                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                    || "1".contentEquals(command.toString())) ? "open" : "close");
+                        }
+                    }
+                    if (paramType == CommandParameterType.OPENCLOSENUMBER) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? 1 : 0);
+                        } else {
+                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                    || "1".contentEquals(command.toString())) ? 1 : 0);
+                        }
+                    }
+                    if (paramType == CommandParameterType.OPENCLOSESWITCH) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? "on" : "off");
+                        } else {
+                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                    || "1".contentEquals(command.toString())) ? "on" : "off");
+                        }
+                    }
                     if (paramType == CommandParameterType.COLOR) {
                         if (command instanceof HSBType) {
                             HSBType hsb = (HSBType) command;
@@ -630,8 +654,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     } else {
                         String strVal = val.getAsString().toLowerCase();
                         updateState(basicChannel.getChannel(),
-                                "on".equals(strVal) || "true".equals(strVal) || "1".equals(strVal) ? OpenClosedType.OPEN
-                                        : OpenClosedType.CLOSED);
+                                "open".equals(strVal) || "on".equals(strVal) || "true".equals(strVal)
+                                        || "1".equals(strVal) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                     }
                     break;
                 case "color":
@@ -706,6 +730,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             switch (response.getCommand()) {
                 case MIIO_INFO:
                     break;
+                case GET_DEVICE_PROPERTY_EXP:
                 case GET_VALUE:
                 case GET_PROPERTIES:
                 case GET_PROPERTY:
