@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerService.class)
 @NonNullByDefault
 public class SncfDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private static final int SEARCH_TIME = 2;
+    private static final int SEARCH_TIME = 10;
 
     private final Logger logger = LoggerFactory.getLogger(SncfDiscoveryService.class);
 

@@ -40,6 +40,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -77,18 +78,35 @@ public class StationHandler extends BaseThingHandler {
         logger.trace("Initializing the Station handler for {}", getThing().getUID());
 
         stationId = (String) getConfig().get("stopPointId");
-
-        if (thing.getProperties().isEmpty()) {
-            discoverAttributes(stationId);
+        if (stationId == null || stationId.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-station-id");
+            return;
         }
-        zoneOffset = ZoneId.of(thing.getProperties().get(TIMEZONE)).getRules().getOffset(Instant.now()).getId()
-                .replace(":", "");
 
-        updateStatus(ThingStatus.ONLINE);
+        if (thing.getProperties().isEmpty() && !discoverAttributes(stationId)) {
+            return;
+        }
+
+        String timezone = thing.getProperties().get(TIMEZONE);
+        if (timezone == null || timezone.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/null-or-empty-timezone");
+            return;
+        }
+
+        zoneOffset = ZoneId.of(timezone).getRules().getOffset(Instant.now()).getId().replace(":", "");
         scheduleRefresh(ZonedDateTime.now().plusSeconds(2));
+        updateStatus(ThingStatus.ONLINE);
     }
 
-    private void discoverAttributes(String localStation) {
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+        if (thing.getStatus() == ThingStatus.ONLINE) {
+            scheduleRefresh(ZonedDateTime.now().plusSeconds(2));
+        }
+    }
+
+    private boolean discoverAttributes(String localStation) {
         SncfBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
             Map<String, String> properties = new HashMap<>();
@@ -107,14 +125,18 @@ public class StationHandler extends BaseThingHandler {
                 ThingBuilder thingBuilder = editThing();
                 thingBuilder.withProperties(properties);
                 updateThing(thingBuilder.build());
+                return true;
             } catch (SncfException e) {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+        return false;
     }
 
-    private void scheduleRefresh(ZonedDateTime when) {
-        long wishedDelay = ZonedDateTime.now().until(when, ChronoUnit.SECONDS);
+    private void scheduleRefresh(@Nullable ZonedDateTime when) {
+        // Ensure we'll try to refresh in one minute if no valid timestamp is provided
+        long wishedDelay = ZonedDateTime.now().until(when != null ? when : ZonedDateTime.now().plusMinutes(1),
+                ChronoUnit.SECONDS);
         ScheduledFuture<?> job = refreshJob;
         if (job != null) {
             long existingDelay = job.getDelay(TimeUnit.SECONDS);
@@ -162,28 +184,36 @@ public class StationHandler extends BaseThingHandler {
         }
     }
 
-    private State getValue(String channelId, Passage passage, String groupDeparture) {
+    private State getValue(String channelId, Passage passage, String group) {
         switch (channelId) {
             case DIRECTION:
-                return new StringType(passage.route.direction.name);
+                return fromNullableString(passage.route.direction.name);
             case CODE:
-                return new StringType(passage.displayInformations.code);
+                return fromNullableString(passage.displayInformations.code);
             case COMMERCIAL_MODE:
-                return new StringType(passage.displayInformations.commercialMode);
+                return fromNullableString(passage.displayInformations.commercialMode);
             case NAME:
-                return new StringType(passage.displayInformations.name);
+                return fromNullableString(passage.displayInformations.name);
             case NETWORK:
-                return new StringType(passage.displayInformations.network);
+                return fromNullableString(passage.displayInformations.network);
             case TIMESTAMP:
-                return new DateTimeType(
-                        fromDTO(groupDeparture.equals(GROUP_ARRIVAL) ? passage.stopDateTime.arrivalDateTime
-                                : passage.stopDateTime.departureDateTime));
+                return fromNullableDTO(group.equals(GROUP_ARRIVAL) ? passage.stopDateTime.arrivalDateTime
+                        : passage.stopDateTime.departureDateTime);
         }
         return UnDefType.NULL;
     }
 
-    private ZonedDateTime fromDTO(String dateTime) {
-        return ZonedDateTime.parse(dateTime + zoneOffset, NAVITIA_DATE_FORMAT);
+    private State fromNullableString(@Nullable String aValue) {
+        return aValue != null ? StringType.valueOf(aValue) : UnDefType.NULL;
+    }
+
+    private @Nullable ZonedDateTime fromDTO(@Nullable String dateTime) {
+        return dateTime != null ? ZonedDateTime.parse(dateTime + zoneOffset, NAVITIA_DATE_FORMAT) : null;
+    }
+
+    private State fromNullableDTO(@Nullable String dateTime) {
+        ZonedDateTime timestamp = fromDTO(dateTime);
+        return timestamp != null ? new DateTimeType(timestamp) : UnDefType.NULL;
     }
 
     private void freeRefreshJob() {
@@ -217,7 +247,7 @@ public class StationHandler extends BaseThingHandler {
                 }
             }
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         return null;
     }
 }
