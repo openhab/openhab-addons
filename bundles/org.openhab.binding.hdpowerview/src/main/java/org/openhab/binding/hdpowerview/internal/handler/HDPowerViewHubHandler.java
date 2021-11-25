@@ -221,7 +221,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             logger.debug("Polling for state");
             pollShades();
             List<Scene> scenes = pollScenes();
+            updateSceneChannels(scenes);
             List<SceneCollection> sceneCollections = pollSceneCollections();
+            updateSceneCollectionChannels(sceneCollections);
             List<ScheduledEvent> scheduledEvents = pollScheduledEvents();
             updateScheduledEventChannels(scenes, sceneCollections, scheduledEvents);
             updateScheduledEventStates(scheduledEvents);
@@ -295,12 +297,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
         logger.debug("Received data for {} scenes", sceneData.size());
 
+        return sceneData;
+    }
+
+    private void updateSceneChannels(List<Scene> scenes) {
         Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
         boolean isChannelListChanged = false;
-        for (Scene scene : sceneData) {
+        for (Scene scene : scenes) {
             ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scene.id));
             String channelId = channelUid.getId();
             // remove existing scene channel from the map
@@ -329,8 +335,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (isChannelListChanged) {
             updateThing(editThing().withChannels(allChannels).build());
         }
-
-        return sceneData;
     }
 
     private List<SceneCollection> pollSceneCollections()
@@ -351,12 +355,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
         logger.debug("Received data for {} sceneCollections", sceneCollectionData.size());
 
+        return sceneCollectionData;
+    }
+
+    private void updateSceneCollectionChannels(List<SceneCollection> sceneCollections) {
         Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
         boolean isChannelListChanged = false;
-        for (SceneCollection sceneCollection : sceneCollectionData) {
+        for (SceneCollection sceneCollection : sceneCollections) {
             ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(sceneCollection.id));
             String channelId = channelUid.getId();
             // remove existing scene collection channel from the map
@@ -386,8 +394,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (isChannelListChanged) {
             updateThing(editThing().withChannels(allChannels).build());
         }
-
-        return sceneCollectionData;
     }
 
     private List<ScheduledEvent> pollScheduledEvents()
