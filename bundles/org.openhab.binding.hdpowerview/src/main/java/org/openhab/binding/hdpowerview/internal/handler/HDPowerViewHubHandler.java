@@ -295,7 +295,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
         logger.debug("Received data for {} scenes", sceneData.size());
 
-        Map<String, Channel> idChannelMap = getIdSceneChannelMap();
+        Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
@@ -351,7 +351,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
         logger.debug("Received data for {} sceneCollections", sceneCollectionData.size());
 
-        Map<String, Channel> idChannelMap = getIdSceneCollectionChannelMap();
+        Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
@@ -413,7 +413,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private void updateScheduledEventChannels(List<Scene> scenes, List<SceneCollection> sceneCollections,
             List<ScheduledEvent> scheduledEvents) {
-        Map<String, Channel> idChannelMap = getIdScheduledEventChannelMap();
+        Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
@@ -510,25 +510,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return ret;
     }
 
-    private Map<String, Channel> getIdSceneChannelMap() {
+    private Map<String, Channel> getIdChannelMap(String channelGroupId) {
         Map<String, Channel> ret = new HashMap<>();
-        for (Channel channel : getThing().getChannelsOfGroup(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES)) {
-            ret.put(channel.getUID().getId(), channel);
-        }
-        return ret;
-    }
-
-    private Map<String, Channel> getIdSceneCollectionChannelMap() {
-        Map<String, Channel> ret = new HashMap<>();
-        for (Channel channel : getThing().getChannelsOfGroup(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS)) {
-            ret.put(channel.getUID().getId(), channel);
-        }
-        return ret;
-    }
-
-    private Map<String, Channel> getIdScheduledEventChannelMap() {
-        Map<String, Channel> ret = new HashMap<>();
-        for (Channel channel : getThing().getChannelsOfGroup(HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS)) {
+        for (Channel channel : getThing().getChannelsOfGroup(channelGroupId)) {
             ret.put(channel.getUID().getId(), channel);
         }
         return ret;
