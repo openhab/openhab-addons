@@ -39,6 +39,9 @@ public class VenstarThermostatBindingConstants {
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_EXTERNAL_TEMPERATURE = "outdoorTemperature";
 
+    public static final String CHANNEL_FAN_MODE = "fanMode";    //0=Auto,1=On
+    public static final String CHANNEL_FAN_STATE = "fanState";
+    
     public static final String CHANNEL_HEATING_SETPOINT = "heatingSetpoint";
     public static final String CHANNEL_COOLING_SETPOINT = "coolingSetpoint";
     public static final String CHANNEL_SYSTEM_STATE = "systemState";
