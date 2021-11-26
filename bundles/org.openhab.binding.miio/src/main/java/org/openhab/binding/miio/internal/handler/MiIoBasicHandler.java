@@ -495,7 +495,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return null;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
-        String label = getLocalText("ch." + key + channel, miChannel.getFriendlyName());
+        String label = getLocalText(I18N_CHANNEL_PREFIX + key + channel, miChannel.getFriendlyName());
         ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(label);
         boolean useGeneratedChannelType = false;
         if (!miChannel.getChannelType().isBlank()) {

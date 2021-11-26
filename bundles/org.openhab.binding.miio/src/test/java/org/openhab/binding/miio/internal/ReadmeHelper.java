@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -90,7 +92,7 @@ public class ReadmeHelper {
         sb.append("# Automatic created list by miio readme maker for miio devices & database channels\n\n");
         sb.append("# Devices\n\n");
         for (MiIoDevices d : Arrays.asList(MiIoDevices.values())) {
-            sb.append("thing.");
+            sb.append(I18N_THING_PREFIX);
             sb.append(d.getModel());
             sb.append(" = ");
             sb.append(d.getDescription());
@@ -327,7 +329,8 @@ public class ReadmeHelper {
                     MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
                     if (devdb != null) {
                         for (MiIoBasicChannel channel : devdb.getDevice().getChannels()) {
-                            i18nEntries.put("ch." + key + channel.getChannel(), channel.getFriendlyName());
+                            i18nEntries.put(I18N_CHANNEL_PREFIX + key + channel.getChannel(),
+                                    channel.getFriendlyName());
                             StateDescriptionDTO state = channel.getStateDescription();
                             if (state != null) {
                                 List<OptionsValueListDTO> options = state.getOptions();
@@ -336,7 +339,8 @@ public class ReadmeHelper {
                                         String optionValue = channelOption.value;
                                         String optionLabel = channelOption.label;
                                         if (optionValue != null && optionLabel != null) {
-                                            i18nEntries.put("option." + key + channel.getChannel() + "-" + optionValue,
+                                            i18nEntries.put(
+                                                    I18N_OPTION_PREFIX + key + channel.getChannel() + "-" + optionValue,
                                                     optionLabel);
                                         }
                                     }

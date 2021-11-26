@@ -600,7 +600,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             String label = getThing().getLabel();
             if (label == null || label.startsWith("Xiaomi Mi Device")) {
                 ThingBuilder thingBuilder = editThing();
-                label = getLocalText("thing." + modelId, miDevice.getDescription());
+                label = getLocalText(I18N_THING_PREFIX + modelId, miDevice.getDescription());
                 thingBuilder.withLabel(label);
                 updateThing(thingBuilder.build());
             }
