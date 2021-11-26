@@ -25,6 +25,10 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ScheduledEvents {
 
+    public static final int SCHEDULED_EVENT_TYPE_TIME = 0;
+    public static final int SCHEDULED_EVENT_TYPE_SUNRISE = 1;
+    public static final int SCHEDULED_EVENT_TYPE_SUNSET = 2;
+
     public @Nullable List<ScheduledEvent> scheduledEventData;
     public @Nullable List<Integer> scheduledEventIds;
 

@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringJoiner;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -463,10 +465,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                     continue;
                 }
 
+                String label = getScheduledEventName(name, scheduledEvent);
                 String description = translationProvider.getText("dynamic-channel.automation-enabled.description",
                         name);
                 Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
-                        .withType(automationChannelTypeUID).withLabel(name).withDescription(description).build();
+                        .withType(automationChannelTypeUID).withLabel(label).withDescription(description).build();
                 allChannels.add(channel);
                 isChannelListChanged = true;
                 logger.debug("Creating new channel for scheduled event '{}'", scheduledEvent.id);
@@ -483,6 +486,88 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (isChannelListChanged) {
             updateThing(editThing().withChannels(allChannels).build());
         }
+    }
+
+    private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
+        String time, days = null;
+
+        switch (scheduledEvent.eventType) {
+            case ScheduledEvents.SCHEDULED_EVENT_TYPE_TIME:
+                time = LocalTime.of(scheduledEvent.hour, scheduledEvent.minute).toString();
+                break;
+            case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE:
+                if (scheduledEvent.minute == 0) {
+                    time = translationProvider.getText("dynamic-channel.automation.at_sunrise");
+                } else if (scheduledEvent.minute < 0) {
+                    time = translationProvider.getText("dynamic-channel.automation.before_sunrise",
+                            getFormattedTimeOffset(-scheduledEvent.minute));
+                } else {
+                    time = translationProvider.getText("dynamic-channel.automation.after_sunrise",
+                            getFormattedTimeOffset(scheduledEvent.minute));
+                }
+                break;
+            case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET:
+                if (scheduledEvent.minute == 0) {
+                    time = translationProvider.getText("dynamic-channel.automation.at_sunset");
+                } else if (scheduledEvent.minute < 0) {
+                    time = translationProvider.getText("dynamic-channel.automation.before_sunset",
+                            getFormattedTimeOffset(-scheduledEvent.minute));
+                } else {
+                    time = translationProvider.getText("dynamic-channel.automation.after_sunset",
+                            getFormattedTimeOffset(scheduledEvent.minute));
+                }
+                break;
+            default:
+                return sceneName;
+        }
+
+        if (scheduledEvent.dayMonday && scheduledEvent.dayTuesday && scheduledEvent.dayWednesday
+                && scheduledEvent.dayThursday && scheduledEvent.dayFriday) {
+            if (scheduledEvent.daySaturday && scheduledEvent.daySunday) {
+                days = translationProvider.getText("dynamic-channel.automation.all-days");
+            } else if (!scheduledEvent.daySaturday && !scheduledEvent.daySunday) {
+                days = translationProvider.getText("dynamic-channel.automation.weekdays");
+            }
+        } else if (scheduledEvent.daySaturday && scheduledEvent.daySunday) {
+            if (!scheduledEvent.dayMonday && !scheduledEvent.dayTuesday && !scheduledEvent.dayWednesday
+                    && !scheduledEvent.dayThursday && !scheduledEvent.dayFriday) {
+                days = translationProvider.getText("dynamic-channel.automation.weekends");
+            }
+        }
+        if (days == null) {
+            StringJoiner joiner = new StringJoiner(", ");
+            if (scheduledEvent.dayMonday) {
+                joiner.add(translationProvider.getText("dynamic-channel.automation.monday"));
+            }
+            if (scheduledEvent.dayTuesday) {
+                joiner.add(translationProvider.getText("dynamic-channel.automation.tuesday"));
+            }
+            if (scheduledEvent.dayWednesday) {
+                joiner.add(translationProvider.getText("dynamic-channel.automation.wednesday"));
+            }
+            if (scheduledEvent.dayThursday) {
+                joiner.add(translationProvider.getText("dynamic-channel.automation.thursday"));
+            }
+            if (scheduledEvent.dayFriday) {
+                joiner.add(translationProvider.getText("dynamic-channel.automation.friday"));
+            }
+            if (scheduledEvent.daySaturday) {
+                joiner.add(translationProvider.getText("dynamic-channel.automation.saturday"));
+            }
+            if (scheduledEvent.daySunday) {
+                joiner.add(translationProvider.getText("dynamic-channel.automation.sunday"));
+            }
+            days = joiner.toString();
+        }
+
+        return translationProvider.getText("dynamic-channel.automation-enabled.label", sceneName, time, days);
+    }
+
+    private String getFormattedTimeOffset(int minutes) {
+        if (minutes > 60) {
+            return translationProvider.getText("dynamic-channel.automation.hour-minute", minutes / 60, minutes % 60);
+        }
+        return translationProvider.getText("dynamic-channel.automation.minute", minutes);
     }
 
     private void updateScheduledEventStates(List<ScheduledEvent> scheduledEvents) {
