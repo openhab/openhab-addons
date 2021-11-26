@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal;
 import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -295,20 +296,22 @@ public class ReadmeHelper {
         List<MiIoBasicDevice> arrayList = new ArrayList<>();
         String path = "./src/main/resources/database/";
         File dir = new File(path);
-        File[] filesList = dir.listFiles();
+        FileFilter fileFilter = file -> !file.isDirectory() && file.getName().toLowerCase().endsWith(".json");
+        File[] filesList = dir.listFiles(fileFilter);
+        if (filesList == null) {
+            return arrayList;
+        }
         for (File file : filesList) {
-            if (file.isFile()) {
-                try {
-                    JsonObject deviceMapping = convertFileToJSON(path + file.getName());
-                    Gson gson = new GsonBuilder().serializeNulls().create();
-                    @Nullable
-                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    if (devdb != null) {
-                        arrayList.add(devdb);
-                    }
-                } catch (Exception e) {
-                    LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
+            try {
+                JsonObject deviceMapping = convertFileToJSON(path + file.getName());
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                @Nullable
+                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                if (devdb != null) {
+                    arrayList.add(devdb);
                 }
+            } catch (Exception e) {
+                LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
             }
         }
         return arrayList;
@@ -318,39 +321,40 @@ public class ReadmeHelper {
         Map<String, String> i18nEntries = new HashMap<>();
         String path = "./src/main/resources/database/";
         File dir = new File(path);
-        File[] filesList = dir.listFiles();
+        FileFilter fileFilter = file -> !file.isDirectory() && file.getName().toLowerCase().endsWith(".json");
+        File[] filesList = dir.listFiles(fileFilter);
+        if (filesList == null) {
+            return i18nEntries;
+        }
         for (File file : filesList) {
-            if (file.isFile() && file.getName().toLowerCase().endsWith(".json")) {
-                try {
-                    String key = file.getName().toLowerCase().split("json")[0];
-                    JsonObject deviceMapping = convertFileToJSON(path + file.getName());
-                    Gson gson = new GsonBuilder().serializeNulls().create();
-                    @Nullable
-                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    if (devdb != null) {
-                        for (MiIoBasicChannel channel : devdb.getDevice().getChannels()) {
-                            i18nEntries.put(I18N_CHANNEL_PREFIX + key + channel.getChannel(),
-                                    channel.getFriendlyName());
-                            StateDescriptionDTO state = channel.getStateDescription();
-                            if (state != null) {
-                                List<OptionsValueListDTO> options = state.getOptions();
-                                if (options != null) {
-                                    for (OptionsValueListDTO channelOption : options) {
-                                        String optionValue = channelOption.value;
-                                        String optionLabel = channelOption.label;
-                                        if (optionValue != null && optionLabel != null) {
-                                            i18nEntries.put(
-                                                    I18N_OPTION_PREFIX + key + channel.getChannel() + "-" + optionValue,
-                                                    optionLabel);
-                                        }
+            try {
+                String key = file.getName().toLowerCase().split("json")[0];
+                JsonObject deviceMapping = convertFileToJSON(path + file.getName());
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                @Nullable
+                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                if (devdb != null) {
+                    for (MiIoBasicChannel channel : devdb.getDevice().getChannels()) {
+                        i18nEntries.put(I18N_CHANNEL_PREFIX + key + channel.getChannel(), channel.getFriendlyName());
+                        StateDescriptionDTO state = channel.getStateDescription();
+                        if (state != null) {
+                            List<OptionsValueListDTO> options = state.getOptions();
+                            if (options != null) {
+                                for (OptionsValueListDTO channelOption : options) {
+                                    String optionValue = channelOption.value;
+                                    String optionLabel = channelOption.label;
+                                    if (optionValue != null && optionLabel != null) {
+                                        i18nEntries.put(
+                                                I18N_OPTION_PREFIX + key + channel.getChannel() + "-" + optionValue,
+                                                optionLabel);
                                     }
                                 }
                             }
                         }
                     }
-                } catch (Exception e) {
-                    LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
                 }
+            } catch (Exception e) {
+                LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
             }
         }
         return i18nEntries;
