@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import java.time.DayOfWeek;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -24,6 +26,11 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ScheduledEvents {
+
+    public static final EnumSet<DayOfWeek> WEEKDAYS = EnumSet.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY,
+            DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY);
+
+    public static final EnumSet<DayOfWeek> WEEKENDS = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
 
     public static final int SCHEDULED_EVENT_TYPE_TIME = 0;
     public static final int SCHEDULED_EVENT_TYPE_SUNRISE = 1;
@@ -55,5 +62,31 @@ public class ScheduledEvents {
         public int eventType;
         public int hour;
         public int minute;
+
+        public EnumSet<DayOfWeek> getDays() {
+            EnumSet<DayOfWeek> days = EnumSet.noneOf(DayOfWeek.class);
+            if (daySunday) {
+                days.add(DayOfWeek.SUNDAY);
+            }
+            if (dayMonday) {
+                days.add(DayOfWeek.MONDAY);
+            }
+            if (dayTuesday) {
+                days.add(DayOfWeek.TUESDAY);
+            }
+            if (dayWednesday) {
+                days.add(DayOfWeek.WEDNESDAY);
+            }
+            if (dayThursday) {
+                days.add(DayOfWeek.THURSDAY);
+            }
+            if (dayFriday) {
+                days.add(DayOfWeek.FRIDAY);
+            }
+            if (daySaturday) {
+                days.add(DayOfWeek.SATURDAY);
+            }
+            return days;
+        }
     }
 }

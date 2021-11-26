@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
+import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -489,31 +491,31 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
-        String time, days = null;
+        String timeString, daysString;
 
         switch (scheduledEvent.eventType) {
             case ScheduledEvents.SCHEDULED_EVENT_TYPE_TIME:
-                time = LocalTime.of(scheduledEvent.hour, scheduledEvent.minute).toString();
+                timeString = LocalTime.of(scheduledEvent.hour, scheduledEvent.minute).toString();
                 break;
             case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE:
                 if (scheduledEvent.minute == 0) {
-                    time = translationProvider.getText("dynamic-channel.automation.at_sunrise");
+                    timeString = translationProvider.getText("dynamic-channel.automation.at_sunrise");
                 } else if (scheduledEvent.minute < 0) {
-                    time = translationProvider.getText("dynamic-channel.automation.before_sunrise",
+                    timeString = translationProvider.getText("dynamic-channel.automation.before_sunrise",
                             getFormattedTimeOffset(-scheduledEvent.minute));
                 } else {
-                    time = translationProvider.getText("dynamic-channel.automation.after_sunrise",
+                    timeString = translationProvider.getText("dynamic-channel.automation.after_sunrise",
                             getFormattedTimeOffset(scheduledEvent.minute));
                 }
                 break;
             case ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNSET:
                 if (scheduledEvent.minute == 0) {
-                    time = translationProvider.getText("dynamic-channel.automation.at_sunset");
+                    timeString = translationProvider.getText("dynamic-channel.automation.at_sunset");
                 } else if (scheduledEvent.minute < 0) {
-                    time = translationProvider.getText("dynamic-channel.automation.before_sunset",
+                    timeString = translationProvider.getText("dynamic-channel.automation.before_sunset",
                             getFormattedTimeOffset(-scheduledEvent.minute));
                 } else {
-                    time = translationProvider.getText("dynamic-channel.automation.after_sunset",
+                    timeString = translationProvider.getText("dynamic-channel.automation.after_sunset",
                             getFormattedTimeOffset(scheduledEvent.minute));
                 }
                 break;
@@ -521,20 +523,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 return sceneName;
         }
 
-        if (scheduledEvent.dayMonday && scheduledEvent.dayTuesday && scheduledEvent.dayWednesday
-                && scheduledEvent.dayThursday && scheduledEvent.dayFriday) {
-            if (scheduledEvent.daySaturday && scheduledEvent.daySunday) {
-                days = translationProvider.getText("dynamic-channel.automation.all-days");
-            } else if (!scheduledEvent.daySaturday && !scheduledEvent.daySunday) {
-                days = translationProvider.getText("dynamic-channel.automation.weekdays");
-            }
-        } else if (scheduledEvent.daySaturday && scheduledEvent.daySunday) {
-            if (!scheduledEvent.dayMonday && !scheduledEvent.dayTuesday && !scheduledEvent.dayWednesday
-                    && !scheduledEvent.dayThursday && !scheduledEvent.dayFriday) {
-                days = translationProvider.getText("dynamic-channel.automation.weekends");
-            }
-        }
-        if (days == null) {
+        EnumSet<DayOfWeek> days = scheduledEvent.getDays();
+        if (EnumSet.allOf(DayOfWeek.class).equals(days)) {
+            daysString = translationProvider.getText("dynamic-channel.automation.all-days");
+        } else if (ScheduledEvents.WEEKDAYS.equals(days)) {
+            daysString = translationProvider.getText("dynamic-channel.automation.weekdays");
+        } else if (ScheduledEvents.WEEKENDS.equals(days)) {
+            daysString = translationProvider.getText("dynamic-channel.automation.weekends");
+        } else {
             StringJoiner joiner = new StringJoiner(", ");
             if (scheduledEvent.dayMonday) {
                 joiner.add(translationProvider.getText("dynamic-channel.automation.monday"));
@@ -557,10 +553,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             if (scheduledEvent.daySunday) {
                 joiner.add(translationProvider.getText("dynamic-channel.automation.sunday"));
             }
-            days = joiner.toString();
+            daysString = joiner.toString();
         }
 
-        return translationProvider.getText("dynamic-channel.automation-enabled.label", sceneName, time, days);
+        return translationProvider.getText("dynamic-channel.automation-enabled.label", sceneName, timeString,
+                daysString);
     }
 
     private String getFormattedTimeOffset(int minutes) {
