@@ -14,6 +14,7 @@ package org.openhab.binding.hdpowerview.internal.handler;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -532,27 +533,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             daysString = translationProvider.getText("dynamic-channel.automation.weekends");
         } else {
             StringJoiner joiner = new StringJoiner(", ");
-            if (scheduledEvent.dayMonday) {
-                joiner.add(translationProvider.getText("dynamic-channel.automation.monday"));
-            }
-            if (scheduledEvent.dayTuesday) {
-                joiner.add(translationProvider.getText("dynamic-channel.automation.tuesday"));
-            }
-            if (scheduledEvent.dayWednesday) {
-                joiner.add(translationProvider.getText("dynamic-channel.automation.wednesday"));
-            }
-            if (scheduledEvent.dayThursday) {
-                joiner.add(translationProvider.getText("dynamic-channel.automation.thursday"));
-            }
-            if (scheduledEvent.dayFriday) {
-                joiner.add(translationProvider.getText("dynamic-channel.automation.friday"));
-            }
-            if (scheduledEvent.daySaturday) {
-                joiner.add(translationProvider.getText("dynamic-channel.automation.saturday"));
-            }
-            if (scheduledEvent.daySunday) {
-                joiner.add(translationProvider.getText("dynamic-channel.automation.sunday"));
-            }
+            days.forEach(day -> joiner.add(day.getDisplayName(TextStyle.SHORT, translationProvider.getLocale())));
             daysString = joiner.toString();
         }
 
