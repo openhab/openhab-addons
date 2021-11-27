@@ -31,7 +31,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
 /**
- * This channel handle the Mycroft capability to act as a music player
+ * This channel handles the Mycroft capability to act as a music player
  * (depending on common play music skills installed)
  *
  * @author Gwendal ROULLEAU - Initial contribution
