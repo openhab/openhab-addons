@@ -386,5 +386,4 @@ public class SagerWeatherCaster {
         }
         return result;
     }
-
 }

@@ -164,7 +164,7 @@
 		<item-type>String</item-type>
 		<label>@text/trendLabel</label>
 		<description>@text/trendDescription</description>
-        <category>line</category>
+		<category>line</category>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="1">@text/trend1</option>
@@ -176,19 +176,19 @@
 		</state>
 	</channel-type>
 
-    <channel-type id="timestamp" >
-        <item-type>DateTime</item-type>
-        <label>@text/timestampChannelLabel</label>
-        <description>@text/timestampChannelDescription</description>
-        <category>time</category>
-        <tags>
-            <tag>Status</tag>
-            <tag>Timestamp</tag>
-        </tags>
-        <state readOnly="true"/>
-    </channel-type>
-    
-    <channel-type id="cloudiness">
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>@text/timestampChannelLabel</label>
+		<description>@text/timestampChannelDescription</description>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cloudiness">
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/cloudinessLabel</label>
 		<description>@text/cloudinessDescription</description>
@@ -230,5 +230,5 @@
 		</tags>
 		<state min="0" max="12" pattern="%d"/>
 	</channel-type>
-	
+
 </thing:thing-descriptions>
