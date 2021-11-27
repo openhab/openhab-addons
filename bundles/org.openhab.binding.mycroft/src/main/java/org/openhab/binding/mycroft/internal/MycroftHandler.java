@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,11 +64,10 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private MycroftConfiguration config = new MycroftConfiguration();
     private boolean thingDisposing = false;
-    private AtomicBoolean isStartingWebSocket = new AtomicBoolean(false);
     protected Map<ChannelUID, MycroftChannel<?>> mycroftChannels = new HashMap<>();
 
     /** The reconnect frequency in case of error */
-    private static final int POLL_FREQUENCY_SEC = 10;
+    private static final int POLL_FREQUENCY_SEC = 30;
     private int sometimesSendVolumeRequest = 0;
 
     public MycroftHandler(Thing thing, WebSocketFactory webSocketFactory) {
@@ -103,25 +101,17 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
         if (thingDisposing) {
             return;
         }
-        if (!isStartingWebSocket.compareAndExchange(false, true)) {
-            try {
-                if (connection.isConnected()) {
-                    // sometimes test the connection by sending a real message
-                    // AND refreshing volume in the same step
-                    if (sometimesSendVolumeRequest >= 3) { // arbitrary one on three times
-                        sometimesSendVolumeRequest = 0;
-                        sendMessage(new MessageVolumeGet());
-                    } else {
-                        sometimesSendVolumeRequest++;
-                    }
-                } else {
-                    connection.start(config.host, config.port);
-                }
-            } finally {
-                stopTimer();
-                scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
-                isStartingWebSocket.set(false);
+        if (connection.isConnected()) {
+            // sometimes test the connection by sending a real message
+            // AND refreshing volume in the same step
+            if (sometimesSendVolumeRequest >= 3) { // arbitrary one on three times
+                sometimesSendVolumeRequest = 0;
+                sendMessage(new MessageVolumeGet());
+            } else {
+                sometimesSendVolumeRequest++;
             }
+        } else {
+            connection.start(config.host, config.port);
         }
     }
 
@@ -143,13 +133,12 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        logger.debug("Start initializing mycroft {}", thing.getUID());
+        logger.debug("Start initializing Mycroft {}", thing.getUID());
 
         config = getConfigAs(MycroftConfiguration.class);
 
-        scheduler.execute(() -> {
-            startWebsocket();
-        });
+        scheduledFuture = scheduler.scheduleWithFixedDelay(this::startWebsocket, 0, POLL_FREQUENCY_SEC,
+                TimeUnit.SECONDS);
 
         registerChannel(new ListenChannel(this));
         registerChannel(new VolumeChannel(this));
@@ -205,7 +194,6 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
     @Override
     public void connectionEstablished() {
-        stopTimer();
         logger.debug("Mycroft thing {} is online", thing.getUID());
         updateStatus(ThingStatus.ONLINE);
     }
@@ -213,10 +201,6 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
     @Override
     public void connectionLost(String reason) {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
-
-        stopTimer();
-        // Wait for POLL_FREQUENCY_SEC after a connection was closed before trying again
-        scheduledFuture = scheduler.schedule(this::startWebsocket, POLL_FREQUENCY_SEC, TimeUnit.SECONDS);
     }
 
     @Override
