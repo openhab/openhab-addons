@@ -224,8 +224,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             boolean newJsonSupportsSecondary = positions.jsonSupportsSecondary();
             Map<String, String> properties = getThing().getProperties();
             String propertyKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_SUPPORTS_SECONDARY;
-            if (!properties.containsKey(propertyKey)) {
-                oldJsonSupportsSecondary = !newJsonSupportsSecondary; // trick to force updating the property
+            if ("".equals(properties.getOrDefault(propertyKey, ""))) {
+                oldJsonSupportsSecondary = !newJsonSupportsSecondary; // trick to force property update
             } else {
                 oldJsonSupportsSecondary = Boolean.valueOf(properties.getOrDefault(propertyKey, ""));
             }
