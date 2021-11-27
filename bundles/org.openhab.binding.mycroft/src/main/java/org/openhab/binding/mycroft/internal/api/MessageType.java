@@ -90,7 +90,7 @@ public enum MessageType {
     }
 
     /**
-     * get the expected message type for this message type
+     * get the expected message type for this message
      *
      * @return
      */
