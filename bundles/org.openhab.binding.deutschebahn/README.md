@@ -1,7 +1,7 @@
 # DeutscheBahn Binding
 
 The DeutscheBahn Binding provides the latest timetable information for all trains that arrive or depart at a specific train station, including live information for delays and changes in timetable.
-The informations are requested from the timetable api of DeutscheBahn developer portal, so you'll need a (free) developer account to use this binding.
+The information are requested from the timetable api of DeutscheBahn developer portal, so you'll need a (free) developer account to use this binding.
 
 ## Supported Things
 
@@ -21,16 +21,16 @@ To configure a timetable you first need to register at DeutscheBahn developer po
 5. Choose your previously created application and hit "Abonnieren"
 6. In confirmation-dialog choose "Wechsel zu meine Abonnements"
 7. Create an access key for the production environment by hitting "Schlüssel Erstellen"
-8. Copy the "Zugangstoken". This is required to access the api from openhab.
+8. Copy the "Zugangstoken". This is required to access the api from openHAB.
 
 ### Determine the EVA-No of your station
 
-For the selection of the station within openhab you need the eva nr. of the station.
+For the selection of the station within openHAB you need the eva no. of the station.
 You can look up the number within the csv file available at [Haltestellendaten](https://data.deutschebahn.com/dataset.tags.EVA-Nr..html).
 
 ### Configure timetable bridge
 
-With access key for developer portal and eva nr. of your station you'r ready to configure a timetable (bridge) for this station.
+With access key for developer portal and eva no. of your station you're ready to configure a timetable (bridge) for this station.
 In addition you can configure if only arrivals, only departures or all trains should be contained within the timetable.
 
 **timetable** parameters:
@@ -49,8 +49,8 @@ Each train represents one position within the timetable. For example: If you con
 the next train that arrives / departs at the given station. Position 2 will be the second one, and so on. If you want to
 show the next 4 trains for a station, create 4 things with positions 1 to 4.
 
-**Attention:** The timetable api only provides data for the next 18 hours. If the timetable contains less trains entries than you've created
-train things the channels of these trains will be undefined.
+**Attention:** The timetable api only provides data for the next 18 hours. If the timetable contains less train entries than you've created
+train things, the channels of these trains will be undefined.
 
 **train** parameters:
 
@@ -63,15 +63,15 @@ train things the channels of these trains will be undefined.
 
 Each train has a set of channels, that provides access to any information served by the timetable API. A detailed description of the values and their meaning can be found within
 the [Timetables V1 API Description](https://developer.deutschebahn.com/store/apis/info?name=Timetables&version=v1&provider=DBOpenData&).
-The informations are grouped into three channel-groups:
-The first channel group (trip) contains all informations for the trip of the train, for example the category (like ICE, RE, S).
-The second and third channel group contains informations about the the arrival and the departure of the train at the given station. 
+The information are grouped into three channel-groups:
+The first channel group (trip) contains all information for the trip of the train, for example the category (like ICE, RE, S).
+The second and third channel group contains information about the the arrival and the departure of the train at the given station. 
 Both of the groups may provide an 'UNDEF' channel value, when the train does not arrive / depart at this station
 (due it starts or ends at the given station). If you have configured your timetable to contain only departures (with property trainFilter) the departure channel values will always be defined 
 and if you have selected only arrivals the arrival channel values will always be defined.
-Channels will have an 'NULL' channel value, when corresponding attribute is not set.
+Channels will have a 'NULL' channel value, when the corresponding attribute is not set.
 
-Basically most informations are available as planned and changed value. This allows to easy display changed values (for example the delay or changed platform).
+Basically most information are available as planned and changed value. This allows to easy display changed values (for example the delay or changed platform).
 
 
 **Channels for trip information**
@@ -97,9 +97,9 @@ Basically most informations are available as planned and changed value. This all
 | changed-status | String | Provides the changed status (planned, added, cancelled) of a train. |
 | cancellation-time | DateTime | Time when the cancellation of this stop was created. |
 | line | String | The line of the train.  |
-| messages | String | Messages for this train. Contains all translated codes from the messages of the selected train stop. Multiple messages will be separated with an single dash. |
-| hidden | Switch | On if the event should not be shown on WBT because travellers are not supposed to enter or exit the train at this stop. |
-| wings | String | A sequence of trip id separated by the pipe symbols. |
+| messages | String | Messages for this train. Contains all translated codes from the messages of the selected train stop. Multiple messages will be separated with a single dash. |
+| hidden | Switch | On if the event should not be shown because travellers are not supposed to enter or exit the train at this stop. |
+| wings | String | A sequence of trip id separated by pipe symbols. |
 | transition | String | Trip id of the next or previous train of a shared train. At the start stop this references the previous trip, at the last stop it references the next trip. |
 | planned-distant-endpoint | String | Planned distant endpoint of a train. |
 | changed-distant-endpoint | String | Changed distant endpoint of a train. |
@@ -342,4 +342,4 @@ slots:
 
 Using the widget for displaying the next four departures:
 
-![Departures Hannover HBF](doc/images/Abfahrten_HannoverHBF.png "openHAB page with four widgets displaying the next departures at Hannover HBF")
+![Departures Hannover HBF](doc/Abfahrten_HannoverHBF.png "openHAB page with four widgets displaying the next departures at Hannover HBF")
