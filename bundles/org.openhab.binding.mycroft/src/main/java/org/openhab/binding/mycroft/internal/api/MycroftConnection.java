@@ -76,15 +76,7 @@ public class MycroftConnection {
     }
 
     public MycroftConnection(MycroftConnectionListener listener) {
-        this.connectionListener = listener;
-        this.client = new WebSocketClient();
-        this.client.setMaxIdleTimeout(0);
-        this.client.setConnectTimeout(TIMEOUT_MILLISECONDS);
-        this.socketName = "Websocket$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet();
-
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(MessageType.class, new MessageTypeConverter());
-        gson = gsonBuilder.create();
+        this(listener, new WebSocketClient());
     }
 
     public void start(String ip, int port) {
