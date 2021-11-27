@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.renault.internal.renault.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ import com.google.gson.JsonObject;
  * 
  * @author Doug Culnane - Initial contribution
  */
+@NonNullByDefault
 public class Car {
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
@@ -87,7 +90,6 @@ public class Car {
 
     public void setDetails(JsonObject responseJson) {
         try {
-            imageURL = null;
             if (responseJson.get("assets") != null) {
                 JsonArray assetsJson = responseJson.get("assets").getAsJsonArray();
                 for (JsonElement asset : assetsJson) {
@@ -105,7 +107,7 @@ public class Car {
                             }
                         }
                     }
-                    if (imageURL != null) {
+                    if (imageURL.length() > 0) {
                         break;
                     }
                 }
@@ -115,7 +117,8 @@ public class Car {
         }
     }
 
-    private JsonObject getAttributes(JsonObject responseJson) throws IllegalStateException, ClassCastException {
+    private @Nullable JsonObject getAttributes(JsonObject responseJson)
+            throws IllegalStateException, ClassCastException {
         if (responseJson.get("data") != null && responseJson.get("data").getAsJsonObject().get("attributes") != null) {
             return responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject();
         }
