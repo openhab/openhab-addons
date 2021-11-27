@@ -97,13 +97,13 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
             sendCommand(gatewayCommand);
 
-            if (code == GatewayCommandCode.ControlSetpoint) {
+            if (code.equals(GatewayCommandCode.ControlSetpoint)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
                     updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT, UnDefType.UNDEF);
                 }
                 updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
                         OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
-            } else if (code == GatewayCommandCode.ControlSetpoint2) {
+            } else if (code.equals(GatewayCommandCode.ControlSetpoint2)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
                     updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT, UnDefType.UNDEF);
                 }
