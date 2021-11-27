@@ -197,7 +197,7 @@ public class MycroftConnection {
 
         } catch (RuntimeException e) {
             // we need to catch all processing exceptions, otherwise they could affect the connection
-            logger.warn("{} encountered an error while processing the message {}: {}", socketName, message,
+            logger.debug("{} encountered an error while processing the message {}: {}", socketName, message,
                     e.getMessage());
         }
     }
@@ -231,9 +231,9 @@ public class MycroftConnection {
 
     private void handleWrongSession(@Nullable Session session, String message) {
         if (session == null) {
-            logger.warn("received and discarded message for null session : {}", message);
+            logger.debug("received and discarded message for null session : {}", message);
         } else {
-            logger.warn("{} received and discarded message for other session {}: {}.", socketName, session.hashCode(),
+            logger.debug("{} received and discarded message for other session {}: {}.", socketName, session.hashCode(),
                     message);
         }
     }
