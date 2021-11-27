@@ -42,6 +42,7 @@ The following examples show how to access common openHAB functionalities.
 
 As a simple example, the following script logs "Hello, World!".
 Note that `console.log` will usually not work since the output has no terminal to display the text.
+__Please note:__ Support for `console.log` will likely be added together with a logging API in the [helper library](https://github.com/openhab/openhab-js).
 The openHAB server uses the [SLF4J](https://www.slf4j.org/) library for logging.
 
 ```javascript
@@ -62,6 +63,8 @@ The script uses the [LoggerFactory](https://www.slf4j.org/apidocs/org/slf4j/Logg
 ## Core Actions
 
 The openHAB services, which are pre-included in the integrated JavaScript engine, must explicitely be imported.
+
+__Please note:__ The [helper library](https://github.com/openhab/openhab-js) is on the way and will become the preferred API to work with openHAB.
 
 ```javascript
 let openhab = require('@runtime');
