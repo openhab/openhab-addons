@@ -56,8 +56,8 @@ public class FullMessageChannel extends MycroftChannel<StringType> {
     @Override
     public void handleCommand(Command command) {
         if (command instanceof StringType) {
-            if (handler.sendMessage(command.toString())) {
-                updateMyState(new StringType(command.toString()));
+            if (handler.sendMessage(command.toFullString())) {
+                updateMyState(new StringType(command.toFullString()));
             }
         }
     }

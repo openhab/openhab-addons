@@ -52,8 +52,8 @@ public class SpeakChannel extends MycroftChannel<StringType> {
     @Override
     public void handleCommand(Command command) {
         if (command instanceof StringType) {
-            if (handler.sendMessage(new MessageSpeak(command.toString()))) {
-                updateMyState(new StringType(command.toString()));
+            if (handler.sendMessage(new MessageSpeak(command.toFullString()))) {
+                updateMyState(new StringType(command.toFullString()));
             }
         }
     }

@@ -55,9 +55,9 @@ public class UtteranceChannel extends MycroftChannel<StringType> {
     @Override
     public void handleCommand(Command command) {
         if (command instanceof StringType) {
-            MessageRecognizerLoopUtterance utteranceMessage = new MessageRecognizerLoopUtterance(command.toString());
-            handler.sendMessage(utteranceMessage);
-            updateMyState(new StringType(command.toString()));
+            if (handler.sendMessage(new MessageRecognizerLoopUtterance(command.toFullString()))) {
+                updateMyState(new StringType(command.toFullString()));
+            }
         }
     }
 }
