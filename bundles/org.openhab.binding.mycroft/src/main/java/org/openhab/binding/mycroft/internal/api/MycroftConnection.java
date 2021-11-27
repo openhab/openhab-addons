@@ -173,7 +173,6 @@ public class MycroftConnection {
         logger.trace("{} received raw data: {}", socketName, message);
 
         try {
-
             // listeners on message type :
             BaseMessage mycroftMessage = gson.fromJson(message, BaseMessage.class);
             Objects.requireNonNull(mycroftMessage);
