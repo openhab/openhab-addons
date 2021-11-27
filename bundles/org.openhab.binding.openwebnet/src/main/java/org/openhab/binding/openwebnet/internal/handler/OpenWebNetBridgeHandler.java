@@ -600,7 +600,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Normalize a Where address
+     * Normalize a Where address to generate ownId and Thing id
      *
      * @param where the Where address
      * @return the normalized address as String
