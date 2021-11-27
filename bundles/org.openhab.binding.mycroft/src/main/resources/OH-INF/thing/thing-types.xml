@@ -23,6 +23,7 @@
 			<parameter name="host" type="text" required="true">
 				<label>Mycroft Bus Host Address</label>
 				<description>This is the host to connect to (ip or hostname)</description>
+				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1" max="65535">
 				<label>Mycroft Bus Port</label>
