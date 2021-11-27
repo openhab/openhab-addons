@@ -89,7 +89,6 @@
 				"property": "wifi_led",
 				"friendlyName": "wifi LED",
 				"channel": "led",
-				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

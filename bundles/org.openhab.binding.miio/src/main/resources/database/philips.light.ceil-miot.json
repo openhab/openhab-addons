@@ -24,7 +24,6 @@
 				"piid": 1,
 				"friendlyName": "Power",
 				"channel": "on",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -44,7 +43,6 @@
 				"piid": 2,
 				"friendlyName": "Mode",
 				"channel": "mode",
-				"channelType": "miot_uint8",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
@@ -83,7 +81,6 @@
 				"piid": 4,
 				"friendlyName": "Color Temperature",
 				"channel": "cct",
-				"channelType": "miot_uint32",
 				"type": "Number",
 				"refresh": true,
 				"actions": [
@@ -99,8 +96,13 @@
 				"piid": 1,
 				"friendlyName": "Delayed Turn-off",
 				"channel": "dv",
-				"channelType": "miot_uint16",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 21600,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -115,7 +117,6 @@
 				"piid": 2,
 				"friendlyName": "Wall Scene Enable",
 				"channel": "WallSceneEn",
-				"channelType": "miot_bool",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -131,7 +132,6 @@
 				"piid": 3,
 				"friendlyName": "Wall Scene",
 				"channel": "WallScene",
-				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -147,7 +147,6 @@
 				"piid": 4,
 				"friendlyName": "Auto CCT",
 				"channel": "autoCct",
-				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
 				"actions": [
@@ -163,8 +162,13 @@
 				"piid": 6,
 				"friendlyName": "Dimming Period",
 				"channel": "dimmingPeriod",
-				"channelType": "miot_uint16",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -179,10 +183,77 @@
 				"piid": 12,
 				"friendlyName": "Mi Band Status",
 				"channel": "MibandStatus",
-				"channelType": "miot_string",
 				"type": "String",
 				"refresh": true,
 				"actions": []
+			},
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "light-brightness-down",
+							"label": "Light Brightness Down"
+						},
+						{
+							"value": "light-brightness-up",
+							"label": "Light Brightness Up"
+						},
+						{
+							"value": "light-toggle",
+							"label": "Light Toggle"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-brightness-down"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-brightness-up"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"siid": 2,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "light-toggle"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"light-brightness-down\"\u003d\"Light Brightness Down\",\"light-brightness-up\"\u003d\"Light Brightness Up\",\"light-toggle\"\u003d\"Light Toggle\"]`"
 			}
 		],
 		"experimental": true

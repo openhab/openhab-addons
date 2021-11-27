@@ -30,6 +30,7 @@
 				<default>10</default>
 				<label>Refresh Interval</label>
 				<unitLabel>Seconds</unitLabel>
+				<description>Seconds between fetching values from the air unit. Default is 10.</description>
 			</parameter>
 			<parameter name="updateUnchangedValuesEveryMillis" type="integer" min="0" unit="ms">
 				<label>Interval for Updating Unchanged Values</label>

@@ -56,6 +56,7 @@ import com.google.gson.JsonParser;
  * @author Denis Dudnik - switched to internally integrated source of Jue library
  * @author Simon Kaufmann - migrated to plain Java test
  * @author Christoph Weitkamp - Added support for bulbs using CIE XY colormode only
+ * @author Jacob Laursen - Add workaround for LK Wiser products
  */
 @NonNullByDefault
 public class HueLightHandlerTest {
@@ -93,6 +94,15 @@ public class HueLightHandlerTest {
         String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
         assertSendCommandForBrightnessForPar16(OnOffType.OFF, new HueLightState(OSRAM_MODEL_TYPE, OSRAM),
                 expectedReply);
+    }
+
+    @Test
+    public void assertCommandForLkWiserForBrightnessChannelOff() {
+        final String expectedReply = "{\"on\" : false, \"transitiontime\" : 0}";
+        final String vendor = "Schneider Electric";
+        assertSendCommand(CHANNEL_BRIGHTNESS, OnOffType.OFF,
+                new HueLightState(HueLightHandler.LK_WISER_MODEL_ID, vendor), expectedReply,
+                HueLightHandler.LK_WISER_MODEL_ID, vendor);
     }
 
     @Test

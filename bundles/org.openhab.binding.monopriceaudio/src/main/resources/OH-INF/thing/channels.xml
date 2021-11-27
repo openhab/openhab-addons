@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Monoprice Whole House Amplifier Thing -->
+	<!-- Monoprice 10761/39261/DAX66 Amplifier Thing -->
 	<thing-type id="amplifier">
-		<label>Whole House Amplifier</label>
+		<label>Monoprice 10761 Amplifier, 39261 Matrix or Dayton DAX66 Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
@@ -99,12 +99,13 @@
 			<parameter name="host" type="text" required="false">
 				<context>network-address</context>
 				<label>Address</label>
-				<description>Host Name or IP Address of the Machine Connected to the Monoprice Amplifier (Serial over IP)</description>
+				<description>Host Name or IP Address of the Amplifier or Serial over IP device</description>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535" required="false">
 				<label>Port</label>
-				<description>Communication Port (IP or Serial over IP). For IP connection to the Monoprice Amplifier</description>
-				<default>4444</default>
+				<description>Communication Port for Serial over IP connection to the Amplifier (Default 8080 for amps with built-in
+					Serial over IP)</description>
+				<default>8080</default>
 			</parameter>
 			<parameter name="numZones" type="integer" min="1" max="18" required="true">
 				<label>Number of Zones</label>

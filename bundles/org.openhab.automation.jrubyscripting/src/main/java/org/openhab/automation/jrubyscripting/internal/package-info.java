@@ -10,15 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.myq.internal.dto;
+
+@org.osgi.annotation.bundle.Header(name = org.osgi.framework.Constants.DYNAMICIMPORT_PACKAGE, value = "*")
+package org.openhab.automation.jrubyscripting.internal;
 
 /**
- * The {@link AccountInfoDTO} entity from the MyQ API
+ * Additional information for the JRuby Scripting package
  *
- * @author Dan Cunningham - Initial contribution
+ * @author Brian O'Connell - Initial contribution
  */
-public class AccountInfoDTO {
-
-    public String href;
-    public String id;
-}

@@ -10,54 +10,50 @@
 
 		<config-description>
 			<parameter name="bridgeId" type="text" required="true">
-				<label>Serial Number</label>
-				<description>Serial number of the RFXCOM (FTDI) device</description>
+				<label>@text/config.bridgeId.label</label>
+				<description>@text/config.bridgeId.description</description>
 			</parameter>
 			<parameter name="disableDiscovery" type="boolean" required="true">
-				<label>Disable Discovery of Unknown Devices</label>
-				<description>These RF protocols are prone to noise. If you find a lot of unknown devices showing up in your inbox
-					enabling this will stop devices being added to your inbox.</description>
+				<label>@text/config.disableDiscovery.label</label>
+				<description>@text/config.disableDiscovery.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="ignoreConfig" type="boolean">
-				<label>Skip Transceiver Configuration</label>
-				<description>Fully skip and ignore RFXCOM transceiver configuration. Binding assume that RFXCOM transceiver is
-					preconfigured e.g. via RFXcom Manager. When this is enabled, both set mode command and individual message
-					configurations are ignored.</description>
+				<label>@text/config.ignoreConfig.label</label>
+				<description>@text/config.ignoreConfig.description</description>
 				<default>true</default>
 			</parameter>
 			<parameter name="setMode" type="text">
-				<label>RFXCOM Transceiver Mode</label>
-				<description>RFXCOM transceiver set mode command. Command should be in hexadecimal string format and 28 characters
-					(14 bytes) long. If set mode command is given, individual message configurations are ignored.</description>
+				<label>@text/config.setMode.label</label>
+				<description>@text/config.setMode.description</description>
 			</parameter>
 			<parameter name="transceiverType" type="text">
-				<label>RFXCOM Transceiver Type</label>
-				<description>RFXCOM transceiver type.</description>
+				<label>@text/config.transceiverType.label</label>
+				<description>@text/config.transceiverType.description</description>
 				<default>315MHz</default>
 				<options>
-					<option value="310MHz">310MHz</option>
-					<option value="315MHz">315MHz</option>
+					<option value="310MHz">@text/config.transceiverType.option.310MHz</option>
+					<option value="315MHz">@text/config.transceiverType.option.315MHz</option>
 				</options>
 			</parameter>
 			<parameter name="transmitPower" type="integer" min="-18" max="10">
-				<label>Transmit Power</label>
-				<description>Transmit power in dBm, between -18dBm and +10dBm.</description>
+				<label>@text/config.transmitPower.label</label>
+				<description>@text/config.transmitPower.description</description>
 				<default>-18</default>
 			</parameter>
 			<parameter name="enableUndecoded" type="boolean">
-				<label>Undecoded Messages</label>
-				<description>Enable display of unencoded messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableUndecoded.label</label>
+				<description>@text/config.enableUndecoded.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableVisonic" type="boolean">
-				<label>Visonic Messages</label>
-				<description>Enable Visonic messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableVisonic.label</label>
+				<description>@text/config.enableVisonic.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="enableX10" type="boolean">
-				<label>X10 Messages</label>
-				<description>Enable X10 messages to RFXCOM transceiver.</description>
+				<label>@text/config.enableX10.label</label>
+				<description>@text/config.enableX10.description</description>
 				<default>false</default>
 			</parameter>
 

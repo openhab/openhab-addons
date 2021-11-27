@@ -173,7 +173,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         if (configuration.serialPort != null && configuration.serialPort.startsWith("rfc2217")) {
             logger.debug("Please use the Transceiver over TCP/IP bridge type for a serial over IP connection.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Please use the Transceiver over TCP/IP bridge type for a serial over IP connection.");
+                    "@text/offline.config-error-invalid-thing-type");
             return;
         }
 

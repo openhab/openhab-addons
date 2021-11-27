@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class Scenes {
         public int iconId;
 
         public String getName() {
-            return new String(Base64.getDecoder().decode(name));
+            return new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8);
         }
     }
 }

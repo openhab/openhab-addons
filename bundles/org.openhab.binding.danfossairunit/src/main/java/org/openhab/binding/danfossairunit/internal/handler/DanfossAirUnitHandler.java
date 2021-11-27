@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.danfossairunit.internal;
+package org.openhab.binding.danfossairunit.internal.handler;
 
 import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
 
@@ -22,6 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.danfossairunit.internal.Channel;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnit;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnitCommunicationController;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnitConfiguration;
+import org.openhab.binding.danfossairunit.internal.DanfossAirUnitWriteAccessor;
+import org.openhab.binding.danfossairunit.internal.UnexpectedResponseValueException;
+import org.openhab.binding.danfossairunit.internal.ValueCache;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -73,7 +80,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
                     }
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE,
-                            "Air unit connection not initialized.");
+                            "@text/offline.connection-not-initialized");
                     return;
                 }
             } catch (IllegalArgumentException e) {
@@ -107,7 +114,7 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
             });
         } catch (UnknownHostException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Unknown host: " + config.host);
+                    "@text/offline.communication-error.unknown-host [\"" + config.host + "\"]");
             return;
         }
     }

@@ -1,7 +1,5 @@
 # Nuvo Grand Concerto & Essentia G Binding
 
-![Nuvo logo](doc/nuvo_logo.png)
-
 This binding can be used to control the Nuvo Grand Concerto or Essentia G whole house multi-zone amplifier.
 Up to 20 keypad zones can be controlled when zone expansion modules are used (if not all zones on the amp are used they can be excluded via configuration).
 
@@ -9,7 +7,7 @@ The binding supports three different kinds of connections:
 
 * serial connection,
 * serial over IP connection,
-* direct IP connection via a Nuvo MPS4 music server (experimental)
+* direct IP connection via a Nuvo MPS4 music server
 
 For users without a serial connector on the server side, you can use a USB to serial adapter.
 
@@ -47,8 +45,8 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-* If the port is set to 5006 the binding will adjust its protocol to connect to a NuVo via an MPS4 IP connection.
-* MPS4 connections do not support SxDISPINFO commands including those outlined in the advanced rules section below.
+* If the port is set to 5006, the binding will adjust its protocol to connect to the Nuvo amplifier thing via an MPS4 IP connection.
+* MPS4 connections do not support custom commands using `SxDISPINFO` including those outlined in the advanced rules section below.
 * If a zone has a maximum volume limit configured by the Nuvo configurator, the volume slider will automatically drop back to that level if set above the configured limit.
 * Source display_line1 thru 4 can only be updated on non NuvoNet sources.
 * The track_position channel does not update continuously for NuvoNet sources. It only changes when the track changes or playback is paused/unpaused.

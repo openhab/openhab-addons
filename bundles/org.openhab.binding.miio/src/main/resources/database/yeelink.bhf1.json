@@ -107,7 +107,6 @@
 				"property": "nl_br",
 				"friendlyName": "Nightlight Brightness",
 				"channel": "nightlightBrightness",
-				"channelType": "nightlightBrightness",
 				"type": "Number",
 				"refresh": true,
 				"actions": [],
