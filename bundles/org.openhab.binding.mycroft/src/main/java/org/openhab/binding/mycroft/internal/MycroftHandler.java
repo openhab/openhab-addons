@@ -117,7 +117,6 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         ChannelCommandHandler channelCommand = mycroftChannels.get(channelUID);
         if (channelCommand == null) {
             logger.error("Command {} for channel {} cannot be handled", command.toString(), channelUID.toString());
@@ -128,7 +127,6 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
     @Override
     public void initialize() {
-
         thingDisposing = false;
 
         updateStatus(ThingStatus.UNKNOWN);
