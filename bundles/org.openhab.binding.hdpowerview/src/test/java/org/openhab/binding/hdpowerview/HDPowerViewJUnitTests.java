@@ -39,6 +39,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -388,5 +389,41 @@ public class HDPowerViewJUnitTests {
         assertEquals(3, shadeData.batteryStatus);
 
         assertEquals(4, shadeData.signalStrength);
+
+        assertEquals(8, shadeData.type);
+
+        Integer capabilities = shadeData.capabilities;
+        assertNotNull(capabilities);
+        assertEquals(7, capabilities.intValue());
+
+        ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
+        assertTrue(db.isTypeInDatabase(shadeData.type));
+        assertTrue(db.isTypeInDatabase(db.getPropertyValue(db.getTypeProperty(shadeData.type))));
+
+        assertTrue(db.isCapabilitiesInDatabase(capabilities.intValue()));
+        assertTrue(
+                db.isCapabilitiesInDatabase(db.getPropertyValue(db.getCapabilitiesProperty(capabilities.intValue()))));
+
+        assertTrue(db.isTypeCapabilitiesCompatibile(shadeData.type, capabilities.intValue()));
+
+        assertTrue(db.capabilitiesSupportsSecondary(capabilities.intValue()));
+        assertFalse(db.isTypeCapabilitiesCompatibile(shadeData.type, capabilities.intValue() + 1));
+    }
+
+    /**
+     * General tests of known types database
+     */
+    @Test
+    public void testKnownTypesDatabase() {
+        ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
+
+        assertTrue(db.capabilitiesSupportsSecondary(7));
+        assertTrue(db.isTypeCapabilitiesCompatibile(-1, -1));
+        assertTrue(db.capabilitiesPrimaryReversed(6));
+
+        assertFalse(db.isTypeInDatabase(99));
+        assertFalse(db.isCapabilitiesInDatabase(99));
+        assertFalse(db.capabilitiesPrimaryReversed(0));
+        assertFalse(db.capabilitiesSupportsSecondary(99));
     }
 }
