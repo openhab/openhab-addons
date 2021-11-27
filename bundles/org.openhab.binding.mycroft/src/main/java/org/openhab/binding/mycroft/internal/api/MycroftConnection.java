@@ -68,7 +68,7 @@ public class MycroftConnection {
         this.client = client;
         this.client.setConnectTimeout(TIMEOUT_MILLISECONDS);
         this.client.setMaxIdleTimeout(0);
-        this.socketName = "Websocket$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet();
+        this.socketName = "Websocket-Mycroft$" + System.currentTimeMillis() + "-" + INSTANCE_COUNTER.incrementAndGet();
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(MessageType.class, new MessageTypeConverter());
