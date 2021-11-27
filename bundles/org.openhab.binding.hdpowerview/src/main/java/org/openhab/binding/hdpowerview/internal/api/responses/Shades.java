@@ -51,6 +51,7 @@ public class Shades {
         public @Nullable ShadePosition positions;
         public @Nullable Boolean timedOut;
         public int signalStrength;
+        public @Nullable Integer capabilities;
 
         public String getName() {
             return new String(Base64.getDecoder().decode(name));

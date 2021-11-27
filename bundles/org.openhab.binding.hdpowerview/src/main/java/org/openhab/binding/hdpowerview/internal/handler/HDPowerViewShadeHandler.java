@@ -16,6 +16,7 @@ import static org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstan
 import static org.openhab.binding.hdpowerview.internal.api.ActuatorClass.*;
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -23,6 +24,7 @@ import javax.ws.rs.NotSupportedException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.HubProcessingException;
@@ -32,6 +34,7 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -69,6 +72,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private static final int REFRESH_DELAY_SEC = 10;
     private @Nullable ScheduledFuture<?> refreshPositionFuture = null;
     private @Nullable ScheduledFuture<?> refreshBatteryLevelFuture = null;
+    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -150,8 +154,87 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
                             : UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
+            updateProperties(shadeData);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
+    }
+
+    /**
+     * Update the Thing's properties based on the contents of the provided ShadeData
+     *
+     * Checks the database of known Shade 'types' and 'capabilities' and logs any unknown or incompatible values, so
+     * that developers cna be kept updated about the potential need to add support for that type resp. capability
+     *
+     * @param shadeData
+     */
+    private void updateProperties(ShadeData shadeData) {
+        String propertyKey;
+        int oldPropertyValue;
+
+        Integer capabilites = shadeData.capabilities;
+        int newCapabilities = capabilites != null ? capabilites.intValue() : -1;
+        int newType = shadeData.type;
+        boolean checkCompatibility = false;
+        Map<String, String> properties = getThing().getProperties();
+
+        // update the shade 'type' property
+        propertyKey = HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE;
+        oldPropertyValue = db.getPropertyValue(properties.getOrDefault(propertyKey, ""));
+        if (newType != oldPropertyValue) {
+            getThing().setProperty(propertyKey, db.getTypeProperty(newType));
+            if (newType > 0) {
+                if (!db.isTypeInDatabase(newType)) {
+                    db.logTypeNotInDatabase(newType);
+                }
+                checkCompatibility = true;
+            }
+        }
+
+        // update the shade 'capabilities' property
+        propertyKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
+        oldPropertyValue = db.getPropertyValue(properties.getOrDefault(propertyKey, ""));
+        if (newCapabilities != oldPropertyValue) {
+            getThing().setProperty(propertyKey, db.getCapabilitiesProperty(newCapabilities));
+            if (newCapabilities >= 0) {
+                if (!db.isCapabilitiesInDatabase(newCapabilities)) {
+                    db.logCapabilitiesNotInDatabase(newType, newCapabilities);
+                }
+                checkCompatibility = true;
+            }
+        }
+
+        if (checkCompatibility && !db.isTypeCapabilitiesCompatibile(newType, newCapabilities)) {
+            db.logTypeCapabilitiesNotCompatibile(newType, newCapabilities);
+        }
+    }
+
+    /**
+     * If the shade was hard refreshed then update the shade 'jsonSupportsSecondary' property
+     *
+     * @param shadeData
+     */
+    private void updateHardProperties(ShadeData shadeData) {
+        ShadePosition positions = shadeData.positions;
+        if (positions != null) {
+            Integer capabilites = shadeData.capabilities;
+            int caps = capabilites != null ? capabilites.intValue() : -1;
+            int type = shadeData.type;
+            boolean oldJsonSupportsSecondary;
+            boolean newJsonSupportsSecondary = positions.jsonSupportsSecondary();
+            Map<String, String> properties = getThing().getProperties();
+            String propertyKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_SUPPORTS_SECONDARY;
+            if (!properties.containsKey(propertyKey)) {
+                oldJsonSupportsSecondary = !newJsonSupportsSecondary; // trick to force updating the property
+            } else {
+                oldJsonSupportsSecondary = Boolean.valueOf(properties.getOrDefault(propertyKey, ""));
+            }
+            if (newJsonSupportsSecondary != oldJsonSupportsSecondary) {
+                getThing().setProperty(propertyKey, String.valueOf(newJsonSupportsSecondary));
+                if (newJsonSupportsSecondary != db.capabilitiesSupportsSecondary(caps)) {
+                    db.logSupportsSecondaryNotMatching(type, caps, newJsonSupportsSecondary);
+                }
+            }
         }
     }
 
@@ -322,6 +405,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 if (shadeData != null) {
                     if (Boolean.TRUE.equals(shadeData.timedOut)) {
                         logger.warn("Shade {} wireless refresh time out", shadeId);
+                    } else if (kind == RefreshKind.POSITION) {
+                        updateHardProperties(shadeData);
                     }
                 }
             }

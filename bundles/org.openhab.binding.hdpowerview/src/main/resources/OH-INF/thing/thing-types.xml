@@ -63,6 +63,9 @@
 		<properties>
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
 			<property name="modelId">PowerView Motorized Shade</property>
+			<property name="type"></property>
+			<property name="capabilities"></property>
+			<property name="jsonSupportsSecondary"></property>
 		</properties>
 		<representation-property>id</representation-property>
 

@@ -26,9 +26,9 @@ import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -48,6 +48,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
     private final HDPowerViewHubHandler hub;
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
+    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     public HDPowerViewShadeDiscoveryService(HDPowerViewHubHandler hub) {
         super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE), 600, true);
@@ -96,12 +97,35 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                                 String id = Integer.toString(shadeData.id);
                                 ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
                                         bridgeUID, id);
-                                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID)
                                         .withProperty(HDPowerViewShadeConfiguration.ID, id)
-                                        .withRepresentationProperty(HDPowerViewShadeConfiguration.ID)
-                                        .withLabel(shadeData.getName()).withBridge(bridgeUID).build();
+                                        .withRepresentationProperty(HDPowerViewShadeConfiguration.ID);
+
                                 logger.debug("Hub discovered shade '{}'", id);
-                                thingDiscovered(result);
+
+                                if (shadeData.type > 0) {
+                                    if (db.isTypeInDatabase(shadeData.type)) {
+                                        builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
+                                                db.getTypeProperty(shadeData.type));
+                                    } else {
+                                        db.logTypeNotInDatabase(shadeData.type);
+                                    }
+                                }
+
+                                Integer capabilities = shadeData.capabilities;
+                                int caps = (capabilities != null) ? capabilities.intValue() : -1;
+                                if (caps >= 0) {
+                                    if (db.isCapabilitiesInDatabase(caps)) {
+                                        builder = builder.withProperty(
+                                                HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
+                                                db.getCapabilitiesProperty(caps));
+                                    } else {
+                                        db.logCapabilitiesNotInDatabase(shadeData.type, caps);
+                                    }
+                                }
+
+                                builder = builder.withLabel(shadeData.getName()).withBridge(bridgeUID);
+                                thingDiscovered(builder.build());
                             }
                         }
                     }

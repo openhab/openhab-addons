@@ -49,6 +49,10 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
     public static final String CHANNELTYPE_SCENE_GROUP_ACTIVATE = "scene-group-activate";
 
+    public static final String PROPERTY_SHADE_TYPE = "type";
+    public static final String PROPERTY_SHADE_CAPABILITIES = "capabilities";
+    public static final String PROPERTY_SHADE_JSON_SUPPORTS_SECONDARY = "jsonSupportsSecondary";
+
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();

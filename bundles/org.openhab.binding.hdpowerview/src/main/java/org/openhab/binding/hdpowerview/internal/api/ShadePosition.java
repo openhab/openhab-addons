@@ -130,6 +130,18 @@ public class ShadePosition {
         }
     }
 
+    /**
+     * Detect if the ShadePosition was built from JSON values including posKind value(s) that indicate its support for a
+     * secondary rail
+     *
+     * @return true if the ShadePosition supports a secondary rail
+     */
+    public boolean jsonSupportsSecondary() {
+        Integer posKind2 = this.posKind2;
+        return ((posKind2 != null) && (posKind2.intValue() == ZERO_IS_OPEN.toPosKind()))
+                || (posKind1 == ZERO_IS_OPEN.toPosKind());
+    }
+
     private void setPosition1(CoordinateSystem coordSys, int percent) {
         posKind1 = coordSys.toPosKind();
         switch (coordSys) {
