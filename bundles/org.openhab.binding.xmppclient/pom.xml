@@ -15,45 +15,170 @@
   <name>openHAB Add-ons :: Bundles :: XMPPClient Binding</name>
 
   <properties>
-    <smack.version>4.3.3</smack.version>
+    <smack.version>4.4.4</smack.version>
+    <bnd.importpackage>
+      !android.*,!sun.security.*
+    </bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-java7</artifactId>
+      <artifactId>smack-core</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-xmlparser</artifactId>
+      <version>${smack.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-xmlparser-xpp3</artifactId>
+      <version>${smack.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>xpp3</groupId>
+      <artifactId>xpp3_min</artifactId>
+      <version>1.1.4c</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jxmpp</groupId>
+      <artifactId>jxmpp-core</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jxmpp</groupId>
+      <artifactId>jxmpp-util-cache</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jxmpp</groupId>
+      <artifactId>jxmpp-jid</artifactId>
+      <version>1.0.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-java8</artifactId>
+      <version>${smack.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-sasl-javax</artifactId>
+      <version>${smack.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-resolver-javax</artifactId>
+      <version>${smack.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-extensions</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-im</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-tcp</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-streammanagement</artifactId>
+      <version>${smack.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.igniterealtime.smack</groupId>
       <artifactId>smack-experimental</artifactId>
       <version>${smack.version}</version>
-      <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.hsluv</groupId>
+      <artifactId>hsluv</artifactId>
+      <version>0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.igniterealtime.smack</groupId>
+      <artifactId>smack-resolver-minidns</artifactId>
+      <version>${smack.version}</version>
+    </dependency>
+
     <dependency>
       <groupId>org.minidns</groupId>
       <artifactId>minidns-core</artifactId>
-      <version>0.3.3</version>
-      <scope>provided</scope>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.minidns</groupId>
+      <artifactId>minidns-dnssec</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.minidns</groupId>
+      <artifactId>minidns-client</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.minidns</groupId>
+      <artifactId>minidns-iterative-resolver</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.minidns</groupId>
+      <artifactId>minidns-hla</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.aries.spifly</groupId>
+      <artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.aries.spifly</groupId>
+      <artifactId>org.apache.aries.spifly.dynamic.bundle</artifactId>
+      <version>1.3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-commons</artifactId>
+      <version>9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-tree</artifactId>
+      <version>9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-analysis</artifactId>
+      <version>9.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm-util</artifactId>
+      <version>9.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.xmlpull</artifactId>
+      <version>1.1.3.1_2</version>
     </dependency>
   </dependencies>
 

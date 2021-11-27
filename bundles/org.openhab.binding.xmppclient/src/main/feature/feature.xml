@@ -4,22 +4,22 @@
 
 	<feature name="openhab-binding-xmppclient" description="XMPP Client Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.3.3</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-experimental/4.3.3</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-im/4.3.3</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-tcp/4.3.3</bundle>
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/0.6.3</bundle>
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/0.6.3</bundle>
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/0.6.3</bundle>
-		<bundle dependency="true">mvn:org.minidns/minidns-core/0.3.3</bundle>
 		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.69</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-core/4.3.3</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-sasl-javax/4.3.3</bundle>
-		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>
-		<!-- FIXME: implicit dependencies required at runtime but not automatically installed, this is a workaround -->
-		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-resolver-javax/4.3.3</bundle>
-		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-java7/4.3.3</bundle>
+		<bundle dependency="true">mvn:org.minidns/minidns-core/1.0.2</bundle>
+		<bundle dependency="true">mvn:org.minidns/minidns-dnssec/1.0.2</bundle>
+		<bundle dependency="true">mvn:org.minidns/minidns-client/1.0.2</bundle>
+		<bundle dependency="true">mvn:org.minidns/minidns-iterative-resolver/1.0.2</bundle>
+		<bundle dependency="true">mvn:org.minidns/minidns-hla/1.0.2</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/1.0.3</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/1.0.3</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.0.3</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-core/4.4.4</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.4.4</bundle>
+		<!-- SPI Fly provides the ServiceLoader for OSGi, required by smack-xmlparser -->
+		<bundle start-level="50">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.framework.extension/1.3.2</bundle>
+		<bundle start-level="50">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlpull/1.1.3.1_2</bundle>
+		<bundle start-level="60">mvn:org.igniterealtime.smack/smack-xmlparser-xpp3/4.4.4</bundle>
+		<bundle start-level="70">mvn:org.igniterealtime.smack/smack-xmlparser/4.4.4</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.xmppclient/${project.version}</bundle>
 	</feature>
 </features>
