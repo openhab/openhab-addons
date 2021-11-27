@@ -44,14 +44,12 @@
 		<item-type>String</item-type>
 		<label>TTS</label>
 		<description>The last sentence Mycroft spoke.</description>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="utterance-channel">
 		<item-type>String</item-type>
 		<label>Utterance</label>
 		<description>The last utterance Mycroft received.</description>
-		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="full-message-channel" advanced="true">
