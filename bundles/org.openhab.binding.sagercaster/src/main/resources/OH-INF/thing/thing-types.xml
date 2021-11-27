@@ -72,6 +72,7 @@
 				<label>@text/tempTrendLabel</label>
 				<description>@text/tempTrendDescription</description>
 			</channel>
+			<channel id="timestamp" typeId="timestamp"/>
 		</channels>
 	</channel-group-type>
 
@@ -142,7 +143,7 @@
 	<channel-type id="wind-direction">
 		<item-type>String</item-type>
 		<label>@text/windDirectionLabel</label>
-		<category>Wind</category>
+		<category>wind</category>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -163,6 +164,7 @@
 		<item-type>String</item-type>
 		<label>@text/trendLabel</label>
 		<description>@text/trendDescription</description>
+        <category>line</category>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="1">@text/trend1</option>
@@ -174,19 +176,23 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="timestamp" advanced="true">
-		<item-type>DateTime</item-type>
-		<label>@text/timestampLabel</label>
-		<description>@text/timestampDescription</description>
-		<category>Observation time</category>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="cloudiness">
+    <channel-type id="timestamp" >
+        <item-type>DateTime</item-type>
+        <label>@text/timestampChannelLabel</label>
+        <description>@text/timestampChannelDescription</description>
+        <category>time</category>
+        <tags>
+            <tag>Status</tag>
+            <tag>Timestamp</tag>
+        </tags>
+        <state readOnly="true"/>
+    </channel-type>
+    
+    <channel-type id="cloudiness">
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/cloudinessLabel</label>
 		<description>@text/cloudinessDescription</description>
-		<category>Clouds</category>
+		<category>sun_clouds</category>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -194,7 +200,7 @@
 		<item-type>Number</item-type>
 		<label>@text/rainQttyLabel</label>
 		<description>@text/rainQttyDescription</description>
-		<category>Rain</category>
+		<category>rain</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
@@ -206,7 +212,7 @@
 		<item-type>Switch</item-type>
 		<label>@text/rainingLabel</label>
 		<description>@text/rainingDescription</description>
-		<category>Rain</category>
+		<category>rain</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Rain</tag>
@@ -217,12 +223,12 @@
 		<item-type>Number</item-type>
 		<label>@text/beaufortLabel</label>
 		<description>@text/beaufortDescription</description>
-		<category>Wind</category>
+		<category>wind</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Wind</tag>
 		</tags>
 		<state min="0" max="12" pattern="%d"/>
 	</channel-type>
-
+	
 </thing:thing-descriptions>

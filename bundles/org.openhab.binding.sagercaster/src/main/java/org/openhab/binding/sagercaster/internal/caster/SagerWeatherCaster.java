@@ -53,7 +53,7 @@
  * 378 possible forecasts determined from 4996 dial codes.
  */
 
-package org.openhab.binding.sagercaster.internal;
+package org.openhab.binding.sagercaster.internal.caster;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -76,6 +76,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = SagerWeatherCaster.class, scope = ServiceScope.SINGLETON)
 @NonNullByDefault
 public class SagerWeatherCaster {
+    public final static String UNDEF = "-";
     // Northern Polar Zone & Northern Tropical Zone
     private final static String[] NPZDIRECTIONS = { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
     // Northern Temperate Zone
@@ -88,7 +89,7 @@ public class SagerWeatherCaster {
     private final Logger logger = LoggerFactory.getLogger(SagerWeatherCaster.class);
     private final Properties forecaster = new Properties();
 
-    private Optional<Prevision> prevision = Optional.empty();
+    private Optional<SagerPrediction> prevision = Optional.empty();
     private String[] usedDirections = NTZDIRECTIONS; // Defaulted to Northern Zone
 
     private int currentBearing = -1;
@@ -238,7 +239,7 @@ public class SagerWeatherCaster {
 
     private void updatePrediction() {
         int zWind = Arrays.asList(usedDirections).indexOf(getCompass());
-        String d1 = "-";
+        String d1 = UNDEF;
         switch (zWind) {
             case 0:
                 if (windEvolution == 3) {
@@ -319,39 +320,27 @@ public class SagerWeatherCaster {
         }
         String forecast = forecaster.getProperty(
                 d1 + String.valueOf(sagerPressure) + String.valueOf(pressureEvolution) + String.valueOf(nubes));
-        prevision = (forecast != null) ? Optional.of(new Prevision(forecast)) : Optional.empty();
+        prevision = Optional.ofNullable(forecast != null ? new SagerPrediction(forecast) : null);
     }
 
     public String getForecast() {
-        if (prevision.isPresent()) {
-            char forecast = prevision.get().zForecast;
-            return Character.toString(forecast);
-        }
-        return "-";
+        return prevision.map(p -> p.getForecast()).orElse(UNDEF);
     }
 
     public String getWindVelocity() {
-        if (prevision.isPresent()) {
-            char windVelocity = prevision.get().zWindVelocity;
-            return Character.toString(windVelocity);
-        }
-        return "-";
+        return prevision.map(p -> p.getWindVelocity()).orElse(UNDEF);
     }
 
     public String getWindDirection() {
-        if (prevision.isPresent()) {
-            int direction = prevision.get().zWindDirection;
-            return String.valueOf(direction);
-        }
-        return "-";
+        return prevision.map(p -> p.getWindDirection()).orElse(UNDEF);
     }
 
     public String getWindDirection2() {
-        if (prevision.isPresent()) {
-            int direction = prevision.get().zWindDirection2;
-            return String.valueOf(direction);
-        }
-        return "-";
+        return prevision.map(p -> p.getWindDirection2()).orElse(UNDEF);
+    }
+
+    public String getSagerCode() {
+        return prevision.map(p -> p.getSagerCode()).orElse(UNDEF);
     }
 
     public void setLatitude(double latitude) {
@@ -370,17 +359,32 @@ public class SagerWeatherCaster {
         }
     }
 
-    private class Prevision {
-        public final char zForecast;
-        public final char zWindVelocity;
-        public final int zWindDirection;
-        public final int zWindDirection2;
-
-        public Prevision(String forecast) {
-            zForecast = forecast.charAt(0);
-            zWindVelocity = forecast.charAt(1);
-            zWindDirection = Character.getNumericValue(forecast.charAt(2));
-            zWindDirection2 = (forecast.length() > 3) ? Character.getNumericValue(forecast.charAt(3)) : -1;
+    public int getPredictedBeaufort() {
+        int result = currentBeaufort;
+        switch (getWindVelocity()) {
+            case "N":
+                result += 1;
+                break;
+            case "F":
+                result = 4;
+                break;
+            case "S":
+                result = 6;
+                break;
+            case "G":
+                result = 8;
+                break;
+            case "W":
+                result = 10;
+                break;
+            case "H":
+                result = 12;
+                break;
+            case "D":
+                result -= 1;
+                break;
         }
+        return result;
     }
+
 }

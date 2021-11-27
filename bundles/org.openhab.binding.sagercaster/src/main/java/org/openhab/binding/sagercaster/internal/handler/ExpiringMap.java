@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.sagercaster.internal.handler;
 
+import java.util.NavigableMap;
 import java.util.Optional;
-import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 class ExpiringMap<T> {
-    private final SortedMap<Long, T> values = new TreeMap<>();
+    private final NavigableMap<Long, T> values = new TreeMap<>();
     private Optional<T> agedValue = Optional.empty();
     private long eldestAge = 0;
 
