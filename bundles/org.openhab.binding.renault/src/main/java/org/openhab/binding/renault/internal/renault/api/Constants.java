@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.renault.internal.renault.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Constants for Renault API.
  * 
@@ -19,20 +21,19 @@ package org.openhab.binding.renault.internal.renault.api;
  * 
  * @author Doug Culnane - Initial contribution
  */
+@NonNullByDefault
 public class Constants {
+
+    private static final String GIGYA_URL_EU = "https://accounts.eu1.gigya.com";
+    private static final String GIGYA_URL_US = "https://accounts.us1.gigya.com";
+    private static final String KAMEREON_APIKEY = "Ae9FDWugRxZQAGm3Sxgk7uJn6Q4CGEA2";
+    private static final String KAMEREON_URL_EU = "https://api-wired-prod-1-euw1.wrd-aws.com";
+    private static final String KAMEREON_URL_US = "https://api-wired-prod-1-usw2.wrd-aws.com";
 
     private String gigyaApiKey = "gigya-api-key";
     private String gigyaRootUrl = "gigya-root-url";
     private String kamereonApiKey = "kamereon-api-key";
     private String kamereonRootUrl = "kamereon-root-url";
-
-    static private final String GIGYA_URL_EU = "https://accounts.eu1.gigya.com";
-    static private final String GIGYA_URL_US = "https://accounts.us1.gigya.com";
-    static private final String KAMEREON_APIKEY = "Ae9FDWugRxZQAGm3Sxgk7uJn6Q4CGEA2";
-    static private final String KAMEREON_URL_EU = "https://api-wired-prod-1-euw1.wrd-aws.com";
-    static private final String KAMEREON_URL_US = "https://api-wired-prod-1-usw2.wrd-aws.com";
-
-    static final String LOCALE_BASE_URL = "https://renault-wrd-prod-1-euw1-myrapp-one.s3-eu-west-1.amazonaws.com";
 
     public Constants(final String locale) {
         switch (locale) {

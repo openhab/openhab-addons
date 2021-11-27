@@ -13,17 +13,23 @@
 package org.openhab.binding.renault.internal;
 
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.*;
+import static org.openhab.core.library.unit.MetricPrefix.*;
+import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.renault.internal.renault.api.Car;
 import org.openhab.binding.renault.internal.renault.api.MyRenaultHttpSession;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -45,12 +51,15 @@ public class RenaultHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RenaultHandler.class);
 
-    private @Nullable RenaultConfiguration config;
+    private RenaultConfiguration config = new RenaultConfiguration();
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public RenaultHandler(Thing thing) {
+    private HttpClient httpClient;
+
+    public RenaultHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -62,6 +71,29 @@ public class RenaultHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         this.config = getConfigAs(RenaultConfiguration.class);
+
+        // Validate configuration
+        if (this.config.myRenaultUsername.trim().length() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MyRenault Username is empty!");
+            return;
+        }
+        if (this.config.myRenaultPassword.trim().length() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MyRenault Password is empty!");
+            return;
+        }
+        if (this.config.locale.trim().length() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location is empty!");
+            return;
+        }
+        if (this.config.vin.trim().length() == 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "VIN is empty!");
+            return;
+        }
+        if (this.config.refreshInterval < 1) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "The refresh interval mush to be larger than 1");
+            return;
+        }
 
         // Background initialization:
         if (pollingJob == null || pollingJob.isCancelled()) {
@@ -79,16 +111,18 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     private void getStatus() {
-        MyRenaultHttpSession httpSession;
+        MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
         try {
-            httpSession = new MyRenaultHttpSession(this.config);
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            httpSession.updateCarData(this.config);
-            updateState(httpSession.getCar());
+            httpSession.initSesssion();
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             httpSession = null;
             logger.error("Error My Renault Http Session.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        if (httpSession != null) {
+            httpSession.updateCarData();
+            updateState(httpSession.getCar());
         }
     }
 
@@ -97,7 +131,7 @@ public class RenaultHandler extends BaseThingHandler {
             updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(car.batteryLevel));
         }
         if (car.hvacstatus != null) {
-            updateState(CHANNEL_HVAC_STATUS, (car.hvacstatus ? OnOffType.ON : OnOffType.OFF));
+            updateState(CHANNEL_HVAC_STATUS, OnOffType.from(car.hvacstatus));
         }
         if (car.imageURL != null) {
             updateState(CHANNEL_IMAGE, new StringType(car.imageURL));
@@ -107,7 +141,7 @@ public class RenaultHandler extends BaseThingHandler {
                     new PointType(new DecimalType(car.gpsLatitude), new DecimalType(car.gpsLongitude)));
         }
         if (car.odometer != null) {
-            updateState(CHANNEL_ODOMETER, new DecimalType(car.odometer));
+            updateState(CHANNEL_ODOMETER, new QuantityType<Length>(car.odometer, KILO(METRE)));
         }
     }
 }

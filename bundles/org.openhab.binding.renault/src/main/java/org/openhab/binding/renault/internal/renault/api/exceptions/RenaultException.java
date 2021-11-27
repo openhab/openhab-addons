@@ -10,21 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.renault.internal;
+package org.openhab.binding.renault.internal.renault.api.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link RenaultConfiguration} class contains fields mapping thing configuration parameters.
- *
  * @author Doug Culnane - Initial contribution
  */
 @NonNullByDefault
-public class RenaultConfiguration {
+public class RenaultException extends Exception {
 
-    public String myRenaultUsername = "";
-    public String myRenaultPassword = "";
-    public String locale = "";
-    public String vin = "";
-    public int refreshInterval = 10;
+    private static final long serialVersionUID = 1L;
+
+    public RenaultException(String message) {
+        super(message);
+    }
 }

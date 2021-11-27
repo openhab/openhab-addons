@@ -20,79 +20,105 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
+ * MyRenault registered car for parsing HTTP responses and collecting data and
+ * information.
+ * 
  * @author Doug Culnane - Initial contribution
  */
 public class Car {
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
-    public Double batteryLevel;
-    public Boolean hvacstatus;
-    public Double odometer;
-    public String imageURL;
-    public Double gpsLatitude;
-    public Double gpsLongitude;
+    public Double batteryLevel = Double.valueOf(-1);
+    public Boolean hvacstatus = false;
+    public Double odometer = Double.valueOf(0);
+    public String imageURL = "";
+    public Double gpsLatitude = Double.valueOf(0);
+    public Double gpsLongitude = Double.valueOf(0);
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
-            batteryLevel = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
-                    .get("batteryLevel").getAsDouble();
-        } catch (Exception e) {
-            logger.error("Error {} parsing Battery Status: {}", e, responseJson);
-            batteryLevel = null;
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null && attributes.get("batteryLevel") != null) {
+                batteryLevel = attributes.get("batteryLevel").getAsDouble();
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Battery Status: {}", e.getMessage(), responseJson);
         }
     }
 
     public void setHVACStatus(JsonObject responseJson) {
         try {
-            hvacstatus = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
-                    .get("hvacStatus").getAsString().equals("on");
-        } catch (Exception e) {
-            logger.error("Error {} parsing HVAC Status: {}", e, responseJson);
-            hvacstatus = null;
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null && attributes.get("hvacStatus") != null) {
+                hvacstatus = attributes.get("hvacStatus").getAsString().equals("on");
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing HVAC Status: {}", e.getMessage(), responseJson);
         }
     }
 
     public void setCockpit(JsonObject responseJson) {
         try {
-            odometer = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
-                    .get("totalMileage").getAsDouble();
-        } catch (Exception e) {
-            logger.error("Error {} parsing Cockpit: {}", e, responseJson);
-            odometer = null;
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null && attributes.get("totalMileage") != null) {
+                odometer = attributes.get("totalMileage").getAsDouble();
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Cockpit: {}", e.getMessage(), responseJson);
         }
     }
 
     public void setLocation(JsonObject responseJson) {
         try {
-            gpsLatitude = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
-                    .get("gpsLatitude").getAsDouble();
-            gpsLongitude = responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject()
-                    .get("gpsLongitude").getAsDouble();
-        } catch (Exception e) {
-            logger.error("Error {} parsing Cockpit: {}", e, responseJson);
-            gpsLatitude = null;
-            gpsLongitude = null;
+            JsonObject attributes = getAttributes(responseJson);
+            if (attributes != null) {
+                if (attributes.get("gpsLatitude") != null) {
+                    gpsLatitude = attributes.get("gpsLatitude").getAsDouble();
+                }
+                if (attributes.get("gpsLongitude") != null) {
+                    gpsLongitude = attributes.get("gpsLongitude").getAsDouble();
+                }
+            }
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Cockpit: {}", e.getMessage(), responseJson);
         }
     }
 
     public void setDetails(JsonObject responseJson) {
         try {
-            JsonArray assetsJson = responseJson.get("assets").getAsJsonArray();
-            for (JsonElement asset : assetsJson) {
-                if (asset.getAsJsonObject().get("assetType").getAsString().equals("PICTURE")) {
-                    JsonArray renditions = asset.getAsJsonObject().get("renditions").getAsJsonArray();
-                    for (JsonElement rendition : renditions) {
-                        if (rendition.getAsJsonObject().get("resolutionType").getAsString()
-                                .equals("ONE_MYRENAULT_SMALL")) {
-                            imageURL = rendition.getAsJsonObject().get("url").getAsString();
+            imageURL = null;
+            if (responseJson.get("assets") != null) {
+                JsonArray assetsJson = responseJson.get("assets").getAsJsonArray();
+                for (JsonElement asset : assetsJson) {
+                    if (asset.getAsJsonObject().get("assetType") != null
+                            && asset.getAsJsonObject().get("assetType").getAsString().equals("PICTURE")) {
+                        if (asset.getAsJsonObject().get("renditions") != null) {
+                            JsonArray renditions = asset.getAsJsonObject().get("renditions").getAsJsonArray();
+                            for (JsonElement rendition : renditions) {
+                                if (rendition.getAsJsonObject().get("resolutionType") != null
+                                        && rendition.getAsJsonObject().get("resolutionType").getAsString()
+                                                .equals("ONE_MYRENAULT_SMALL")) {
+                                    imageURL = rendition.getAsJsonObject().get("url").getAsString();
+                                    break;
+                                }
+                            }
                         }
+                    }
+                    if (imageURL != null) {
+                        break;
                     }
                 }
             }
-        } catch (Exception e) {
-            logger.error("Error {} parsing Details: {}", e, responseJson);
-            imageURL = null;
+        } catch (IllegalStateException | ClassCastException e) {
+            logger.warn("Error {} parsing Details: {}", e.getMessage(), responseJson);
         }
+    }
+
+    private JsonObject getAttributes(JsonObject responseJson) throws IllegalStateException, ClassCastException {
+        if (responseJson.get("data") != null && responseJson.get("data").getAsJsonObject().get("attributes") != null) {
+            return responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject();
+        }
+        return null;
     }
 }

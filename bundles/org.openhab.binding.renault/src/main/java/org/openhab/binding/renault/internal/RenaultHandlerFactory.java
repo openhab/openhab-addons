@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -25,6 +27,7 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link RenaultHandlerFactory} is responsible for creating things and thing
@@ -36,10 +39,13 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.renault", service = ThingHandlerFactory.class)
 public class RenaultHandlerFactory extends BaseThingHandlerFactory {
 
+    private final HttpClient httpClient;
+
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CAR);
 
     @Activate
-    public RenaultHandlerFactory() {
+    public RenaultHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -52,7 +58,7 @@ public class RenaultHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_CAR.equals(thingTypeUID)) {
-            return new RenaultHandler(thing);
+            return new RenaultHandler(thing, httpClient);
         }
 
         return null;
