@@ -1,56 +1,55 @@
-# sonnen Binding
+# Sonnen Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The binding for sonnen communicates with a sonnen battery. More information about the sonnen battery can be found here: https://sonnen.de/
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Things | Description  | Thing Type |
+|--------|--------------|------------|
+| sonnen | Control of a sonnen battery | battery|
 
-## Discovery
-
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the sonnen Binding
-#
-# Default secret key for the pairing of the sonnen Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Only one parameter is required. The IP-Address of the sonnen battery in your local network.
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+```
+Thing sonnen:battery:myBattery "sonnenBattery"  [ hostIP="192.168.0.10"]
+```
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+The following channels are yet supported:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| Channel | Type  | Access| Description|
+|---------|-------|-------|------------|
+| isBatteryCharging| Switch | read|Indicates if the Battery is charging at that moment|
+|isBatteryDischarging|Switch|read|Indicates if the Battery is discharging at that moment|
+|consumption|Number:Energy|read|Indicates the actual consumption of the consumer in watt|
+|gridFeedIn|Number:Energy|read|Indicates the actual feeding to the Grid in watt|
+|solarProduction|Number:Energy|read|Indicates the actual production of the Solar system in watt|
+|batteryLevel|Number|read|Indicates the actual Battery Level in % from 0 - 100|
+|isFlowConsumptionBattery|Switch|read|Indicates if there is a current flow from Battery towards Consumption|
+|isFlowConsumptionGrid|Switch|read|Indicates if there is a current flow from Grid towards Consumption|
+|isFlowConsumptionProduction|Switch|read|Indicates if there is a current flow from Solar Production towards Consumption|
+|isFlowGridBattery|Switch|read|Indicates if there is a current flow from Grid towards Battery|
+|isFlowProductionBattery|Switch|read|Indicates if there is a current flow from Production towards Battery|
+|isFlowProductionGrid|Switch|read|Indicates if there is a current flow from Production towards Grid|
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+demo.items:
 
-## Any custom content here!
+```
+Number:Energy Consumption { channel="battery:consumption" }
+Number:Energy GridFeeding { channel="battery:gridFeedIn" }
+Number BatteryLevel { channel="battery:batteryLevel" }
+Switch FlowConsumptionBattery { channel="oven:isFlowConsumptionBattery" }
+```
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+## Tested Hardware
+
+The binding was successfully tested with the following sonnen battery:
+
+- sonnnen eco 8.0 SW Version: 1.6.10.1221979
