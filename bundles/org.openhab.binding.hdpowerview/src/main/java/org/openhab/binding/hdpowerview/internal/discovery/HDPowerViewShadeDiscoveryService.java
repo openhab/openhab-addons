@@ -106,7 +106,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                                 if (shadeData.type > 0) {
                                     if (db.isTypeInDatabase(shadeData.type)) {
                                         builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
-                                                db.getTypeProperty(shadeData.type));
+                                                db.getType(shadeData.type).toString());
                                     } else {
                                         db.logTypeNotInDatabase(shadeData.type);
                                     }
@@ -118,7 +118,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                                     if (db.isCapabilitiesInDatabase(caps)) {
                                         builder = builder.withProperty(
                                                 HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
-                                                db.getCapabilitiesProperty(caps));
+                                                db.getCapabilities(caps).toString());
                                     } else {
                                         db.logCapabilitiesNotInDatabase(shadeData.type, caps);
                                     }

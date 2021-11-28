@@ -154,7 +154,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
                             : UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
-            updateProperties(shadeData);
+            updatePropertiesSoft(shadeData);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -164,75 +164,72 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
      * Update the Thing's properties based on the contents of the provided ShadeData
      *
      * Checks the database of known Shade 'types' and 'capabilities' and logs any unknown or incompatible values, so
-     * that developers cna be kept updated about the potential need to add support for that type resp. capability
+     * that developers can be kept updated about the potential need to add support for that type resp. capability
      *
      * @param shadeData
      */
-    private void updateProperties(ShadeData shadeData) {
-        String propertyKey;
-        int oldPropertyValue;
-
-        Integer capabilites = shadeData.capabilities;
-        int newCapabilities = capabilites != null ? capabilites.intValue() : -1;
-        int newType = shadeData.type;
-        boolean checkCompatibility = false;
-        Map<String, String> properties = getThing().getProperties();
+    private void updatePropertiesSoft(ShadeData shadeData) {
+        final Map<String, String> properties = getThing().getProperties();
+        boolean propChanged = false;
 
         // update the shade 'type' property
-        propertyKey = HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE;
-        oldPropertyValue = db.getPropertyValue(properties.getOrDefault(propertyKey, ""));
-        if (newType != oldPropertyValue) {
-            getThing().setProperty(propertyKey, db.getTypeProperty(newType));
-            if (newType > 0) {
-                if (!db.isTypeInDatabase(newType)) {
-                    db.logTypeNotInDatabase(newType);
-                }
-                checkCompatibility = true;
+        final int type = shadeData.type;
+        String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE;
+        String propOldVal = properties.getOrDefault(propKey, "");
+        String propNewVal = db.getType(type).toString();
+        if (!propNewVal.equals(propOldVal)) {
+            propChanged = true;
+            getThing().setProperty(propKey, propNewVal);
+            if ((type > 0) && !db.isTypeInDatabase(type)) {
+                db.logTypeNotInDatabase(type);
             }
         }
 
         // update the shade 'capabilities' property
-        propertyKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
-        oldPropertyValue = db.getPropertyValue(properties.getOrDefault(propertyKey, ""));
-        if (newCapabilities != oldPropertyValue) {
-            getThing().setProperty(propertyKey, db.getCapabilitiesProperty(newCapabilities));
-            if (newCapabilities >= 0) {
-                if (!db.isCapabilitiesInDatabase(newCapabilities)) {
-                    db.logCapabilitiesNotInDatabase(newType, newCapabilities);
-                }
-                checkCompatibility = true;
+        final Integer temp = shadeData.capabilities;
+        final int capabilities = temp != null ? temp.intValue() : -1;
+        propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
+        propOldVal = properties.getOrDefault(propKey, "");
+        propNewVal = db.getCapabilities(capabilities).toString();
+        if (!propNewVal.equals(propOldVal)) {
+            propChanged = true;
+            getThing().setProperty(propKey, propNewVal);
+            if ((capabilities >= 0) && !db.isCapabilitiesInDatabase(capabilities)) {
+                db.logCapabilitiesNotInDatabase(type, capabilities);
             }
         }
 
-        if (checkCompatibility && !db.isTypeCapabilitiesCompatibile(newType, newCapabilities)) {
-            db.logTypeCapabilitiesNotCompatibile(newType, newCapabilities);
+        if (propChanged && db.isTypeInDatabase(type) && db.isCapabilitiesInDatabase(capabilities)
+                && !db.getType(type).capabilitiesEqual(capabilities)) {
+            db.logTypeCapabilitiesNotEqual(type, capabilities);
         }
     }
 
     /**
-     * If the shade was hard refreshed then update the shade 'jsonSupportsSecondary' property
+     * After a hard refresh, update the Thing's properties based on the contents of the provided ShadeData
+     *
+     * Checks if the secondary support capabilities in the database of known Shade 'types' and 'capabilities' matches
+     * that implied by the ShadeData and logs any incompatible values, so that developers can be kept updated about the
+     * potential need to add support for that type resp. capability
      *
      * @param shadeData
      */
-    private void updateHardProperties(ShadeData shadeData) {
-        ShadePosition positions = shadeData.positions;
+    private void updatePropertiesHard(ShadeData shadeData) {
+        final ShadePosition positions = shadeData.positions;
         if (positions != null) {
-            Integer capabilites = shadeData.capabilities;
-            int caps = capabilites != null ? capabilites.intValue() : -1;
-            int type = shadeData.type;
-            boolean oldJsonSupportsSecondary;
-            boolean newJsonSupportsSecondary = positions.jsonSupportsSecondary();
-            Map<String, String> properties = getThing().getProperties();
-            String propertyKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_SUPPORTS_SECONDARY;
-            if ("".equals(properties.getOrDefault(propertyKey, ""))) {
-                oldJsonSupportsSecondary = !newJsonSupportsSecondary; // trick to force property update
-            } else {
-                oldJsonSupportsSecondary = Boolean.valueOf(properties.getOrDefault(propertyKey, ""));
-            }
-            if (newJsonSupportsSecondary != oldJsonSupportsSecondary) {
-                getThing().setProperty(propertyKey, String.valueOf(newJsonSupportsSecondary));
-                if (newJsonSupportsSecondary != db.capabilitiesSupportsSecondary(caps)) {
-                    db.logSupportsSecondaryNotMatching(type, caps, newJsonSupportsSecondary);
+            final Map<String, String> properties = getThing().getProperties();
+
+            // update the shade 'jsonSupportsSecondary' property
+            final boolean jsonSupportsSeconday = positions.jsonSupportsSecondary();
+            String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_SUPPORTS_SECONDARY;
+            String propOldVal = properties.getOrDefault(propKey, "");
+            String propNewVal = String.valueOf(jsonSupportsSeconday);
+            if (!propNewVal.equals(propOldVal)) {
+                getThing().setProperty(propKey, propNewVal);
+                final Integer temp = shadeData.capabilities;
+                final int capabilities = temp != null ? temp.intValue() : -1;
+                if (jsonSupportsSeconday != db.getCapabilities(capabilities).supportsSecondary()) {
+                    db.logSecondarySupportNotEqual(shadeData.type, capabilities, jsonSupportsSeconday);
                 }
             }
         }
@@ -406,7 +403,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     if (Boolean.TRUE.equals(shadeData.timedOut)) {
                         logger.warn("Shade {} wireless refresh time out", shadeId);
                     } else if (kind == RefreshKind.POSITION) {
-                        updateHardProperties(shadeData);
+                        updatePropertiesHard(shadeData);
                     }
                 }
             }

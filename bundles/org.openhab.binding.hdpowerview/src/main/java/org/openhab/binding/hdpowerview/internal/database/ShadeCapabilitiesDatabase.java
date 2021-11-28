@@ -17,151 +17,206 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class containing the database of all known shade 'types', their respective 'capabilities', plus other relevant
- * functional attributes.
+ * Class containing the database of all known shade 'types' and their respective 'capabilities'.
  *
- * If user systems detect shade types that are not in the database, then this class will issue logger warning messages
+ * If user systems detect shade types that are not in the database, then this class can issue logger warning messages
  * indicating such absence, and prompting the user to report it to developers so that the database and the respective
- * binding functionality can be extended over time.
+ * binding functionality can (hopefully) be extended over time.
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
 @NonNullByDefault
 public class ShadeCapabilitiesDatabase {
 
-    private static final String NOT_DETERMINED = "Not determined";
-
     private final Logger logger = LoggerFactory.getLogger(ShadeCapabilitiesDatabase.class);
-
-    /*
-     * Database of known shade types
-     */
-    private static final TypeItem[] TYPE_DATABASE = {
-        // @formatter:off
-            new TypeItem( 4, 0, "Roman"),
-            new TypeItem( 5, 0, "Bottom Up"),
-            new TypeItem( 6, 0, "Duette"),
-            new TypeItem( 7, 6, "Top Down"),
-            new TypeItem( 8, 7, "Duette Top Down Bottom Up"),
-            new TypeItem( 9, 7, "Duette DuoLite Top Down Bottom Up"),
-            new TypeItem(23, 1, "Silhouette"),
-            new TypeItem(42, 0, "M25T Roller Blind"),
-            new TypeItem(43, 1, "Facette"),
-            new TypeItem(44, 0, "Twist"),
-            new TypeItem(47, 7, "Pleated Top Down Bottom Up"),
-            new TypeItem(49, 0, "AC Roller"),
-            new TypeItem(51, 2, "Venetian"),
-            new TypeItem(54, 3, "Vertical Slats Left Stack"),
-            new TypeItem(55, 3, "Vertical Slats Right Stack"),
-            new TypeItem(56, 3, "Vertical Slats Split Stack"),
-            new TypeItem(62, 2, "Venetian"),
-            new TypeItem(69, 3, "Curtain Left Stack"),
-            new TypeItem(70, 3, "Curtain Right Stack"),
-            new TypeItem(71, 3, "Curtain Split Stack"),
-            new TypeItem(79, 8, "Duolite Lift"),
-            // =================================
-            new TypeItem(-1, -1, NOT_DETERMINED)
-        // @formatter:on
-    };
 
     /*
      * Database of known shade capabilities
      */
-    private static final CapabilitiesItem[] CAPABILITIES_DATABASE = {
+    private static final Capabilities[] CAPABILITIES_DATABASE = {
         // @formatter:off
-            new CapabilitiesItem(0, "Bottom Up"),
-            new CapabilitiesItem(1, "Bottom Up Tilt 90°"),
-            new CapabilitiesItem(2, "Bottom Up Tilt 180°"),
-            new CapabilitiesItem(3, "Vertical"),
-            new CapabilitiesItem(4, "Vertical Tilt 180°"),
-            new CapabilitiesItem(5, "Tilt Only 180°"),
-            new CapabilitiesItem(6, "Top Down").primaryReversed(),
-            new CapabilitiesItem(7, "Top Down Bottom Up").supportsSecondary().notSupportsVane(),
-            new CapabilitiesItem(8, "Duolite Lift"),
-            new CapabilitiesItem(9, "Duolite Lift and Tilt 90°"),
-            // =================================
-            new CapabilitiesItem(-1, NOT_DETERMINED)
+            new Capabilities(0).primary().vane().text("Bottom Up"),
+            new Capabilities(1).primary().vane().text("Bottom Up Tilt 90°"),
+            new Capabilities(2).primary().vane().text("Bottom Up Tilt 180°"),
+            new Capabilities(3).primary().vane().text("Vertical"),
+            new Capabilities(4).primary().vane().text("Vertical Tilt 180°"),
+            new Capabilities(5)          .vane().text("Tilt Only 180°"),
+            new Capabilities(6).primary()       .text("Top Down")                 .invertPrimary(),
+            new Capabilities(7).primary()       .text("Top Down Bottom Up")       .secondary(),
+            new Capabilities(8).primary().vane().text("Duolite Lift"),
+            new Capabilities(9).primary().vane().text("Duolite Lift and Tilt 90°"),
         // @formatter:on
-    };
+            new Capabilities() };
+
+    /*
+     * Database of known shade types and corresponding capabilities
+     */
+    private static final Type[] TYPE_DATABASE = {
+        // @formatter:off
+            new Type( 4).capabilities(0).text("Roman"),
+            new Type( 5).capabilities(0).text("Bottom Up"),
+            new Type( 6).capabilities(0).text("Duette"),
+            new Type( 7).capabilities(6).text("Top Down"),
+            new Type( 8).capabilities(7).text("Duette Top Down Bottom Up"),
+            new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
+            new Type(23).capabilities(1).text("Silhouette"),
+            new Type(42).capabilities(0).text("M25T Roller Blind"),
+            new Type(43).capabilities(1).text("Facette"),
+            new Type(44).capabilities(0).text("Twist"),
+            new Type(47).capabilities(7).text("Pleated Top Down Bottom Up"),
+            new Type(49).capabilities(0).text("AC Roller"),
+            new Type(51).capabilities(2).text("Venetian"),
+            new Type(54).capabilities(3).text("Vertical Slats Left Stack"),
+            new Type(55).capabilities(3).text("Vertical Slats Right Stack"),
+            new Type(56).capabilities(3).text("Vertical Slats Split Stack"),
+            new Type(62).capabilities(2).text("Venetian"),
+            new Type(69).capabilities(3).text("Curtain Left Stack"),
+            new Type(70).capabilities(3).text("Curtain Right Stack"),
+            new Type(71).capabilities(3).text("Curtain Split Stack"),
+            new Type(79).capabilities(8).text("Duolite Lift"),
+        // @formatter:on
+            new Type() };
 
     /**
-     * Describes a shade type entry in the known shades database. Includes the 'type' parameter, its respective
-     * 'capabilities' parameter, and a description text
+     * Base class that is extended by Type and Capabilities classes.
      *
-     * @author AndrewFG - Initial contribution
-     *
+     * @author Andrew Fiddian-Green - Initial Contribution
      */
-    static class TypeItem {
-        int type;
-        int capabilities;
-        String description;
+    public static class Base {
+        protected int intValue = -1;
+        protected String text = "-- not in database --";
 
-        public TypeItem(int type, int capabilities, String description) {
-            this.type = type;
-            this.capabilities = capabilities;
-            this.description = description;
+        @Override
+        public String toString() {
+            return String.format("%d ( %s )", intValue, text);
         }
     }
 
     /**
-     * Describes a shade 'capabilities' entry in the database. Includes the 'capabilities' parameter, its description,
-     * and an indication whether the respective shade supports a secondary rail.
+     * Describes a shade type entry in the database; implements 'capabilities' parameter.
      *
      * @author AndrewFG - Initial contribution
-     *
      */
-    static class CapabilitiesItem {
-        int capabilities;
-        String description;
-        boolean supportsVane = true;
-        boolean supportsSecondary = false;
-        boolean primaryReversed = false;
+    public static class Type extends Base {
+        private int capabilities = -1;
 
-        public CapabilitiesItem(int capabilities, String description) {
+        protected Type() {
+        }
+
+        protected Type(int type) {
+            intValue = type;
+        }
+
+        protected Type text(String text) {
+            this.text = text;
+            return this;
+        }
+
+        protected Type capabilities(int capabilities) {
             this.capabilities = capabilities;
-            this.description = description;
+            return this;
         }
 
         /**
-         * Tag to show that the 'capabilities' entry is for a shade with a secondary rail
+         * Check if the passed shade 'capabilities' are the same as the classes own 'capabilities'.
          *
-         * @return this
+         * @param capabilities the 'capabilities' parameter to be checked
+         * @return true if the passed 'capabilities' equals the classes own 'capabilities'
          */
-        public CapabilitiesItem supportsSecondary() {
+        public boolean capabilitiesEqual(int capabilities) {
+            return (this.capabilities == capabilities);
+        }
+    }
+
+    /**
+     * Describes a shade 'capabilities' entry in the database; adds properties indicating its supported functionality.
+     *
+     * @author AndrewFG - Initial contribution
+     */
+    public static class Capabilities extends Base {
+        private boolean supportsPrimary;
+        private boolean supportsVane;
+        private boolean supportsSecondary;
+        private boolean primaryInverted;
+
+        protected Capabilities() {
+        }
+
+        protected Capabilities(int capabilities) {
+            intValue = capabilities;
+        }
+
+        protected Capabilities text(String text) {
+            this.text = text;
+            return this;
+        }
+
+        protected Capabilities primary() {
+            supportsPrimary = true;
+            return this;
+        }
+
+        protected Capabilities vane() {
+            supportsVane = true;
+            return this;
+        }
+
+        protected Capabilities secondary() {
             supportsSecondary = true;
             return this;
         }
 
-        /**
-         * Tag to show that the 'capabilities' entry is for a primary rail with its open/closed positions reversed
-         *
-         * @return this
-         */
-        public CapabilitiesItem primaryReversed() {
-            primaryReversed = true;
+        protected Capabilities invertPrimary() {
+            primaryInverted = true;
             return this;
         }
 
         /**
-         * Tag to show that the 'capabilities' entry is for a shade without vanes
+         * Check if the Capabilities class instance supports a primary shade.
          *
-         * @return this
+         * @return true if it supports a primary shade.
          */
-        public CapabilitiesItem notSupportsVane() {
-            supportsVane = false;
-            return this;
+        public boolean supportsPrimary() {
+            return supportsPrimary;
+        }
+
+        /**
+         * Check if the Capabilities class instance supports a vane.
+         *
+         * @return true if it supports a vane.
+         */
+        public boolean supportsVane() {
+            return supportsVane;
+        }
+
+        /**
+         * Check if the Capabilities class instance supports a secondary shade.
+         *
+         * @return true if it supports a secondary shade.
+         */
+        public boolean supportsSecondary() {
+            return supportsSecondary;
+        }
+
+        /**
+         * Check if the Capabilities class instance supports a secondary shade.
+         *
+         * @return true if the primary shade is inverted.
+         */
+        public boolean isPrimaryInverted() {
+            return primaryInverted;
         }
     }
 
     /**
-     * Determines if a given shade 'type' is in this database of known shade types
+     * Determines if a given shade 'type' is in the database.
      *
-     * @param type the shade 'type' parameter
-     * @return true if the shade 'type' is known
+     * @param type the shade 'type' parameter.
+     * @return true if the shade 'type' is known.
      */
     public boolean isTypeInDatabase(int type) {
-        for (TypeItem item : TYPE_DATABASE) {
-            if ((type == item.type) && (type > 0)) {
+        for (Type item : TYPE_DATABASE) {
+            if ((type == item.intValue) && (type > 0)) {
                 return true;
             }
         }
@@ -169,29 +224,14 @@ public class ShadeCapabilitiesDatabase {
     }
 
     /**
-     * Get the formatted property description text of the given shade 'type' entry
-     *
-     * @param type the shade 'type' parameter
-     * @return formatted property description text
-     */
-    public String getTypeProperty(int type) {
-        for (TypeItem item : TYPE_DATABASE) {
-            if (type == item.type) {
-                return format(item.type, item.description);
-            }
-        }
-        return format(-1, NOT_DETERMINED);
-    }
-
-    /**
-     * Determines if a given 'capabilities' value is in this database of known capabilities
+     * Determines if a given 'capabilities' value is in the database.
      *
      * @param capabilities the shade 'capabilities' parameter
      * @return true if the 'capabilities' value is known
      */
     public boolean isCapabilitiesInDatabase(int capabilities) {
-        for (CapabilitiesItem item : CAPABILITIES_DATABASE) {
-            if ((capabilities == item.capabilities) && (capabilities >= 0)) {
+        for (Capabilities item : CAPABILITIES_DATABASE) {
+            if ((capabilities == item.intValue) && (capabilities >= 0)) {
                 return true;
             }
         }
@@ -199,144 +239,79 @@ public class ShadeCapabilitiesDatabase {
     }
 
     /**
-     * Get the formatted property description text of the given shade 'capabilities' entry
+     * Return a Type class instance that corresponds to the given 'type' parameter.
      *
-     * @param capabilities the shade 'capabilities' parameter
-     * @return formatted property description text
+     * @param type the shade 'type' parameter.
+     * @return corresponding instance of Type class.
      */
-    public String getCapabilitiesProperty(int capabilities) {
-        for (CapabilitiesItem item : CAPABILITIES_DATABASE) {
-            if (capabilities == item.capabilities) {
-                return format(item.capabilities, item.description);
+    public Type getType(int type) {
+        for (Type item : TYPE_DATABASE) {
+            if (type == item.intValue) {
+                return item;
             }
         }
-        return format(-1, NOT_DETERMINED);
+        return new Type();
     }
 
     /**
-     * Determine the shade 'capabilities' from its 'type'
+     * Return a Capabilities class instance that corresponds to the given 'capabilities' parameter.
      *
-     * @param type the shade 'type' parameter
-     * @return the shade 'capabilities' value
+     * @param capabilities the shade 'capabilities' parameter.
+     * @return corresponding instance of Capabilities class.
      */
-    public int getTypeCapabilities(int type) {
-        for (TypeItem item : TYPE_DATABASE) {
-            if (type == item.type) {
-                return item.capabilities;
+    public Capabilities getCapabilities(int capabilities) {
+        for (Capabilities item : CAPABILITIES_DATABASE) {
+            if (capabilities == item.intValue) {
+                return item;
             }
         }
-        return -1;
+        return new Capabilities();
     }
 
-    /**
-     * Determine if the shade 'capabilities' are compatible with its 'type'
-     *
-     * @param type the shade 'type' parameter
-     * @param capabilities the shade 'capabilities' parameter
-     * @return true if the 'capabilities' match the 'type'
-     */
-    public boolean isTypeCapabilitiesCompatibile(int type, int capabilities) {
-        return (capabilities == getTypeCapabilities(type));
-    }
+    private static final String REQUEST_DEVELOPERS_TO_UPDATE = " => Please request developers to update the database!";
 
     /**
-     * Determine if the capabilities indicate support for a secondary rail
-     *
-     * @param capabilities the shade 'capabilities' parameter
-     * @return true if a secondary rail is supported
-     */
-    public boolean capabilitiesSupportsSecondary(int capabilities) {
-        for (CapabilitiesItem item : CAPABILITIES_DATABASE) {
-            if (capabilities == item.capabilities) {
-                return item.supportsSecondary;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Determine if the capabilities indicate that the primary rail open/closed positions are reversed
-     *
-     * @param capabilities the shade 'capabilities' parameter
-     * @return true if the primary rail is reversed
-     */
-    public boolean capabilitiesPrimaryReversed(int capabilities) {
-        for (CapabilitiesItem item : CAPABILITIES_DATABASE) {
-            if (capabilities == item.capabilities) {
-                return item.primaryReversed;
-            }
-        }
-        return false;
-    }
-
-    private static final String PROPERTY_FORMAT_STRING = "%d ( %s )";
-
-    /**
-     * Concatenate the value and its description into a single formatted property string
-     *
-     * @param value
-     * @param description
-     * @return the concatenated formatted string
-     */
-    private String format(int value, String description) {
-        return String.format(PROPERTY_FORMAT_STRING, value, description);
-    }
-
-    /**
-     * Parse the formatted property string and return the part that represents its int value
-     *
-     * @param propertyString
-     * @return the int value
-     */
-    public int getPropertyValue(String propertyString) {
-        try {
-            return Integer.parseInt(propertyString.substring(0, propertyString.indexOf(" ")));
-        } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            return -1;
-        }
-    }
-
-    /**
-     * Log a message indicating that 'type' is not in database
+     * Log a message indicating that 'type' is not in database.
      *
      * @param type
      */
     public void logTypeNotInDatabase(int type) {
-        logger.warn("Shade 'type:{}' is not in database => Please inform developers!", type);
+        logger.warn("The shade 'type:{}' is not in the database!{}", type, REQUEST_DEVELOPERS_TO_UPDATE);
     }
 
     /**
-     * Log a message indicating that 'capabilities' is not in database
+     * Log a message indicating that 'capabilities' is not in database.
      *
      * @param capabilities
      */
     public void logCapabilitiesNotInDatabase(int type, int capabilities) {
-        logger.warn("Shade 'type:{}' has 'capabilities:{}' not in database => Please inform developers!", type,
-                capabilities);
+        logger.warn("The 'capabilities:{}' for shade 'type:{}' are not in the database!{}", capabilities, type,
+                REQUEST_DEVELOPERS_TO_UPDATE);
     }
 
     /**
-     * Log a message indicating 'type' and 'capabilities' are not mutually compatible
+     * Log a message indicating the type's capabilities and the passed capabilities are not equal.
      *
      * @param type
      * @param capabilities
      */
-    public void logTypeCapabilitiesNotCompatibile(int type, int capabilities) {
-        logger.warn("Shade 'type:{}' and 'capabilities:{}' are not compatible in database => Please inform developers!",
-                type, capabilities);
+    public void logTypeCapabilitiesNotEqual(int type, int capabilities) {
+        logger.warn("The 'capabilities:{}' reported by shade 'type:{}' don't match the database!{}", capabilities, type,
+                REQUEST_DEVELOPERS_TO_UPDATE);
     }
 
     /**
-     * Log a message indicating that secondary support observed via JSON payload does not match the value expected from
-     * the 'type' and 'capabilities'
+     * Log a message indicating that secondary support observed via JSON pay-load does not match the value expected from
+     * the 'type' and 'capabilities'.
      *
      * @param type
      * @param capabilities
      * @param jsonSupportsSecondary
      */
-    public void logSupportsSecondaryNotMatching(int type, int capabilities, boolean jsonSupportsSecondary) {
+    public void logSecondarySupportNotEqual(int type, int capabilities, boolean jsonSupportsSecondary) {
         logger.warn(
-                "Shade 'jsonSupportsSecondary:{}' property does not match 'type:{}', 'capabilities:{}' in database => Please inform developers!",
-                jsonSupportsSecondary, type, capabilities);
+                "The 'jsonSupportsSecondary:{}' property reported by shade 'type:{}' is different "
+                        + "than described by its 'capabilities:{}' in the database!{}",
+                jsonSupportsSecondary, type, capabilities, REQUEST_DEVELOPERS_TO_UPDATE);
     }
 }
