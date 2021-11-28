@@ -19,9 +19,9 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SeekableByteChannel;
 
 /**
+ * Simple wrapper around a byte array to provide a SeekableByteChannel for consumption
  *
- * @author daniel
- *
+ * @author Dan Cunningham - Initial contribution
  */
 public class ReadOnlySeekableByteArrayChannel implements SeekableByteChannel {
     private byte[] data;

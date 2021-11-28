@@ -35,6 +35,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Dan Cunningham - Script injections
  */
 @Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jsscripting", property = Constants.SERVICE_PID
         + "=org.openhab.automation.jsscripting")

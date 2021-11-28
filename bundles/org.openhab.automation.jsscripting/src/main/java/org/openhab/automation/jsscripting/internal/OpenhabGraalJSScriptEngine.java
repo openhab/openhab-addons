@@ -55,6 +55,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  * GraalJS Script Engine implementation
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Dan Cunningham - Script injections
  */
 public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngineWithInvocable<GraalJSScriptEngine> {
 
