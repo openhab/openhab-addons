@@ -62,7 +62,6 @@ Fragment-Host: org.openhab.binding.systeminfo
 	org.ops4j.pax.logging.pax-logging-api;version='[2.0.10,2.0.11)',\
 	com.sun.jna;version='[5.9.0,5.9.1)',\
 	com.sun.jna.platform;version='[5.9.0,5.9.1)',\
-	biz.aQute.tester.junit-platform;version='[6.0.0,6.0.1)',\
 	si-units;version='[2.1.0,2.1.1)',\
 	si.uom.si-quantity;version='[2.1.0,2.1.1)',\
 	junit-jupiter-api;version='[5.8.1,5.8.2)',\
@@ -73,4 +72,5 @@ Fragment-Host: org.openhab.binding.systeminfo
 	net.bytebuddy.byte-buddy;version='[1.12.1,1.12.2)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.12.1,1.12.2)',\
 	org.mockito.mockito-core;version='[4.1.0,4.1.1)',\
-	org.objenesis;version='[3.2.0,3.2.1)'
+	org.objenesis;version='[3.2.0,3.2.1)',\
+	biz.aQute.tester.junit-platform;version='[6.1.0,6.1.1)'
