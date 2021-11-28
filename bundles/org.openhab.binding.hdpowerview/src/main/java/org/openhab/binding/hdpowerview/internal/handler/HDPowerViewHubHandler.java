@@ -160,7 +160,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
+        initializeChannels();
         schedulePoll();
+    }
+
+    private void initializeChannels() {
+        // Rebuild dynamic channels and synchronize with cache.
+        updateThing(editThing().withChannels(new ArrayList<Channel>()).build());
+        sceneCache.clear();
+        sceneCollectionCache.clear();
+        scheduledEventCache.clear();
     }
 
     public @Nullable HDPowerViewWebTargets getWebTargets() {
