@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.renault.internal.renault.api;
+package org.openhab.binding.renault.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,7 +24,7 @@ import com.google.gson.JsonObject;
 /**
  * MyRenault registered car for parsing HTTP responses and collecting data and
  * information.
- * 
+ *
  * @author Doug Culnane - Initial contribution
  */
 @NonNullByDefault
@@ -92,6 +92,7 @@ public class Car {
         try {
             if (responseJson.get("assets") != null) {
                 JsonArray assetsJson = responseJson.get("assets").getAsJsonArray();
+                String url = null;
                 for (JsonElement asset : assetsJson) {
                     if (asset.getAsJsonObject().get("assetType") != null
                             && asset.getAsJsonObject().get("assetType").getAsString().equals("PICTURE")) {
@@ -101,13 +102,14 @@ public class Car {
                                 if (rendition.getAsJsonObject().get("resolutionType") != null
                                         && rendition.getAsJsonObject().get("resolutionType").getAsString()
                                                 .equals("ONE_MYRENAULT_SMALL")) {
-                                    imageURL = rendition.getAsJsonObject().get("url").getAsString();
+                                    url = rendition.getAsJsonObject().get("url").getAsString();
                                     break;
                                 }
                             }
                         }
                     }
-                    if (!imageURL.isEmpty()) {
+                    if (url != null && !url.isEmpty()) {
+                        imageURL = url;
                         break;
                     }
                 }

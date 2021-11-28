@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.renault.internal.renault.api;
+package org.openhab.binding.renault.internal.api;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -24,11 +24,12 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
-import org.openhab.binding.renault.internal.renault.api.exceptions.RenaultException;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -61,8 +62,7 @@ public class MyRenaultHttpSession {
         this.constants = new Constants(config.locale);
     }
 
-    public void initSesssion() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
-            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
+    public void initSesssion() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         login();
         getAccountInfo();
         getJWT();
@@ -77,8 +77,7 @@ public class MyRenaultHttpSession {
         getHvacStatus();
     }
 
-    private void login() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
-            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
+    private void login() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         Fields fields = new Fields();
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("loginID", config.myRenaultUsername);
@@ -86,10 +85,19 @@ public class MyRenaultHttpSession {
         logger.debug("URL: {}/accounts.login", this.constants.getGigyaRootUrl());
         ContentResponse response = httpClient.FORM(this.constants.getGigyaRootUrl() + "/accounts.login", fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
-            JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-            JsonObject sessionInfoJson = responseJson.getAsJsonObject("sessionInfo");
-            cookieValue = sessionInfoJson.get("cookieValue").getAsString();
-            logger.debug("Cookie: {}", cookieValue);
+            try {
+                JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+                JsonObject sessionInfoJson = responseJson.getAsJsonObject("sessionInfo");
+                if (sessionInfoJson != null) {
+                    JsonElement element = sessionInfoJson.get("cookieValue");
+                    if (element != null) {
+                        cookieValue = element.getAsString();
+                        logger.debug("Cookie: {}", cookieValue);
+                    }
+                }
+            } catch (JsonParseException | ClassCastException | IllegalStateException e) {
+                throw new RenaultException("Login Error: cookie value not found in JSON response");
+            }
         } else {
             logger.warn("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
@@ -97,19 +105,29 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getAccountInfo() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
-            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
+    private void getAccountInfo() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         Fields fields = new Fields();
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("login_token", cookieValue);
         ContentResponse response = httpClient.FORM(this.constants.getGigyaRootUrl() + "/accounts.getAccountInfo",
                 fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
-            JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-            JsonObject dataJson = responseJson.getAsJsonObject("data");
-            personId = dataJson.get("personId").getAsString();
-            gigyaDataCenter = dataJson.get("gigyaDataCenter").getAsString();
-            logger.debug("personId ID: {} gigyaDataCenter: {}", personId, gigyaDataCenter);
+            try {
+                JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+                JsonObject dataJson = responseJson.getAsJsonObject("data");
+                if (dataJson != null) {
+                    JsonElement element1 = dataJson.get("personId");
+                    JsonElement element2 = dataJson.get("gigyaDataCenter");
+                    if (element1 != null && element2 != null) {
+                        personId = element1.getAsString();
+                        gigyaDataCenter = element2.getAsString();
+                        logger.debug("personId ID: {} gigyaDataCenter: {}", personId, gigyaDataCenter);
+                    }
+                }
+            } catch (JsonParseException | ClassCastException | IllegalStateException e) {
+                throw new RenaultException(
+                        "Get Account Info Error: personId or gigyaDataCenter value not found in JSON response");
+            }
         } else {
             logger.warn("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());
@@ -117,8 +135,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getJWT() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
-            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
+    private void getJWT() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
         Fields fields = new Fields();
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("login_token", cookieValue);
@@ -127,9 +144,16 @@ public class MyRenaultHttpSession {
         fields.add("gigyaDataCenter", gigyaDataCenter);
         ContentResponse response = this.httpClient.FORM(this.constants.getGigyaRootUrl() + "/accounts.getJWT", fields);
         if (HttpStatus.OK_200 == response.getStatus()) {
-            JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-            jwt = responseJson.get("id_token").getAsString();
-            logger.debug("jwt: {} ", jwt);
+            try {
+                JsonObject responseJson = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
+                JsonElement element = responseJson.get("id_token");
+                if (element != null) {
+                    jwt = element.getAsString();
+                    logger.debug("jwt: {} ", jwt);
+                }
+            } catch (JsonParseException | ClassCastException | IllegalStateException e) {
+                throw new RenaultException("Get JWT Error: jwt value not found in JSON response");
+            }
         } else {
             logger.warn("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());

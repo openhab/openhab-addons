@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.renault.internal.renault.api.exceptions;
+package org.openhab.binding.renault.internal.api.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

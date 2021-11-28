@@ -10,10 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.renault.internal;
+package org.openhab.binding.renault.internal.handler;
 
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.*;
-import static org.openhab.core.library.unit.MetricPrefix.*;
+import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.METRE;
 
 import java.util.concurrent.ScheduledFuture;
@@ -24,8 +24,9 @@ import javax.measure.quantity.Length;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.renault.internal.renault.api.Car;
-import org.openhab.binding.renault.internal.renault.api.MyRenaultHttpSession;
+import org.openhab.binding.renault.internal.RenaultConfiguration;
+import org.openhab.binding.renault.internal.api.Car;
+import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
@@ -96,15 +97,17 @@ public class RenaultHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         // Background initialization:
-        if (pollingJob == null || pollingJob.isCancelled()) {
+        ScheduledFuture<?> job = pollingJob;
+        if (job == null || job.isCancelled()) {
             pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval, TimeUnit.MINUTES);
         }
     }
 
     @Override
     public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> job = pollingJob;
+        if (job != null) {
+            job.cancel(true);
             pollingJob = null;
         }
         super.dispose();
@@ -127,21 +130,27 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     private void updateState(Car car) {
-        if (car.batteryLevel != null) {
-            updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(car.batteryLevel));
+        Double batteryLevel = car.batteryLevel;
+        if (batteryLevel != null) {
+            updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
         }
-        if (car.hvacstatus != null) {
-            updateState(CHANNEL_HVAC_STATUS, OnOffType.from(car.hvacstatus));
+        Boolean hvacstatus = car.hvacstatus;
+        if (hvacstatus != null) {
+            updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
         }
-        if (car.imageURL != null && !car.imageURL.isEmpty()) {
-            updateState(CHANNEL_IMAGE, new StringType(car.imageURL));
+        String imageURL = car.imageURL;
+        if (imageURL != null && !imageURL.isEmpty()) {
+            updateState(CHANNEL_IMAGE, new StringType(imageURL));
         }
-        if (car.gpsLatitude != null && car.gpsLongitude != null) {
+        Double latitude = car.gpsLatitude;
+        Double longitude = car.gpsLongitude;
+        if (latitude != null && longitude != null) {
             updateState(CHANNEL_LOCATION,
-                    new PointType(new DecimalType(car.gpsLatitude), new DecimalType(car.gpsLongitude)));
+                    new PointType(new DecimalType(latitude.doubleValue()), new DecimalType(longitude.doubleValue())));
         }
-        if (car.odometer != null) {
-            updateState(CHANNEL_ODOMETER, new QuantityType<Length>(Double.valueOf(car.odometer), KILO(METRE)));
+        Double odometer = car.odometer;
+        if (odometer != null) {
+            updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
         }
     }
 }
