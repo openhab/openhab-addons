@@ -39,9 +39,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.renault", service = ThingHandlerFactory.class)
 public class RenaultHandlerFactory extends BaseThingHandlerFactory {
 
-    private final HttpClient httpClient;
-
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CAR);
+
+    private final HttpClient httpClient;
 
     @Activate
     public RenaultHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {

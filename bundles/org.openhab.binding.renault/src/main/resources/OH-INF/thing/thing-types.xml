@@ -26,45 +26,45 @@
 				<label>MyRenault Password</label>
 			</parameter>
 			<parameter name="locale" type="text" required="true">
-				<label>MyRenault Location (language_country)</label>
-				<description>The language and country combination that best fits with your MyRenault registered car.</description>
+				<label>MyRenault Location</label>
+				<description>The country (and language combination) that best fits with your MyRenault registered car.</description>
 				<options>
-					<option value="bg_BG">bg_BG</option>
-					<option value="cs_CZ">cs_CZ</option>
-					<option value="da_DK">da_DK</option>
-					<option value="de_DE">de_DE</option>
-					<option value="de_AT">de_AT</option>
-					<option value="de_CH">de_CH</option>
-					<option value="en_GB">en_GB</option>
-					<option value="en_IE">en_IE</option>
-					<option value="es_ES">es_ES</option>
-					<option value="es_MX">es_MX</option>
-					<option value="fi_FI">fi_FI</option>
-					<option value="fr_FR">fr_FR</option>
-					<option value="fr_BE">fr_BE</option>
-					<option value="fr_CH">fr_CH</option>
-					<option value="fr_LU">fr_LU</option>
-					<option value="hr_HR">hr_HR</option>
-					<option value="hu_HU">hu_HU</option>
-					<option value="it_IT">it_IT</option>
-					<option value="it_CH">it_CH</option>
-					<option value="nl_NL">nl_NL</option>
-					<option value="nl_BE">nl_BE</option>
-					<option value="no_NO">no_NO</option>
-					<option value="pl_PL">pl_PL</option>
-					<option value="pt_PT">pt_PT</option>
-					<option value="ro_RO">ro_RO</option>
-					<option value="ru_RU">ru_RU</option>
-					<option value="sk_SK">sk_SK</option>
-					<option value="sl_SI">sl_SI</option>
-					<option value="sv_SE">sv_SE</option>
+					<option value="de_AT">Austria</option>
+					<option value="nl_BE">Belgium (Dutch)</option>
+					<option value="fr_BE">Belgium (French)</option>
+					<option value="bg_BG">Bulgaria</option>
+					<option value="hr_HR">Croatia</option>
+					<option value="cs_CZ">Czech</option>
+					<option value="da_DK">Denmark</option>
+					<option value="it_IT">Italy</option>
+					<option value="fi_FI">Finland</option>
+					<option value="fr_FR">France</option>
+					<option value="de_DE">Germany</option>
+					<option value="hu_HU">Hungary</option>
+					<option value="en_IE">Ireland</option>
+					<option value="fr_LU">Luxembourg</option>
+					<option value="es_MX">Mexico</option>
+					<option value="nl_NL">Netherlands</option>
+					<option value="no_NO">Norway</option>
+					<option value="pl_PL">Poland</option>
+					<option value="pt_PT">Portugal</option>
+					<option value="ro_RO">Romania</option>
+					<option value="ru_RU">Russian</option>
+					<option value="sk_SK">Slovakia</option>
+					<option value="sl_SI">Slovenia</option>
+					<option value="es_ES">Spain</option>
+					<option value="sv_SE">Sweden</option>
+					<option value="fr_CH">Switzerland (French)</option>
+					<option value="de_CH">Switzerland (German)</option>
+					<option value="it_CH">Switzerland (Italian)</option>
+					<option value="en_GB">United Kingdom</option>
 				</options>
 			</parameter>
 			<parameter name="vin" type="text" required="true">
 				<label>VIN</label>
 				<description>Vehicle Identification Number</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="m" min="1">
+			<parameter name="refreshInterval" type="integer" unit="min" min="1">
 				<label>Refresh Interval</label>
 				<description>Interval the car is polled in minutes.</description>
 				<default>10</default>
@@ -88,7 +88,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Odometer</label>
 		<description>Total distance travelled</description>
-		<state pattern="%.1f" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

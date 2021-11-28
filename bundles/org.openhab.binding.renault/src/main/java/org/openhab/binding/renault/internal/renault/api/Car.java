@@ -32,12 +32,12 @@ public class Car {
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
-    public Double batteryLevel = Double.valueOf(-1);
-    public Boolean hvacstatus = false;
-    public Double odometer = Double.valueOf(0);
-    public String imageURL = "";
-    public Double gpsLatitude = Double.valueOf(0);
-    public Double gpsLongitude = Double.valueOf(0);
+    public @Nullable Double batteryLevel;
+    public @Nullable Boolean hvacstatus;
+    public @Nullable Double odometer;
+    public @Nullable String imageURL;
+    public @Nullable Double gpsLatitude;
+    public @Nullable Double gpsLongitude;
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
@@ -84,7 +84,7 @@ public class Car {
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
-            logger.warn("Error {} parsing Cockpit: {}", e.getMessage(), responseJson);
+            logger.warn("Error {} parsing Location: {}", e.getMessage(), responseJson);
         }
     }
 
@@ -107,7 +107,7 @@ public class Car {
                             }
                         }
                     }
-                    if (imageURL.length() > 0) {
+                    if (!imageURL.isEmpty()) {
                         break;
                     }
                 }

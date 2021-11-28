@@ -15,6 +15,8 @@ package org.openhab.binding.renault.internal.renault.api.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Exception thrown while trying to access the My Renault web services.
+ * 
  * @author Doug Culnane - Initial contribution
  */
 @NonNullByDefault

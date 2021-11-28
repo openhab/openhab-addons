@@ -45,7 +45,7 @@ public class MyRenaultHttpSession {
     private Car car = new Car();
     private RenaultConfiguration config;
     private HttpClient httpClient;
-    private @Nullable Constants constants;
+    private Constants constants;
     private @Nullable String kamereonToken;
     private @Nullable String kamereonaccountId;
     private @Nullable String cookieValue;
@@ -58,11 +58,11 @@ public class MyRenaultHttpSession {
     public MyRenaultHttpSession(RenaultConfiguration config, HttpClient httpClient) {
         this.config = config;
         this.httpClient = httpClient;
+        this.constants = new Constants(config.locale);
     }
 
-    public void initSesssion() throws Exception {
-        this.constants = new Constants(config.locale);
-        httpClient.start();
+    public void initSesssion() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
+            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
         login();
         getAccountInfo();
         getJWT();
@@ -77,7 +77,8 @@ public class MyRenaultHttpSession {
         getHvacStatus();
     }
 
-    private void login() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
+    private void login() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
+            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
         Fields fields = new Fields();
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("loginID", config.myRenaultUsername);
@@ -96,7 +97,8 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getAccountInfo() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
+    private void getAccountInfo() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
+            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
         Fields fields = new Fields();
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("login_token", cookieValue);
@@ -115,7 +117,8 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getJWT() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
+    private void getJWT() throws RenaultException, InterruptedException, ExecutionException, TimeoutException,
+            JsonParseException, ClassCastException, IllegalStateException, NullPointerException {
         Fields fields = new Fields();
         fields.add("ApiKey", this.constants.getGigyaApiKey());
         fields.add("login_token", cookieValue);

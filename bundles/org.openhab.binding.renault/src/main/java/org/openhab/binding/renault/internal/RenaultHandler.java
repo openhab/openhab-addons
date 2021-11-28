@@ -69,7 +69,6 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         this.config = getConfigAs(RenaultConfiguration.class);
 
         // Validate configuration
@@ -94,6 +93,7 @@ public class RenaultHandler extends BaseThingHandler {
                     "The refresh interval mush to be larger than 1");
             return;
         }
+        updateStatus(ThingStatus.UNKNOWN);
 
         // Background initialization:
         if (pollingJob == null || pollingJob.isCancelled()) {
@@ -117,7 +117,7 @@ public class RenaultHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             httpSession = null;
-            logger.error("Error My Renault Http Session.", e);
+            logger.warn("Error My Renault Http Session.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         if (httpSession != null) {
@@ -133,7 +133,7 @@ public class RenaultHandler extends BaseThingHandler {
         if (car.hvacstatus != null) {
             updateState(CHANNEL_HVAC_STATUS, OnOffType.from(car.hvacstatus));
         }
-        if (car.imageURL != null) {
+        if (car.imageURL != null && !car.imageURL.isEmpty()) {
             updateState(CHANNEL_IMAGE, new StringType(car.imageURL));
         }
         if (car.gpsLatitude != null && car.gpsLongitude != null) {
@@ -141,7 +141,7 @@ public class RenaultHandler extends BaseThingHandler {
                     new PointType(new DecimalType(car.gpsLatitude), new DecimalType(car.gpsLongitude)));
         }
         if (car.odometer != null) {
-            updateState(CHANNEL_ODOMETER, new QuantityType<Length>(car.odometer, KILO(METRE)));
+            updateState(CHANNEL_ODOMETER, new QuantityType<Length>(Double.valueOf(car.odometer), KILO(METRE)));
         }
     }
 }
