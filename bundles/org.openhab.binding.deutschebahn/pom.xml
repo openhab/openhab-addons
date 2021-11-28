@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.deutschebahn</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: DeutscheBahn Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Deutsche Bahn Binding</name>
 
   <build>
     <plugins>

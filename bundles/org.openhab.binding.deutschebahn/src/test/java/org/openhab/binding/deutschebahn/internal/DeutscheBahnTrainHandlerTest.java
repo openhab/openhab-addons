@@ -79,6 +79,11 @@ public class DeutscheBahnTrainHandlerTest {
                 .thenReturn(Arrays.asList(arrivalPlannedTime, arrivalLine, arrivalChangedTime));
         when(thing.getChannelsOfGroup("departure"))
                 .thenReturn(Arrays.asList(departurePlannedTime, departurePlannedPlatform, departureTargetStation));
+        when(thing.getChannels()).thenReturn(Arrays.asList( //
+                tripLabelCategory, //
+                arrivalPlannedTime, arrivalLine, arrivalChangedTime, //
+                departurePlannedTime, departurePlannedPlatform, departureTargetStation));
+
         return thing;
     }
 

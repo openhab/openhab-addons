@@ -1,7 +1,7 @@
-# DeutscheBahn Binding
+# Deutsche Bahn Binding
 
-The DeutscheBahn Binding provides the latest timetable information for all trains that arrive or depart at a specific train station, including live information for delays and changes in timetable.
-The information are requested from the timetable api of DeutscheBahn developer portal, so you'll need a (free) developer account to use this binding.
+The Deutsche Bahn Binding provides the latest timetable information for all trains that arrive or depart at a specific train station, including live information for delays and changes in timetable.
+The information are requested from the timetable api of Deutsche Bahn developer portal, so you'll need a (free) developer account to use this binding.
 
 ## Supported Things
 
@@ -12,9 +12,9 @@ The information are requested from the timetable api of DeutscheBahn developer p
 
 ### Generate Access-Key for timetable API
 
-To configure a timetable you first need to register at DeutscheBahn developer portal and register for timetable API to get an access key.
+To configure a timetable you first need to register at Deutsche Bahn developer portal and register for timetable API to get an access key.
 
-1. Go to [DeutscheBahn Developer](https://developer.deutschebahn.com)
+1. Go to [Deutsche Bahn Developer](https://developer.deutschebahn.com)
 2. Register new account or login with an existing one
 3. If no application is configured yet (check Tab "Meine Anwendungen") create a new application. Only the name is required, any other fields can be left blank.
 4. Go to APIs - Timetables v1 (may be displayed on second page)
@@ -37,7 +37,7 @@ In addition you can configure if only arrivals, only departures or all trains sh
 
 | Property | Default | Required | Description |
 |-|-|-|-|
-| `accessToken` | | Yes | The access token for the timetable api within the developer portal of DeutscheBahn. |
+| `accessToken` | | Yes | The access token for the timetable api within the developer portal of Deutsche Bahn. |
 | `evaNo` | | Yes | The eva nr. of the train station for which the timetable will be requested.|
 | `trainFilter` |  | Yes | Selects the trains that will be displayed in the timetable. Either only arrivals, only departures or all trains can be displayed. |
 

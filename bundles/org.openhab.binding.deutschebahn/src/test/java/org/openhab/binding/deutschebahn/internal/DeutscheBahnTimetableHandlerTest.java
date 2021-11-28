@@ -23,14 +23,22 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.deutschebahn.internal.timetable.TimeproviderStub;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiFactory;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiStub;
+import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1Impl.HttpCallable;
 import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ImplTestHelper;
+import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
+import org.openhab.binding.deutschebahn.internal.timetable.dto.Timetable;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for {@link DeutscheBahnTimetableHandler}.
@@ -68,11 +76,17 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
 
     private DeutscheBahnTimetableHandler createAndInitHandler(final ThingHandlerCallback callback, final Bridge bridge)
             throws Exception {
+        return createAndInitHandler(callback, bridge, createApiWithTestdata().getApiFactory());
+    }
+
+    private DeutscheBahnTimetableHandler createAndInitHandler( //
+            final ThingHandlerCallback callback, //
+            final Bridge bridge, //
+            final TimetablesV1ApiFactory apiFactory) throws Exception { //
         final TimeproviderStub timeProvider = new TimeproviderStub();
         timeProvider.time = new GregorianCalendar(2021, Calendar.AUGUST, 16, 9, 30);
 
-        final DeutscheBahnTimetableHandler handler = new DeutscheBahnTimetableHandler(bridge,
-                createApiWithTestdata().getApiFactory(), timeProvider);
+        final DeutscheBahnTimetableHandler handler = new DeutscheBahnTimetableHandler(bridge, apiFactory, timeProvider);
         handler.setCallback(callback);
         handler.initialize();
         return handler;
@@ -103,5 +117,71 @@ public class DeutscheBahnTimetableHandlerTest implements TimetablesV1ImplTestHel
         final DeutscheBahnTrainHandler childHandler = (DeutscheBahnTrainHandler) train.getHandler();
         verify(childHandler, timeout(1000))
                 .updateChannels(argThat((TimetableStop stop) -> stop.getId().equals(stopId)));
+    }
+
+    @Test
+    public void testUpdateTrainsToUndefinedIfNoDataWasProvided() throws Exception {
+        final Bridge bridge = mockBridge();
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+
+        final TimetablesV1ApiStub stubWithError = TimetablesV1ApiStub.createWithException();
+
+        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
+                (String authToken, HttpCallable httpCallable) -> stubWithError);
+
+        try {
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback, timeout(1000)).statusUpdated(eq(bridge),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)));
+
+            verifyChannelsUpdatedToUndef(bridge, 0, callback, UnDefType.UNDEF);
+            verifyChannelsUpdatedToUndef(bridge, 1, callback, UnDefType.UNDEF);
+            verifyChannelsUpdatedToUndef(bridge, 2, callback, UnDefType.UNDEF);
+
+        } finally {
+            handler.dispose();
+        }
+    }
+
+    private static void verifyChannelsUpdatedToUndef(Bridge bridge, int offset, ThingHandlerCallback callback,
+            State expectedState) {
+        final Thing thing = bridge.getThings().get(offset);
+        for (Channel channel : thing.getChannels()) {
+            verify(callback).stateUpdated(eq(channel.getUID()), eq(expectedState));
+        }
+    }
+
+    @Test
+    public void testUpdateTrainsToUndefinedIfNotEnoughDataWasProvided() throws Exception {
+        final Bridge bridge = mockBridge();
+        final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
+
+        // Bridge contains 3 trains, but Timetable contains only 1 items, so two trains has to be updated to undef
+        // value.
+        final Timetable timetable = new Timetable();
+        TimetableStop stop01 = new TimetableStop();
+        stop01.setId("stop01id");
+        Event dp = new Event();
+        dp.setPt("2108161000");
+        stop01.setDp(dp);
+        timetable.getS().add(stop01);
+
+        final TimetablesV1ApiStub stubWithData = TimetablesV1ApiStub.createWithResult(timetable);
+
+        final DeutscheBahnTimetableHandler handler = createAndInitHandler(callback, bridge,
+                (String authToken, HttpCallable httpCallable) -> stubWithData);
+
+        try {
+            verify(callback).statusUpdated(eq(bridge), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+            verify(callback, timeout(1000)).statusUpdated(eq(bridge),
+                    argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
+
+            verifyThingUpdated(bridge, 0, stop01.getId());
+            verifyChannelsUpdatedToUndef(bridge, 1, callback, UnDefType.UNDEF);
+            verifyChannelsUpdatedToUndef(bridge, 2, callback, UnDefType.UNDEF);
+
+        } finally {
+            handler.dispose();
+        }
     }
 }

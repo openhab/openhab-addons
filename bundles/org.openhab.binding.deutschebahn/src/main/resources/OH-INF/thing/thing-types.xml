@@ -6,24 +6,24 @@
 
 	<bridge-type id="timetable">
 
-		<label>DeutscheBahn Timetable</label>
-		<description>Connection to the timetable API of DeutscheBahn. Provides timetable data that can be displayed using the
+		<label>Deutsche Bahn Timetable</label>
+		<description>Connection to the timetable API of Deutsche Bahn. Provides timetable data that can be displayed using the
 			train things.</description>
 
 		<config-description>
 			<parameter name="accessToken" type="text" required="true">
 				<label>Access Token</label>
-				<description>Access Token from DeutscheBahn developer portal for accessing the webservice api.</description>
+				<description>Access Token from Deutsche Bahn developer portal for accessing the webservice api.</description>
 			</parameter>
 			<parameter name="evaNo" type="text" required="true" pattern="80\d{5,5}">
-				<label>evaNo of Station</label>
+				<label>EvaNo of Station</label>
 				<description>evaNo of the station, for which the timetable should be requested. see
 					https://data.deutschebahn.com/dataset.tags.EVA-Nr..html</description>
 			</parameter>
 			<parameter name="trainFilter" type="text" readOnly="false">
 				<advanced>true</advanced>
 				<default>departures</default>
-				<label>train filter</label>
+				<label>Train Filter</label>
 				<description>Selects the trains that will be be displayed in this timetable. If not set only departures will be
 					provided.</description>
 				<options>
@@ -127,14 +127,14 @@
 
 	<channel-type id="filter-flags" advanced="true">
 		<item-type>String</item-type>
-		<label>Filter flags</label>
+		<label>Filter Flags</label>
 		<description>Provides the filter flags.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="trip-type" advanced="true">
 		<item-type>String</item-type>
-		<label>Trip type</label>
+		<label>Trip Type</label>
 		<description>Provides the type of the trip.</description>
 		<state readOnly="true">
 			<options>
@@ -265,8 +265,9 @@
 	<channel-type id="hidden" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Hidden</label>
-		<description>On if the event should not be shown on WBT because travellers are not supposed to enter or exit the train
-			at this stop.</description>
+		<description>On if the event should not be shown, because travellers are not supposed to enter or exit the train
+			at
+			this stop.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -287,21 +288,21 @@
 
 	<channel-type id="planned-distant-endpoint" advanced="true">
 		<item-type>String</item-type>
-		<label>Planned distant endpoint</label>
+		<label>Planned Distant Endpoint</label>
 		<description>Planned distant endpoint.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="changed-distant-endpoint" advanced="true">
 		<item-type>String</item-type>
-		<label>Changed distant endpoint</label>
+		<label>Changed Distant Endpoint</label>
 		<description>Changed distant endpoint.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="distant-change" advanced="true">
 		<item-type>Number</item-type>
-		<label>Distant change</label>
+		<label>Distant Change</label>
 		<description>distant change</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -309,14 +310,14 @@
 	<!-- Channels with derived values from other channels -->
 	<channel-type id="planned-final-station">
 		<item-type>String</item-type>
-		<label>Planned final Station</label>
+		<label>Planned Final Station</label>
 		<description>Planned final station of the train. For arrivals the starting station is returned, for departures the
 			target station is returned.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="planned-intermediate-stations">
 		<item-type>String</item-type>
-		<label>Planned intermediate Stations</label>
+		<label>Planned Intermediate Stations</label>
 		<description>Returns the planned stations this train came from (for arrivals) or the stations this train will go to
 			(for departures). Stations will be separated by single dash.</description>
 		<state readOnly="true"/>
@@ -324,7 +325,7 @@
 
 	<channel-type id="changed-final-station">
 		<item-type>String</item-type>
-		<label>Changed final Station</label>
+		<label>Changed Final Station</label>
 		<description>Changed final station of the train. For arrivals the starting station is returned, for departures the
 			target station is returned.</description>
 		<state readOnly="true"/>
@@ -332,7 +333,7 @@
 
 	<channel-type id="changed-intermediate-stations">
 		<item-type>String</item-type>
-		<label>Changed intermediate Stations</label>
+		<label>Changed Intermediate Stations</label>
 		<description>Returns the changed stations this train came from (for arrivals) or the stations this train will go to
 			(for departures). Stations will be separated by single dash.</description>
 		<state readOnly="true"/>

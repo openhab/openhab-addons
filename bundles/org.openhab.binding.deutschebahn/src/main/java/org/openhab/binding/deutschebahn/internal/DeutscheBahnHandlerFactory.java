@@ -30,13 +30,13 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link DeutscheBahnTimetableHandlerFactory} is responsible for creating things and thing handlers.
+ * The {@link DeutscheBahnHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Sönke Küper - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.deutschebahn", service = ThingHandlerFactory.class)
-public class DeutscheBahnTimetableHandlerFactory extends BaseThingHandlerFactory {
+public class DeutscheBahnHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TIMETABLE_TYPE, TRAIN_TYPE);
 

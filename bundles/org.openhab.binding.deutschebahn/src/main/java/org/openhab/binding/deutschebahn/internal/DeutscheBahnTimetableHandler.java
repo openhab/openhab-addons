@@ -36,6 +36,7 @@ import org.openhab.binding.deutschebahn.internal.timetable.TimetablesV1ApiFactor
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -44,6 +45,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -100,7 +102,6 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> updateJob;
 
     private final Logger logger = LoggerFactory.getLogger(DeutscheBahnTimetableHandler.class);
-    private @Nullable DeutscheBahnTimetableConfiguration config;
     private @Nullable TimetableLoader loader;
 
     private TimetablesV1ApiFactory timetablesV1ApiFactory;
@@ -112,7 +113,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
      */
     public DeutscheBahnTimetableHandler( //
             final Bridge bridge, //
-            TimetablesV1ApiFactory timetablesV1ApiFactory, //
+            final TimetablesV1ApiFactory timetablesV1ApiFactory, //
             final Supplier<Date> currentTimeProvider) {
         super(bridge);
         this.timetablesV1ApiFactory = timetablesV1ApiFactory;
@@ -120,14 +121,14 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     }
 
     private List<TimetableStop> loadTimetable() {
-        if (this.loader == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        final TimetableLoader currentLoader = this.loader;
+        if (currentLoader == null) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
             return Collections.emptyList();
         }
 
         try {
-            @SuppressWarnings("null")
-            final List<TimetableStop> stops = this.loader.getTimetableStops();
+            final List<TimetableStop> stops = currentLoader.getTimetableStops();
             this.updateStatus(ThingStatus.ONLINE);
             return stops;
         } catch (final IOException e) {
@@ -143,16 +144,14 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
-        this.config = this.getConfigAs(DeutscheBahnTimetableConfiguration.class);
+        final DeutscheBahnTimetableConfiguration config = this.getConfigAs(DeutscheBahnTimetableConfiguration.class);
 
         try {
-            final TimetablesV1Api api = this.timetablesV1ApiFactory.create(this.config.accessToken,
-                    HttpUtil::executeUrl);
+            final TimetablesV1Api api = this.timetablesV1ApiFactory.create(config.accessToken, HttpUtil::executeUrl);
 
-            final TimetableStopFilter stopFilter = this.config.getTimetableStopFilter();
+            final TimetableStopFilter stopFilter = config.getTimetableStopFilter();
 
             final EventType eventSelection = stopFilter == TimetableStopFilter.ARRIVALS ? EventType.ARRIVAL
                     : EventType.ARRIVAL;
@@ -162,7 +161,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
                     stopFilter, //
                     eventSelection, //
                     currentTimeProvider, //
-                    this.config.evaNo, //
+                    config.evaNo, //
                     1); // will be updated on first call
 
             this.updateStatus(ThingStatus.UNKNOWN);
@@ -173,7 +172,7 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
             });
         } catch (JAXBException | SAXException | URISyntaxException e) {
             this.logger.error("Error initializing api", e);
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -221,21 +220,39 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
         }
     }
 
-    @SuppressWarnings("null")
     private void updateChannels() {
-        if (this.loader == null) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        final TimetableLoader currentLoader = this.loader;
+        if (currentLoader == null) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR);
             return;
         }
         final GroupedThings groupedThings = this.groupThingsPerPosition();
-        this.loader.setStopCount(groupedThings.getMaxPosition());
+        currentLoader.setStopCount(groupedThings.getMaxPosition());
         final List<TimetableStop> timetableStops = this.loadTimetable();
         if (timetableStops.isEmpty()) {
+            updateThingsToUndefined(groupedThings);
             return;
         }
 
         this.logger.debug("Retrieved {} timetable stops.", timetableStops.size());
         this.updateThings(groupedThings, timetableStops);
+    }
+
+    /**
+     * No data was retrieved, so update all channel values to undefined.
+     */
+    private void updateThingsToUndefined(GroupedThings groupedThings) {
+        for (List<Thing> things : groupedThings.thingsPerPosition.values()) {
+            for (Thing thing : things) {
+                updateChannelsToUndefined(thing);
+            }
+        }
+    }
+
+    private void updateChannelsToUndefined(Thing thing) {
+        for (Channel channel : thing.getChannels()) {
+            this.updateState(channel.getUID(), UnDefType.UNDEF);
+        }
     }
 
     private void updateThings(GroupedThings groupedThings, final List<TimetableStop> timetableStops) {
@@ -250,6 +267,17 @@ public class DeutscheBahnTimetableHandler extends BaseBridgeHandler {
                         assert thingHandler instanceof DeutscheBahnTrainHandler;
                         ((DeutscheBahnTrainHandler) thingHandler).updateChannels(stop);
                     }
+                }
+            }
+            position++;
+        }
+
+        // Update all things to undefined, for which no data was received.
+        while (position <= groupedThings.getMaxPosition()) {
+            final List<Thing> thingsAtPosition = groupedThings.getThingsAtPosition(position);
+            if (thingsAtPosition != null) {
+                for (Thing thing : thingsAtPosition) {
+                    updateChannelsToUndefined(thing);
                 }
             }
             position++;
