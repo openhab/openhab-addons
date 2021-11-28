@@ -63,6 +63,46 @@ public class ScheduledEvents {
         public int hour;
         public int minute;
 
+        @Override
+        public boolean equals(@Nullable Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof ScheduledEvent)) {
+                return false;
+            }
+            ScheduledEvent other = (ScheduledEvent) o;
+
+            return this.id == other.id && this.enabled == other.enabled && this.sceneId == other.sceneId
+                    && this.sceneCollectionId == other.sceneCollectionId && this.daySunday == other.daySunday
+                    && this.dayMonday == other.dayMonday && this.dayTuesday == other.dayTuesday
+                    && this.dayWednesday == other.dayWednesday && this.dayThursday == other.dayThursday
+                    && this.dayFriday == other.dayFriday && this.daySaturday == other.daySaturday
+                    && this.eventType == other.eventType && this.hour == other.hour && this.minute == other.minute;
+        }
+
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + id;
+            result = prime * result + (enabled ? 1 : 0);
+            result = prime * result + sceneId;
+            result = prime * result + sceneCollectionId;
+            result = prime * result + (daySunday ? 1 : 0);
+            result = prime * result + (dayMonday ? 1 : 0);
+            result = prime * result + (dayTuesday ? 1 : 0);
+            result = prime * result + (dayWednesday ? 1 : 0);
+            result = prime * result + (dayThursday ? 1 : 0);
+            result = prime * result + (dayFriday ? 1 : 0);
+            result = prime * result + (daySaturday ? 1 : 0);
+            result = prime * result + eventType;
+            result = prime * result + hour;
+            result = prime * result + minute;
+
+            return result;
+        }
+
         public EnumSet<DayOfWeek> getDays() {
             EnumSet<DayOfWeek> days = EnumSet.noneOf(DayOfWeek.class);
             if (daySunday) {

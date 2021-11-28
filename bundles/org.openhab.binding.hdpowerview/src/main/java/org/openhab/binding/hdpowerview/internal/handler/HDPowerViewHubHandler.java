@@ -18,10 +18,13 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.StringJoiner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -88,6 +91,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
+
+    private Map<ChannelUID, ScheduledEvent> scheduledEventCache = new ConcurrentHashMap<ChannelUID, ScheduledEvent>();
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
@@ -424,71 +429,89 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private void updateScheduledEventChannels(List<Scene> scenes, List<SceneCollection> sceneCollections,
             List<ScheduledEvent> scheduledEvents) {
-        Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
-        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+        Map<ChannelUID, Channel> channelsToDelete = getUidChannelMap(
+                HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
+        List<Channel> channelsToAdd = new ArrayList<Channel>();
+        Set<ChannelUID> updatedChannelUids = new HashSet<>();
+
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
-        boolean isChannelListChanged = false;
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
             ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scheduledEvent.id));
-            String channelId = channelUid.getId();
-            // remove existing scheduled event channel from the map
-            if (idChannelMap.containsKey(channelId)) {
-                idChannelMap.remove(channelId);
+
+            ScheduledEvent cachedEntry = scheduledEventCache.get(channelUid);
+            if (cachedEntry == null) {
+                logger.debug("Creating new channel for scheduled event '{}'", scheduledEvent.id);
+            } else if (scheduledEvent.equals(cachedEntry)) {
                 logger.debug("Keeping channel for existing scheduled event '{}'", scheduledEvent.id);
+                channelsToDelete.remove(channelUid);
+                continue;
             } else {
-                // create a new scheduled event channel
-                String name = null;
-                if (scheduledEvent.sceneId > 0) {
-                    for (Scene scene : scenes) {
-                        if (scene.id == scheduledEvent.sceneId) {
-                            name = scene.getName();
-                            break;
-                        }
+                logger.debug("Updating channel for scheduled event '{}'", scheduledEvent.id);
+                updatedChannelUids.add(channelUid);
+            }
+
+            String name = null;
+            if (scheduledEvent.sceneId > 0) {
+                for (Scene scene : scenes) {
+                    if (scene.id == scheduledEvent.sceneId) {
+                        name = scene.getName();
+                        break;
                     }
-                    if (name == null) {
-                        logger.error("sceneId {} was not found for scheduledEventId {}", scheduledEvent.sceneId,
-                                scheduledEvent.id);
-                        continue;
-                    }
-                } else if (scheduledEvent.sceneCollectionId > 0) {
-                    for (SceneCollection sceneCollection : sceneCollections) {
-                        if (sceneCollection.id == scheduledEvent.sceneCollectionId) {
-                            name = sceneCollection.getName();
-                            break;
-                        }
-                    }
-                    if (name == null) {
-                        logger.error("sceneCollectionId {} was not found for scheduledEventId {}",
-                                scheduledEvent.sceneCollectionId, scheduledEvent.id);
-                        continue;
-                    }
-                } else {
-                    logger.error("ScheduledEventId {} not related to any scene or scene collection", scheduledEvent.id);
+                }
+                if (name == null) {
+                    logger.error("Scene '{}'' was not found for scheduled event '{}'", scheduledEvent.sceneId,
+                            scheduledEvent.id);
                     continue;
                 }
-
-                String label = getScheduledEventName(name, scheduledEvent);
-                String description = translationProvider.getText("dynamic-channel.automation-enabled.description",
-                        name);
-                Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
-                        .withType(automationChannelTypeUID).withLabel(label).withDescription(description).build();
-                allChannels.add(channel);
-                isChannelListChanged = true;
-                logger.debug("Creating new channel for scheduled event '{}'", scheduledEvent.id);
+            } else if (scheduledEvent.sceneCollectionId > 0) {
+                for (SceneCollection sceneCollection : sceneCollections) {
+                    if (sceneCollection.id == scheduledEvent.sceneCollectionId) {
+                        name = sceneCollection.getName();
+                        break;
+                    }
+                }
+                if (name == null) {
+                    logger.error("Scene collection '{}'' was not found for scheduled event '{}'",
+                            scheduledEvent.sceneCollectionId, scheduledEvent.id);
+                    continue;
+                }
+            } else {
+                logger.error("Scheduled event '{}'' not related to any scene or scene collection", scheduledEvent.id);
+                continue;
             }
+
+            String label = getScheduledEventName(name, scheduledEvent);
+            String description = translationProvider.getText("dynamic-channel.automation-enabled.description", name);
+            Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
+                    .withType(automationChannelTypeUID).withLabel(label).withDescription(description).build();
+            channelsToAdd.add(channel);
+            scheduledEventCache.put(channelUid, scheduledEvent);
         }
 
-        // remove any previously created channels that no longer exist
-        if (!idChannelMap.isEmpty()) {
-            logger.debug("Removing {} orphan scheduled event channels", idChannelMap.size());
-            allChannels.removeAll(idChannelMap.values());
-            isChannelListChanged = true;
+        if (channelsToDelete.isEmpty() && channelsToAdd.isEmpty()) {
+            return;
         }
 
-        if (isChannelListChanged) {
-            updateThing(editThing().withChannels(allChannels).build());
+        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+
+        // Remove any previously created channels that no longer exist or are being replaced
+        if (!channelsToDelete.isEmpty()) {
+            logger.debug("Removing {} orphan scheduled event channels",
+                    channelsToDelete.size() - updatedChannelUids.size());
+            allChannels.removeAll(channelsToDelete.values());
+            channelsToDelete.forEach((k, v) -> {
+                if (!updatedChannelUids.contains(k)) {
+                    scheduledEventCache.remove(k);
+                }
+            });
         }
+
+        if (!channelsToAdd.isEmpty()) {
+            allChannels.addAll(channelsToAdd);
+        }
+
+        updateThing(editThing().withChannels(allChannels).build());
     }
 
     private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
@@ -575,6 +598,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             if (shade.id != 0) {
                 ret.put(Integer.toString(shade.id), shade);
             }
+        }
+        return ret;
+    }
+
+    private Map<ChannelUID, Channel> getUidChannelMap(String channelGroupId) {
+        Map<ChannelUID, Channel> ret = new HashMap<>();
+        for (Channel channel : getThing().getChannelsOfGroup(channelGroupId)) {
+            ret.put(channel.getUID(), channel);
         }
         return ret;
     }
