@@ -397,33 +397,41 @@ public class HDPowerViewJUnitTests {
         assertEquals(7, capabilities.intValue());
 
         ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
+
         assertTrue(db.isTypeInDatabase(shadeData.type));
-        assertTrue(db.isTypeInDatabase(db.getPropertyValue(db.getTypeProperty(shadeData.type))));
-
         assertTrue(db.isCapabilitiesInDatabase(capabilities.intValue()));
-        assertTrue(
-                db.isCapabilitiesInDatabase(db.getPropertyValue(db.getCapabilitiesProperty(capabilities.intValue()))));
 
-        assertTrue(db.isTypeCapabilitiesCompatibile(shadeData.type, capabilities.intValue()));
+        assertTrue(db.getType(shadeData.type).capabilitiesEqual(capabilities.intValue()));
 
-        assertTrue(db.capabilitiesSupportsSecondary(capabilities.intValue()));
-        assertFalse(db.isTypeCapabilitiesCompatibile(shadeData.type, capabilities.intValue() + 1));
+        assertTrue(db.getCapabilities(capabilities.intValue()).supportsSecondary());
+        assertFalse(db.getType(shadeData.type).capabilitiesEqual(capabilities.intValue() + 1));
     }
 
     /**
-     * General tests of known types database
+     * General tests of the database of known types.
      */
     @Test
     public void testKnownTypesDatabase() {
         ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
-        assertTrue(db.capabilitiesSupportsSecondary(7));
-        assertTrue(db.isTypeCapabilitiesCompatibile(-1, -1));
-        assertTrue(db.capabilitiesPrimaryReversed(6));
+        assertTrue(db.isTypeInDatabase(4));
+        assertTrue(db.isCapabilitiesInDatabase(0));
+
+        assertTrue(db.getCapabilities(6).isPrimaryInverted());
+        assertTrue(db.getCapabilities(7).supportsSecondary());
+
+        assertTrue(db.getType(4).capabilitiesEqual(0));
+        assertTrue(db.getType(-1).capabilitiesEqual(-1));
 
         assertFalse(db.isTypeInDatabase(99));
         assertFalse(db.isCapabilitiesInDatabase(99));
-        assertFalse(db.capabilitiesPrimaryReversed(0));
-        assertFalse(db.capabilitiesSupportsSecondary(99));
+
+        assertFalse(db.getCapabilities(0).isPrimaryInverted());
+        assertFalse(db.getCapabilities(-1).isPrimaryInverted());
+        assertFalse(db.getCapabilities(99).isPrimaryInverted());
+
+        assertFalse(db.getCapabilities(0).supportsSecondary());
+        assertFalse(db.getCapabilities(-1).supportsSecondary());
+        assertFalse(db.getCapabilities(99).supportsSecondary());
     }
 }
