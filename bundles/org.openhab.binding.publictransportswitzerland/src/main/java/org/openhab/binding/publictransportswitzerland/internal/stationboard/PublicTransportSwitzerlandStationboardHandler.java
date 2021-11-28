@@ -32,6 +32,7 @@ import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
@@ -59,8 +60,6 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private static final String TSV_CHANNEL = "tsv";
 
-    private final ChannelGroupUID stationboardChannelGroupUID = new ChannelGroupUID(getThing().getUID(),
-            "stationboard");
     private final ChannelGroupUID dynamicChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "departures");
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
@@ -305,7 +304,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
         for (int i = existingChannels.size(); i < numberOfChannels; i++) {
             Channel channel = ChannelBuilder.create(getChannelUIDForPosition(i), "String")
-                    .withLabel("Departure " + (i + 1)).build();
+                    .withLabel("Departure " + (i + 1))
+                    .withType(new ChannelTypeUID("publictransportswitzerland", "departure")).build();
             thingBuilder.withChannel(channel);
         }
 
