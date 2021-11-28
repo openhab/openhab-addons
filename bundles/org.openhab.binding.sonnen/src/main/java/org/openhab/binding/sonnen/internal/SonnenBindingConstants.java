@@ -16,19 +16,30 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link sonnenBindingConstants} class defines common constants, which are
+ * The {@link SonnenBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Christian Feininger - Initial contribution
  */
 @NonNullByDefault
-public class sonnenBindingConstants {
+public class SonnenBindingConstants {
 
     private static final String BINDING_ID = "sonnen";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_SONNEN = new ThingTypeUID(BINDING_ID, "battery");
 
     // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    public static final String CHANNELBATTERYCHARGING = "channelBatteryCharging";
+    public static final String CHANNELBATTERYDISCHARGING = "channelBatteryDischarging";
+    public static final String CHANNELCONSUMPTION = "channelConsumption";
+    public static final String CHANNELGRIDFEEDIN = "channelGridFeedIn";
+    public static final String CHANNELSOLARPRODUCTION = "channelSolarProduction";
+    public static final String CHANNELBATTERYLEVEL = "channelBatteryLevel";
+    public static final String CHANNELFLOWCONSUMPTIONBATTERY = "channelFlowConsumptionBattery";
+    public static final String CHANNELFLOWCONSUMPTIONGRID = "channelFlowConsumptionGrid";
+    public static final String CHANNELFLOWCONSUMPTIONPRODUCTION = "channelFlowConsumptionProduction";
+    public static final String CHANNELFLOWGRIDBATTERY = "channelFlowGridBattery";
+    public static final String CHANNELFLOWPRODUCTIONBATTERY = "channelFlowProductionBattery";
+    public static final String CHANNELFLOWPRODUCTIONGRID = "channelFlowProductionGrid";
 }

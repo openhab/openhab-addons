@@ -21,72 +21,113 @@ import com.google.gson.annotations.SerializedName;
  * @author Christian Feininger - Initial contribution
  */
 public class SonnenJsonDataDTO {
-    metadata meta = new metadata();
-    boolean prg;
-    boolean wprg;
-    String mode = "";
-    @SerializedName("sp_temp")
-    String spTemp = "";
-    @SerializedName("is_temp")
-    String isTemp = "";
-    @SerializedName("ht_char")
-    String htChar = "";
-    @SerializedName("weekprogram")
-    private wprogram[] weekprogram;
-    @SerializedName("error")
-    private err[] error;
-    @SerializedName("eco_mode")
-    boolean ecoMode;
-    boolean pgi;
-    String ignitions = "";
-    @SerializedName("on_time")
-    String onTime = "";
-    String consumption = "";
-    @SerializedName("maintenance_in")
-    String maintenanceIn = "";
-    @SerializedName("cleaning_in")
-    String cleaningIn = "";
+    @SerializedName("BatteryCharging")
+    boolean batteryCharging;
+    @SerializedName("BatteryDischarging")
+    boolean batteryDischarging;
+    @SerializedName("Consumption_W")
+    int consumptionHouse;
+    @SerializedName("GridFeedIn_W")
+    int gridFeedIn;
+    @SerializedName("Production_W")
+    int solarProduction;
+    @SerializedName("USOC")
+    int batteryChargingLevel;
+    @SerializedName("FlowConsumptionBattery")
+    boolean flowConsumptionBattery;
+    @SerializedName("FlowConsumptionGrid")
+    boolean flowConsumptionGrid;
+    @SerializedName("FlowConsumptionProduction")
+    boolean flowConsumptionProduction;
+    @SerializedName("FlowGridBattery")
+    boolean flowGridBattery;
+    @SerializedName("FlowProductionBattery")
+    boolean flowProductionBattery;
+    @SerializedName("FlowProductionGrid")
+    boolean flowProductionGrid;
 
-    /***
-     * Get the nonce
-     *
-     * @return nonce
+    /**
+     * @return the batteryCharging
      */
-    public String getNonce() {
-        return this.meta.getNonce();
+    public boolean isBatteryCharging() {
+        return batteryCharging;
     }
 
     /**
-     * Returns the is Temperature of the Oven
-     *
-     * @return
+     * @return the batteryDischarging
      */
-    public String getisTemp() {
-        return isTemp;
+    public boolean isBatteryDischarging() {
+        return batteryDischarging;
     }
 
-    public boolean getEcoMode() {
-        return ecoMode;
+    /**
+     * @return the consumptionHouse
+     */
+    public int getConsumptionHouse() {
+        return consumptionHouse;
     }
 
-    public String getIgnitions() {
-        return ignitions;
+    /**
+     * @return the gridFeedIn
+     */
+    public int getGridFeedIn() {
+        return gridFeedIn;
     }
 
-    public String getOnTime() {
-        return onTime;
+    /**
+     * @return the solarProduction
+     */
+    public int getSolarProduction() {
+        return solarProduction;
     }
 
-    public String getConsumption() {
-        return consumption;
+    /**
+     * @return the batteryChargingLevel
+     */
+    public int getBatteryChargingLevel() {
+        return batteryChargingLevel;
     }
 
-    public String getMaintenanceIn() {
-        return maintenanceIn;
+    /**
+     * @return the flowConsumptionBattery
+     */
+    public boolean isFlowConsumptionBattery() {
+        return flowConsumptionBattery;
     }
 
-    public String getCleaningIn() {
-        return cleaningIn;
+    /**
+     * @return the flowConsumptionGrid
+     */
+    public boolean isFlowConsumptionGrid() {
+        return flowConsumptionGrid;
+    }
+
+    /**
+     * @return the flowConsumptionProduction
+     */
+    public boolean isFlowConsumptionProduction() {
+        return flowConsumptionProduction;
+    }
+
+    /**
+     * @return the flowGridBattery
+     */
+    public boolean isFlowGridBattery() {
+        return flowGridBattery;
+    }
+
+    /**
+     * @return the flowProductionBattery
+     */
+    public boolean isFlowProductionBattery() {
+        return flowProductionBattery;
+    }
+
+    /**
+     * @return the flowProductionGrid
+     */
+    public boolean isFlowProductionGrid() {
+        return flowProductionGrid;
     }
 
     /***
@@ -96,57 +137,5 @@ public class SonnenJsonDataDTO {
      */
     public SonnenJsonDataDTO getResponse() {
         return this;
-    }
-
-    public class metadata {
-        @SerializedName("sw_version")
-        String swVersion = "";
-        @SerializedName("hw_version")
-        String hwVersion = "";
-        @SerializedName("bootl_version")
-        String bootlVersion = "";
-        @SerializedName("wifi_sw_version")
-        String wifiSWVersion = "";
-        @SerializedName("wifi_bootl_version")
-        String wifiBootlVersion = "";
-        String sn = "";
-        String typ = "";
-        String language = "";
-        String nonce = "";
-        @SerializedName("eco_editable")
-        String ecoEditable = "";
-        String ts = "";
-        String ean = "";
-        boolean rau;
-        @SerializedName("wlan_features")
-        private String[] wlan_features;
-
-        public String getNonce() {
-            return nonce;
-        }
-    }
-
-    public class err {
-        String time = "";
-        String nr = "";
-    }
-
-    public class wprogram {
-        String day = "";
-        String begin = "";
-        String end = "";
-        String temp = "";
-    }
-
-    public String getMode() {
-        return mode;
-    }
-
-    public String getspTemp() {
-        return spTemp;
-    }
-
-    public boolean getPrg() {
-        return prg;
     }
 }

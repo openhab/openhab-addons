@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.sonnen.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * The {@link sonnenConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link SonnenConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Feininger - Initial contribution
  */
-public class sonnenConfiguration {
+@NonNullByDefault
+public class SonnenConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname;
-    public String password;
-    public int refreshInterval;
+    public @Nullable String hostIP = null;
+    public int refreshInterval = 30;
 }

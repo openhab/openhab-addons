@@ -52,7 +52,7 @@ public class SonnenJSONCommunication {
      * @param thingUID Thing UID for logging purposes
      * @return true if no error occurred, false otherwise.
      */
-    public boolean refreshOvenConnection(Helper message, String thingUID) {
+    public boolean refreshBatteryConnection(Helper message, String thingUID) {
         if (config.hostIP == null) {
             message.setStatusDescription("Error in configuration. Please recreate Thing.");
             return false;
@@ -106,7 +106,7 @@ public class SonnenJSONCommunication {
      * @return
      */
     @Nullable
-    public SonnenJsonDataDTO getOvenData() {
+    public SonnenJsonDataDTO getBatteryData() {
         return this.batteryData;
     }
 }
