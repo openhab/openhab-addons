@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.sonnen.internal;
 
-import static org.openhab.binding.sonnen.internal.sonnenBindingConstants.*;
+import static org.openhab.binding.sonnen.internal.SonnenBindingConstants.*;
 
 import java.util.Set;
 
@@ -26,16 +26,16 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link sonnenHandlerFactory} is responsible for creating things and thing
+ * The {@link SonnenHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Christian Feininger - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.sonnen", service = ThingHandlerFactory.class)
-public class sonnenHandlerFactory extends BaseThingHandlerFactory {
+public class SonnenHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SAMPLE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SONNEN);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,8 +46,8 @@ public class sonnenHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SAMPLE.equals(thingTypeUID)) {
-            return new sonnenHandler(thing);
+        if (THING_TYPE_SONNEN.equals(thingTypeUID)) {
+            return new SonnenHandler(thing);
         }
 
         return null;

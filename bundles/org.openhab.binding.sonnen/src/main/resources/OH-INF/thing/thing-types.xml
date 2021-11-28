@@ -4,43 +4,113 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
-	<thing-type id="sample">
-		<!-- Comment this in for Things which need a Bridge to function.
-			<supported-bridge-type-refs>
-			<bridge-type-ref id="sonnenBridge" />
-			</supported-bridge-type-refs>
-		-->
-
+	<!-- Sonnen Thing Type -->
+	<thing-type id="battery">
 		<label>sonnen Binding Thing</label>
-		<description>Sample thing for sonnen Binding</description>
+		<description>Thing for sonnen battery connection</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="channelBatteryCharging" typeId="isBatteryCharging"/>
+			<channel id="channelBatteryDischarging" typeId="isBatteryDischarging"/>
+			<channel id="channelConsumption" typeId="consumption"/>
+			<channel id="channelGridFeedIn" typeId="gridFeedIn"/>
+			<channel id="channelSolarProduction" typeId="solarProduction"/>
+			<channel id="channelBatteryLevel" typeId="batteryLevel"/>
+			<channel id="channelFlowConsumptionBattery" typeId="isFlowConsumptionBattery"/>
+			<channel id="channelFlowConsumptionGrid" typeId="isFlowConsumptionGrid"/>
+			<channel id="channelFlowConsumptionProduction" typeId="isFlowConsumptionProduction"/>
+			<channel id="channelFlowGridBattery" typeId="isFlowGridBattery"/>
+			<channel id="channelFlowProductionBattery" typeId="isFlowProductionBattery"/>
+			<channel id="channelFlowProductionGrid" typeId="isFlowProductionGrid"/>
 		</channels>
 
 		<config-description>
-			<parameter name="hostname" type="text" required="true">
+			<parameter name="hostIP" type="text" required="true">
 				<context>network-address</context>
-				<label>Hostname</label>
-				<description>Hostname or IP address of the device</description>
+				<label>IP Address</label>
+				<description>Please add the IP Address of your sonnen battery</description>
 			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Passwort to access the device</description>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+			<parameter name="refreshInterval" type="integer" unit="s" min="0" max="1000">
 				<label>Refresh Interval</label>
-				<description>Interval the device is polled in sec.</description>
+				<description>How often the sonnen battery in seconds should schedule a refresh after a channel is linked to an item.
+					Valid input is 0 - 999..</description>
+				<advanced>true</advanced>
+				<default>30</default>
 			</parameter>
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>Number:Temperature</item-type>
-		<label>Example Temperature</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
-		<description>Sample channel for sonnen Binding</description>
+	<!-- sonnen Channel Type -->
+	<channel-type id="isBatteryCharging">
+		<item-type>Switch</item-type>
+		<label>Is Battery Charging</label>
+		<description>Indicates if the Battery is charging at that moment</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isBatteryDischarging">
+		<item-type>Switch</item-type>
+		<label>Is Battery Discharging</label>
+		<description>Indicates if the Battery is discharging at that moment</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="consumption">
+		<item-type>Number:Energy</item-type>
+		<label>Consumption</label>
+		<description>Indicates the actual consumption of the consumer in watt</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="gridFeedIn">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Feed In</label>
+		<description>Indicates the actual feeding to the Grid in watt</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="solarProduction">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Production</label>
+		<description>Indicates the actual production of the Solar system in watt</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryLevel">
+		<item-type>Number</item-type>
+		<label>Battery Level</label>
+		<description>Indicates the actual Battery Level in % from 0 - 100</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isFlowConsumptionBattery">
+		<item-type>Switch</item-type>
+		<label>Flow Battery -> Consumption</label>
+		<description>Indicates if there is a current flow from Battery towards Consumption.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isFlowConsumptionGrid">
+		<item-type>Switch</item-type>
+		<label>Flow Grid -> Consumption</label>
+		<description>Indicates if there is a current flow from Grid towards Consumption.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isFlowConsumptionProduction">
+		<item-type>Switch</item-type>
+		<label>Flow Production -> Consumption</label>
+		<description>Indicates if there is a current flow from Solar Production towards Consumption.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isFlowGridBattery">
+		<item-type>Switch</item-type>
+		<label>Flow Grid -> Battery</label>
+		<description>Indicates if there is a current flow from Grid towards Battery.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isFlowProductionBattery">
+		<item-type>Switch</item-type>
+		<label>Flow Production -> Battery</label>
+		<description>Indicates if there is a current flow from Production towards Battery.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="isFlowProductionGrid">
+		<item-type>Switch</item-type>
+		<label>Flow Production -> Grid</label>
+		<description>Indicates if there is a current flow from Production towards Grid.</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
