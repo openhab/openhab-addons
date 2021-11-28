@@ -72,19 +72,19 @@ public class RenaultHandler extends BaseThingHandler {
         this.config = getConfigAs(RenaultConfiguration.class);
 
         // Validate configuration
-        if (this.config.myRenaultUsername.trim().length() == 0) {
+        if (this.config.myRenaultUsername.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MyRenault Username is empty!");
             return;
         }
-        if (this.config.myRenaultPassword.trim().length() == 0) {
+        if (this.config.myRenaultPassword.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "MyRenault Password is empty!");
             return;
         }
-        if (this.config.locale.trim().length() == 0) {
+        if (this.config.locale.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location is empty!");
             return;
         }
-        if (this.config.vin.trim().length() == 0) {
+        if (this.config.vin.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "VIN is empty!");
             return;
         }
