@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         java: [ '11' ]
-        maven: [ '3.8.3']
+        maven: [ '3.8.4']
         os: [ 'ubuntu-20.04' ]
     name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
