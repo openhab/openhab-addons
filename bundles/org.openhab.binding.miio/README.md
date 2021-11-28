@@ -187,7 +187,7 @@ Currently the miio binding supports more than 300 different models.
 | Mi Multifunction Air Monitor | miio:basic       | [cgllc.airmonitor.b1](#cgllc-airmonitor-b1) | Yes       |            |
 | Qingping Air Monitor         | miio:basic       | [cgllc.airmonitor.s1](#cgllc-airmonitor-s1) | Yes       |            |
 | Mi Universal Remote          | miio:unsupported | chuangmi.ir.v2         | No        |            |
-| Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) | miio:basic       | [chuangmi.plug.212a01](#chuangmi-plug-212a01) | Yes       | Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses |
+| Mi Smart Power Plug 2 (Wi-Fi and Bluetooth Gateway) | miio:basic       | [chuangmi.plug.212a01](#chuangmi-plug-212a01) | Yes       |            |
 | Mi Smart Plug WiFi           | miio:basic       | [chuangmi.plug.hmi205](#chuangmi-plug-hmi205) | Yes       |            |
 | Mi Smart Plug (WiFi)         | miio:basic       | [chuangmi.plug.hmi206](#chuangmi-plug-hmi206) | Yes       |            |
 | Mi Smart Wi-Fi Plug (Bluetooth Gateway) | miio:basic       | [chuangmi.plug.hmi208](#chuangmi-plug-hmi208) | Yes       |            |
@@ -693,6 +693,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | countdown            | Number:Time          | Imilab Timer - Countdown                 |            |
 | task-switch          | Switch               | Imilab Timer - Task Switch               |            |
 | countdown-info       | Switch               | Imilab Timer - Countdown Info            |            |
+| bt-gw                | String               | BT Gateway                               | Value mapping `["disable"="Disable","enable"="Enable"]` |
 
 ### Mi Smart Plug WiFi (<a name="chuangmi-plug-hmi205">chuangmi.plug.hmi205</a>) Channels
 
@@ -5469,6 +5470,7 @@ Number:Time off_duration "Imilab Timer - Off Duration" (G_plug) {channel="miio:b
 Number:Time countdown "Imilab Timer - Countdown" (G_plug) {channel="miio:basic:plug:countdown"}
 Switch task_switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
 Switch countdown_info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
+String bt_gw "BT Gateway" (G_plug) {channel="miio:basic:plug:bt-gw"}
 ```
 
 ### Mi Smart Plug WiFi (chuangmi.plug.hmi205) item file lines
