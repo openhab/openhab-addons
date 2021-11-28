@@ -8,18 +8,13 @@
 		<parameter name="injectionEnabled" type="boolean" required="true">
 			<label>Use Built-in Global Variables </label>
 			<description><![CDATA[ Import all variables from the OH scripting library into all rules for common services like items, things, actions, log, etc... <br>
-			If disabled, the OH scripting library can be imported manually using "<i>require(@oh)</i>"
+			If disabled, the OH scripting library can be imported manually using "<i>require('openhab')</i>"
 			]]></description>
 			<options>
 				<option value="true">Use Built-in Variables</option>
 				<option value="false">Do Not Use Built-in Variables</option>
 			</options>
 			<default>true</default>
-		</parameter>
-		<parameter name="injectionCode" type="text" required="true">
-			<label>Injection code</label>
-			<description>Injection code used to expose helper variables</description>
-			<default>Object.assign(this, require('@oh'));</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

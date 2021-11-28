@@ -59,7 +59,7 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
 public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngineWithInvocable<GraalJSScriptEngine> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
-
+    private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     private static final String MODULE_DIR = String.join(File.separator, OpenHAB.getConfigFolder(), "automation", "lib",
             "javascript", "personal");
@@ -79,7 +79,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
      */
     public OpenhabGraalJSScriptEngine(@Nullable String injectionCode) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
-        this.globalScript = "require(\"@globals\");" + (injectionCode != null ? injectionCode : "");
+        this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
         delegate = GraalJSScriptEngine.create(
                 Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
                         .build(),
@@ -102,11 +102,11 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
                                     SeekableByteChannel sbc = null;
                                     if (path.startsWith(LOCAL_NODE_PATH)) {
                                         InputStream is = getClass().getResourceAsStream(path.toString());
-                                        if (is != null) {
-                                            sbc = new ReadOnlySeekableByteArrayChannel(is.readAllBytes());
+                                        if (is == null) {
+                                            throw new IOException("Could not read " + path.toString());
                                         }
-                                    }
-                                    if (sbc == null) {
+                                        sbc = new ReadOnlySeekableByteArrayChannel(is.readAllBytes());
+                                    } else {
                                         sbc = super.newByteChannel(path, options, attrs);
                                     }
                                     return new PrefixedSeekableByteChannel(

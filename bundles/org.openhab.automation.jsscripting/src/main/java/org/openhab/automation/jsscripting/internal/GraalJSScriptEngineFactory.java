@@ -42,9 +42,8 @@ import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GraalJSScriptEngineFactory.class);
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
-    private static final String CFG_INJECTION_CODE = "injectionCode";
-
-    private String injectionCode;
+    private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
+    private boolean injectionEnabled;
 
     @Override
     public List<String> getScriptTypes() {
@@ -64,7 +63,8 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public ScriptEngine createScriptEngine(String scriptType) {
-        return new DebuggingGraalScriptEngine<>(new OpenhabGraalJSScriptEngine(injectionCode));
+        return new DebuggingGraalScriptEngine<>(
+                new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null));
     }
 
     @Activate
@@ -75,17 +75,6 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Modified
     protected void modified(Map<String, ?> config) {
         Object injectionEnabled = config.get(CFG_INJECTION_ENABLED);
-        boolean enabled = injectionEnabled != null && (Boolean) injectionEnabled;
-        if (enabled) {
-            Object injectionCodeObj = config.get(CFG_INJECTION_CODE);
-            if (injectionCodeObj != null) {
-                LOGGER.debug("Adding code {}", injectionCodeObj);
-                injectionCode = (String) injectionCodeObj;
-            } else {
-                injectionCode = null;
-            }
-        } else {
-            injectionCode = null;
-        }
+        this.injectionEnabled = injectionEnabled != null && (Boolean) injectionEnabled;
     }
 }

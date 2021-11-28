@@ -25,6 +25,7 @@
     <graal.version>21.3.0</graal.version>
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
+    <ohjs.version>openhab@0.0.1-beta.1</ohjs.version>
   </properties>
 
   <build>
@@ -48,12 +49,10 @@
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <version>1.12.0</version>
-
         <configuration>
           <nodeVersion>v12.16.1</nodeVersion>
-          <workingDirectory>javascript</workingDirectory>
+          <workingDirectory>target/js</workingDirectory>
         </configuration>
-
         <executions>
           <execution>
             <id>Install node and npm</id>
@@ -62,24 +61,22 @@
             </goals>
             <phase>generate-sources</phase>
           </execution>
-
           <execution>
             <id>npm install</id>
             <goals>
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install</arguments>
+              <arguments>install ${ohjs.version} webpack webpack-cli</arguments>
             </configuration>
           </execution>
-
           <execution>
             <id>npx webpack</id>
             <goals>
               <goal>npx</goal>
             </goals>
             <configuration>
-              <arguments>webpack</arguments>
+              <arguments>webpack -c ./node_modules/openhab/webpack.config.js --entry ./node_modules/openhab/ -o ./dist</arguments>
             </configuration>
           </execution>
         </executions>
@@ -96,7 +93,7 @@
             <configuration>
               <resources>
                 <resource>
-                  <directory>javascript/dist</directory>
+                  <directory>target/js/dist</directory>
                   <targetPath>node_modules</targetPath>
                 </resource>
               </resources>
