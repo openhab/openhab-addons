@@ -180,7 +180,11 @@
     <module>org.openhab.binding.deconz</module>
         
     <module>org.openhab.binding.denonmarantz</module>
+<<<<<<< HEAD
         
+=======
+    <module>org.openhab.binding.deutschebahn</module>
+>>>>>>> 50d5622e79 ([deutschebahn] Initial contribution: New binding for DeutscheBahn Fahrplan (#11384))
     <module>org.openhab.binding.digiplex</module>
         
     <module>org.openhab.binding.digitalstrom</module>
