@@ -84,7 +84,6 @@ Fragment-Host: org.openhab.binding.nest
 	org.ops4j.pax.web.pax-web-api;version='[7.3.19,7.3.20)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.3.19,7.3.20)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.3.19,7.3.20)',\
-	biz.aQute.tester.junit-platform;version='[6.0.0,6.0.1)',\
 	com.fasterxml.woodstox.woodstox-core;version='[6.2.6,6.2.7)',\
 	org.apache.aries.jax.rs.whiteboard;version='[2.0.1,2.0.2)',\
 	org.apache.cxf.cxf-core;version='[3.4.5,3.4.6)',\
@@ -104,4 +103,5 @@ Fragment-Host: org.openhab.binding.nest
 	net.bytebuddy.byte-buddy-agent;version='[1.12.1,1.12.2)',\
 	org.mockito.junit-jupiter;version='[4.1.0,4.1.1)',\
 	org.mockito.mockito-core;version='[4.1.0,4.1.1)',\
-	org.objenesis;version='[3.2.0,3.2.1)'
+	org.objenesis;version='[3.2.0,3.2.1)',\
+	biz.aQute.tester.junit-platform;version='[6.1.0,6.1.1)'
