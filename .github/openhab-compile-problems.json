@@ -1,0 +1,21 @@
+{
+  "problemMatcher": [
+    {
+      "owner": "openhab-compile-problems",
+      "severity": "error",
+      "pattern": [
+        {
+          "regexp": "Failed to execute goal.*Compilation failure"
+        },
+        {
+          "regexp": "^\\[ERROR\\] (.+\\.java):\\[(.+),(.+)\\] (.*)$",
+          "file": 1,
+          "line": 2,
+          "col": 3,
+          "message": 4,
+          "loop": true
+        }
+      ]
+    }
+  ]
+}
