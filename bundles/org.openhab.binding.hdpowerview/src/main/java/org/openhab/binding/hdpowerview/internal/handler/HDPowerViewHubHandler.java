@@ -578,7 +578,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private String getFormattedTimeOffset(int minutes) {
         if (minutes > 60) {
-            return translationProvider.getText("dynamic-channel.automation.hour-minute", minutes / 60, minutes % 60);
+            int remainder = minutes % 60;
+            if (remainder == 0) {
+                return translationProvider.getText("dynamic-channel.automation.hour", minutes / 60);
+            }
+            return translationProvider.getText("dynamic-channel.automation.hour-minute", minutes / 60, remainder);
         }
         return translationProvider.getText("dynamic-channel.automation.minute", minutes);
     }
