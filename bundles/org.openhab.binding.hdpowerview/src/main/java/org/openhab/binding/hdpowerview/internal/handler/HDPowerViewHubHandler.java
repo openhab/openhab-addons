@@ -349,6 +349,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             sceneCache.put(channelUid, scene);
         }
 
+        if (!channelsToDelete.isEmpty()) {
+            logger.debug("Removing {} orphan scene channels", channelsToDelete.size() - updatedChannelUids.size());
+        }
+        updateThingChannels(channelsToDelete, channelsToAdd, updatedChannelUids, sceneCache);
+    }
+
+    private void updateThingChannels(Map<ChannelUID, Channel> channelsToDelete, List<Channel> channelsToAdd,
+            Set<ChannelUID> updatedChannelUids, Map<ChannelUID, ?> cache) {
         if (channelsToDelete.isEmpty() && channelsToAdd.isEmpty()) {
             return;
         }
@@ -357,11 +365,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
         // Remove any previously created channels that no longer exist or are being replaced
         if (!channelsToDelete.isEmpty()) {
-            logger.debug("Removing {} orphan scene channels", channelsToDelete.size() - updatedChannelUids.size());
             allChannels.removeAll(channelsToDelete.values());
             channelsToDelete.forEach((k, v) -> {
                 if (!updatedChannelUids.contains(k)) {
-                    sceneCache.remove(k);
+                    cache.remove(k);
                 }
             });
         }
@@ -424,29 +431,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             sceneCollectionCache.put(channelUid, sceneCollection);
         }
 
-        if (channelsToDelete.isEmpty() && channelsToAdd.isEmpty()) {
-            return;
-        }
-
-        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
-
-        // Remove any previously created channels that no longer exist or are being replaced
         if (!channelsToDelete.isEmpty()) {
             logger.debug("Removing {} orphan scene collection channels",
                     channelsToDelete.size() - updatedChannelUids.size());
-            allChannels.removeAll(channelsToDelete.values());
-            channelsToDelete.forEach((k, v) -> {
-                if (!updatedChannelUids.contains(k)) {
-                    sceneCollectionCache.remove(k);
-                }
-            });
         }
-
-        if (!channelsToAdd.isEmpty()) {
-            allChannels.addAll(channelsToAdd);
-        }
-
-        updateThing(editThing().withChannels(allChannels).build());
+        updateThingChannels(channelsToDelete, channelsToAdd, updatedChannelUids, sceneCollectionCache);
     }
 
     private List<ScheduledEvent> pollScheduledEvents()
@@ -501,7 +490,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                     }
                 }
                 if (name == null) {
-                    logger.error("Scene '{}'' was not found for scheduled event '{}'", scheduledEvent.sceneId,
+                    logger.error("Scene '{}' was not found for scheduled event '{}'", scheduledEvent.sceneId,
                             scheduledEvent.id);
                     continue;
                 }
@@ -513,7 +502,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                     }
                 }
                 if (name == null) {
-                    logger.error("Scene collection '{}'' was not found for scheduled event '{}'",
+                    logger.error("Scene collection '{}' was not found for scheduled event '{}'",
                             scheduledEvent.sceneCollectionId, scheduledEvent.id);
                     continue;
                 }
@@ -530,29 +519,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             scheduledEventCache.put(channelUid, scheduledEvent);
         }
 
-        if (channelsToDelete.isEmpty() && channelsToAdd.isEmpty()) {
-            return;
-        }
-
-        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
-
-        // Remove any previously created channels that no longer exist or are being replaced
         if (!channelsToDelete.isEmpty()) {
             logger.debug("Removing {} orphan scheduled event channels",
                     channelsToDelete.size() - updatedChannelUids.size());
-            allChannels.removeAll(channelsToDelete.values());
-            channelsToDelete.forEach((k, v) -> {
-                if (!updatedChannelUids.contains(k)) {
-                    scheduledEventCache.remove(k);
-                }
-            });
         }
-
-        if (!channelsToAdd.isEmpty()) {
-            allChannels.addAll(channelsToAdd);
-        }
-
-        updateThing(editThing().withChannels(allChannels).build());
+        updateThingChannels(channelsToDelete, channelsToAdd, updatedChannelUids, scheduledEventCache);
     }
 
     private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
