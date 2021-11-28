@@ -41,7 +41,9 @@ public enum StatusType {
     GOTO(16, "Go To"),
     ZONE(17, "Zone Clean"),
     ROOM(18, "Room Clean"),
-    FULL(100, "Full");
+    RETURNING_HOME(22, "Returning Home"),
+    FULL(100, "Full"),
+    OFFLINE(101, "Device Offline");
 
     private final int id;
     private final String description;
