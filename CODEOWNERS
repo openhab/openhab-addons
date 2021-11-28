@@ -283,6 +283,7 @@
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.somfymylink/ @loungeflyz
 /bundles/org.openhab.binding.somfytahoma/ @octa22
+/bundles/org.openhab.binding.sonnen / @chingon007
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.sonyaudio/ @freke
 /bundles/org.openhab.binding.sonyprojector/ @lolodomo
