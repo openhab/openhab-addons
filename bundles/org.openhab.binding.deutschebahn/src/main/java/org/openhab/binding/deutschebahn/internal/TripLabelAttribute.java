@@ -37,8 +37,8 @@ import org.openhab.core.types.UnDefType;
  * @param <STATE_TYPE> type of state.
  */
 @NonNullByDefault
-public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State>
-        extends AbstractDtoAttributeSelector<TripLabel, VALUE_TYPE, STATE_TYPE> implements AttributeSelection {
+public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> extends
+        AbstractDtoAttributeSelector<TripLabel, @Nullable VALUE_TYPE, STATE_TYPE> implements AttributeSelection {
 
     /**
      * Trip category.

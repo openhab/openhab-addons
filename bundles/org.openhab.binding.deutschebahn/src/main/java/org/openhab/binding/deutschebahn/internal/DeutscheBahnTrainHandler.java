@@ -17,9 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
-import org.openhab.binding.deutschebahn.internal.timetable.dto.TripLabel;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -126,7 +124,8 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
     }
 
     /**
-     * Creates an {@link ChannelWithConfig} for an channel that represents an attribute of an {@link TripLabel}.
+     * Creates an {@link ChannelWithConfig} for an channel that represents an attribute of an
+     * {@link org.openhab.binding.deutschebahn.internal.timetable.dto.TripLabel}.
      */
     private void createTripChannelConfiguration(Channel channel) {
         final ChannelUID channelUid = channel.getUID();
@@ -143,7 +142,8 @@ public class DeutscheBahnTrainHandler extends BaseThingHandler {
     }
 
     /**
-     * Creates the {@link ChannelWithConfig} for an channel that represents an attribute of an {@link Event}.}
+     * Creates the {@link ChannelWithConfig} for an channel that represents an attribute of an
+     * {@link org.openhab.binding.deutschebahn.internal.timetable.dto.Event}.}
      */
     private void createEventChannelConfiguration(EventType eventType, Channel channel) {
         final ChannelUID channelUid = channel.getUID();

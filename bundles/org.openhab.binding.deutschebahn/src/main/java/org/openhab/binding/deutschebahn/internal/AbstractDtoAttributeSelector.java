@@ -30,7 +30,7 @@ import org.openhab.core.types.State;
  * @param <STATE_TYPE> type of state.
  */
 @NonNullByDefault
-public abstract class AbstractDtoAttributeSelector<DTO_TYPE extends JaxbEntity, VALUE_TYPE, STATE_TYPE extends State> {
+public abstract class AbstractDtoAttributeSelector<DTO_TYPE extends JaxbEntity, @Nullable VALUE_TYPE, STATE_TYPE extends State> {
 
     private final Function<DTO_TYPE, @Nullable VALUE_TYPE> getter;
     private final BiConsumer<DTO_TYPE, VALUE_TYPE> setter;

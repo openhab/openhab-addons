@@ -49,7 +49,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
-        extends AbstractDtoAttributeSelector<Event, VALUE_TYPE, STATE_TYPE> {
+        extends AbstractDtoAttributeSelector<Event, @Nullable VALUE_TYPE, STATE_TYPE> {
 
     /**
      * Planned Path.
