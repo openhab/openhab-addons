@@ -369,6 +369,7 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
+                logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -385,6 +386,7 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
+                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -401,7 +403,8 @@ public class LinkyHandler extends BaseThingHandler {
         if (api != null) {
             try {
                 api.dispose();
-            } catch (LinkyException ignore) {
+            } catch (LinkyException e) {
+                logger.debug("disconnect: {}", e.getMessage());
             }
         }
     }
