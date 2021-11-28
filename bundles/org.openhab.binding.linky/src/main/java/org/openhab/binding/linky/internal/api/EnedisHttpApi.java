@@ -120,6 +120,7 @@ public class EnedisHttpApi {
             if (authData == null || authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
                     || authData.callbacks.get(1).input.isEmpty() || !config.username
                             .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
+                logger.debug("auth1 - invalid template for auth data: {}", result.getContentAsString());
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 
