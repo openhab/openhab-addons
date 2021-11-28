@@ -90,7 +90,7 @@ public class XmlRpcClient extends RpcClient<String> {
                 if ("init".equals(request.getMethodName())) { // no retries for "init" request
                     break;
                 }
-                logger.debug("XmlRpcMessage failed, sending message again {}/{}", rpcRetryCounter, MAX_RPC_RETRY);
+                logger.debug("XmlRpcMessage failed({}), sending message again {}/{}", ex.getMessage(), rpcRetryCounter, MAX_RPC_RETRY);
             }
         }
         throw reason;
