@@ -46,6 +46,34 @@ public class Scenes {
         public int colorId;
         public int iconId;
 
+        @Override
+        public boolean equals(@Nullable Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Scene)) {
+                return false;
+            }
+            Scene other = (Scene) o;
+
+            return this.id == other.id && this.name.equals(other.name) && this.roomId == other.roomId
+                    && this.order == other.order && this.colorId == other.colorId && this.iconId == other.iconId;
+        }
+
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + id;
+            result = prime * result + (name == null ? 0 : name.hashCode());
+            result = prime * result + roomId;
+            result = prime * result + order;
+            result = prime * result + colorId;
+            result = prime * result + iconId;
+
+            return result;
+        }
+
         public String getName() {
             return new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8);
         }

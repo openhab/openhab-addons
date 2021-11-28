@@ -92,6 +92,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
 
+    private Map<ChannelUID, Scene> sceneCache = new ConcurrentHashMap<ChannelUID, Scene>();
     private Map<ChannelUID, ScheduledEvent> scheduledEventCache = new ConcurrentHashMap<ChannelUID, ScheduledEvent>();
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -311,40 +312,55 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void updateSceneChannels(List<Scene> scenes) {
-        Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
-        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+        Map<ChannelUID, Channel> channelsToDelete = getUidChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
+        List<Channel> channelsToAdd = new ArrayList<Channel>();
+        Set<ChannelUID> updatedChannelUids = new HashSet<>();
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
-        boolean isChannelListChanged = false;
         for (Scene scene : scenes) {
             ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scene.id));
-            String channelId = channelUid.getId();
-            // remove existing scene channel from the map
-            if (idChannelMap.containsKey(channelId)) {
-                idChannelMap.remove(channelId);
-                logger.debug("Keeping channel for existing scene '{}'", scene.id);
-            } else {
-                // create a new scene channel
-                String description = translationProvider.getText("dynamic-channel.scene-activate.description",
-                        scene.getName());
-                Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
-                        .withType(sceneChannelTypeUID).withLabel(scene.getName()).withDescription(description).build();
-                allChannels.add(channel);
-                isChannelListChanged = true;
+            Scene cachedEntry = sceneCache.get(channelUid);
+            if (cachedEntry == null) {
                 logger.debug("Creating new channel for scene '{}'", scene.id);
+            } else if (scene.equals(cachedEntry)) {
+                logger.debug("Keeping channel for existing scene '{}'", scene.id);
+                channelsToDelete.remove(channelUid);
+                continue;
+            } else {
+                logger.debug("Updating channel for scene '{}'", scene.id);
+                updatedChannelUids.add(channelUid);
             }
+
+            String description = translationProvider.getText("dynamic-channel.scene-activate.description",
+                    scene.getName());
+            Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(sceneChannelTypeUID)
+                    .withLabel(scene.getName()).withDescription(description).build();
+            channelsToAdd.add(channel);
+            sceneCache.put(channelUid, scene);
         }
 
-        // remove any previously created channels that no longer exist
-        if (!idChannelMap.isEmpty()) {
-            logger.debug("Removing {} orphan scene channels", idChannelMap.size());
-            allChannels.removeAll(idChannelMap.values());
-            isChannelListChanged = true;
+        if (channelsToDelete.isEmpty() && channelsToAdd.isEmpty()) {
+            return;
         }
 
-        if (isChannelListChanged) {
-            updateThing(editThing().withChannels(allChannels).build());
+        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+
+        // Remove any previously created channels that no longer exist or are being replaced
+        if (!channelsToDelete.isEmpty()) {
+            logger.debug("Removing {} orphan scene channels", channelsToDelete.size() - updatedChannelUids.size());
+            allChannels.removeAll(channelsToDelete.values());
+            channelsToDelete.forEach((k, v) -> {
+                if (!updatedChannelUids.contains(k)) {
+                    scheduledEventCache.remove(k);
+                }
+            });
         }
+
+        if (!channelsToAdd.isEmpty()) {
+            allChannels.addAll(channelsToAdd);
+        }
+
+        updateThing(editThing().withChannels(allChannels).build());
     }
 
     private List<SceneCollection> pollSceneCollections()
@@ -433,12 +449,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
         List<Channel> channelsToAdd = new ArrayList<Channel>();
         Set<ChannelUID> updatedChannelUids = new HashSet<>();
-
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
             ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scheduledEvent.id));
-
             ScheduledEvent cachedEntry = scheduledEventCache.get(channelUid);
             if (cachedEntry == null) {
                 logger.debug("Creating new channel for scheduled event '{}'", scheduledEvent.id);
