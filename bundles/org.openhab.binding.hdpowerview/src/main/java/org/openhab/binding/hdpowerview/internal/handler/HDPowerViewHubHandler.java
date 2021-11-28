@@ -93,6 +93,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
 
     private Map<ChannelUID, Scene> sceneCache = new ConcurrentHashMap<ChannelUID, Scene>();
+    private Map<ChannelUID, SceneCollection> sceneCollectionCache = new ConcurrentHashMap<ChannelUID, SceneCollection>();
     private Map<ChannelUID, ScheduledEvent> scheduledEventCache = new ConcurrentHashMap<ChannelUID, ScheduledEvent>();
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -351,7 +352,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             allChannels.removeAll(channelsToDelete.values());
             channelsToDelete.forEach((k, v) -> {
                 if (!updatedChannelUids.contains(k)) {
-                    scheduledEventCache.remove(k);
+                    sceneCache.remove(k);
                 }
             });
         }
@@ -385,41 +386,58 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void updateSceneCollectionChannels(List<SceneCollection> sceneCollections) {
-        Map<String, Channel> idChannelMap = getIdChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
-        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+        Map<ChannelUID, Channel> channelsToDelete = getUidChannelMap(
+                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
+        List<Channel> channelsToAdd = new ArrayList<Channel>();
+        Set<ChannelUID> updatedChannelUids = new HashSet<>();
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
-        boolean isChannelListChanged = false;
         for (SceneCollection sceneCollection : sceneCollections) {
             ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(sceneCollection.id));
-            String channelId = channelUid.getId();
-            // remove existing scene collection channel from the map
-            if (idChannelMap.containsKey(channelId)) {
-                idChannelMap.remove(channelId);
-                logger.debug("Keeping channel for existing scene collection '{}'", sceneCollection.id);
-            } else {
-                // create a new scene collection channel
-                String description = translationProvider.getText("dynamic-channel.scene-group-activate.description",
-                        sceneCollection.getName());
-                Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
-                        .withType(sceneGroupChannelTypeUID).withLabel(sceneCollection.getName())
-                        .withDescription(description).build();
-                allChannels.add(channel);
-                isChannelListChanged = true;
+            SceneCollection cachedEntry = sceneCollectionCache.get(channelUid);
+            if (cachedEntry == null) {
                 logger.debug("Creating new channel for scene collection '{}'", sceneCollection.id);
+            } else if (sceneCollection.equals(cachedEntry)) {
+                logger.debug("Keeping channel for existing scene collection '{}'", sceneCollection.id);
+                channelsToDelete.remove(channelUid);
+                continue;
+            } else {
+                logger.debug("Updating channel for scene collection '{}'", sceneCollection.id);
+                updatedChannelUids.add(channelUid);
             }
+
+            String description = translationProvider.getText("dynamic-channel.scene-group-activate.description",
+                    sceneCollection.getName());
+            Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
+                    .withType(sceneGroupChannelTypeUID).withLabel(sceneCollection.getName())
+                    .withDescription(description).build();
+            channelsToAdd.add(channel);
+            sceneCollectionCache.put(channelUid, sceneCollection);
         }
 
-        // remove any previously created channels that no longer exist
-        if (!idChannelMap.isEmpty()) {
-            logger.debug("Removing {} orphan scene collection channels", idChannelMap.size());
-            allChannels.removeAll(idChannelMap.values());
-            isChannelListChanged = true;
+        if (channelsToDelete.isEmpty() && channelsToAdd.isEmpty()) {
+            return;
         }
 
-        if (isChannelListChanged) {
-            updateThing(editThing().withChannels(allChannels).build());
+        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+
+        // Remove any previously created channels that no longer exist or are being replaced
+        if (!channelsToDelete.isEmpty()) {
+            logger.debug("Removing {} orphan scene collection channels",
+                    channelsToDelete.size() - updatedChannelUids.size());
+            allChannels.removeAll(channelsToDelete.values());
+            channelsToDelete.forEach((k, v) -> {
+                if (!updatedChannelUids.contains(k)) {
+                    sceneCollectionCache.remove(k);
+                }
+            });
         }
+
+        if (!channelsToAdd.isEmpty()) {
+            allChannels.addAll(channelsToAdd);
+        }
+
+        updateThing(editThing().withChannels(allChannels).build());
     }
 
     private List<ScheduledEvent> pollScheduledEvents()
@@ -620,14 +638,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         Map<ChannelUID, Channel> ret = new HashMap<>();
         for (Channel channel : getThing().getChannelsOfGroup(channelGroupId)) {
             ret.put(channel.getUID(), channel);
-        }
-        return ret;
-    }
-
-    private Map<String, Channel> getIdChannelMap(String channelGroupId) {
-        Map<String, Channel> ret = new HashMap<>();
-        for (Channel channel : getThing().getChannelsOfGroup(channelGroupId)) {
-            ret.put(channel.getUID().getId(), channel);
         }
         return ret;
     }
