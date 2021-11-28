@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- TEST-DEVICE (Universal) -->
+	<thing-type id="Test_Device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Tapo Universal TestDevice</label>
+		<description>For testing pruposes! Response is written down as info in openhab-log</description>
+		<channel-groups>
+			<channel-group id="actuator" typeId="colorBulb"/>
+			<channel-group id="device" typeId="deviceState"/>
+			<channel-group id="effect" typeId="lightEffect"/>
+			<channel-group id="debug" typeId="commandDebug"/>
+		</channel-groups>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:tapo:device"/>
+	</thing-type>
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+
+	<!-- CHANNEL GROUP TYPES -->
+	<!--Device-Statuss Channel Type -->
+	<channel-group-type id="commandDebug">
+		<label>Device Communication Debug</label>
+		<description>Device resoponses and command debugging</description>
+		<channels>
+			<channel id="deviceResponse" typeId="deviceResponse"/>
+			<channel id="deviceCommand" typeId="deviceCommand"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- ############################### CHANNELS ############################### -->
+
+	<!-- OuputState Channel Type -->
+	<channel-type id="deviceResponse">
+		<item-type>String</item-type>
+		<label>Device Response</label>
+		<description>DeviceResponse</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- OuputState Channel Type -->
+	<channel-type id="deviceCommand">
+		<item-type>String</item-type>
+		<label>Device Command</label>
+		<description>command send to device. use: 'command':'value'</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+</thing:thing-descriptions>
