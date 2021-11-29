@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
@@ -125,17 +126,21 @@ public class Conversions {
 
     public static JsonElement getJsonElement(String element, JsonElement responseValue)
             throws ClassCastException, IllegalStateException {
-        if (responseValue.isJsonPrimitive()) {
-            JsonElement jsonElement = JsonParser.parseString(responseValue.getAsString());
-            if (jsonElement.isJsonObject()) {
-                JsonObject value = jsonElement.getAsJsonObject();
-                if (value.has(element)) {
-                    return value.get(element);
+        try {
+            if (responseValue.isJsonPrimitive() || responseValue.isJsonObject()) {
+                JsonElement jsonElement = responseValue.isJsonObject() ? responseValue
+                        : JsonParser.parseString(responseValue.getAsString());
+                if (jsonElement.isJsonObject()) {
+                    JsonObject value = jsonElement.getAsJsonObject();
+                    if (value.has(element)) {
+                        return value.get(element);
+                    }
                 }
             }
-        } else {
-            LOGGER.debug("JsonElement '{}' not found in '{}'", element, responseValue);
+        } catch (JsonParseException e) {
+            // ignore
         }
+        LOGGER.debug("JsonElement '{}' not found in '{}'", element, responseValue);
         return responseValue;
     }
 
@@ -143,7 +148,11 @@ public class Conversions {
             @Nullable Map<String, Object> deviceVariables) {
         try {
             if (transformation.toUpperCase().startsWith("GETJSONELEMENT")) {
-                return getJsonElement(transformation.length() > 15 ? transformation.substring(15) : "", value);
+                if (transformation.length() > 15) {
+                    return getJsonElement(transformation.substring(15), value);
+                } else {
+                    LOGGER.info("Transformation {} missing element. Returning '{}'", transformation, value.toString());
+                }
             }
             switch (transformation.toUpperCase()) {
                 case "YEELIGHTSCENEID":
