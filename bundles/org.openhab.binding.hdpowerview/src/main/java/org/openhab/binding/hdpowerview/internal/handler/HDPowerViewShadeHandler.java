@@ -153,9 +153,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     /**
-     * Update the state of the channels based on the ShadeData provided
+     * Update the state of the channels based on the ShadeData provided.
      *
-     * @param shadeData the ShadeData to be used; may be null
+     * @param shadeData the ShadeData to be used; may be null.
      */
     protected void onReceiveUpdate(@Nullable ShadeData shadeData) {
         if (shadeData != null) {
@@ -173,10 +173,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     /**
-     * Update the Thing's properties based on the contents of the provided ShadeData
+     * Update the Thing's properties based on the contents of the provided ShadeData.
      *
      * Checks the database of known Shade 'types' and 'capabilities' and logs any unknown or incompatible values, so
-     * that developers can be kept updated about the potential need to add support for that type resp. capability
+     * that developers can be kept updated about the potential need to add support for that type resp. capabilities.
      *
      * @param shadeData
      */
@@ -218,11 +218,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     /**
-     * After a hard refresh, update the Thing's properties based on the contents of the provided ShadeData
+     * After a hard refresh, update the Thing's properties based on the contents of the provided ShadeData.
      *
      * Checks if the secondary support capabilities in the database of known Shade 'types' and 'capabilities' matches
      * that implied by the ShadeData and logs any incompatible values, so that developers can be kept updated about the
-     * potential need to add support for that type resp. capability
+     * potential need to add support for that type resp. capabilities.
      *
      * @param shadeData
      */
