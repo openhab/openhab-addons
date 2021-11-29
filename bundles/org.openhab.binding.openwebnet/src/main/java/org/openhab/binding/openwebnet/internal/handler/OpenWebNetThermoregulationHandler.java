@@ -61,8 +61,18 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
     private Thermoregulation.Function currentFunction = Thermoregulation.Function.GENERIC;
 
+    private boolean isStandAlone = false;
+
     public OpenWebNetThermoregulationHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        Object standAloneConfig = getConfig().get(OpenWebNetBindingConstants.CONFIG_PROPERTY_STANDALONE);
+
+        isStandAlone = Boolean.parseBoolean(standAloneConfig.toString());
     }
 
     @Override
@@ -148,7 +158,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                     newTemp = ((DecimalType) command).doubleValue();
                 }
                 try {
-                    send(Thermoregulation.requestWriteSetpointTemperature(w.value(), newTemp, currentFunction));
+                    send(Thermoregulation.requestWriteSetpointTemperature(w.value(), newTemp, currentFunction,
+                            isStandAlone));
                 } catch (MalformedFrameException | OWNException e) {
                     logger.warn("handleSetpoint() {}", e.getMessage());
                 }
@@ -164,7 +175,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             if (w != null) {
                 try {
                     Thermoregulation.OperationMode mode = Thermoregulation.OperationMode.valueOf(command.toString());
-                    send(Thermoregulation.requestWriteMode(w.value(), mode, currentFunction, currentSetPointTemp));
+                    send(Thermoregulation.requestWriteMode(w.value(), mode, currentFunction, currentSetPointTemp,
+                            isStandAlone));
                 } catch (OWNException e) {
                     logger.warn("handleMode() {}", e.getMessage());
                 } catch (IllegalArgumentException e) {
