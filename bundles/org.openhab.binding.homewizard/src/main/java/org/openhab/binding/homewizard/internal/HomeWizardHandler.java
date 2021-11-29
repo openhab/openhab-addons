@@ -29,6 +29,8 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -43,6 +45,7 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class HomeWizardHandler extends BaseThingHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(HomeWizardHandler.class);
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
@@ -171,30 +174,41 @@ public class HomeWizardHandler extends BaseThingHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_POWER_L3,
                 new QuantityType<>(payload.getActivePowerL3W(), Units.WATT));
 
-        updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
-                new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
-
-        // 210119164000
+        // If no data from the gas meter is present, the json value will be null, which means gson ignores it,
+        // leaving the value in the payload object at 0.
         long dtv = payload.getGasTimestamp();
-        long seconds = dtv % 100;
+        if (dtv > 0) {
+            updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
+                    new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
 
-        dtv /= 100;
-        long minutes = dtv % 100;
+            // 210119164000
+            long seconds = dtv % 100;
 
-        dtv /= 100;
-        long hours = dtv % 100;
+            dtv /= 100;
+            long minutes = dtv % 100;
 
-        dtv /= 100;
-        long day = dtv % 100;
+            dtv /= 100;
+            long hours = dtv % 100;
 
-        dtv /= 100;
-        long month = dtv % 100;
+            dtv /= 100;
+            long day = dtv % 100;
 
-        dtv /= 100;
-        long year = dtv + 2000; // Where (When?) have I seen this before?
+            dtv /= 100;
+            long month = dtv % 100;
 
-        DateTimeType dtt = DateTimeType
-                .valueOf(String.format("%04d-%02d-%02dT%02d:%02d:%02d", year, month, day, hours, minutes, seconds));
-        updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, dtt);
+            dtv /= 100;
+            long year = dtv + 2000;
+
+            String dateString = String.format("%04d-%02d-%02dT%02d:%02d:%02d", year, month, day, hours, minutes,
+                    seconds);
+            try {
+                DateTimeType dtt = DateTimeType.valueOf(dateString);
+                updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, dtt);
+                updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
+                        new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
+            } catch (java.time.format.DateTimeParseException e) {
+                logger.warn("Unable to parse Gas timestamp {} / {}", payload.getGasTimestamp(), dateString);
+            }
+        }
     }
 }

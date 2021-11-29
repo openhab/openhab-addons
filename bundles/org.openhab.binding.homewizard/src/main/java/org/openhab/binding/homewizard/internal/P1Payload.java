@@ -43,7 +43,7 @@ public class P1Payload {
     private double activePowerL2W;
     private double activePowerL3W;
     private double totalGasM3;
-    private long gasTimestamp;
+    private long gasTimestamp = 0;
 
     /**
      * Getter for the smart meter version
