@@ -96,16 +96,16 @@ openhab.Exec = Java.type('org.openhab.core.model.script.actions.Exec');
 let Duration = Java.type('java.time.Duration');
 
 // Execute command line.
-openhab.Exec.executeCommandLine('echo', 'Hello Wordl!');
+openhab.Exec.executeCommandLine('echo', 'Hello World!');
 
 // Execute command line with timeout.
-openhab.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello Wordl!');
+openhab.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello World!');
 
 // Get response from command line.
-let response = openhab.Exec.executeCommandLine('echo', 'Hello Wordl!');
+let response = openhab.Exec.executeCommandLine('echo', 'Hello World!');
 
 // Get response from command line with timeout.
-response = openhab.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello Wordl!');
+response = openhab.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello World!');
 ```
 
 ### HTTP Actions
