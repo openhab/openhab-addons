@@ -401,10 +401,10 @@ public class HDPowerViewJUnitTests {
         assertTrue(db.isTypeInDatabase(shadeData.type));
         assertTrue(db.isCapabilitiesInDatabase(capabilities.intValue()));
 
-        assertTrue(db.getType(shadeData.type).capabilitiesEqual(capabilities.intValue()));
+        assertEquals(db.getType(shadeData.type).getCapabilities(), capabilities.intValue());
 
         assertTrue(db.getCapabilities(capabilities.intValue()).supportsSecondary());
-        assertFalse(db.getType(shadeData.type).capabilitiesEqual(capabilities.intValue() + 1));
+        assertNotEquals(db.getType(shadeData.type).getCapabilities(), capabilities.intValue() + 1);
     }
 
     /**
@@ -417,18 +417,18 @@ public class HDPowerViewJUnitTests {
         assertTrue(db.isTypeInDatabase(4));
         assertTrue(db.isCapabilitiesInDatabase(0));
 
-        assertTrue(db.getCapabilities(6).isPrimaryInverted());
+        assertTrue(db.getCapabilities(6).isPrimaryStateInverted());
         assertTrue(db.getCapabilities(7).supportsSecondary());
 
-        assertTrue(db.getType(4).capabilitiesEqual(0));
-        assertTrue(db.getType(-1).capabilitiesEqual(-1));
+        assertEquals(db.getType(4).getCapabilities(), 0);
+        assertEquals(db.getType(-1).getCapabilities(), -1);
 
         assertFalse(db.isTypeInDatabase(99));
         assertFalse(db.isCapabilitiesInDatabase(99));
 
-        assertFalse(db.getCapabilities(0).isPrimaryInverted());
-        assertFalse(db.getCapabilities(-1).isPrimaryInverted());
-        assertFalse(db.getCapabilities(99).isPrimaryInverted());
+        assertFalse(db.getCapabilities(0).isPrimaryStateInverted());
+        assertFalse(db.getCapabilities(-1).isPrimaryStateInverted());
+        assertFalse(db.getCapabilities(99).isPrimaryStateInverted());
 
         assertFalse(db.getCapabilities(0).supportsSecondary());
         assertFalse(db.getCapabilities(-1).supportsSecondary());

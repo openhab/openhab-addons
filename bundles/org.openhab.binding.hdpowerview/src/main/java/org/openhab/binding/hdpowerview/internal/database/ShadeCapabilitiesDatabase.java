@@ -35,15 +35,15 @@ public class ShadeCapabilitiesDatabase {
      */
     private static final Capabilities[] CAPABILITIES_DATABASE = {
         // @formatter:off
-            new Capabilities(0).primary().vane().text("Bottom Up"),
+            new Capabilities(0).primary()       .text("Bottom Up"),
             new Capabilities(1).primary().vane().text("Bottom Up Tilt 90°"),
             new Capabilities(2).primary().vane().text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary().vane().text("Vertical"),
+            new Capabilities(3).primary()       .text("Vertical"),
             new Capabilities(4).primary().vane().text("Vertical Tilt 180°"),
             new Capabilities(5)          .vane().text("Tilt Only 180°"),
-            new Capabilities(6).primary()       .text("Top Down")                 .invertPrimary(),
+            new Capabilities(6).primary()       .text("Top Down")                 .primaryStateInverted(),
             new Capabilities(7).primary()       .text("Top Down Bottom Up")       .secondary(),
-            new Capabilities(8).primary().vane().text("Duolite Lift"),
+            new Capabilities(8).primary()       .text("Duolite Lift"),
             new Capabilities(9).primary().vane().text("Duolite Lift and Tilt 90°"),
         // @formatter:on
             new Capabilities() };
@@ -118,13 +118,12 @@ public class ShadeCapabilitiesDatabase {
         }
 
         /**
-         * Check if the passed shade 'capabilities' are the same as the classes own 'capabilities'.
+         * Get shade types's 'capabilities'.
          *
-         * @param capabilities the 'capabilities' parameter to be checked
-         * @return true if the passed 'capabilities' equals the classes own 'capabilities'
+         * @return 'capabilities'.
          */
-        public boolean capabilitiesEqual(int capabilities) {
-            return (this.capabilities == capabilities);
+        public int getCapabilities() {
+            return capabilities;
         }
     }
 
@@ -135,9 +134,9 @@ public class ShadeCapabilitiesDatabase {
      */
     public static class Capabilities extends Base {
         private boolean supportsPrimary;
-        private boolean supportsVane;
+        private boolean supportsVanes;
         private boolean supportsSecondary;
-        private boolean primaryInverted;
+        private boolean primaryStateInverted;
 
         protected Capabilities() {
         }
@@ -157,7 +156,7 @@ public class ShadeCapabilitiesDatabase {
         }
 
         protected Capabilities vane() {
-            supportsVane = true;
+            supportsVanes = true;
             return this;
         }
 
@@ -166,8 +165,8 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
-        protected Capabilities invertPrimary() {
-            primaryInverted = true;
+        protected Capabilities primaryStateInverted() {
+            primaryStateInverted = true;
             return this;
         }
 
@@ -185,8 +184,8 @@ public class ShadeCapabilitiesDatabase {
          *
          * @return true if it supports a vane.
          */
-        public boolean supportsVane() {
-            return supportsVane;
+        public boolean supportsVanes() {
+            return supportsVanes;
         }
 
         /**
@@ -203,8 +202,8 @@ public class ShadeCapabilitiesDatabase {
          *
          * @return true if the primary shade is inverted.
          */
-        public boolean isPrimaryInverted() {
-            return primaryInverted;
+        public boolean isPrimaryStateInverted() {
+            return primaryStateInverted;
         }
     }
 
@@ -295,23 +294,24 @@ public class ShadeCapabilitiesDatabase {
      * @param type
      * @param capabilities
      */
-    public void logTypeCapabilitiesNotEqual(int type, int capabilities) {
+    public void logCapabilitiesMismatch(int type, int capabilities) {
         logger.warn("The 'capabilities:{}' reported by shade 'type:{}' don't match the database!{}", capabilities, type,
                 REQUEST_DEVELOPERS_TO_UPDATE);
     }
 
     /**
-     * Log a message indicating that secondary support observed via JSON pay-load does not match the value expected from
-     * the 'type' and 'capabilities'.
+     * Log a message indicating that a shade's secondary/vanes support, as observed via its actual JSON pay-load, does
+     * not match the expected value as declared in its 'type' and 'capabilities'.
      *
+     * @param propertyKey
      * @param type
      * @param capabilities
-     * @param jsonSupportsSecondary
+     * @param propertyValue
      */
-    public void logSecondarySupportNotEqual(int type, int capabilities, boolean jsonSupportsSecondary) {
+    public void logPropertyMismatch(String propertyKey, int type, int capabilities, boolean propertyValue) {
         logger.warn(
-                "The 'jsonSupportsSecondary:{}' property reported by shade 'type:{}' is different "
-                        + "than described by its 'capabilities:{}' in the database!{}",
-                jsonSupportsSecondary, type, capabilities, REQUEST_DEVELOPERS_TO_UPDATE);
+                "The '{}:{}' property actually reported by shade 'type:{}' is different "
+                        + "than expected from its 'capabilities:{}' in the database!{}",
+                propertyKey, propertyValue, type, capabilities, REQUEST_DEVELOPERS_TO_UPDATE);
     }
 }
