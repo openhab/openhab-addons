@@ -124,8 +124,7 @@ public class Conversions {
         }
     }
 
-    public static JsonElement getJsonElement(String element, JsonElement responseValue)
-            throws ClassCastException, IllegalStateException {
+    public static JsonElement getJsonElement(String element, JsonElement responseValue) {
         try {
             if (responseValue.isJsonPrimitive() || responseValue.isJsonObject()) {
                 JsonElement jsonElement = responseValue.isJsonObject() ? responseValue
