@@ -98,7 +98,11 @@
     <module>org.openhab.binding.amplipi</module>
         
     <module>org.openhab.binding.androiddebugbridge</module>
+<<<<<<< HEAD
         
+=======
+    <module>org.openhab.binding.anel</module>
+>>>>>>> 0adacaf596 ([anel] Initial contribution of the Anel NET-PwrCtrl binding for OH3 (#10952))
     <module>org.openhab.binding.astro</module>
         
     <module>org.openhab.binding.atlona</module>
