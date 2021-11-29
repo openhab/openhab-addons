@@ -121,7 +121,7 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable String getResponse(String url) {
         try {
-            logger.debug("SNCF Api request: URL = '{}'", url);
+            logger.debug("SNCF Api request: url = '{}'", url);
             ContentResponse contentResponse = httpClient.newRequest(url).method(GET).timeout(10, TimeUnit.SECONDS)
                     .header(HttpHeader.AUTHORIZATION, apiId).send();
             int httpStatus = contentResponse.getStatus();
@@ -131,33 +131,32 @@ public class SncfBridgeHandler extends BaseBridgeHandler {
                 return content;
             }
             logger.debug("SNCF Api server responded with status code {}: {}", httpStatus, content);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException e) {
             logger.debug("Execution occured : {}", e.getMessage(), e);
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            logger.debug("Execution interrupted : {}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
         }
         return null;
     }
 
     public @Nullable List<PlaceNearby> discoverNearby(PointType location, int distance) throws SncfException {
-        String URL = String.format(Locale.US,
-                "%s/coord/%.5f;%.5f/places_nearby?distance=%d&type[]=stop_point&count=100", SERVICE_URL,
-                location.getLongitude().floatValue(), location.getLatitude().floatValue(), distance);
-        PlacesNearby places = getResponseFromCache(URL, PlacesNearby.class);
+        String url = String.format(Locale.US, "%scoord/%.5f;%.5f/places_nearby?distance=%d&type[]=stop_point&count=100",
+                SERVICE_URL, location.getLongitude().floatValue(), location.getLatitude().floatValue(), distance);
+        PlacesNearby places = getResponseFromCache(url, PlacesNearby.class);
         return places.placesNearby;
     }
 
     public Optional<StopPoint> stopPointDetail(String stopPointId) throws SncfException {
-        String URL = String.format("%s/stop_points/%s", SERVICE_URL, stopPointId);
-        List<StopPoint> points = getResponseFromCache(URL, StopPoints.class).stopPoints;
+        String url = String.format("%sstop_points/%s", SERVICE_URL, stopPointId);
+        List<StopPoint> points = getResponseFromCache(url, StopPoints.class).stopPoints;
         return points != null && !points.isEmpty() ? Optional.ofNullable(points.get(0)) : Optional.empty();
     }
 
     public Optional<Passage> getNextPassage(String stopPointId, String expected) throws SncfException {
-        String URL = String.format("%s/stop_points/%s/%s?disable_geojson=true&count=1", SERVICE_URL, stopPointId,
+        String url = String.format("%sstop_points/%s/%s?disable_geojson=true&count=1", SERVICE_URL, stopPointId,
                 expected);
-        List<Passage> passages = getResponseFromCache(URL, Passages.class).passages;
+        List<Passage> passages = getResponseFromCache(url, Passages.class).passages;
         return passages != null && !passages.isEmpty() ? Optional.ofNullable(passages.get(0)) : Optional.empty();
     }
 

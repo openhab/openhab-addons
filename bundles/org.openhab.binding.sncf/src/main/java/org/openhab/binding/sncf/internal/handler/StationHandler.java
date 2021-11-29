@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sncf.internal.SncfException;
 import org.openhab.binding.sncf.internal.dto.Passage;
+import org.openhab.binding.sncf.internal.dto.StopDateTime;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PointType;
@@ -102,7 +103,7 @@ public class StationHandler extends BaseThingHandler {
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
         super.bridgeStatusChanged(bridgeStatusInfo);
         if (thing.getStatus() == ThingStatus.ONLINE) {
-            scheduleRefresh(ZonedDateTime.now().plusSeconds(2));
+            initialize();
         }
     }
 
@@ -137,50 +138,50 @@ public class StationHandler extends BaseThingHandler {
         // Ensure we'll try to refresh in one minute if no valid timestamp is provided
         long wishedDelay = ZonedDateTime.now().until(when != null ? when : ZonedDateTime.now().plusMinutes(1),
                 ChronoUnit.SECONDS);
+        wishedDelay = wishedDelay < 0 ? 60 : wishedDelay;
+        logger.debug("wishedDelay is {} seconds", wishedDelay);
         ScheduledFuture<?> job = refreshJob;
         if (job != null) {
             long existingDelay = job.getDelay(TimeUnit.SECONDS);
-            if (existingDelay < wishedDelay) {
+            logger.debug("existingDelay is {} seconds", existingDelay);
+            if (existingDelay < wishedDelay && existingDelay > 0) {
+                logger.debug("Do nothing, existingDelay earlier than wishedDelay");
                 return;
             }
             freeRefreshJob();
         }
-        refreshJob = scheduler.schedule(this::queryApiAndUpdateChannels, wishedDelay, TimeUnit.SECONDS);
+        logger.debug("Scheduling update in {} seconds.", wishedDelay);
+        refreshJob = scheduler.schedule(() -> updateThing(), wishedDelay, TimeUnit.SECONDS);
     }
 
-    private void queryApiAndUpdateChannels() {
+    private void updateThing() {
         SncfBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
-            try {
-                bridgeHandler.getNextPassage(stationId, GROUP_DEPARTURE).ifPresentOrElse(departure -> {
-                    getThing().getChannels().stream().map(Channel::getUID).filter(
-                            channelUID -> isLinked(channelUID) && GROUP_DEPARTURE.equals(channelUID.getGroupId()))
-                            .forEach(channelUID -> {
-                                State state = getValue(channelUID.getIdWithoutGroup(), departure, GROUP_DEPARTURE);
-                                updateState(channelUID, state);
-                            });
-                    scheduleRefresh(fromDTO(departure.stopDateTime.departureDateTime));
-                }, () -> {
-                    logger.debug("No {} available", GROUP_DEPARTURE);
-                    scheduleRefresh(ZonedDateTime.now().plusMinutes(5));
-                });
-                bridgeHandler.getNextPassage(stationId, GROUP_ARRIVAL).ifPresentOrElse(arrival -> {
-                    getThing().getChannels().stream().map(Channel::getUID)
-                            .filter(channelUID -> isLinked(channelUID) && GROUP_ARRIVAL.equals(channelUID.getGroupId()))
-                            .forEach(channelUID -> {
-                                State state = getValue(channelUID.getIdWithoutGroup(), arrival, GROUP_ARRIVAL);
-                                updateState(channelUID, state);
-                            });
-                    scheduleRefresh(fromDTO(arrival.stopDateTime.arrivalDateTime));
-                }, () -> {
-                    logger.debug("No {} available", GROUP_ARRIVAL);
-                    scheduleRefresh(ZonedDateTime.now().plusMinutes(5));
-                });
-                updateStatus(ThingStatus.ONLINE);
-            } catch (SncfException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                freeRefreshJob();
-            }
+            scheduler.submit(() -> updatePassage(bridgeHandler, GROUP_ARRIVAL));
+            scheduler.submit(() -> updatePassage(bridgeHandler, GROUP_DEPARTURE));
+        }
+    }
+
+    private void updatePassage(SncfBridgeHandler bridgeHandler, String movement) {
+        try {
+            bridgeHandler.getNextPassage(stationId, movement).ifPresentOrElse(passage -> {
+                getThing().getChannels().stream().map(Channel::getUID)
+                        .filter(channelUID -> isLinked(channelUID) && movement.equals(channelUID.getGroupId()))
+                        .forEach(channelUID -> {
+                            State state = getValue(channelUID.getIdWithoutGroup(), passage, movement);
+                            updateState(channelUID, state);
+                        });
+                StopDateTime stopTime = passage.stopDateTime;
+                scheduleRefresh(fromDTO(
+                        GROUP_DEPARTURE.equals(movement) ? stopTime.departureDateTime : stopTime.arrivalDateTime));
+            }, () -> {
+                logger.debug("No {} available", movement);
+                scheduleRefresh(ZonedDateTime.now().plusMinutes(5));
+            });
+            updateStatus(ThingStatus.ONLINE);
+        } catch (SncfException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            freeRefreshJob();
         }
     }
 
@@ -233,7 +234,7 @@ public class StationHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            queryApiAndUpdateChannels();
+            updateThing();
         }
     }
 

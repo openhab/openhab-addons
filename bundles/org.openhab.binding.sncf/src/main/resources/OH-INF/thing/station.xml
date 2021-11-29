@@ -53,13 +53,13 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="name">
+	<channel-type id="name" advanced="true">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="network">
+	<channel-type id="network" advanced="true">
 		<item-type>String</item-type>
 		<label>Network</label>
 		<state readOnly="true"></state>
@@ -74,7 +74,8 @@
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
-		<state readOnly="true"/>
+		<category>time</category>
+		<state readOnly="true" pattern="%1$tR"/>
 	</channel-type>
 
 </thing:thing-descriptions>

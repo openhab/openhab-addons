@@ -53,7 +53,7 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
 
     @Activate
     public SncfDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
+        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, false);
     }
 
     @Override

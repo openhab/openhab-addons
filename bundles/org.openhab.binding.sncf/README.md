@@ -1,12 +1,14 @@
 # SNCF Binding
 
-The SNCF binding provides real-time data for each train, bus, tramway... station in France.
+The SNCF binding provides real-time data(*) for each train, bus, tramway... station in France.
 This is based on live API provided by DIGITALSNCF.
 
 Get your API key on [DIGITALSNCF web site](https://www.digital.sncf.com/startup/api/token-developpeur)
 
 Note : SNCF Api is based on the open [API Navitia](https://doc.navitia.io/#getting-started). 
 This binding uses a very small subset of it, restricted to its primary purpose.
+
+(*) According to DIGITALSNCF Transilien may only be available for schedule, maybe not real-time.
 
 ## Supported Things
 
