@@ -274,8 +274,57 @@
 				},
 				"refresh": true,
 				"actions": []
+			},
+			{
+				"property": "",
+				"friendlyName": "BT Gateway",
+				"channel": "bt-gw",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": false,
+					"options": [
+						{
+							"value": "disable",
+							"label": "Disable"
+						},
+						{
+							"value": "enable",
+							"label": "Enable"
+						}
+					]
+				},
+				"refresh": true,
+				"customRefreshCommand": "bt_gateway_status",
+				"transformation": "getJsonElement-gateway_status",
+				"actions": [
+					{
+						"command": "bt_gateway_enable",
+						"parameterType": "EMPTY",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "enable"
+								}
+							]
+						}
+					},
+					{
+						"command": "bt_gateway_disable",
+						"parameterType": "EMPTY",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "disable"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"disable\"\u003d\"Disable\",\"enable\"\u003d\"Enable\"]`"
 			}
 		],
-		"experimental": true
+		"experimental": false
 	}
 }
