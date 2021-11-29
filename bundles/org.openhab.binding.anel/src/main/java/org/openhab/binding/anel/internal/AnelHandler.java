@@ -127,13 +127,9 @@ public class AnelHandler extends BaseThingHandler {
             // schedule refresher task to continuously check for device state
             periodicRefreshTask = scheduler.scheduleWithFixedDelay(this::periodicRefresh, //
                     0, IAnelConstants.REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
-
         } catch (InterruptedException e) {
-
             // OH shutdown - don't log anything, Framework will call dispose()
-
         } catch (Exception e) {
-
             logger.debug("Connection to '{}' failed", config, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Connection to '" + config
                     + "' failed unexpectedly with " + e.getClass().getSimpleName() + ": " + e.getMessage());
@@ -148,7 +144,6 @@ public class AnelHandler extends BaseThingHandler {
          */
         final AnelUdpConnector udpConnector2 = udpConnector;
         if (udpConnector2 != null && udpConnector2.isConnected()) {
-
             /*
              * Check whether or not the device sends a response at all. If not, after some unanswered refresh requests,
              * we should change the thing status to COMM_ERROR. The refresh task should remain active so that the device
@@ -156,7 +151,6 @@ public class AnelHandler extends BaseThingHandler {
              */
             if (refreshRequestWithoutResponse > IAnelConstants.UNANSWERED_REFRESH_REQUESTS_TO_SET_THING_OFFLINE
                     && getThing().getStatus() == ThingStatus.ONLINE) {
-
                 final String msg = "Setting thing offline because it did not respond to the last "
                         + IAnelConstants.UNANSWERED_REFRESH_REQUESTS_TO_SET_THING_OFFLINE + " status requests: "
                         + config;
@@ -168,9 +162,7 @@ public class AnelHandler extends BaseThingHandler {
 
                 udpConnector2.send(IAnelConstants.BROADCAST_DISCOVERY_MSG);
                 sendingFailures = 0;
-
             } catch (Exception e) {
-
                 handleSendException(e);
             }
         }
@@ -180,7 +172,6 @@ public class AnelHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         final AnelUdpConnector udpConnector2 = udpConnector;
         if (udpConnector2 == null || !udpConnector2.isConnected() || getThing().getStatus() != ThingStatus.ONLINE) {
-
             // don't log initial refresh commands because they may occur before thing is online
             if (!(command instanceof RefreshType)) {
                 logger.debug("Cannot handle command '{}' for channel '{}' because thing ({}) is not connected: {}", //
@@ -191,32 +182,23 @@ public class AnelHandler extends BaseThingHandler {
 
         String anelCommand = null;
         if (command instanceof RefreshType) {
-
             final State update = stateUpdater.getChannelUpdate(channelUID.getId(), state);
             if (update != null) {
-
                 updateState(channelUID, update);
-
             } else if (!refreshRequested) {
-
                 // send broadcast request for refreshing the state; remember it to avoid multiple simultaneous requests
                 refreshRequested = true;
                 anelCommand = IAnelConstants.BROADCAST_DISCOVERY_MSG;
-
             } else {
-
                 logger.debug(
                         "Channel {} received command {} which is ignored because another channel already requested the same command",
                         channelUID, command);
             }
         } else if (command instanceof OnOffType) {
-
             final State lockedState;
             synchronized (this) { // lock needed to update the state if needed
-
                 lockedState = commandHandler.getLockedState(state, channelUID.getId());
                 if (lockedState == null) {
-
                     // command only possible if state is not locked
                     anelCommand = commandHandler.toAnelCommandAndUnsetState(state, channelUID.getId(), command,
                             getAuthentication());
@@ -228,7 +210,6 @@ public class AnelHandler extends BaseThingHandler {
                         channelUID, command, lockedState);
 
                 updateState(channelUID, lockedState);
-
             } else if (anelCommand == null) {
                 logger.warn(
                         "Channel {} received command {} which is (currently) not supported; please check channel configuration.",
@@ -244,9 +225,7 @@ public class AnelHandler extends BaseThingHandler {
             try {
                 udpConnector2.send(anelCommand);
                 sendingFailures = 0;
-
             } catch (Exception e) {
-
                 handleSendException(e);
             }
         }
@@ -254,15 +233,11 @@ public class AnelHandler extends BaseThingHandler {
 
     private void handleSendException(Exception e) {
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-
             if (sendingFailures++ == IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
-
                 final String msg = "Setting thing offline because binding failed to send " + sendingFailures
                         + " messages to it: " + config;
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-
             } else if (sendingFailures < IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
-
                 logger.warn("Failed to send message to: {}", config, e);
             }
         } // else: ignore exception for offline things
@@ -310,18 +285,13 @@ public class AnelHandler extends BaseThingHandler {
 
                 updates.forEach(this::updateState);
             }
-
         } catch (Exception e) {
-
             if (getThing().getStatus() == ThingStatus.ONLINE) {
-
                 if (updateStateFailures++ == IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
                     final String msg = "Setting thing offline because status updated failed " + updateStateFailures
                             + " times in a row for: " + config;
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-
                 } else if (updateStateFailures < IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
-
                     logger.warn("Status update failed for: {}", config, e);
                 }
             } // else: ignore exception for offline things

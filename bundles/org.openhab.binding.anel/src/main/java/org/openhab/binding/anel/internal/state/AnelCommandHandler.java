@@ -32,7 +32,6 @@ public class AnelCommandHandler {
     private final Logger logger = LoggerFactory.getLogger(AnelCommandHandler.class);
 
     public @Nullable State getLockedState(@Nullable AnelState state, String channelId) {
-
         if (IAnelConstants.CHANNEL_RELAY_STATE.contains(channelId)) {
             if (state == null) {
                 return null; // assume unlocked
@@ -69,22 +68,17 @@ public class AnelCommandHandler {
             if (ioState == null) {
                 return null; // no state information available
             }
-
             return OnOffType.from(ioState.booleanValue());
         }
-
         return null; // all other channels are read-only!
     }
 
     public @Nullable String toAnelCommandAndUnsetState(@Nullable AnelState state, String channelId, Command command,
             String authentication) {
-
         if (!(command instanceof OnOffType)) {
-
             // only relay states and io states can be changed, all other channels are read-only
             logger.warn("Anel binding only support ON/OFF and Refresh commands, not {}: {}",
                     command.getClass().getSimpleName(), command);
-
         } else if (IAnelConstants.CHANNEL_RELAY_STATE.contains(channelId)) {
             final int index = IAnelConstants.getIndexFromChannel(channelId);
 
@@ -96,11 +90,8 @@ public class AnelCommandHandler {
             @Nullable
             final Boolean locked = state == null ? null : state.relayLocked[index];
             if (locked == null || !locked.booleanValue()) {
-
                 return String.format("Sw_%s%d%s", command.toString().toLowerCase(), index + 1, authentication);
-
             } else {
-
                 logger.warn("Relay {} is locked; skipping command {}.", index + 1, command);
             }
         } else if (IAnelConstants.CHANNEL_IO_STATE.contains(channelId)) {
@@ -114,11 +105,8 @@ public class AnelCommandHandler {
             @Nullable
             final Boolean isInput = state == null ? null : state.ioIsInput[index];
             if (isInput == null || !isInput.booleanValue()) {
-
                 return String.format("IO_%s%d%s", command.toString().toLowerCase(), index + 1, authentication);
-
             } else {
-
                 logger.warn("IO {} has direction input, not output; skipping command {}.", index + 1, command);
             }
         }

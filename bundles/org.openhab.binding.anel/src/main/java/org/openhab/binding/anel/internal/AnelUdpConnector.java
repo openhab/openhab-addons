@@ -126,7 +126,6 @@ public class AnelUdpConnector {
                             "Listener thread started but listener is not yet active after 2sec; something seems to be wrong with the JVM thread handling?!");
                 }
             } catch (SocketException e) {
-
                 if (logNotThrowExcpetion) {
                     logger.warn(
                             "Failed to open socket connection on port {} (maybe there is already another socket listener on that port?)",
@@ -187,19 +186,14 @@ public class AnelUdpConnector {
 
                     listener2.accept(message);
                 });
-
             } catch (Exception e) {
                 listenerActive = false;
 
                 if (receivingSocket == null) {
-
                     logger.debug("Socket closed; stopping listener on port {}.", receivePort);
-
                 } else {
-
                     // if we get 3 errors in a row, we should better add a delay to stop spamming the log!
                     if (receiveFailures++ > IAnelConstants.ATTEMPTS_WITH_COMMUNICATION_ERRORS) {
-
                         logger.debug(
                                 "Unexpected error while listening on port {}; waiting 10sec before the next attempt to listen on that port.",
                                 receivePort, e);
@@ -207,7 +201,6 @@ public class AnelUdpConnector {
                             Thread.sleep(200); // 50 * 200ms = 10sec
                         }
                     } else {
-
                         logger.warn("Unexpected error while listening on port {}", receivePort, e);
                     }
                 }

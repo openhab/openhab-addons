@@ -43,7 +43,6 @@ public class AnelStateUpdater {
 
         final int index = IAnelConstants.getIndexFromChannel(channelId);
         if (index >= 0) {
-
             if (IAnelConstants.CHANNEL_RELAY_NAME.contains(channelId)) {
                 return getStringState(state.relayName[index]);
             }

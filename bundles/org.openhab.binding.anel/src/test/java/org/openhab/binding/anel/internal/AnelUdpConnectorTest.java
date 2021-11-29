@@ -55,7 +55,7 @@ public class AnelUdpConnectorTest {
 
     private static final ExecutorService EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
-    private static final Queue<String> receivedMessages = new ConcurrentLinkedQueue<>();
+    private final Queue<String> receivedMessages = new ConcurrentLinkedQueue<>();
 
     @Nullable
     private static AnelUdpConnector connector;

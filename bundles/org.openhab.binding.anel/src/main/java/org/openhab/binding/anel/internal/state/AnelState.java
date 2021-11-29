@@ -155,7 +155,6 @@ public class AnelState {
         temperature = segments.length > 24 ? parseTemperature(segments[24], issues) : null;
 
         if (segments.length > 34 && "p".equals(segments[27])) {
-
             // optional sensor (if device supports it and firmware >= 6.1) after power management
             if (segments.length > 38 && "s".equals(segments[35])) {
                 sensorTemperature = segments[36];
@@ -166,14 +165,11 @@ public class AnelState {
                 sensorHumidity = null;
                 sensorBrightness = null;
             }
-
         } else if (segments.length > 31 && "n".equals(segments[27]) && "s".equals(segments[28])) {
-
             // but sensor! (if device supports it and firmware >= 6.1)
             sensorTemperature = segments[29];
             sensorHumidity = segments[30];
             sensorBrightness = segments[31];
-
         } else {
             // firmware <= 6.0 or unknown format; skip rest
             sensorTemperature = null;

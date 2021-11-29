@@ -100,15 +100,10 @@ public class AnelDiscoveryService extends AbstractDiscoveryService {
                 }
             }
         } catch (InterruptedException | ClosedByInterruptException e) {
-
             return; // OH shutdown or scan was aborted
-
         } catch (Exception e) {
-
             logger.warn("Unexpected exception during anel device scan", e);
-
         } finally {
-
             scanningThread = null;
         }
         logger.debug("Scan finished.");
@@ -148,16 +143,12 @@ public class AnelDiscoveryService extends AbstractDiscoveryService {
             }
 
             return deviceDiscovered[0];
-
         } catch (BindException e) {
-
             // most likely socket is already in use, ignore this exception.
             logger.debug(
                     "Invalid address {} or one of the ports {} or {} is already in use. Skipping scan of these ports.",
                     broadcastAddress, sendPort, receivePort);
-
         } finally {
-
             udpConnector.disconnect();
         }
         return false;
@@ -175,7 +166,6 @@ public class AnelDiscoveryService extends AbstractDiscoveryService {
     private void deviceDiscovered(String status, int sendPort, int receivePort) {
         final String[] segments = status.split(":");
         if (segments.length >= 16) {
-
             final String name = segments[1].trim();
             final String ip = segments[2];
             final String macAddress = segments[5];
