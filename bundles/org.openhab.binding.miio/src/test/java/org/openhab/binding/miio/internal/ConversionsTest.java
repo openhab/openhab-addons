@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.miio.internal.basic.Conversions;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
@@ -82,6 +83,30 @@ public class ConversionsTest {
         resp = Conversions.execute(transformation, value, deviceVariables);
         assertNotNull(resp);
         assertEquals(new JsonPrimitive("testresponse"), resp);
+
+        // test input as jsonString for a number
+        value = new JsonPrimitive("{\"test\": 3}");
+        resp = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(resp);
+        assertEquals(new JsonPrimitive(3), resp);
+
+        // test input as jsonString for a array
+        value = new JsonPrimitive("{\"test\": []}");
+        resp = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(resp);
+        assertEquals(new JsonArray(), resp);
+
+        // test input as jsonString for a array
+        value = new JsonPrimitive("{\"test\": false}");
+        resp = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(resp);
+        assertEquals(new JsonPrimitive(false), resp);
+
+        // test input as jsonObject for a number
+        value = JsonParser.parseString("{\"test\": 3}");
+        resp = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(resp);
+        assertEquals(new JsonPrimitive(3), resp);
 
         // test input as jsonString for non-existing element
         value = new JsonPrimitive("{\"nottest\": \"testresponse\"}");
