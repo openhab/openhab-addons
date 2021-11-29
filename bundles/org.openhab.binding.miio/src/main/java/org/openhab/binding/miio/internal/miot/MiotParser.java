@@ -63,7 +63,7 @@ import com.google.gson.JsonParser;
 public class MiotParser {
     private final Logger logger = LoggerFactory.getLogger(MiotParser.class);
 
-    private static final String BASEURL = "http://miot-spec.org/miot-spec-v2/";
+    private static final String BASEURL = "https://miot-spec.org/miot-spec-v2/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final boolean SKIP_SIID_1 = true;
 
