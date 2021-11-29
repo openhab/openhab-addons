@@ -331,7 +331,7 @@ public class MiotParser {
         if (actionText.length() > 35) {
             deviceMapping.setReadmeComment(
                     "Identified " + actionText.toString().replace("Manual", "manual").replace("\r\n", "<br />")
-                            + "Please test and feedback if they are working to they can be linked to a channel.");
+                            + "Please test and feedback if they are working so they can be linked to a channel.");
         }
         logger.info(channelConfigText.toString());
         if (actionText.length() > 30) {
