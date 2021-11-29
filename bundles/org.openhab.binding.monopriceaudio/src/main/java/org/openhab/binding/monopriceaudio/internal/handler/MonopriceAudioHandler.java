@@ -260,7 +260,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     case CHANNEL_TYPE_SOURCE:
                         if (command instanceof DecimalType) {
                             int value = ((DecimalType) command).intValue();
-                            if (value >= ONE && value <= amp.getMaxSrc()) {
+                            if (value >= ONE && value <= amp.getNumSources()) {
                                 logger.debug("Got source command {} zone {}", value, zoneId);
                                 connector.sendCommand(zoneId, amp.getSourceCmd(), value);
                                 zoneDataMap.get(zoneId).setSource(String.format("%02d", value));
@@ -341,7 +341,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                     case CHANNEL_TYPE_ALLSOURCE:
                         if (command instanceof DecimalType) {
                             int value = ((DecimalType) command).intValue();
-                            if (value >= ONE && value <= amp.getMaxSrc()) {
+                            if (value >= ONE && value <= amp.getNumSources()) {
                                 zoneStream.forEach((streamZoneId) -> {
                                     if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
                                         try {

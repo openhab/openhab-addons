@@ -34,9 +34,9 @@ import org.openhab.core.types.StateOption;
 public enum AmplifierModel {
 
     // to avoid breaking existing installations, the 10761/DAX66 will still be known as 'amplifier'
-    AMPLIFIER("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 6, 38, -7, 7, 7, -10, 10, 10,
-            18, 6, true, Arrays.asList("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31",
-                    "32", "33", "34", "35", "36")) {
+    AMPLIFIER("<", "\r", "?", "", "#>", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -7, 7, 7, -10, 10, 10, 18,
+            6, true, Arrays.asList("11", "12", "13", "14", "15", "16", "21", "22", "23", "24", "25", "26", "31", "32",
+                    "33", "34", "35", "36")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
@@ -71,8 +71,8 @@ public enum AmplifierModel {
             return sourceLabels;
         }
     },
-    MONOPRICE70V("!", "+\r", "?", "ZS", "?", "PR", "IS", "VO", "MU", "TR", "BS", "BA", "", 2, 38, -7, 7, 7, -32, 31, 32,
-            6, 2, false, Arrays.asList("1", "2", "3", "4", "5", "6")) {
+    MONOPRICE70V("!", "+\r", "?", "ZS", "?", "PR", "IS", "VO", "MU", "TR", "BS", "BA", "", 38, -7, 7, 7, -32, 31, 32, 6,
+            2, false, Arrays.asList("1", "2", "3", "4", "5", "6")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
@@ -119,8 +119,47 @@ public enum AmplifierModel {
             return sourceLabels;
         }
     },
-    XANTECH44("!", "+\r", "?", "ZD", "#", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 8, 38, -4, 4, 4, -10, 10, 10,
-            4, 4, false, Arrays.asList("1", "2", "3", "4")) {
+    // Dayton Audio DAX88
+    DAX88("<", "\r", "?", "", ">", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -12, 12, 12, -10, 10, 10, 8, 8,
+            true, Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08")) {
+        @Override
+        public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
+            MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
+            Matcher matcher = MONOPRICE_PATTERN.matcher(newZoneData);
+
+            if (matcher.find()) {
+                zoneData.setZone(matcher.group(1));
+                zoneData.setPage(matcher.group(2));
+                zoneData.setPower(matcher.group(3));
+                zoneData.setMute(matcher.group(4));
+                zoneData.setDnd(matcher.group(5));
+                zoneData.setVolume(Integer.parseInt(matcher.group(6)));
+                zoneData.setTreble(Integer.parseInt(matcher.group(7)));
+                zoneData.setBass(Integer.parseInt(matcher.group(8)));
+                zoneData.setBalance(Integer.parseInt(matcher.group(9)));
+                zoneData.setSource(matcher.group(10));
+                zoneData.setKeypad(matcher.group(11));
+            }
+
+            return zoneData;
+        }
+
+        @Override
+        public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
+            List<StateOption> sourceLabels = new ArrayList<>();
+            sourceLabels.add(new StateOption("1", config.inputLabel1));
+            sourceLabels.add(new StateOption("2", config.inputLabel2));
+            sourceLabels.add(new StateOption("3", config.inputLabel3));
+            sourceLabels.add(new StateOption("4", config.inputLabel4));
+            sourceLabels.add(new StateOption("5", config.inputLabel5));
+            sourceLabels.add(new StateOption("6", config.inputLabel6));
+            sourceLabels.add(new StateOption("7", config.inputLabel7));
+            sourceLabels.add(new StateOption("8", config.inputLabel8));
+            return sourceLabels;
+        }
+    },
+    XANTECH44("!", "+\r", "?", "ZD", "#", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -4, 4, 4, -10, 10, 10, 4,
+            4, false, Arrays.asList("1", "2", "3", "4")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             return getXantechZoneData(newZoneData);
@@ -136,9 +175,9 @@ public enum AmplifierModel {
             return sourceLabels;
         }
     },
-    XANTECH88("!", "+\r", "?", "ZD", "#", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 8, 38, -4, 4, 4, -10, 10, 10,
-            24, 8, false, Arrays.asList("11", "12", "13", "14", "15", "16", "17", "18", "21", "22", "23", "24", "25",
-                    "26", "27", "28", "31", "32", "33", "34", "35", "36", "37", "38")) {
+    XANTECH88("!", "+\r", "?", "ZD", "#", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -4, 4, 4, -10, 10, 10, 24,
+            8, false, Arrays.asList("11", "12", "13", "14", "15", "16", "17", "18", "21", "22", "23", "24", "25", "26",
+                    "27", "28", "31", "32", "33", "34", "35", "36", "37", "38")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             return getXantechZoneData(newZoneData);
@@ -179,8 +218,9 @@ public enum AmplifierModel {
     }
 
     // Monoprice 10761 / DAX66 status string: #>1200010000130809100601
+    // DAX88 status string is the same but does not have leading '#': >xxaabbccddeeffgghhiijj
     private static final Pattern MONOPRICE_PATTERN = Pattern
-            .compile("^#>(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})");
+            .compile("^#?>(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})");
 
     // Monoprice 70v 31028 status string: ?6ZS VO8 PO1 MU0 IS0+ (does not include treble, bass & balance)
     private static final Pattern MONOPRICE70V_PATTERN = Pattern
@@ -206,7 +246,6 @@ public enum AmplifierModel {
     private String bassCmd;
     private String balanceCmd;
     private String dndCmd;
-    private int maxSrc;
     private int maxVol;
     private int minTone;
     private int maxTone;
@@ -232,9 +271,8 @@ public enum AmplifierModel {
      **/
     AmplifierModel(String cmdPrefix, String cmdSuffix, String queryPrefix, String querySuffix, String respPrefix,
             String powerCmd, String sourceCmd, String volumeCmd, String muteCmd, String trebleCmd, String bassCmd,
-            String balanceCmd, String dndCmd, int maxSrc, int maxVol, int minTone, int maxTone, int toneOffset,
-            int minBal, int maxBal, int balOffset, int maxZones, int numSources, boolean padNumbers,
-            List<String> zoneIds) {
+            String balanceCmd, String dndCmd, int maxVol, int minTone, int maxTone, int toneOffset, int minBal,
+            int maxBal, int balOffset, int maxZones, int numSources, boolean padNumbers, List<String> zoneIds) {
         this.cmdPrefix = cmdPrefix;
         this.cmdSuffix = cmdSuffix;
         this.queryPrefix = queryPrefix;
@@ -248,7 +286,6 @@ public enum AmplifierModel {
         this.bassCmd = bassCmd;
         this.balanceCmd = balanceCmd;
         this.dndCmd = dndCmd;
-        this.maxSrc = maxSrc;
         this.maxVol = maxVol;
         this.minTone = minTone;
         this.maxTone = maxTone;
@@ -336,10 +373,6 @@ public enum AmplifierModel {
 
     public String getDndCmd() {
         return dndCmd;
-    }
-
-    public int getMaxSrc() {
-        return maxSrc;
     }
 
     public int getMaxVol() {

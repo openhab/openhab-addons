@@ -43,7 +43,8 @@ import org.osgi.service.component.annotations.Reference;
 public class MonopriceAudioHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_MP, THING_TYPE_MP70V, THING_TYPE_XT44, THING_TYPE_XT88).collect(Collectors.toSet()));
+            Stream.of(THING_TYPE_MP, THING_TYPE_MP70V, THING_TYPE_DAX88, THING_TYPE_XT44, THING_TYPE_XT88)
+                    .collect(Collectors.toSet()));
 
     private final SerialPortManager serialPortManager;
 
