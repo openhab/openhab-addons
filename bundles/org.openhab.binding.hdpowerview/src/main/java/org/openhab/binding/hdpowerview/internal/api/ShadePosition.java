@@ -131,25 +131,25 @@ public class ShadePosition {
     }
 
     /**
-     * Detect if the ShadePosition was built from JSON values including a posKind2 value that indicates its support for
-     * a secondary rail.
+     * Detect if the ShadePosition has 'posKindN' value(s) indicating support for a secondary rail.
      *
      * @return true if the ShadePosition supports a secondary rail.
      */
     public boolean jsonHasSecondary() {
+        int check = ZERO_IS_OPEN.toPosKind();
         Integer posKind2 = this.posKind2;
-        return (posKind2 != null) && (posKind2.intValue() == ZERO_IS_OPEN.toPosKind());
+        return (posKind1 == check) || ((posKind2 != null) && (posKind2.intValue() == check));
     }
 
     /**
-     * Detect if the ShadePosition was built from JSON values including a posKind2 value that indicates its support for
-     * vanes.
+     * Detect if the ShadePosition has 'posKindN' value(s) indicating support for vanes.
      *
      * @return true if the ShadePosition supports vanes.
      */
     public boolean jsonHasVanes() {
+        int check = VANE_COORDS.toPosKind();
         Integer posKind2 = this.posKind2;
-        return (posKind2 != null) && (posKind2.intValue() == VANE_COORDS.toPosKind());
+        return (posKind1 == check) || ((posKind2 != null) && (posKind2.intValue() == check));
     }
 
     private void setPosition1(CoordinateSystem coordSys, int percent) {
