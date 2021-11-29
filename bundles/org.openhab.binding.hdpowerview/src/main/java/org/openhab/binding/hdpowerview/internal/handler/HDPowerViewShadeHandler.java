@@ -172,7 +172,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         final Map<String, String> properties = getThing().getProperties();
         boolean propChanged = false;
 
-        // update the shade 'type' property
+        // update 'type' property
         final int type = shadeData.type;
         String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE;
         String propOldVal = properties.getOrDefault(propKey, "");
@@ -185,7 +185,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
         }
 
-        // update the shade 'capabilities' property
+        // update 'capabilities' property
         final Integer temp = shadeData.capabilities;
         final int capabilities = temp != null ? temp.intValue() : -1;
         propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
@@ -199,9 +199,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
         }
 
-        if (propChanged && db.isTypeInDatabase(type) && db.isCapabilitiesInDatabase(capabilities)
-                && !db.getType(type).capabilitiesEqual(capabilities)) {
-            db.logTypeCapabilitiesNotEqual(type, capabilities);
+        if (propChanged && db.isCapabilitiesInDatabase(capabilities) && db.isTypeInDatabase(type)
+                && (capabilities != db.getType(type).getCapabilities())) {
+            db.logCapabilitiesMismatch(type, capabilities);
         }
     }
 
@@ -219,17 +219,31 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (positions != null) {
             final Map<String, String> properties = getThing().getProperties();
 
-            // update the shade 'jsonSupportsSecondary' property
-            final boolean jsonSupportsSeconday = positions.jsonSupportsSecondary();
-            String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_SUPPORTS_SECONDARY;
+            // update 'jsonHasSecondary' property
+            String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_HAS_SECONDARY;
             String propOldVal = properties.getOrDefault(propKey, "");
-            String propNewVal = String.valueOf(jsonSupportsSeconday);
+            boolean propJsonVal = positions.jsonHasSecondary();
+            String propNewVal = String.valueOf(propJsonVal);
             if (!propNewVal.equals(propOldVal)) {
                 getThing().setProperty(propKey, propNewVal);
                 final Integer temp = shadeData.capabilities;
                 final int capabilities = temp != null ? temp.intValue() : -1;
-                if (jsonSupportsSeconday != db.getCapabilities(capabilities).supportsSecondary()) {
-                    db.logSecondarySupportNotEqual(shadeData.type, capabilities, jsonSupportsSeconday);
+                if (propJsonVal != db.getCapabilities(capabilities).supportsSecondary()) {
+                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propJsonVal);
+                }
+            }
+
+            // update 'jsonHasVanes' property
+            propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_HAS_VANES;
+            propOldVal = properties.getOrDefault(propKey, "");
+            propJsonVal = positions.jsonHasVanes();
+            propNewVal = String.valueOf(propJsonVal);
+            if (!propNewVal.equals(propOldVal)) {
+                getThing().setProperty(propKey, propNewVal);
+                final Integer temp = shadeData.capabilities;
+                final int capabilities = temp != null ? temp.intValue() : -1;
+                if (propJsonVal != db.getCapabilities(capabilities).supportsVanes()) {
+                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propJsonVal);
                 }
             }
         }

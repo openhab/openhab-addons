@@ -65,7 +65,8 @@
 			<property name="modelId">PowerView Motorized Shade</property>
 			<property name="type"></property>
 			<property name="capabilities"></property>
-			<property name="jsonSupportsSecondary"></property>
+			<property name="jsonHasSecondary"></property>
+			<property name="jsonHasVanes"></property>
 		</properties>
 		<representation-property>id</representation-property>
 
