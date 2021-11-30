@@ -6,7 +6,7 @@
 
 	<!-- Nuvo Whole House Amplifier Thing -->
 	<thing-type id="amplifier">
-		<label>Nuvo Whole House Amplifier</label>
+		<label>Grand Concerto or Essentia G Whole House Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
