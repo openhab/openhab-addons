@@ -6,7 +6,7 @@
 
 	<!-- RadioThemostat Thing -->
 	<thing-type id="rtherm">
-		<label>Thermostat</label>
+		<label>CT30, CT50/3M50 or CT80 Wi-Fi Thermostat</label>
 		<description>
 			A Thermostat to Control the House's HVAC System
 		</description>
