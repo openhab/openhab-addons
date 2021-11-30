@@ -4,15 +4,25 @@
 
 	<feature name="openhab-binding-xmppclient" description="XMPP Client Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<bundle dependency="true">mvn:org.bouncycastle/bcprov-jdk15on/1.69</bundle>
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/1.0.3</bundle>
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/1.0.3</bundle>
-		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/1.0.3</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-core/4.4.4</bundle>
-		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.4.4</bundle>
+		<feature prerequisite="true">wrap</feature>
+		<bundle>mvn:org.jxmpp/jxmpp-core/1.0.3</bundle>
+		<bundle>mvn:org.jxmpp/jxmpp-jid/1.0.3</bundle>
+		<bundle>mvn:org.jxmpp/jxmpp-util-cache/1.0.3</bundle>
+		<bundle>mvn:org.minidns/minidns-core/1.0.2</bundle>
+		<bundle>wrap:mvn:org.igniterealtime.smack/smack-core/4.4.4$Import-Package=!sun.security.pkcs11,org.jivesoftware.*&amp;overwrite=merge</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-extensions/4.4.4</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-experimental/4.4.4</bundle>
+		<bundle>wrap:mvn:org.hsluv/hsluv/0.2</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-im/4.4.4</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-tcp/4.4.4</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-streammanagement/4.4.4</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-resolver-javax/4.4.4</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-sasl-javax/4.4.4</bundle>
+		<bundle>mvn:org.igniterealtime.smack/smack-java8/4.4.4</bundle>
 		<!-- SPI Fly provides the ServiceLoader for OSGi, required by smack-xmlparser -->
 		<bundle start-level="50">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.framework.extension/1.3.2</bundle>
-		<bundle start-level="50">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlpull/1.1.3.1_2</bundle>
+		<bundle start-level="50">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.3.2</bundle>
+		<bundle start-level="50">wrap:mvn:xpp3/xpp3/1.1.4c</bundle>
 		<bundle start-level="60">mvn:org.igniterealtime.smack/smack-xmlparser-xpp3/4.4.4</bundle>
 		<bundle start-level="70">mvn:org.igniterealtime.smack/smack-xmlparser/4.4.4</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.xmppclient/${project.version}</bundle>
