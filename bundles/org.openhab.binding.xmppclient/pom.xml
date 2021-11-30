@@ -108,37 +108,10 @@
     </dependency>
 
     <dependency>
-      <groupId>org.igniterealtime.smack</groupId>
-      <artifactId>smack-resolver-minidns</artifactId>
-      <version>${smack.version}</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.minidns</groupId>
       <artifactId>minidns-core</artifactId>
       <version>1.0.2</version>
     </dependency>
-    <dependency>
-      <groupId>org.minidns</groupId>
-      <artifactId>minidns-dnssec</artifactId>
-      <version>1.0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.minidns</groupId>
-      <artifactId>minidns-client</artifactId>
-      <version>1.0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.minidns</groupId>
-      <artifactId>minidns-iterative-resolver</artifactId>
-      <version>1.0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.minidns</groupId>
-      <artifactId>minidns-hla</artifactId>
-      <version>1.0.2</version>
-    </dependency>
-
     <dependency>
       <groupId>org.apache.aries.spifly</groupId>
       <artifactId>org.apache.aries.spifly.dynamic.framework.extension</artifactId>
