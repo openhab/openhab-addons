@@ -14,6 +14,8 @@ package org.openhab.binding.sncf.internal.discovery;
 
 import static org.openhab.binding.sncf.internal.SncfBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerService.class)
 @NonNullByDefault
 public class SncfDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-    private static final int SEARCH_TIME = 10;
+    private static final int SEARCH_TIME = 7;
 
     private final Logger logger = LoggerFactory.getLogger(SncfDiscoveryService.class);
 
@@ -74,13 +76,16 @@ public class SncfDiscoveryService extends AbstractDiscoveryService implements Th
                     List<PlaceNearby> places = handler.discoverNearby(location, searchRange);
                     if (places != null && !places.isEmpty()) {
                         places.forEach(place -> {
-                            String placeId = place.id;
-                            String thingId = placeId.replace(":", "_").replace("-", "_").replace("stop_point_", "");
-                            thingDiscovered(
-                                    DiscoveryResultBuilder.create(new ThingUID(STATION_THING_TYPE, bridgeUID, thingId))
-                                            .withLabel(place.stopPoint.name).withBridge(bridgeUID)
-                                            .withRepresentationProperty(STOP_POINT_ID)
-                                            .withProperty(STOP_POINT_ID, placeId).build());
+                            // stop_point:SNCF:87386573:Bus
+                            List<String> idElts = new LinkedList<String>(Arrays.asList(place.id.split(":")));
+                            idElts.remove(0);
+                            idElts.remove(0);
+                            thingDiscovered(DiscoveryResultBuilder
+                                    .create(new ThingUID(STATION_THING_TYPE, bridgeUID, String.join("_", idElts)))
+                                    .withLabel(String.format("%s (%s)", place.stopPoint.name, idElts.get(1))
+                                            .replace("-", "_"))
+                                    .withBridge(bridgeUID).withRepresentationProperty(STOP_POINT_ID)
+                                    .withProperty(STOP_POINT_ID, place.id).build());
                         });
                     } else {
                         logger.info("No station found in a perimeter of {} m, extending search", searchRange);

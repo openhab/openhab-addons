@@ -209,7 +209,7 @@ public class StationHandler extends BaseThingHandler {
     }
 
     private @Nullable ZonedDateTime fromDTO(@Nullable String dateTime) {
-        return dateTime != null ? ZonedDateTime.parse(dateTime + zoneOffset, NAVITIA_DATE_FORMAT) : null;
+        return dateTime != null ? ZonedDateTime.parse(dateTime + zoneOffset, NAVITIA_DATE_FORMAT).plusMinutes(1) : null;
     }
 
     private State fromNullableDTO(@Nullable String dateTime) {
