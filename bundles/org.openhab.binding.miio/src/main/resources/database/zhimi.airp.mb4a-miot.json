@@ -1,11 +1,46 @@
 {
 	"deviceMapping": {
 		"id": [
-			"zhimi.airpurifier.mb4"
+			"zhimi.airp.mb4a"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,
 		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "filter-reset-filter-life",
+							"label": "Filter Reset Filter Life"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "EMPTY",
+						"parameters": [
+							3.0
+						],
+						"siid": 4,
+						"aiid": 1,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "filter-reset-filter-life"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"filter-reset-filter-life\"\u003d\"Filter Reset Filter Life\"]`"
+			},
 			{
 				"property": "on",
 				"siid": 2,
@@ -77,7 +112,7 @@
 				"property": "pm2.5-density",
 				"siid": 3,
 				"piid": 4,
-				"friendlyName": "Environment - Pm2 5 Density",
+				"friendlyName": "Environment - PM2 5 Density",
 				"channel": "pm2_5_density",
 				"type": "Number",
 				"stateDescription": {
