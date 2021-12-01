@@ -15,6 +15,8 @@ The following things types are available:
 | miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
 | miio:vacuum      | For Xiaomi/RoboRock Robot Vacuum products                                                                                         |
 | miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
+| miio:gateway     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                  |
+| miio:lumi        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function            |
 | miio:unsupported | For experimenting with other devices which use the Mi IO protocol or to build experimental support                                                       |
 
 # Discovery
@@ -86,6 +88,7 @@ However, for devices that are unsupported, you may override the value and try to
 
 Note: Suggest to use the cloud communication only for devices that require it. 
 It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
+Note2: communications parameter is not available for lumi devices. Lumi devices communicate using the bridge/gateway.
 
 ### Example Thing file
 
@@ -94,6 +97,11 @@ It is unknown at this time if Xiaomi has a rate limit or other limitations on th
 or in case of unknown models include the model information of a similar device that is supported:
 
 `Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct", cloudServer="de" ]`
+
+in case of gateway, instead of defining it as a Thing, use Bridge
+
+`Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]` 
+
 
 # Advanced: Unsupported devices
 
@@ -176,7 +184,11 @@ This will change the communication method and the Mi IO binding can communicate 
 
 # Mi IO Devices
 
+<<<<<<< Upstream, based on origin/main
 Currently the miio binding supports more than 310 different models.
+=======
+Currently the miio binding supports more than 320 different models.
+>>>>>>> adf8125 [miio] Cleanup to prepare for PR
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
 |------------------------------|------------------|------------------------|-----------|------------|
@@ -520,6 +532,9 @@ Currently the miio binding supports more than 310 different models.
 | Mi AI Alarm                  | miio:unsupported | zimi.clock.myk01       | No        |            |
 | Mi Smart Power Strip         | miio:basic       | [zimi.powerstrip.v2](#zimi-powerstrip-v2) | Yes       |            |
 
+note: Supported means we received feedback from users this device is working with the binding. 
+For devices with experimental support, we did not yet confirmation that channels are correctly working. 
+Please feedback your findings for these devices (e.g. Are all channels working, do they contain the right information, is controlling the devices working etc.)
 
 # Channels
 
@@ -1615,6 +1630,62 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | brightness           | Dimmer               | Light - Brightness                       |            |
 | color-temperature    | Number:Temperature   | Light - Color Temperature                |            |
 
+### IKEA E27 white spectrum opal (<a name="ikea-light-led1545g12">ikea.light.led1545g12</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
+### IKEA E27 white spectrum clear (<a name="ikea-light-led1546g12">ikea.light.led1546g12</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
+### IKEA E14 white spectrum (<a name="ikea-light-led1536g5">ikea.light.led1536g5</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
+### IKEA GU10 white spectrum (<a name="ikea-light-led1537r6">ikea.light.led1537r6</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
+### IKEA E27 warm white (<a name="ikea-light-led1623g12">ikea.light.led1623g12</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
+### IKEA GU10 warm white (<a name="ikea-light-led1650r5">ikea.light.led1650r5</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
+### IKEA E14 warm white (<a name="ikea-light-led1649c5">ikea.light.led1649c5</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
 ### Xiaomiyoupin Curtain Controller (Wi-Fi) (<a name="lumi-curtain-hagl05">lumi.curtain.hagl05</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -1640,6 +1711,24 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | gatewayVol           | Number               | Gateway Volume                           |            |
 | alarmingVol          | Number               | Alarming Volume                          |            |
 | doorbellPush         | String               | Doorbell Push                            |            |
+
+### Mi smart Home Gateway Hub (<a name="lumi-gateway-mieu01">lumi.gateway.mieu01</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| guard                | Switch               | Guard                                    |            |
+| corridor             | Switch               | Automatic Night Light                    |            |
+| nightlight           | Color                | Night Light                              |            |
+| rgb                  | Color                | Colored Light                            |            |
+| doorbell_volume      | Number               | Doorbell Volume                          |            |
+| alarming_volume      | Number               | Alarming Volume                          |            |
+| gateway_volume       | Number               | Gateway Volume                           |            |
+| arming_time          | Number:Time          | Arming Time                              |            |
+| corridor_on_time     | Number:Time          | Corridor on time                         |            |
+| language             | String               | Voice prompt Language                    |            |
+| zigbee_channel       | String               | Zigbee Channel                           |            |
+| lumi_bind            | String               | Lumi_bind info                           |            |
+| doorbell_push        | String               | Doorbell Push                            |            |
 
 ### Mi smart Home Gateway Hub v1 (<a name="lumi-gateway-v1">lumi.gateway.v1</a>) Channels
 
@@ -1671,23 +1760,92 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | alarmingVol          | Number               | Alarming Volume                          |            |
 | doorbellPush         | String               | Doorbell Push                            |            |
 
-### Mi smart Home Gateway Hub (<a name="lumi-gateway-mieu01">lumi.gateway.mieu01</a>) Channels
+### Aqara LED Light Bulb (Tunable White) (<a name="lumi-light-aqcn02">lumi.light.aqcn02</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| guard                | Switch               | Guard                                    |            |
-| corridor             | Switch               | Automatic Night Light                    |            |
-| nightlight           | Color                | Night Light                              |            |
-| rgb                  | Color                | Colored Light                            |            |
-| doorbell_volume      | Number               | Doorbell Volume                          |            |
-| alarming_volume      | Number               | Alarming Volume                          |            |
-| gateway_volume       | Number               | Gateway Volume                           |            |
-| arming_time          | Number:Time          | Arming Time                              |            |
-| corridor_on_time     | Number:Time          | Corridor on time                         |            |
-| language             | String               | Voice prompt Language                    |            |
-| zigbee_channel       | String               | Zigbee Channel                           |            |
-| lumi_bind            | String               | Lumi_bind info                           |            |
-| doorbell_push        | String               | Doorbell Push                            |            |
+| power                | Switch               | Power                                    |            |
+| brightness           | Dimmer               | Brightness                               |            |
+| colour_temperature   | Number               | Color Temperature                        |            |
+
+### Door lock (<a name="lumi-lock-v1">lumi.lock.v1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| status               | String               | Status                                   |            |
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data |
+
+### Aqara Door Lock (<a name="lumi-lock-aq1">lumi.lock.aq1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| status               | String               | Status                                   |            |
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data |
+
+### Aqara Door Lock S2 (<a name="lumi-lock-acn02">lumi.lock.acn02</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| status               | String               | Status                                   |            |
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data |
+
+### Aqara Door lock S2 Pro (<a name="lumi-lock-acn03">lumi.lock.acn03</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| status               | String               | Status                                   |            |
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data |
+
+### Mi Smart Plug (Zigbee) (<a name="lumi-plug-mmeu01">lumi.plug.mmeu01</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| power                | Switch               | Power                                    |            |
+| load_power           | Number               | Load Power                               |            |
+| en_night_tip_light   | Switch               | Led Light                                |            |
+| poweroff_memory      | Switch               | Poweroff Memory                          |            |
+| max_power            | Number               | Max Power                                |            |
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data. |
+
+### Mi Window and Door Sensor (<a name="lumi-sensor_magnet-v2">lumi.sensor_magnet.v2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data. |
+
+### Mi Motion Sensor (<a name="lumi-sensor_motion-aq2">lumi.sensor_motion.aq2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data |
+
+### Mi Motion Sensor (<a name="lumi-sensor_motion-v2">lumi.sensor_motion.v2</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data |
+
+### Mi Temperature and Humidity Sensor (<a name="lumi-sensor_ht-v1">lumi.sensor_ht.v1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| temperature          | Number:Temperature   | Temperature                              |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+
+### Water Leak Sensor (<a name="lumi-sensor_wleak-aq1">lumi.sensor_wleak.aq1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| leak                 | Switch               | Leaking                                  |            |
+| log                  | String               | Device Log                               | This channel uses cloud to get data. See widget market place for suitable widget to display the data |
+
+### Aqara Temperature and Humidity Sensor (<a name="lumi-weather-v1">lumi.weather.v1</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| temperature          | Number:Temperature   | Temperature                              |            |
+| humidity             | Number:Dimensionless | Humidity                                 |            |
+| pressure             | Number:Pressure      | pressure                                 |            |
 
 ### Mi Robot Vacuum-Mop Essential (<a name="mijia-vacuum-v2">mijia.vacuum.v2</a>) Channels
 
@@ -2142,7 +2300,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | MibandStatus         | String               | Mi Band Status                           |            |
 | actions              | String               | Actions                                  | Value mapping `["light-brightness-down"="Light Brightness Down","light-brightness-up"="Light Brightness Up","light-toggle"="Light Toggle"]` |
 
-###  Zhirui Ceiling Lamp Black 40W (<a name="philips-light-obceim">philips.light.obceim</a>) Channels
+### Zhirui Ceiling Lamp Black 40W (<a name="philips-light-obceim">philips.light.obceim</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
@@ -6795,6 +6953,83 @@ Dimmer brightness "Light - Brightness" (G_light) {channel="miio:basic:light:brig
 Number:Temperature color_temperature "Light - Color Temperature" (G_light) {channel="miio:basic:light:color-temperature"}
 ```
 
+### IKEA E27 white spectrum opal (ikea.light.led1545g12) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "IKEA E27 white spectrum opal" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
+### IKEA E27 white spectrum clear (ikea.light.led1546g12) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "IKEA E27 white spectrum clear" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
+### IKEA E14 white spectrum (ikea.light.led1536g5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "IKEA E14 white spectrum" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
+### IKEA GU10 white spectrum (ikea.light.led1537r6) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "IKEA GU10 white spectrum" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
+### IKEA E27 warm white (ikea.light.led1623g12) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "IKEA E27 warm white" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
+### IKEA GU10 warm white (ikea.light.led1650r5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "IKEA GU10 warm white" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
+### IKEA E14 warm white (ikea.light.led1649c5) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "IKEA E14 warm white" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
 ### Xiaomiyoupin Curtain Controller (Wi-Fi) (lumi.curtain.hagl05) item file lines
 
 note: Autogenerated example. Replace the id (curtain) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -6820,50 +7055,11 @@ note: Autogenerated example. Replace the id (gateway) in the channel with your o
 
 ```
 Group G_gateway "Mi Air Purifier virtual" <status>
-Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
-Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
-Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
-Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
-```
-
-### Mi smart Home Gateway Hub v1 (lumi.gateway.v1) item file lines
-
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```
-Group G_gateway "Mi smart Home Gateway Hub v1" <status>
-Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
-Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
-Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
-Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
-```
-
-### Mi smart Home GatewayHub v2 (lumi.gateway.v2) item file lines
-
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```
-Group G_gateway "Mi smart Home GatewayHub v2" <status>
-Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
-Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
-Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
-Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
-```
-
-### Mi smart Home Gateway Hub v3 (lumi.gateway.v3) item file lines
-
-note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
-
-```
-Group G_gateway "Mi smart Home Gateway Hub v3" <status>
-Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:basic:gateway:telnetEnable"}
-Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbellVol"}
-Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gatewayVol"}
-Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarmingVol"}
-String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbellPush"}
+Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:gateway:gateway:telnetEnable"}
+Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:doorbellVol"}
+Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gatewayVol"}
+Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarmingVol"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbellPush"}
 ```
 
 ### Mi smart Home Gateway Hub (lumi.gateway.mieu01) item file lines
@@ -6872,19 +7068,181 @@ note: Autogenerated example. Replace the id (gateway) in the channel with your o
 
 ```
 Group G_gateway "Mi smart Home Gateway Hub" <status>
-Switch guard "Guard" (G_gateway) {channel="miio:basic:gateway:guard"}
-Switch corridor "Automatic Night Light" (G_gateway) {channel="miio:basic:gateway:corridor"}
-Color nightlight "Night Light" (G_gateway) {channel="miio:basic:gateway:nightlight"}
-Color rgb "Colored Light" (G_gateway) {channel="miio:basic:gateway:rgb"}
-Number doorbell_volume "Doorbell Volume" (G_gateway) {channel="miio:basic:gateway:doorbell_volume"}
-Number alarming_volume "Alarming Volume" (G_gateway) {channel="miio:basic:gateway:alarming_volume"}
-Number gateway_volume "Gateway Volume" (G_gateway) {channel="miio:basic:gateway:gateway_volume"}
-Number:Time arming_time "Arming Time" (G_gateway) {channel="miio:basic:gateway:arming_time"}
-Number:Time corridor_on_time "Corridor on time" (G_gateway) {channel="miio:basic:gateway:corridor_on_time"}
-String language "Voice prompt Language" (G_gateway) {channel="miio:basic:gateway:language"}
-String zigbee_channel "Zigbee Channel" (G_gateway) {channel="miio:basic:gateway:zigbee_channel"}
-String lumi_bind "Lumi_bind info" (G_gateway) {channel="miio:basic:gateway:lumi_bind"}
-String doorbell_push "Doorbell Push" (G_gateway) {channel="miio:basic:gateway:doorbell_push"}
+Switch guard "Guard" (G_gateway) {channel="miio:gateway:gateway:guard"}
+Switch corridor "Automatic Night Light" (G_gateway) {channel="miio:gateway:gateway:corridor"}
+Color nightlight "Night Light" (G_gateway) {channel="miio:gateway:gateway:nightlight"}
+Color rgb "Colored Light" (G_gateway) {channel="miio:gateway:gateway:rgb"}
+Number doorbell_volume "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:doorbell_volume"}
+Number alarming_volume "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarming_volume"}
+Number gateway_volume "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gateway_volume"}
+Number:Time arming_time "Arming Time" (G_gateway) {channel="miio:gateway:gateway:arming_time"}
+Number:Time corridor_on_time "Corridor on time" (G_gateway) {channel="miio:gateway:gateway:corridor_on_time"}
+String language "Voice prompt Language" (G_gateway) {channel="miio:gateway:gateway:language"}
+String zigbee_channel "Zigbee Channel" (G_gateway) {channel="miio:gateway:gateway:zigbee_channel"}
+String lumi_bind "Lumi_bind info" (G_gateway) {channel="miio:gateway:gateway:lumi_bind"}
+String doorbell_push "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbell_push"}
+```
+
+### Mi smart Home Gateway Hub v1 (lumi.gateway.v1) item file lines
+
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_gateway "Mi smart Home Gateway Hub v1" <status>
+Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:gateway:gateway:telnetEnable"}
+Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:doorbellVol"}
+Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gatewayVol"}
+Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarmingVol"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbellPush"}
+```
+
+### Mi smart Home GatewayHub v2 (lumi.gateway.v2) item file lines
+
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_gateway "Mi smart Home GatewayHub v2" <status>
+Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:gateway:gateway:telnetEnable"}
+Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:doorbellVol"}
+Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gatewayVol"}
+Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarmingVol"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbellPush"}
+```
+
+### Mi smart Home Gateway Hub v3 (lumi.gateway.v3) item file lines
+
+note: Autogenerated example. Replace the id (gateway) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_gateway "Mi smart Home Gateway Hub v3" <status>
+Switch telnetEnable "Enable Telnet" (G_gateway) {channel="miio:gateway:gateway:telnetEnable"}
+Number doorbellVol "Doorbell Volume" (G_gateway) {channel="miio:gateway:gateway:doorbellVol"}
+Number gatewayVol "Gateway Volume" (G_gateway) {channel="miio:gateway:gateway:gatewayVol"}
+Number alarmingVol "Alarming Volume" (G_gateway) {channel="miio:gateway:gateway:alarmingVol"}
+String doorbellPush "Doorbell Push" (G_gateway) {channel="miio:gateway:gateway:doorbellPush"}
+```
+
+### Aqara LED Light Bulb (Tunable White) (lumi.light.aqcn02) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_light "Aqara LED Light Bulb (Tunable White)" <status>
+Switch power "Power" (G_light) {channel="miio:lumi:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:lumi:light:brightness"}
+Number colour_temperature "Color Temperature" (G_light) {channel="miio:lumi:light:colour_temperature"}
+```
+
+### Door lock (lumi.lock.v1) item file lines
+
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_lock "Door lock" <status>
+String status "Status" (G_lock) {channel="miio:lumi:lock:status"}
+String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
+```
+
+### Aqara Door Lock (lumi.lock.aq1) item file lines
+
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_lock "Aqara Door Lock" <status>
+String status "Status" (G_lock) {channel="miio:lumi:lock:status"}
+String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
+```
+
+### Aqara Door Lock S2 (lumi.lock.acn02) item file lines
+
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_lock "Aqara Door Lock S2" <status>
+String status "Status" (G_lock) {channel="miio:lumi:lock:status"}
+String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
+```
+
+### Aqara Door lock S2 Pro (lumi.lock.acn03) item file lines
+
+note: Autogenerated example. Replace the id (lock) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_lock "Aqara Door lock S2 Pro" <status>
+String status "Status" (G_lock) {channel="miio:lumi:lock:status"}
+String log "Device Log" (G_lock) {channel="miio:lumi:lock:log"}
+```
+
+### Mi Smart Plug (Zigbee) (lumi.plug.mmeu01) item file lines
+
+note: Autogenerated example. Replace the id (plug) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_plug "Mi Smart Plug (Zigbee)" <status>
+Switch power "Power" (G_plug) {channel="miio:lumi:plug:power"}
+Number load_power "Load Power" (G_plug) {channel="miio:lumi:plug:load_power"}
+Switch en_night_tip_light "Led Light" (G_plug) {channel="miio:lumi:plug:en_night_tip_light"}
+Switch poweroff_memory "Poweroff Memory" (G_plug) {channel="miio:lumi:plug:poweroff_memory"}
+Number max_power "Max Power" (G_plug) {channel="miio:lumi:plug:max_power"}
+String log "Device Log" (G_plug) {channel="miio:lumi:plug:log"}
+```
+
+### Mi Window and Door Sensor (lumi.sensor_magnet.v2) item file lines
+
+note: Autogenerated example. Replace the id (sensor_magnet) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_sensor_magnet "Mi Window and Door Sensor" <status>
+String log "Device Log" (G_sensor_magnet) {channel="miio:lumi:sensor_magnet:log"}
+```
+
+### Mi Motion Sensor (lumi.sensor_motion.aq2) item file lines
+
+note: Autogenerated example. Replace the id (sensor_motion) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_sensor_motion "Mi Motion Sensor" <status>
+String log "Device Log" (G_sensor_motion) {channel="miio:lumi:sensor_motion:log"}
+```
+
+### Mi Motion Sensor (lumi.sensor_motion.v2) item file lines
+
+note: Autogenerated example. Replace the id (sensor_motion) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_sensor_motion "Mi Motion Sensor" <status>
+String log "Device Log" (G_sensor_motion) {channel="miio:lumi:sensor_motion:log"}
+```
+
+### Mi Temperature and Humidity Sensor (lumi.sensor_ht.v1) item file lines
+
+note: Autogenerated example. Replace the id (sensor_ht) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_sensor_ht "Mi Temperature and Humidity Sensor" <status>
+Number:Temperature temperature "Temperature" (G_sensor_ht) {channel="miio:lumi:sensor_ht:temperature"}
+Number:Dimensionless humidity "Humidity" (G_sensor_ht) {channel="miio:lumi:sensor_ht:humidity"}
+```
+
+### Water Leak Sensor (lumi.sensor_wleak.aq1) item file lines
+
+note: Autogenerated example. Replace the id (sensor_wleak) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_sensor_wleak "Water Leak Sensor" <status>
+Switch leak "Leaking" (G_sensor_wleak) {channel="miio:lumi:sensor_wleak:leak"}
+String log "Device Log" (G_sensor_wleak) {channel="miio:lumi:sensor_wleak:log"}
+```
+
+### Aqara Temperature and Humidity Sensor (lumi.weather.v1) item file lines
+
+note: Autogenerated example. Replace the id (weather) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_weather "Aqara Temperature and Humidity Sensor" <status>
+Number:Temperature temperature "Temperature" (G_weather) {channel="miio:lumi:weather:temperature"}
+Number:Dimensionless humidity "Humidity" (G_weather) {channel="miio:lumi:weather:humidity"}
+Number:Pressure pressure "pressure" (G_weather) {channel="miio:lumi:weather:pressure"}
 ```
 
 ### Mi Robot Vacuum-Mop Essential (mijia.vacuum.v2) item file lines
@@ -7433,12 +7791,12 @@ String MibandStatus "Mi Band Status" (G_light) {channel="miio:basic:light:Miband
 String actions "Actions" (G_light) {channel="miio:basic:light:actions"}
 ```
 
-###  Zhirui Ceiling Lamp Black 40W (philips.light.obceim) item file lines
+### Zhirui Ceiling Lamp Black 40W (philips.light.obceim) item file lines
 
 note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```
-Group G_light " Zhirui Ceiling Lamp Black 40W" <status>
+Group G_light "Zhirui Ceiling Lamp Black 40W" <status>
 Switch on "Power" (G_light) {channel="miio:basic:light:on"}
 Number mode "Mode" (G_light) {channel="miio:basic:light:mode"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}

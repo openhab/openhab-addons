@@ -7,18 +7,6 @@
 		"maxProperties": 5,
 		"channels": [
 			{
-				"property": "open",
-				"friendlyName": "Open",
-				"channel": "open",
-				"type": "Contact",
-				"refresh": true,
-				"actions": [],
-				"category": "door",
-				"tags": [
-					"Status"
-				]
-			},
-			{
 				"property": "log",
 				"friendlyName": "Device Log",
 				"channel": "log",
@@ -31,10 +19,10 @@
 				"tags": [
 					"Point"
 				],
-				"readmeComment": "This channel uses cloud to get data"
+				"readmeComment": "This channel uses cloud to get data. See widget market place for suitable widget to display the data."
 			}
 		],
-		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge. Note: Won\u0027t display the current status. Log only\u0027",
 		"experimental": false
 	}
 }

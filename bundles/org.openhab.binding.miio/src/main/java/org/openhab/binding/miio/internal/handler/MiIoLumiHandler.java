@@ -68,7 +68,6 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
         }
 
         bridgeHandler = null;
-        // bridgeHandler = getBridgeHandler();
         if (ThingStatus.ONLINE != bridge.getStatus()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
@@ -127,10 +126,11 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
 
     @Override
     protected synchronized void updateData() {
-        logger.debug("Periodic update for '{}' ({})", getThing().getUID().toString(), getThing().getThingTypeUID());
+        logger.debug("Periodic update for '{}' ({})", getThing().getUID(), getThing().getThingTypeUID());
         try {
             if (!hasConnection() || skipUpdate() || miioCom == null) {
-                // return;
+                logger.debug("Periodic update for '{}' skipped.", getThing().getUID());
+                return;
             }
             checkChannelStructure();
             final MiIoBindingConfiguration config = this.configuration;
@@ -151,7 +151,7 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                 logger.debug("Null value occured for device {}: {}", midevice, config);
             }
         } catch (Exception e) {
-            logger.debug("Error while updating '{}': ", getThing().getUID().toString(), e);
+            logger.debug("Error while performing periodic refresh for '{}': {}", getThing().getUID().toString(), e);
         }
     }
 }

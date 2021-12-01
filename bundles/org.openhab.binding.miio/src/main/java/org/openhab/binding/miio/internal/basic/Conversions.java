@@ -85,26 +85,26 @@ public class Conversions {
         if (!deviceLog.isJsonObject() && !deviceLog.isJsonPrimitive()) {
             return deviceLog;
         }
-        JsonObject outLog = deviceLog.isJsonObject() ? deviceLog.getAsJsonObject()
+        JsonObject deviceLogJsonObj = deviceLog.isJsonObject() ? deviceLog.getAsJsonObject()
                 : (JsonObject) JsonParser.parseString(deviceLog.getAsString());
-        JsonArray outLog2 = new JsonArray();
-        if (outLog.has("data") && outLog.get("data").isJsonArray()) {
-            for (JsonElement element : outLog.get("data").getAsJsonArray()) {
+        JsonArray resultLog = new JsonArray();
+        if (deviceLogJsonObj.has("data") && deviceLogJsonObj.get("data").isJsonArray()) {
+            for (JsonElement element : deviceLogJsonObj.get("data").getAsJsonArray()) {
                 if (element.isJsonObject()) {
-                    JsonObject elementJO = element.getAsJsonObject();
-                    if (elementJO.has("value")) {
-                        String value = elementJO.get("value").getAsString();
+                    JsonObject dataObject = element.getAsJsonObject();
+                    if (dataObject.has("value")) {
+                        String value = dataObject.get("value").getAsString();
                         JsonElement val = JsonParser.parseString(value);
                         if (val.isJsonArray()) {
-                            outLog2.add(JsonParser.parseString(val.getAsString()));
+                            resultLog.add(JsonParser.parseString(val.getAsString()));
                         } else {
-                            outLog2.add(val);
+                            resultLog.add(val);
                         }
                     }
                 }
             }
         }
-        return outLog2;
+        return resultLog;
     }
 
     private static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {

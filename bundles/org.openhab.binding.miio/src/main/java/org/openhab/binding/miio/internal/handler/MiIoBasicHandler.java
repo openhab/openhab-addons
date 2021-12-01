@@ -623,8 +623,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             }
         }
         if (res.size() != para.size()) {
-            logger.debug("Unexpected size different. Request size {},  response size {}. (Req: {}, Resp:{})",
-                    para.size(), res.size(), para, res);
+            logger.debug("Unexpected size different{}. Request size {},  response size {}. (Req: {}, Resp:{})",
+                    isSubdeviceUpdate ? " for childdevice refresh" : "", para.size(), res.size(), para, res);
             return;
         }
         for (int i = 0; i < para.size(); i++) {
@@ -780,7 +780,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         super.onMessageReceived(response);
         if (response.isError() || (!response.getSender().isBlank()
                 && !response.getSender().contentEquals(getThing().getUID().getAsString()))) {
-            logger.trace("device {} is not processing command {} as no match.. sender '{}'", getThing().getUID(),
+            logger.trace("Device {} is not processing command {} as no match. Sender id:'{}'", getThing().getUID(),
                     response.getId(), response.getSender());
             return;
         }
@@ -821,8 +821,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         }
                         cmds.remove(response.getId());
                     } else {
-                        logger.debug("Could not identify channel for {}... dev: {} in queue {}", response.getMethod(),
-                                getThing().getUID(), cmds.size());
+                        logger.debug("Could not identify channel for {}. Device {} has {} commands in queue.",
+                                response.getMethod(), getThing().getUID(), cmds.size());
                     }
                     break;
             }

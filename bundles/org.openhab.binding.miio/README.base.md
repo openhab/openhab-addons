@@ -88,7 +88,7 @@ However, for devices that are unsupported, you may override the value and try to
 
 Note: Suggest to use the cloud communication only for devices that require it. 
 It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
-Note2: communications parameter is not available for lumi devices. Lumi devices take the parameter from the bridge/gateway
+Note2: communications parameter is not available for lumi devices. Lumi devices communicate using the bridge/gateway.
 
 ### Example Thing file
 
@@ -185,6 +185,9 @@ This will change the communication method and the Mi IO binding can communicate 
 # Mi IO Devices
 
 !!!devices
+note: Supported means we received feedback from users this device is working with the binding. 
+For devices with experimental support, we did not yet confirmation that channels are correctly working. 
+Please feedback your findings for these devices (e.g. Are all channels working, do they contain the right information, is controlling the devices working etc.)
 
 # Channels
 

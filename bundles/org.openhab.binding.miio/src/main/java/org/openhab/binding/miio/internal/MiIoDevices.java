@@ -158,7 +158,7 @@ public enum MiIoDevices {
     PHILIPS_LIGHT_MONO1("philips.light.mono1", "Philips Smart Lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_MOONLIGHT("philips.light.moonlight", "Philips ZhiRui Bedside Lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_OBCEIL("philips.light.obceil", "Zhirui Ceiling Lamp Black 80W", THING_TYPE_BASIC),
-    PHILIPS_LIGHT_OBCEIM("philips.light.obceim", " Zhirui Ceiling Lamp Black 40W", THING_TYPE_BASIC),
+    PHILIPS_LIGHT_OBCEIM("philips.light.obceim", "Zhirui Ceiling Lamp Black 40W", THING_TYPE_BASIC),
     PHILIPS_LIGHT_OBCEIS("philips.light.obceis", "Zhirui Ceiling Lamp Black 28W", THING_TYPE_BASIC),
     PHILIPS_LIGHT_RWREAD("philips.light.rwread", "Mijia Philips Study Desk Lamp", THING_TYPE_BASIC),
     PHILIPS_LIGHT_SCEIL("philips.light.sceil", "Zhirui Ceiling Lamp Starry 80W", THING_TYPE_BASIC),

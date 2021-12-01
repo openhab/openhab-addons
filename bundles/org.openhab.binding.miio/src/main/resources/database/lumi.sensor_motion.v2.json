@@ -1,23 +1,12 @@
 {
 	"deviceMapping": {
 		"id": [
-			"lumi.sensor_motion.v2"
+			"lumi.sensor_motion.v2",
+			"lumi.sensor_motion.aq2"
 		],
 		"propertyMethod": "get_device_prop_exp",
 		"maxProperties": 5,
 		"channels": [
-			{
-				"property": "motion",
-				"friendlyName": "Motion",
-				"channel": "motion",
-				"type": "Switch",
-				"refresh": true,
-				"actions": [],
-				"category": "motion",
-				"tags": [
-					"Alarm"
-				]
-			},
 			{
 				"property": "log",
 				"friendlyName": "Device Log",
@@ -31,10 +20,10 @@
 				"tags": [
 					"Point"
 				],
-				"readmeComment": "This channel uses cloud to get data"
+				"readmeComment": "This channel uses cloud to get data. See widget market place for suitable widget to display the data"
 			}
 		],
-		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.Note: Won\u0027t display the current status, nor trigger events. Log only",
 		"experimental": false
 	}
 }

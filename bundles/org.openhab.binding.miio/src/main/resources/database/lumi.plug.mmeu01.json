@@ -100,7 +100,8 @@
 				"category": "setting",
 				"tags": [
 					"Point"
-				]
+				],
+				"readmeComment": "This channel uses cloud to get data. See widget market place for suitable widget to display the data."
 			}
 		],
 		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",

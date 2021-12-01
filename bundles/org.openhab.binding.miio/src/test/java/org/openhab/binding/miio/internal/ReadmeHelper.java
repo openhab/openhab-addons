@@ -134,35 +134,37 @@ public class ReadmeHelper {
         sw.write(devicesCount);
         sw.write("\n\n");
         sw.write(
-                "| Device                       | ThingType        | Device Model           | Supported | Remark     |\n");
+                "| Device                             | ThingType        | Device Model           | Supported    | Remark     |\n");
         sw.write(
-                "|------------------------------|------------------|------------------------|-----------|------------|\n");
+                "|------------------------------------|------------------|------------------------|--------------|------------|\n");
 
         Arrays.asList(MiIoDevices.values()).forEach(device -> {
             if (!device.getModel().equals("unknown")) {
                 String link = device.getModel().replace(".", "-");
                 boolean isSupported = device.getThingType().equals(MiIoBindingConstants.THING_TYPE_UNSUPPORTED);
+                Boolean experimental = false;
                 String remark = "";
                 if (DATABASE_THING_TYPES.contains(device.getThingType())) {
                     MiIoBasicDevice dev = findDatabaseEntry(device.getModel());
                     if (dev != null) {
                         remark = dev.getDevice().getReadmeComment();
-                        final Boolean experimental = dev.getDevice().getExperimental();
-                        if (experimental != null && experimental.booleanValue()) {
+                        final Boolean experimentalDev = dev.getDevice().getExperimental();
+                        experimental = experimentalDev != null && experimentalDev.booleanValue();
+                        if (experimental) {
                             remark += (remark.isBlank() ? "" : "<br />")
                                     + "Experimental support. Please report back if all channels are functional. Preferably share the debug log of property refresh and command responses";
                         }
                     }
                 }
                 sw.write("| ");
-                sw.write(minLengthString(device.getDescription(), 28));
+                sw.write(minLengthString(device.getDescription(), 34));
                 sw.write(" | ");
                 sw.write(minLengthString(device.getThingType().toString(), 16));
                 sw.write(" | ");
                 String model = isSupported ? device.getModel() : "[" + device.getModel() + "](#" + link + ")";
                 sw.write(minLengthString(model, 22));
                 sw.write(" | ");
-                sw.write(isSupported ? "No       " : "Yes      ");
+                sw.write(isSupported ? "No          " : (experimental ? "Experimental" : "Yes         "));
                 sw.write(" | ");
                 sw.write(minLengthString(remark, 10));
                 sw.write(" |\n");
@@ -240,7 +242,8 @@ public class ReadmeHelper {
 
                     for (MiIoBasicChannel ch : dev.getDevice().getChannels()) {
                         sw.write(ch.getType() + " " + ch.getChannel().replace("-", "_") + " \"" + ch.getFriendlyName()
-                                + "\" (" + gr + ") {channel=\"miio:basic:" + id + ":" + ch.getChannel() + "\"}\n");
+                                + "\" (" + gr + ") {channel=\"" + device.getThingType().toString() + ":" + id + ":"
+                                + ch.getChannel() + "\"}\n");
                     }
                     sw.write("```\n\n");
                 }
