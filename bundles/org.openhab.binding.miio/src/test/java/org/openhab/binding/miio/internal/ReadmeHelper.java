@@ -195,25 +195,21 @@ public class ReadmeHelper {
     }
 
     public static String readmeOptionMapping(MiIoBasicChannel channel, String model) {
-        StateDescriptionDTO stateDescription = channel.getStateDescription();
-        if (stateDescription != null && stateDescription.getOptions() != null) {
-            final List<OptionsValueListDTO> options = stateDescription.getOptions();
-            if (options != null && !options.isEmpty()) {
-                StringBuilder mapping = new StringBuilder();
-                mapping.append("Value mapping `[");
-                options.forEach((option) -> {
-                    mapping.append(String.format("\"%s\"=\"%s\",", String.valueOf(option.value),
-                            String.valueOf(option.label)));
-                });
-                mapping.deleteCharAt(mapping.length() - 1);
-                mapping.append("]`");
-                String newComment = mapping.toString();
-                if (!channel.getReadmeComment().contentEquals(newComment)) {
-                    LOGGER.info("Channel {} - {} readme comment updated to '{}'", model, channel.getChannel(),
-                            newComment);
-                }
-                return newComment;
+        final List<OptionsValueListDTO> options = getChannelOptions(channel);
+        if (!options.isEmpty()) {
+            StringBuilder mapping = new StringBuilder();
+            mapping.append("Value mapping `[");
+            options.forEach((option) -> {
+                mapping.append(
+                        String.format("\"%s\"=\"%s\",", String.valueOf(option.value), String.valueOf(option.label)));
+            });
+            mapping.deleteCharAt(mapping.length() - 1);
+            mapping.append("]`");
+            String newComment = mapping.toString();
+            if (!channel.getReadmeComment().contentEquals(newComment)) {
+                LOGGER.info("Channel {} - {} readme comment updated to '{}'", model, channel.getChannel(), newComment);
             }
+            return newComment;
         }
         return channel.getReadmeComment();
     }
@@ -317,6 +313,17 @@ public class ReadmeHelper {
         return arrayList;
     }
 
+    public static List<OptionsValueListDTO> getChannelOptions(MiIoBasicChannel channel) {
+        StateDescriptionDTO state = channel.getStateDescription();
+        if (state != null) {
+            List<OptionsValueListDTO> options = state.getOptions();
+            if (options != null) {
+                return options;
+            }
+        }
+        return List.of();
+    }
+
     private Map<String, String> createI18nEntries() {
         Map<String, String> i18nEntries = new HashMap<>();
         String path = "./src/main/resources/database/";
@@ -333,23 +340,18 @@ public class ReadmeHelper {
                 Gson gson = new GsonBuilder().serializeNulls().create();
                 @Nullable
                 MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                if (devdb != null) {
-                    for (MiIoBasicChannel channel : devdb.getDevice().getChannels()) {
-                        i18nEntries.put(I18N_CHANNEL_PREFIX + key + channel.getChannel(), channel.getFriendlyName());
-                        StateDescriptionDTO state = channel.getStateDescription();
-                        if (state != null) {
-                            List<OptionsValueListDTO> options = state.getOptions();
-                            if (options != null) {
-                                for (OptionsValueListDTO channelOption : options) {
-                                    String optionValue = channelOption.value;
-                                    String optionLabel = channelOption.label;
-                                    if (optionValue != null && optionLabel != null) {
-                                        i18nEntries.put(
-                                                I18N_OPTION_PREFIX + key + channel.getChannel() + "-" + optionValue,
-                                                optionLabel);
-                                    }
-                                }
-                            }
+                if (devdb == null) {
+                    continue;
+                }
+                for (MiIoBasicChannel channel : devdb.getDevice().getChannels()) {
+                    i18nEntries.put(I18N_CHANNEL_PREFIX + key + channel.getChannel(), channel.getFriendlyName());
+                    List<OptionsValueListDTO> options = getChannelOptions(channel);
+                    for (OptionsValueListDTO channelOption : options) {
+                        String optionValue = channelOption.value;
+                        String optionLabel = channelOption.label;
+                        if (optionValue != null && optionLabel != null) {
+                            i18nEntries.put(I18N_OPTION_PREFIX + key + channel.getChannel() + "-" + optionValue,
+                                    optionLabel);
                         }
                     }
                 }
