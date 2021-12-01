@@ -58,8 +58,7 @@ The Station thing holds two groups of channels (arrivals and departures) contain
 | Channel ID            | Item Type | Description                                      |
 |-----------------------|-----------|--------------------------------------------------|
 | direction             | String    | The direction of the route                       |
-| code                  | String    | Code name of the line                            |
-| commercialMode        | String    | Commercial name of the line (RER, Transilien...) |
+| lineName              | String    | Commercial name of the line                      |
 | name                  | String    | Name of the line                                 |
 | network               | String    | Name of the network ruling the line              |
 | timestamp             | DateTime  | Timestamp of the event (departure, arrival)      |

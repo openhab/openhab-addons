@@ -40,8 +40,7 @@ public class SncfBindingConstants {
 
     // List of Channel id's
     public static final String DIRECTION = "direction";
-    public static final String CODE = "code";
-    public static final String COMMERCIAL_MODE = "commercialMode";
+    public static final String LINE_NAME = "lineName";
     public static final String NAME = "name";
     public static final String NETWORK = "network";
     public static final String TIMESTAMP = "timestamp";

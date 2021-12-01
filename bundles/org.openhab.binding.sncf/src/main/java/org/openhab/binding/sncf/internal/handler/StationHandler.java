@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sncf.internal.SncfException;
 import org.openhab.binding.sncf.internal.dto.Passage;
-import org.openhab.binding.sncf.internal.dto.StopDateTime;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.PointType;
@@ -157,25 +156,28 @@ public class StationHandler extends BaseThingHandler {
     private void updateThing() {
         SncfBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler != null) {
-            scheduler.submit(() -> updatePassage(bridgeHandler, GROUP_ARRIVAL));
-            scheduler.submit(() -> updatePassage(bridgeHandler, GROUP_DEPARTURE));
+            scheduler.submit(() -> {
+                updatePassage(bridgeHandler, GROUP_ARRIVAL);
+                updatePassage(bridgeHandler, GROUP_DEPARTURE);
+            });
         }
     }
 
-    private void updatePassage(SncfBridgeHandler bridgeHandler, String movement) {
+    private void updatePassage(SncfBridgeHandler bridgeHandler, String direction) {
         try {
-            bridgeHandler.getNextPassage(stationId, movement).ifPresentOrElse(passage -> {
+            bridgeHandler.getNextPassage(stationId, direction).ifPresentOrElse(passage -> {
                 getThing().getChannels().stream().map(Channel::getUID)
-                        .filter(channelUID -> isLinked(channelUID) && movement.equals(channelUID.getGroupId()))
+                        .filter(channelUID -> isLinked(channelUID) && direction.equals(channelUID.getGroupId()))
                         .forEach(channelUID -> {
-                            State state = getValue(channelUID.getIdWithoutGroup(), passage, movement);
+                            State state = getValue(channelUID.getIdWithoutGroup(), passage, direction);
                             updateState(channelUID, state);
                         });
-                StopDateTime stopTime = passage.stopDateTime;
-                scheduleRefresh(fromDTO(
-                        GROUP_DEPARTURE.equals(movement) ? stopTime.departureDateTime : stopTime.arrivalDateTime));
+                ZonedDateTime eventTime = getEventTimestamp(passage, direction);
+                if (eventTime != null) {
+                    scheduleRefresh(eventTime.plusMinutes(1));
+                }
             }, () -> {
-                logger.debug("No {} available", movement);
+                logger.debug("No {} available", direction);
                 scheduleRefresh(ZonedDateTime.now().plusMinutes(5));
             });
             updateStatus(ThingStatus.ONLINE);
@@ -185,21 +187,19 @@ public class StationHandler extends BaseThingHandler {
         }
     }
 
-    private State getValue(String channelId, Passage passage, String group) {
+    private State getValue(String channelId, Passage passage, String direction) {
         switch (channelId) {
             case DIRECTION:
                 return fromNullableString(passage.route.direction.name);
-            case CODE:
-                return fromNullableString(passage.displayInformations.code);
-            case COMMERCIAL_MODE:
-                return fromNullableString(passage.displayInformations.commercialMode);
+            case LINE_NAME:
+                return fromNullableString(String.format("%s %s", passage.displayInformations.commercialMode,
+                        passage.displayInformations.code));
             case NAME:
                 return fromNullableString(passage.displayInformations.name);
             case NETWORK:
                 return fromNullableString(passage.displayInformations.network);
             case TIMESTAMP:
-                return fromNullableDTO(group.equals(GROUP_ARRIVAL) ? passage.stopDateTime.arrivalDateTime
-                        : passage.stopDateTime.departureDateTime);
+                return fromNullableTime(passage, direction);
         }
         return UnDefType.NULL;
     }
@@ -208,12 +208,14 @@ public class StationHandler extends BaseThingHandler {
         return aValue != null ? StringType.valueOf(aValue) : UnDefType.NULL;
     }
 
-    private @Nullable ZonedDateTime fromDTO(@Nullable String dateTime) {
-        return dateTime != null ? ZonedDateTime.parse(dateTime + zoneOffset, NAVITIA_DATE_FORMAT).plusMinutes(1) : null;
+    private @Nullable ZonedDateTime getEventTimestamp(Passage passage, String direction) {
+        String eventTime = direction.equals(GROUP_ARRIVAL) ? passage.stopDateTime.arrivalDateTime
+                : passage.stopDateTime.departureDateTime;
+        return eventTime != null ? ZonedDateTime.parse(eventTime + zoneOffset, NAVITIA_DATE_FORMAT) : null;
     }
 
-    private State fromNullableDTO(@Nullable String dateTime) {
-        ZonedDateTime timestamp = fromDTO(dateTime);
+    private State fromNullableTime(Passage passage, String direction) {
+        ZonedDateTime timestamp = getEventTimestamp(passage, direction);
         return timestamp != null ? new DateTimeType(timestamp) : UnDefType.NULL;
     }
 

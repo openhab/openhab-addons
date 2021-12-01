@@ -33,8 +33,7 @@
 		<label>Other</label>
 		<channels>
 			<channel id="direction" typeId="direction"/>
-			<channel id="code" typeId="code"/>
-			<channel id="commercialMode" typeId="commercialMode"/>
+			<channel id="lineName" typeId="lineName"/>
 			<channel id="name" typeId="name"/>
 			<channel id="network" typeId="network"/>
 			<channel id="timestamp" typeId="timestamp"/>
@@ -47,9 +46,9 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="code">
+	<channel-type id="lineName">
 		<item-type>String</item-type>
-		<label>Code</label>
+		<label>Line</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -62,12 +61,6 @@
 	<channel-type id="network" advanced="true">
 		<item-type>String</item-type>
 		<label>Network</label>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="commercialMode">
-		<item-type>String</item-type>
-		<label>Commercial Mode</label>
 		<state readOnly="true"></state>
 	</channel-type>
 
