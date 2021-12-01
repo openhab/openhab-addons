@@ -151,7 +151,7 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                 logger.debug("Null value occured for device {}: {}", midevice, config);
             }
         } catch (Exception e) {
-            logger.debug("Error while performing periodic refresh for '{}': {}", getThing().getUID().toString(), e);
+            logger.debug("Error while performing periodic refresh for '{}': {}", getThing().getUID(), e.getMessage());
         }
     }
 }
