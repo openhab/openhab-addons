@@ -13,6 +13,9 @@
 package org.openhab.binding.homewizard.internal;
 
 import java.io.IOException;
+import java.time.DateTimeException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -182,32 +185,31 @@ public class HomeWizardHandler extends BaseThingHandler {
                     new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
 
             // 210119164000
-            long seconds = dtv % 100;
+            int seconds = (int) (dtv % 100);
 
             dtv /= 100;
-            long minutes = dtv % 100;
+            int minutes = (int) (dtv % 100);
 
             dtv /= 100;
-            long hours = dtv % 100;
+            int hours = (int) (dtv % 100);
 
             dtv /= 100;
-            long day = dtv % 100;
+            int day = (int) (dtv % 100);
 
             dtv /= 100;
-            long month = dtv % 100;
+            int month = (int) (dtv % 100);
 
             dtv /= 100;
-            long year = dtv + 2000;
+            int year = (int) (dtv + 2000);
 
-            String dateString = String.format("%04d-%02d-%02dT%02d:%02d:%02d", year, month, day, hours, minutes,
-                    seconds);
             try {
-                DateTimeType dtt = DateTimeType.valueOf(dateString);
+                DateTimeType dtt = new DateTimeType(
+                        ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, ZoneId.systemDefault()));
                 updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, dtt);
                 updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
                         new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
-            } catch (java.time.format.DateTimeParseException e) {
-                logger.warn("Unable to parse Gas timestamp {} / {}", payload.getGasTimestamp(), dateString);
+            } catch (DateTimeException e) {
+                logger.warn("Unable to parse Gas timestamp: {}", payload.getGasTimestamp());
             }
         }
     }
