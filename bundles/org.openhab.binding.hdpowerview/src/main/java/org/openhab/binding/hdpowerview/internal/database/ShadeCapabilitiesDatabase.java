@@ -31,25 +31,25 @@ public class ShadeCapabilitiesDatabase {
     private final Logger logger = LoggerFactory.getLogger(ShadeCapabilitiesDatabase.class);
 
     /*
-     * Database of known shade capabilities
+     * Database of known shade capabilities.
      */
     private static final Capabilities[] CAPABILITIES_DATABASE = {
         // @formatter:off
-            new Capabilities(0).primary()       .text("Bottom Up"),
-            new Capabilities(1).primary().vane().text("Bottom Up Tilt 90°"),
-            new Capabilities(2).primary().vane().text("Bottom Up Tilt 180°"),
-            new Capabilities(3).primary()       .text("Vertical"),
-            new Capabilities(4).primary().vane().text("Vertical Tilt 180°"),
-            new Capabilities(5)          .vane().text("Tilt Only 180°"),
-            new Capabilities(6).primary()       .text("Top Down")                 .primaryStateInverted(),
-            new Capabilities(7).primary()       .text("Top Down Bottom Up")       .secondary(),
-            new Capabilities(8).primary()       .text("Duolite Lift"),
-            new Capabilities(9).primary().vane().text("Duolite Lift and Tilt 90°"),
+            new Capabilities(0).primary().tiltOnClosed()                      .text("Bottom Up"),
+            new Capabilities(1).primary().tiltAnywhere()                      .text("Bottom Up Tilt 90°"),
+            new Capabilities(2).primary().tiltAnywhere().tilt180()            .text("Bottom Up Tilt 180°"),
+            new Capabilities(3).primary().tiltOnClosed()                      .text("Vertical"),
+            new Capabilities(4).primary().tiltAnywhere().tilt180()            .text("Vertical Tilt 180°"),
+            new Capabilities(5)          .tiltAnywhere().tilt180()            .text("Tilt Only 180°"),
+            new Capabilities(6).primary()                                     .text("Top Down")                 .primaryStateInverted(),
+            new Capabilities(7).primary()                         .secondary().text("Top Down Bottom Up"),
+            new Capabilities(8).primary()                                     .text("Duolite Lift"),
+            new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°"),
         // @formatter:on
             new Capabilities() };
 
     /*
-     * Database of known shade types and corresponding capabilities
+     * Database of known shade types and corresponding capabilities.
      */
     private static final Type[] TYPE_DATABASE = {
         // @formatter:off
@@ -82,7 +82,7 @@ public class ShadeCapabilitiesDatabase {
      *
      * @author Andrew Fiddian-Green - Initial Contribution
      */
-    public static class Base {
+    private static class Base {
         protected int intValue = -1;
         protected String text = "-- not in database --";
 
@@ -134,11 +134,13 @@ public class ShadeCapabilitiesDatabase {
      */
     public static class Capabilities extends Base {
         private boolean supportsPrimary;
-        private boolean supportsVanes;
         private boolean supportsSecondary;
+        private boolean supportsTiltOnClosed;
+        private boolean supportsTiltAnywhere;
         private boolean primaryStateInverted;
+        private boolean tilt180Degrees;
 
-        protected Capabilities() {
+        public Capabilities() {
         }
 
         protected Capabilities(int capabilities) {
@@ -155,8 +157,8 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
-        protected Capabilities vane() {
-            supportsVanes = true;
+        protected Capabilities tiltOnClosed() {
+            supportsTiltOnClosed = true;
             return this;
         }
 
@@ -165,8 +167,18 @@ public class ShadeCapabilitiesDatabase {
             return this;
         }
 
+        protected Capabilities tiltAnywhere() {
+            supportsTiltAnywhere = true;
+            return this;
+        }
+
         protected Capabilities primaryStateInverted() {
             primaryStateInverted = true;
+            return this;
+        }
+
+        protected Capabilities tilt180() {
+            tilt180Degrees = true;
             return this;
         }
 
@@ -184,8 +196,8 @@ public class ShadeCapabilitiesDatabase {
          *
          * @return true if it supports a vane.
          */
-        public boolean supportsVanes() {
-            return supportsVanes;
+        public boolean supportsTiltAnywhere() {
+            return supportsTiltAnywhere;
         }
 
         /**
@@ -204,6 +216,27 @@ public class ShadeCapabilitiesDatabase {
          */
         public boolean isPrimaryStateInverted() {
             return primaryStateInverted;
+        }
+
+        /**
+         * Check if the Capabilities class instance supports 'tilt when closed'.
+         *
+         * Note: Simple bottom up or vertical shades that do not have independent vane controls, can be tilted in a
+         * simple way, only when they are fully closed, by moving the shade motor a bit further.
+         *
+         * @return true if the primary shade is inverted.
+         */
+        public boolean supportsTiltOnClosed() {
+            return supportsTiltOnClosed && !supportsTiltAnywhere;
+        }
+
+        /**
+         * Check if the Capabilities class instance supports 180 degrees tilt.
+         *
+         * @return true if the primary shade supports 180 degrees.
+         */
+        public boolean supportsTilt180() {
+            return tilt180Degrees;
         }
     }
 

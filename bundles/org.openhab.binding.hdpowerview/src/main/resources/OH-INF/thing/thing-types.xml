@@ -72,7 +72,7 @@
 			<property name="type"></property>
 			<property name="capabilities"></property>
 			<property name="jsonHasSecondary"></property>
-			<property name="jsonHasVanes"></property>
+			<property name="jsonTiltAnywhere"></property>
 		</properties>
 		<representation-property>id</representation-property>
 
