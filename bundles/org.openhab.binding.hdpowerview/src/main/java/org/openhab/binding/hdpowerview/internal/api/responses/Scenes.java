@@ -38,7 +38,7 @@ public class Scenes {
      */
     @SuppressWarnings("null")
     @NonNullByDefault
-    public static class Scene {
+    public static class Scene implements Comparable<Scene> {
         public int id;
         public @Nullable String name;
         public int roomId;
@@ -72,6 +72,11 @@ public class Scenes {
             result = prime * result + iconId;
 
             return result;
+        }
+
+        @Override
+        public int compareTo(Scene other) {
+            return Integer.compare(order, other.order);
         }
 
         public String getName() {

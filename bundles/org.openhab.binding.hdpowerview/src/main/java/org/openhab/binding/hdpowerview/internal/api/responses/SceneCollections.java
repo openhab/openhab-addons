@@ -38,7 +38,7 @@ public class SceneCollections {
      */
     @SuppressWarnings("null")
     @NonNullByDefault
-    public static class SceneCollection {
+    public static class SceneCollection implements Comparable<SceneCollection> {
         public int id;
         public @Nullable String name;
         public int order;
@@ -70,6 +70,11 @@ public class SceneCollections {
             result = prime * result + iconId;
 
             return result;
+        }
+
+        @Override
+        public int compareTo(SceneCollection other) {
+            return Integer.compare(order, other.order);
         }
 
         public String getName() {

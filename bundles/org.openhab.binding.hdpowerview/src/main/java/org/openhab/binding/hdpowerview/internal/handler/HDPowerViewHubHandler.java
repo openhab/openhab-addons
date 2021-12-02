@@ -18,13 +18,10 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.StringJoiner;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -92,9 +89,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
 
-    private Map<ChannelUID, Scene> sceneCache = new ConcurrentHashMap<ChannelUID, Scene>();
-    private Map<ChannelUID, SceneCollection> sceneCollectionCache = new ConcurrentHashMap<ChannelUID, SceneCollection>();
-    private Map<ChannelUID, ScheduledEvent> scheduledEventCache = new ConcurrentHashMap<ChannelUID, ScheduledEvent>();
+    private List<Scene> sceneCache = new ArrayList<>();
+    private List<SceneCollection> sceneCollectionCache = new ArrayList<>();
+    private List<ScheduledEvent> scheduledEventCache = new ArrayList<>();
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
@@ -246,7 +243,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             List<SceneCollection> sceneCollections = pollSceneCollections();
             updateSceneCollectionChannels(sceneCollections);
             List<ScheduledEvent> scheduledEvents = pollScheduledEvents();
-            updateScheduledEventChannels(scenes, sceneCollections, scheduledEvents);
+            updateScheduledEventChannels(scheduledEvents, scenes, sceneCollections);
             updateScheduledEventStates(scheduledEvents);
         } catch (JsonParseException e) {
             logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
@@ -322,62 +319,30 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void updateSceneChannels(List<Scene> scenes) {
-        Map<ChannelUID, Channel> channelsToDelete = getUidChannelMap(HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
-        List<Channel> channelsToAdd = new ArrayList<Channel>();
-        Set<ChannelUID> updatedChannelUids = new HashSet<>();
-        ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
-                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
-        for (Scene scene : scenes) {
-            ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scene.id));
-            Scene cachedEntry = sceneCache.get(channelUid);
-            if (cachedEntry == null) {
-                logger.debug("Creating new channel for scene '{}'", scene.id);
-            } else if (scene.equals(cachedEntry)) {
-                logger.debug("Keeping channel for existing scene '{}'", scene.id);
-                channelsToDelete.remove(channelUid);
-                continue;
-            } else {
-                logger.debug("Updating channel for scene '{}'", scene.id);
-                updatedChannelUids.add(channelUid);
-            }
-
-            String description = translationProvider.getText("dynamic-channel.scene-activate.description",
-                    scene.getName());
-            Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(sceneChannelTypeUID)
-                    .withLabel(scene.getName()).withDescription(description).build();
-            channelsToAdd.add(channel);
-            sceneCache.put(channelUid, scene);
-        }
-
-        if (!channelsToDelete.isEmpty()) {
-            logger.debug("Removing {} orphan scene channels", channelsToDelete.size() - updatedChannelUids.size());
-        }
-        updateThingChannels(channelsToDelete, channelsToAdd, updatedChannelUids, sceneCache);
-    }
-
-    private void updateThingChannels(Map<ChannelUID, Channel> channelsToDelete, List<Channel> channelsToAdd,
-            Set<ChannelUID> updatedChannelUids, Map<ChannelUID, ?> cache) {
-        if (channelsToDelete.isEmpty() && channelsToAdd.isEmpty()) {
+        if (scenes.size() == sceneCache.size() && sceneCache.containsAll(scenes)) {
+            // Duplicates are not allowed. Reordering is not supported.
+            logger.debug("Preserving scene channels, no changes detected");
             return;
         }
 
+        logger.debug("Updating all scene channels, changes detected");
+        sceneCache = new ArrayList<Scene>(scenes);
+
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
-
-        // Remove any previously created channels that no longer exist or are being replaced
-        if (!channelsToDelete.isEmpty()) {
-            allChannels.removeAll(channelsToDelete.values());
-            channelsToDelete.forEach((k, v) -> {
-                if (!updatedChannelUids.contains(k)) {
-                    cache.remove(k);
-                }
-            });
-        }
-
-        if (!channelsToAdd.isEmpty()) {
-            allChannels.addAll(channelsToAdd);
-        }
-
+        allChannels.removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES.equals(c.getUID().getGroupId()));
+        scenes.stream().sorted().forEach(scene -> allChannels.add(createSceneChannel(scene)));
         updateThing(editThing().withChannels(allChannels).build());
+    }
+
+    private Channel createSceneChannel(Scene scene) {
+        ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
+                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
+        ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scene.id));
+        String description = translationProvider.getText("dynamic-channel.scene-activate.description", scene.getName());
+        Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(sceneChannelTypeUID)
+                .withLabel(scene.getName()).withDescription(description).build();
+
+        return channel;
     }
 
     private List<SceneCollection> pollSceneCollections()
@@ -402,40 +367,34 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void updateSceneCollectionChannels(List<SceneCollection> sceneCollections) {
-        Map<ChannelUID, Channel> channelsToDelete = getUidChannelMap(
-                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
-        List<Channel> channelsToAdd = new ArrayList<Channel>();
-        Set<ChannelUID> updatedChannelUids = new HashSet<>();
+        if (sceneCollections.size() == sceneCollectionCache.size()
+                && sceneCollectionCache.containsAll(sceneCollections)) {
+            // Duplicates are not allowed. Reordering is not supported.
+            logger.debug("Preserving scene collection channels, no changes detected");
+            return;
+        }
+
+        logger.debug("Updating all scene collection channels, changes detected");
+        sceneCollectionCache = new ArrayList<SceneCollection>(sceneCollections);
+
+        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+        allChannels
+                .removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS.equals(c.getUID().getGroupId()));
+        sceneCollections.stream().sorted()
+                .forEach(sceneCollection -> allChannels.add(createSceneCollectionChannel(sceneCollection)));
+        updateThing(editThing().withChannels(allChannels).build());
+    }
+
+    private Channel createSceneCollectionChannel(SceneCollection sceneCollection) {
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_SCENE_GROUPS);
-        for (SceneCollection sceneCollection : sceneCollections) {
-            ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(sceneCollection.id));
-            SceneCollection cachedEntry = sceneCollectionCache.get(channelUid);
-            if (cachedEntry == null) {
-                logger.debug("Creating new channel for scene collection '{}'", sceneCollection.id);
-            } else if (sceneCollection.equals(cachedEntry)) {
-                logger.debug("Keeping channel for existing scene collection '{}'", sceneCollection.id);
-                channelsToDelete.remove(channelUid);
-                continue;
-            } else {
-                logger.debug("Updating channel for scene collection '{}'", sceneCollection.id);
-                updatedChannelUids.add(channelUid);
-            }
+        ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(sceneCollection.id));
+        String description = translationProvider.getText("dynamic-channel.scene-group-activate.description",
+                sceneCollection.getName());
+        Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(sceneGroupChannelTypeUID)
+                .withLabel(sceneCollection.getName()).withDescription(description).build();
 
-            String description = translationProvider.getText("dynamic-channel.scene-group-activate.description",
-                    sceneCollection.getName());
-            Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
-                    .withType(sceneGroupChannelTypeUID).withLabel(sceneCollection.getName())
-                    .withDescription(description).build();
-            channelsToAdd.add(channel);
-            sceneCollectionCache.put(channelUid, sceneCollection);
-        }
-
-        if (!channelsToDelete.isEmpty()) {
-            logger.debug("Removing {} orphan scene collection channels",
-                    channelsToDelete.size() - updatedChannelUids.size());
-        }
-        updateThingChannels(channelsToDelete, channelsToAdd, updatedChannelUids, sceneCollectionCache);
+        return channel;
     }
 
     private List<ScheduledEvent> pollScheduledEvents()
@@ -459,71 +418,71 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return scheduledEventData;
     }
 
-    private void updateScheduledEventChannels(List<Scene> scenes, List<SceneCollection> sceneCollections,
-            List<ScheduledEvent> scheduledEvents) {
-        Map<ChannelUID, Channel> channelsToDelete = getUidChannelMap(
-                HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
-        List<Channel> channelsToAdd = new ArrayList<Channel>();
-        Set<ChannelUID> updatedChannelUids = new HashSet<>();
+    private void updateScheduledEventChannels(List<ScheduledEvent> scheduledEvents, List<Scene> scenes,
+            List<SceneCollection> sceneCollections) {
+        if (scheduledEvents.size() == scheduledEventCache.size() && scheduledEventCache.containsAll(scheduledEvents)) {
+            // Duplicates are not allowed. Reordering is not supported.
+            logger.debug("Preserving scheduled event channels, no changes detected");
+            return;
+        }
+
+        logger.debug("Updating all scheduled event channels, changes detected");
+        scheduledEventCache = new ArrayList<ScheduledEvent>(scheduledEvents);
+
+        List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
+        allChannels
+                .removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS.equals(c.getUID().getGroupId()));
+        scheduledEvents.stream().forEach(scheduledEvent -> {
+            Channel channel = createScheduledEventChannel(scheduledEvent, scenes, sceneCollections);
+            if (channel != null) {
+                allChannels.add(channel);
+            }
+        });
+        updateThing(editThing().withChannels(allChannels).build());
+    }
+
+    private @Nullable Channel createScheduledEventChannel(ScheduledEvent scheduledEvent, List<Scene> scenes,
+            List<SceneCollection> sceneCollections) {
+        String referencedName = getReferencedSceneOrSceneCollectionName(scheduledEvent, scenes, sceneCollections);
+        if (referencedName == null) {
+            return null;
+        }
         ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
                 HDPowerViewBindingConstants.CHANNEL_GROUP_AUTOMATIONS);
-        for (ScheduledEvent scheduledEvent : scheduledEvents) {
-            ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scheduledEvent.id));
-            ScheduledEvent cachedEntry = scheduledEventCache.get(channelUid);
-            if (cachedEntry == null) {
-                logger.debug("Creating new channel for scheduled event '{}'", scheduledEvent.id);
-            } else if (scheduledEvent.equals(cachedEntry)) {
-                logger.debug("Keeping channel for existing scheduled event '{}'", scheduledEvent.id);
-                channelsToDelete.remove(channelUid);
-                continue;
-            } else {
-                logger.debug("Updating channel for scheduled event '{}'", scheduledEvent.id);
-                updatedChannelUids.add(channelUid);
+        ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scheduledEvent.id));
+        String label = getScheduledEventName(referencedName, scheduledEvent);
+        String description = translationProvider.getText("dynamic-channel.automation-enabled.description",
+                referencedName);
+        Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(automationChannelTypeUID)
+                .withLabel(label).withDescription(description).build();
+
+        return channel;
+    }
+
+    private @Nullable String getReferencedSceneOrSceneCollectionName(ScheduledEvent scheduledEvent, List<Scene> scenes,
+            List<SceneCollection> sceneCollections) {
+        if (scheduledEvent.sceneId > 0) {
+            for (Scene scene : scenes) {
+                if (scene.id == scheduledEvent.sceneId) {
+                    return scene.getName();
+                }
             }
-
-            String name = null;
-            if (scheduledEvent.sceneId > 0) {
-                for (Scene scene : scenes) {
-                    if (scene.id == scheduledEvent.sceneId) {
-                        name = scene.getName();
-                        break;
-                    }
+            logger.error("Scene '{}' was not found for scheduled event '{}'", scheduledEvent.sceneId,
+                    scheduledEvent.id);
+            return null;
+        } else if (scheduledEvent.sceneCollectionId > 0) {
+            for (SceneCollection sceneCollection : sceneCollections) {
+                if (sceneCollection.id == scheduledEvent.sceneCollectionId) {
+                    return sceneCollection.getName();
                 }
-                if (name == null) {
-                    logger.error("Scene '{}' was not found for scheduled event '{}'", scheduledEvent.sceneId,
-                            scheduledEvent.id);
-                    continue;
-                }
-            } else if (scheduledEvent.sceneCollectionId > 0) {
-                for (SceneCollection sceneCollection : sceneCollections) {
-                    if (sceneCollection.id == scheduledEvent.sceneCollectionId) {
-                        name = sceneCollection.getName();
-                        break;
-                    }
-                }
-                if (name == null) {
-                    logger.error("Scene collection '{}' was not found for scheduled event '{}'",
-                            scheduledEvent.sceneCollectionId, scheduledEvent.id);
-                    continue;
-                }
-            } else {
-                logger.error("Scheduled event '{}'' not related to any scene or scene collection", scheduledEvent.id);
-                continue;
             }
-
-            String label = getScheduledEventName(name, scheduledEvent);
-            String description = translationProvider.getText("dynamic-channel.automation-enabled.description", name);
-            Channel channel = ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH)
-                    .withType(automationChannelTypeUID).withLabel(label).withDescription(description).build();
-            channelsToAdd.add(channel);
-            scheduledEventCache.put(channelUid, scheduledEvent);
+            logger.error("Scene collection '{}' was not found for scheduled event '{}'",
+                    scheduledEvent.sceneCollectionId, scheduledEvent.id);
+            return null;
+        } else {
+            logger.error("Scheduled event '{}'' not related to any scene or scene collection", scheduledEvent.id);
+            return null;
         }
-
-        if (!channelsToDelete.isEmpty()) {
-            logger.debug("Removing {} orphan scheduled event channels",
-                    channelsToDelete.size() - updatedChannelUids.size());
-        }
-        updateThingChannels(channelsToDelete, channelsToAdd, updatedChannelUids, scheduledEventCache);
     }
 
     private String getScheduledEventName(String sceneName, ScheduledEvent scheduledEvent) {
@@ -577,7 +536,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private String getFormattedTimeOffset(int minutes) {
-        if (minutes > 60) {
+        if (minutes >= 60) {
             int remainder = minutes % 60;
             if (remainder == 0) {
                 return translationProvider.getText("dynamic-channel.automation.hour", minutes / 60);
@@ -614,14 +573,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             if (shade.id != 0) {
                 ret.put(Integer.toString(shade.id), shade);
             }
-        }
-        return ret;
-    }
-
-    private Map<ChannelUID, Channel> getUidChannelMap(String channelGroupId) {
-        Map<ChannelUID, Channel> ret = new HashMap<>();
-        for (Channel channel : getThing().getChannelsOfGroup(channelGroupId)) {
-            ret.put(channel.getUID(), channel);
         }
         return ret;
     }
