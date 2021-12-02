@@ -49,6 +49,8 @@ import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -106,8 +108,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
-            BasicChannelTypeProvider basicChannelTypeProvider) {
-        super(thing, miIoDatabaseWatchService, cloudConnector);
+            BasicChannelTypeProvider basicChannelTypeProvider, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
+        super(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider, localeProvider);
         this.channelTypeRegistry = channelTypeRegistry;
         this.basicChannelTypeProvider = basicChannelTypeProvider;
     }
@@ -452,6 +455,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         try {
             JsonObject deviceMapping = Utils.convertFileToJSON(fn);
             logger.debug("Using device database: {} for device {}", fn.getFile(), deviceName);
+            String key = fn.getFile().replaceFirst("/database/", "").split("json")[0];
             Gson gson = new GsonBuilder().serializeNulls().create();
             miioDevice = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
             for (Channel ch : getThing().getChannels()) {
@@ -475,7 +479,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     logger.debug("properties {}", miChannel);
                     if (!miChannel.getType().isEmpty()) {
                         basicChannelTypeProvider.addChannelType(miChannel, deviceName);
-                        ChannelUID channelUID = addChannel(thingBuilder, miChannel, deviceName);
+                        ChannelUID channelUID = addChannel(thingBuilder, miChannel, deviceName, key);
                         if (channelUID != null) {
                             actions.put(channelUID, miChannel);
                             channelsAdded++;
@@ -505,7 +509,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return false;
     }
 
-    private @Nullable ChannelUID addChannel(ThingBuilder thingBuilder, MiIoBasicChannel miChannel, String model) {
+    private @Nullable ChannelUID addChannel(ThingBuilder thingBuilder, MiIoBasicChannel miChannel, String model,
+            String key) {
         String channel = miChannel.getChannel();
         String dataType = miChannel.getType();
         if (channel.isEmpty() || dataType.isEmpty()) {
@@ -514,7 +519,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return null;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
-        ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(miChannel.getFriendlyName());
+        String label = getLocalText(I18N_CHANNEL_PREFIX + key + channel, miChannel.getFriendlyName());
+        ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(label);
         boolean useGeneratedChannelType = false;
         if (!miChannel.getChannelType().isBlank()) {
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(miChannel.getChannelType());

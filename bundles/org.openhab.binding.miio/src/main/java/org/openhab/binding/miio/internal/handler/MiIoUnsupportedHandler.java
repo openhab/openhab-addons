@@ -44,6 +44,8 @@ import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.miot.MiotParser;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -87,8 +89,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     });
 
     public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            CloudConnector cloudConnector, HttpClient httpClientFactory) {
-        super(thing, miIoDatabaseWatchService, cloudConnector);
+            CloudConnector cloudConnector, HttpClient httpClientFactory, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
+        super(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider, localeProvider);
         this.httpClient = httpClientFactory;
     }
 
