@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.*;
+
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -24,6 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,6 +65,7 @@ public class ReadmeHelper {
     private static final String BASEFILE = "./README.base.md";
     private static final String OUTPUTFILE = "./README.md";
     private static final String DEVICE_NAMES_FILE = "./src/main/resources/misc/device_names.json";
+    private static final String I18N_CHANNEL_FILE = "./src/main/resources/OH-INF/i18n/basic.properties";
     private static final boolean UPDATE_OPTION_MAPPING_README_COMMENTS = true;
 
     @Disabled
@@ -71,7 +78,6 @@ public class ReadmeHelper {
         StringWriter channelList = rm.channelList();
         LOGGER.info("## Creating Item Files for miio:basic devices");
         StringWriter itemFileExamples = rm.itemFileExamples();
-        LOGGER.info("## Done");
         try {
             String baseDoc = new String(Files.readAllBytes(Paths.get(BASEFILE)), StandardCharsets.UTF_8);
             String newDoc = baseDoc.replaceAll("!!!devices", deviceList.toString())
@@ -79,8 +85,34 @@ public class ReadmeHelper {
                     .replaceAll("!!!itemFileExamples", itemFileExamples.toString());
             Files.write(Paths.get(OUTPUTFILE), newDoc.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
-            LOGGER.warn("IO exception", e);
+            LOGGER.warn("IO exception writing readme", e);
         }
+
+        LOGGER.info("## Creating i18n entries for devices and miio:basic channels");
+        StringBuilder sb = new StringBuilder();
+        sb.append("# Automatic created list by miio readme maker for miio devices & database channels\n\n");
+        sb.append("# Devices\n\n");
+        for (MiIoDevices d : Arrays.asList(MiIoDevices.values())) {
+            sb.append(I18N_THING_PREFIX);
+            sb.append(d.getModel());
+            sb.append(" = ");
+            sb.append(d.getDescription());
+            sb.append("\n");
+        }
+        sb.append("\n# Channels\n\n");
+        for (Entry<String, String> e : sortByKeys(rm.createI18nEntries()).entrySet()) {
+            sb.append(e.getKey());
+            sb.append(" = ");
+            sb.append(e.getValue());
+            sb.append("\n");
+        }
+        sb.append("\n");
+        try {
+            Files.write(Paths.get(I18N_CHANNEL_FILE), sb.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            LOGGER.warn("IO exception creating i18n file", e);
+        }
+        LOGGER.info("## Done");
     }
 
     private StringWriter deviceList() {
@@ -163,25 +195,21 @@ public class ReadmeHelper {
     }
 
     public static String readmeOptionMapping(MiIoBasicChannel channel, String model) {
-        StateDescriptionDTO stateDescription = channel.getStateDescription();
-        if (stateDescription != null && stateDescription.getOptions() != null) {
-            final List<OptionsValueListDTO> options = stateDescription.getOptions();
-            if (options != null && !options.isEmpty()) {
-                StringBuilder mapping = new StringBuilder();
-                mapping.append("Value mapping `[");
-                options.forEach((option) -> {
-                    mapping.append(String.format("\"%s\"=\"%s\",", String.valueOf(option.value),
-                            String.valueOf(option.label)));
-                });
-                mapping.deleteCharAt(mapping.length() - 1);
-                mapping.append("]`");
-                String newComment = mapping.toString();
-                if (!channel.getReadmeComment().contentEquals(newComment)) {
-                    LOGGER.info("Channel {} - {} readme comment updated to '{}'", model, channel.getChannel(),
-                            newComment);
-                }
-                return newComment;
+        final List<OptionsValueListDTO> options = getChannelOptions(channel);
+        if (!options.isEmpty()) {
+            StringBuilder mapping = new StringBuilder();
+            mapping.append("Value mapping `[");
+            options.forEach((option) -> {
+                mapping.append(
+                        String.format("\"%s\"=\"%s\",", String.valueOf(option.value), String.valueOf(option.label)));
+            });
+            mapping.deleteCharAt(mapping.length() - 1);
+            mapping.append("]`");
+            String newComment = mapping.toString();
+            if (!channel.getReadmeComment().contentEquals(newComment)) {
+                LOGGER.info("Channel {} - {} readme comment updated to '{}'", model, channel.getChannel(), newComment);
             }
+            return newComment;
         }
         return channel.getReadmeComment();
     }
@@ -264,23 +292,78 @@ public class ReadmeHelper {
         List<MiIoBasicDevice> arrayList = new ArrayList<>();
         String path = "./src/main/resources/database/";
         File dir = new File(path);
-        File[] filesList = dir.listFiles();
+        FileFilter fileFilter = file -> !file.isDirectory() && file.getName().toLowerCase().endsWith(".json");
+        File[] filesList = dir.listFiles(fileFilter);
+        if (filesList == null) {
+            return arrayList;
+        }
         for (File file : filesList) {
-            if (file.isFile()) {
-                try {
-                    JsonObject deviceMapping = convertFileToJSON(path + file.getName());
-                    Gson gson = new GsonBuilder().serializeNulls().create();
-                    @Nullable
-                    MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
-                    if (devdb != null) {
-                        arrayList.add(devdb);
-                    }
-                } catch (Exception e) {
-                    LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
+            try {
+                JsonObject deviceMapping = convertFileToJSON(path + file.getName());
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                @Nullable
+                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                if (devdb != null) {
+                    arrayList.add(devdb);
                 }
+            } catch (Exception e) {
+                LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
             }
         }
         return arrayList;
+    }
+
+    public static List<OptionsValueListDTO> getChannelOptions(MiIoBasicChannel channel) {
+        StateDescriptionDTO state = channel.getStateDescription();
+        if (state != null) {
+            List<OptionsValueListDTO> options = state.getOptions();
+            if (options != null) {
+                return options;
+            }
+        }
+        return List.of();
+    }
+
+    private Map<String, String> createI18nEntries() {
+        Map<String, String> i18nEntries = new HashMap<>();
+        String path = "./src/main/resources/database/";
+        File dir = new File(path);
+        FileFilter fileFilter = file -> !file.isDirectory() && file.getName().toLowerCase().endsWith(".json");
+        File[] filesList = dir.listFiles(fileFilter);
+        if (filesList == null) {
+            return i18nEntries;
+        }
+        for (File file : filesList) {
+            try {
+                String key = file.getName().toLowerCase().split("json")[0];
+                JsonObject deviceMapping = convertFileToJSON(path + file.getName());
+                Gson gson = new GsonBuilder().serializeNulls().create();
+                @Nullable
+                MiIoBasicDevice devdb = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
+                if (devdb == null) {
+                    continue;
+                }
+                for (MiIoBasicChannel channel : devdb.getDevice().getChannels()) {
+                    i18nEntries.put(I18N_CHANNEL_PREFIX + key + channel.getChannel(), channel.getFriendlyName());
+                    List<OptionsValueListDTO> options = getChannelOptions(channel);
+                    for (OptionsValueListDTO channelOption : options) {
+                        String optionValue = channelOption.value;
+                        String optionLabel = channelOption.label;
+                        if (optionValue != null && optionLabel != null) {
+                            i18nEntries.put(I18N_OPTION_PREFIX + key + channel.getChannel() + "-" + optionValue,
+                                    optionLabel);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.info("Error while searching  in database '{}': {}", file.getName(), e.getMessage());
+            }
+        }
+        return i18nEntries;
+    }
+
+    public static <K extends Comparable, V> Map<K, V> sortByKeys(Map<K, V> map) {
+        return new TreeMap<>(map);
     }
 
     private static String minLengthString(String string, int length) {
@@ -290,7 +373,6 @@ public class ReadmeHelper {
     JsonObject convertFileToJSON(String fileName) {
         // Read from File to String
         JsonObject jsonObject = new JsonObject();
-
         try {
             JsonElement jsonElement = JsonParser.parseReader(new FileReader(fileName));
             jsonObject = jsonElement.getAsJsonObject();
