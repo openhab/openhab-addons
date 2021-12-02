@@ -438,11 +438,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     protected void sendRefreshProperties(String command, JsonArray getPropString) {
         JsonArray para = getPropString;
-        logger.debug("Matching {} -{}  = {}", MiIoCommand.GET_DEVICE_PROPERTY_EXP.getCommand(), command,
-                MiIoCommand.GET_DEVICE_PROPERTY_EXP.getCommand().contentEquals(command));
         if (MiIoCommand.GET_DEVICE_PROPERTY_EXP.getCommand().contentEquals(command)) {
-            // TODO: remove logging
-            logger.debug("This seems a subdevice propery refresh... GET_DEVICE_PROPERTY_EXP {}",
+            logger.debug("This seems a subdevice propery refresh for {}... ({} {})", getThing().getUID(), command,
                     getPropString.toString());
             para = new JsonArray();
             para.add(getPropString);

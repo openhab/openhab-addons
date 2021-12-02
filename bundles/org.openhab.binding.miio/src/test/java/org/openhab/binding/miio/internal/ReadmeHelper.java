@@ -30,8 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -294,8 +294,8 @@ public class ReadmeHelper {
             }
         }
         if (sb.length() > 0) {
-            LOGGER.info("Model(s) not found. Suggested lines to add to MiIoDevices.java\r\n{}", sb.toString());
-            LOGGER.info("Model(s) not found. Suggested lines to add to the change log\r\n{}", commentSb.toString());
+            LOGGER.info("Model(s) not found. Suggested lines to add to MiIoDevices.java\r\n{}", sb);
+            LOGGER.info("Model(s) not found. Suggested lines to add to the change log\r\n{}", commentSb);
         }
     }
 

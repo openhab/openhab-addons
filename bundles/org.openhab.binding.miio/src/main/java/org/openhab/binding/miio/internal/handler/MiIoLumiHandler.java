@@ -19,6 +19,8 @@ import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -41,8 +43,10 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
 
     public MiIoLumiHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
-            BasicChannelTypeProvider basicChannelTypeProvider) {
-        super(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry, basicChannelTypeProvider);
+            BasicChannelTypeProvider basicChannelTypeProvider, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
+        super(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry, basicChannelTypeProvider,
+                i18nProvider, localeProvider);
     }
 
     @Override
@@ -128,10 +132,6 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
     protected synchronized void updateData() {
         logger.debug("Periodic update for '{}' ({})", getThing().getUID(), getThing().getThingTypeUID());
         try {
-            if (!hasConnection() || skipUpdate() || miioCom == null) {
-                logger.debug("Periodic update for '{}' skipped.", getThing().getUID());
-                return;
-            }
             checkChannelStructure();
             final MiIoBindingConfiguration config = this.configuration;
             final MiIoBasicDevice midevice = miioDevice;

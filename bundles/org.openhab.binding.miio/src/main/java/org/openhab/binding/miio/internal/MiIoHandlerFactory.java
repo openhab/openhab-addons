@@ -127,11 +127,11 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_LUMI)) {
             return new MiIoLumiHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
-                    basicChannelTypeProvider);
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
             return new MiIoGatewayHandler((Bridge) thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
-                    basicChannelTypeProvider);
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
             return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
