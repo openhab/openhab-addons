@@ -38,6 +38,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -213,13 +214,13 @@ public class EGateHandler extends BaseBridgeHandler {
 
             synchronized (lock) {
                 try {
-                    localSocket = new Socket();
                     localSocket.connect(new InetSocketAddress(host, port));
                     localSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
                     BufferedWriter localWriter = writer;
                     localWriter = new BufferedWriter(new OutputStreamWriter(localSocket.getOutputStream()));
                     localWriter.write("SilenceModeSet;Value=0;" + CR);
                     localWriter.flush();
+                    localSocket.close();
                 } catch (IOException e) {
                     logger.debug("IOException in pollingConfig: {} host {} port {}", e.toString(), host, port);
                     try {
