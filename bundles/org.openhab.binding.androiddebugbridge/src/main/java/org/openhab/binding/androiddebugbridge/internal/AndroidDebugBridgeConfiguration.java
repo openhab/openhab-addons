@@ -39,6 +39,10 @@ public class AndroidDebugBridgeConfiguration {
      */
     public int timeout = 5;
     /**
+     * Record input time in seconds.
+     */
+    public int recordSeconds = 5;
+    /**
      * Configure media state detection behavior by package
      */
     public @Nullable String mediaStateJSONConfig;
