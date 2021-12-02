@@ -98,7 +98,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         assertTrue(discovery.getSupportedThingTypes().contains(DECT400_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT440_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(DECT500_THING_TYPE));
-        assertTrue(discovery.getSupportedThingTypes().contains(PL546E_THING_TYPE));
+        assertTrue(discovery.getSupportedThingTypes().contains(POWERLINE546E_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(COMETDECT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_CONTACT_THING_TYPE));
         assertTrue(discovery.getSupportedThingTypes().contains(HAN_FUN_SWITCH_THING_TYPE));
@@ -508,7 +508,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
 
         assertEquals(DiscoveryResultFlag.NEW, discoveryResult.getFlag());
         assertEquals(new ThingUID("avmfritz:FRITZ_Powerline_546E:1:5C_49_79_F0_A3_84"), discoveryResult.getThingUID());
-        assertEquals(PL546E_THING_TYPE, discoveryResult.getThingTypeUID());
+        assertEquals(POWERLINE546E_THING_TYPE, discoveryResult.getThingTypeUID());
         assertEquals(BRIGE_THING_ID, discoveryResult.getBridgeUID());
         assertEquals("5C:49:79:F0:A3:84", discoveryResult.getProperties().get(CONFIG_AIN));
         assertEquals("AVM", discoveryResult.getProperties().get(PROPERTY_VENDOR));
