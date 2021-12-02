@@ -50,14 +50,14 @@ public class ShadePosition {
     /**
      * Get the shade's State for the given actuator class resp. coordinate system.
      *
-     * @param capabilities the shade Thing capabilities.
-     * @param coordSys the actuator class resp. coordinate system state to be returned.
+     * @param shadeCapabilities the shade Thing capabilities.
+     * @param posKindCoords the actuator class (coordinate system) whose state is to be returned.
      * @return the current state.
      */
-    public State getState(Capabilities capabilities, CoordinateSystem coordSys) {
-        State result = getPosition1(capabilities, coordSys);
+    public State getState(Capabilities shadeCapabilities, CoordinateSystem posKindCoords) {
+        State result = getPosition1(shadeCapabilities, posKindCoords);
         if (UnDefType.UNDEF.equals(result)) {
-            result = getPosition2(capabilities, coordSys);
+            result = getPosition2(shadeCapabilities, posKindCoords);
         }
         return result;
     }
@@ -65,24 +65,24 @@ public class ShadePosition {
     /**
      * Set the shade's position1 value for the given actuator class resp. coordinate system.
      *
-     * @param capabilities the shade Thing capabilities.
-     * @param coordSys the actuator class resp. coordinate system state to be returned.
-     * @param percent the new position value
+     * @param shadeCapabilities the shade Thing capabilities.
+     * @param posKindCoords the actuator class (coordinate system) whose state is to be changed.
+     * @param percent the new position value.
      */
-    private void setPosition1(Capabilities capabilities, CoordinateSystem coordSys, int percent) {
-        switch (coordSys) {
+    private void setPosition1(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
+        switch (posKindCoords) {
             case PRIMARY_ZERO_IS_CLOSED:
                 /*
                  * Primary rail of a bottom-up shade, or lower rail of a dual action shade: => INVERTED
                  */
-                // on dual rail shades constrain percent to not move the lower rail above the upper
-                if (capabilities.supportsPrimary() && capabilities.supportsSecondary()) {
-                    State secondary = getState(capabilities, SECONDARY_ZERO_IS_OPEN);
+                if (shadeCapabilities.supportsPrimary() && shadeCapabilities.supportsSecondary()) {
+                    // on dual rail shades constrain percent to not move the lower rail above the upper
+                    State secondary = getState(shadeCapabilities, SECONDARY_ZERO_IS_OPEN);
                     if (secondary instanceof PercentType) {
                         percent = Math.max(percent, ((PercentType) secondary).intValue());
                     }
                 }
-                posKind1 = coordSys.ordinal();
+                posKind1 = posKindCoords.ordinal();
                 position1 = MAX_SHADE - (int) Math.round((double) percent / 100 * MAX_SHADE);
                 break;
 
@@ -90,16 +90,16 @@ public class ShadePosition {
                 /*
                  * Secondary, upper rail of a dual action shade: => NOT INVERTED
                  */
-                posKind1 = coordSys.ordinal();
+                posKind1 = posKindCoords.ordinal();
                 position1 = (int) Math.round((double) percent / 100 * MAX_SHADE);
                 break;
 
-            case VANE_COORDS:
+            case VANE_TILT_COORDS:
                 /*
                  * Vane angle of the primary rail of a bottom-up single action shade: => NOT INVERTED
                  */
-                posKind1 = coordSys.ordinal();
-                int max = capabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
+                posKind1 = posKindCoords.ordinal();
+                int max = shadeCapabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
                 position1 = (int) Math.round((double) percent / 100 * max);
                 break;
 
@@ -112,20 +112,20 @@ public class ShadePosition {
     /**
      * Get the shade's position1 State for the given actuator class resp. coordinate system.
      *
-     * @param capabilities the shade Thing capabilities.
-     * @param coordSys the actuator class resp. coordinate system state to be returned.
-     * @return the State (or UNDEF if not available)
+     * @param shadeCapabilities the shade Thing capabilities.
+     * @param posKindCoords the actuator class (coordinate system) whose state is to be returned.
+     * @return the State (or UNDEF if not available).
      */
-    private State getPosition1(Capabilities capabilities, CoordinateSystem coordSys) {
-        switch (coordSys) {
+    private State getPosition1(Capabilities shadeCapabilities, CoordinateSystem posKindCoords) {
+        switch (posKindCoords) {
             case PRIMARY_ZERO_IS_CLOSED:
                 /*
                  * Primary rail of a bottom-up shade, or lower rail of a dual action shade: => INVERTED
                  */
-                if (coordSys.equals(posKind1)) {
+                if (posKindCoords.equals(posKind1)) {
                     return new PercentType(100 - (int) Math.round((double) position1 / MAX_SHADE * 100));
                 }
-                if (VANE_COORDS.equals(posKind1) && capabilities.supportsTiltOnClosed()) {
+                if (VANE_TILT_COORDS.equals(posKind1) && shadeCapabilities.supportsTiltOnClosed()) {
                     return PercentType.HUNDRED;
                 }
                 break;
@@ -134,12 +134,12 @@ public class ShadePosition {
                 /*
                  * Secondary, upper rail of a dual action shade: => NOT INVERTED
                  */
-                if (coordSys.equals(posKind1)) {
+                if (posKindCoords.equals(posKind1)) {
                     return new PercentType((int) Math.round((double) position1 / MAX_SHADE * 100));
                 }
                 break;
 
-            case VANE_COORDS:
+            case VANE_TILT_COORDS:
                 /*
                  * Vane angle of the primary rail of a bottom-up single action shade: => NOT INVERTED
                  *
@@ -151,11 +151,11 @@ public class ShadePosition {
                  * be a bug in the hub) so we avoid an out of range exception via the Math.min()
                  * function below..
                  */
-                if (coordSys.equals(posKind1)) {
-                    int max = capabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
+                if (posKindCoords.equals(posKind1)) {
+                    int max = shadeCapabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
                     return new PercentType((int) Math.round((double) Math.min(position1, max) / max * 100));
                 }
-                if (PRIMARY_ZERO_IS_CLOSED.equals(posKind1) && capabilities.supportsTiltOnClosed()) {
+                if (PRIMARY_ZERO_IS_CLOSED.equals(posKind1) && shadeCapabilities.supportsTiltOnClosed()) {
                     return position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO;
                 }
 
@@ -167,17 +167,17 @@ public class ShadePosition {
     /**
      * Set the shade's position2 value for the given actuator class resp. coordinate system.
      *
-     * @param capabilities the shade Thing capabilities.
-     * @param coordSys the actuator class resp. coordinate system state to be returned.
-     * @param percent the new position value
+     * @param shadeCapabilities the shade Thing capabilities.
+     * @param posKindCoords the actuator class (coordinate system) whose state is to be changed.
+     * @param percent the new position value.
      */
-    private void setPosition2(Capabilities capabilities, CoordinateSystem coordSys, int percent) {
-        switch (coordSys) {
+    private void setPosition2(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
+        switch (posKindCoords) {
             case PRIMARY_ZERO_IS_CLOSED:
                 /*
                  * Primary rail of a bottom-up shade, or lower rail of a dual action shade: => INVERTED
                  */
-                posKind2 = coordSys.ordinal();
+                posKind2 = posKindCoords.ordinal();
                 position2 = Integer.valueOf(MAX_SHADE - (int) Math.round((double) percent / 100 * MAX_SHADE));
                 break;
 
@@ -185,20 +185,20 @@ public class ShadePosition {
                 /*
                  * Secondary, upper rail of a dual action shade: => NOT INVERTED
                  */
-                // on dual rail shades constrain percent to not move the upper rail below the lower
-                if (capabilities.supportsPrimary() && capabilities.supportsSecondary()) {
-                    State primary = getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+                if (shadeCapabilities.supportsPrimary() && shadeCapabilities.supportsSecondary()) {
+                    // on dual rail shades constrain percent to not move the upper rail below the lower
+                    State primary = getState(shadeCapabilities, PRIMARY_ZERO_IS_CLOSED);
                     if (primary instanceof PercentType) {
                         percent = Math.min(percent, ((PercentType) primary).intValue());
                     }
                 }
-                posKind2 = coordSys.ordinal();
+                posKind2 = posKindCoords.ordinal();
                 position2 = Integer.valueOf((int) Math.round((double) percent / 100 * MAX_SHADE));
                 break;
 
-            case VANE_COORDS:
-                posKind2 = coordSys.ordinal();
-                int max = capabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
+            case VANE_TILT_COORDS:
+                posKind2 = posKindCoords.ordinal();
+                int max = shadeCapabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
                 position2 = Integer.valueOf((int) Math.round((double) percent / 100 * max));
                 break;
 
@@ -211,11 +211,11 @@ public class ShadePosition {
     /**
      * Get the shade's position2 State for the given actuator class resp. coordinate system.
      *
-     * @param capabilities the shade Thing capabilities.
-     * @param coordSys the actuator class resp. coordinate system state to be returned.
-     * @return the State (or UNDEF if not available)
+     * @param shadeCapabilities the shade Thing capabilities.
+     * @param posKindCoords the actuator class (coordinate system) whose state is to be returned.
+     * @return the State (or UNDEF if not available).
      */
-    private State getPosition2(Capabilities capabilities, CoordinateSystem coordSys) {
+    private State getPosition2(Capabilities shadeCapabilities, CoordinateSystem posKindCoords) {
         Integer posKind2 = this.posKind2;
         Integer position2 = this.position2;
 
@@ -223,12 +223,12 @@ public class ShadePosition {
             return UnDefType.UNDEF;
         }
 
-        switch (coordSys) {
+        switch (posKindCoords) {
             case PRIMARY_ZERO_IS_CLOSED:
                 /*
                  * Primary rail of a bottom-up shade, or lower rail of a dual action shade: => INVERTED
                  */
-                if (coordSys.equals(posKind2)) {
+                if (posKindCoords.equals(posKind2)) {
                     return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
                 }
                 break;
@@ -237,7 +237,7 @@ public class ShadePosition {
                 /*
                  * Secondary, upper rail of a dual action shade: => NOT INVERTED
                  */
-                if (coordSys.equals(posKind2)) {
+                if (posKindCoords.equals(posKind2)) {
                     return new PercentType((int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
                 }
                 break;
@@ -249,9 +249,9 @@ public class ShadePosition {
              * be a bug in the hub) so we avoid an out of range exception via the Math.min()
              * function below..
              */
-            case VANE_COORDS:
-                if (coordSys.equals(posKind2)) {
-                    int max = capabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
+            case VANE_TILT_COORDS:
+                if (posKindCoords.equals(posKind2)) {
+                    int max = shadeCapabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
                     return new PercentType((int) Math.round((double) Math.min(position2.intValue(), max) / max * 100));
                 }
 
@@ -277,19 +277,19 @@ public class ShadePosition {
      * @return true if the ShadePosition supports tilt anywhere.
      */
     public boolean jsonTiltAnywhere() {
-        return ((PRIMARY_ZERO_IS_CLOSED.equals(posKind1)) && (VANE_COORDS.equals(posKind2))
-                || ((PRIMARY_ZERO_IS_CLOSED.equals(posKind2) && (VANE_COORDS.equals(posKind1)))));
+        return ((PRIMARY_ZERO_IS_CLOSED.equals(posKind1)) && (VANE_TILT_COORDS.equals(posKind2))
+                || ((PRIMARY_ZERO_IS_CLOSED.equals(posKind2) && (VANE_TILT_COORDS.equals(posKind1)))));
     }
 
     /**
      * Set the shade's position for the given actuator class resp. coordinate system.
      *
-     * @param capabilities the shade Thing capabilities.
-     * @param coordSys the actuator class resp. coordinate system state to be returned.
+     * @param shadeCapabilities the shade Thing capabilities.
+     * @param posKindCoords the actuator class (coordinate system) whose state is to be changed.
      * @param percent the new position value.
      * @return this object.
      */
-    public ShadePosition setPosition(Capabilities capabilities, CoordinateSystem coordSys, int percent) {
+    public ShadePosition setPosition(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
         // if necessary swap the order of position1 and position2
         if (PRIMARY_ZERO_IS_CLOSED.equals(posKind2) && !PRIMARY_ZERO_IS_CLOSED.equals(posKind1)) {
             final Integer posKind2Temp = posKind2;
@@ -306,33 +306,33 @@ public class ShadePosition {
             position2 = null;
         }
 
-        // logic to set wither position1 or position2
-        switch (coordSys) {
+        // logic to set either position1 or position2
+        switch (posKindCoords) {
             case PRIMARY_ZERO_IS_CLOSED:
-                if (capabilities.supportsPrimary()) {
-                    setPosition1(capabilities, coordSys, percent);
+                if (shadeCapabilities.supportsPrimary()) {
+                    setPosition1(shadeCapabilities, posKindCoords, percent);
                 }
                 break;
 
             case SECONDARY_ZERO_IS_OPEN:
-                if (capabilities.supportsSecondary()) {
-                    if (capabilities.supportsPrimary()) {
-                        setPosition2(capabilities, coordSys, percent);
+                if (shadeCapabilities.supportsSecondary()) {
+                    if (shadeCapabilities.supportsPrimary()) {
+                        setPosition2(shadeCapabilities, posKindCoords, percent);
                     } else {
-                        setPosition1(capabilities, coordSys, percent);
+                        setPosition1(shadeCapabilities, posKindCoords, percent);
                     }
                 }
                 break;
 
-            case VANE_COORDS:
-                if (capabilities.supportsPrimary()) {
-                    if (capabilities.supportsTiltOnClosed()) {
-                        setPosition1(capabilities, coordSys, percent);
-                    } else if (capabilities.supportsTiltAnywhere()) {
-                        setPosition2(capabilities, coordSys, percent);
+            case VANE_TILT_COORDS:
+                if (shadeCapabilities.supportsPrimary()) {
+                    if (shadeCapabilities.supportsTiltOnClosed()) {
+                        setPosition1(shadeCapabilities, posKindCoords, percent);
+                    } else if (shadeCapabilities.supportsTiltAnywhere()) {
+                        setPosition2(shadeCapabilities, posKindCoords, percent);
                     }
-                } else if (capabilities.supportsTiltAnywhere()) {
-                    setPosition1(capabilities, coordSys, percent);
+                } else if (shadeCapabilities.supportsTiltAnywhere()) {
+                    setPosition1(shadeCapabilities, posKindCoords, percent);
                 }
                 break;
 

@@ -118,9 +118,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_VANE:
                 if (command instanceof PercentType) {
-                    moveShade(VANE_COORDS, ((PercentType) command).intValue());
+                    moveShade(VANE_TILT_COORDS, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    moveShade(VANE_COORDS, OnOffType.ON.equals(command) ? 100 : 0);
+                    moveShade(VANE_TILT_COORDS, OnOffType.ON.equals(command) ? 100 : 0);
                 }
                 break;
 
@@ -154,7 +154,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
                             : UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
-            updatePropertiesSoft(shadeData);
+            updateSoftProperties(shadeData);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -168,7 +168,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
      *
      * @param shadeData
      */
-    private void updatePropertiesSoft(ShadeData shadeData) {
+    private void updateSoftProperties(ShadeData shadeData) {
         final Map<String, String> properties = getThing().getProperties();
         boolean propChanged = false;
 
@@ -215,7 +215,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
      *
      * @param shadeData
      */
-    private void updatePropertiesHard(ShadeData shadeData) {
+    private void updateHardProperties(ShadeData shadeData) {
         final ShadePosition positions = shadeData.positions;
         if (positions != null) {
             final Map<String, String> properties = getThing().getProperties();
@@ -253,7 +253,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private void updateBindingStates(@Nullable ShadePosition shadePos) {
         if (shadePos != null) {
             updateState(CHANNEL_SHADE_POSITION, shadePos.getState(capabilities, PRIMARY_ZERO_IS_CLOSED));
-            updateState(CHANNEL_SHADE_VANE, shadePos.getState(capabilities, VANE_COORDS));
+            updateState(CHANNEL_SHADE_VANE, shadePos.getState(capabilities, VANE_TILT_COORDS));
             updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(capabilities, SECONDARY_ZERO_IS_OPEN));
         } else {
             updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
@@ -407,7 +407,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     if (Boolean.TRUE.equals(shadeData.timedOut)) {
                         logger.warn("Shade {} wireless refresh time out", shadeId);
                     } else if (kind == RefreshKind.POSITION) {
-                        updatePropertiesHard(shadeData);
+                        updateHardProperties(shadeData);
                     }
                 }
             }
