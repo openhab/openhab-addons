@@ -46,7 +46,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
 /**
- * Unit tests for HD PowerView binding
+ * Unit tests for HD PowerView binding.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  * @author Jacob Laursen - Add support for scene groups
@@ -60,7 +60,7 @@ public class HDPowerViewJUnitTests {
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     /*
-     * load a test JSON string from a file
+     * load a test JSON string from a file.
      */
     private String loadJson(String fileName) {
         try {
@@ -73,7 +73,7 @@ public class HDPowerViewJUnitTests {
     }
 
     /**
-     * Run a series of ONLINE tests on the communication with a hub
+     * Run a series of ONLINE tests on the communication with a hub.
      *
      * @param hubIPAddress must be a valid hub IP address to run the
      *            tests on; or an INVALID IP address to
@@ -123,8 +123,8 @@ public class HDPowerViewJUnitTests {
                 if (shadesX != null) {
                     List<ShadeData> shadesData = shadesX.shadeData;
                     assertNotNull(shadesData);
-                    if (shadesData != null) {
 
+                    if (shadesData != null) {
                         assertTrue(!shadesData.isEmpty());
                         ShadeData shadeData;
                         shadeData = shadesData.get(0);
@@ -152,12 +152,12 @@ public class HDPowerViewJUnitTests {
             try {
                 Scenes scenes = webTargets.getScenes();
                 assertNotNull(scenes);
-                if (scenes != null) {
 
+                if (scenes != null) {
                     List<Scene> scenesData = scenes.sceneData;
                     assertNotNull(scenesData);
-                    if (scenesData != null) {
 
+                    if (scenesData != null) {
                         assertTrue(!scenesData.isEmpty());
                         Scene sceneZero = scenesData.get(0);
                         assertNotNull(sceneZero);
@@ -191,15 +191,16 @@ public class HDPowerViewJUnitTests {
                 if (shade != null) {
                     ShadeData shadeData = shade.shade;
                     assertNotNull(shadeData);
+
                     if (shadeData != null) {
                         ShadePosition positions = shadeData.positions;
                         assertNotNull(positions);
-                        if (positions != null) {
 
+                        if (positions != null) {
                             Integer capabilitiesValue = shadeData.capabilities;
                             assertNotNull(capabilitiesValue);
-                            if (capabilitiesValue != null) {
 
+                            if (capabilitiesValue != null) {
                                 Capabilities capabilities = db.getCapabilities(capabilitiesValue.intValue());
 
                                 State pos = positions.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
@@ -271,7 +272,7 @@ public class HDPowerViewJUnitTests {
     }
 
     /**
-     * Test parsing of ShadePosition
+     * Test parsing of ShadePosition.
      *
      */
     @Test
@@ -281,48 +282,48 @@ public class HDPowerViewJUnitTests {
         State pos;
         Capabilities capabilities = db.getCapabilities(0);
 
-        // shade fully up
+        // ==== shade fully up ====
         test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 0);
         assertNotNull(test);
         pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_COORDS);
         assertTrue(UnDefType.UNDEF.equals(pos));
 
-        // shade fully down (method 1)
+        // ==== shade fully down (method 1) ====
         test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 100);
         assertNotNull(test);
         pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_COORDS);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
 
-        // shade fully down (method 2)
-        test = new ShadePosition().setPosition(capabilities, VANE_COORDS, 0);
+        // ==== shade fully down (method 2) ====
+        test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 0);
         assertNotNull(test);
         pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_COORDS);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
 
-        // shade fully down (method 2) and vane fully open
-        test = new ShadePosition().setPosition(capabilities, VANE_COORDS, 100);
+        // ==== shade fully down (method 2) and vane fully open ====
+        test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 100);
         assertNotNull(test);
         pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_COORDS);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
     }
 
     /**
-     * Test generic JSON shades response
+     * Test generic JSON shades response.
      */
     @Test
     public void shadeResponseIsParsedCorrectly() throws JsonParseException {
@@ -335,7 +336,7 @@ public class HDPowerViewJUnitTests {
     }
 
     /**
-     * Test generic JSON scene response
+     * Test generic JSON scene response.
      */
     @Test
     public void sceneResponseIsParsedCorrectly() throws JsonParseException {
@@ -358,7 +359,7 @@ public class HDPowerViewJUnitTests {
     }
 
     /**
-     * Test generic JSON scene collection response
+     * Test generic JSON scene collection response.
      */
     @Test
     public void sceneCollectionResponseIsParsedCorrectly() throws JsonParseException {
@@ -368,8 +369,8 @@ public class HDPowerViewJUnitTests {
 
         SceneCollections sceneCollections = gson.fromJson(json, SceneCollections.class);
         assertNotNull(sceneCollections);
-        if (sceneCollections != null) {
 
+        if (sceneCollections != null) {
             List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
             assertNotNull(sceneCollectionData);
             if (sceneCollectionData != null) {
@@ -383,7 +384,7 @@ public class HDPowerViewJUnitTests {
     }
 
     /**
-     * Test the JSON parsing for a duette top down bottom up shade
+     * Test the JSON parsing for a duette top down bottom up shade.
      */
     @Test
     public void duetteTopDownBottomUpShadeIsParsedCorrectly() throws JsonParseException {
@@ -394,11 +395,10 @@ public class HDPowerViewJUnitTests {
         Shades shades = gson.fromJson(json, Shades.class);
         assertNotNull(shades);
         if (shades != null) {
-
             List<ShadeData> shadesData = shades.shadeData;
             assertNotNull(shadesData);
-            if (shadesData != null) {
 
+            if (shadesData != null) {
                 assertEquals(1, shadesData.size());
                 ShadeData shadeData = shadesData.get(0);
                 assertNotNull(shadeData);
@@ -408,8 +408,8 @@ public class HDPowerViewJUnitTests {
 
                 ShadePosition shadePos = shadeData.positions;
                 assertNotNull(shadePos);
-                if (shadePos != null) {
 
+                if (shadePos != null) {
                     Integer capabilitiesValue = shadeData.capabilities;
                     assertNotNull(capabilitiesValue);
                     if (capabilitiesValue != null) {
@@ -425,7 +425,7 @@ public class HDPowerViewJUnitTests {
                         assertEquals(PercentType.class, pos.getClass());
                         assertEquals(35, ((PercentType) pos).intValue());
 
-                        pos = shadePos.getState(capabilities, VANE_COORDS);
+                        pos = shadePos.getState(capabilities, VANE_TILT_COORDS);
                         assertEquals(UnDefType.class, pos.getClass());
 
                         assertEquals(3, shadeData.batteryStatus);
@@ -441,6 +441,29 @@ public class HDPowerViewJUnitTests {
 
                         assertTrue(db.getCapabilities(capabilitiesValue.intValue()).supportsSecondary());
                         assertNotEquals(db.getType(shadeData.type).getCapabilities(), capabilitiesValue.intValue() + 1);
+
+                        // ==== when changing position1, position2 value is not changed (vice-versa) ====
+                        ShadePosition shadePosition = shadeData.positions;
+                        assertNotNull(shadePosition);
+                        if (shadePosition != null) {
+                            // ==== position2 ====
+                            State position2Old = shadePosition.getState(capabilities, SECONDARY_ZERO_IS_OPEN);
+                            shadePosition.setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 99);
+                            State position2New = shadePosition.getState(capabilities, SECONDARY_ZERO_IS_OPEN);
+                            assertEquals(PercentType.class, position2Old.getClass());
+                            assertEquals(PercentType.class, position2New.getClass());
+                            assertEquals(((PercentType) position2Old).intValue(),
+                                    ((PercentType) position2New).intValue());
+
+                            // ==== position2 ====
+                            State position1Old = shadePosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+                            shadePosition.setPosition(capabilities, SECONDARY_ZERO_IS_OPEN, 99);
+                            State position1New = shadePosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+                            assertEquals(PercentType.class, position1Old.getClass());
+                            assertEquals(PercentType.class, position1New.getClass());
+                            assertEquals(((PercentType) position1Old).intValue(),
+                                    ((PercentType) position1New).intValue());
+                        }
                     }
                 }
             }
@@ -473,71 +496,85 @@ public class HDPowerViewJUnitTests {
         assertFalse(db.getCapabilities(99).supportsSecondary());
     }
 
+    /**
+     * On dual rail shades, it should not be possible to drive the upper rail below the lower rail, or vice-versa. So
+     * the binding code applies constraints on setting such positions. This test checks that the constraint code is
+     * working.
+     */
     @Test
     public void testDualRailConstraints() {
         ShadePosition shade = new ShadePosition();
         Capabilities caps = db.getCapabilities(7);
 
-        // OK !! primary at bottom, secondary at top
+        // ==== OK !! primary at bottom, secondary at top ====
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0);
         assertEquals(PercentType.HUNDRED, shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
 
-        // OK !! primary at middle, secondary at top
+        // ==== OK !! primary at middle, secondary at top ====
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 50).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0);
         assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
 
-        // OK !! primary at middle, secondary at middle
+        // ==== OK !! primary at middle, secondary at middle ====
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 50).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 50);
         assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
 
-        // IMPOSSIBLE !! secondary at middle, primary above => test the constraining code
+        // ==== IMPOSSIBLE !! secondary at middle, primary above => test the constraining code ====
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 40).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 25);
         assertEquals(new PercentType(40), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
         assertEquals(new PercentType(40), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
 
-        // OK !! secondary at middle, primary below
+        // ==== OK !! secondary at middle, primary below ====
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 50).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 75);
         assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
         assertEquals(new PercentType(75), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
 
-        // IMPOSSIBLE !! primary at middle, secondary below => test the constraining code
+        // ==== IMPOSSIBLE !! primary at middle, secondary below => test the constraining code ====
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 60).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 75);
         assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(new PercentType(60), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
 
-        // OK !! primary at middle, secondary above
+        // ==== OK !! primary at middle, secondary above ====
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 60).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 25);
         assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(new PercentType(25), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
     }
 
-    // @Test
-    // public void testPositionsJson() {
-    // final Gson gson = new Gson();
-    // int[] positions = { 0, 50, 100 };
-    // CoordinateSystem[] coordinates = { SECONDARY_ZERO_IS_OPEN, VANE_COORDS, PRIMARY_ZERO_IS_CLOSED };
-    // for (Capabilities capabilities : ShadeCapabilitiesDatabase.CAPABILITIES_DATABASE) {
-    // ShadePosition shade = new ShadePosition();
-    // if (capabilities.supportsPrimary()) {
-    // shade = shade.setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 0);
-    // for (CoordinateSystem coordinate : coordinates) {
-    // for (int position : positions) {
-    // shade.setPosition(capabilities, coordinate, position);
-    // for (CoordinateSystem coordinate2 : coordinates) {
-    // System.out.println(String.format("%s|%s|%d|%s|%s|%s", capabilities.toString(),
-    // coordinate.toString(), position, gson.toJson(shade), coordinate2.toString(),
-    // shade.getState(capabilities, coordinate2)));
-    // }
-    // }
-    // }
-    // }
-    // }
-    // }
+    /**
+     * Print out the positions JSON produced, and the respective output State values, for all possible combinations of
+     * shade position kinds (coordinate systems), shade capabilities, and for a variety of possible position values.
+     *
+     * Note: the code is commented out in order to prevent printing to System.out when the tests are being run in the
+     * automated build system.
+     */
+    @Test
+    public void printOutPositionsJson() {
+        /*
+         * final Gson gson = new Gson();
+         * int[] positions = { 0, 50, 100 };
+         * CoordinateSystem[] coordinates = { SECONDARY_ZERO_IS_OPEN, VANE_COORDS, PRIMARY_ZERO_IS_CLOSED };
+         * for (Capabilities capabilities : ShadeCapabilitiesDatabase.CAPABILITIES_DATABASE) {
+         * ShadePosition shade = new ShadePosition();
+         * if (capabilities.supportsPrimary()) {
+         * shade = shade.setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 0);
+         * for (CoordinateSystem coordinate : coordinates) {
+         * for (int position : positions) {
+         * shade.setPosition(capabilities, coordinate, position);
+         * for (CoordinateSystem coordinate2 : coordinates) {
+         * System.out.println(String.format("%s|%s|%d|%s|%s|%s", capabilities.toString(),
+         * coordinate.toString(), position, gson.toJson(shade), coordinate2.toString(),
+         * shade.getState(capabilities, coordinate2)));
+         * }
+         * }
+         * }
+         * }
+         * }
+         */
+    }
 }
