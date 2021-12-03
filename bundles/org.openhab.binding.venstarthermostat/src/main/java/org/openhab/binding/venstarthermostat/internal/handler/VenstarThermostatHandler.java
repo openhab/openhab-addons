@@ -74,6 +74,7 @@ import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemStateSeri
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -105,7 +106,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class VenstarThermostatHandler extends ConfigStatusThingHandler {
-
     private static final int TIMEOUT_SECONDS = 30;
     private static final int UPDATE_AFTER_COMMAND_SECONDS = 2;
     private Logger log = LoggerFactory.getLogger(VenstarThermostatHandler.class);
@@ -531,7 +531,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             updateIfChanged(CHANNEL_AWAY_MODE_RAW, new DecimalType(infoData.getAwayMode().mode()));
             updateIfChanged(CHANNEL_FAN_MODE, new StringType(infoData.getFanMode().modeName()));
             updateIfChanged(CHANNEL_FAN_MODE_RAW, new DecimalType(infoData.getFanMode().mode()));
-            updateIfChanged(CHANNEL_FAN_STATE, new StringType(infoData.getFanState().stateName()));
+            updateIfChanged(CHANNEL_FAN_STATE, OnOffType.from(infoData.getFanState().stateName()));
             updateIfChanged(CHANNEL_FAN_STATE_RAW, new DecimalType(infoData.getFanState().state()));
             updateIfChanged(CHANNEL_SCHEDULE_MODE, new StringType(infoData.getScheduleMode().modeName()));
             updateIfChanged(CHANNEL_SCHEDULE_MODE_RAW, new DecimalType(infoData.getScheduleMode().mode()));

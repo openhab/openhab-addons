@@ -15,7 +15,7 @@ package org.openhab.binding.venstarthermostat.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VenstarFanMode} represents the value of the system mode returned
+ * The {@link VenstarFanMode} represents the value of the fan mode returned
  * from the REST API.
  *
  * @author Matthew Davies - Initial contribution

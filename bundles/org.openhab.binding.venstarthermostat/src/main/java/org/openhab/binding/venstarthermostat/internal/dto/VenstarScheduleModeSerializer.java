@@ -30,6 +30,10 @@ public class VenstarScheduleModeSerializer implements JsonDeserializer<VenstarSc
     public VenstarScheduleMode deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
         int key = element.getAsInt();
-        return VenstarScheduleMode.fromInt(key);
+        try {
+            return VenstarScheduleMode.fromInt(key);
+        } catch (IllegalArgumentException e) {
+            throw new JsonParseException(e);
+        }
     }
 }

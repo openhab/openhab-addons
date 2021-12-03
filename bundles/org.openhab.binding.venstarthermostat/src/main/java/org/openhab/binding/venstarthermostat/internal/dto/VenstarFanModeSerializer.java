@@ -31,6 +31,10 @@ public class VenstarFanModeSerializer implements JsonDeserializer<VenstarFanMode
     public VenstarFanMode deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
         int key = element.getAsInt();
-        return VenstarFanMode.fromInt(key);
+        try {
+            return VenstarFanMode.fromInt(key);
+        } catch (IllegalArgumentException e) {
+            throw new JsonParseException(e);
+        }
     }
 }

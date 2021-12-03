@@ -172,15 +172,10 @@
 	</channel-type>
 
 	<channel-type id="fanState">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Fan State</label>
 		<description>Current Fan State</description>
-		<state readOnly="true">
-			<options>
-				<option value="off">Off</option>
-				<option value="on">On</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fanStateRaw" advanced="true">
