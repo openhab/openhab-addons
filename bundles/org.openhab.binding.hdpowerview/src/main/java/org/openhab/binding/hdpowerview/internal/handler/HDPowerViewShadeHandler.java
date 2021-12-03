@@ -322,7 +322,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
             // set the new position value, and write the positions to the hub
             webTargets.moveShade(shadeId, newPosition.setPosition(capabilities, coordSys, newPercent));
-            if (newPosition.isOverridden()) {
+            if (newPosition.wasOverridden()) {
                 final ShadePosition finalPosition = newPosition;
                 scheduler.submit(() -> {
                     updateBindingStates(finalPosition);

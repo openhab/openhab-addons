@@ -361,11 +361,11 @@ public class ShadePosition {
 
     /**
      * Check if any of the position values were swapped or overridden by internal logic of this class. Generally this
-     * means that the shade may need to be refreshed from the hub.
+     * means that the Thing's Channels may need to be refreshed from the new position data.
      *
      * @return
      */
-    public boolean isOverridden() {
+    public boolean wasOverridden() {
         return positionOverrideApplied;
     }
 }
