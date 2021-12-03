@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -35,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ChromecastDiscoveryParticipant} is responsible for discovering Chromecast devices through UPnP.
+ * The {@link ChromecastDiscoveryParticipant} is responsible for discovering Chromecast devices through mDNS.
  *
  * @author Kai Kreuzer - Initial contribution
  * @author Daniel Walters - Change discovery protocol to mDNS
@@ -66,8 +67,9 @@ public class ChromecastDiscoveryParticipant implements MDNSDiscoveryParticipant 
 
     private void activateOrModifyService(ComponentContext componentContext) {
         Dictionary<String, @Nullable Object> properties = componentContext.getProperties();
-        String autoDiscoveryPropertyValue = (String) properties.get("background");
-        if (autoDiscoveryPropertyValue != null && autoDiscoveryPropertyValue.length() != 0) {
+        String autoDiscoveryPropertyValue = (String) properties
+                .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
+        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
             isAutoDiscoveryEnabled = Boolean.valueOf(autoDiscoveryPropertyValue);
         }
     }

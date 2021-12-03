@@ -28,7 +28,7 @@ Configure a Callback URL when the Chromecast cannot connect using the Primary Ad
 
 ## Discovery
 
-Chromecast devices are discovered on the network using UPnP.
+Chromecast devices are discovered on the network using mDNS.
 No authentication is required for accessing the devices on the network.
 Auto-discovery is enabled by default.
 To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
@@ -42,7 +42,7 @@ discovery.chromecast:background=false
 Chromecast devices can also be manually added.
 The only configuration parameter is the `ipAddress`.
 For an audio group also the port is necessary.
-The autodiscovery process finds the port automatically.
+The auto-discovery process finds the port automatically.
 With manual thing configuration the parameter `port` must be determined manually.
 
 Example for audio group:
