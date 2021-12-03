@@ -15,17 +15,16 @@ package org.openhab.binding.renault.internal.api.exceptions;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Exception thrown while trying to access the My Renault web services when HTTP
- * 403 is returned. Normally means the car is not paired to the account.
+ * Exception thrown while trying to update the My Renault car information.
  * 
  * @author Doug Culnane - Initial contribution
  */
 @NonNullByDefault
-public class RenaultForbiddenException extends Exception {
+public class RenaultUpdateException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public RenaultForbiddenException(String message) {
+    public RenaultUpdateException(String message) {
         super(message);
     }
 }

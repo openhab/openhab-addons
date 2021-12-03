@@ -28,6 +28,7 @@ import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
@@ -127,38 +128,69 @@ public class RenaultHandler extends BaseThingHandler {
             logger.warn("Error My Renault Http Session.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        try {
-            if (httpSession != null) {
-                httpSession.updateCarData(car);
-                updateState();
+        if (httpSession != null) {
+            String imageURL = car.imageURL;
+            if (imageURL != null && !imageURL.isEmpty()) {
+                updateState(CHANNEL_IMAGE, new StringType(imageURL));
             }
-        } catch (RenaultForbiddenException e) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            updateHvacStatus(httpSession);
+            updateCockpit(httpSession);
+            updateLocation(httpSession);
+            updateBattery(httpSession);
         }
     }
 
-    private void updateState() {
-        Double batteryLevel = car.batteryLevel;
-        if (batteryLevel != null) {
-            updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
+    private void updateHvacStatus(MyRenaultHttpSession httpSession) {
+        try {
+            httpSession.getHvacStatus(car);
+            Boolean hvacstatus = car.hvacstatus;
+            if (hvacstatus != null) {
+                updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
+            }
+        } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Update HVAC error: " + e.getMessage());
         }
-        Boolean hvacstatus = car.hvacstatus;
-        if (hvacstatus != null) {
-            updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
+    }
+
+    private void updateLocation(MyRenaultHttpSession httpSession) {
+        try {
+            httpSession.getLocation(car);
+            Double latitude = car.gpsLatitude;
+            Double longitude = car.gpsLongitude;
+            if (latitude != null && longitude != null) {
+                updateState(CHANNEL_LOCATION, new PointType(new DecimalType(latitude.doubleValue()),
+                        new DecimalType(longitude.doubleValue())));
+            }
+        } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Update location error: " + e.getMessage());
         }
-        String imageURL = car.imageURL;
-        if (imageURL != null && !imageURL.isEmpty()) {
-            updateState(CHANNEL_IMAGE, new StringType(imageURL));
+    }
+
+    private void updateCockpit(MyRenaultHttpSession httpSession) {
+        try {
+            httpSession.getCockpit(car);
+            Double odometer = car.odometer;
+            if (odometer != null) {
+                updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
+            }
+        } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Update cockpit  error: " + e.getMessage());
         }
-        Double latitude = car.gpsLatitude;
-        Double longitude = car.gpsLongitude;
-        if (latitude != null && longitude != null) {
-            updateState(CHANNEL_LOCATION,
-                    new PointType(new DecimalType(latitude.doubleValue()), new DecimalType(longitude.doubleValue())));
-        }
-        Double odometer = car.odometer;
-        if (odometer != null) {
-            updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
+    }
+
+    private void updateBattery(MyRenaultHttpSession httpSession) {
+        try {
+            httpSession.getBatteryStatus(car);
+            Double batteryLevel = car.batteryLevel;
+            if (batteryLevel != null) {
+                updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
+            }
+        } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Update battery error: " + e.getMessage());
         }
     }
 }

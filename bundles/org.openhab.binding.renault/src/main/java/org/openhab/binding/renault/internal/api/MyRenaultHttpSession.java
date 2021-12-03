@@ -26,6 +26,7 @@ import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,20 +63,17 @@ public class MyRenaultHttpSession {
         this.constants = new Constants(config.locale);
     }
 
-    public void initSesssion(Car car) throws RenaultException, RenaultForbiddenException, InterruptedException,
-            ExecutionException, TimeoutException {
+    public void initSesssion(Car car) throws RenaultException, RenaultForbiddenException, RenaultUpdateException,
+            InterruptedException, ExecutionException, TimeoutException {
         login();
         getAccountInfo();
         getJWT();
         getAccountID();
-        getVehicle(car);
-    }
 
-    public void updateCarData(Car car) throws RenaultForbiddenException {
-        getCockpit(car);
-        getBatteryStatus(car);
-        getLocation(car);
-        getHvacStatus(car);
+        final String imageURL = car.imageURL;
+        if (imageURL == null) {
+            getVehicle(car);
+        }
     }
 
     private void login() throws RenaultException, InterruptedException, ExecutionException, TimeoutException {
@@ -162,7 +160,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getAccountID() throws RenaultException, RenaultForbiddenException {
+    private void getAccountID() throws RenaultException, RenaultForbiddenException, RenaultUpdateException {
         JsonObject responseJson = getKamereonResponse(
                 "/commerce/v1/persons/" + personId + "?country=" + getCountry(config));
         if (responseJson != null) {
@@ -179,7 +177,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getVehicle(Car car) throws RenaultForbiddenException {
+    public void getVehicle(Car car) throws RenaultForbiddenException, RenaultUpdateException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId + "/vehicles/"
                 + config.vin + "/details?country=" + getCountry(config));
         if (responseJson != null) {
@@ -187,7 +185,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getBatteryStatus(Car car) throws RenaultForbiddenException {
+    public void getBatteryStatus(Car car) throws RenaultForbiddenException, RenaultUpdateException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/battery-status?country=" + getCountry(config));
         if (responseJson != null) {
@@ -195,7 +193,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getHvacStatus(Car car) throws RenaultForbiddenException {
+    public void getHvacStatus(Car car) throws RenaultForbiddenException, RenaultUpdateException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/hvac-status?country=" + getCountry(config));
         if (responseJson != null) {
@@ -203,7 +201,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getCockpit(Car car) throws RenaultForbiddenException {
+    public void getCockpit(Car car) throws RenaultForbiddenException, RenaultUpdateException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
         if (responseJson != null) {
@@ -211,7 +209,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private void getLocation(Car car) throws RenaultForbiddenException {
+    public void getLocation(Car car) throws RenaultForbiddenException, RenaultUpdateException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
                 + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/location?country=" + getCountry(config));
         if (responseJson != null) {
@@ -219,7 +217,8 @@ public class MyRenaultHttpSession {
         }
     }
 
-    private @Nullable JsonObject getKamereonResponse(String path) throws RenaultForbiddenException {
+    private @Nullable JsonObject getKamereonResponse(String path)
+            throws RenaultForbiddenException, RenaultUpdateException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.GET)
                 .header("Content-type", "application/vnd.api+json").header("apikey", this.constants.getKamereonApiKey())
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
@@ -228,12 +227,17 @@ public class MyRenaultHttpSession {
             if (HttpStatus.OK_200 == response.getStatus()) {
                 logger.debug("Kamereon Response: {}", response.getContentAsString());
                 return JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-            } else if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
-                throw new RenaultForbiddenException(
-                        "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
             } else {
                 logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
                         response.getContentAsString());
+
+                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
+                    throw new RenaultForbiddenException(
+                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
+                } else {
+                    throw new RenaultUpdateException(
+                            "Kamereon Response Failed! Error: [" + response.getStatus() + "] " + response.getReason());
+                }
             }
         } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
