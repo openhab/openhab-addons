@@ -10,7 +10,7 @@
 		<category>Lightbulb</category>
 
 		<channels>
-			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="color" typeId="system.color"/>
 			<channel id="colorTemperature" typeId="system.color-temperature"/>
 			<channel id="colorTemperatureAbs" typeId="colorTemperatureAbs3"/>
 			<channel id="power" typeId="power"/>

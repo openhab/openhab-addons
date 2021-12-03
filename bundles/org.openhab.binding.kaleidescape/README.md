@@ -78,7 +78,7 @@ The following channels are available:
 | ui#power                   | Switch      | Turn the zone On or Off (system standby)                                                                         |
 | ui#volume                  | Dimmer      | A virtual volume that tracks the volume in K control apps, use as a proxy to adjust a real volume item via rules |
 | ui#mute                    | Switch      | A virtual mute switch that tracks the mute status in K control apps, use as a proxy to control a real mute item  |
-| ui#control                 | Player      | Control Movie Playback e.g. start/pause/next/previous/ffward/rewind                                              |
+| ui#control                 | Player      | Control Movie Playback e.g. play/pause/next/previous/ffward/rewind                                              |
 | ui#title_name              | String      | The title of the movie currently playing                                                                         |
 | ui#play_mode               | String      | The current playback mode of the movie                                                                           |
 | ui#play_speed              | String      | The speed of playback scanning                                                                                   |
@@ -112,7 +112,7 @@ The following channels are available:
 | ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters      |
 | ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                        |
 | -- music channels (not available on Alto and Strato) --                                                                                                     |
-| music#control              | Player      | Control Music Playback e.g. start/pause/next/previous/ffward/rewind                                              |
+| music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                              |
 | music#repeat               | Switch      | Controls repeat playback for music                                                                               |
 | music#random               | Switch      | Controls random playback for music                                                                               |
 | music#track                | String      | The name of the currently playing track                                                                          |
