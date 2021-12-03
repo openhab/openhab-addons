@@ -322,6 +322,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
             // overwrite the new position value, and write the positions to the hub
             webTargets.moveShade(shadeId, newPosition.setPosition(capabilities, coordSys, newPercent));
+            if (newPosition.isOverridden()) {
+                // if setPosition() overrode any position values, request a refresh asap
+                requestRefreshShadePosition();
+            }
         } catch (HubProcessingException | NumberFormatException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
             return;
