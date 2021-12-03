@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
@@ -58,8 +59,11 @@ public class RenaultHandler extends BaseThingHandler {
 
     private HttpClient httpClient;
 
+    private Car car;
+
     public RenaultHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.car = new Car();
         this.httpClient = httpClient;
     }
 
@@ -116,20 +120,24 @@ public class RenaultHandler extends BaseThingHandler {
     private void getStatus() {
         MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
         try {
-            httpSession.initSesssion();
+            httpSession.initSesssion(car);
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             httpSession = null;
             logger.warn("Error My Renault Http Session.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        if (httpSession != null) {
-            httpSession.updateCarData();
-            updateState(httpSession.getCar());
+        try {
+            if (httpSession != null) {
+                httpSession.updateCarData(car);
+                updateState();
+            }
+        } catch (RenaultForbiddenException e) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
-    private void updateState(Car car) {
+    private void updateState() {
         Double batteryLevel = car.batteryLevel;
         if (batteryLevel != null) {
             updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
