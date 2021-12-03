@@ -28,8 +28,8 @@
 			<label>API Token</label>
 			<description>API Token for local openHAB server (might be neccessary when deactivated default user role for
 				unauthenticated users)</description>
-			<default></default>
 			<advanced>true</advanced>
+			<context>password</context>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
