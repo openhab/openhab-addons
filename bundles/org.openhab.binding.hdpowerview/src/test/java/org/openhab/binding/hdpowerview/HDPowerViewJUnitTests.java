@@ -510,26 +510,26 @@ public class HDPowerViewJUnitTests {
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0);
         assertEquals(PercentType.HUNDRED, shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
-        assertFalse(shade.isOverridden());
+        assertFalse(shade.wasOverridden());
 
         // ==== OK !! primary at middle, secondary at top ====
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 50).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0);
         assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
-        assertFalse(shade.isOverridden());
+        assertFalse(shade.wasOverridden());
 
         // ==== OK !! primary at middle, secondary at middle ====
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 50).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 50);
         assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
-        assertFalse(shade.isOverridden());
+        assertFalse(shade.wasOverridden());
 
         // ==== IMPOSSIBLE !! secondary at middle, primary above => test the constraining code ====
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 40).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 25);
         assertEquals(new PercentType(40), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
         assertEquals(new PercentType(40), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-        assertTrue(shade.isOverridden());
+        assertTrue(shade.wasOverridden());
 
         // shade has the isOverridden() flag set, so create a new instance to clear it
         shade = new ShadePosition();
@@ -539,14 +539,14 @@ public class HDPowerViewJUnitTests {
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 50).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 75);
         assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
         assertEquals(new PercentType(75), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-        assertFalse(shade.isOverridden());
+        assertFalse(shade.wasOverridden());
 
         // ==== IMPOSSIBLE !! primary at middle, secondary below => test the constraining code ====
         shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 60).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 75);
         assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(new PercentType(60), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
-        assertTrue(shade.isOverridden());
+        assertTrue(shade.wasOverridden());
 
         // shade has the isOverridden() flag set, so create a new instance to clear it
         shade = new ShadePosition();
@@ -556,7 +556,7 @@ public class HDPowerViewJUnitTests {
         shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 60).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 25);
         assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(new PercentType(25), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
-        assertFalse(shade.isOverridden());
+        assertFalse(shade.wasOverridden());
     }
 
     /**
