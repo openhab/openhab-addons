@@ -15,33 +15,31 @@ package org.openhab.binding.venstarthermostat.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VenstarSystemMode} represents the value of the system mode returned
+ * The {@link VenstarFanState} represents the state of the fan returned
  * from the REST API.
  *
- * @author William Welliver - Initial contribution
+ * @author Matthew Davies - Initial contribution
  */
 @NonNullByDefault
-public enum VenstarSystemMode {
+public enum VenstarFanState {
     OFF(0, "off", "Off"),
-    HEAT(1, "heat", "Heat"),
-    COOL(2, "cool", "Cool"),
-    AUTO(3, "auto", "Auto");
+    ON(1, "on", "On");
 
-    private int mode;
+    private int state;
     private String name;
     private String friendlyName;
 
-    VenstarSystemMode(int mode, String name, String friendlyName) {
-        this.mode = mode;
+    VenstarFanState(int state, String name, String friendlyName) {
+        this.state = state;
         this.name = name;
         this.friendlyName = friendlyName;
     }
 
-    public int mode() {
-        return mode;
+    public int state() {
+        return state;
     }
 
-    public String modeName() {
+    public String stateName() {
         return name;
     }
 
@@ -49,13 +47,13 @@ public enum VenstarSystemMode {
         return friendlyName;
     }
 
-    public static VenstarSystemMode fromInt(int mode) throws IllegalArgumentException {
-        for (VenstarSystemMode sm : values()) {
-            if (sm.mode == mode) {
-                return sm;
+    public static VenstarFanState fromInt(int state) throws IllegalArgumentException {
+        for (VenstarFanState fs : values()) {
+            if (fs.state == state) {
+                return fs;
             }
         }
 
-        throw (new IllegalArgumentException("Invalid system mode " + mode));
+        throw (new IllegalArgumentException("Invalid fan state " + state));
     }
 }
