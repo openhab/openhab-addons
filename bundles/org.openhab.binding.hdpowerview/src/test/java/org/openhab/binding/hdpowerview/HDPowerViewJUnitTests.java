@@ -272,49 +272,65 @@ public class HDPowerViewJUnitTests {
     }
 
     /**
-     * Test parsing of ShadePosition.
+     * Test parsing of ShadePosition (shade fully up).
      *
      */
     @Test
-    public void testShadePositionParsing() {
-        // ==== exercise some code ====
-        ShadePosition test;
-        State pos;
+    public void testShadePositionParsingFullyUp() {
         Capabilities capabilities = db.getCapabilities(0);
-
-        // ==== shade fully up ====
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 0);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 0);
         assertNotNull(test);
-        pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, VANE_TILT_COORDS);
         assertTrue(UnDefType.UNDEF.equals(pos));
+    }
 
-        // ==== shade fully down (method 1) ====
-        test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 100);
+    /**
+     * Test parsing of ShadePosition (shade fully down (method 1)).
+     *
+     */
+    @Test
+    public void testShadePositionParsingShadeFullyDown1() {
+        Capabilities capabilities = db.getCapabilities(0);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 100);
         assertNotNull(test);
-        pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, VANE_TILT_COORDS);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
+    }
 
-        // ==== shade fully down (method 2) ====
-        test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 0);
+    /**
+     * Test parsing of ShadePosition (shade fully down (method 2)).
+     *
+     */
+    @Test
+    public void testShadePositionParsingShadeFullyDown2() {
+        Capabilities capabilities = db.getCapabilities(0);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 0);
         assertNotNull(test);
-        pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, VANE_TILT_COORDS);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
+    }
 
-        // ==== shade fully down (method 2) and vane fully open ====
-        test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 100);
+    /**
+     * Test parsing of ShadePosition (shade fully down (method 2) and vane fully open).
+     *
+     */
+    @Test
+    public void testShadePositionParsingShadeFullyDownVaneOpen() {
+        Capabilities capabilities = db.getCapabilities(0);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 100);
         assertNotNull(test);
-        pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, VANE_TILT_COORDS);

@@ -161,8 +161,11 @@ public class ShadePosition {
                 if (PRIMARY_ZERO_IS_CLOSED.equals(posKind1) && shadeCapabilities.supportsTiltOnClosed()) {
                     return position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO;
                 }
+                break;
 
-            default:
+            case ERROR_UNKNOWN:
+            case NONE:
+                // fall through, return UNDEF
         }
         return UnDefType.UNDEF;
     }
@@ -260,9 +263,11 @@ public class ShadePosition {
                     int max = shadeCapabilities.supportsTilt180() ? MAX_SHADE : MAX_VANE;
                     return new PercentType((int) Math.round((double) Math.min(position2.intValue(), max) / max * 100));
                 }
+                break;
 
-            default:
-
+            case ERROR_UNKNOWN:
+            case NONE:
+                // fall through, return UNDEF
         }
         return UnDefType.UNDEF;
     }
@@ -342,7 +347,9 @@ public class ShadePosition {
                 }
                 break;
 
-            default:
+            case ERROR_UNKNOWN:
+            case NONE:
+                // fall through, do nothing
         }
         return this;
     }

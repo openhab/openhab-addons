@@ -71,8 +71,8 @@
 			<property name="modelId">PowerView Motorized Shade</property>
 			<property name="type"></property>
 			<property name="capabilities"></property>
-			<property name="jsonHasSecondary"></property>
-			<property name="jsonTiltAnywhere"></property>
+			<property name="secondaryRailDetected"></property>
+			<property name="tiltAnywhereDetected"></property>
 		</properties>
 		<representation-property>id</representation-property>
 

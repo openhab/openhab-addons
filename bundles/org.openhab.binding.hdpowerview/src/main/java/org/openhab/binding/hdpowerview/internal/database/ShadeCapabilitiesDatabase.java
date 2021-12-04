@@ -95,7 +95,7 @@ public class ShadeCapabilitiesDatabase {
     /**
      * Describes a shade type entry in the database; implements 'capabilities' parameter.
      *
-     * @author AndrewFG - Initial contribution
+     * @author Andrew Fiddian-Green - Initial Contribution
      */
     public static class Type extends Base {
         private int capabilities = -1;
@@ -130,7 +130,7 @@ public class ShadeCapabilitiesDatabase {
     /**
      * Describes a shade 'capabilities' entry in the database; adds properties indicating its supported functionality.
      *
-     * @author AndrewFG - Initial contribution
+     * @author Andrew Fiddian-Green - Initial Contribution
      */
     public static class Capabilities extends Base {
         private boolean supportsPrimary;
