@@ -52,6 +52,7 @@ public enum MiIoDevices {
     DEERMA_HUMIDIFIER_JSQ("deerma.humidifier.jsq", "Mi Smart Antibacterial Humidifier", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ1("deerma.humidifier.jsq1", "Mi S Smart Humidifer ", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ5("deerma.humidifier.jsq5", "Mi Smart Antibacterial Humidifier", THING_TYPE_BASIC),
+    DEERMA_HUMIDIFIER_JSQS("deerma.humidifier.jsqs", "Mi Smart Humidifer S", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_MJJSQ("deerma.humidifier.mjjsq", "Mi Smart Humidifier", THING_TYPE_BASIC),
     DMAKER_AIRFRESH_A1("dmaker.airfresh.a1", "Mi Fresh Air Ventilator A1-150", THING_TYPE_BASIC),
     DMAKER_AIRFRESH_T2017("dmaker.airfresh.t2017", "Mi Fresh Air Ventilator", THING_TYPE_BASIC),
