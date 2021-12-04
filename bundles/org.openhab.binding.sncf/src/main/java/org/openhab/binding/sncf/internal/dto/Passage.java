@@ -20,6 +20,5 @@ package org.openhab.binding.sncf.internal.dto;
  */
 public class Passage {
     public VJDisplayInformation displayInformations;
-    public Route route;
     public StopDateTime stopDateTime;
 }
