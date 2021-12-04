@@ -66,6 +66,9 @@ public class MiIoBasicChannel {
     @SerializedName("refresh")
     @Expose
     private @Nullable Boolean refresh;
+    @SerializedName("refreshInterval")
+    @Expose
+    private @Nullable Integer refreshInterval;
     @SerializedName("customRefreshCommand")
     @Expose
     private @Nullable String channelCustomRefreshCommand;
@@ -200,6 +203,23 @@ public class MiIoBasicChannel {
 
     public void setRefresh(@Nullable Boolean refresh) {
         this.refresh = refresh;
+    }
+
+    public Integer getRefreshInterval() {
+        Integer refreshInterval = this.refreshInterval;
+        if (refreshInterval != null) {
+            return refreshInterval;
+        }
+        return 1;
+    }
+
+    public void setRefresh(@Nullable final Integer interval) {
+        final Integer refreshInterval = interval;
+        if (refreshInterval != null && refreshInterval.intValue() != 1) {
+            this.refreshInterval = refreshInterval;
+        } else {
+            this.refreshInterval = null;
+        }
     }
 
     public String getChannelCustomRefreshCommand() {

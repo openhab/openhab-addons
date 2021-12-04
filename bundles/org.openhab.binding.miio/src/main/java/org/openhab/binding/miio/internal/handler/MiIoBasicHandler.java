@@ -105,6 +105,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
     private Map<ChannelUID, MiIoBasicChannel> actions = new HashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
     private BasicChannelTypeProvider basicChannelTypeProvider;
+    private Map<String, Integer> customRefreshInterval = new HashMap<>();
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
@@ -352,11 +353,33 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
     }
 
+    private boolean customRefreshIntervalCheck(MiIoBasicChannel miChannel) {
+        if (miChannel.getRefreshInterval() > 1) {
+            int iteration = customRefreshInterval.getOrDefault(miChannel.getChannel(), 0);
+            if (iteration < 1) {
+                customRefreshInterval.put(miChannel.getChannel(), miChannel.getRefreshInterval() - 1);
+            } else {
+                logger.debug("Skip refresh of channel {} for {}. Next refresh in {} cycles.", miChannel.getChannel(),
+                        getThing().getUID(), iteration);
+                customRefreshInterval.put(miChannel.getChannel(), iteration - 1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean linkedChannelCheck(MiIoBasicChannel miChannel) {
+        if (!isLinked(miChannel.getChannel())) {
+            logger.debug("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
+                    getThing().getUID());
+            return false;
+        }
+        return true;
+    }
+
     private void refreshCustomProperties(MiIoBasicDevice midevice) {
         for (MiIoBasicChannel miChannel : refreshListCustomCommands.values()) {
-            if (!isLinked(miChannel.getChannel())) {
-                logger.debug("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
-                        getThing().getUID());
+            if (customRefreshIntervalCheck(miChannel) || !linkedChannelCheck(miChannel)) {
                 continue;
             }
             String cmd = miChannel.getChannelCustomRefreshCommand();
@@ -378,9 +401,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         int maxProperties = device.getDevice().getMaxProperties();
         JsonArray getPropString = new JsonArray();
         for (MiIoBasicChannel miChannel : refreshList) {
-            if (!isLinked(miChannel.getChannel())) {
-                logger.debug("Skip refresh of channel {} for {} as it is not linked", miChannel.getChannel(),
-                        getThing().getUID());
+            if (customRefreshIntervalCheck(miChannel) || !linkedChannelCheck(miChannel)) {
                 continue;
             }
             JsonElement property;

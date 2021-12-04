@@ -700,6 +700,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | task-switch          | Switch               | Imilab Timer - Task Switch               |            |
 | countdown-info       | Switch               | Imilab Timer - Countdown Info            |            |
 | bt-gw                | String               | BT Gateway                               | Value mapping `["disable"="Disable","enable"="Enable"]` |
+| bt-gw-devices        | String               | Connected BT Gateway Devices             | Note, refreshes every 2nd refresh. Channel requires cloud connectivity to function. Sample widget to visualise the (json) output available from the widget market |
 
 ### Mi Smart Plug WiFi (<a name="chuangmi-plug-hmi205">chuangmi.plug.hmi205</a>) Channels
 
@@ -5663,6 +5664,7 @@ Number:Time countdown "Imilab Timer - Countdown" (G_plug) {channel="miio:basic:p
 Switch task_switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
 Switch countdown_info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
 String bt_gw "BT Gateway" (G_plug) {channel="miio:basic:plug:bt-gw"}
+String bt_gw_devices "Connected BT Gateway Devices" (G_plug) {channel="miio:basic:plug:bt-gw-devices"}
 ```
 
 ### Mi Smart Plug WiFi (chuangmi.plug.hmi205) item file lines
