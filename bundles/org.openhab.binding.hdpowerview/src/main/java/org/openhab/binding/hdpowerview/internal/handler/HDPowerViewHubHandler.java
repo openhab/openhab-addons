@@ -92,6 +92,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<Scene> sceneCache = new ArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new ArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new ArrayList<>();
+    private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
@@ -240,6 +241,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             pollShades();
             List<Scene> scenes = pollScenes();
             updateSceneChannels(scenes);
+            createDeprecatedSceneChannels(scenes);
             List<SceneCollection> sceneCollections = pollSceneCollections();
             updateSceneCollectionChannels(sceneCollections);
             List<ScheduledEvent> scheduledEvents = pollScheduledEvents();
@@ -343,6 +345,42 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 .withLabel(scene.getName()).withDescription(description).build();
 
         return channel;
+    }
+
+    private void createDeprecatedSceneChannels(List<Scene> scenes) {
+        if (deprecatedChannelsCreated) {
+            // Only do this once.
+            return;
+        }
+        ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
+                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
+        for (Scene scene : scenes) {
+            String channelId = Integer.toString(scene.id);
+            ChannelUID newChannelUid = new ChannelUID(channelGroupUid, channelId);
+            ChannelUID deprecatedChannelUid = new ChannelUID(getThing().getUID(), channelId);
+            String description = translationProvider.getText("dynamic-channel.scene-activate.deprecated.description",
+                    scene.getName());
+            Channel channel = ChannelBuilder.create(deprecatedChannelUid, CoreItemFactory.SWITCH)
+                    .withType(sceneChannelTypeUID).withLabel(scene.getName()).withDescription(description).build();
+            logger.debug("Creating deprecated channel '{}' ('{}') to probe for linked items", deprecatedChannelUid,
+                    scene.getName());
+            updateThing(editThing().withChannel(channel).build());
+            if (this.isLinked(deprecatedChannelUid) && !this.isLinked(newChannelUid)) {
+                logger.warn("Created deprecated channel '{}' ('{}'), please link items to '{}' instead",
+                        deprecatedChannelUid, scene.getName(), newChannelUid);
+            } else {
+                if (this.isLinked(newChannelUid)) {
+                    logger.debug("Removing deprecated channel '{}' ('{}') since new channel '{}' is linked",
+                            deprecatedChannelUid, scene.getName(), newChannelUid);
+
+                } else {
+                    logger.debug("Removing deprecated channel '{}' ('{}') since it has no linked items",
+                            deprecatedChannelUid, scene.getName());
+                }
+                updateThing(editThing().withoutChannel(deprecatedChannelUid).build());
+            }
+        }
+        deprecatedChannelsCreated = true;
     }
 
     private List<SceneCollection> pollSceneCollections()
