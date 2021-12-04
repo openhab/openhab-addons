@@ -190,7 +190,7 @@ public class StationHandler extends BaseThingHandler {
     private State getValue(String channelId, Passage passage, String direction) {
         switch (channelId) {
             case DIRECTION:
-                return fromNullableString(passage.route.direction.name);
+                return fromNullableString(passage.displayInformations.direction);
             case LINE_NAME:
                 return fromNullableString(String.format("%s %s", passage.displayInformations.commercialMode,
                         passage.displayInformations.code));

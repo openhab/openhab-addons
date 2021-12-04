@@ -23,4 +23,5 @@ public class VJDisplayInformation {
     public String network;
     public String name;
     public String commercialMode;
+    public String direction;
 }
