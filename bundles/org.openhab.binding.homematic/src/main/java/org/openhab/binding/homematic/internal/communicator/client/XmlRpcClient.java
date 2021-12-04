@@ -87,10 +87,13 @@ public class XmlRpcClient extends RpcClient<String> {
                 throw new IOException(ex);
             } catch (IOException ex) {
                 reason = ex;
-                if ("init".equals(request.getMethodName())) { // no retries for "init" request
+                // no retries for "init" request or if connection is refused
+                if ("init".equals(request.getMethodName())
+                        || ex.getCause() != null && ex.getCause() instanceof ExecutionException) {
                     break;
                 }
-                logger.debug("XmlRpcMessage failed({}), sending message again {}/{}", ex.getMessage(), rpcRetryCounter, MAX_RPC_RETRY);
+                logger.debug("XmlRpcMessage failed({}), sending message again {}/{}", ex.getMessage(), rpcRetryCounter,
+                        MAX_RPC_RETRY);
             }
         }
         throw reason;
