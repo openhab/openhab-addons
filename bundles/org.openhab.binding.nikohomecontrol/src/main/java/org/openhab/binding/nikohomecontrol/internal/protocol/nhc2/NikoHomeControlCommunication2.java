@@ -395,7 +395,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         break;
                     default:
                         actionType = ActionType.GENERIC;
-                        logger.debug("device type {} not recognised, default to GENERIC action", device.type);
+                        logger.debug("device model {} not recognised, default to GENERIC action", device.model);
                 }
 
                 NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
@@ -480,14 +480,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             booleanState = basicStateProperty.get().basicState;
         }
 
-        if (booleanState != null) {
-            if (NHCON.equals(booleanState)) {
-                action.setBooleanState(true);
-                logger.debug("setting action {} internally to ON", action.getId());
-            } else if (NHCOFF.equals(booleanState)) {
-                action.setBooleanState(false);
-                logger.debug("setting action {} internally to OFF", action.getId());
-            }
+        if ((booleanState != null) && NHCOFF.equals(booleanState)) {
+            action.setBooleanState(false);
+            logger.debug("setting action {} internally to OFF", action.getId());
         }
 
         if (dimmerProperty.isPresent()) {
@@ -496,6 +491,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 action.setState(Integer.parseInt(brightness));
                 logger.debug("setting action {} internally to {}", action.getId(), dimmerProperty.get().brightness);
             }
+        }
+
+        if ((booleanState != null) && NHCON.equals(booleanState)) {
+            action.setBooleanState(true);
+            logger.debug("setting action {} internally to ON", action.getId());
         }
     }
 
@@ -615,6 +615,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         switch (action.getType()) {
             case GENERIC:
             case TRIGGER:
+                if (!NHCON.equals(value)) {
+                    // Only trigger for ON
+                    return;
+                }
                 property.basicState = NHCTRIGGERED;
                 break;
             case RELAY:
@@ -627,6 +631,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 } else if (NHCOFF.equals(value)) {
                     property.status = value;
                 } else {
+                    action.setState(Integer.parseInt(value)); // set cached state to new brightness value to avoid
+                                                              // switching on with old brightness value before updating
+                                                              // to new value
                     // If the light is off, turn the light on before sending the brightness value, needs to happen
                     // in 2 separate messages.
                     if (!action.booleanState()) {
