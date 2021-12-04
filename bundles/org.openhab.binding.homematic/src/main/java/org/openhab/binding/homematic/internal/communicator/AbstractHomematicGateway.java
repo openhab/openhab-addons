@@ -88,7 +88,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractHomematicGateway implements RpcEventListener, HomematicGateway, VirtualGateway {
     private final Logger logger = LoggerFactory.getLogger(AbstractHomematicGateway.class);
     public static final double DEFAULT_DISABLE_DELAY = 2.0;
-    private static final long RESTART_DELAY = 30; 
+    private static final long RESTART_DELAY = 30;
     private static final long CONNECTION_TRACKER_INTERVAL_SECONDS = 15;
 
     private final Map<TransferMode, RpcClient<?>> rpcClients = new HashMap<>();
