@@ -68,7 +68,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<category>time</category>
-		<state readOnly="true" pattern="%1$tR"/>
+		<state readOnly="true" pattern="%1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 </thing:thing-descriptions>

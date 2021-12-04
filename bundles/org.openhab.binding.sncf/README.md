@@ -68,7 +68,20 @@ The Station thing holds two groups of channels (arrivals and departures) contain
 sncf.things:
 
 ```
-Bridge sncf:api:main "Bridge" [apiID="xxx-yyy-zzz"] {
+Bridge sncf:api:8901d44a68 "Bridge" [apiID="xxx-yyy-zzz"] {
     station MyHouse "Krakow"[stopPointId="stop_point:SNCF:87561951:Bus"]
 }
 ```
+
+sncf.items:
+
+```
+String      Arrival_Direction   { channel="sncf:station:8901d44a68:87381475_RapidTransit:arrivals#direction" }
+String      Arrival_Line        { channel="sncf:station:8901d44a68:87381475_RapidTransit:arrivals#lineName" }
+DateTime    Arrival_Time        { channel="sncf:station:8901d44a68:87381475_RapidTransit:arrivals#timestamp" }
+String      Departure_Direction { channel="sncf:station:8901d44a68:87381475_RapidTransit:departures#direction" }
+String      Departure_Line      { channel="sncf:station:8901d44a68:87381475_RapidTransit:departures#lineName" }
+DateTime    Departure_Time      { channel="sncf:station:8901d44a68:87381475_RapidTransit:departures#timestamp" }
+
+```
+
