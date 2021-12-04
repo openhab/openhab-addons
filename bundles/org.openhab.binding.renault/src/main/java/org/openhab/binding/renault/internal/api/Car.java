@@ -32,6 +32,11 @@ public class Car {
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
+    public boolean disableLocation = false;
+    public boolean disableBattery = false;
+    public boolean disableCockpit = false;
+    public boolean disableHvac = false;
+
     public @Nullable Double batteryLevel;
     public @Nullable Boolean hvacstatus;
     public @Nullable Double odometer;

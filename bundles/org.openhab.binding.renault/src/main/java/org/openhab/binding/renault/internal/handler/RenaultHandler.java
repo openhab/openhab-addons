@@ -28,6 +28,7 @@ import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -75,6 +76,9 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+
+        // reset the car on initialize
+        this.car = new Car();
         this.config = getConfigAs(RenaultConfiguration.class);
 
         // Validate configuration
@@ -141,56 +145,64 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     private void updateHvacStatus(MyRenaultHttpSession httpSession) {
-        try {
-            httpSession.getHvacStatus(car);
-            Boolean hvacstatus = car.hvacstatus;
-            if (hvacstatus != null) {
-                updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
+        if (!car.disableHvac) {
+            try {
+                httpSession.getHvacStatus(car);
+                Boolean hvacstatus = car.hvacstatus;
+                if (hvacstatus != null) {
+                    updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
+                }
+            } catch (RenaultNotImplementedException e) {
+                car.disableHvac = true;
+            } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
-        } catch (RenaultForbiddenException | RenaultUpdateException e) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Update HVAC error: " + e.getMessage());
         }
     }
 
     private void updateLocation(MyRenaultHttpSession httpSession) {
-        try {
-            httpSession.getLocation(car);
-            Double latitude = car.gpsLatitude;
-            Double longitude = car.gpsLongitude;
-            if (latitude != null && longitude != null) {
-                updateState(CHANNEL_LOCATION, new PointType(new DecimalType(latitude.doubleValue()),
-                        new DecimalType(longitude.doubleValue())));
+        if (!car.disableLocation) {
+            try {
+                httpSession.getLocation(car);
+                Double latitude = car.gpsLatitude;
+                Double longitude = car.gpsLongitude;
+                if (latitude != null && longitude != null) {
+                    updateState(CHANNEL_LOCATION, new PointType(new DecimalType(latitude.doubleValue()),
+                            new DecimalType(longitude.doubleValue())));
+                }
+            } catch (RenaultNotImplementedException e) {
+                car.disableLocation = true;
+            } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
-        } catch (RenaultForbiddenException | RenaultUpdateException e) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Update location error: " + e.getMessage());
         }
     }
 
     private void updateCockpit(MyRenaultHttpSession httpSession) {
-        try {
-            httpSession.getCockpit(car);
-            Double odometer = car.odometer;
-            if (odometer != null) {
-                updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
+        if (!car.disableCockpit) {
+            try {
+                httpSession.getCockpit(car);
+                Double odometer = car.odometer;
+                if (odometer != null) {
+                    updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
+                }
+            } catch (RenaultNotImplementedException e) {
+                car.disableCockpit = true;
+            } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
-        } catch (RenaultForbiddenException | RenaultUpdateException e) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Update cockpit  error: " + e.getMessage());
         }
     }
 
     private void updateBattery(MyRenaultHttpSession httpSession) {
-        try {
-            httpSession.getBatteryStatus(car);
-            Double batteryLevel = car.batteryLevel;
-            if (batteryLevel != null) {
-                updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
+        if (!car.disableBattery) {
+            try {
+                httpSession.getBatteryStatus(car);
+                Double batteryLevel = car.batteryLevel;
+                if (batteryLevel != null) {
+                    updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
+                }
+            } catch (RenaultNotImplementedException e) {
+                car.disableBattery = true;
+            } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
-        } catch (RenaultForbiddenException | RenaultUpdateException e) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Update battery error: " + e.getMessage());
         }
     }
 }
