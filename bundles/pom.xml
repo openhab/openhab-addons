@@ -614,7 +614,11 @@
     <module>org.openhab.binding.smhi</module>
         
     <module>org.openhab.binding.smartthings</module>
+<<<<<<< HEAD
         
+=======
+    <module>org.openhab.binding.sncf</module>
+>>>>>>> cb0c4bbcb4 ([SNCF] A binding to get French railways arrivals and departures (#11607))
     <module>org.openhab.binding.snmp</module>
         
     <module>org.openhab.binding.solaredge</module>
