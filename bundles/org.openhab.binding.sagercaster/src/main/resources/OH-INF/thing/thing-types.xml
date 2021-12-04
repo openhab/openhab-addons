@@ -143,7 +143,7 @@
 	<channel-type id="wind-direction">
 		<item-type>String</item-type>
 		<label>@text/windDirectionLabel</label>
-		<category>wind</category>
+		<category>Wind</category>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
@@ -164,7 +164,7 @@
 		<item-type>String</item-type>
 		<label>@text/trendLabel</label>
 		<description>@text/trendDescription</description>
-		<category>line</category>
+		<category>Line</category>
 		<state readOnly="true" pattern="%s">
 			<options>
 				<option value="1">@text/trend1</option>
@@ -180,7 +180,7 @@
 		<item-type>DateTime</item-type>
 		<label>@text/timestampChannelLabel</label>
 		<description>@text/timestampChannelDescription</description>
-		<category>time</category>
+		<category>Time</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Timestamp</tag>
@@ -192,7 +192,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>@text/cloudinessLabel</label>
 		<description>@text/cloudinessDescription</description>
-		<category>sun_clouds</category>
+		<category>Sun_Clouds</category>
 		<state min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
@@ -200,7 +200,7 @@
 		<item-type>Number</item-type>
 		<label>@text/rainQttyLabel</label>
 		<description>@text/rainQttyDescription</description>
-		<category>rain</category>
+		<category>Rain</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Rain</tag>
@@ -212,7 +212,7 @@
 		<item-type>Switch</item-type>
 		<label>@text/rainingLabel</label>
 		<description>@text/rainingDescription</description>
-		<category>rain</category>
+		<category>Rain</category>
 		<tags>
 			<tag>Status</tag>
 			<tag>Rain</tag>
@@ -223,7 +223,7 @@
 		<item-type>Number</item-type>
 		<label>@text/beaufortLabel</label>
 		<description>@text/beaufortDescription</description>
-		<category>wind</category>
+		<category>Wind</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Wind</tag>

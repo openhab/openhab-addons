@@ -6,7 +6,8 @@ The Sager Weathercaster is a scientific instrument for accurate prediction of th
 
 * To operate, this binding will need to use channel values provided by other means (e.g. Weather Binding, Netatmo, a 1-Wire personal weather station...)
 
-* This binding buffers readings for some hours before producing weather forecasts(wind direction and sea level pressure). SagerWeatherCaster needs an observation period of minimum 6 hours.
+* This binding buffers readings for some hours before producing weather forecasts(wind direction and sea level pressure). 
+SagerWeatherCaster needs an observation period of minimum 6 hours.
 
 For these reasons, this binding is not a binding in the usual sense.
 
@@ -44,6 +45,7 @@ The binding will use some input channels, that can be configured directly with p
 | pressure            | input  |Number:Pressure      | Sea level pressure                                              |
 | wind-angle          | input  |Number:Angle         | Wind direction                                                  |
 | temperature         | input  |Number:Temperature   | Outside temperature                                             |
+| timestamp           | output |DateTime             | Timestamp of the last forecast update                           |
 | forecast            | output |String               | Description of the weather forecast                             |
 | velocity            | output |String               | Description of the expected wind evolution                      |
 | velocity-beaufort   | output |Number               | Expected wind evolution using the Beaufort scale                |
