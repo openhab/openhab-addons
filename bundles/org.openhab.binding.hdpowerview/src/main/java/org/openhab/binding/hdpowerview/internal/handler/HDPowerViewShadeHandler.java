@@ -221,7 +221,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             final Map<String, String> properties = getThing().getProperties();
 
             // update 'jsonHasSecondary' property
-            String propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_HAS_SECONDARY;
+            String propKey = HDPowerViewBindingConstants.PROPERTY_SECONDARY_RAIL_DETECTED;
             String propOldVal = properties.getOrDefault(propKey, "");
             boolean propJsonVal = positions.jsonSecondary();
             String propNewVal = String.valueOf(propJsonVal);
@@ -235,7 +235,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             }
 
             // update 'jsonTiltAnywhere' property
-            propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_JSON_TILT_ANYWHERE;
+            propKey = HDPowerViewBindingConstants.PROPERTY_TILT_ANYWHERE_DETECTED;
             propOldVal = properties.getOrDefault(propKey, "");
             propJsonVal = positions.jsonTiltAnywhere();
             propNewVal = String.valueOf(propJsonVal);

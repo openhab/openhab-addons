@@ -51,8 +51,8 @@ public class HDPowerViewBindingConstants {
 
     public static final String PROPERTY_SHADE_TYPE = "type";
     public static final String PROPERTY_SHADE_CAPABILITIES = "capabilities";
-    public static final String PROPERTY_SHADE_JSON_HAS_SECONDARY = "jsonHasSecondary";
-    public static final String PROPERTY_SHADE_JSON_TILT_ANYWHERE = "jsonTiltAnywhere";
+    public static final String PROPERTY_SECONDARY_RAIL_DETECTED = "secondaryRailDetected";
+    public static final String PROPERTY_TILT_ANYWHERE_DETECTED = "tiltAnywhereDetected";
 
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 
