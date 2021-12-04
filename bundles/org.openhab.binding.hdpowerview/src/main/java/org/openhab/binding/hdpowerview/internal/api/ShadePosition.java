@@ -44,14 +44,6 @@ public class ShadePosition {
     private @Nullable Integer posKind2 = null;
     private @Nullable Integer position2 = null;
 
-    /**
-     * This field gets set to true whenever the internal logic has a) constrained the value of position1 or position2,
-     * b) swapped them around, or c) deleted an invalid position value.
-     *
-     * The field is 'transient' to force GSON to ignore it.
-     */
-    private transient boolean positionOverrideApplied = false;
-
     public ShadePosition() {
     }
 
@@ -90,7 +82,6 @@ public class ShadePosition {
                         int secPercent = ((PercentType) secondary).intValue();
                         if (percent < secPercent) {
                             percent = secPercent;
-                            positionOverrideApplied = true;
                         }
                     }
                 }
@@ -204,7 +195,6 @@ public class ShadePosition {
                         int primaryPercent = ((PercentType) primary).intValue();
                         if (percent > primaryPercent) {
                             percent = primaryPercent;
-                            positionOverrideApplied = true;
                         }
                     }
                 }
@@ -314,14 +304,12 @@ public class ShadePosition {
             position2 = Integer.valueOf(position1);
             posKind1 = posKind2Temp != null ? posKind2Temp.intValue() : NONE.ordinal();
             position1 = position2Temp != null ? position2Temp.intValue() : 0;
-            positionOverrideApplied = true;
         }
 
         // delete position2 if it has an invalid position kind
         if (ERROR_UNKNOWN.equals(posKind2) || NONE.equals(posKind2)) {
             posKind2 = null;
             position2 = null;
-            positionOverrideApplied = true;
         }
 
         // logic to set either position1 or position2
@@ -357,15 +345,5 @@ public class ShadePosition {
             default:
         }
         return this;
-    }
-
-    /**
-     * Check if any of the position values were swapped or overridden by internal logic of this class. Generally this
-     * means that the Thing's Channels may need to be refreshed from the new position data.
-     *
-     * @return
-     */
-    public boolean wasOverridden() {
-        return positionOverrideApplied;
     }
 }
