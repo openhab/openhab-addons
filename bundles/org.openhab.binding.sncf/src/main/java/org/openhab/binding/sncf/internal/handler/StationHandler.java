@@ -174,7 +174,7 @@ public class StationHandler extends BaseThingHandler {
                         });
                 ZonedDateTime eventTime = getEventTimestamp(passage, direction);
                 if (eventTime != null) {
-                    scheduleRefresh(eventTime.plusMinutes(1));
+                    scheduleRefresh(eventTime.plusSeconds(10));
                 }
             }, () -> {
                 logger.debug("No {} available", direction);
