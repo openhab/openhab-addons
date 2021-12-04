@@ -44,7 +44,7 @@ public enum VenstarAwayMode {
         return friendlyName;
     }
 
-    public static VenstarAwayMode fromInt(int mode) {
+    public static VenstarAwayMode fromInt(int mode) throws IllegalArgumentException {
         for (VenstarAwayMode am : values()) {
             if (am.mode == mode) {
                 return am;
