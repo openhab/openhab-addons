@@ -20,6 +20,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
@@ -42,6 +48,7 @@ import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.openhab.binding.homematic.internal.model.HmRssiInfo;
+import org.openhab.core.common.ThreadPoolManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +61,13 @@ public abstract class RpcClient<T> {
     private final Logger logger = LoggerFactory.getLogger(RpcClient.class);
     protected static final int MAX_RPC_RETRY = 3;
     protected static final int RESP_BUFFER_SIZE = 8192;
+    private static final int INITIAL_CALLBACK_REG_DELAY = 20; // 20 s before first attempt
+    private static final int CALLBACK_REG_DELAY = 10; // 10 s between two attempts
 
     protected HomematicConfig config;
     private String thisUID = UUID.randomUUID().toString();
+    private ScheduledFuture<?> future = null;
+    private int attempt;
 
     public RpcClient(HomematicConfig config) {
         this.config = config;
@@ -86,32 +97,36 @@ public abstract class RpcClient<T> {
      * Register a callback for the specified interface where the Homematic gateway can send its events.
      */
     public void init(HmInterface hmInterface) throws IOException {
+        ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(GATEWAY_POOL_NAME);
         RpcRequest<T> request = createRpcRequest("init");
         request.addArg(getRpcCallbackUrl());
         request.addArg(thisUID);
         if (config.getGatewayInfo().isHomegear()) {
             request.addArg(Integer.valueOf(0x22));
         }
-        int maxRetryAttempts = config.getCallbackRegistrationRetries();
-        int waitTime = config.getRetryWaitTime() * 1000;
-        for (int attempt = 1; attempt <= maxRetryAttempts; attempt++) {
-            try {
-                logger.debug("Register callback for interface {}, attempt {}/{}", hmInterface.getName(), attempt,
-                        maxRetryAttempts);
-                sendMessage(config.getRpcPort(hmInterface), request);
-                break;
-            } catch (IOException e) {
-                if (attempt == maxRetryAttempts) {
-                    logger.warn(
-                            "All attempts to register a callback for interface '{}' failed, last exception message: {}",
-                            hmInterface.getName(), e.getMessage());
-                    throw (e);
-                }
+        logger.debug("Register callback for interface {}", hmInterface.getName());
+        try {
+            attempt = 1;
+            sendMessage(config.getRpcPort(hmInterface), request); // first attempt without delay
+        } catch (IOException e) {
+            future = scheduler.scheduleWithFixedDelay(() -> {
+                logger.debug("Register callback for interface {}, attempt {}", hmInterface.getName(), ++attempt);
                 try {
-                    Thread.sleep(waitTime);
-                } catch (InterruptedException e1) {
-                    // ignore
+                    sendMessage(config.getRpcPort(hmInterface), request);
+                    future.cancel(true);
+                } catch (IOException ex) {
+                    // Ignore, retry
                 }
+            }, INITIAL_CALLBACK_REG_DELAY, CALLBACK_REG_DELAY, TimeUnit.SECONDS);
+            try {
+                future.get(config.getCallbackRegTimeout(), TimeUnit.SECONDS);
+            } catch (CancellationException e1) {
+                logger.debug("Callback for interface {} successfully registered", hmInterface.getName());
+            } catch (InterruptedException | ExecutionException e1) {
+                throw new IOException("Callback reg. thread interrupted", e1);
+            } catch (TimeoutException e1) {
+                logger.error("Callback registration for interface {} timed out", hmInterface.getName());
+                throw new IOException("Unable to reconnect in time");
             }
         }
     }

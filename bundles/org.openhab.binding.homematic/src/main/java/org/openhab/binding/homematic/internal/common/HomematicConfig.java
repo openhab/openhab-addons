@@ -59,7 +59,7 @@ public class HomematicConfig {
 
     private HmGatewayInfo gatewayInfo;
     private int callbackRegistrationRetries;
-    private int retryWaitTime;
+    private int callbackRegTimeout;
 
     /**
      * Returns the Homematic gateway address.
@@ -118,31 +118,17 @@ public class HomematicConfig {
     }
 
     /**
-     * Sets the number of retry connects.
+     * Sets timeout for callback registration.
      */
-    public void setCallbackRegistrationRetries(int retries) {
-        this.callbackRegistrationRetries = retries;
+    public void setCallbackRegTimeout(int timeout) {
+        this.callbackRegTimeout = timeout;
     }
 
     /**
-     * Returns the number of retry connects.
+     * Returns timeout for callback registrations.
      */
-    public int getCallbackRegistrationRetries() {
-        return callbackRegistrationRetries;
-    }
-
-    /**
-     * Sets the wait time between two retries in seconds.
-     */
-    public void setRetryWaitTime(int retryWaitTime) {
-        this.retryWaitTime = retryWaitTime;
-    }
-
-    /**
-     * Returns the wait time between two retries in seconds.
-     */
-    public int getRetryWaitTime() {
-        return retryWaitTime;
+    public int getCallbackRegTimeout() {
+        return callbackRegTimeout;
     }
 
     /**
