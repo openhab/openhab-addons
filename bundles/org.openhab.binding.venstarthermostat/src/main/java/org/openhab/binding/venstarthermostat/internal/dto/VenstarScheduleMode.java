@@ -15,23 +15,21 @@ package org.openhab.binding.venstarthermostat.internal.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VenstarSystemMode} represents the value of the system mode returned
+ * The {@link VenstarScheduleMode} represents the value of the schedule mode returned
  * from the REST API.
  *
- * @author William Welliver - Initial contribution
+ * @author Matthew Davies - Initial contribution
  */
 @NonNullByDefault
-public enum VenstarSystemMode {
-    OFF(0, "off", "Off"),
-    HEAT(1, "heat", "Heat"),
-    COOL(2, "cool", "Cool"),
-    AUTO(3, "auto", "Auto");
+public enum VenstarScheduleMode {
+    DISABLED(0, "disabled", "Disabled"),
+    ENABLED(1, "enabled", "Enabled");
 
     private int mode;
     private String name;
     private String friendlyName;
 
-    VenstarSystemMode(int mode, String name, String friendlyName) {
+    VenstarScheduleMode(int mode, String name, String friendlyName) {
         this.mode = mode;
         this.name = name;
         this.friendlyName = friendlyName;
@@ -49,13 +47,13 @@ public enum VenstarSystemMode {
         return friendlyName;
     }
 
-    public static VenstarSystemMode fromInt(int mode) throws IllegalArgumentException {
-        for (VenstarSystemMode sm : values()) {
+    public static VenstarScheduleMode fromInt(int mode) throws IllegalArgumentException {
+        for (VenstarScheduleMode sm : values()) {
             if (sm.mode == mode) {
                 return sm;
             }
         }
 
-        throw (new IllegalArgumentException("Invalid system mode " + mode));
+        throw (new IllegalArgumentException("Invalid schedule mode " + mode));
     }
 }

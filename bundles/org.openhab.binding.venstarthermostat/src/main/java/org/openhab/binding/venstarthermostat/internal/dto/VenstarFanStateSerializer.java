@@ -20,19 +20,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * The {@link VenstarSystemStateSerializer} parses system state values
+ * The {@link VenstarFanStateSerializer} parses system mode values
  * from the REST API JSON.
  *
- * @author William Welliver - Initial contribution
- * @author Matthew Davies - added IllegalArgumentException handling
+ * @author Matthew Davies - Initial contribution
  */
-public class VenstarSystemStateSerializer implements JsonDeserializer<VenstarSystemState> {
+public class VenstarFanStateSerializer implements JsonDeserializer<VenstarFanState> {
     @Override
-    public VenstarSystemState deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
+    public VenstarFanState deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
+
         int key = element.getAsInt();
         try {
-            return VenstarSystemState.fromInt(key);
+            return VenstarFanState.fromInt(key);
         } catch (IllegalArgumentException e) {
             throw new JsonParseException(e);
         }
