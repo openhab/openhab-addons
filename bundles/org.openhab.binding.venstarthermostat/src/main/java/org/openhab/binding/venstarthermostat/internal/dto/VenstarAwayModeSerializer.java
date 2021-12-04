@@ -30,6 +30,10 @@ public class VenstarAwayModeSerializer implements JsonDeserializer<VenstarAwayMo
     public VenstarAwayMode deserialize(JsonElement element, Type arg1, JsonDeserializationContext arg2)
             throws JsonParseException {
         int key = element.getAsInt();
-        return VenstarAwayMode.fromInt(key);
+        try {
+            return VenstarAwayMode.fromInt(key);
+        } catch (IllegalArgumentException e) {
+            throw new JsonParseException(e);
+        }
     }
 }
