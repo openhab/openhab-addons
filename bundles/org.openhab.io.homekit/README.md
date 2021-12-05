@@ -585,7 +585,7 @@ or using UI
 |                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
 |                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
 |                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
-|                      |                             | ColorTemperature             | Number                   | NOT WORKING on iOS 14.x. Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
+|                      |                             | ColorTemperature             | Number                   | Color temperature which is represented in reciprocal megaKelvin, default value range - 50 to 400. should not be used in combination with hue, saturation and brightness. supported configuration: minValue, maxValue                                                                                                                                                 |
 | Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      |                             | CurrentFanState              | Number                   | current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                             |
@@ -743,6 +743,13 @@ In order to get logs from the underlying library used to implement the HomeKit p
 ```
 openhab> log:set TRACE io.github.hapjava
 openhab> log:tail io.github.hapjava
+```
+
+In to enable detailed logs of openHAB homekit binding
+
+```
+openhab> log:set TRACE org.openhab.io.homekit.internal
+openhab> log:tail org.openhab.io.homekit.internal
 ```
 
 ## Console commands
