@@ -88,7 +88,7 @@ public class ShadeCapabilitiesDatabase {
 
         @Override
         public String toString() {
-            return String.format("%d ( %s )", intValue, text);
+            return String.format("%s (%d)", text, intValue);
         }
     }
 
