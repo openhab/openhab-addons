@@ -179,6 +179,7 @@ Number:Power HeatPump_power_el              { channel="ecotouch:geo:heatpump:pow
 Number:Power HeatPump_power_th              { channel="ecotouch:geo:heatpump:power_heating" }
 Number HeatPump_COP_heating                 { channel="ecotouch:geo:heatpump:cop_heating" }
 Number:Temperature HeatPump_adaptHeating    { channel="ecotouch:geo:heatpump:adapt_heating" }
+Switch HeatPump_state_sourcepump            { channel="ecotouch:geo:heatpump:state_sourcepump" }
 ```
 
 ### ecotouch.sitemap
@@ -197,4 +198,22 @@ sitemap ecotouch label="Waterkotte EcoTouch"
     Text item=HeatPump_COP_heating
     Setpoint item=HeatPump_adaptHeating minValue=-2.0 maxValue=2.0 step=0.5
 }
+```
+
+A snippet to show the current state of the heatpump (you need to have the corresponding items in your .items-file):
+
+```
+    Text label="State" icon="settings" {
+        Text item=HeatPump_state_sourcepump   label="Status Quellenpumpe [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_heatingpump  label="Status Heizungsumwälzpumpe [%s]"                   valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_evd          label="Status Freigabe Regelung EDV / Magnetventil [%s]"  valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_compressor1  label="Status Verdichter 1 [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_extheater    label="Status externer Wärmeerzeuger [%s]"                valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_alarm        label="Status Alarmausgang [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_cooling      label="Status Motorventil Kühlbetrieb [%s]"               valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_water        label="Status Motorventil Warmwasser [%s]"                valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_pool         label="Status Motorventil Pool [%s]"                      valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_solar        label="Status Solarbetrieb [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_cooling4way  label="Status 4-Wege_ventil [%s]"                         valuecolor=[==ON="green", ==OFF="red"]
+    }
 ```
