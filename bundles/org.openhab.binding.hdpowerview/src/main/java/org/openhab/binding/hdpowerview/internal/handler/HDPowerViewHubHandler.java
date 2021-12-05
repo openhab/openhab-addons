@@ -347,6 +347,11 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return channel;
     }
 
+    /**
+     * Create backwards compatible scene channels if any items configured before release 3.2
+     * are still linked. Users should have a reasonable amount of time to migrate to the new
+     * scene channels that are connected to a channel group.
+     */
     private void createDeprecatedSceneChannels(List<Scene> scenes) {
         if (deprecatedChannelsCreated) {
             // Only do this once.
