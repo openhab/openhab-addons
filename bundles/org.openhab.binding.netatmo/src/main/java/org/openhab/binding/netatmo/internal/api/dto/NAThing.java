@@ -83,5 +83,4 @@ public class NAThing extends NAObject {
     public @Nullable String getRoomId() {
         return roomId;
     }
-
 }
