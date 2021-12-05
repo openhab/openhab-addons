@@ -253,6 +253,7 @@
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.revogi/ @andibraeu
 /bundles/org.openhab.binding.remoteopenhab/ @lolodomo
+/bundles/org.openhab.binding.renault/ @dougculnane
 /bundles/org.openhab.binding.resol/ @ramack
 /bundles/org.openhab.binding.rfxcom/ @martinvw @paulianttila
 /bundles/org.openhab.binding.rme/ @kgoderis
@@ -279,6 +280,7 @@
 /bundles/org.openhab.binding.smartmeter/ @msteigenberger
 /bundles/org.openhab.binding.smartthings/ @BobRak
 /bundles/org.openhab.binding.smhi/ @pacive
+/bundles/org.openhab.binding.sncf/ @clinique
 /bundles/org.openhab.binding.snmp/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarlog/ @johannrichard
