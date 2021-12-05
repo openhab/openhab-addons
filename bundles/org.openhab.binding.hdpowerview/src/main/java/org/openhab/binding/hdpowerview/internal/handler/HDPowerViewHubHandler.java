@@ -239,13 +239,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         try {
             logger.debug("Polling for state");
             pollShades();
-            List<Scene> scenes = pollScenes();
-            updateSceneChannels(scenes);
-            createDeprecatedSceneChannels(scenes);
-            List<SceneCollection> sceneCollections = pollSceneCollections();
-            updateSceneCollectionChannels(sceneCollections);
-            List<ScheduledEvent> scheduledEvents = pollScheduledEvents();
-            updateScheduledEventChannels(scheduledEvents, scenes, sceneCollections);
+
+            List<Scene> scenes = updateSceneChannels();
+            List<SceneCollection> sceneCollections = updateSceneCollectionChannels();
+            List<ScheduledEvent> scheduledEvents = updateScheduledEventChannels(scenes, sceneCollections);
+
+            // Scheduled events should also have their current state updated if event has been
+            // enabled or disabled through app or other integration.
             updateScheduledEventStates(scheduledEvents);
         } catch (JsonParseException e) {
             logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
@@ -300,7 +300,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         thingHandler.onReceiveUpdate(shadeData);
     }
 
-    private List<Scene> pollScenes() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+    private List<Scene> fetchScenes() throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
@@ -320,11 +320,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return sceneData;
     }
 
-    private void updateSceneChannels(List<Scene> scenes) {
+    private List<Scene> updateSceneChannels()
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        List<Scene> scenes = fetchScenes();
+
         if (scenes.size() == sceneCache.size() && sceneCache.containsAll(scenes)) {
             // Duplicates are not allowed. Reordering is not supported.
             logger.debug("Preserving scene channels, no changes detected");
-            return;
+            return scenes;
         }
 
         logger.debug("Updating all scene channels, changes detected");
@@ -334,6 +337,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         allChannels.removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES.equals(c.getUID().getGroupId()));
         scenes.stream().sorted().forEach(scene -> allChannels.add(createSceneChannel(scene)));
         updateThing(editThing().withChannels(allChannels).build());
+
+        createDeprecatedSceneChannels(scenes);
+
+        return scenes;
     }
 
     private Channel createSceneChannel(Scene scene) {
@@ -388,7 +395,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         deprecatedChannelsCreated = true;
     }
 
-    private List<SceneCollection> pollSceneCollections()
+    private List<SceneCollection> fetchSceneCollections()
             throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
@@ -409,12 +416,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return sceneCollectionData;
     }
 
-    private void updateSceneCollectionChannels(List<SceneCollection> sceneCollections) {
+    private List<SceneCollection> updateSceneCollectionChannels()
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        List<SceneCollection> sceneCollections = fetchSceneCollections();
+
         if (sceneCollections.size() == sceneCollectionCache.size()
                 && sceneCollectionCache.containsAll(sceneCollections)) {
             // Duplicates are not allowed. Reordering is not supported.
             logger.debug("Preserving scene collection channels, no changes detected");
-            return;
+            return sceneCollections;
         }
 
         logger.debug("Updating all scene collection channels, changes detected");
@@ -426,6 +436,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         sceneCollections.stream().sorted()
                 .forEach(sceneCollection -> allChannels.add(createSceneCollectionChannel(sceneCollection)));
         updateThing(editThing().withChannels(allChannels).build());
+
+        return sceneCollections;
     }
 
     private Channel createSceneCollectionChannel(SceneCollection sceneCollection) {
@@ -440,7 +452,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return channel;
     }
 
-    private List<ScheduledEvent> pollScheduledEvents()
+    private List<ScheduledEvent> fetchScheduledEvents()
             throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
@@ -461,12 +473,15 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         return scheduledEventData;
     }
 
-    private void updateScheduledEventChannels(List<ScheduledEvent> scheduledEvents, List<Scene> scenes,
-            List<SceneCollection> sceneCollections) {
+    private List<ScheduledEvent> updateScheduledEventChannels(List<Scene> scenes,
+            List<SceneCollection> sceneCollections)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        List<ScheduledEvent> scheduledEvents = fetchScheduledEvents();
+
         if (scheduledEvents.size() == scheduledEventCache.size() && scheduledEventCache.containsAll(scheduledEvents)) {
             // Duplicates are not allowed. Reordering is not supported.
             logger.debug("Preserving scheduled event channels, no changes detected");
-            return;
+            return scheduledEvents;
         }
 
         logger.debug("Updating all scheduled event channels, changes detected");
@@ -482,6 +497,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         });
         updateThing(editThing().withChannels(allChannels).build());
+
+        return scheduledEvents;
     }
 
     private @Nullable Channel createScheduledEventChannel(ScheduledEvent scheduledEvent, List<Scene> scenes,
