@@ -223,28 +223,28 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             // update 'jsonHasSecondary' property
             String propKey = HDPowerViewBindingConstants.PROPERTY_SECONDARY_RAIL_DETECTED;
             String propOldVal = properties.getOrDefault(propKey, "");
-            boolean propJsonVal = positions.jsonSecondary();
-            String propNewVal = String.valueOf(propJsonVal);
+            boolean propNewBool = positions.secondaryRailDetected();
+            String propNewVal = String.valueOf(propNewBool);
             if (!propNewVal.equals(propOldVal)) {
                 getThing().setProperty(propKey, propNewVal);
                 final Integer temp = shadeData.capabilities;
                 final int capabilities = temp != null ? temp.intValue() : -1;
-                if (propJsonVal != db.getCapabilities(capabilities).supportsSecondary()) {
-                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propJsonVal);
+                if (propNewBool != db.getCapabilities(capabilities).supportsSecondary()) {
+                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propNewBool);
                 }
             }
 
             // update 'jsonTiltAnywhere' property
             propKey = HDPowerViewBindingConstants.PROPERTY_TILT_ANYWHERE_DETECTED;
             propOldVal = properties.getOrDefault(propKey, "");
-            propJsonVal = positions.jsonTiltAnywhere();
-            propNewVal = String.valueOf(propJsonVal);
+            propNewBool = positions.tiltAnywhereDetected();
+            propNewVal = String.valueOf(propNewBool);
             if (!propNewVal.equals(propOldVal)) {
                 getThing().setProperty(propKey, propNewVal);
                 final Integer temp = shadeData.capabilities;
                 final int capabilities = temp != null ? temp.intValue() : -1;
-                if (propJsonVal != db.getCapabilities(capabilities).supportsTiltAnywhere()) {
-                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propJsonVal);
+                if (propNewBool != db.getCapabilities(capabilities).supportsTiltAnywhere()) {
+                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propNewBool);
                 }
             }
         }
