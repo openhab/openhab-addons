@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ public interface ScriptDisposalAware {
 
     /**
      * Indicates that the script has been disposed
-     * 
+     *
      * @param scriptIdentifier the identifier for the script
      */
     void unload(String scriptIdentifier);
