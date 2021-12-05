@@ -102,7 +102,7 @@
 	<channel-type id="channel_camera_temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
-		<description>Temperatur der Blink Kamera</description>
+		<description>Temperature measured by Kamera</description>
 		<category>Temperature</category>
 		<tags>
 			<tag>CurrentTemperature</tag>
