@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" bindingId="blink"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="account">
+		<label>Blink Account</label>
+		<description>Blink Account Information</description>
+
+		<representation-property>email</representation-property>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>E-mail</label>
+				<description>Blink Account E-Mail</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Blink Account Password</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+				<default>120</default>
+				<label>Refresh Interval</label>
+				<description>Interval the device states linked to the account are polled in sec.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="camera">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Blink Security Camera</label>
+		<description>Blink Security Camera</description>
+		<category>Camera</category>
+
+		<channels>
+			<channel id="channel_camera_motiondetection" typeId="channel_camera_motiondetection"/>
+			<channel id="channel_camera_battery" typeId="system.low-battery"/>
+			<channel id="channel_camera_temperature" typeId="channel_camera_temperature"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Blink</property>
+		</properties>
+
+		<representation-property>cameraId</representation-property>
+
+		<config-description>
+			<parameter name="cameraId" type="integer" required="true">
+				<label>ID</label>
+				<description>Internal ID of camera (please use auto-discovery).</description>
+			</parameter>
+			<parameter name="networkId" type="integer" required="true">
+				<label>ID</label>
+				<description>Internal ID of network (please use auto-discovery).</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="network">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Blink Security Network</label>
+		<description>Blink Security Network</description>
+
+		<channels>
+			<channel id="channel_network_armed" typeId="channel_network_armed"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Blink</property>
+		</properties>
+
+		<representation-property>networkId</representation-property>
+
+		<config-description>
+			<parameter name="networkId" type="integer" required="true">
+				<label>ID</label>
+				<description>Internal ID of network (please use auto-discovery).</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="channel_camera_motiondetection">
+		<item-type>Switch</item-type>
+		<label>Motion Detection</label>
+		<description>Motion Detection Status</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="channel_camera_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperatur der Blink Kamera</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>CurrentTemperature</tag>
+		</tags>
+		<state pattern="%.1f °F" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="channel_network_armed">
+		<item-type>Switch</item-type>
+		<label>Armed</label>
+		<description>Network armed (start recording/reporting motion events for enabled cameras)</description>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+</thing:thing-descriptions>
