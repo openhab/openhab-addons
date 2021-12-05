@@ -36,6 +36,7 @@ import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DeviceWithMeasureHandler extends DeviceHandler {
-    private final Logger logger = LoggerFactory.getLogger(DeviceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceWithMeasureHandler.class);
     private final Optional<WeatherApi> weatherApi;
     private final Map<String, State> measures = new HashMap<>();
     private final Set<Channel> measureChannels = new HashSet<>();
@@ -81,22 +82,27 @@ public class DeviceWithMeasureHandler extends DeviceHandler {
                 Configuration measureDef = channel.getConfiguration();
                 String period = (String) measureDef.get("period");
                 String limit = (String) measureDef.get("limit");
-                // TODO : find better way to come from channel definition back to MeasureType
-                String channelId = channel.getChannelTypeUID().getId();
-                String[] elements = channelId.split("-");
-                MeasureClass.asSet.stream().filter(mt -> mt.tagName.equals(elements[0])).findFirst().ifPresent(mt -> {
-                    try {
-                        Object result = api.getMeasurements(config.id, moduleId, period, mt, limit);
+                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                if (channelTypeUID != null) {
+                    String channelId = channelTypeUID.getId();
+                    String[] elements = channelId.split("-");
+                    MeasureClass.asSet.stream().filter(mt -> mt.tagName.equals(elements[0])).findFirst()
+                            .ifPresent(mt -> {
+                                try {
+                                    Object result = api.getMeasurements(config.id, moduleId, period, mt, limit);
 
-                        State data = result instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) result)
-                                : result instanceof Double ? toQuantityType((Double) result, mt) : UnDefType.UNDEF;
+                                    State data = result instanceof ZonedDateTime
+                                            ? toDateTimeType((ZonedDateTime) result)
+                                            : result instanceof Double ? toQuantityType((Double) result, mt)
+                                                    : UnDefType.UNDEF;
 
-                        localMeasures.put(channel.getUID().getIdWithoutGroup(), data);
-                    } catch (NetatmoException e) {
-                        logger.info("Error getting measurement {} for channel {}", measureDef.values().toString(),
-                                channel.getLabel());
-                    }
-                });
+                                    localMeasures.put(channel.getUID().getIdWithoutGroup(), data);
+                                } catch (NetatmoException e) {
+                                    logger.info("Error getting measurement {} for channel {}",
+                                            measureDef.values().toString(), channel.getLabel());
+                                }
+                            });
+                }
             });
         });
     }

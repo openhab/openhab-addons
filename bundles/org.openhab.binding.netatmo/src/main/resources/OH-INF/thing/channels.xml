@@ -130,7 +130,7 @@
 
 	<channel-type id="energy-mode">
 		<item-type>String</item-type>
-		<label>Mode house</label>
+		<label>House Mode</label>
 		<state readOnly="false">
 			<options>
 				<option value="SCHEDULE"/>

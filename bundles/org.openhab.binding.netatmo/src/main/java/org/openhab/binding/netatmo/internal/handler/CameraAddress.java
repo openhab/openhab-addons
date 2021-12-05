@@ -56,6 +56,6 @@ public class CameraAddress {
      * @return true, when the VPN URL isn't equal given VPN URL, otherwise false
      */
     public boolean vpnURLChanged(String vpnURL) {
-        return !vpnURL.equals(vpnURL);
+        return !vpnURL.equals(this.vpnURL);
     }
 }

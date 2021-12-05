@@ -258,7 +258,7 @@ public class ApiBridge {
 
     private void setConnectionStatus(ConnectionStatus newStatus) {
         connectionStatus = newStatus;
-        logger.debug(connectionStatus.getMessage());
+        logger.debug("Connection status changed : {}", connectionStatus.getMessage());
         listeners.forEach(l -> l.apiConnectionStatusChanged(connectionStatus));
     }
 }

@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.core.types.State;
@@ -22,6 +23,7 @@ import org.openhab.core.types.State;
 /**
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class MeasureTest {
 
     @Test

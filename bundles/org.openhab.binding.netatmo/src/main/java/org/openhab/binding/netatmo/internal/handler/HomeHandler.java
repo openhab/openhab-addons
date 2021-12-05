@@ -280,7 +280,7 @@ public class HomeHandler extends DeviceWithEventHandler {
                 Collection<NAHomeEvent> events = api.getLastEventsOf(config.id, personId);
                 return events.isEmpty() ? null : events.iterator().next();
             } catch (NetatmoException | NoSuchElementException e) {
-                logger.warn("Error retrieving last events of person '{}' : {}", personId, e);
+                logger.warn("Error retrieving last events of person '{}' : {}", personId, e.getMessage());
             }
         }
         return null;

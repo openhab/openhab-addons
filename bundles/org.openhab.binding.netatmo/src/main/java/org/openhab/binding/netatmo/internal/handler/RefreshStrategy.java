@@ -82,7 +82,6 @@ public class RefreshStrategy {
     }
 
     public Duration nextRunDelay() {
-        // TODO : attention, il semble que ce résultat puisse devenir négatif !!!
         return searchRefreshInterval ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY);
     }
 

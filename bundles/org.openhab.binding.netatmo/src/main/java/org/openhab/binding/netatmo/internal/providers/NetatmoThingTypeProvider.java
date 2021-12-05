@@ -80,7 +80,6 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
                         .withConfigDescriptionURI(moduleType.getConfigDescription())
                         .withExtensibleChannelTypeIds(moduleType.extensions);
-                // TODO : vérifier si l'on peut passer une liste vide ou s'il faut la tester avant
                 ThingTypeUID thingType = moduleType.getBridgeUID();
                 if (thingType != null) {
                     thingTypeBuilder.withSupportedBridgeTypeUIDs(Arrays.asList(thingType.getAsString()));

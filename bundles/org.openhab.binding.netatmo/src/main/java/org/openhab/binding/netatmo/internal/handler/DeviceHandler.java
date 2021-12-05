@@ -105,7 +105,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
 
     @Override
     public void apiConnectionStatusChanged(ConnectionStatus connectionStatus) {
-        if (connectionStatus == ConnectionStatus.SUCCESS) {
+        if (connectionStatus.equals(ConnectionStatus.SUCCESS)) {
             ThingStatus status = getThing().getStatus();
             if (status != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE);
