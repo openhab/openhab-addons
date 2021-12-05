@@ -135,7 +135,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
         if (host == null || host.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-host-address");
+                    "@text/offline.conf-error.no-host-address");
             return;
         }
 
