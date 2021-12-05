@@ -98,11 +98,6 @@ public class ConversionsTest {
 
         transformation = "getJsonElement-test";
 
-        // test without deviceVariables
-        resp = Conversions.execute(transformation, value, null);
-        assertNotNull(resp);
-        assertEquals(new JsonPrimitive("testresponse"), resp);
-
         // test non json
         value = new JsonPrimitive("some non json value");
         resp = Conversions.execute(transformation, value, deviceVariables);
