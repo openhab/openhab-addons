@@ -26,8 +26,6 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
 
@@ -41,7 +39,6 @@ import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
         + "=org.openhab.automation.jsscripting")
 @ConfigurableService(category = "automation", label = "JS Scripting", description_uri = "automation:jsscripting")
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraalJSScriptEngineFactory.class);
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
     private boolean injectionEnabled;
@@ -76,6 +73,6 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     @Modified
     protected void modified(Map<String, ?> config) {
         Object injectionEnabled = config.get(CFG_INJECTION_ENABLED);
-        this.injectionEnabled = injectionEnabled != null && (Boolean) injectionEnabled;
+        this.injectionEnabled = injectionEnabled == null || (Boolean) injectionEnabled;
     }
 }
