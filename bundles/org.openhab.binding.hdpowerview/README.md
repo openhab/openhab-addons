@@ -78,7 +78,7 @@ All of these channels appear in the binding, but only those which have a physica
 | Channel        | Item Type                | Description |
 |----------------|--------------------------|-------------|
 | position       | Rollershutter            | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
+| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
 | vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
 | lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
 | batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
@@ -93,20 +93,37 @@ And for horizontal shades, it maps the horizontal position of the "truck" to the
 
 Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
 
-| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent |
-|--------------------------|-------------------|-----------------------|------------------|----------------|---------|
-| Single action bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%      |
-|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    |
-| Single action top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%      |
-|                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    |
-| Single action right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      |
-|                          |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    |
-| Single action left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      |
-|                          |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    |
-| Dual action (lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      |
-|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    |
-| Dual action (upper rail) | ***`secondary`*** | ▲                     | ***Down***       | `OPEN`         | 0%      |
-|                          |                   | ▼                     | ***Up***         | `CLOSED`       | 100%    |
+| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent | Pebble Remote Button |
+|--------------------------|-------------------|-----------------------|------------------|----------------|---------|----------------------|
+| Single action bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                    |
+|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                    |
+| Single action top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%      | ▲                    |
+|                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ▼                    |
+| Single action right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      | ▲                    |
+|                          |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    | ▼                    |
+| Single action left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      | ▲                    |
+|                          |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    | ▼                    |
+| Dual action (lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                    |
+|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                    |
+| Dual action (upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%      | ![](doc/right.png)   |
+|                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ![](doc/left.png)    |
+
+### Note on Legacy Installations
+
+On older 'legacy' installations, the upper rail of dual action shades  functions in a so called `legacyMode`.
+Which is different from the above table, as shown in the table below.
+
+| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent | Pebble Remote Button |
+|--------------------------|-------------------|-----------------------|------------------|----------------|---------|----------------------|
+| Dual action (upper rail) | `secondary`       | ▲                     | Up               | `CLOSED`       | 100%    | ![](doc/left.png)    |
+|                          |                   | ▼                     | Down             | `OPEN`         | 0%      | ![](doc/right.png)   |
+
+Legacy installations can be updated to the modern form of operation by setting the `secondary` Channel's *Configuration Parameter* named `legacyMode` to 'false', as shown below.
+
+| Secondary Channel Configuration Parameter | Description                                                             |
+|-------------------------------------------|-------------------------------------------------------------------------|
+| legacyMode                                | Boolean. Selects whether the Secondary Channel operates in legacy mode. |
+
 
 ### Interdependency between Channel positions
 
@@ -122,7 +139,12 @@ So there is an interdependency between the value of `vane` and the value of `pos
 | Shade 100% down, Vane 100% | 100% = `DOWN`       | 100%            |
 
 On dual action shades, the top rail cannot move below the position of the bottom rail.
-So the value of `secondary` may be constrained by the value of `position`.
+So the value of `secondary` is constrained by the value of `position`.
+
+| Case                       | State of `position` | State of `secondary` |
+|----------------------------|---------------------|----------------------|
+| tbd                        | tbd                 | tbd                  |
+| tbd                        | tbd                 | tbd                  |
 
 ## Refreshing the PowerView Hub Cache
 
