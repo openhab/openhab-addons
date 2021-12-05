@@ -273,21 +273,21 @@ public class ShadePosition {
     }
 
     /**
-     * Detect if the ShadePosition has a posKindN value indicating support for a secondary rail.
+     * Detect if the ShadePosition has a posKindN value indicating potential support for a secondary rail.
      *
      * @return true if the ShadePosition supports a secondary rail.
      */
-    public boolean jsonSecondary() {
+    public boolean secondaryRailDetected() {
         return SECONDARY_ZERO_IS_OPEN.equals(posKind1) || SECONDARY_ZERO_IS_OPEN.equals(posKind2);
     }
 
     /**
-     * Detect if the ShadePosition has both a posKindN value indicating support for tilt, AND a posKindN indicating
-     * support for a primary rail. i.e. it supports tilt anywhere functionality.
+     * Detect if the ShadePosition has both a posKindN value indicating potential support for tilt, AND a posKindN
+     * indicating support for a primary rail. i.e. it potentially supports tilt anywhere functionality.
      *
-     * @return true if the ShadePosition supports tilt anywhere.
+     * @return true if potential support for tilt anywhere functionality was detected.
      */
-    public boolean jsonTiltAnywhere() {
+    public boolean tiltAnywhereDetected() {
         return ((PRIMARY_ZERO_IS_CLOSED.equals(posKind1)) && (VANE_TILT_COORDS.equals(posKind2))
                 || ((PRIMARY_ZERO_IS_CLOSED.equals(posKind2) && (VANE_TILT_COORDS.equals(posKind1)))));
     }
