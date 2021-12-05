@@ -171,7 +171,7 @@ For a general problem with the binding report the issue directly to openHAB.
 Things:
 
 ```
-systeminfo:computer:work [interval_high=3, interval_medium=60]
+Thing systeminfo:computer:work [interval_high=3, interval_medium=60]
 ```
 
 Items:
@@ -249,7 +249,7 @@ String Process_path               "Path"                <none>           { chann
 Sitemap:
 
 ```
-Text label="Systeminfo" {
+sitemap systeminfo label="Systeminfo" {
     Frame label="Network Information" {
         Default item=Network_AdapterName
         Default item=Network_Name
