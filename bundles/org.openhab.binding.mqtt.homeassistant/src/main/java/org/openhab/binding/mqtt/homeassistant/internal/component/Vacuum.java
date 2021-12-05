@@ -15,51 +15,84 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.generic.values.DateTimeValue;
-import org.openhab.binding.mqtt.generic.values.NumberValue;
+import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT vacuum, following the https://www.home-assistant.io/components/vacuum.mqtt/ specification.
  *
  * @author Stefan Triller - Initial contribution
+ * @author Anton Kharuzhyi - Make it compilant with the Specification
  */
 @NonNullByDefault
 public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
-    public static final String VACUUM_STATE_CHANNEL_ID = "state";
-    public static final String VACUUM_COMMAND_CHANNEL_ID = "command";
-    public static final String VACUUM_BATTERY_CHANNEL_ID = "batteryLevel";
-    public static final String VACUUM_FAN_SPEED_CHANNEL_ID = "fanSpeed";
+    public static final String SCHEMA_LEGACY = "legacy";
+    public static final String SCHEMA_STATE = "state";
 
-    // sensor stats
-    public static final String VACUUM_MAIN_BRUSH_CHANNEL_ID = "mainBrushUsage";
-    public static final String VACUUM_SIDE_BRUSH_CHANNEL_ID = "sideBrushUsage";
-    public static final String VACUUM_FILTER_CHANNEL_ID = "filter";
-    public static final String VACUUM_SENSOR_CHANNEL_ID = "sensor";
-    public static final String VACUUM_CURRENT_CLEAN_TIME_CHANNEL_ID = "currentCleanTime";
-    public static final String VACUUM_CURRENT_CLEAN_AREA_CHANNEL_ID = "currentCleanArea";
-    public static final String VACUUM_CLEAN_TIME_CHANNEL_ID = "cleanTime";
-    public static final String VACUUM_CLEAN_AREA_CHANNEL_ID = "cleanArea";
-    public static final String VACUUM_CLEAN_COUNT_CHANNEL_ID = "cleanCount";
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
+    public static final String OFF = "off";
 
-    public static final String VACUUM_LAST_RUN_START_CHANNEL_ID = "lastRunStart";
-    public static final String VACUUM_LAST_RUN_END_CHANNEL_ID = "lastRunEnd";
-    public static final String VACUUM_LAST_RUN_DURATION_CHANNEL_ID = "lastRunDuration";
-    public static final String VACUUM_LAST_RUN_AREA_CHANNEL_ID = "lastRunArea";
-    public static final String VACUUM_LAST_RUN_ERROR_CODE_CHANNEL_ID = "lastRunErrorCode";
-    public static final String VACUUM_LAST_RUN_ERROR_DESCRIPTION_CHANNEL_ID = "lastRunErrorDescription";
-    public static final String VACUUM_LAST_RUN_FINISHED_FLAG_CHANNEL_ID = "lastRunFinishedFlag";
+    public static final String FEATURE_TURN_ON = "turn_on"; // Begin cleaning
+    public static final String FEATURE_TURN_OFF = "turn_off"; // Turn the Vacuum off
+    public static final String FEATURE_RETURN_HOME = "return_home"; // Return to base/dock
+    public static final String FEATURE_START = "start";
+    public static final String FEATURE_STOP = "stop"; // Stop the Vacuum
+    public static final String FEATURE_CLEAN_SPOT = "clean_spot"; // Initialize a spot cleaning cycle
+    public static final String FEATURE_LOCATE = "locate"; // Locate the vacuum (typically by playing a song)
+    public static final String FEATURE_PAUSE = "pause"; // Pause the vacuum
+    public static final String FEATURE_BATTERY = "battery";
+    public static final String FEATURE_STATUS = "status";
+    public static final String FEATURE_FAN_SPEED = "fan_speed";
+    public static final String FEATURE_SEND_COMMAND = "send_command";
 
-    public static final String VACUUM_BIN_IN_TIME_CHANNEL_ID = "binInTime";
-    public static final String VACUUM_LAST_BIN_OUT_TIME_CHANNEL_ID = "lastBinOutTime";
-    public static final String VACUUM_LAST_BIN_FULL_TIME_CHANNEL_ID = "lastBinFullTime";
+    // State Schema only
+    public static final String STATE_CLEANING = "cleaning";
+    public static final String STATE_DOCKED = "docked";
+    public static final String STATE_PAUSED = "paused";
+    public static final String STATE_IDLE = "idle";
+    public static final String STATE_RETURNING = "returning";
+    public static final String STATE_ERROR = "error";
 
-    public static final String VACUUM_CUSMTOM_COMMAND_CHANNEL_ID = "customCommand";
+    public static final String COMMAND_CH_ID = "command";
+    public static final String FAN_SPEED_CH_ID = "fanSpeed";
+    public static final String CUSTOM_COMMAND_CH_ID = "customCommand";
+    public static final String BATTERY_LEVEL_CH_ID = "batteryLevel";
+    public static final String CHARGING_CH_ID = "charging";
+    public static final String CLEANING_CH_ID = "cleaning";
+    public static final String DOCKED_CH_ID = "docked";
+    public static final String ERROR_CH_ID = "error";
+    public static final String JSON_ATTRIBUTES_CH_ID = "jsonAttributes";
+    public static final String STATE_CH_ID = "state";
+
+    public static final List<String> LEGACY_DEFAULT_FEATURES = List.of(FEATURE_TURN_ON, FEATURE_TURN_OFF, FEATURE_STOP,
+            FEATURE_RETURN_HOME, FEATURE_BATTERY, FEATURE_STATUS, FEATURE_CLEAN_SPOT);
+    public static final List<String> LEGACY_SUPPORTED_FEATURES = List.of(FEATURE_TURN_ON, FEATURE_TURN_OFF,
+            FEATURE_PAUSE, FEATURE_STOP, FEATURE_RETURN_HOME, FEATURE_BATTERY, FEATURE_STATUS, FEATURE_LOCATE,
+            FEATURE_CLEAN_SPOT, FEATURE_FAN_SPEED, FEATURE_SEND_COMMAND);
+
+    public static final List<String> STATE_DEFAULT_FEATURES = List.of(FEATURE_START, FEATURE_STOP, FEATURE_RETURN_HOME,
+            FEATURE_STATUS, FEATURE_BATTERY, FEATURE_CLEAN_SPOT);
+    public static final List<String> STATE_SUPPORTED_FEATURES = List.of(FEATURE_START, FEATURE_STOP, FEATURE_PAUSE,
+            FEATURE_RETURN_HOME, FEATURE_BATTERY, FEATURE_STATUS, FEATURE_LOCATE, FEATURE_CLEAN_SPOT, FEATURE_FAN_SPEED,
+            FEATURE_SEND_COMMAND);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Vacuum.class);
 
     /**
      * Configuration class for MQTT component
@@ -69,196 +102,220 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             super("MQTT Vacuum");
         }
 
+        // Legacy and Common MQTT vacuum configuration section.
+
+        @SerializedName("battery_level_template")
+        protected @Nullable String batteryLevelTemplate;
+        @SerializedName("battery_level_topic")
+        protected @Nullable String batteryLevelTopic;
+
+        @SerializedName("charging_template")
+        protected @Nullable String chargingTemplate;
+        @SerializedName("charging_topic")
+        protected @Nullable String chargingTopic;
+
+        @SerializedName("cleaning_template")
+        protected @Nullable String cleaningTemplate;
+        @SerializedName("cleaning_topic")
+        protected @Nullable String cleaningTopic;
+
+        @SerializedName("command_topic")
         protected @Nullable String commandTopic;
-        protected String stateTopic = "";
-        protected @Nullable String sendCommandTopic; // for custom_command
 
-        // [start, pause, stop, return_home, battery, status, locate, clean_spot, fan_speed, send_command]
-        protected String[] supportedFeatures = new String[] {};
+        @SerializedName("docked_template")
+        protected @Nullable String dockedTemplate;
+        @SerializedName("docked_topic")
+        protected @Nullable String dockedTopic;
+
+        @SerializedName("enabled_by_default")
+        protected @Nullable Boolean enabledByDefault = true;
+
+        @SerializedName("error_template")
+        protected @Nullable String errorTemplate;
+        @SerializedName("error_topic")
+        protected @Nullable String errorTopic;
+
+        @SerializedName("fan_speed_list")
+        protected @Nullable List<String> fanSpeedList;
+        @SerializedName("fan_speed_template")
+        protected @Nullable String fanSpeedTemplate;
+        @SerializedName("fan_speed_topic")
+        protected @Nullable String fanSpeedTopic;
+
+        @SerializedName("payload_clean_spot")
+        protected @Nullable String payloadCleanSpot = "clean_spot";
+        @SerializedName("payload_locate")
+        protected @Nullable String payloadLocate = "locate";
+        @SerializedName("payload_return_to_base")
+        protected @Nullable String payloadReturnToBase = "return_to_base";
+        @SerializedName("payload_start_pause")
+        protected @Nullable String payloadStartPause = "start_pause"; // Legacy only
+        @SerializedName("payload_stop")
+        protected @Nullable String payloadStop = "stop";
+        @SerializedName("payload_turn_off")
+        protected @Nullable String payloadTurnOff = "turn_off";
+        @SerializedName("payload_turn_on")
+        protected @Nullable String payloadTurnOn = "turn_on";
+
+        @SerializedName("schema")
+        protected Schema schema = Schema.LEGACY;
+
+        @SerializedName("send_command_topic")
+        protected @Nullable String sendCommandTopic;
+
+        @SerializedName("set_fan_speed_topic")
         protected @Nullable String setFanSpeedTopic;
-        protected String[] fanSpeedList = new String[] {};
 
-        protected @Nullable String jsonAttributesTopic;
+        @SerializedName("supported_features")
+        protected @Nullable List<String> supportedFeatures;
+
+        // State MQTT vacuum configuration section.
+
+        // Start/Pause replaced by 2 payloads
+        @SerializedName("payload_pause")
+        protected @Nullable String payloadPause = "pause";
+        @SerializedName("payload_start")
+        protected @Nullable String payloadStart = "start";
+
+        @SerializedName("state_topic")
+        protected @Nullable String stateTopic;
+
+        @SerializedName("json_attributes_template")
         protected @Nullable String jsonAttributesTemplate;
+        @SerializedName("json_attributes_topic")
+        protected @Nullable String jsonAttributesTopic;
     }
 
+    /**
+     * Creates component based on generic configuration and component configuration type.
+     *
+     * @param componentConfiguration generic componentConfiguration with not parsed JSON config
+     */
     public Vacuum(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
+        final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
-        List<String> features = Arrays.asList(channelConfiguration.supportedFeatures);
+        final var allowedSupportedFeatures = channelConfiguration.schema == Schema.LEGACY ? LEGACY_SUPPORTED_FEATURES
+                : STATE_SUPPORTED_FEATURES;
+        final var configSupportedFeatures = channelConfiguration.supportedFeatures == null
+                ? channelConfiguration.schema == Schema.LEGACY ? LEGACY_DEFAULT_FEATURES : STATE_DEFAULT_FEATURES
+                : channelConfiguration.supportedFeatures;
+        List<String> deviceSupportedFeatures = Collections.emptyList();
 
-        // features = [start, pause, stop, return_home, status, locate, clean_spot, fan_speed, send_command]
-        ArrayList<String> possibleCommands = new ArrayList<String>();
-        if (features.contains("start")) {
-            possibleCommands.add("start");
+        if (!configSupportedFeatures.isEmpty()) {
+            deviceSupportedFeatures = allowedSupportedFeatures.stream().filter(configSupportedFeatures::contains)
+                    .collect(Collectors.toList());
+        }
+        if (deviceSupportedFeatures.size() != configSupportedFeatures.size()) {
+            LOGGER.warn("Vacuum discovery config has unsupported or duplicated features. Supported: {}, provided: {}",
+                    Arrays.toString(allowedSupportedFeatures.toArray()),
+                    Arrays.toString(configSupportedFeatures.toArray()));
         }
 
-        if (features.contains("stop")) {
-            possibleCommands.add("stop");
+        final List<String> commands = new ArrayList<>();
+        addPayloadToList(deviceSupportedFeatures, FEATURE_CLEAN_SPOT, channelConfiguration.payloadCleanSpot, commands);
+        addPayloadToList(deviceSupportedFeatures, FEATURE_LOCATE, channelConfiguration.payloadLocate, commands);
+        addPayloadToList(deviceSupportedFeatures, FEATURE_RETURN_HOME, channelConfiguration.payloadReturnToBase,
+                commands);
+        addPayloadToList(deviceSupportedFeatures, FEATURE_STOP, channelConfiguration.payloadStop, commands);
+        addPayloadToList(deviceSupportedFeatures, FEATURE_TURN_OFF, channelConfiguration.payloadTurnOff, commands);
+        addPayloadToList(deviceSupportedFeatures, FEATURE_TURN_ON, channelConfiguration.payloadTurnOn, commands);
+
+        if (channelConfiguration.schema == Schema.LEGACY) {
+            addPayloadToList(deviceSupportedFeatures, FEATURE_PAUSE, channelConfiguration.payloadStartPause, commands);
+        } else {
+            addPayloadToList(deviceSupportedFeatures, FEATURE_PAUSE, channelConfiguration.payloadPause, commands);
+            addPayloadToList(deviceSupportedFeatures, FEATURE_START, channelConfiguration.payloadStart, commands);
         }
 
-        if (features.contains("pause")) {
-            possibleCommands.add("pause");
+        buildOptionalChannel(COMMAND_CH_ID, new TextValue(commands.toArray(new String[0])), updateListener, null,
+                channelConfiguration.commandTopic, null, null);
+
+        final var fanSpeedList = channelConfiguration.fanSpeedList;
+        if (deviceSupportedFeatures.contains(FEATURE_FAN_SPEED) && fanSpeedList != null && !fanSpeedList.isEmpty()) {
+            if (!fanSpeedList.contains(OFF)) {
+                fanSpeedList.add(OFF); // Off value is used when cleaning if OFF
+            }
+            var fanSpeedValue = new TextValue(fanSpeedList.toArray(new String[0]));
+            if (channelConfiguration.schema == Schema.LEGACY) {
+                buildOptionalChannel(FAN_SPEED_CH_ID, fanSpeedValue, updateListener, null,
+                        channelConfiguration.setFanSpeedTopic, channelConfiguration.fanSpeedTemplate,
+                        channelConfiguration.fanSpeedTopic);
+            } else if (deviceSupportedFeatures.contains(FEATURE_STATUS)) {
+                buildOptionalChannel(FAN_SPEED_CH_ID, fanSpeedValue, updateListener, null,
+                        channelConfiguration.setFanSpeedTopic, "{{ value_json.fan_speed }}",
+                        channelConfiguration.stateTopic);
+            } else {
+                LOGGER.info("Status feature is disabled, unable to get fan speed.");
+                buildOptionalChannel(FAN_SPEED_CH_ID, fanSpeedValue, updateListener, null,
+                        channelConfiguration.setFanSpeedTopic, null, null);
+            }
         }
 
-        if (features.contains("return_home")) {
-            possibleCommands.add("return_to_base");
+        if (deviceSupportedFeatures.contains(FEATURE_SEND_COMMAND)) {
+            buildOptionalChannel(CUSTOM_COMMAND_CH_ID, new TextValue(), updateListener, null,
+                    channelConfiguration.sendCommandTopic, null, null);
         }
 
-        if (features.contains("locate")) {
-            possibleCommands.add("locate");
+        if (channelConfiguration.schema == Schema.LEGACY) {
+            // I assume, that if these topics defined in config, then we don't need to check features
+            buildOptionalChannel(BATTERY_LEVEL_CH_ID,
+                    new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
+                    updateListener, null, null, channelConfiguration.batteryLevelTemplate,
+                    channelConfiguration.batteryLevelTopic);
+            buildOptionalChannel(CHARGING_CH_ID, new OnOffValue(TRUE, FALSE), updateListener, null, null,
+                    channelConfiguration.chargingTemplate, channelConfiguration.chargingTopic);
+            buildOptionalChannel(CLEANING_CH_ID, new OnOffValue(TRUE, FALSE), updateListener, null, null,
+                    channelConfiguration.cleaningTemplate, channelConfiguration.cleaningTopic);
+            buildOptionalChannel(DOCKED_CH_ID, new OnOffValue(TRUE, FALSE), updateListener, null, null,
+                    channelConfiguration.dockedTemplate, channelConfiguration.dockedTopic);
+            buildOptionalChannel(ERROR_CH_ID, new TextValue(), updateListener, null, null,
+                    channelConfiguration.errorTemplate, channelConfiguration.errorTopic);
+        } else {
+            if (deviceSupportedFeatures.contains(FEATURE_STATUS)) {
+                // state key is mandatory
+                buildOptionalChannel(STATE_CH_ID,
+                        new TextValue(new String[] { STATE_CLEANING, STATE_DOCKED, STATE_PAUSED, STATE_IDLE,
+                                STATE_RETURNING, STATE_ERROR }),
+                        updateListener, null, null, "{{ value_json.state }}", channelConfiguration.stateTopic);
+                if (deviceSupportedFeatures.contains(FEATURE_BATTERY)) {
+                    buildOptionalChannel(BATTERY_LEVEL_CH_ID,
+                            new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
+                            updateListener, null, null, "{{ value_json.battery_level }}",
+                            channelConfiguration.stateTopic);
+                }
+            }
         }
 
-        TextValue value = new TextValue(possibleCommands.toArray(new String[0]));
-        buildChannel(VACUUM_COMMAND_CHANNEL_ID, value, "Command", componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.commandTopic).commandTopic(channelConfiguration.commandTopic, false, 1)
-                .build();
+        buildOptionalChannel(JSON_ATTRIBUTES_CH_ID, new TextValue(), updateListener, null, null,
+                channelConfiguration.jsonAttributesTemplate, channelConfiguration.jsonAttributesTopic);
+    }
 
-        List<String> vacuumStates = List.of("docked", "cleaning", "returning", "paused", "idle", "error");
-        TextValue valueState = new TextValue(vacuumStates.toArray(new String[0]));
-        buildChannel(VACUUM_STATE_CHANNEL_ID, valueState, "State", componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.stateTopic, "{{value_json.state}}").build();
-
-        if (features.contains("battery")) {
-            // build battery level channel (0-100)
-            NumberValue batValue = new NumberValue(BigDecimal.ZERO, new BigDecimal(100), new BigDecimal(1), "%");
-            buildChannel(VACUUM_BATTERY_CHANNEL_ID, batValue, "Battery Level",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.stateTopic, "{{value_json.battery_level}}").build();
+    @Nullable
+    private ComponentChannel buildOptionalChannel(String channelId, Value valueState,
+            ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
+            @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic) {
+        if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
+            return buildChannel(channelId, valueState, channelConfiguration.getName(), channelStateUpdateListener)
+                    .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
+                    .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
+                            commandTemplate)
+                    .build();
         }
+        return null;
+    }
 
-        if (features.contains("fan_speed")) {
-            // build fan speed channel with values from channelConfiguration.fan_speed_list
-            TextValue fanValue = new TextValue(channelConfiguration.fanSpeedList);
-            buildChannel(VACUUM_FAN_SPEED_CHANNEL_ID, fanValue, "Fan speed", componentConfiguration.getUpdateListener())
-                    .stateTopic(channelConfiguration.stateTopic, "{{value_json.fan_speed}}")
-                    .commandTopic(channelConfiguration.setFanSpeedTopic, false, 1).build();
+    private void addPayloadToList(List<String> supportedFeatures, String feature, @Nullable String payload,
+            List<String> list) {
+        if (supportedFeatures.contains(feature) && payload != null && !payload.isEmpty()) {
+            list.add(payload);
         }
+    }
 
-        // {"mainBrush":"220.6","sideBrush":"120.6","filter":"70.6","sensor":"0.0","currentCleanTime":"0.0","currentCleanArea":"0.0","cleanTime":"79.3","cleanArea":"4439.9","cleanCount":183,"last_run_stats":{"startTime":1613503117000,"endTime":1613503136000,"duration":0,"area":"0.0","errorCode":0,"errorDescription":"No
-        // error","finishedFlag":false},"bin_in_time":1000,"last_bin_out":-1,"last_bin_full":-1,"last_loaded_map":null,"state":"docked","valetudo_state":{"id":8,"name":"Charging"}}
-        if (features.contains("status")) {
-            NumberValue currentCleanTimeValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_CURRENT_CLEAN_TIME_CHANNEL_ID, currentCleanTimeValue, "Current Cleaning Time",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.currentCleanTime}}")
-                            .build();
-
-            NumberValue currentCleanAreaValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_CURRENT_CLEAN_AREA_CHANNEL_ID, currentCleanAreaValue, "Current Cleaning Area",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.currentCleanArea}}")
-                            .build();
-
-            NumberValue cleanTimeValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_CLEAN_TIME_CHANNEL_ID, cleanTimeValue, "Cleaning Time",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.cleanTime}}").build();
-
-            NumberValue cleanAreaValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_CLEAN_AREA_CHANNEL_ID, cleanAreaValue, "Cleaned Area",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.cleanArea}}").build();
-
-            NumberValue cleaCountValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_CLEAN_COUNT_CHANNEL_ID, cleaCountValue, "Cleaning Counter",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.cleanCount}}").build();
-
-            DateTimeValue lastStartTime = new DateTimeValue();
-            buildChannel(VACUUM_LAST_RUN_START_CHANNEL_ID, lastStartTime, "Last run start time",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic,
-                                    "{{value_json.last_run_stats.startTime}}")
-                            .build();
-
-            DateTimeValue lastEndTime = new DateTimeValue();
-            buildChannel(VACUUM_LAST_RUN_END_CHANNEL_ID, lastEndTime, "Last run end time",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic,
-                                    "{{value_json.last_run_stats.endTime}}")
-                            .build();
-
-            NumberValue lastRunDurationValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_LAST_RUN_DURATION_CHANNEL_ID, lastRunDurationValue, "Last run duration",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic,
-                                    "{{value_json.last_run_stats.duration}}")
-                            .build();
-
-            NumberValue lastRunAreaValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_LAST_RUN_AREA_CHANNEL_ID, lastRunAreaValue, "Last run area",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.last_run_stats.area}}")
-                            .build();
-
-            NumberValue lastRunErrorCodeValue = new NumberValue(null, null, null, null);
-            buildChannel(VACUUM_LAST_RUN_ERROR_CODE_CHANNEL_ID, lastRunErrorCodeValue, "Last run error code",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic,
-                                    "{{value_json.last_run_stats.errorCode}}")
-                            .build();
-
-            TextValue lastRunErrorDescriptionValue = new TextValue();
-            buildChannel(VACUUM_LAST_RUN_ERROR_DESCRIPTION_CHANNEL_ID, lastRunErrorDescriptionValue,
-                    "Last run error description", componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic,
-                                    "{{value_json.last_run_stats.errorDescription}}")
-                            .build();
-
-            // true/false doesnt map to ON/OFF => use TextValue instead of OnOffValue
-            TextValue lastRunFinishedFlagValue = new TextValue();
-            buildChannel(VACUUM_LAST_RUN_FINISHED_FLAG_CHANNEL_ID, lastRunFinishedFlagValue, "Last run finished flag",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic,
-                                    "{{value_json.last_run_stats.finishedFlag}}")
-                            .build();
-
-            // only for valetudo re => advanced channels
-            DateTimeValue binInValue = new DateTimeValue();
-            buildChannel(VACUUM_BIN_IN_TIME_CHANNEL_ID, binInValue, "Bin In Time",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.bin_in_time}}")
-                            .isAdvanced(true).build();
-
-            DateTimeValue lastBinOutValue = new DateTimeValue();
-            buildChannel(VACUUM_LAST_BIN_OUT_TIME_CHANNEL_ID, lastBinOutValue, "Last Bin Out Time",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.last_bin_out}}")
-                            .isAdvanced(true).build();
-
-            DateTimeValue lastBinFullValue = new DateTimeValue();
-            buildChannel(VACUUM_LAST_BIN_FULL_TIME_CHANNEL_ID, lastBinFullValue, "Last Bin Full Time",
-                    componentConfiguration.getUpdateListener())
-                            .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.last_bin_full}}")
-                            .isAdvanced(true).build();
-        }
-
-        NumberValue mainBrush = new NumberValue(null, null, null, null);
-        buildChannel(VACUUM_MAIN_BRUSH_CHANNEL_ID, mainBrush, "Main brush usage",
-                componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.mainBrush}}").build();
-
-        NumberValue sideBrush = new NumberValue(null, null, null, null);
-        buildChannel(VACUUM_SIDE_BRUSH_CHANNEL_ID, sideBrush, "Side brush usage",
-                componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.sideBrush}}").build();
-
-        NumberValue filterValue = new NumberValue(null, null, null, null);
-        buildChannel(VACUUM_FILTER_CHANNEL_ID, filterValue, "Filter time", componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.filter}}").build();
-
-        NumberValue sensorValue = new NumberValue(null, null, null, null);
-        buildChannel(VACUUM_SENSOR_CHANNEL_ID, sensorValue, "Sensor", componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.jsonAttributesTopic, "{{value_json.sensor}}").build();
-
-        // if we have a custom command channel for zone cleanup, etc => create text channel
-        if (channelConfiguration.sendCommandTopic != null) {
-            TextValue customCommandValue = new TextValue();
-            buildChannel(VACUUM_CUSMTOM_COMMAND_CHANNEL_ID, customCommandValue, "Custom Command",
-                    componentConfiguration.getUpdateListener())
-                            .commandTopic(channelConfiguration.sendCommandTopic, false, 1)
-                            .stateTopic(channelConfiguration.sendCommandTopic).build();
-        }
+    public enum Schema {
+        @SerializedName("legacy")
+        LEGACY,
+        @SerializedName("state")
+        STATE
     }
 }

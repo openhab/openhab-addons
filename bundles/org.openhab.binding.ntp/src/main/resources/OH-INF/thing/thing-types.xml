@@ -46,14 +46,14 @@
 		<item-type>DateTime</item-type>
 		<label>Date</label>
 		<description>NTP refreshed date &amp; time</description>
-		<category>Date</category>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="string-channel">
 		<item-type>String</item-type>
 		<label>Date</label>
 		<description>NTP refreshed date &amp; time</description>
-		<category>Date</category>
+		<category>Time</category>
 		<state readOnly="true"/>
 		<config-description>
 			<parameter name="DateTimeFormat" type="text" required="false">
