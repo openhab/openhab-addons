@@ -480,13 +480,15 @@ All these channels except welcomePersonAtHome are read only.
 ## things/netatmo.things
 
 ```
-// Bridge configuration:
-Bridge netatmo:netatmoapi:home "Netatmo API" [ clientId="*********", clientSecret="**********", username = "mail@example.com", password = "******", readStation=true, readThermostat=false] {
-    // Thing configuration:
-    Bridge netatmo:NAMain:inside "Netatmo Inside"       [ id="aa:aa:aa:aa:aa:aa" ] {
-        NAModule1 outside "Netatmo Outside"  [ id="bb:bb:bb:bb:bb:bb" ]
-        NAModule3 rain "Netatmo Rain"        [ id="cc:cc:cc:cc:cc:cc" ]
+Bridge netatmo:NAMain:inside "Inside Weather Station" [id="aa:aa:aa:aa:aa:aa"] {
+    NAModule1 outside   "Outside Module" [id="bb:bb:bb:bb:bb:bb"] {
+        Channels:
+            Type Pressure-Measurement : maxPressToday [       
+                limit="MAX",
+                period="1day"
+            ]
     }
+    NAModule3 rain      "Rain Sensor"    [ id="cc:cc:cc:cc:cc:cc" ]
 }
 ```
 
