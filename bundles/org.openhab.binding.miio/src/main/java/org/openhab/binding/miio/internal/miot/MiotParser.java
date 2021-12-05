@@ -66,6 +66,7 @@ public class MiotParser {
     private static final String BASEURL = "https://miot-spec.org/miot-spec-v2/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final boolean SKIP_SIID_1 = true;
+    private static final boolean INCLUDE_MANUAL_ACTIONS_COMMENT = false;
 
     private String model;
     private @Nullable String urn;
@@ -328,7 +329,7 @@ public class MiotParser {
         }
         deviceMapping.setChannels(miIoBasicChannels);
         device.setDevice(deviceMapping);
-        if (actionText.length() > 35) {
+        if (actionText.length() > 35 && INCLUDE_MANUAL_ACTIONS_COMMENT) {
             deviceMapping.setReadmeComment(
                     "Identified " + actionText.toString().replace("Manual", "manual").replace("\r\n", "<br />")
                             + "Please test and feedback if they are working so they can be linked to a channel.");
