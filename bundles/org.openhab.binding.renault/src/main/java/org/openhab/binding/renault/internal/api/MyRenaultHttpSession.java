@@ -71,7 +71,7 @@ public class MyRenaultHttpSession {
         getJWT();
         getAccountID();
 
-        final String imageURL = car.imageURL;
+        final String imageURL = car.getImageURL();
         if (imageURL == null) {
             getVehicle(car);
         }

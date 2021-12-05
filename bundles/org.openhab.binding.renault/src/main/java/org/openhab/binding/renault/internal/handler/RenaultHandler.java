@@ -76,7 +76,6 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         // reset the car on initialize
         this.car = new Car();
         this.config = getConfigAs(RenaultConfiguration.class);
@@ -133,7 +132,7 @@ public class RenaultHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         if (httpSession != null) {
-            String imageURL = car.imageURL;
+            String imageURL = car.getImageURL();
             if (imageURL != null && !imageURL.isEmpty()) {
                 updateState(CHANNEL_IMAGE, new StringType(imageURL));
             }
@@ -145,62 +144,62 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     private void updateHvacStatus(MyRenaultHttpSession httpSession) {
-        if (!car.disableHvac) {
+        if (!car.isDisableHvac()) {
             try {
                 httpSession.getHvacStatus(car);
-                Boolean hvacstatus = car.hvacstatus;
+                Boolean hvacstatus = car.getHvacstatus();
                 if (hvacstatus != null) {
                     updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
                 }
             } catch (RenaultNotImplementedException e) {
-                car.disableHvac = true;
+                car.setDisableHvac(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
         }
     }
 
     private void updateLocation(MyRenaultHttpSession httpSession) {
-        if (!car.disableLocation) {
+        if (!car.isDisableLocation()) {
             try {
                 httpSession.getLocation(car);
-                Double latitude = car.gpsLatitude;
-                Double longitude = car.gpsLongitude;
+                Double latitude = car.getGpsLatitude();
+                Double longitude = car.getGpsLongitude();
                 if (latitude != null && longitude != null) {
                     updateState(CHANNEL_LOCATION, new PointType(new DecimalType(latitude.doubleValue()),
                             new DecimalType(longitude.doubleValue())));
                 }
             } catch (RenaultNotImplementedException e) {
-                car.disableLocation = true;
+                car.setDisableLocation(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
         }
     }
 
     private void updateCockpit(MyRenaultHttpSession httpSession) {
-        if (!car.disableCockpit) {
+        if (!car.isDisableCockpit()) {
             try {
                 httpSession.getCockpit(car);
-                Double odometer = car.odometer;
+                Double odometer = car.getOdometer();
                 if (odometer != null) {
                     updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
                 }
             } catch (RenaultNotImplementedException e) {
-                car.disableCockpit = true;
+                car.setDisableCockpit(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
         }
     }
 
     private void updateBattery(MyRenaultHttpSession httpSession) {
-        if (!car.disableBattery) {
+        if (!car.isDisableBattery()) {
             try {
                 httpSession.getBatteryStatus(car);
-                Double batteryLevel = car.batteryLevel;
+                Double batteryLevel = car.getBatteryLevel();
                 if (batteryLevel != null) {
                     updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
                 }
             } catch (RenaultNotImplementedException e) {
-                car.disableBattery = true;
+                car.setDisableBattery(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
             }
         }

@@ -32,17 +32,17 @@ public class Car {
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
-    public boolean disableLocation = false;
-    public boolean disableBattery = false;
-    public boolean disableCockpit = false;
-    public boolean disableHvac = false;
+    private boolean disableLocation = false;
+    private boolean disableBattery = false;
+    private boolean disableCockpit = false;
+    private boolean disableHvac = false;
 
-    public @Nullable Double batteryLevel;
-    public @Nullable Boolean hvacstatus;
-    public @Nullable Double odometer;
-    public @Nullable String imageURL;
-    public @Nullable Double gpsLatitude;
-    public @Nullable Double gpsLongitude;
+    private @Nullable Double batteryLevel;
+    private @Nullable Boolean hvacstatus;
+    private @Nullable Double odometer;
+    private @Nullable String imageURL;
+    private @Nullable Double gpsLatitude;
+    private @Nullable Double gpsLongitude;
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
@@ -122,6 +122,86 @@ public class Car {
         } catch (IllegalStateException | ClassCastException e) {
             logger.warn("Error {} parsing Details: {}", e.getMessage(), responseJson);
         }
+    }
+
+    public boolean isDisableLocation() {
+        return disableLocation;
+    }
+
+    public void setDisableLocation(boolean disableLocation) {
+        this.disableLocation = disableLocation;
+    }
+
+    public boolean isDisableBattery() {
+        return disableBattery;
+    }
+
+    public void setDisableBattery(boolean disableBattery) {
+        this.disableBattery = disableBattery;
+    }
+
+    public boolean isDisableCockpit() {
+        return disableCockpit;
+    }
+
+    public void setDisableCockpit(boolean disableCockpit) {
+        this.disableCockpit = disableCockpit;
+    }
+
+    public boolean isDisableHvac() {
+        return disableHvac;
+    }
+
+    public void setDisableHvac(boolean disableHvac) {
+        this.disableHvac = disableHvac;
+    }
+
+    public @Nullable Double getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public void setBatteryLevel(Double batteryLevel) {
+        this.batteryLevel = batteryLevel;
+    }
+
+    public @Nullable Boolean getHvacstatus() {
+        return hvacstatus;
+    }
+
+    public void setHvacstatus(Boolean hvacstatus) {
+        this.hvacstatus = hvacstatus;
+    }
+
+    public @Nullable Double getOdometer() {
+        return odometer;
+    }
+
+    public void setOdometer(Double odometer) {
+        this.odometer = odometer;
+    }
+
+    public @Nullable String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
+
+    public @Nullable Double getGpsLatitude() {
+        return gpsLatitude;
+    }
+
+    public void setGpsLatitude(Double gpsLatitude) {
+        this.gpsLatitude = gpsLatitude;
+    }
+
+    public @Nullable Double getGpsLongitude() {
+        return gpsLongitude;
+    }
+
+    public void setGpsLongitude(Double gpsLongitude) {
+        this.gpsLongitude = gpsLongitude;
     }
 
     private @Nullable JsonObject getAttributes(JsonObject responseJson)
