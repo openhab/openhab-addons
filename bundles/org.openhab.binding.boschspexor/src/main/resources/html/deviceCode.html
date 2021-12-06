@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>openHAB - authorization binding for Bosch spexor</title>
+<style>
+html {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.logo {
+	display: block;
+	margin: auto;
+	width: 100%;
+}
+
+.block {
+	border: 1px solid #bbb;
+	background-color: white;
+	margin: 10px 0;
+	padding: 8px 10px;
+}
+
+.error {
+	background: #FFC0C0;
+	border: 1px solid darkred;
+	color: darkred
+}
+
+.authorized {
+	border: 1px solid #90EE90;
+	background-color: #E0FFE0;
+}
+
+.button {
+	margin-bottom: 10px;
+}
+
+.button a {
+	background: #1ED760;
+	border-radius: 500px;
+	color: white;
+	padding: 10px 20px 10px;
+	font-size: 16px;
+	font-weight: 700;
+	border-width: 0;
+	text-decoration: none;
+}
+</style>
+</head>
+<body>
+	<div>
+		<h1>Authorization of openHAB to for binding Bosch spexor</h1>
+	</div>
+	<p>To use the openHAB with the Bosch spexor please authorize your
+		openHAB with spexor.</p>
+	<p>Please register this service with the Bosch spexor app.
+		Therefore please proceed with following steps:</p>
+	<ul>
+		<li>Open the Bosch spexor app.</li>
+		<li>Go to: Account</li>
+		<li>click on "spexor API"</li>
+		<li>Register new service</li>
+		<li>option 1) scan the current QRCode</li>
+		<li>option 2) enter the device code into the app</li>
+		<li>proceed with the app</li>
+	</ul>
+	<p>
+		This openHAB service is currently <span id="state">UNAUTHORIZED</span>
+		to communicate with the spexor API
+	</p>
+
+	<div id="status">
+		<div>
+			<label>Device code</label><input id="deviceCode"
+				value="YUcTDyJOT3XmWS-AoRkE6gv4fbmpV9N5mIRBe8s5AXY" type="text"
+				disabled="disabled"></input>
+		</div>
+		<div>
+			<label>User code</label><input id="userCode" value="XXXX-XXXX"
+				type="text" disabled="disabled"></input>
+		</div>
+		<div>
+			<label>expires in</label><input id="expires_in" value="3600"
+				type="text" disabled="disabled"></input>
+		</div>
+		<div>
+			<label>interval</label><input id="interval" value="5" type="text"
+				disabled="disabled"></input>
+		</div>
+	</div>
+
+	<div>
+		<label>QR CODE</label>
+		<div id="qrcode"></div>
+		<script type="text/javascript">
+			new QRCode(document.getElementById("qrcode"),
+					"http://jindo.dev.naver.com/collie");
+		</script>
+	</div>
+
+	<div id="error"></div>
+</body>
+</html>
