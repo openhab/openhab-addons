@@ -1,56 +1,80 @@
 # blink Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+With this binding, you can use blink security cameras in OpenHAB.
 
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+Communication with the cameras is done using the blink API, as used by the official blink app.
+
+Since the API can only be used for polling information, status information from the server is not received in real time.
+A refresh interval can be set to poll the server for device information.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
-
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the blink Binding
-#
-# Default secret key for the pairing of the blink Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
+_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when
+using it._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+### blink Account (used as a bridge)
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The blink account is used to authenticate against the API. blink does not support OAuth or any other authorization
+protocol, so the credentials have to be provided in the bridge configuration.
+
+Configuration parameters are:
+
+| Parameter         | Description                                    |
+| ---------         | ---------------------------------------------- |
+| email             | E-Mail address which is used in the blink app. |
+| password          | Password which is used in the blink app.       |
+| refreshInterval   | Refresh interval for device status. This should be used with caution, since there is the possibility that blink might enforce a lockout if the server gets hit too often. | 
+
+blink has implemented a 2-factor-authentication, so after the first login, a email or text message (as configured in
+your app settings)
+will be sent to you. This pin code needs to be entered into a form generated for each blink account bridge.
+
+The URL for pin verification is `<youropenhaburl>/blink/<accountUID>`. The easiest way to get this, is to copy the
+validationURL thing property:
+
+![](doc/verification-url.png)
+
+### blink Camera
+
+One single blink camera, belonging to a blink network (see below).
+
+Configuration parameters should be set by discovery after configuration of an account exclusively. For completeness,
+configuration parameters are:
+
+| Parameter         | Description                       |
+| ---------         | ----------------------------------|
+| networkId         | Internal blink network ID         |
+| cameraId          | Internal blink camera ID          |
+
+### blink Network
+
+A blink network basically corresponds to the blink sync modules and groups cameras. A blink network can be armed,
+activating all cameras which have motion detection enabled. Cameras with motion detection in a disarmed network won't
+trigger alerts.
+
+Configuration parameters should be set by discovery after configuration of an account exclusively. For completeness,
+configuration parameters are:
+
+| Parameter         | Description                       |
+| ---------         | ----------------------------------|
+| networkId         | Internal blink network ID         |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+### blink Camera
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| channel_camera_motiondetection  | Switch | Enables/disables motion detection for this camera.  |
+| channel_camera_battery | LowBattery | Read-only channel, triggering ON when battery status is low |
+| channel_camera_temperature | Number | Read-only channel, outputting camera temperature |
 
-## Full Example
+### blink Network
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
-
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+| channel  | type   | description                  |
+|----------|--------|------------------------------|
+| channel_network_armed  | Switch | Arms/disarms the network. Overrides schedules which are set in the app.  |
