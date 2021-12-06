@@ -149,10 +149,6 @@ public class BloomSkyJsonSensorData {
         return videoList;
     }
 
-    public void setVideoList(List<String> videoList) {
-        this.videoList = videoList;
-    }
-
     public List<String> getVideoListC() {
         return videoListC;
     }
