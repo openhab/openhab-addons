@@ -1,6 +1,6 @@
 # BloomSky Binding
 
-![Bloomsky](./doc/bloomsky_sky_weather_station.svg)
+![Bloomsky](doc/bloomsky_sky_weather_station.svg)
 
 This is a "read-only" binding that uses the [BloomSky API](http://weatherlution.com/bloomsky-api/?doing_wp_cron=1615241711.4678061008453369140625) to retrieve the sensor data from the **SKY1, SKY2** and **STORM** personal weather stations.
 
@@ -21,9 +21,9 @@ The following thing types are supported:
 
 | Thing | ID | Description |
 | --- | --- | --- |
-|![Account](./doc/location_details.png) | bridge | Represents the connection to the owners BloomSky device account through the API key for accessing the weather station details and sensor readings |
-| ![BloomSky SKY1/SKY2](./doc/sky2_weather_station.png) | sky | Provides station details for a specific location, weather sensor data and camera images captured for the most recent 5-minute interval by the _SKY1 or SKY2_ weather station:  <br> &#9726; City, Street Name <br> &#9726; Device Id, Name <br> &#9726; Latitude, Longitude, Altitude <br> &#9726; Number of Followers <br> &#9726; UTC, Daylight Savings Time <br> &#9726; Device Type (SKY1 or SKY2)  <br> &#9726; Temperature, Humidity, Barometric Pressure  <br> &#9726; UV Index, Luminance <br> &#9726; Battery Voltage, Rain, Night Indicator <br> &#9726; Image - URL & Time Stamp <br> &#9726; Video List Fahrenheit, Celsius   |
-|![BloomSKY STORM](./doc/bloomsky_storm_weather_station.png) | storm | Provides weather sensor data captured for the most recent 5-minute interval by the _STORM_ weather station: <br> &#9726; UV Index <br> &#9726; Wind Speed, Direction, Gust <br> &#9726; Rain Rate, Daily & Rolling 24-Hour Accumulation |
+|![Account](doc/location_details.png) | bridge | Represents the connection to the owners BloomSky device account through the API key for accessing the weather station details and sensor readings |
+| ![BloomSky SKY1/SKY2](doc/sky2_weather_station.png) | sky | Provides station details for a specific location, weather sensor data and camera images captured for the most recent 5-minute interval by the _SKY1 or SKY2_ weather station:  <br> &#9726; City, Street Name <br> &#9726; Device Id, Name <br> &#9726; Latitude, Longitude, Altitude <br> &#9726; Number of Followers <br> &#9726; UTC, Daylight Savings Time <br> &#9726; Device Type (SKY1 or SKY2)  <br> &#9726; Temperature, Humidity, Barometric Pressure  <br> &#9726; UV Index, Luminance <br> &#9726; Battery Voltage, Rain, Night Indicator <br> &#9726; Image - URL & Time Stamp <br> &#9726; Video List Fahrenheit, Celsius   |
+|![BloomSKY STORM](doc/bloomsky_storm_weather_station.png) | storm | Provides weather sensor data captured for the most recent 5-minute interval by the _STORM_ weather station: <br> &#9726; UV Index <br> &#9726; Wind Speed, Direction, Gust <br> &#9726; Rain Rate, Daily & Rolling 24-Hour Accumulation |
 
 &#9888; **Note:** BloomSky _Indoor_ devices were discontinued in October-2015; they are not supported by this binding.  
 

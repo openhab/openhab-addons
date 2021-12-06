@@ -27,11 +27,8 @@ import org.openhab.binding.bloomsky.internal.handler.BloomSkyBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +42,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.bloomsky")
+
 public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(BloomSkyDiscoveryService.class);
@@ -62,7 +59,7 @@ public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
      *
      * @param bridgeHandler
      */
-    @Activate
+
     public BloomSkyDiscoveryService(final @Reference BloomSkyBridgeHandler bridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
         this.bridgeHandler = bridgeHandler;

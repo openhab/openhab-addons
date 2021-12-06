@@ -18,11 +18,10 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bloomsky.internal.handler.BloomSkyBridgeHandler;
 import org.openhab.core.i18n.LocaleProvider;
 
 /**
- * The {@link BloomSkyBridgeConfiguration} is the class used to match the {@link BloomSkyBridgeHandler} configuration.
+ * The {@link BloomSkyBridgeConfiguration} is the class used to match the BloomSkyBridgeHandler} configuration.
  *
  * @author Dave J Schoepel - Initial contribution
  *
@@ -79,7 +78,6 @@ public class BloomSkyBridgeConfiguration implements LocaleProvider {
 
     @Override
     public Locale getLocale() {
-        // TODO Auto-generated method stub
         return localeProvider.getLocale();
     }
 }
