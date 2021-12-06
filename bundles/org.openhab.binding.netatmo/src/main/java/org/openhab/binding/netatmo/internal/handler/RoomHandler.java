@@ -64,7 +64,6 @@ public class RoomHandler extends DeviceHandler {
                 if (channelName.equals(CHANNEL_SETPOINT_MODE)) {
                     SetpointMode targetMode = SetpointMode.valueOf(command.toString());
                     if (targetMode == SetpointMode.MANUAL) {
-                        // updateState(channelUID, toStringType(currentData.getSetpointMode()));
                         logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
                     } else {
                         homeHandler.callSetRoomThermMode(config.id, targetMode);

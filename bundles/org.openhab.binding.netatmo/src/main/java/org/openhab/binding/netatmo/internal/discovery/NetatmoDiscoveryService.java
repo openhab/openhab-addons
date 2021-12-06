@@ -73,7 +73,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void apiConnectionStatusChanged(ConnectionStatus connectionStatus) {
-        if (connectionStatus.equals(ConnectionStatus.SUCCESS)) {
+        if (ConnectionStatus.SUCCESS.equals(connectionStatus)) {
             super.activate(null);
         } else {
             super.deactivate();

@@ -124,5 +124,4 @@ public class WeatherApi extends RestManager {
 
     public class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
     }
-
 }

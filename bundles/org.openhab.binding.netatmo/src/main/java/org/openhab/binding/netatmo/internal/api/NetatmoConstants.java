@@ -73,13 +73,15 @@ public class NetatmoConstants {
         }
     }
 
+    private static final String SUM_RAIN = "SUM_RAIN";
+
     public enum MeasureClass {
         INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
         EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
         PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), true, "PRESSURE", "Pressure", "Pressure"),
         CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), true, "CO2", "CO2", "Dimensionless"),
         NOISE(new Measure(35, 120, 1, Units.DECIBEL), true, "NOISE", "Noise", "Dimensionless"),
-        RAIN_QUANTITY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), false, "SUM_RAIN", "Rain", "Length"),
+        RAIN_QUANTITY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), false, SUM_RAIN, "Rain", "Length"),
         RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR), false, "", "Rain", "Speed"),
         WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR), false, "", "Wind", "Speed"),
         WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE), false, "", "Wind", "Angle"),
@@ -99,7 +101,7 @@ public class NetatmoConstants {
             this.tagName = tagName;
             if (!apiDescriptor.isBlank()) {
                 String measureType = MEASURE;
-                if (apiDescriptor.equals("SUM_RAIN")) {
+                if (SUM_RAIN.equals(apiDescriptor)) {
                     measureType = "rain-" + measureType;
                 }
                 channels.put(String.join("-", tagName, MEASURE),

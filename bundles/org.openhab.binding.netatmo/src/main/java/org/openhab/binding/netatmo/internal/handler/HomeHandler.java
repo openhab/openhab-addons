@@ -168,7 +168,6 @@ public class HomeHandler extends DeviceWithEventHandler {
             } else if (channelName.equals(CHANNEL_SETPOINT_MODE)) {
                 SetpointMode targetMode = SetpointMode.valueOf(command.toString());
                 if (targetMode == SetpointMode.MANUAL) {
-                    // updateState(channelUID, toStringType(currentData.getSetpointMode()));
                     logger.info("Switch to 'Manual' is done by setting a setpoint temp, command ignored");
                 } else {
                     callSetThermMode(config.id, targetMode);
@@ -213,17 +212,6 @@ public class HomeHandler extends DeviceWithEventHandler {
                         }
                     }
                 });
-                /*
-                 * localNaThing.getEvents().stream()// .filter(e -> e.getTime().isAfter(lastEventTime.get()))
-                 * .sorted(Comparator.comparing(NAHomeEvent::getTime)).forEach(event -> {
-                 * String personId = event.getPersonId();
-                 * if (personId != null) {
-                 * notifyListener(personId, event);
-                 * }
-                 * notifyListener(event.getCameraId(), event);
-                 * lastEventTime.set(event.getTime());
-                 * });
-                 */
             });
         }
     }
@@ -285,22 +273,4 @@ public class HomeHandler extends DeviceWithEventHandler {
         }
         return null;
     }
-
-    // @Override
-    // public void setEvent(NAEvent event) {
-    // if (event instanceof NAWebhookEvent) {
-    // NAWebhookEvent whEvent = (NAWebhookEvent) event;
-    // Set<String> modules = new HashSet<>();
-    // if (whEvent.getEventType().appliesOn(ModuleType.NACamera)
-    // || whEvent.getEventType().appliesOn(ModuleType.NOC)) {
-    // modules.add(whEvent.getCameraId());
-    // }
-    // if (event.getEventType().appliesOn(ModuleType.NAPerson)) {
-    // modules.addAll(whEvent.getPersons().keySet());
-    // }
-    // modules.forEach(module -> notifyListener(module, whEvent));
-    // } else {
-    // super.setEvent(event);
-    // }
-    // }
 }

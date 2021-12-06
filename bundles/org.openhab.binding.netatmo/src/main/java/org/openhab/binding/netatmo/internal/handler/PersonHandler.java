@@ -72,7 +72,7 @@ public class PersonHandler extends DeviceWithEventHandler {
 
     @Override
     protected void internalSetNewEvent(NAEvent event) {
-        logger.debug("Updating person  with event : {}", event.toString());
+        logger.debug("Updating person with event : {}", event.toString());
 
         updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_TIME, new DateTimeType(event.getTime()));
         updateIfLinked(GROUP_PERSON_EVENT, CHANNEL_EVENT_CAMERA_ID, toStringType(event.getCameraId()));

@@ -60,8 +60,8 @@ public abstract class RestManager {
         if (response instanceof ApiResponse.Ok) {
             ApiResponse.Ok okResponse = (ApiResponse.Ok) response;
             if (!okResponse.isSuccess()) {
-                throw new NetatmoException(String.format("Unsuccessfull command : %s for uri : %s",
-                        response.getStatus(), uriBuilder.build().toString()));
+                throw new NetatmoException(String.format("Unsuccessful command : %s for uri : %s", response.getStatus(),
+                        uriBuilder.build().toString()));
             }
         }
         return response;

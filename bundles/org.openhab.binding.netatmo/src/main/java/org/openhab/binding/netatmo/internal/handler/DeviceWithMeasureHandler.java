@@ -103,7 +103,7 @@ public class DeviceWithMeasureHandler extends DeviceHandler {
 
                                     localMeasures.put(channel.getUID().getIdWithoutGroup(), data);
                                 } catch (NetatmoException e) {
-                                    logger.info("Error getting measurement {} for channel {}",
+                                    logger.warn("Error getting measurement {} for channel {}",
                                             measureDef.values().toString(), channel.getLabel());
                                 }
                             });

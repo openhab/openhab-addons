@@ -49,7 +49,6 @@ public class NetatmoCalendarUtils {
 
     public static @Nullable ZonedDateTime nextProgramTime(@Nullable NAThermProgram activeProgram) {
         ZonedDateTime result = null;
-        // long diff = getTimeDiff();
         if (activeProgram != null) {
             long diff = minutesSinceProgramBaseTime();
             // By default we'll use the first slot of next week - this case will be true if
@@ -62,7 +61,6 @@ public class NetatmoCalendarUtils {
                     break;
                 }
             }
-            // return next * 60 + getProgramBaseTime();
             result = programBaseTimeZdt().plusMinutes(next);
         }
         return result;
