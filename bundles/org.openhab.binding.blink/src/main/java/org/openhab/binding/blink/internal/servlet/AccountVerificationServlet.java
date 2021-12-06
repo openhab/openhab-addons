@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,8 +48,6 @@ public class AccountVerificationServlet extends HttpServlet {
         try {
             servletUrl = "/blink/" + URLEncoder.encode(accountHandler.getThing().getUID().getId(), "UTF8");
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
-            ServletContext context = this.getServletContext();
-            logger.info(context.getContextPath());
         } catch (NamespaceException | ServletException | UnsupportedEncodingException e) {
             throw new IllegalStateException(e.getMessage());
         }
@@ -110,12 +107,11 @@ public class AccountVerificationServlet extends HttpServlet {
         writer.write("<form method=\"POST\">");
         if (validationError) {
             writer.write("<span class=\"error\">Invalid 2FA verification PIN code.<br/>" +
-                    "The code is only valid for a 10 minute period. Please try disabling and enabling the Blink Account " +
+                    "The code is only valid for a 40 minute period. Please try disabling and enabling the Blink Account " +
                     "Thing to generate a new PIN code if you think that might be the problem.</span>");
         }
         writer.write("<input type=\"text\" name=\"pin\" pattern=\"[0-9]{6}\" maxlength=\"6\">");
         writer.write("<input type=\"submit\" value=\"Validate\">");
-        writer.write("<a href=\"?resend\">Resend pin code</a>");
         writer.write("</form></body></html>");
     }
 

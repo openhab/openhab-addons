@@ -14,14 +14,12 @@ package org.openhab.binding.blink.internal.handler;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.AccountConfiguration;
+import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.discovery.BlinkDiscoveryService;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCamera;
@@ -56,12 +54,12 @@ public class AccountHandler extends BaseBridgeHandler {
     public static final String GENERATED_CLIENT_ID = "generatedClientId";
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
 
-    private @Nullable AccountConfiguration config;
-    private final AccountService blinkService;
+    @Nullable AccountConfiguration config;
+    AccountService blinkService;
     private final HttpService httpService;
     private Gson gson;
-    private @Nullable AccountVerificationServlet accountServlet;
-    private @Nullable BlinkAccount blinkAccount;
+    @Nullable AccountVerificationServlet accountServlet;
+    @Nullable BlinkAccount blinkAccount;
     @NonNullByDefault({}) ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
 
     public AccountHandler(Bridge bridge, HttpService httpService, HttpClientFactory httpClientFactory, Gson gson) {
@@ -107,6 +105,7 @@ public class AccountHandler extends BaseBridgeHandler {
             if (generatedClientId == null) {
                 generatedClientId = blinkService.generateClientId();
                 start2FA = true;
+                properties.put(GENERATED_CLIENT_ID, generatedClientId);
             }
             try {
                 // call login api
@@ -145,7 +144,7 @@ public class AccountHandler extends BaseBridgeHandler {
         this.accountServlet = null;
     }
 
-    private void cleanup() {
+    void cleanup() {
         logger.debug("cleanup {}", getThing().getUID().getAsString());
     }
 
@@ -162,7 +161,7 @@ public class AccountHandler extends BaseBridgeHandler {
         }
     }
 
-    private @Nullable BlinkHomescreen loadDevices() {
+    @Nullable BlinkHomescreen loadDevices() {
         try {
             return blinkService.getDevices(blinkAccount);
         } catch (IOException e) {
@@ -179,43 +178,49 @@ public class AccountHandler extends BaseBridgeHandler {
         return this.config;
     }
 
-    private BlinkCamera getCameraState(String cameraId, boolean refresh) throws IOException {
+    BlinkCamera getCameraState(CameraConfiguration camera, boolean refresh) throws IOException {
+        Long cameraId = camera.cameraId;
         BlinkHomescreen devices = getDevices(refresh);
         if (blinkAccount == null) {
             logger.error("Blink Account not set in bridge");
             throw new IOException("Blink Account not set in bridge");
         }
-        if (devices == null || devices.cameras == null) {
+        if (devices == null || devices.cameras == null || devices.cameras.isEmpty()) {
+            logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
+            throw new IOException("No cameras found for account");
+        }
+        List<BlinkCamera> cameras = devices.cameras.stream()
+                .filter(c -> Objects.equals(c.network_id, camera.networkId))
+                .filter(c -> Objects.equals(c.id, cameraId))
+                .collect(Collectors.toUnmodifiableList());
+        if (cameras.size() > 1) {
+            logger.error("More than one camera {} for account {}", cameraId, blinkAccount.account.account_id);
+            throw new IOException("More than one camera found for id " + cameraId);
+        } else if (cameras.isEmpty()) {
             logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("Unknown camera");
+
         }
-        try {
-            List<BlinkCamera> cameras = devices.cameras.stream().filter(c -> c.id.equals(Long.parseLong(cameraId)))
-                    .collect(Collectors.toUnmodifiableList());
-            if (cameras.size() == 1)
-                return cameras.get(0);
-        } catch (NumberFormatException e) {
-            logger.error("Bad camera id, must be numeric: {}", cameraId);
-        }
-        logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
-        throw new IOException("Unknown camera");
+        return cameras.get(0);
     }
 
-    private BlinkNetwork getNetworkState(String networkId, boolean refresh) throws IOException {
+    BlinkNetwork getNetworkState(String networkId, boolean refresh) throws IOException {
         BlinkHomescreen devices = getDevices(refresh);
         if (blinkAccount == null) {
             logger.error("Blink Account not set in bridge");
             throw new IOException("Blink Account not set in bridge");
         }
-        if (devices == null || devices.networks == null) {
+        if (devices == null || devices.networks == null || devices.networks.isEmpty()) {
             logger.error("Unknown network {} for account {}", networkId, blinkAccount.account.account_id);
-            throw new IOException("Unknown network");
+            throw new IOException("No networks found for account");
         }
         try {
             List<BlinkNetwork> networks = devices.networks.stream().filter(n -> n.id.equals(Long.parseLong(networkId)))
                     .collect(Collectors.toUnmodifiableList());
             if (networks.size() == 1)
                 return networks.get(0);
+            else if (networks.size() > 1)
+                throw new IOException("More than one network found with id " + networkId);
         } catch (NumberFormatException e) {
             logger.error("Bad network id, must be numeric: {}", networkId);
         }
@@ -223,20 +228,20 @@ public class AccountHandler extends BaseBridgeHandler {
         throw new IOException("Unknown network");
     }
 
-    public OnOffType getBattery(String cameraId) throws IOException {
-        String battery = getCameraState(cameraId, false).battery;
-        if (!"ok".equals(battery))
+    public OnOffType getBattery(CameraConfiguration camera) throws IOException {
+        String battery = getCameraState(camera, false).battery;
+        if ("ok".equals(battery))
             return OnOffType.OFF;
         else
             return OnOffType.ON;
     }
 
-    public long getTemperature(String cameraId) throws IOException {
-        return getCameraState(cameraId, false).signals.temp;
+    public double getTemperature(CameraConfiguration camera) throws IOException {
+        return getCameraState(camera, false).signals.temp;
     }
 
-    public OnOffType getMotionDetection(String cameraId, boolean refreshCache) throws IOException {
-        return OnOffType.from(getCameraState(cameraId, refreshCache).enabled);
+    public OnOffType getMotionDetection(CameraConfiguration camera, boolean refreshCache) throws IOException {
+        return OnOffType.from(getCameraState(camera, refreshCache).enabled);
     }
 
     public OnOffType getNetworkArmed(String networkId, boolean refreshCache) throws IOException {

@@ -14,7 +14,6 @@ package org.openhab.binding.blink.internal.handler;
 
 import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.NetworkConfiguration;
 import org.openhab.binding.blink.internal.service.NetworkService;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -45,24 +44,21 @@ public class NetworkHandler extends BaseThingHandler {
 
     NetworkService networkService;
     NetworkConfiguration config = new NetworkConfiguration();
-    @Nullable AccountHandler accountHandler;
 
-    public NetworkHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) throws IllegalArgumentException {
+    public NetworkHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) {
         super(thing);
         networkService = new NetworkService(httpClientFactory.getCommonHttpClient(), gson);
-        if (getBridge() == null || getBridge().getHandler() == null) {
-            throw new IllegalArgumentException("Cannot initialize blink network thing without a blink account bridge");
-        }
-        accountHandler = (AccountHandler) getBridge().getHandler();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (accountHandler == null) {
-            // never happens, but it's impossible to set accountHandler in constructor as nonnull without the compiler
-            // being unhappy. without this null-check, IntelliJ is unhappy. this if makes me unhappy, but no one cares.
+        if (getBridge() == null || getBridge().getHandler() == null) {
+            logger.warn("Cannot handle commands of blink things without a bridge: {}",
+                    thing.getUID().getAsString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge");
             return;
         }
+        AccountHandler accountHandler = (AccountHandler) getBridge().getHandler();
         try {
             if (CHANNEL_NETWORK_ARMED.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {

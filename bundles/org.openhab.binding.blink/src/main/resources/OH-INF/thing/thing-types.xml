@@ -38,9 +38,11 @@
 		<category>Camera</category>
 
 		<channels>
-			<channel id="channel_camera_motiondetection" typeId="channel_camera_motiondetection"/>
-			<channel id="channel_camera_battery" typeId="system.low-battery"/>
-			<channel id="channel_camera_temperature" typeId="channel_camera_temperature"/>
+			<channel id="motiondetection" typeId="motiondetection"/>
+			<channel id="battery" typeId="system.low-battery"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="setThumbnail" typeId="setThumbnail"/>
+			<channel id="getThumbnail" typeId="thumbnail"/>
 		</channels>
 
 		<properties>
@@ -71,7 +73,7 @@
 		<description>Blink Security Network</description>
 
 		<channels>
-			<channel id="channel_network_armed" typeId="channel_network_armed"/>
+			<channel id="armed" typeId="armed"/>
 		</channels>
 
 		<properties>
@@ -89,7 +91,7 @@
 
 	</thing-type>
 
-	<channel-type id="channel_camera_motiondetection">
+	<channel-type id="motiondetection">
 		<item-type>Switch</item-type>
 		<label>Motion Detection</label>
 		<description>Motion Detection Status</description>
@@ -99,7 +101,24 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="channel_camera_temperature">
+	<channel-type id="setThumbnail">
+		<item-type>Switch</item-type>
+		<label>Create Thumbnail</label>
+		<description>Save snapshot as thumbnail</description>
+		<category>Camera</category>
+		<tags>
+			<tag>Switchable</tag>
+		</tags>
+	</channel-type>
+
+	<channel-type id="thumbnail">
+		<item-type>Image</item-type>
+		<label>Thumbnail</label>
+		<description>Current thumbnail</description>
+		<category>Camera</category>
+	</channel-type>
+
+	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Temperature measured by Kamera</description>
@@ -110,7 +129,7 @@
 		<state pattern="%.1f °F" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="channel_network_armed">
+	<channel-type id="armed">
 		<item-type>Switch</item-type>
 		<label>Armed</label>
 		<description>Network armed (start recording/reporting motion events for enabled cameras)</description>

@@ -8,6 +8,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
@@ -25,8 +26,7 @@ import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.blink")
 public class BlinkDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
-    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_CAMERA,
-            THING_TYPE_NETWORK);
+    static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CAMERA, THING_TYPE_NETWORK);
     private final Logger logger = LoggerFactory.getLogger(BlinkDiscoveryService.class);
 
     @Nullable AccountHandler accountHandler;
@@ -57,15 +57,17 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
         discover();
     }
 
-    private void discover() {
+    void discover() {
         if (accountHandler == null) {
             logger.debug("Blink background discovery cancelled without accountHandler.");
             return;
         }
-        if (accountHandler.getThing().getStatus() != ThingStatus.ONLINE)
+        if (accountHandler.getThing().getStatus() != ThingStatus.ONLINE) {
+            logger.debug("Not starting discovery for things which ar not online.");
             return;
+        }
         BlinkHomescreen homescreen = accountHandler.getDevices(false);
-        if (homescreen == null)
+        if (homescreen == null || homescreen.cameras == null || homescreen.networks == null)
             return;
         ThingUID bridgeUID = accountHandler.getThing().getUID();
         logger.debug("Blink background discovery running for {}", bridgeUID.getAsString());
@@ -88,6 +90,11 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
                     .withRepresentationProperty(PROPERTY_NETWORK_ID);
             thingDiscovered(dr.build());
         });
+    }
+
+    @Override
+    protected void thingDiscovered(DiscoveryResult discoveryResult) {
+        super.thingDiscovered(discoveryResult);
     }
 
     @Override

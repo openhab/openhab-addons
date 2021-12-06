@@ -14,12 +14,12 @@ package org.openhab.binding.blink.internal.handler;
 
 import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -44,8 +44,8 @@ public class CameraHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
 
-    private @Nullable CameraConfiguration config;
-    private CameraService cameraService;
+    @NonNullByDefault({}) CameraConfiguration config;
+    CameraService cameraService;
 
     public CameraHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) {
         super(thing);
@@ -62,25 +62,38 @@ public class CameraHandler extends BaseThingHandler {
                 return;
             }
             AccountHandler accountHandler = (AccountHandler) getBridge().getHandler();
-            String cameraUId = thing.getUID().getId();
             if (CHANNEL_CAMERA_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    long temp = accountHandler.getTemperature(cameraUId);
+                    double temp = accountHandler.getTemperature(config);
                     updateState(CHANNEL_CAMERA_TEMPERATURE, new DecimalType(temp));
                 }
             } else if (CHANNEL_CAMERA_BATTERY.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(cameraUId));
+                    updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(config));
                 }
             } else if (CHANNEL_CAMERA_MOTIONDETECTION.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(CHANNEL_CAMERA_MOTIONDETECTION, accountHandler.getMotionDetection(cameraUId, false));
+                    updateState(CHANNEL_CAMERA_MOTIONDETECTION, accountHandler.getMotionDetection(config, false));
                 } else if (command instanceof OnOffType) {
                     OnOffType cmd = (OnOffType) command;
                     boolean enable = (cmd == OnOffType.ON);
                     cameraService.motionDetection(accountHandler.getBlinkAccount(), config, enable);
-                    // TODO: enable/disable is an async command in the api, changes might not be reflected in updateState
+                    // enable/disable is an async command in the api, changes might not be reflected in updateState
                     updateState(CHANNEL_CAMERA_MOTIONDETECTION, cmd);
+                }
+            } else if (CHANNEL_CAMERA_SETTHUMBNAIL.equals(channelUID.getId())) {
+                if (command instanceof RefreshType)
+                    updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
+                if (command instanceof OnOffType && command == OnOffType.ON) {
+                    cameraService.createThumbnail(accountHandler.getBlinkAccount(), config);
+                    updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
+                }
+            } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
+                if (command instanceof RefreshType) {
+                    String imagePath = accountHandler.getCameraState(config, true).thumbnail;
+                    updateState(CHANNEL_CAMERA_GETTHUMBNAIL,
+                            new RawType(cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath),
+                                    "image/jpeg"));
                 }
             }
         } catch (IOException e) {

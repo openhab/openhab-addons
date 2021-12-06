@@ -30,10 +30,12 @@ public class BlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID(BINDING_ID, "camera");
     public static final ThingTypeUID THING_TYPE_NETWORK = new ThingTypeUID(BINDING_ID, "network");
     // List of all Channel ids
-    public static final String CHANNEL_CAMERA_MOTIONDETECTION = "channel_camera_motiondetection";
-    public static final String CHANNEL_CAMERA_BATTERY = "channel_camera_battery";
-    public static final String CHANNEL_CAMERA_TEMPERATURE = "channel_camera_temperature";
-    public static final String CHANNEL_NETWORK_ARMED = "channel_network_armed";
+    public static final String CHANNEL_CAMERA_MOTIONDETECTION = "motiondetection";
+    public static final String CHANNEL_CAMERA_BATTERY = "battery";
+    public static final String CHANNEL_CAMERA_TEMPERATURE = "temperature";
+    public static final String CHANNEL_CAMERA_SETTHUMBNAIL = "setThumbnail";
+    public static final String CHANNEL_CAMERA_GETTHUMBNAIL = "getThumbnail";
+    public static final String CHANNEL_NETWORK_ARMED = "armed";
     // List of property names
     public static final String PROPERTY_CAMERA_ID = "cameraId";
 

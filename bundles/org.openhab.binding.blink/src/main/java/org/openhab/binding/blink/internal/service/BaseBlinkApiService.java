@@ -21,8 +21,8 @@ public class BaseBlinkApiService {
     private final Logger logger = LoggerFactory.getLogger(BaseBlinkApiService.class);
 
     private static final String HEADER_TOKEN_AUTH = "token-auth";
-    private final String BASE_URL = "https://rest-{tier}.immedia-semi.com";
-    public static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
+    @SuppressWarnings("FieldCanBeLocal") private final String BASE_URL = "https://rest-{tier}.immedia-semi.com";
+    static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
 
     HttpClient httpClient;
     Gson gson;
@@ -38,27 +38,52 @@ public class BaseBlinkApiService {
         return gson.fromJson(json, classOfT);
     }
 
-    private String request(String tier, String uri, HttpMethod method, @Nullable String token,
+    String request(String tier, String uri, HttpMethod method, @Nullable String token,
             @Nullable Map<String, String> params)
             throws IOException {
-        String baseUrl = BASE_URL.replace("{tier}", tier);
-        String url = baseUrl + uri;
+        String url = createUrl(tier, uri);
         try {
-            final Request request = httpClient.newRequest(url).method(method.toString());
-            if (params != null)
-                params.forEach(request::param);
-            request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON);
-            if (token != null)
-                request.header(HEADER_TOKEN_AUTH, token);
-            ContentResponse contentResponse = request.send();
-            if (contentResponse.getStatus() != 200) {
-                throw new IOException("Blink API Call unsuccessful <Status " + contentResponse.getStatus() + ">");
-            }
+            ContentResponse contentResponse = createRequestAndSend(url, method, token, params, true);
             return contentResponse.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Error calling Blink API. Reason: {}", e.getMessage());
             throw new IOException(e);
         }
+    }
+
+    public byte[] rawRequest(String tier, String uri, HttpMethod method, @Nullable String token,
+            @Nullable Map<String, String> params)
+            throws IOException {
+        String url = createUrl(tier, uri);
+        try {
+            ContentResponse contentResponse = createRequestAndSend(url, method, token, params, false);
+            return contentResponse.getContent();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.error("Error calling Blink API. Reason: {}", e.getMessage());
+            throw new IOException(e);
+        }
+    }
+
+    private String createUrl(String tier, String uri) {
+        String baseUrl = BASE_URL.replace("{tier}", tier);
+        return baseUrl + uri;
+    }
+
+    private ContentResponse createRequestAndSend(String url, HttpMethod method, @Nullable String token,
+            @Nullable Map<String, String> params, boolean json)
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
+        final Request request = httpClient.newRequest(url).method(method.toString());
+        if (params != null)
+            params.forEach(request::param);
+        if (json)
+            request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON);
+        if (token != null)
+            request.header(HEADER_TOKEN_AUTH, token);
+        ContentResponse contentResponse = request.send();
+        if (contentResponse.getStatus() != 200) {
+            throw new IOException("Blink API Call unsuccessful <Status " + contentResponse.getStatus() + ">");
+        }
+        return contentResponse;
     }
 
 }
