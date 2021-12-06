@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.hdpowerview.internal.database;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +38,8 @@ public class ShadeCapabilitiesDatabase {
     /*
      * Database of known shade capabilities.
      */
-    private static final Capabilities[] CAPABILITIES_DATABASE = {
-        // @formatter:off
+    private static final Map<Integer, Capabilities> CAPABILITIES_DATABASE = Arrays.asList(
+    // @formatter:off
             new Capabilities(0).primary().tiltOnClosed()                      .text("Bottom Up"),
             new Capabilities(1).primary().tiltAnywhere()                      .text("Bottom Up Tilt 90°"),
             new Capabilities(2).primary().tiltAnywhere().tilt180()            .text("Bottom Up Tilt 180°"),
@@ -45,14 +50,14 @@ public class ShadeCapabilitiesDatabase {
             new Capabilities(7).primary()                         .secondary().text("Top Down Bottom Up"),
             new Capabilities(8).primary()                                     .text("Duolite Lift"),
             new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°"),
-        // @formatter:on
-            new Capabilities() };
+    // @formatter:on
+            new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
     /*
      * Database of known shade types and corresponding capabilities.
      */
-    private static final Type[] TYPE_DATABASE = {
-        // @formatter:off
+    private static final Map<Integer, Type> TYPE_DATABASE = Arrays.asList(
+    // @formatter:off
             new Type( 4).capabilities(0).text("Roman"),
             new Type( 5).capabilities(0).text("Bottom Up"),
             new Type( 6).capabilities(0).text("Duette"),
@@ -74,8 +79,8 @@ public class ShadeCapabilitiesDatabase {
             new Type(70).capabilities(3).text("Curtain Right Stack"),
             new Type(71).capabilities(3).text("Curtain Split Stack"),
             new Type(79).capabilities(8).text("Duolite Lift"),
-        // @formatter:on
-            new Type() };
+    // @formatter:on
+            new Type()).stream().collect(Collectors.toMap(Type::getValue, Function.identity()));
 
     /**
      * Base class that is extended by Type and Capabilities classes.
@@ -85,6 +90,10 @@ public class ShadeCapabilitiesDatabase {
     private static class Base {
         protected int intValue = -1;
         protected String text = "-- not in database --";
+
+        protected Integer getValue() {
+            return intValue;
+        }
 
         @Override
         public String toString() {
@@ -247,12 +256,7 @@ public class ShadeCapabilitiesDatabase {
      * @return true if the shade 'type' is known.
      */
     public boolean isTypeInDatabase(int type) {
-        for (Type item : TYPE_DATABASE) {
-            if ((type == item.intValue) && (type > 0)) {
-                return true;
-            }
-        }
-        return false;
+        return TYPE_DATABASE.containsKey(type);
     }
 
     /**
@@ -262,12 +266,7 @@ public class ShadeCapabilitiesDatabase {
      * @return true if the 'capabilities' value is known
      */
     public boolean isCapabilitiesInDatabase(int capabilities) {
-        for (Capabilities item : CAPABILITIES_DATABASE) {
-            if ((capabilities == item.intValue) && (capabilities >= 0)) {
-                return true;
-            }
-        }
-        return false;
+        return CAPABILITIES_DATABASE.containsKey(capabilities);
     }
 
     /**
@@ -277,12 +276,7 @@ public class ShadeCapabilitiesDatabase {
      * @return corresponding instance of Type class.
      */
     public Type getType(int type) {
-        for (Type item : TYPE_DATABASE) {
-            if (type == item.intValue) {
-                return item;
-            }
-        }
-        return new Type();
+        return TYPE_DATABASE.getOrDefault(type, new Type());
     }
 
     /**
@@ -292,12 +286,7 @@ public class ShadeCapabilitiesDatabase {
      * @return corresponding instance of Capabilities class.
      */
     public Capabilities getCapabilities(int capabilities) {
-        for (Capabilities item : CAPABILITIES_DATABASE) {
-            if (capabilities == item.intValue) {
-                return item;
-            }
-        }
-        return new Capabilities();
+        return CAPABILITIES_DATABASE.getOrDefault(capabilities, new Capabilities());
     }
 
     private static final String REQUEST_DEVELOPERS_TO_UPDATE = " => Please request developers to update the database!";
