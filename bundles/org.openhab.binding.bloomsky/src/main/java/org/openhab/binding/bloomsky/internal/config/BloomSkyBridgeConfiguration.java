@@ -19,6 +19,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bloomsky.internal.handler.BloomSkyBridgeHandler;
+import org.openhab.core.i18n.LocaleProvider;
 
 /**
  * The {@link BloomSkyBridgeConfiguration} is the class used to match the {@link BloomSkyBridgeHandler} configuration.
@@ -27,23 +28,24 @@ import org.openhab.binding.bloomsky.internal.handler.BloomSkyBridgeHandler;
  *
  */
 @NonNullByDefault
-public class BloomSkyBridgeConfiguration {
+public class BloomSkyBridgeConfiguration implements LocaleProvider {
 
     // Use country code to determine default units for the BloomSky observations
-    public final String countryCode = Locale.getDefault().getCountry();
+    private @NonNullByDefault({}) LocaleProvider localeProvider;
 
     public @Nullable String apikey; // API Key from BloomSky Device Owner Account
     public int refreshInterval = 5; // Minimum interval is five minutes
 
     // Initialize with default units based on country the code, start with Imperial units
-    public @Nullable String units = IMPERIAL_UNITS;
+    public String units = IMPERIAL_UNITS;
 
     /**
      * @param countryCode to test for default display units
      * @return display unit constant based on country code, so that can be used to set the bridge configuration
      */
-    public String setDisplayUnits(String countryCode) {
+    public String setDisplayUnits() {
         // Assuming country code is valid using Local to retrieve it
+        String countryCode = localeProvider.getLocale().getCountry();
         switch (countryCode) {
             case "US": // United States
             case "LR": // Liberia
@@ -73,5 +75,11 @@ public class BloomSkyBridgeConfiguration {
      */
     public @Nullable String getUnits() {
         return units;
+    }
+
+    @Override
+    public Locale getLocale() {
+        // TODO Auto-generated method stub
+        return localeProvider.getLocale();
     }
 }

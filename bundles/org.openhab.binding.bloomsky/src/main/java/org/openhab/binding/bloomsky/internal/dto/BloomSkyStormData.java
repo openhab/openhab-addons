@@ -24,35 +24,29 @@ import com.google.gson.annotations.SerializedName;
 public class BloomSkyStormData {
 
     @SerializedName("UVIndex")
-    @Expose
-    private Integer uVIndex; // Calculated UV index (1-11+), this is more accurate than index from SKY device
+    private int uVIndex; // Calculated UV index (1-11+), this is more accurate than index from SKY device
 
     @SerializedName("WindDirection")
-    @Expose
     private String windDirection; // Converted Wind direction from degrees to compass headings (S,SW,W,NW,N,NE,E,SE)
 
     @SerializedName("RainDaily")
-    @Expose
-    private Double rainDaily; // Daily rain total for the past 24 hour period in inches/millimeters
+    private double rainDaily; // Daily rain total for the past 24 hour period in inches/millimeters
 
     /*
      * Wind gust highest wind speed (peak speed in
      * a rolling 10 minute window) miles/hour or meters/second
      */
     @SerializedName("WindGust")
-    @Expose
-    private Double windGust;
+    private double windGust;
 
     /*
      * Sustained wind speed rolling two minute average (miles/hour or meters/second)
      */
     @SerializedName("SustainedWindSpeed")
-    @Expose
-    private Double sustainedWindSpeed;
+    private double sustainedWindSpeed;
 
     @SerializedName("RainRate")
-    @Expose
-    private Double rainRate; // Rain Rate 10 minutes of rainfall inches/millimeters
+    private double rainRate; // Rain Rate 10 minutes of rainfall inches/millimeters
 
     /*
      * 24 hour rainfall (a rolling 24 hour window) inches/millimeters
@@ -61,62 +55,34 @@ public class BloomSkyStormData {
      */
     @SerializedName("24hRain")
     @Expose(deserialize = true)
-    private Double rain24h;
+    private double rain24h;
 
-    public Integer getuVIndex() {
+    public int getuVIndex() {
         return uVIndex;
-    }
-
-    public void setuVIndex(Integer uVIndex) {
-        this.uVIndex = uVIndex;
     }
 
     public String getWindDirection() {
         return windDirection;
     }
 
-    public void setWindDirection(String windDirection) {
-        this.windDirection = windDirection;
-    }
-
-    public Double getRainDaily() {
+    public double getRainDaily() {
         return rainDaily;
     }
 
-    public void setRainDaily(Double rainDaily) {
-        this.rainDaily = rainDaily;
-    }
-
-    public Double getWindGust() {
+    public double getWindGust() {
         return windGust;
     }
 
-    public void setWindGust(Double windGust) {
-        this.windGust = windGust;
-    }
-
-    public Double getSustainedWindSpeed() {
+    public double getSustainedWindSpeed() {
         return sustainedWindSpeed;
     }
 
-    public void setSustainedWindSpeed(Double sustainedWindSpeed) {
-        this.sustainedWindSpeed = sustainedWindSpeed;
-    }
-
-    public Double getRainRate() {
+    public double getRainRate() {
         return rainRate;
     }
 
-    public void setRainRate(Double rainRate) {
-        this.rainRate = rainRate;
-    }
-
-    public Double getRain24h() {
+    public double getRain24h() {
         return rain24h;
-    }
-
-    public void setRain24h(Double rain24h) {
-        this.rain24h = rain24h;
     }
 
     @Override

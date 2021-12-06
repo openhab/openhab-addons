@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.bloomsky.internal.dto;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link BloomSkySkyData} is the Java class used to map the JSON response to an BloomSky API request.
  *
- * @author dschoepel - Initial contribution
+ * @author Dave J Schoepel - Initial contribution
  *
  */
 public class BloomSkySkyData {
@@ -28,32 +27,25 @@ public class BloomSkySkyData {
      * corresponds to brightness given in candelas per square meter cd/m2
      */
     @SerializedName("Luminance")
-    @Expose
-    private Integer luminance;
+    private int luminance;
 
     @SerializedName("Temperature")
-    @Expose
-    private Double temperature; // Outside temperature in Fahrenheit or Celsius
+    private double temperature; // Outside temperature in Fahrenheit or Celsius
 
     @SerializedName("ImageURL")
-    @Expose
     private String imageURL; // Image URL - URL to JPG snapshot image from the Sky camera at Image time stamp
 
     @SerializedName("TS")
-    @Expose
-    private Long tS; // Observation time stamp in epoch format (Unix time stamp)
+    private long tS; // Observation time stamp in epoch format (Unix time stamp)
 
     @SerializedName("Rain")
-    @Expose
     private String rain; // Rain detected true or false (is it raining)
 
     @SerializedName("Humidity")
-    @Expose
-    private Double humidity; // Humidity given as a percentage
+    private double humidity; // Humidity given as a percentage
 
     @SerializedName("Pressure")
-    @Expose
-    private Double pressure; // Atmospheric pressure inHG or mbar
+    private double pressure; // Atmospheric pressure inHG or mbar
 
     /*
      * Device type (model) SKY1 or SKY2. The only difference is that the
@@ -61,7 +53,6 @@ public class BloomSkySkyData {
      * to WiFi.
      */
     @SerializedName("DeviceType")
-    @Expose
     private String deviceType;
 
     /*
@@ -70,122 +61,70 @@ public class BloomSkySkyData {
      * panel.
      */
     @SerializedName("Voltage")
-    @Expose
-    private Integer voltage;
+    private double voltage;
 
     /*
      * After sunset (night) indicator true or false. The PWS does not take
      * snapshot images during the night.
      */
     @SerializedName("Night")
-    @Expose
     private String night;
     /*
      * Calculated UV index (1 - 11+). The Storm UV Index is considered more accurate
      * than SKY. If a Storm is installed, the Storm UV Index should be used.
      */
     @SerializedName("UVIndex")
-    @Expose
-    private Integer uVIndex;
+    private int uVIndex;
 
     @SerializedName("ImageTS")
-    @Expose
-    private Long imageTS; // Image time stamp in epoch format (Unix time stamp)
+    private long imageTS; // Image time stamp in epoch format (Unix time stamp)
 
-    public Integer getLuminance() {
+    public int getLuminance() {
         return luminance;
     }
 
-    public void setLuminance(Integer luminance) {
-        this.luminance = luminance;
-    }
-
-    public Double getTemperature() {
+    public double getTemperature() {
         return temperature;
-    }
-
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
     }
 
     public String getImageURL() {
         return imageURL;
     }
 
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
-    }
-
-    public Long gettS() {
+    public long gettS() {
         return tS;
-    }
-
-    public void settS(Long tS) {
-        this.tS = tS;
     }
 
     public String getRain() {
         return rain;
     }
 
-    public void setRain(String rain) {
-        this.rain = rain;
-    }
-
-    public Double getHumidity() {
+    public double getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(Double humidity) {
-        this.humidity = humidity;
-    }
-
-    public Double getPressure() {
+    public double getPressure() {
         return pressure;
-    }
-
-    public void setPressure(Double pressure) {
-        this.pressure = pressure;
     }
 
     public String getDeviceType() {
         return deviceType;
     }
 
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
-    }
-
-    public Integer getVoltage() {
+    public double getVoltage() {
         return voltage;
-    }
-
-    public void setVoltage(Integer voltage) {
-        this.voltage = voltage;
     }
 
     public String getNight() {
         return night;
     }
 
-    public void setNight(String night) {
-        this.night = night;
-    }
-
-    public Integer getuVIndex() {
+    public int getuVIndex() {
         return uVIndex;
     }
 
-    public void setuVIndex(Integer uVIndex) {
-        this.uVIndex = uVIndex;
-    }
-
-    public Long getImageTS() {
+    public long getImageTS() {
         return imageTS;
-    }
-
-    public void setImageTS(Long imageTS) {
-        this.imageTS = imageTS;
     }
 
     @Override

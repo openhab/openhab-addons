@@ -374,9 +374,9 @@ public class BloomSkySKYHandler extends BloomSkyAbstractHandler {
                 updateChannel(channelUID, undefOrString(obs.getData().getDeviceType()));
                 break;
             case CH_SKY_VOLTAGE:
-                int voltage = (obs.getData().getVoltage() / BATTERY_FULLY_CHARGED) * 100;
-                if (voltage >= 100) {
-                    voltage = 100;
+                double voltage = (obs.getData().getVoltage() / BATTERY_FULLY_CHARGED) * 100;
+                if (voltage >= 100.0) {
+                    voltage = 100.0;
                 }
                 updateChannel(channelUID, undefOrQuantity(voltage, getVoltageUnit()));
                 break;

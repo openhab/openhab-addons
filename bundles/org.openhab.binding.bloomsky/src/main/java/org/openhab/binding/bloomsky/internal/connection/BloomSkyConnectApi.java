@@ -57,16 +57,6 @@ public class BloomSkyConnectApi extends BloomSkyApi {
     }
 
     /**
-     * Method overridden from {@link BloomSkyApi} to retrieve the base URL for the BloomSky API.
-     *
-     * @return Base URL to use for the BloomSky API
-     */
-    @Override
-    protected String getBaseUrl() {
-        return BASE_API_URL;
-    }
-
-    /**
      * Method used to by handlers to request device information from the BloomSky rest API.
      * <ul>
      * <li>Builds base URL with correct unit query parameter using the display units from Bridge configuration.</li>
@@ -80,7 +70,7 @@ public class BloomSkyConnectApi extends BloomSkyApi {
      */
     public BloomSkyJsonSensorData[] getSkyDeviceData(String apiKey, String displayUnits)
             throws BloomSkyCommunicationException {
-        String url = buildURL(getBaseUrl(), setRequestParams(displayUnits));
+        String url = buildURL(BASE_API_URL, setRequestParams(displayUnits));
         final Request request = getHttpClient().newRequest(url);
         request.method(HttpMethod.GET);
 

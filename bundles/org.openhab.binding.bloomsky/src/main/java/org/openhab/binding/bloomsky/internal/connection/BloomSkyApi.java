@@ -41,13 +41,6 @@ public abstract class BloomSkyApi {
     }
 
     /**
-     * Method to retrieve the BloomSky API base URL.
-     *
-     * @return BloomSky base URL for API get requests
-     */
-    protected abstract String getBaseUrl();
-
-    /**
      * Method to retrieve the shared HTTP client used by the Handlers to retrieve device/observations from the API.
      *
      * @return Common shared HTTP client to use for API requests

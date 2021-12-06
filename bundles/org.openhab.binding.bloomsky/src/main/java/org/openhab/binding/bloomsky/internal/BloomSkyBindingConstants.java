@@ -34,17 +34,16 @@ public class BloomSkyBindingConstants {
     public static final String API = "api";
     public static final String IMPERIAL_UNITS = "Imperial";
     public static final String METRIC_UNITS = "Metric";
-    public static final String API_KEY_VALUE = "apiKeyValue";
+    public static final String API_KEY_VALUE = "apikey";
     public static final String CONFIG_UNITS = "configUnits";
     public static final String REFRESH_INTERVAL = "refreshInterval";
     public static final String PARAM_UNITS = "unit";
     public static final String TOO_WARM_FOR_WIND_CHILL = "Too warm for wind chill";
-    public static final Integer BATTERY_FULLY_CHARGED = 2600;
+    public static final double BATTERY_FULLY_CHARGED = 2600;
 
     // Bridge
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge-api");
-    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_BRIDGE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE);
 
     // Sky Thing
     public static final ThingTypeUID THING_TYPE_SKY = new ThingTypeUID(BINDING_ID, "sky");
@@ -130,8 +129,8 @@ public class BloomSkyBindingConstants {
 
     // STORM Thing
     public static final ThingTypeUID THING_TYPE_STORM = new ThingTypeUID(BINDING_ID, "storm");
-    public static final Set<ThingTypeUID> SUPPORTED_BLOOMSKY_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_SKY, THING_TYPE_STORM).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_BLOOMSKY_THING_TYPES_UIDS = Set.of(THING_TYPE_SKY,
+            THING_TYPE_STORM);
 
     // Sky Thing Properties
     public static final String STORM_ASSOCIATED_WITH_SKY_DEVICE_ID = "stormAssociatedWithSkyDeviceID";

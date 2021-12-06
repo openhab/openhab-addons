@@ -43,24 +43,24 @@
 		<label>Sky Device Detail</label>
 		<description>This is the Sky 1/2 device detail</description>
 		<channels>
-			<channel typeId="utc" id="utc"></channel>
-			<channel typeId="cityName" id="cityName"></channel>
-			<channel typeId="searchable" id="searchable"></channel>
-			<channel typeId="deviceName" id="deviceName"></channel>
-			<channel typeId="registerTime" id="registerTime"></channel>
-			<channel typeId="dst" id="dst"></channel>
-			<channel typeId="boundedPoint" id="boundedPoint"></channel>
-			<channel typeId="lon" id="lon"></channel>
-			<channel typeId="videoList" id="videoList"></channel>
-			<channel typeId="videoListC" id="videoListC"></channel>
-			<channel typeId="deviceID" id="deviceID"></channel>
-			<channel typeId="numOfFollowers" id="numOfFollowers"></channel>
-			<channel typeId="lat" id="lat"></channel>
-			<channel typeId="alt" id="alt"></channel>
-			<channel typeId="system.location" id="location"></channel>
-			<channel typeId="fullAddress" id="fullAddress"></channel>
-			<channel typeId="streetName" id="streetName"></channel>
-			<channel typeId="previewImageList" id="previewImageList"></channel>
+			<channel typeId="utc" id="utc"/>
+			<channel typeId="cityName" id="cityName"/>
+			<channel typeId="searchable" id="searchable"/>
+			<channel typeId="deviceName" id="deviceName"/>
+			<channel typeId="registerTime" id="registerTime"/>
+			<channel typeId="dst" id="dst"/>
+			<channel typeId="boundedPoint" id="boundedPoint"/>
+			<channel typeId="lon" id="lon"/>
+			<channel typeId="videoList" id="videoList"/>
+			<channel typeId="videoListC" id="videoListC"/>
+			<channel typeId="deviceID" id="deviceID"/>
+			<channel typeId="numOfFollowers" id="numOfFollowers"/>
+			<channel typeId="lat" id="lat"/>
+			<channel typeId="alt" id="alt"/>
+			<channel typeId="system.location" id="location"/>
+			<channel typeId="fullAddress" id="fullAddress"/>
+			<channel typeId="streetName" id="streetName"/>
+			<channel typeId="previewImageList" id="previewImageList"/>
 		</channels>
 	</channel-group-type>
 
@@ -68,21 +68,21 @@
 		<label>Sky Weather Observations</label>
 		<description>This is the weather sensor observations from the SKY device</description>
 		<channels>
-			<channel typeId="luminance" id="luminance"></channel>
-			<channel typeId="system.outdoor-temperature" id="temperature"></channel>
-			<channel typeId="dewPoint" id="dewPoint"></channel>
-			<channel typeId="heatIndex" id="heatIndex"></channel>
-			<channel typeId="imageURL" id="imageURL"></channel>
-			<channel typeId="currentSkyImage" id="currentSkyImage"></channel>
-			<channel typeId="tS" id="tS"></channel>
-			<channel typeId="rain" id="rain"></channel>
-			<channel typeId="system.atmospheric-humidity" id="humidity"></channel>
-			<channel typeId="system.barometric-pressure" id="pressure"></channel>
-			<channel typeId="deviceType" id="deviceType"></channel>
-			<channel typeId="system.battery-level" id="batteryLevel"></channel>
-			<channel typeId="night" id="night"></channel>
-			<channel typeId="skyUVIndex" id="skyUVIndex"></channel>
-			<channel typeId="imageTS" id="imageTS"></channel>
+			<channel typeId="luminance" id="luminance"/>
+			<channel typeId="system.outdoor-temperature" id="temperature"/>
+			<channel typeId="dewPoint" id="dewPoint"/>
+			<channel typeId="heatIndex" id="heatIndex"/>
+			<channel typeId="imageURL" id="imageURL"/>
+			<channel typeId="currentSkyImage" id="currentSkyImage"/>
+			<channel typeId="tS" id="tS"/>
+			<channel typeId="rain" id="rain"/>
+			<channel typeId="system.atmospheric-humidity" id="humidity"/>
+			<channel typeId="system.barometric-pressure" id="pressure"/>
+			<channel typeId="deviceType" id="deviceType"/>
+			<channel typeId="system.battery-level" id="batteryLevel"/>
+			<channel typeId="night" id="night"/>
+			<channel typeId="skyUVIndex" id="skyUVIndex"/>
+			<channel typeId="imageTS" id="imageTS"/>
 		</channels>
 	</channel-group-type>
 
@@ -90,11 +90,11 @@
 		<label>Sky Video List°F</label>
 		<description>This is the weather stations last five days (starting with yesterday) of time-lapse videos in fahrenheit</description>
 		<channels>
-			<channel id="videoDay1" typeId="videoDay1"></channel>
-			<channel id="videoDay2" typeId="videoDay2"></channel>
-			<channel id="videoDay3" typeId="videoDay3"></channel>
-			<channel id="videoDay4" typeId="videoDay4"></channel>
-			<channel id="videoDay5" typeId="videoDay5"></channel>
+			<channel id="videoDay1" typeId="videoDay1"/>
+			<channel id="videoDay2" typeId="videoDay2"/>
+			<channel id="videoDay3" typeId="videoDay3"/>
+			<channel id="videoDay4" typeId="videoDay4"/>
+			<channel id="videoDay5" typeId="videoDay5"/>
 		</channels>
 	</channel-group-type>
 
@@ -102,11 +102,11 @@
 		<label>Sky Video List°C</label>
 		<description>This is the weather stations last five days (starting with yesterday) of time-lapse videos in celsius</description>
 		<channels>
-			<channel id="videoCDay1" typeId="videoCDay1"></channel>
-			<channel id="videoCDay2" typeId="videoCDay2"></channel>
-			<channel id="videoCDay3" typeId="videoCDay3"></channel>
-			<channel id="videoCDay4" typeId="videoCDay4"></channel>
-			<channel id="videoCDay5" typeId="videoCDay5"></channel>
+			<channel id="videoCDay1" typeId="videoCDay1"/>
+			<channel id="videoCDay2" typeId="videoCDay2"/>
+			<channel id="videoCDay3" typeId="videoCDay3"/>
+			<channel id="videoCDay4" typeId="videoCDay4"/>
+			<channel id="videoCDay5" typeId="videoCDay5"/>
 		</channels>
 	</channel-group-type>
 
@@ -114,11 +114,11 @@
 		<label>Sky Preview Images</label>
 		<description>This is the weather stations last five days (starting with yesterday) video preview image snapshots</description>
 		<channels>
-			<channel id="previewImage1" typeId="previewImage1"></channel>
-			<channel id="previewImage2" typeId="previewImage2"></channel>
-			<channel id="previewImage3" typeId="previewImage3"></channel>
-			<channel id="previewImage4" typeId="previewImage4"></channel>
-			<channel id="previewImage5" typeId="previewImage5"></channel>
+			<channel id="previewImage1" typeId="previewImage1"/>
+			<channel id="previewImage2" typeId="previewImage2"/>
+			<channel id="previewImage3" typeId="previewImage3"/>
+			<channel id="previewImage4" typeId="previewImage4"/>
+			<channel id="previewImage5" typeId="previewImage5"/>
 		</channels>
 	</channel-group-type>
 
@@ -128,28 +128,28 @@
 		<item-type>Number</item-type>
 		<label>UTC Offset</label>
 		<description>Weather observation Universal Time Coordinated offset</description>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="cityName">
 		<item-type>String</item-type>
 		<label>Observation Location City</label>
 		<description>Weather observation city location</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="searchable" advanced="true">
 		<item-type>String</item-type>
 		<label>PWS Public Visibility</label>
 		<description>Public can find this PWS on Bloomsky map</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="deviceName">
 		<item-type>String</item-type>
 		<label>Device Name</label>
 		<description>Owner assigned name for the weather station</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="registerTime" advanced="true">
@@ -157,98 +157,98 @@
 		<label>Registration Time Stamp</label>
 		<description>Registration time stamp - date and time when device was first registered with BloomSky account</description>
 		<category>Time</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dst" advanced="true">
 		<item-type>Number</item-type>
 		<label>Observation DST Flag</label>
 		<description>Weather station is in an area using Daylight savings time (1) or standard time (0)</description>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="boundedPoint" advanced="true">
 		<item-type>String</item-type>
 		<label>Bounded Point (Obsolete)</label>
 		<description>Weather observation city location</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="lon" advanced="true">
 		<item-type>Number</item-type>
 		<label>Longitude</label>
 		<description>Weather station longitude in decimal format</description>
-		<state readOnly="true" pattern="%.5f"></state>
+		<state readOnly="true" pattern="%.5f"/>
 	</channel-type>
 
 	<channel-type id="videoList" advanced="true">
 		<item-type>String</item-type>
 		<label>Video List°F</label>
 		<description>Video list - URLs to last five days of video time lapse mp4's in Fahrenheit</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoListC" advanced="true">
 		<item-type>String</item-type>
 		<label>Video List°C</label>
 		<description>Video list - URLs to last five days of video time lapse mp4's in Celsius</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="deviceID" advanced="true">
 		<item-type>String</item-type>
 		<label>Device ID</label>
 		<description>Device unique identifier</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="numOfFollowers">
 		<item-type>Number</item-type>
 		<label>Number Of Followers</label>
 		<description>Number of followers this PWS has as a favorite</description>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="lat" advanced="true">
 		<item-type>Number</item-type>
 		<label>Latitude</label>
 		<description>Weather station latitude in decimal format</description>
-		<state readOnly="true" pattern="%.5f"></state>
+		<state readOnly="true" pattern="%.5f"/>
 	</channel-type>
 
 	<channel-type id="alt" advanced="true">
 		<item-type>Number</item-type>
 		<label>Altitude</label>
 		<description>Weather station altitude longitude in decimal format</description>
-		<state readOnly="true" pattern="%.2f"></state>
+		<state readOnly="true" pattern="%.2f"/>
 	</channel-type>
 
 	<channel-type id="fullAddress">
 		<item-type>String</item-type>
 		<label>Observation Address</label>
 		<description>Weather observation full address</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="streetName">
 		<item-type>String</item-type>
 		<label>Observation Street</label>
 		<description>Weather observation street name</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="previewImageList" advanced="true">
 		<item-type>String</item-type>
 		<label>Preview Image Snapshots</label>
 		<description>Image snapshots list - URLs to last five image snapshots that make up the days video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="luminance">
 		<item-type>Number:Illuminance</item-type>
 		<label>Luminance</label>
 		<description>Luminance (brightness) given in candelas per square meter cd/m2</description>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="dewPoint">
@@ -271,14 +271,14 @@
 		<item-type>String</item-type>
 		<label>Current Image URL</label>
 		<description>Most recent URL to snapshot image(jpeg) from the Sky camera taken at Image time stamp</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="currentSkyImage">
 		<item-type>Image</item-type>
 		<label>Current Sky Image</label>
 		<description>Image - snapshot image from the Sky camera taken at Image time stamp</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 
@@ -294,21 +294,21 @@
 		<item-type>String</item-type>
 		<label>Rain Detected</label>
 		<description>Rain detected true or false (is it raining)</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="deviceType">
 		<item-type>String</item-type>
 		<label>Sky Device Model</label>
 		<description>Device type (model) SKY1 or SKY2.</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="night">
 		<item-type>String</item-type>
 		<label>Night Detected</label>
 		<description>Night detected after sunset/before sunrise</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="imageTS">
@@ -323,112 +323,112 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV index</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="videoDay1">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video-1</label>
 		<description>Day long time-lapse mp4 video 1of5 URL to access the video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoDay2">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video-2</label>
 		<description>Day long time-lapse mp4 video 2of5 URL to access the video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoDay3">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video-3</label>
 		<description>Day long time-lapse mp4 video 3of5 URL to access the video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoDay4">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video-4</label>
 		<description>Day long time-lapse mp4 video 4of5 URL to access the video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoDay5">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video-5</label>
 		<description>Day long time-lapse mp4 video 5of5 URL to access the video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoCDay1">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video°C-1</label>
 		<description>Day long time-lapse mp4 video 1of5 URL to access the celsius video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoCDay2">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video°C-2</label>
 		<description>Day long time-lapse mp4 video 2of5 URL to access the celsius video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoCDay3">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video°C-3</label>
 		<description>Day long time-lapse mp4 video 3of5 URL to access the celsius video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoCDay4">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video°C-4</label>
 		<description>Day long time-lapse mp4 video 4of5 URL to access the celsius video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="videoCDay5">
 		<item-type>String</item-type>
 		<label>24hr Time-lapse Video°C-5</label>
 		<description>Day long time-lapse mp4 video 5of5 URL to access the celsius video</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="previewImage1">
 		<item-type>Image</item-type>
 		<label>Video Preview Image-1</label>
 		<description>Time lapse video preview image snapshot from yesterday (today - 1 day)</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="previewImage2">
 		<item-type>Image</item-type>
 		<label>Video Preview Image-2</label>
 		<description>Time lapse video preview image snapshot from (today - 2 days)</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="previewImage3">
 		<item-type>Image</item-type>
 		<label>Video Preview Image-3</label>
 		<description>Time lapse video preview image snapshot from (today - 3 days)</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="previewImage4">
 		<item-type>Image</item-type>
 		<label>Video Preview Image-4</label>
 		<description>Time lapse video preview image snapshot from (today - 4 days)</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="previewImage5">
 		<item-type>Image</item-type>
 		<label>Video Preview Image-5</label>
 		<description>Time lapse video preview image snapshot from (today - 5 days)</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 
@@ -454,16 +454,16 @@
 		<label>Storm Weather Observations</label>
 		<description>This is the weather sensor observations from the Storm device</description>
 		<channels>
-			<channel typeId="stormUVIndex" id="stormUVIndex"></channel>
-			<channel typeId="system.wind-direction" id="windDirectionAngle"></channel>
-			<channel typeId="windDirectionCompass" id="windDirectionCompass"></channel>
-			<channel typeId="rainDaily" id="rainDaily"></channel>
-			<channel typeId="windGust" id="windGust"></channel>
-			<channel typeId="windChill" id="windChill"></channel>
-			<channel typeId="sustainedWindSpeed" id="sustainedWindSpeed"></channel>
-			<channel typeId="rainRate" id="rainRate"></channel>
-			<channel typeId="rain24h" id="rain24h"></channel>
-			<channel typeId="stormTimeStamp" id="stormTimeStamp"></channel>
+			<channel typeId="stormUVIndex" id="stormUVIndex"/>
+			<channel typeId="system.wind-direction" id="windDirectionAngle"/>
+			<channel typeId="windDirectionCompass" id="windDirectionCompass"/>
+			<channel typeId="rainDaily" id="rainDaily"/>
+			<channel typeId="windGust" id="windGust"/>
+			<channel typeId="windChill" id="windChill"/>
+			<channel typeId="sustainedWindSpeed" id="sustainedWindSpeed"/>
+			<channel typeId="rainRate" id="rainRate"/>
+			<channel typeId="rain24h" id="rain24h"/>
+			<channel typeId="stormTimeStamp" id="stormTimeStamp"/>
 		</channels>
 	</channel-group-type>
 
@@ -473,7 +473,7 @@
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV index</description>
-		<state readOnly="true" pattern="%d"></state>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="rainRate">
@@ -516,7 +516,7 @@
 		<item-type>String</item-type>
 		<label>Wind Direction Compass</label>
 		<description>Wind direction as compass point (N, NE, E, SE, S, SW, W, NW)</description>
-		<state readOnly="true" pattern="%s"></state>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 
@@ -541,7 +541,7 @@
 		<label>Storm Observation Timestamp</label>
 		<description>Storm update time stamp - date and time when observations were last updated</description>
 		<category>Time</category>
-		<state readOnly="true"></state>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

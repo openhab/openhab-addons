@@ -24,6 +24,7 @@ import org.openhab.binding.bloomsky.internal.handler.BloomSkyBridgeHandler;
 import org.openhab.binding.bloomsky.internal.handler.BloomSkySKYHandler;
 import org.openhab.binding.bloomsky.internal.handler.BloomSkyStormHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -38,7 +39,7 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link BloomSkyHandlerFactory} is responsible for creating things and thing
+ * The {@link BloomSkyHandlerFactory} is responsible for creating Bridge and Weather Station things and thing
  * handlers.
  *
  * @author Dave J Schoepel - Initial contribution
@@ -53,7 +54,7 @@ public class BloomSkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public BloomSkyHandlerFactory(@Reference HttpClientFactory httpClientFactory,
-            @Reference TimeZoneProvider timeZoneProvider) {
+            @Reference TimeZoneProvider timeZoneProvider, @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.timeZoneProvider = timeZoneProvider;
     }

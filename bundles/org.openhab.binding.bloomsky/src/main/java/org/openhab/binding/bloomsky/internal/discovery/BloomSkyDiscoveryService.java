@@ -27,8 +27,12 @@ import org.openhab.binding.bloomsky.internal.handler.BloomSkyBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +45,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
+@Component(service = DiscoveryService.class, configurationPid = "discovery.bloomsky")
 public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
 
     private final Logger logger = LoggerFactory.getLogger(BloomSkyDiscoveryService.class);
@@ -57,7 +62,8 @@ public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
      *
      * @param bridgeHandler
      */
-    public BloomSkyDiscoveryService(BloomSkyBridgeHandler bridgeHandler) {
+    @Activate
+    public BloomSkyDiscoveryService(final @Reference BloomSkyBridgeHandler bridgeHandler) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
         this.bridgeHandler = bridgeHandler;
         activate(null);
@@ -98,6 +104,7 @@ public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
                 skyProperties.put(SKY_DEVICE_ID, device.getDeviceID());
                 skyProperties.put(SKY_DEVICE_NAME, device.getDeviceName());
                 skyProperties.put(SKY_DEVICE_MODEL, device.getData().getDeviceType());
+
                 logger.debug("scanForNewDevices - found SKY called {} with DeviceID = {}", device.getDeviceName(),
                         device.getDeviceID());
                 DiscoveryResult skyDiscoveryResult = DiscoveryResultBuilder.create(skyThingUid)
@@ -106,7 +113,7 @@ public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
 
                 thingDiscovered(skyDiscoveryResult);
                 // Check for STORM device associated with this SKY weather station
-                if (device.getStorm().getuVIndex() != null && device.getStorm().getWindDirection() != null) {
+                if (device.getStorm().getuVIndex() >= 0 && device.getStorm().getWindDirection() != null) {
                     logger.debug("scanForNewDevices found a STORM associated with the SKY device called: {}",
                             device.getDeviceName());
 
@@ -120,6 +127,7 @@ public class BloomSkyDiscoveryService extends AbstractDiscoveryService {
                     stormProperties.put(STORM_ASSOCIATED_WITH_SKY_DEVICE_ID, device.getDeviceID());
                     stormProperties.put(STORM_ASSOCAITED_WITH_SKY_DEVICE_NAME, device.getDeviceName());
                     stormProperties.put(STORM_DEVICE_MODEL, STORM_MODEL);
+
                     DiscoveryResult stormDiscoveryResult = DiscoveryResultBuilder.create(stormThingUid)
                             .withThingType(stormThingTypeUID).withProperties(stormProperties).withBridge(bridgeUID)
                             .withRepresentationProperty(STORM_ASSOCIATED_WITH_SKY_DEVICE_ID).withLabel(stormThingLabel)
