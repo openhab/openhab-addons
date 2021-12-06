@@ -73,7 +73,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private @Nullable ScheduledFuture<?> refreshBatteryLevelFuture = null;
 
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
-    private Capabilities capabilities = new Capabilities();
+    private int shadeCapabilities = -1;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -160,13 +160,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     protected void onReceiveUpdate(@Nullable ShadeData shadeData) {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
+            updateSoftProperties(shadeData);
             updateBindingStates(shadeData.positions);
             updateBatteryLevel(shadeData.batteryStatus);
             updateState(CHANNEL_SHADE_BATTERY_VOLTAGE,
                     shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
                             : UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
-            updateSoftProperties(shadeData);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -200,7 +200,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         // update 'capabilities' property
         final Integer temp = shadeData.capabilities;
         final int capabilitiesVal = temp != null ? temp.intValue() : -1;
-        capabilities = db.getCapabilities(capabilitiesVal);
+        Capabilities capabilities = db.getCapabilities(capabilitiesVal);
         propKey = HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES;
         propOldVal = properties.getOrDefault(propKey, "");
         propNewVal = capabilities.toString();
@@ -210,6 +210,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if ((capabilitiesVal >= 0) && !db.isCapabilitiesInDatabase(capabilitiesVal)) {
                 db.logCapabilitiesNotInDatabase(type, capabilitiesVal);
             }
+        }
+
+        // update shadeCapabilities field
+        if (capabilitiesVal >= 0) {
+            shadeCapabilities = capabilitiesVal;
         }
 
         if (propChanged && db.isCapabilitiesInDatabase(capabilitiesVal) && db.isTypeInDatabase(type)
@@ -263,15 +268,20 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private void updateBindingStates(@Nullable ShadePosition shadePos) {
-        if (shadePos != null) {
-            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(capabilities, PRIMARY_ZERO_IS_CLOSED));
-            updateState(CHANNEL_SHADE_VANE, shadePos.getState(capabilities, VANE_TILT_COORDS));
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(capabilities, SECONDARY_ZERO_IS_OPEN));
+        if (shadePos == null) {
+            logger.debug("The value of 'shadePosition' argument was null!");
+        } else if (shadeCapabilities < 0) {
+            logger.debug("The 'shadeCapabilities' field has not been initialized!");
         } else {
-            updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
-            updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
+            Capabilities caps = db.getCapabilities(shadeCapabilities);
+            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(caps, PRIMARY_ZERO_IS_CLOSED));
+            updateState(CHANNEL_SHADE_VANE, shadePos.getState(caps, VANE_TILT_COORDS));
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(caps, SECONDARY_ZERO_IS_OPEN));
+            return;
         }
+        updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
+        updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
+        updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
     }
 
     private void updateBatteryLevel(int batteryStatus) {
@@ -321,7 +331,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 newPosition = new ShadePosition();
             }
             // set the new position value, and write the positions to the hub
-            webTargets.moveShade(shadeId, newPosition.setPosition(capabilities, coordSys, newPercent));
+            webTargets.moveShade(shadeId,
+                    newPosition.setPosition(db.getCapabilities(shadeCapabilities), coordSys, newPercent));
             // update the Channels to match the new position
             final ShadePosition finalPosition = newPosition;
             scheduler.submit(() -> {
