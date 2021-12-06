@@ -12,13 +12,16 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="battery">
-		<label>Battery</label>
-		<channels>
-			<channel id="value" typeId="system.battery-level"/>
-			<channel id="low-battery" typeId="system.low-battery"/>
-		</channels>
-	</channel-group-type>
+    <channel-group-type id="energy-battery">
+        <label>Battery</label>
+        <channels>
+            <channel id="value" typeId="system.battery-level"/>
+            <channel id="status" typeId="string-ro">
+                <label>Status</label>
+            </channel>
+            <channel id="low-battery" typeId="system.low-battery"/>
+        </channels>
+    </channel-group-type>
 
 	<channel-group-type id="timestamp">
 		<label>Timestamp</label>

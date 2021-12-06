@@ -35,7 +35,7 @@ import org.openhab.core.types.UnDefType;
 public class BatteryChannelHelper extends AbstractChannelHelper {
 
     public BatteryChannelHelper() {
-        super(GROUP_BATTERY, GROUP_ENERGY_BATTERY);
+        super(GROUP_ENERGY_BATTERY);
     }
 
     @Override
