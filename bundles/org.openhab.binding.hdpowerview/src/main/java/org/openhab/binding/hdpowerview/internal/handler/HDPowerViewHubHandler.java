@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -89,9 +90,9 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
 
-    private List<Scene> sceneCache = new ArrayList<>();
-    private List<SceneCollection> sceneCollectionCache = new ArrayList<>();
-    private List<ScheduledEvent> scheduledEventCache = new ArrayList<>();
+    private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
+    private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
+    private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
     private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -331,7 +332,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all scene channels, changes detected");
-        sceneCache = new ArrayList<Scene>(scenes);
+        sceneCache = new CopyOnWriteArrayList<Scene>(scenes);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels.removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES.equals(c.getUID().getGroupId()));
@@ -428,7 +429,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all scene collection channels, changes detected");
-        sceneCollectionCache = new ArrayList<SceneCollection>(sceneCollections);
+        sceneCollectionCache = new CopyOnWriteArrayList<SceneCollection>(sceneCollections);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
@@ -485,7 +486,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all scheduled event channels, changes detected");
-        scheduledEventCache = new ArrayList<ScheduledEvent>(scheduledEvents);
+        scheduledEventCache = new CopyOnWriteArrayList<ScheduledEvent>(scheduledEvents);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
