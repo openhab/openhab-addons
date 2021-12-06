@@ -18,7 +18,11 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -28,7 +32,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -165,7 +174,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String response = HttpUtil.executeUrl("GET", requestUrl, 10_000);
             logger.debug("Got response from API: {}", response);
 
-            return new JsonParser().parse(response);
+            return JsonParser.parseString(response);
         } catch (IOException e) {
             logger.warn("Unable to fetch stationboard data: {}", e.getMessage());
             return null;
@@ -285,7 +294,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
     private String createIdentifier(String category, String number) {
         // Only show the number for buses
-        if (category.equals("B")) {
+        if ("B".equals(category)) {
             return number;
         }
 
