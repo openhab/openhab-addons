@@ -43,98 +43,98 @@
 		</parameter>
 	</config-description>
 
-    <config-description uri="netatmo:pressure:config">
-        <parameter name="limit" type="text">
-            <label>Limit</label>
-            <options>
-                <option value="MIN">Minimum</option>
-                <option value="MAX">Maximum</option>
-            </options>
-            <default>MIN</default>
-        </parameter>
-        <parameter name="period" type="text">
-            <label>Period</label>
-            <options>
-                <option value="30min">30 minutes</option>
-                <option value="1hour">1 hour</option>
-                <option value="3hours">3 hours</option>
-                <option value="1day">This day</option>
-                <option value="1week">This week</option>
-                <option value="1month">This month</option>
-            </options>
-            <default>1week</default>
-        </parameter>
-    </config-description>
+	<config-description uri="netatmo:pressure:config">
+		<parameter name="limit" type="text">
+			<label>Limit</label>
+			<options>
+				<option value="MIN">Minimum</option>
+				<option value="MAX">Maximum</option>
+			</options>
+			<default>MIN</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<options>
+				<option value="30min">30 minutes</option>
+				<option value="1hour">1 hour</option>
+				<option value="3hours">3 hours</option>
+				<option value="1day">This day</option>
+				<option value="1week">This week</option>
+				<option value="1month">This month</option>
+			</options>
+			<default>1week</default>
+		</parameter>
+	</config-description>
 
-    <config-description uri="netatmo:co2:config">
-        <parameter name="limit" type="text">
-            <label>Limit</label>
-            <options>
-                <option value="MIN">Minimum</option>
-                <option value="MAX">Maximum</option>
-            </options>
-            <default>MIN</default>
-        </parameter>
-        <parameter name="period" type="text">
-            <label>Period</label>
-            <options>
-                <option value="30min">30 minutes</option>
-                <option value="1hour">1 hour</option>
-                <option value="3hours">3 hours</option>
-                <option value="1day">This day</option>
-                <option value="1week">This week</option>
-                <option value="1month">This month</option>
-            </options>
-            <default>1week</default>
-        </parameter>
-    </config-description>
-    
-    <config-description uri="netatmo:noise:config">
-        <parameter name="limit" type="text">
-            <label>Limit</label>
-            <options>
-                <option value="MIN">Minimum</option>
-                <option value="MAX">Maximum</option>
-            </options>
-            <default>MIN</default>
-        </parameter>
-        <parameter name="period" type="text">
-            <label>Period</label>
-            <options>
-                <option value="30min">30 minutes</option>
-                <option value="1hour">1 hour</option>
-                <option value="3hours">3 hours</option>
-                <option value="1day">This day</option>
-                <option value="1week">This week</option>
-                <option value="1month">This month</option>
-            </options>
-            <default>1week</default>
-        </parameter>
-    </config-description>
-    
-    <config-description uri="netatmo:hum:config">
-        <parameter name="limit" type="text">
-            <label>Limit</label>
-            <options>
-                <option value="MIN">Minimum</option>
-                <option value="MAX">Maximum</option>
-            </options>
-            <default>MIN</default>
-        </parameter>
-        <parameter name="period" type="text">
-            <label>Period</label>
-            <options>
-                <option value="30min">30 minutes</option>
-                <option value="1hour">1 hour</option>
-                <option value="3hours">3 hours</option>
-                <option value="1day">This day</option>
-                <option value="1week">This week</option>
-                <option value="1month">This month</option>
-            </options>
-            <default>1week</default>
-        </parameter>
-    </config-description>
-    
+	<config-description uri="netatmo:co2:config">
+		<parameter name="limit" type="text">
+			<label>Limit</label>
+			<options>
+				<option value="MIN">Minimum</option>
+				<option value="MAX">Maximum</option>
+			</options>
+			<default>MIN</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<options>
+				<option value="30min">30 minutes</option>
+				<option value="1hour">1 hour</option>
+				<option value="3hours">3 hours</option>
+				<option value="1day">This day</option>
+				<option value="1week">This week</option>
+				<option value="1month">This month</option>
+			</options>
+			<default>1week</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="netatmo:noise:config">
+		<parameter name="limit" type="text">
+			<label>Limit</label>
+			<options>
+				<option value="MIN">Minimum</option>
+				<option value="MAX">Maximum</option>
+			</options>
+			<default>MIN</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<options>
+				<option value="30min">30 minutes</option>
+				<option value="1hour">1 hour</option>
+				<option value="3hours">3 hours</option>
+				<option value="1day">This day</option>
+				<option value="1week">This week</option>
+				<option value="1month">This month</option>
+			</options>
+			<default>1week</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="netatmo:hum:config">
+		<parameter name="limit" type="text">
+			<label>Limit</label>
+			<options>
+				<option value="MIN">Minimum</option>
+				<option value="MAX">Maximum</option>
+			</options>
+			<default>MIN</default>
+		</parameter>
+		<parameter name="period" type="text">
+			<label>Period</label>
+			<options>
+				<option value="30min">30 minutes</option>
+				<option value="1hour">1 hour</option>
+				<option value="3hours">3 hours</option>
+				<option value="1day">This day</option>
+				<option value="1week">This week</option>
+				<option value="1month">This month</option>
+			</options>
+			<default>1week</default>
+		</parameter>
+	</config-description>
+
 	<config-description uri="netatmo:timestamp:config">
 		<parameter name="limit" type="text">
 			<label>Limit</label>
