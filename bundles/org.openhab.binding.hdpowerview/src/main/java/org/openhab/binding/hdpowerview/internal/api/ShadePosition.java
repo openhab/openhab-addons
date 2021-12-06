@@ -20,6 +20,8 @@ import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDataba
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The position of a single shade, as returned by the HD PowerView hub
@@ -29,6 +31,9 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class ShadePosition {
+
+    private final transient Logger logger = LoggerFactory.getLogger(ShadePosition.class);
+
     /**
      * Primary actuator position.
      */
@@ -59,6 +64,7 @@ public class ShadePosition {
         if (UnDefType.UNDEF.equals(result)) {
             result = getPosition2(shadeCapabilities, posKindCoords);
         }
+        logger.trace("getState(): capabilities={}, coords={} => result={}", shadeCapabilities, posKindCoords, result);
         return result;
     }
 
@@ -301,6 +307,8 @@ public class ShadePosition {
      * @return this object.
      */
     public ShadePosition setPosition(Capabilities shadeCapabilities, CoordinateSystem posKindCoords, int percent) {
+        logger.trace("setPosition(): capabilities={}, coords={}, percent={}", shadeCapabilities, posKindCoords,
+                percent);
         // if necessary swap the order of position1 and position2
         if (PRIMARY_ZERO_IS_CLOSED.equals(posKind2) && !PRIMARY_ZERO_IS_CLOSED.equals(posKind1)) {
             final Integer posKind2Temp = posKind2;
