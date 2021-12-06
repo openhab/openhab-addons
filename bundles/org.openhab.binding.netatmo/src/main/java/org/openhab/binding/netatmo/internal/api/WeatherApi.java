@@ -72,13 +72,19 @@ public class WeatherApi extends RestManager {
     }
 
     public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
+            MeasureClass measureClass) throws NetatmoException {
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, measureClass.apiDescriptor, 0, 0);
+        return result.getSingleValue();
+    }
+
+    public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
             MeasureClass measureClass, String limit) throws NetatmoException {
         String queryLimit = limit;
         if (!measureClass.apiDescriptor.contains("_")) {
             queryLimit += "_" + measureClass.apiDescriptor;
         }
 
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit, 0, 0);
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase(), 0, 0);
         return result.getSingleValue();
     }
 
@@ -89,6 +95,7 @@ public class WeatherApi extends RestManager {
                 .queryParam("date_end", (dateEnd > 0 && dateEnd > dateBegin) ? dateEnd : "last")
                 .queryParam("optimize", true) // NAMeasuresResponse is not designed for optimize=false
                 .queryParam("type", measureType.toLowerCase());
+
         if (scale != null) {
             uriBuilder.queryParam("scale", scale.toLowerCase());
         }
@@ -98,13 +105,13 @@ public class WeatherApi extends RestManager {
         if (dateBegin > 0) {
             uriBuilder.queryParam("date_begin", dateBegin);
         }
-        if (!measureType.startsWith("date")) {
-            NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
+        if (measureType.startsWith("date")) {
+            NADateMeasuresResponse response = get(uriBuilder, NADateMeasuresResponse.class);
             if (!response.getBody().isEmpty()) {
                 return response.getBody().get(0);
             }
         } else {
-            NADateMeasuresResponse response = get(uriBuilder, NADateMeasuresResponse.class);
+            NAMeasuresResponse response = get(uriBuilder, NAMeasuresResponse.class);
             if (!response.getBody().isEmpty()) {
                 return response.getBody().get(0);
             }
@@ -117,4 +124,5 @@ public class WeatherApi extends RestManager {
 
     public class NADateMeasuresResponse extends ApiResponse<List<NAMeasureBodyElem<ZonedDateTime>>> {
     }
+
 }

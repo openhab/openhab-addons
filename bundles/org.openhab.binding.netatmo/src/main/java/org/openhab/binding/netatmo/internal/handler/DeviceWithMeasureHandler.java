@@ -89,7 +89,12 @@ public class DeviceWithMeasureHandler extends DeviceHandler {
                     MeasureClass.asSet.stream().filter(mt -> mt.tagName.equals(elements[0])).findFirst()
                             .ifPresent(mt -> {
                                 try {
-                                    Object result = api.getMeasurements(config.id, moduleId, period, mt, limit);
+                                    Object result;
+                                    if (limit != null) {
+                                        result = api.getMeasurements(config.id, moduleId, period, mt, limit);
+                                    } else {
+                                        result = api.getMeasurements(config.id, moduleId, period, mt);
+                                    }
 
                                     State data = result instanceof ZonedDateTime
                                             ? toDateTimeType((ZonedDateTime) result)

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-    <config-description uri="netatmo:Rain-Measurement:config">
+    <config-description uri="netatmo:rain-measurement:config">
         <parameter name="period" type="text">
             <label>Period</label>
             <options>
@@ -20,7 +20,7 @@
         </parameter>
     </config-description>
     
-    <config-description uri="netatmo:Measurement:config">
+    <config-description uri="netatmo:measurement:config">
 		<parameter name="limit" type="text">
 			<label>Limit</label>
 			<options>
@@ -43,7 +43,7 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="netatmo:Timestamp:config">
+	<config-description uri="netatmo:timestamp:config">
 		<parameter name="limit" type="text">
 			<label>Limit</label>
 			<options>

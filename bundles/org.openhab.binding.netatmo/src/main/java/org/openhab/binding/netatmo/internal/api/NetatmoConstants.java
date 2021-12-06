@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,6 +27,7 @@ import java.util.stream.Stream;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 
@@ -56,6 +61,18 @@ public class NetatmoConstants {
         }
     }
 
+    public static class MeasureChannelDetails {
+        public final URI configURI;
+        public final String itemType;
+        public final String pattern;
+
+        public MeasureChannelDetails(String measureType, String itemType, String pattern) {
+            this.configURI = URI.create(String.join(":", BINDING_ID, measureType, "config"));
+            this.itemType = itemType;
+            this.pattern = pattern;
+        }
+    }
+
     public enum MeasureClass {
         INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
         EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
@@ -69,20 +86,30 @@ public class NetatmoConstants {
         HUMIDITY(new Measure(0, 100, 3, Units.PERCENT), true, "HUM", "Humidity", "Dimensionless");
 
         public static final EnumSet<MeasureClass> asSet = EnumSet.allOf(MeasureClass.class);
+        private static final String MEASURE = "measurement";
 
         public final Measure measureDefinition;
         public final String apiDescriptor;
-        public final boolean isScalable;
         public final String tagName;
-        public final String dimension;
+        public final Map<String, MeasureChannelDetails> channels = new HashMap<>(2);
 
-        MeasureClass(Measure measureDefinition, boolean isScalable, String apiDescriptor, String tagName,
-                String dimension) {
-            this.measureDefinition = measureDefinition;
-            this.isScalable = isScalable;
+        MeasureClass(Measure measureDef, boolean canScale, String apiDescriptor, String tagName, String dimension) {
+            this.measureDefinition = measureDef;
             this.apiDescriptor = apiDescriptor;
             this.tagName = tagName;
-            this.dimension = dimension;
+            if (!apiDescriptor.isBlank()) {
+                String measureType = MEASURE;
+                if (apiDescriptor.equals("SUM_RAIN")) {
+                    measureType = "rain-" + measureType;
+                }
+                channels.put(String.join("-", tagName, MEASURE),
+                        new MeasureChannelDetails(measureType, String.join(":", CoreItemFactory.NUMBER, dimension),
+                                String.format("%%.%df %%unit%%", measureDefinition.scale)));
+                if (canScale) {
+                    channels.put(String.join("-", tagName, GROUP_TIMESTAMP), new MeasureChannelDetails(GROUP_TIMESTAMP,
+                            CoreItemFactory.DATETIME, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM"));
+                }
+            }
         }
     }
 

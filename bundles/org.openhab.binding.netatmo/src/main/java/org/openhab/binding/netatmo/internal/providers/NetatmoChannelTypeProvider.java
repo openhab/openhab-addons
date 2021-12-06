@@ -14,9 +14,7 @@ package org.openhab.binding.netatmo.internal.providers;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.BINDING_ID;
 
-import java.net.URI;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +26,7 @@ import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.service.component.annotations.Component;
 
@@ -40,39 +39,21 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = { NetatmoChannelTypeProvider.class, ChannelTypeProvider.class })
 public class NetatmoChannelTypeProvider implements ChannelTypeProvider {
-    public static final String MEASURE = "Measurement";
-    public static final String TIMESTAMP = "Timestamp";
-    private Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<ChannelTypeUID, ChannelType>();
+    private final Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
 
     public NetatmoChannelTypeProvider() {
         MeasureClass.asSet.forEach(measure -> {
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, measure.tagName + "-" + MEASURE);
-            ChannelType channelType = ChannelTypeBuilder
-                    .state(channelTypeUID, measure.tagName + " " + MEASURE, "Number:" + measure.dimension)
-                    .withConfigDescriptionURI(buildConfigName(MEASURE))
-                    .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create()
-                            .withPattern(getPattern(measure)).withReadOnly(true).build())
-                    .withTags(List.of(MEASURE, measure.tagName)).build();
-            channelTypes.put(channelTypeUID, channelType);
-            if (measure.isScalable) {
-                channelTypeUID = new ChannelTypeUID(BINDING_ID, measure.tagName + "-" + TIMESTAMP);
-                channelType = ChannelTypeBuilder.state(channelTypeUID, measure.tagName + " " + TIMESTAMP, "DateTime")
-                        .withStateDescriptionFragment(
-                                StateDescriptionFragmentBuilder.create().withReadOnly(true).build())
-                        .withConfigDescriptionURI(buildConfigName(TIMESTAMP)).withCategory("time")
-                        .withTags(List.of("Status", TIMESTAMP)).build();
-                channelTypes.put(channelTypeUID, channelType);
-            }
+            measure.channels.forEach((measureChannel, channelDetails) -> {
+                ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, measureChannel);
+                StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder
+                        .state(channelTypeUID, measureChannel.replace("-", " "), channelDetails.itemType)
+                        .withStateDescriptionFragment(StateDescriptionFragmentBuilder.create().withReadOnly(true)
+                                .withPattern(channelDetails.pattern).build())
+                        .withConfigDescriptionURI(channelDetails.configURI);
+
+                channelTypes.put(channelTypeUID, channelTypeBuilder.build());
+            });
         });
-    }
-
-    private String getPattern(MeasureClass measure) {
-        int scale = measure.measureDefinition.scale;
-        return String.format("%%.%df %%unit%%", scale);
-    }
-
-    private URI buildConfigName(String variable) {
-        return URI.create(String.join(":", BINDING_ID, variable, "config"));
     }
 
     @Override

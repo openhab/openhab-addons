@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -20,7 +19,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.binding.netatmo.internal.providers.NetatmoChannelTypeProvider;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
@@ -89,14 +87,7 @@ public abstract class AbstractChannelHelper {
     }
 
     public Set<String> getMeasureChannels() {
-        Set<String> result = new HashSet<>();
         MeasureClass measure = measureClass;
-        if (measure != null && !measure.apiDescriptor.isBlank()) {
-            result.add(measure.tagName + "-" + NetatmoChannelTypeProvider.MEASURE);
-            if (measure.isScalable) {
-                result.add(measure.tagName + "-" + NetatmoChannelTypeProvider.TIMESTAMP);
-            }
-        }
-        return result;
+        return measure != null ? measure.channels.keySet() : Set.of();
     }
 }
