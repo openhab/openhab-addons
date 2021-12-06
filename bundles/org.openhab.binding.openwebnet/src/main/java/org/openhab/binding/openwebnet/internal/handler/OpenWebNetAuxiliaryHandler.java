@@ -17,7 +17,6 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -67,19 +66,22 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
         logger.debug("handleSwitchCommand() (command={} - channel={})", command, channel);
-        if (channel.getId().equals(CHANNEL_SWITCH)) {
-            if (command instanceof OnOffType) {
-                try {
-                    if (OnOffType.ON.equals(command)) {
-                        send(Auxiliary.requestTurnOn(toWhere(channel.getId())));
-                    } else if (OnOffType.OFF.equals(command)) {
-                        send(Auxiliary.requestTurnOff(toWhere(channel.getId())));
+        Where w = deviceWhere;
+        if (w != null) {
+            if (channel.getId().equals(CHANNEL_SWITCH)) {
+                if (command instanceof OnOffType) {
+                    try {
+                        if (OnOffType.ON.equals(command)) {
+                            send(Auxiliary.requestTurnOn(w.value()));
+                        } else if (OnOffType.OFF.equals(command)) {
+                            send(Auxiliary.requestTurnOff(w.value()));
+                        }
+                    } catch (OWNException e) {
+                        logger.warn("Exception while processing command {}: {}", command, e.getMessage());
                     }
-                } catch (OWNException e) {
-                    logger.warn("Exception while processing command {}: {}", command, e.getMessage());
+                } else {
+                    logger.warn("Unsupported ChannelUID {}", channel);
                 }
-            } else {
-                logger.warn("Unsupported ChannelUID {}", channel);
             }
         }
     }
@@ -87,15 +89,15 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-        requestStatus(channel.getId());
+        requestStatus();
     }
 
     /** helper method to request auxiliary status based on channel */
-    private void requestStatus(String channelId) {
+    private void requestStatus() {
         Where w = deviceWhere;
         if (w != null) {
             try {
-                Response res = send(Auxiliary.requestStatus(toWhere(channelId)));
+                Response res = send(Auxiliary.requestStatus(w.value()));
                 if (res != null && res.isSuccess()) {
                     ThingStatus ts = getThing().getStatus();
                     if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
@@ -121,10 +123,10 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
                         send(Auxiliary.requestStatus(WhereAuxiliary.GENERAL.value()));
                         lastAllDevicesRefreshTS = now;
                     } catch (OWNException e) {
-                        logger.warn("Exception while requesting all devices refresh: {}", e.getMessage());
+                        logger.warn("Exception while requesting all AUX devices refresh: {}", e.getMessage());
                     }
                 } else {
-                    logger.debug("Refresh all devices just sent...");
+                    logger.debug("Refresh all AUX devices just sent...");
                 }
             }
         }
@@ -138,23 +140,5 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     protected String ownIdPrefix() {
         return Who.AUX.value().toString();
-    }
-
-    /**
-     * @param channelId the channelId string
-     * @return a WHERE address string based on channelId string
-     */
-    @Nullable
-    private String toWhere(String channelId) {
-        Where w = deviceWhere;
-        if (w != null) {
-            OpenWebNetBridgeHandler brH = bridgeHandler;
-            if (brH != null) {
-                return w.value();
-            } else if (channelId.equals(CHANNEL_SWITCH)) {
-                return w.value();
-            }
-        }
-        return null;
     }
 }
