@@ -69,12 +69,14 @@ configuration parameters are:
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| channel_camera_motiondetection  | Switch | Enables/disables motion detection for this camera.  |
-| channel_camera_battery | LowBattery | Read-only channel, triggering ON when battery status is low |
-| channel_camera_temperature | Number | Read-only channel, outputting camera temperature |
+| motiondetection  | Switch | Enables/disables motion detection for this camera.  |
+| battery | LowBattery | Read-only channel, triggering ON when battery status is low |
+| temperature | Number | Read-only channel, outputting camera temperature |
+| setThumbnail | Switch | Write-only channel, triggering taking a new snapshot as thumbnail |
+| getThumbnail | Image | Read-only channel, return the current thumbnail |
 
 ### blink Network
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| channel_network_armed  | Switch | Arms/disarms the network. Overrides schedules which are set in the app.  |
+| armed  | Switch | Arms/disarms the network. Overrides schedules which are set in the app.  |
