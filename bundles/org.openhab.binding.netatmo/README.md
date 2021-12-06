@@ -98,7 +98,7 @@ For example your serial number "h00bcdc" should end up as "02:00:00:00:bc:dc".
 
 ## Discovery
 
-If you did not manually create things in the *.things file, the Netatmo Binding is able to discover automatically all depending modules and devices from Netatmo website.
+If you did not manually create things in the *.things file, the Netatmo Binding is able to discover automatically all depending modules and devices.
 
 
 ## Channels
@@ -109,87 +109,60 @@ If you did not manually create things in the *.things file, the Netatmo Binding 
 Weather station does not need any refreshInterval setting.
 Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
 
-Example item for the **indoor module**:
-
-```
-Number Netatmo_Indoor_CO2 "CO2" <carbondioxide> { channel = "netatmo:NAMain:home:inside:Co2" }
-```
 
 **Supported channels for the main indoor module:**
 
-| Channel ID          | Item Type            | Description                                              |
-|---------------------|----------------------|----------------------------------------------------------|
-| Co2                 | Number:Dimensionless | Air quality                                              |
-| MinCo2              | Number:Dimensionless | Minimum CO2 on current day                               |
-| MaxCo2              | Number:Dimensionless | Maximum CO2 on current day                               |
-| DateMinCo2          | DateTime             | Date when minimum CO2 was reached on current day         |
-| DateMaxCo2          | DateTime             | Date when maximum CO2 was reached on current day         |
-| temperature         | Number:Temperature   | Current temperature                                      |
-| temperature-trend           | String               | Temperature evolution trend (up, down, stable)           |
-| Noise               | Number:Dimensionless | Current noise level                                      |
-| MinNoise            | Number:Dimensionless | Minimum noise on current day                             |
-| MaxNoise            | Number:Dimensionless | Maximum noise on current day                             |
-| DateMinNoise        | DateTime             | Date when minimum noise was reached on current day       |
-| DateMaxNoise        | DateTime             | Date when maximum noise was reached on current day       |
-| Pressure            | Number:Pressure      | Current pressure                                         |
-| MinPressure         | Number:Pressure      | Minimum pressure on current day                          |
-| MaxPressure         | Number:Pressure      | Maximum pressure on current day                          |
-| DateMinPressure     | DateTime             | Date when minimum pressure was reached on current day    |
-| DateMaxPressure     | DateTime             | Date when maximum pressure was reached on current day    |
-| pressure-trend      | String               | Pressure evolution trend for last 12h (up, down, stable) |
-| absolute-pressure    | Number:Pressure      | Absolute pressure                                        |
-| humidity            | Number:Dimensionless | Current humidity                                         |
-| MinHumidity         | Number:Dimensionless | Minimum humidity on current day                          |
-| MaxHumidity         | Number:Dimensionless | Maximum humidity on current day                          |
-| DateMinHumidity     | DateTime             | Date when minimum humidity was reached on current day    |
-| DateMaxHumidity     | DateTime             | Date when maximum humidity was reached on current day    |
-| humidex             | Number               | Computed Humidex index                                   |
-| heat-index           | Number:Temperature   | Computed Heat Index                                      |
-| dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
-| dew-point-depression  | Number:Temperature   | Computed dewpoint depression                             |
-| today-min             | Number:Temperature   | Minimum temperature on current day                       |
-| today-max             | Number:Temperature   | Maximum temperature on current day                       |
-| ever-min         | DateTime             | Date when minimum temperature was reached on current day |
-| ever-max         | DateTime             | Date when maximum temperature was reached on current day |
-| timestamp           | DateTime             | Timestamp when data was measured                         |
-| last-seen            | DateTime             | Last status store                                        |
-| signal-strength     | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Channel Group       | Channel Id           | Item Type            | Description                                              |
+|---------------------|----------------------|----------------------|--------------------------------------------------|
+| pressure            | value                | Number:Pressure      | Current pressure                                 |
+| pressure            | absolute             | Number:Pressure      | Pressure at sea level                            |
+| pressure            | trend                | String               | Pressure evolution trend over time               |
+| noise               | value                | Number:Dimensionless | Current noise level                              |
+| humidity            | value                | Number:Dimensionless | Current humidity                                 |
+| humidity            | humidex              | Number               | Computed Humidex index                           |
+| humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
+| humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
+| humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
+| humidity            | dew-point-depression | Number:Temperature   | Computed dewpoint depression                     |
+| temperature         | value                | Number:Temperature   | Current temperature                              |
+| temperature         | today-min            | Number:Temperature   | Minimum temperature on current day               |
+| temperature         | today-max            | Number:Temperature   | Maximum temperature on current day               |
+| temperature         | min-today            | Number:Temperature   | Timestamp of today's minimum temperature         |
+| temperature         | max_today            | Number:Temperature   | Timestamp of today's maximum temperature         |
+| temperature         | trend                | String               | Temperature evolution trend over time            |
+| co2                 | value                | Number:Dimensionless | Air quality                                      |
+| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
+| signal              | value                | Number:Power         | Signal strength in dB                            |
+
 
 All these channels are read only.
 
 
 ### Weather Station Outdoor module
 
-Example item for the **outdoor module** 
-
-```
-Number Netatmo_Outdoor_Temperature "Temperature" { channel = "netatmo:NAModule1:home:outside:Temperature" }
-```
-
 **Supported channels for the outdoor module:**
 
-| Channel ID          | Item Type            | Description                                              |
-|---------------------|----------------------|----------------------------------------------------------|
-| temperature         | Number:Temperature   | Current temperature                                      |
-| temperature-trend           | String               | Temperature evolution trend (up, down, stable)           |
-| humidity            | Number:Dimensionless | Current humidity                                         |
-| MinHumidity         | Number:Dimensionless | Minimum humidity on current day                          |
-| MaxHumidity         | Number:Dimensionless | Maximum humidity on current day                          |
-| DateMinHumidity     | DateTime             | Date when minimum humidity was reached on current day    |
-| DateMaxHumidity     | DateTime             | Date when maximum humidity was reached on current day    |
-| humidex             | Number               | Computed Humidex index                                   |
-| heat-index           | Number:Temperature   | Computed Heat Index                                      |
-| Dewpoint            | Number:Temperature   | Computed dewpoint temperature                            |
-|dew-point-depression  | Number:Temperature   | Computed dewpoint depression                             |
-| today-min             | Number:Temperature   | Minimum temperature on current day                       |
-| today-max             | Number:Temperature   | Maximum temperature on current day                       |
-| DateMinTemp         | DateTime             | Date when minimum temperature was reached on current day |
-| DateMaxTemp         | DateTime             | Date when maximum temperature was reached on current day |
-| timestamp           | DateTime             | Timestamp when data was measured                         |
-| last-message         | DateTime             | Last message emitted by the module                       |
-| low-battery          | Switch               | Low battery                                              |
-| battery-level           | Number               | Battery level                                            |
-| signal-strength     | Number               | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| Channel Group       | Channel Id           | Item Type            | Description                                              |
+|---------------------|----------------------|----------------------|--------------------------------------------------|
+| humidity            | value                | Number:Dimensionless | Current humidity                                 |
+| humidity            | humidex              | Number               | Computed Humidex index                           |
+| humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
+| humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
+| humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
+| humidity            | dew-point-depression | Number:Temperature   | Computed dewpoint depression                     |
+| temperature         | value                | Number:Temperature   | Current temperature                              |
+| temperature         | today-min            | Number:Temperature   | Minimum temperature on current day               |
+| temperature         | today-max            | Number:Temperature   | Maximum temperature on current day               |
+| temperature         | min-today            | Number:Temperature   | Timestamp of today's minimum temperature         |
+| temperature         | max_today            | Number:Temperature   | Timestamp of today's maximum temperature         |
+| temperature         | trend                | String               | Temperature evolution trend over time            |
+| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
+| signal              | value                | Number:Power         | Signal strength in dB                            |
+| battery             | value                | Number               | Battery level                                    |
+| battery             | low-battery          | Switch               | Low battery                                      |
+
 
 All these channels are read only.
 
@@ -480,15 +453,16 @@ All these channels except welcomePersonAtHome are read only.
 ## things/netatmo.things
 
 ```
-Bridge netatmo:NAMain:inside "Inside Weather Station" [id="aa:aa:aa:aa:aa:aa"] {
-    NAModule1 outside   "Outside Module" [id="bb:bb:bb:bb:bb:bb"] {
+Bridge netatmo:NAMain:inside "Inside Weather Station" [id="70:ee:aa:aa:aa:aa"] {
+    NAModule1 outside   "Outside Module" [id="02:00:00:aa:aa:aa"] {
         Channels:
-            Type Pressure-Measurement : maxPressToday [       
-                limit="MAX",
-                period="1day"
-            ]
+            Type hum-measurement : maxHumWeek [limit="MAX",period="1week"]
     }
-    NAModule3 rain      "Rain Sensor"    [ id="cc:cc:cc:cc:cc:cc" ]
+    NAModule3 rainModule        "Netatmo Rain Module"    [id="05:00:00:aa:aa:aa"] {
+        Channels:
+            Type sum_rain-measurement: rainThisWeek  "Rain This Week"     [period="1week"]
+            Type sum_rain-measurement: rainThisMonth "Rain This Month"    [period="1month"]
+    }
 }
 ```
 

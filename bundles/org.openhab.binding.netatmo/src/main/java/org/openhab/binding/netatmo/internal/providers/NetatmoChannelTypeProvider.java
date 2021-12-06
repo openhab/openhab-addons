@@ -63,10 +63,7 @@ public class NetatmoChannelTypeProvider implements ChannelTypeProvider {
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        if (channelTypes.containsKey(channelTypeUID)) {
-            return channelTypes.get(channelTypeUID);
-        } else {
-            return null;
-        }
+        return this.channelTypes.values().stream().filter(channelType -> channelType.getUID().equals(channelTypeUID))
+                .findFirst().orElse(null);
     }
 }

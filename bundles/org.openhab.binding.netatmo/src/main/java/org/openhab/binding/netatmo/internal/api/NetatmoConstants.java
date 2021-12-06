@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -73,43 +74,43 @@ public class NetatmoConstants {
         }
     }
 
-    private static final String SUM_RAIN = "SUM_RAIN";
-
     public enum MeasureClass {
-        INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
-        EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS), true, "TEMP", "Temperature", "Temperature"),
-        PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), true, "PRESSURE", "Pressure", "Pressure"),
-        CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), true, "CO2", "CO2", "Dimensionless"),
-        NOISE(new Measure(35, 120, 1, Units.DECIBEL), true, "NOISE", "Noise", "Dimensionless"),
-        RAIN_QUANTITY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), false, SUM_RAIN, "Rain", "Length"),
-        RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR), false, "", "Rain", "Speed"),
-        WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR), false, "", "Wind", "Speed"),
-        WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE), false, "", "Wind", "Angle"),
-        HUMIDITY(new Measure(0, 100, 3, Units.PERCENT), true, "HUM", "Humidity", "Dimensionless");
+        INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS), "temp", true),
+        EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS), "temp", true),
+        PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), "pressure", true),
+        CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), "co2", true),
+        NOISE(new Measure(35, 120, 1, Units.DECIBEL), "noise", true),
+        RAIN_QUANTITY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), "sum_rain", false),
+        RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR)),
+        WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR)),
+        WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE)),
+        HUMIDITY(new Measure(0, 100, 3, Units.PERCENT), "hum", true);
 
         public static final EnumSet<MeasureClass> asSet = EnumSet.allOf(MeasureClass.class);
-        private static final String MEASURE = "measurement";
 
         public final Measure measureDefinition;
         public final String apiDescriptor;
-        public final String tagName;
         public final Map<String, MeasureChannelDetails> channels = new HashMap<>(2);
 
-        MeasureClass(Measure measureDef, boolean canScale, String apiDescriptor, String tagName, String dimension) {
+        MeasureClass(Measure measureDef) {
+            this(measureDef, "", false);
+        }
+
+        MeasureClass(Measure measureDef, String apiDescriptor, boolean canScale) {
             this.measureDefinition = measureDef;
             this.apiDescriptor = apiDescriptor;
-            this.tagName = tagName;
             if (!apiDescriptor.isBlank()) {
-                String measureType = MEASURE;
-                if (SUM_RAIN.equals(apiDescriptor)) {
-                    measureType = "rain-" + measureType;
-                }
-                channels.put(String.join("-", tagName, MEASURE),
-                        new MeasureChannelDetails(measureType, String.join(":", CoreItemFactory.NUMBER, dimension),
-                                String.format("%%.%df %%unit%%", measureDefinition.scale)));
+                String dimension = (Units.DECIBEL.equals(measureDef.unit)
+                        || Units.PARTS_PER_MILLION.equals(measureDef.unit) || Units.PERCENT.equals(measureDef.unit))
+                                ? "Dimensionless" // strangely it is given as an Angle
+                                : UnitUtils.getDimensionName(measureDef.unit);
+
+                channels.put(String.join("-", apiDescriptor, "measurement"),
+                        new MeasureChannelDetails(apiDescriptor, String.join(":", CoreItemFactory.NUMBER, dimension),
+                                String.format("%%.%df %s", measureDefinition.scale, UnitUtils.UNIT_PLACEHOLDER)));
                 if (canScale) {
-                    channels.put(String.join("-", tagName, GROUP_TIMESTAMP), new MeasureChannelDetails(GROUP_TIMESTAMP,
-                            CoreItemFactory.DATETIME, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM"));
+                    channels.put(String.join("-", apiDescriptor, GROUP_TIMESTAMP), new MeasureChannelDetails(
+                            GROUP_TIMESTAMP, CoreItemFactory.DATETIME, "%1$tA, %1$td.%1$tm. %1$tH:%1$tM"));
                 }
             }
         }
