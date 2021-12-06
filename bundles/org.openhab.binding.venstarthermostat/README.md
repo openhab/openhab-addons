@@ -24,7 +24,7 @@ to enter them in the thermostat configuration in openHAB.
 
 ## Discovery
 
-Once the binding is installed it will attempt to auto discovery Venstar thermostats located on the local network.
+Once the binding is installed it will attempt to auto discover Venstar thermostats located on the local network.
 These will appear as Things in the system Inbox.
 After adding the Inbox item, enter the user name and password from the physical thermostat in the Thing's configuration.
 
