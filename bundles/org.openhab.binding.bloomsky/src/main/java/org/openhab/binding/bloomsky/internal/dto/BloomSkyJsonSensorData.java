@@ -157,11 +157,11 @@ public class BloomSkyJsonSensorData {
         return videoListC;
     }
 
-       public String getDeviceID() {
+    public String getDeviceID() {
         return deviceID;
     }
 
-       public int getNumOfFollowers() {
+    public int getNumOfFollowers() {
         return numOfFollowers;
     }
 
