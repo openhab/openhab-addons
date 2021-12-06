@@ -27,6 +27,8 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Type;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -103,26 +105,14 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
 
                                 logger.debug("Hub discovered shade '{}'", id);
 
-                                if (shadeData.type > 0) {
-                                    if (db.isTypeInDatabase(shadeData.type)) {
-                                        builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
-                                                db.getType(shadeData.type).toString());
-                                    } else {
-                                        db.logTypeNotInDatabase(shadeData.type);
-                                    }
-                                }
+                                Type type = db.getType(shadeData.type);
+                                builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
+                                        type.toString());
 
-                                Integer capabilities = shadeData.capabilities;
-                                int caps = (capabilities != null) ? capabilities.intValue() : -1;
-                                if (caps >= 0) {
-                                    if (db.isCapabilitiesInDatabase(caps)) {
-                                        builder = builder.withProperty(
-                                                HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
-                                                db.getCapabilities(caps).toString());
-                                    } else {
-                                        db.logCapabilitiesNotInDatabase(shadeData.type, caps);
-                                    }
-                                }
+                                Integer caps = shadeData.capabilities;
+                                Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
+                                builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
+                                        capabilities.toString());
 
                                 builder = builder.withLabel(shadeData.getName()).withBridge(bridgeUID);
                                 thingDiscovered(builder.build());
