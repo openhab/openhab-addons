@@ -62,7 +62,7 @@ public class NetatmoConstants {
         PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), true, "PRESSURE", "Pressure", "Pressure"),
         CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), true, "CO2", "CO2", "Dimensionless"),
         NOISE(new Measure(35, 120, 1, Units.DECIBEL), true, "NOISE", "Noise", "Dimensionless"),
-        RAIN_QTTY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), false, "SUM_RAIN", "Rain", "Length"),
+        RAIN_QUANTITY(new Measure(0, 150, 0.1, MILLI(SIUnits.METRE)), false, "SUM_RAIN", "Rain", "Length"),
         RAIN_INTENSITY(new Measure(0, 150, 0.1, Units.MILLIMETRE_PER_HOUR), false, "", "Rain", "Speed"),
         WIND_SPEED(new Measure(0, 160, 1.8, SIUnits.KILOMETRE_PER_HOUR), false, "", "Wind", "Speed"),
         WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE), false, "", "Wind", "Angle"),
@@ -171,6 +171,8 @@ public class NetatmoConstants {
         SECURITY(Stream.of(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES).flatMap(Set::stream)
                 .collect(Collectors.toSet())),
         NONE(Set.of());
+
+        public static final EnumSet<FeatureArea> asSet = EnumSet.allOf(FeatureArea.class);
 
         public final Set<Scope> scopes;
 

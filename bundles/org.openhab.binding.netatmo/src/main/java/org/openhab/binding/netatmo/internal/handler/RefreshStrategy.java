@@ -82,7 +82,8 @@ public class RefreshStrategy {
     }
 
     public Duration nextRunDelay() {
-        return searchRefreshInterval ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY);
+        Duration result = searchRefreshInterval ? PROBING_INTERVAL : dataValidity.minus(dataAge()).plus(DEFAULT_DELAY);
+        return result.isNegative() || result.isZero() ? PROBING_INTERVAL : result;
     }
 
     public boolean isSearchingRefreshInterval() {

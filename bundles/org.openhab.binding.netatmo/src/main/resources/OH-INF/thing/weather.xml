@@ -77,10 +77,10 @@
 		<label>Rain gauge</label>
 		<channels>
 			<channel id="value" typeId="rain-intensity"/>
-			<channel id="sum-1" typeId="rain-qtty">
+			<channel id="sum-1" typeId="rain-quantity">
 				<label>Rain 1h</label>
 			</channel>
-			<channel id="sum-24" typeId="rain-qtty">
+			<channel id="sum-24" typeId="rain-quantity">
 				<label>Rain 24h</label>
 			</channel>
 		</channels>

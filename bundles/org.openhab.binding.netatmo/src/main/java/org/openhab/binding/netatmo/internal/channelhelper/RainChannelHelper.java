@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 public class RainChannelHelper extends AbstractChannelHelper {
 
     public RainChannelHelper() {
-        super(GROUP_RAIN, MeasureClass.RAIN_QTTY);
+        super(GROUP_RAIN, MeasureClass.RAIN_QUANTITY);
     }
 
     @Override
@@ -41,9 +41,9 @@ public class RainChannelHelper extends AbstractChannelHelper {
             case CHANNEL_VALUE:
                 return toQuantityType(dashboard.getRain(), MeasureClass.RAIN_INTENSITY);
             case CHANNEL_SUM_RAIN1:
-                return toQuantityType(dashboard.getSumRain1(), MeasureClass.RAIN_QTTY);
+                return toQuantityType(dashboard.getSumRain1(), MeasureClass.RAIN_QUANTITY);
             case CHANNEL_SUM_RAIN24:
-                return toQuantityType(dashboard.getSumRain24(), MeasureClass.RAIN_QTTY);
+                return toQuantityType(dashboard.getSumRain24(), MeasureClass.RAIN_QUANTITY);
         }
         return null;
     }

@@ -62,7 +62,7 @@
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
-	<channel-type id="rain-qtty">
+	<channel-type id="rain-quantity">
 		<item-type>Number:Length</item-type>
 		<label>Rain Quantity</label>
 		<category>Rain</category>

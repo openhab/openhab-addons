@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.api;
 
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,9 +38,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class AuthenticationApi extends RestManager {
-    private static final String ALL_SCOPES = EnumSet.allOf(FeatureArea.class).stream().map(f -> f.scopes)
-            .flatMap(Set::stream).map(Scope::name).map(String::toLowerCase).collect(Collectors.joining(" "));
-
+    private static final String ALL_SCOPES = FeatureArea.asSet.stream().map(f -> f.scopes).flatMap(Set::stream)
+            .map(Scope::name).map(String::toLowerCase).collect(Collectors.joining(" "));
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
     private final NetatmoBindingConfiguration configuration;
     private final ScheduledExecutorService scheduler;

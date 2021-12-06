@@ -5,7 +5,22 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="netatmo:Measurement:config">
+    <config-description uri="netatmo:Rain-Measurement:config">
+        <parameter name="period" type="text">
+            <label>Period</label>
+            <options>
+                <option value="30min">30 minutes</option>
+                <option value="1hour">1 hour</option>
+                <option value="3hours">3 hours</option>
+                <option value="1day">This day</option>
+                <option value="1week">This week</option>
+                <option value="1month">This month</option>
+            </options>
+            <default>1week</default>
+        </parameter>
+    </config-description>
+    
+    <config-description uri="netatmo:Measurement:config">
 		<parameter name="limit" type="text">
 			<label>Limit</label>
 			<options>
@@ -24,7 +39,7 @@
 				<option value="1week">This week</option>
 				<option value="1month">This month</option>
 			</options>
-			<default>ONE_WEEK</default>
+			<default>1week</default>
 		</parameter>
 	</config-description>
 
@@ -43,7 +58,7 @@
 				<option value="1week">This week</option>
 				<option value="1month">This month</option>
 			</options>
-			<default>ONE_WEEK</default>
+			<default>1week</default>
 		</parameter>
 	</config-description>
 
