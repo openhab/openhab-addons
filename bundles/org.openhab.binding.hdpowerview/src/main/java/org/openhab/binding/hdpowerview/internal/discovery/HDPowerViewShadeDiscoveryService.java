@@ -114,7 +114,12 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                                 builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
                                         capabilities.toString());
 
-                                builder = builder.withLabel(shadeData.getName()).withBridge(bridgeUID);
+                                builder = builder
+                                        // Newly auto discovered shades are assumed to be NOT legacy shades, so
+                                        // explicitly set 'legacySecondaryMode' to FALSE.
+                                        .withProperty(HDPowerViewShadeConfiguration.LEGACY_SECONDARY_MODE, "false")
+                                        .withLabel(shadeData.getName()).withBridge(bridgeUID);
+
                                 thingDiscovered(builder.build());
                             }
                         }

@@ -48,6 +48,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
     private int shadeCapabilities = -1;
+    private boolean newSecondaryMode;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -104,6 +106,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+        /*
+         * Set newSecondaryMode if the legacySecondaryMode configuration parameter is not explicitly FALSE.
+         * For the avoidance of doubt: this means legacySecondaryMode is NEITHER..
+         * - NULL i.e. the real legacy case where the configuration parameter is missing, NOR
+         * - TRUE i.e. where the configuration parameter has been manually overridden.
+         */
+        newSecondaryMode = Boolean.FALSE.equals(getConfigAs(HDPowerViewShadeConfiguration.class).legacySecondaryMode);
     }
 
     @Override
@@ -138,7 +147,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_SECONDARY_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(SECONDARY_ZERO_IS_OPEN, ((PercentType) command).intValue());
+                    int position = ((PercentType) command).intValue();
+                    if (newSecondaryMode) {
+                        position = 100 - position;
+                    }
+                    moveShade(SECONDARY_ZERO_IS_OPEN, position);
                 } else if (command instanceof UpDownType) {
                     moveShade(SECONDARY_ZERO_IS_OPEN, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
@@ -276,9 +289,14 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             Capabilities caps = db.getCapabilities(shadeCapabilities);
             updateState(CHANNEL_SHADE_POSITION, shadePos.getState(caps, PRIMARY_ZERO_IS_CLOSED));
             updateState(CHANNEL_SHADE_VANE, shadePos.getState(caps, VANE_TILT_COORDS));
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(caps, SECONDARY_ZERO_IS_OPEN));
+            State newState = shadePos.getState(caps, SECONDARY_ZERO_IS_OPEN);
+            if (newSecondaryMode && (newState instanceof PercentType)) {
+                newState = new PercentType(100 - ((PercentType) newState).intValue());
+            }
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, newState);
             return;
         }
+
         updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
         updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
         updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);

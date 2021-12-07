@@ -75,6 +75,10 @@
 				<label>ID</label>
 				<description>The numeric ID of the PowerView Shade in the Hub</description>
 			</parameter>
+			<parameter name="legacySecondaryMode" type="boolean" required="false">
+				<label>Legacy Secondary Mode</label>
+				<description>Use legacy 0%..100% position coordinates for the secondary rail.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

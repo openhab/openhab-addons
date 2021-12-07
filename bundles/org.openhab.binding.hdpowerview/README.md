@@ -55,6 +55,7 @@ However, the configuration parameters are described below:
 | Configuration Parameter | Description                                                   |
 |-------------------------|---------------------------------------------------------------|
 | id                      | The ID of the PowerView shade in the app. Must be an integer. |
+| legacySecondaryMode     | A boolean value that forces the secondary rail's 0%..100% position to use legacy mode co-ordinates (see 'Note on Legacy Installations' below). By default on new installations its value is 'false'. |
 
 ## Channels
 
@@ -138,13 +139,9 @@ So there is an interdependency between the value of `vane` and the value of `pos
 | Shade 100% down, Vane 50%  | 100% = `DOWN`       | 50%             |
 | Shade 100% down, Vane 100% | 100% = `DOWN`       | 100%            |
 
-On dual action shades, the top rail cannot move below the position of the bottom rail.
-So the value of `secondary` is constrained by the value of `position`.
-
-| Case                       | State of `position` | State of `secondary` |
-|----------------------------|---------------------|----------------------|
-| tbd                        | tbd                 | tbd                  |
-| tbd                        | tbd                 | tbd                  |
+On dual action shades, the top rail cannot move below the bottom rail, nor can the bottom rail move above the top.
+So the value of `secondary` is constrained by the prior value of `position`.
+And the value of `position` is constrained by the prior value of `secondary`.
 
 ## Refreshing the PowerView Hub Cache
 
