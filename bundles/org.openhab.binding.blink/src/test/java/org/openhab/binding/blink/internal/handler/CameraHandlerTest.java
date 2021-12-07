@@ -168,7 +168,7 @@ public class CameraHandlerTest {
         cameraHandler.cameraService = cameraService;
         doReturn(123L).when(cameraService).createThumbnail(ArgumentMatchers.any(BlinkAccount.class),
                 ArgumentMatchers.any(CameraConfiguration.class));
-        cameraHandler.handleCommand(CHANNEL_CAMERA_SETTHUMBNAIL, RefreshType.REFRESH);
+        cameraHandler.handleCommand(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.ON);
         verify(cameraService).createThumbnail(blinkAccount, cameraHandler.config);
     }
 

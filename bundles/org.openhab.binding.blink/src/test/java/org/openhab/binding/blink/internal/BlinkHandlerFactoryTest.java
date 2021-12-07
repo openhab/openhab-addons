@@ -19,6 +19,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -41,6 +42,7 @@ class BlinkHandlerFactoryTest {
     private static final String NETWORK = "network";
     private @Mock @NonNullByDefault({}) HttpService httpService;
     private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
+    private @Mock @NonNullByDefault({}) BundleContext bundleContext;
 
     private BlinkHandlerFactory factory = new BlinkHandlerFactory(httpService, httpClientFactory);
 
@@ -55,7 +57,12 @@ class BlinkHandlerFactoryTest {
 
     void setupMocks() {
         when(httpClientFactory.getCommonHttpClient()).thenReturn(new HttpClient());
-        factory = new BlinkHandlerFactory(httpService, httpClientFactory);
+        factory = new BlinkHandlerFactory(httpService, httpClientFactory) {
+            @Override
+            protected BundleContext getBundleContext() {
+                return bundleContext;
+            }
+        };
     }
 
     @Test
