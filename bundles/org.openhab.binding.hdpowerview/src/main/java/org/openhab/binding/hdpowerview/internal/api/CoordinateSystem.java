@@ -19,9 +19,9 @@ import org.eclipse.jdt.annotation.Nullable;
  * Shade coordinate system (a.k.a. position kind), as returned by the HD PowerView hub.
  *
  * @param NONE a coordinate system that does not refer to any type of physical rail.
- * @param PRIMARY_ZERO_IS_CLOSED primary rail, whose coordinate value 0 means shade is closed.
- * @param SECONDARY_ZERO_IS_OPEN secondary rail, whose coordinate value 0 means shade is open.
- * @param VANE_TILT_COORDS vane/tilt operator, whose coordinate system is for vanes.
+ * @param PRIMARY_RAIL primary rail, whose coordinate value 0 means shade is closed.
+ * @param SECONDARY_RAIL secondary rail, whose coordinate value 0 means shade is open.
+ * @param VANE_TILT vane/tilt operator, whose coordinate system is for vanes.
  * @param ERROR_UNKNOWN unsupported coordinate system.
  *
  * @author Andy Lintner - Initial contribution of the original enum called
@@ -52,34 +52,34 @@ public enum CoordinateSystem {
      *      vanes: 0..32767
      *
      * Shade fully up: (top-down: open, bottom-up: closed)
-     *      posKind: 1 {ZERO_IS_CLOSED}
+     *      posKind: 1
      *      position: 65535
      *
      * Shade and vane fully down: (top-down: closed, bottom-up: open)
-     *      posKind: 1 {ZERO_IS_CLOSED}
+     *      posKind: 1
      *      position1: 0
      *
      * ALTERNATE: Shade and vane fully down: (top-down: closed, bottom-up: open)
-     *      posKind: 3 {VANE_COORDS}
+     *      posKind: 3
      *      position: 0
      *
      * Shade fully down (closed) and vane fully up (open):
-     *      posKind: 3 {VANE_COORDS}
+     *      posKind: 3
      *      position: 32767
      *
      * Dual action, secondary top-down shade fully up (closed):
-     *      posKind: 2 {ZERO_IS_OPEN}
+     *      posKind: 2
      *      position: 0
      *
      * Dual action, secondary top-down shade fully down (open):
-     *      posKind: 2 {ZERO_IS_OPEN}
+     *      posKind: 2
      *      position: 65535
      *
      */
     NONE,
-    PRIMARY_ZERO_IS_CLOSED,
-    SECONDARY_ZERO_IS_OPEN,
-    VANE_TILT_COORDS,
+    PRIMARY_RAIL,
+    SECONDARY_RAIL,
+    VANE_TILT,
     ERROR_UNKNOWN;
 
     public static final int MAX_SHADE = 65535;

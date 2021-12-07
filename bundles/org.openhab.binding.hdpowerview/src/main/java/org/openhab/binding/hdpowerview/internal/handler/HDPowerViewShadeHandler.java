@@ -125,9 +125,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         switch (channelUID.getId()) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(PRIMARY_ZERO_IS_CLOSED, ((PercentType) command).intValue());
+                    moveShade(PRIMARY_RAIL, ((PercentType) command).intValue());
                 } else if (command instanceof UpDownType) {
-                    moveShade(PRIMARY_ZERO_IS_CLOSED, UpDownType.UP.equals(command) ? 0 : 100);
+                    moveShade(PRIMARY_RAIL, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     if (StopMoveType.STOP.equals(command)) {
                         stopShade();
@@ -139,9 +139,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_VANE:
                 if (command instanceof PercentType) {
-                    moveShade(VANE_TILT_COORDS, ((PercentType) command).intValue());
+                    moveShade(VANE_TILT, ((PercentType) command).intValue());
                 } else if (command instanceof OnOffType) {
-                    moveShade(VANE_TILT_COORDS, OnOffType.ON.equals(command) ? 100 : 0);
+                    moveShade(VANE_TILT, OnOffType.ON.equals(command) ? 100 : 0);
                 }
                 break;
 
@@ -151,9 +151,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     if (newSecondaryMode) {
                         position = 100 - position;
                     }
-                    moveShade(SECONDARY_ZERO_IS_OPEN, position);
+                    moveShade(SECONDARY_RAIL, position);
                 } else if (command instanceof UpDownType) {
-                    moveShade(SECONDARY_ZERO_IS_OPEN, UpDownType.UP.equals(command) ? 0 : 100);
+                    moveShade(SECONDARY_RAIL, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
                     if (StopMoveType.STOP.equals(command)) {
                         stopShade();
@@ -287,9 +287,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             logger.debug("The 'shadeCapabilities' field has not been initialized!");
         } else {
             Capabilities caps = db.getCapabilities(shadeCapabilities);
-            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-            updateState(CHANNEL_SHADE_VANE, shadePos.getState(caps, VANE_TILT_COORDS));
-            State newState = shadePos.getState(caps, SECONDARY_ZERO_IS_OPEN);
+            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(caps, PRIMARY_RAIL));
+            updateState(CHANNEL_SHADE_VANE, shadePos.getState(caps, VANE_TILT));
+            State newState = shadePos.getState(caps, SECONDARY_RAIL);
             if (newSecondaryMode && (newState instanceof PercentType)) {
                 newState = new PercentType(100 - ((PercentType) newState).intValue());
             }
