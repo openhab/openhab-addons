@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.lutron.internal.protocol.lip;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -60,6 +57,6 @@ public class Monitoring {
     public static final Integer ALL = 255;
 
     /** Set of monitoring types which must be enabled */
-    public static final Set<Integer> REQUIRED_SET = Collections.unmodifiableSet(
-            Stream.of(BUTTON, LED, ZONE, OCCUPANCY, SCENE, TIMECLOCK, REPLY, HVAC, MODE).collect(Collectors.toSet()));
+    public static final Set<Integer> REQUIRED_SET = Set.of(BUTTON, LED, ZONE, OCCUPANCY, SCENE, TIMECLOCK, REPLY, HVAC,
+            MODE);
 }
