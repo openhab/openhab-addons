@@ -5043,7 +5043,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | buttom_door          | String               | Others - Buttom Door                     |            |
 | reboot_cause         | Number               | Others - Reboot_cause                    | Value mapping `["0"="REASON_HW_BOOT","1"="REASON_USER_REBOOT","2"="REASON_UPDATE","3"="REASON_WDT"]` |
 | manual_level         | Number               | Others - Manual Level                    | Value mapping `["1"="level1","2"="level2","3"="level3"]` |
-| powertime            | Number:duration      | Others - Powertime                       |            |
+| powertime            | Number:Time          | Others - Powertime                       |            |
 | country_code         | Number               | Others - Country Code                    | Value mapping `["91"="India","44"="UK","852"="Hong Kong","886"="Taiwan","82"="Korea"]` |
 
 ### Smartmi Air Purifier (<a name="zhimi-airpurifier-za1">zhimi.airpurifier.za1</a>) Channels
@@ -10759,7 +10759,7 @@ String cola "Others - Cola" (G_airpurifier) {channel="miio:basic:airpurifier:col
 String buttom_door "Others - Buttom Door" (G_airpurifier) {channel="miio:basic:airpurifier:buttom_door"}
 Number reboot_cause "Others - Reboot_cause" (G_airpurifier) {channel="miio:basic:airpurifier:reboot_cause"}
 Number manual_level "Others - Manual Level" (G_airpurifier) {channel="miio:basic:airpurifier:manual_level"}
-Number:duration powertime "Others - Powertime" (G_airpurifier) {channel="miio:basic:airpurifier:powertime"}
+Number:Time powertime "Others - Powertime" (G_airpurifier) {channel="miio:basic:airpurifier:powertime"}
 Number country_code "Others - Country Code" (G_airpurifier) {channel="miio:basic:airpurifier:country_code"}
 ```
 
