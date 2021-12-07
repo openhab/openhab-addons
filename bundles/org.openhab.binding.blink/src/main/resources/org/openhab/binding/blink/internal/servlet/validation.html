@@ -1,0 +1,163 @@
+</head>
+<title>blink 2FA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  input {
+    font-family: 'Readex Pro', sans-serif;
+    font-size: 2rem;
+    width: 2.6rem;
+    border: none;
+    border-bottom: 2px solid #aaa;
+    text-align: center;
+    background: #FFF;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  input:focus {
+    border-bottom: 2px solid #e64a19;
+    outline: none;
+  }
+
+  input.submit {
+    font-weight: bold;
+    line-height: 40px;
+    width: 2.6rem;
+    font-size: 34px;
+    background: linear-gradient(to left, #fff 50%, #e64a19 50%) right;
+    background-size: 200%;
+    transition: .5s ease-out;
+  }
+
+  input.submit:focus, input.submit:hover {
+    color: #fff;
+    background-position: left;
+    border-bottom: none;
+  }
+
+  input:focus {
+    animation-name: zoom;
+    animation-duration: 200ms;
+  }
+
+  @keyframes zoom {
+    from {
+    }
+    to {
+      transform: scale(1.1);
+    }
+  }
+
+  body {
+    font-family: 'Readex Pro', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: lightgray;
+    flex-direction: column;
+  }
+
+  h1, h2 {
+    display: block;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.7);
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0;
+  }
+
+  h2 {
+    margin-top: 2px;
+    font-size: 1.2rem;
+    font-weight: 300;
+  }
+
+  .error {
+    display: block;
+    text-align: center;
+    color: #e64a19;
+    font-weight: 300;
+    margin-top: 10px;
+  }
+
+  form {
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<form id="blink2fa" class="form" method="POST">
+  <h1>blink</h1>
+  <h2>Please enter verification PIN</h2>
+  <div class="digits">
+    <input type="text" name="digit1" required/>
+    <input type="text" name="digit2" required/>
+    <input type="text" name="digit3" required/>
+    <input type="text" name="digit4" required/>
+    <input type="text" name="digit5" required/>
+    <input type="text" name="digit6" required/>
+    <input class="submit" type="submit" value="▸"/>
+  </div>
+  {{error}}
+  <input id="pin" type="hidden" name="pin"/>
+</form>
+
+<script type="text/javascript">
+  console.clear();
+
+  document.querySelector("input").focus();
+
+  document.querySelector(".digits").addEventListener("keydown", event => {
+    var key = event.keyCode || event.charCode;
+    if (key == 8 || key == 46) {
+      const target = event.target;
+      const hasSibling = target.previousElementSibling;
+      const hasSiblingInput = hasSibling && target.previousElementSibling.nodeName === "INPUT";
+      if (hasSiblingInput) {
+        target.previousElementSibling.focus();
+      }
+    }
+  });
+
+  document.querySelector(".digits").addEventListener("input", function ({target, data}) {
+    // Exclude non-numeric characters (if a value has been entered)
+    data && (target.value = data.replace(/[^0-9]/g, ''));
+    const hasValue = target.value !== "";
+    const hasSibling = target.nextElementSibling;
+    const hasSiblingInput = hasSibling && target.nextElementSibling.nodeName === "INPUT";
+
+    if (hasValue && hasSiblingInput) {
+      target.nextElementSibling.focus();
+    }
+
+  });
+
+  function processForm(e) {
+    if (e.preventDefault) e.preventDefault();
+    var pin = document.getElementById('pin');
+    var elements = document.getElementById("blink2fa").elements;
+
+    for (var i = 0, element; element = elements[i++];) {
+      if (element.type === "text" && element.value !== "")
+        pin.value += element.value;
+    }
+    console.log(pin.value);
+    return true;
+  }
+
+  var form = document.getElementById('blink2fa');
+  if (form.attachEvent) {
+    form.attachEvent("submit", processForm);
+  } else {
+    form.addEventListener("submit", processForm);
+  }
+</script>
+
+
+</body>

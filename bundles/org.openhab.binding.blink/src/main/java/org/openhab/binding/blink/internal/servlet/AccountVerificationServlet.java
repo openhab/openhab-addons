@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.blink.internal.servlet;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.binding.blink.internal.service.AccountService;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -38,10 +38,12 @@ public class AccountVerificationServlet extends HttpServlet {
     private final AccountHandler accountHandler;
     private final AccountService blinkService;
     private final String servletUrl;
+    private final BundleContext bundleContext;
 
-    public AccountVerificationServlet(HttpService httpService, AccountHandler accountHandler,
-            AccountService blinkService) {
+    public AccountVerificationServlet(HttpService httpService, BundleContext bundleContext,
+            AccountHandler accountHandler, AccountService blinkService) {
         this.httpService = httpService;
+        this.bundleContext = bundleContext;
         this.accountHandler = accountHandler;
         this.blinkService = blinkService;
 
@@ -101,18 +103,31 @@ public class AccountVerificationServlet extends HttpServlet {
         }
     }
 
-    private void generateVerificationPage(PrintWriter writer, boolean validationError) {
-        writer.write("<html><head><title>Blink 2FA</title><head><body>");
-        writer.write("<h1>Blink 2FA</h1>");
-        writer.write("<form method=\"POST\">");
-        if (validationError) {
-            writer.write("<span class=\"error\">Invalid 2FA verification PIN code.<br/>" +
-                    "The code is only valid for a 40 minute period. Please try disabling and enabling the Blink Account " +
-                    "Thing to generate a new PIN code if you think that might be the problem.</span>");
+    private void generateVerificationPage(PrintWriter writer, boolean validationError) throws IOException {
+        URL url = this.bundleContext.getBundle()
+                .getEntry("org/openhab/binding/blink/internal/servlet/validation.html");
+        if (url == null)
+            throw new IllegalArgumentException("validation.html not found");
+        InputStream ioStream = url.openStream();
+        if (ioStream == null) {
+            throw new IllegalArgumentException("validation.html not found");
         }
-        writer.write("<input type=\"text\" name=\"pin\" pattern=\"[0-9]{6}\" maxlength=\"6\">");
-        writer.write("<input type=\"submit\" value=\"Validate\">");
-        writer.write("</form></body></html>");
+
+        new BufferedReader(new InputStreamReader(ioStream)).lines().map(l -> {
+            if ("{{error}}".equals(l.trim())) {
+                if (validationError) {
+                    return "<div class=\"error\">" +
+                            "    <b>Invalid 2 factor verification PIN code.</b><br/>\n" +
+                            "    The code is only valid for a 40 minute period. Please try disabling and enabling the blink Account Thing\n" +
+                            "    to generate a new PIN code if you think that might be the problem." +
+                            "</div>";
+                } else {
+                    return "";
+                }
+            }
+            return l;
+        }).forEach(writer::write);
+
     }
 
 }

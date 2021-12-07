@@ -38,6 +38,8 @@ validationURL thing property:
 
 ![](doc/verification-url.png)
 
+![](doc/2fa.png)
+
 ### blink Camera
 
 One single blink camera, belonging to a blink network (see below).
@@ -73,7 +75,7 @@ configuration parameters are:
 | battery | LowBattery | Read-only channel, triggering ON when battery status is low |
 | temperature | Number | Read-only channel, outputting camera temperature |
 | setThumbnail | Switch | Write-only channel, triggering taking a new snapshot as thumbnail |
-| getThumbnail | Image | Read-only channel, return the current thumbnail |
+| getThumbnail | Image | Read-only channel, return the current thumbnail. Use REFRESH to update thumbnail from server |
 
 ### blink Network
 

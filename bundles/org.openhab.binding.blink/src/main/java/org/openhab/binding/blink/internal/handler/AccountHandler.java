@@ -37,6 +37,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +54,7 @@ public class AccountHandler extends BaseBridgeHandler {
 
     public static final String GENERATED_CLIENT_ID = "generatedClientId";
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
+    BundleContext bundleContext;
 
     @Nullable AccountConfiguration config;
     AccountService blinkService;
@@ -62,9 +64,12 @@ public class AccountHandler extends BaseBridgeHandler {
     @Nullable BlinkAccount blinkAccount;
     @NonNullByDefault({}) ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
 
-    public AccountHandler(Bridge bridge, HttpService httpService, HttpClientFactory httpClientFactory, Gson gson) {
+    public AccountHandler(Bridge bridge, HttpService httpService,
+            BundleContext bundleContext, HttpClientFactory httpClientFactory,
+            Gson gson) {
         super(bridge);
         this.httpService = httpService;
+        this.bundleContext = bundleContext;
         this.gson = gson;
         this.blinkService = new AccountService(httpClientFactory.getCommonHttpClient(), gson);
     }
@@ -92,7 +97,7 @@ public class AccountHandler extends BaseBridgeHandler {
             // register 2FA Verification Servlet for this thing
             if (accountServlet == null) {
                 try {
-                    accountServlet = new AccountVerificationServlet(httpService, this, blinkService);
+                    accountServlet = new AccountVerificationServlet(httpService, bundleContext, this, blinkService);
                 } catch (IllegalStateException e) {
                     logger.warn("Failed to create account servlet", e);
                 }

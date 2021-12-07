@@ -37,6 +37,7 @@ import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.BridgeImpl;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import com.google.gson.Gson;
 
@@ -59,6 +60,7 @@ class AccountHandlerTest extends JavaTest {
     @Mock @NonNullByDefault({}) AccountService accountService;
     @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
     @Mock @NonNullByDefault({}) ExpiringCache<BlinkHomescreen> cache;
+    @Mock @NonNullByDefault({}) BundleContext bundleContext;
     @Spy Bridge bridge = new BridgeImpl(THING_TYPE_UID, CLIENT_ID);
 
     @NonNullByDefault({}) AccountHandler accountHandler;
@@ -71,7 +73,7 @@ class AccountHandlerTest extends JavaTest {
         config.put("password", "derwolf");
         config.put("refreshInterval", 30);
         when(bridge.getConfiguration()).thenReturn(config);
-        accountHandler = spy(new AccountHandler(bridge, httpService, httpClientFactory, new Gson()));
+        accountHandler = spy(new AccountHandler(bridge, httpService, bundleContext, httpClientFactory, new Gson()));
     }
 
     @Test
