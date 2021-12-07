@@ -118,6 +118,8 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         logger.trace("remove user {}", username);
         if (!this.blockUserDeletion) {
             storage.remove(createUserKey(username));
+        } else {
+            logger.debug("deletion of the user was blocked by binding settings");
         }
     }
 
@@ -128,7 +130,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     public void clear() {
-        logger.trace("clear all users. block user deletion flag {}", this.blockUserDeletion);
+        logger.trace("clear all users");
         if (!this.blockUserDeletion) {
             for (String key : new HashSet<>(storage.getKeys())) {
                 if (isUserKey(key)) {
