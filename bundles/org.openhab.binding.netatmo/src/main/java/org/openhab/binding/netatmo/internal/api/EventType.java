@@ -26,102 +26,62 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public enum EventType {
-    UNKNOWN(Set.of()),
+    UNKNOWN(),
     @SerializedName("person") // When the Indoor Camera detects a face
-    PERSON(Set.of(ModuleType.NAPerson, ModuleType.NACamera)),
+    PERSON(ModuleType.NAPerson, ModuleType.NACamera),
 
     @SerializedName("person_away") // When geofencing indicates that the person has left the home
-    PERSON_AWAY(Set.of(ModuleType.NAPerson)),
+    PERSON_AWAY(ModuleType.NAPerson),
 
     @SerializedName("outdoor") // When the Outdoor Camera detects a human, a car or an animal
-    OUTDOOR(Set.of(ModuleType.NOC, ModuleType.NDB)),
+    OUTDOOR(ModuleType.NOC, ModuleType.NDB),
 
     @SerializedName("daily_summary") // When the Outdoor Camera video summary of the last 24 hours is available
-    DAILY_SUMMARY(Set.of(ModuleType.NOC)),
+    DAILY_SUMMARY(ModuleType.NOC),
 
     @SerializedName("movement") // When the Indoor Camera detects motion
-    MOVEMENT(Set.of(ModuleType.NACamera)),
+    MOVEMENT(ModuleType.NACamera),
 
     @SerializedName("new_module") // A new Module has been paired with the Indoor Camera
-    NEW_MODULE(Set.of(ModuleType.NACamera)),
+    NEW_MODULE(ModuleType.NACamera),
 
     @SerializedName("module_connect") // Module is connected with the Indoor Camera
-    MODULE_CONNECT(Set.of(ModuleType.NACamera)),
+    MODULE_CONNECT(ModuleType.NACamera),
 
     @SerializedName("module_disconnect") // Module lost its connection with the Indoor Camera
-    MODULE_DISCONNECT(Set.of(ModuleType.NACamera)),
+    MODULE_DISCONNECT(ModuleType.NACamera),
 
     @SerializedName("module_low_battery") // Module's battery is low
-    MODULE_LOW_BATTERY(Set.of(ModuleType.NACamera)),
+    MODULE_LOW_BATTERY(ModuleType.NACamera),
 
     @SerializedName("module_end_update") // Module's firmware update is over
-    MODULE_END_UPDATE(Set.of(ModuleType.NACamera)),
+    MODULE_END_UPDATE(ModuleType.NACamera),
 
     @SerializedName("connection") // When the Camera connects to Netatmo servers
-    CONNECTION(Set.of(ModuleType.NACamera, ModuleType.NOC)),
+    CONNECTION(ModuleType.NACamera, ModuleType.NOC),
 
     @SerializedName("disconnection") // When the Camera loses connection with Netatmo servers
-    DISCONNECTION(Set.of(ModuleType.NACamera, ModuleType.NOC)),
+    DISCONNECTION(ModuleType.NACamera, ModuleType.NOC),
 
     @SerializedName("on") // When Camera Monitoring is resumed
-    ON(Set.of(ModuleType.NACamera, ModuleType.NOC)),
+    ON(ModuleType.NACamera, ModuleType.NOC),
 
     @SerializedName("off") // When Camera Monitoring is turned off
-    OFF(Set.of(ModuleType.NACamera, ModuleType.NOC)),
+    OFF(ModuleType.NACamera, ModuleType.NOC),
 
     @SerializedName("boot") // When the Camera is booting
-    BOOT(Set.of(ModuleType.NACamera, ModuleType.NOC)),
+    BOOT(ModuleType.NACamera, ModuleType.NOC),
 
     @SerializedName("sd") // When Camera SD Card status changes
-    SD(Set.of(ModuleType.NACamera, ModuleType.NOC)),
+    SD(ModuleType.NACamera, ModuleType.NOC),
 
     @SerializedName("alim") // When Camera power supply status changes
-    ALIM(Set.of(ModuleType.NACamera, ModuleType.NOC));
-
-    // Left for future implementation
-    // @SerializedName("tag_big_move") // When a Smart Sensor detects a big move
-    // TAG_BIG_MOVE(Set.of(ModuleType.NACamera, ModuleType.NACamDoorTag)),
-    //
-    // @SerializedName("tag_small_move")
-    // TAG_SMALL_MOVE(Set.of(ModuleType.NACamera, ModuleType.NACamDoorTag)),
-    //
-    // @SerializedName("tag_uninstalled")
-    // TAG_UNINSTALLED(Set.of(ModuleType.NACamera, ModuleType.NACamDoorTag)),
-    //
-    // @SerializedName("tag_open")
-    // TAG_OPEN(Set.of(ModuleType.NACamera, ModuleType.NACamDoorTag)),
-    //
-    // @SerializedName("hush")
-    // HUSH(Set.of(ModuleType.NSD)),
-    //
-    // @SerializedName("smoke")
-    // SMOKE(Set.of(ModuleType.NSD)),
-    //
-    // @SerializedName("tampered")
-    // TAMPERED(Set.of(ModuleType.NSD)),
-    //
-    // @SerializedName("wifi_status")
-    // WIFI_STATUS(Set.of(ModuleType.NSD)),
-    //
-    // @SerializedName("battery_status")
-    // BATTERY_STATUS(Set.of(ModuleType.NSD)),
-    //
-    // @SerializedName("detection_chamber_status")
-    // DETECTION_CHAMBER_STATUS(Set.of(ModuleType.NSD)),
-    //
-    // @SerializedName("sound_test")
-    // SOUND_TEST(Set.of(ModuleType.NSD)),
-    //
-    // @SerializedName("siren_sounding")
-    // SIREN_SOUNDING(Set.of(ModuleType.NIS)),
-    //
-    // @SerializedName("siren_tampered")
-    // SIREN_TAMPERED(Set.of(ModuleType.NIS));
+    ALIM(ModuleType.NACamera, ModuleType.NOC);
 
     private final Set<ModuleType> appliesTo;
 
-    EventType(Set<ModuleType> appliesTo) {
-        this.appliesTo = appliesTo;
+    EventType(ModuleType... appliesTo) {
+        this.appliesTo = Set.of(appliesTo);
     }
 
     @Override

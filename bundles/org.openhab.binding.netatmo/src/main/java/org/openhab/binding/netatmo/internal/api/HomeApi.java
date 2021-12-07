@@ -59,14 +59,14 @@ public class HomeApi extends RestManager {
         return response.getBody().getElements();
     }
 
-    public boolean setpersonsaway(String homeId, String personId) throws NetatmoException {
+    public boolean setPersonsAway(String homeId, String personId) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_AWAY);
         String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);
         return true;
     }
 
-    public boolean setpersonshome(String homeId, String personId) throws NetatmoException {
+    public boolean setPersonsHome(String homeId, String personId) throws NetatmoException {
         UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_HOME);
         String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);

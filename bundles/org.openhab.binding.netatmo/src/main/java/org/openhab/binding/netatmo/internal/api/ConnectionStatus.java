@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ConnectionStatus {
     public static ConnectionStatus SUCCESS = new ConnectionStatus("Connected to Netatmo API");
-    public static ConnectionStatus UNKNOWN = new ConnectionStatus("Connection not yet tried");
+    public static ConnectionStatus UNKNOWN = new ConnectionStatus("Connection to Netatmo is unknown");
 
     private final String message;
 

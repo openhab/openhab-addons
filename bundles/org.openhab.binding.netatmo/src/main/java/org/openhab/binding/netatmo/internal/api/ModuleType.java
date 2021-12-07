@@ -70,68 +70,55 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public enum ModuleType {
-    UNKNOWN(null, RefreshPolicy.NONE, FeatureArea.NONE, null, List.of(), null),
-    NAHome(HomeHandler.class, RefreshPolicy.CONFIG, FeatureArea.NONE, null,
-            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class), null),
+    UNKNOWN(null, RefreshPolicy.NONE, FeatureArea.NONE, null, null, List.of()),
+    NAHome(HomeHandler.class, RefreshPolicy.CONFIG, FeatureArea.NONE, null, null,
+            List.of(HomeSecurityChannelHelper.class, HomeEnergyChannelHelper.class)),
 
     // Security Features
-    NAPerson(PersonHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome,
-            List.of(PersonChannelHelper.class), null),
-    NACamera(CameraHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome,
-            List.of(CameraChannelHelper.class), NAWelcome.class),
-    NOC(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome,
-            List.of(CameraChannelHelper.class, PresenceChannelHelper.class), NAWelcome.class),
-    NDB(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, List.of(CameraChannelHelper.class),
-            NAWelcome.class),
+    NAPerson(PersonHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, null,
+            List.of(PersonChannelHelper.class)),
+    NACamera(CameraHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, NAWelcome.class,
+            List.of(CameraChannelHelper.class)),
+    NOC(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, NAWelcome.class,
+            List.of(CameraChannelHelper.class, PresenceChannelHelper.class)),
+    NDB(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, NAWelcome.class,
+            List.of(CameraChannelHelper.class)),
 
     // Weather Features
-    NAMain(MainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null,
+    NAMain(MainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null, NAThing.class,
             List.of(PressureChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
                     TemperatureChannelHelper.class, Co2ChannelHelper.class, TimestampChannelHelper.class,
-                    MeasuresChannelHelper.class, SignalChannelHelper.class),
-            NAThing.class),
-    NAModule1(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+                    MeasuresChannelHelper.class, SignalChannelHelper.class)),
+    NAModule1(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
             List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, BatteryChannelHelper.class,
-                    MeasuresChannelHelper.class, TimestampChannelHelper.class, SignalChannelHelper.class),
-            NAModule.class),
-    NAModule2(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+                    MeasuresChannelHelper.class, TimestampChannelHelper.class, SignalChannelHelper.class)),
+    NAModule2(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
             List.of(WindChannelHelper.class, BatteryChannelHelper.class, TimestampChannelHelper.class,
-                    SignalChannelHelper.class),
-            NAModule.class),
-    NAModule3(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+                    SignalChannelHelper.class)),
+    NAModule3(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
             List.of(RainChannelHelper.class, BatteryChannelHelper.class, MeasuresChannelHelper.class,
-                    TimestampChannelHelper.class, SignalChannelHelper.class),
-            NAModule.class),
-    NAModule4(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain,
+                    TimestampChannelHelper.class, SignalChannelHelper.class)),
+    NAModule4(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
             List.of(HumidityChannelHelper.class, TemperatureChannelHelper.class, Co2ChannelHelper.class,
                     BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampChannelHelper.class,
-                    SignalChannelHelper.class),
-            NAModule.class),
+                    SignalChannelHelper.class)),
 
     // Aircare Features
-    NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, FeatureArea.AIR_CARE, null,
+    NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, FeatureArea.AIR_CARE, null, NAThing.class,
             List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, PressureChannelHelper.class,
                     TemperatureChannelHelper.class, Co2ChannelHelper.class, HomeCoachChannelHelper.class,
                     TimestampChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class,
-                    MeasuresChannelHelper.class),
-            NAThing.class),
+                    MeasuresChannelHelper.class)),
 
     // Energy Features
-    NAPlug(DeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, List.of(SignalChannelHelper.class),
-            NAModule.class),
-    NATherm1(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome,
-            List.of(Therm1ChannelHelper.class, BatteryChannelHelper.class, SignalChannelHelper.class),
-            NAThermostat.class),
-    NARoom(RoomHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome,
-            List.of(RoomChannelHelper.class, RoomSetpointChannelHelper.class), NARoom.class),
-    NRV(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome,
-            List.of(BatteryChannelHelper.class, SignalChannelHelper.class), NAModule.class),
-
-    // Left for future implementation
-    // NACamDoorTag : self explaining
-    // NSD : smoke detector
-    // NIS : indoor siren
-    ;
+    NAPlug(DeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, NAModule.class,
+            List.of(SignalChannelHelper.class)),
+    NATherm1(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, NAThermostat.class,
+            List.of(Therm1ChannelHelper.class, BatteryChannelHelper.class, SignalChannelHelper.class)),
+    NARoom(RoomHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, NARoom.class,
+            List.of(RoomChannelHelper.class, RoomSetpointChannelHelper.class)),
+    NRV(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, NAModule.class,
+            List.of(BatteryChannelHelper.class, SignalChannelHelper.class));
 
     public enum RefreshPolicy {
         AUTO,
@@ -153,17 +140,16 @@ public enum ModuleType {
     public final FeatureArea features;
 
     ModuleType(@Nullable Class<?> handlerClass, RefreshPolicy refreshPeriod, FeatureArea features,
-            @Nullable ModuleType bridge, List<Class<? extends AbstractChannelHelper>> setOfHelpers,
-            @Nullable Class<?> dto) {
+            @Nullable ModuleType bridge, @Nullable Class<?> dto, List<Class<? extends AbstractChannelHelper>> helpers) {
         this.handlerClass = handlerClass;
         this.refreshPeriod = refreshPeriod;
-        this.channelHelpers = setOfHelpers;
+        this.channelHelpers = helpers;
         this.bridgeType = bridge;
         this.dto = dto;
         this.features = features;
 
         try {
-            for (Class<? extends AbstractChannelHelper> helperClass : setOfHelpers) {
+            for (Class<? extends AbstractChannelHelper> helperClass : helpers) {
                 AbstractChannelHelper helper = helperClass.getConstructor().newInstance();
                 groups.addAll(helper.getChannelGroups());
                 extensions.addAll(helper.getMeasureChannels());

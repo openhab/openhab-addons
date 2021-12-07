@@ -38,27 +38,6 @@ public enum EventSubType {
     VEHICLE(EventType.MOVEMENT, 2), // Car seen
     ANIMAL(EventType.MOVEMENT, 3); // Animal seen
 
-    // Left for future implementation
-    // SOUNDING_STOPPED(EventType.SIREN_SOUNDING, 0),
-    // SOUNDING_STARTED(EventType.SIREN_SOUNDING, 1),
-    //
-    // CHAMBER_CLEAN(EventType.DETECTION_CHAMBER_STATUS, 0),
-    // CHAMBER_DUSTY(EventType.DETECTION_CHAMBER_STATUS, 1),
-    //
-    // SOUND_TEST_OK(EventType.SOUND_TEST, 0),
-    // SOUND_TEST_ERROR(EventType.SOUND_TEST, 1),
-    //
-    // BATTERY_VERY_LOW(EventType.BATTERY_STATUS, 1),
-    //
-    // TAMPERED_READY(EventType.TAMPERED, 0),
-    // TAMPERED_TAMPERED(EventType.TAMPERED, 1),
-    //
-    // SMOKE_CLEARED(EventType.SMOKE, 0),
-    // SMOKE_DETECTED(EventType.SMOKE, 1),
-    //
-    // WIFI_ERROR(EventType.WIFI_STATUS, 0),
-    // WIFI_OK(EventType.WIFI_STATUS, 1);
-
     public final EventType type;
     public final int subType;
 

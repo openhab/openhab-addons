@@ -228,7 +228,7 @@ public class HomeHandler extends DeviceWithEventHandler {
 
     public void callSetPersonAway(String personId, boolean away) {
         tryApiCall(
-                () -> away ? homeApi.setpersonsaway(config.id, personId) : homeApi.setpersonshome(config.id, personId));
+                () -> away ? homeApi.setPersonsAway(config.id, personId) : homeApi.setPersonsHome(config.id, personId));
     }
 
     public void callSetRoomThermMode(String roomId, SetpointMode targetMode) {

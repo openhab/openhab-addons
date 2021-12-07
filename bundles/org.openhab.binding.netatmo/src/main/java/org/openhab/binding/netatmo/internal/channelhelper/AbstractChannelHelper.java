@@ -40,7 +40,7 @@ public abstract class AbstractChannelHelper {
     }
 
     public AbstractChannelHelper(String providedGroup, MeasureClass measureClass) {
-        this.channelGroups = Set.of(providedGroup);
+        this(providedGroup);
         this.measureClass = measureClass;
     }
 
