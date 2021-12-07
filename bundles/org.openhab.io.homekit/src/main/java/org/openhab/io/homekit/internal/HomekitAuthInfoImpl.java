@@ -46,22 +46,24 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private byte[] privateKey;
     private String pin;
     private String setupId;
+    private boolean blockUserDeletion;
 
-    public HomekitAuthInfoImpl(Storage<String> storage, String pin, String setupId)
+    public HomekitAuthInfoImpl(Storage<String> storage, String pin, String setupId, boolean blockUserDeletion)
             throws InvalidAlgorithmParameterException {
         this.storage = storage;
         this.pin = pin;
         this.setupId = setupId;
+        this.blockUserDeletion = blockUserDeletion;
         initializeStorage();
     }
 
     @Override
     public void createUser(String username, byte[] publicKey) {
-        logger.trace("Create user {}", username);
+        logger.trace("create user {}", username);
         final String userKey = createUserKey(username);
         final String encodedPublicKey = Base64.getEncoder().encodeToString(publicKey);
         storage.put(userKey, encodedPublicKey);
-        logger.trace("Stored user key {} with value {}", userKey, encodedPublicKey);
+        logger.trace("stored user key {} with value {}", userKey, encodedPublicKey);
     }
 
     @Override
@@ -113,8 +115,10 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public void removeUser(String username) {
-        logger.trace("Remove user {}", username);
-        storage.remove(createUserKey(username));
+        logger.trace("remove user {}", username);
+        if (!this.blockUserDeletion) {
+            storage.remove(createUserKey(username));
+        }
     }
 
     @Override
@@ -124,11 +128,15 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     }
 
     public void clear() {
-        logger.trace("Clear all users");
-        for (String key : new HashSet<>(storage.getKeys())) {
-            if (isUserKey(key)) {
-                storage.remove(key);
+        logger.trace("clear all users. block user deletion flag {}", this.blockUserDeletion);
+        if (!this.blockUserDeletion) {
+            for (String key : new HashSet<>(storage.getKeys())) {
+                if (isUserKey(key)) {
+                    storage.remove(key);
+                }
             }
+        } else {
+            logger.debug("deletion of users information is blocked by binding settings");
         }
     }
 
@@ -146,7 +154,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
         final @Nullable Object privateKeyConfig = storage.get(STORAGE_PRIVATE_KEY);
         if (mac == null) {
             logger.warn(
-                    "Could not find existing MAC in {}. Generating new MAC. This will require re-pairing of iOS devices.",
+                    "could not find existing MAC in {}. Generating new MAC. This will require re-pairing of iOS devices.",
                     storage.getClass().getName());
             mac = HomekitServer.generateMac();
             storage.put(STORAGE_MAC, mac);
