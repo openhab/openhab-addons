@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.net.URI;
 import java.util.Set;
@@ -22,8 +22,8 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 
 /**
  * Base class for all various rest managers
@@ -38,10 +38,10 @@ public abstract class RestManager {
     protected static final URI OAUTH_URI = API_BASE_BUILDER.clone().path(PATH_OAUTH).build();
 
     private final Set<Scope> requiredScopes;
-    protected final ApiBridge apiHandler;
+    protected final ApiBridge apiBridge;
 
     public RestManager(ApiBridge apiHandler, FeatureArea features) {
-        this.apiHandler = apiHandler;
+        this.apiBridge = apiHandler;
         this.requiredScopes = features.scopes;
     }
 
@@ -56,15 +56,18 @@ public abstract class RestManager {
 
     private <T extends ApiResponse<?>> T executeUri(UriBuilder uriBuilder, HttpMethod method, Class<T> classOfT,
             @Nullable String payload) throws NetatmoException {
-        T response = apiHandler.executeUri(uriBuilder.build(), method, classOfT, payload);
-        if (response instanceof ApiResponse.Ok) {
-            ApiResponse.Ok okResponse = (ApiResponse.Ok) response;
-            if (!okResponse.isSuccess()) {
-                throw new NetatmoException(String.format("Unsuccessful command : %s for uri : %s", response.getStatus(),
-                        uriBuilder.build().toString()));
+        if (apiBridge.getConnectionStatus().equals(ConnectionStatus.SUCCESS) || requiredScopes.isEmpty()) {
+            T response = apiBridge.executeUri(uriBuilder.build(), method, classOfT, payload);
+            if (response instanceof ApiResponse.Ok) {
+                ApiResponse.Ok okResponse = (ApiResponse.Ok) response;
+                if (!okResponse.isSuccess()) {
+                    throw new NetatmoException(String.format("Unsuccessful command : %s for uri : %s",
+                            response.getStatus(), uriBuilder.build().toString()));
+                }
             }
+            return response;
         }
-        return response;
+        throw new NetatmoException("Request cancelled : API bridge is not connected.");
     }
 
     protected UriBuilder getApiUriBuilder() {

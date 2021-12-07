@@ -18,7 +18,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
+import org.openhab.binding.netatmo.internal.api.SecurityApi;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PresenceLightMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
@@ -91,7 +92,7 @@ public class PresenceHandler extends CameraHandler {
         if (camAddress != null) {
             String localUrl = camAddress.getLocalURL();
             if (localUrl != null) {
-                tryApiCall(() -> apiBridge.getHomeApi().changeFloodLightMode(localUrl, mode));
+                tryApiCall(() -> apiBridge.getRestManager(SecurityApi.class).changeFloodLightMode(localUrl, mode));
             }
         }
     }

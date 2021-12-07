@@ -19,15 +19,13 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -41,34 +39,24 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
-import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
-import org.openhab.binding.netatmo.internal.deserialization.NAObjectMapDeserializer;
-import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
-import org.openhab.binding.netatmo.internal.deserialization.NAPushTypeDeserializer;
-import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
-import org.openhab.binding.netatmo.internal.deserialization.NAThingMapDeserializer;
-import org.openhab.binding.netatmo.internal.deserialization.StrictEnumTypeAdapterFactory;
+import org.openhab.binding.netatmo.internal.deserialization.NetatmoGson;
 import org.openhab.binding.netatmo.internal.utils.BindingUtils;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.OpenClosedType;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonSyntaxException;
 
 /**
@@ -91,38 +79,19 @@ public class ApiBridge {
     private final Gson gson;
 
     private NetatmoBindingConfiguration configuration = new NetatmoBindingConfiguration();
-    private Map<Class<? extends RestManager>, Object> managers = new HashMap<>();
+    private Map<Class<? extends RestManager>, RestManager> managers = new HashMap<>();
     private ConnectionStatus connectionStatus = ConnectionStatus.UNKNOWN;
     private List<Scope> grantedScopes = List.of();
 
+    private @Nullable ScheduledFuture<?> connectJob;
+
     @Activate
-    public ApiBridge(@Reference HttpClientFactory httpClientFactory, @Reference TimeZoneProvider timeZoneProvider,
+    public ApiBridge(@Reference HttpClientFactory httpClientFactory, @Reference NetatmoGson netatmoGson,
             ComponentContext componentContext) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpHeaders.put(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=UTF-8");
+        this.gson = netatmoGson.getGson();
         this.connectApi = new AuthenticationApi(this, configuration, scheduler);
-
-        gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory())
-                .registerTypeAdapter(NAObjectMap.class, new NAObjectMapDeserializer())
-                .registerTypeAdapter(NAThingMap.class, new NAThingMapDeserializer())
-                .registerTypeAdapter(NAPushType.class, new NAPushTypeDeserializer())
-                .registerTypeAdapter(ZonedDateTime.class,
-                        (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
-                            long netatmoTS = json.getAsJsonPrimitive().getAsLong();
-                            Instant i = Instant.ofEpochSecond(netatmoTS);
-                            return ZonedDateTime.ofInstant(i, timeZoneProvider.getTimeZone());
-                        })
-                .registerTypeAdapter(OnOffType.class,
-                        (JsonDeserializer<OnOffType>) (json, type, jsonDeserializationContext) -> OnOffType
-                                .from(json.getAsJsonPrimitive().getAsString()))
-                .registerTypeAdapter(OpenClosedType.class,
-                        (JsonDeserializer<OpenClosedType>) (json, type, jsonDeserializationContext) -> {
-                            String value = json.getAsJsonPrimitive().getAsString().toUpperCase();
-                            return "TRUE".equals(value) || "1".equals(value) ? OpenClosedType.CLOSED
-                                    : OpenClosedType.OPEN;
-                        })
-                .create();
 
         openConnection(BindingUtils.ComponentContextToMap(componentContext));
     }
@@ -140,18 +109,33 @@ public class ApiBridge {
         }
     }
 
+    @Deactivate
+    public void dispose() {
+        connectApi.dispose();
+        freeConnectJob();
+    }
+
+    private void freeConnectJob() {
+        ScheduledFuture<?> job = connectJob;
+        if (job != null) {
+            job.cancel(true);
+        }
+        connectJob = null;
+    }
+
     private void prepareReconnection(NetatmoException e) {
-        setConnectionStatus(ConnectionStatus.Failed("Will retry to connect Netatmo API, this one failed : %s", e));
+        setConnectionStatus(ConnectionStatus.Failed("Will retry to connect Netatmo API, this call failed : %s", e));
         onAccessTokenResponse(null, List.of());
-        scheduler.schedule(() -> openConnection(null), configuration.reconnectInterval, TimeUnit.SECONDS);
+        freeConnectJob();
+        connectJob = scheduler.schedule(() -> openConnection(null), configuration.reconnectInterval, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends RestManager> @Nullable T getRestManager(Class<T> typeOfRest) {
+    public <T extends RestManager> T getRestManager(Class<T> typeOfRest) {
         if (!managers.containsKey(typeOfRest)) {
             try {
-                Constructor<?> constructor = typeOfRest.getConstructor(ApiBridge.class);
-                T tentative = (T) constructor.newInstance(this);
+                Constructor<T> constructor = typeOfRest.getConstructor(ApiBridge.class);
+                T tentative = constructor.newInstance(this);
                 if (!grantedScopes.containsAll(tentative.getRequiredScopes())) {
                     throw new NetatmoException("Required scopes missing to access : " + typeOfRest);
                 }
@@ -161,31 +145,6 @@ public class ApiBridge {
             }
         }
         return (T) managers.get(typeOfRest);
-    }
-
-    public Optional<WeatherApi> getWeatherApi() {
-        return Optional.ofNullable(getRestManager(WeatherApi.class));
-    }
-
-    public Optional<EnergyApi> getEnergyApi() {
-        return Optional.ofNullable(getRestManager(EnergyApi.class));
-    }
-
-    public Optional<AircareApi> getAirCareApi() {
-        return Optional.ofNullable(getRestManager(AircareApi.class));
-    }
-
-    public Optional<SecurityApi> getSecurityApi() {
-        return Optional.ofNullable(getRestManager(SecurityApi.class));
-    }
-
-    public HomeApi getHomeApi() {
-        HomeApi homeApi = (HomeApi) managers.get(HomeApi.class);
-        if (homeApi == null) {
-            homeApi = new HomeApi(this);
-            managers.put(HomeApi.class, homeApi);
-        }
-        return homeApi;
     }
 
     synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT, @Nullable String payload)
@@ -260,5 +219,9 @@ public class ApiBridge {
         connectionStatus = newStatus;
         logger.debug("Connection status changed : {}", connectionStatus.getMessage());
         listeners.forEach(l -> l.apiConnectionStatusChanged(connectionStatus));
+    }
+
+    public ConnectionStatus getConnectionStatus() {
+        return connectionStatus;
     }
 }

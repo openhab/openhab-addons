@@ -18,11 +18,11 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
-import org.openhab.binding.netatmo.internal.api.EventSubType;
-import org.openhab.binding.netatmo.internal.api.EventType;
 import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.EventCategory;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.VideoStatus;
+import org.openhab.binding.netatmo.internal.api.data.EventSubType;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.EventCategory;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.VideoStatus;
 
 /**
  *

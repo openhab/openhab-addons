@@ -16,16 +16,15 @@ import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
 import org.slf4j.Logger;
@@ -38,11 +37,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 class AuthenticationApi extends RestManager {
-    private static final String ALL_SCOPES = FeatureArea.asSet.stream().map(f -> f.scopes).flatMap(Set::stream)
-            .map(Scope::name).map(String::toLowerCase).collect(Collectors.joining(" "));
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
     private final NetatmoBindingConfiguration configuration;
     private final ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> refreshTokenJob;
 
     AuthenticationApi(ApiBridge apiClient, NetatmoBindingConfiguration configuration,
             ScheduledExecutorService scheduler) {
@@ -52,17 +50,18 @@ class AuthenticationApi extends RestManager {
     }
 
     void authenticate() throws NetatmoException {
-        Map<String, @Nullable String> payload = new HashMap<>(Map.of(SCOPE, ALL_SCOPES));
+        Map<String, @Nullable String> payload = new HashMap<>(Map.of(SCOPE, FeatureArea.ALL_SCOPES));
         payload.put(PASSWORD, configuration.password);
         payload.put(USERNAME, configuration.username);
         requestToken(getPayload(PASSWORD, payload));
     }
 
     private void requestToken(String tokenRequest) throws NetatmoException {
-        NAAccessTokenResponse answer = apiHandler.executeUri(OAUTH_URI, HttpMethod.POST, NAAccessTokenResponse.class,
+        NAAccessTokenResponse answer = apiBridge.executeUri(OAUTH_URI, HttpMethod.POST, NAAccessTokenResponse.class,
                 tokenRequest);
-        apiHandler.onAccessTokenResponse(answer.getAccessToken(), answer.getScope());
-        scheduler.schedule(() -> {
+        apiBridge.onAccessTokenResponse(answer.getAccessToken(), answer.getScope());
+        freeTokenJob();
+        refreshTokenJob = scheduler.schedule(() -> {
             try {
                 requestToken(getPayload(REFRESH_TOKEN, Map.of(REFRESH_TOKEN, answer.getRefreshToken())));
             } catch (NetatmoException e) {
@@ -77,5 +76,17 @@ class AuthenticationApi extends RestManager {
         payload.put(CLIENT_ID, configuration.clientId);
         payload.put(CLIENT_SECRET, configuration.clientSecret);
         return payload.entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.joining("&"));
+    }
+
+    public void dispose() {
+        freeTokenJob();
+    }
+
+    private void freeTokenJob() {
+        ScheduledFuture<?> job = refreshTokenJob;
+        if (job != null) {
+            job.cancel(true);
+        }
+        refreshTokenJob = null;
     }
 }

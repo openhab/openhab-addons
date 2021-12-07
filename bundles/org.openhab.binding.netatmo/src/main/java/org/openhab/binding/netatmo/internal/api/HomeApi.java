@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.util.Collection;
 
@@ -20,11 +20,10 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.PresenceLightMode;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome.NAHomesDataResponse;
-import org.openhab.binding.netatmo.internal.api.dto.NAPing;
 
 /**
  *
@@ -59,37 +58,4 @@ public class HomeApi extends RestManager {
         return response.getBody().getElements();
     }
 
-    public boolean setPersonsAway(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_AWAY);
-        String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
-        post(uriBuilder, ApiResponse.Ok.class, payload);
-        return true;
-    }
-
-    public boolean setPersonsHome(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_HOME);
-        String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
-        post(uriBuilder, ApiResponse.Ok.class, payload);
-        return true;
-    }
-
-    public String ping(String vpnUrl) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path(SPATH_PING);
-        NAPing response = get(uriBuilder, NAPing.class);
-        return response.getStatus();
-    }
-
-    public boolean changeStatus(String localCameraURL, boolean setOn) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARM_CHANGESTATUS);
-        uriBuilder.queryParam("status", setOn ? "on" : "off");
-        post(uriBuilder, ApiResponse.Ok.class, null);
-        return true;
-    }
-
-    public boolean changeFloodLightMode(String localCameraURL, PresenceLightMode mode) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARM_FLOODLIGHTSET);
-        uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
-        get(uriBuilder, ApiResponse.Ok.class);
-        return true;
-    }
 }

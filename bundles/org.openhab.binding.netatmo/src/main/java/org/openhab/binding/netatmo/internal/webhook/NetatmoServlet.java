@@ -68,7 +68,7 @@ public class NetatmoServlet extends HttpServlet {
     private final Map<String, DeviceWithEventHandler> dataListeners = new ConcurrentHashMap<>();
     private final HttpService httpService;
     private boolean hookSet = false;
-    private @Nullable SecurityApi api;
+    // private SecurityApi api;
     private final ApiBridge apiBridge;
 
     @Activate
@@ -79,7 +79,6 @@ public class NetatmoServlet extends HttpServlet {
         try {
             httpService.registerServlet(NETATMO_CALLBACK_URI, this, null, httpService.createDefaultHttpContext());
             logger.debug("Started Netatmo Webhook Servlet at '{}'", NETATMO_CALLBACK_URI);
-            api = apiBridge.getRestManager(SecurityApi.class);
         } catch (ServletException | NamespaceException e) {
             logger.error("Could not start Netatmo Webhook Servlet : {}", e.getMessage());
         }
@@ -96,14 +95,13 @@ public class NetatmoServlet extends HttpServlet {
     @Modified
     protected void modified(Map<String, Object> config) {
         NetatmoBindingConfiguration configuration = new Configuration(config).as(NetatmoBindingConfiguration.class);
-        SecurityApi localApi = api;
         String url = configuration.webHookUrl;
-        if (url != null && !url.isEmpty() && localApi != null) {
+        if (url != null && !url.isEmpty()) {
             String tentative = url + NETATMO_CALLBACK_URI;
             try {
                 URI webhookURI = new URI(tentative);
                 logger.info("Setting Netatmo Welcome WebHook to {}", webhookURI.toString());
-                hookSet = localApi.addwebhook(webhookURI);
+                hookSet = apiBridge.getRestManager(SecurityApi.class).addwebhook(webhookURI);
             } catch (URISyntaxException e) {
                 logger.warn("webhookUrl is not a valid URI '{}' : {}", tentative, e.getMessage());
             } catch (NetatmoException e) {
@@ -113,11 +111,10 @@ public class NetatmoServlet extends HttpServlet {
     }
 
     private void releaseWebHook() {
-        SecurityApi localApi = api;
-        if (hookSet && localApi != null) {
+        if (hookSet) {
             logger.info("Releasing Netatmo Welcome WebHook");
             try {
-                localApi.dropWebhook();
+                apiBridge.getRestManager(SecurityApi.class).dropWebhook();
             } catch (NetatmoException e) {
                 logger.warn("Error releasing webhook : {}", e.getMessage());
             }

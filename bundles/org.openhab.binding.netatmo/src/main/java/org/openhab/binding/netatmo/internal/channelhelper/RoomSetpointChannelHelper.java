@@ -17,8 +17,8 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NARoom;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.types.State;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api;
+package org.openhab.binding.netatmo.internal.api.data;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

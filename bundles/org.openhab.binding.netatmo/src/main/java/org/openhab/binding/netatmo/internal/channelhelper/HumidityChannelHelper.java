@@ -18,7 +18,7 @@ import static org.openhab.binding.netatmo.internal.utils.WeatherUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.MeasureClass;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;

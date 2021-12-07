@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
 
@@ -110,4 +111,19 @@ public class EnergyApi extends RestManager {
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
+
+    public boolean setPersonsAway(String homeId, String personId) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_AWAY);
+        String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
+        post(uriBuilder, ApiResponse.Ok.class, payload);
+        return true;
+    }
+
+    public boolean setPersonsHome(String homeId, String personId) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder().path(SPATH_PERSON_HOME);
+        String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
+        post(uriBuilder, ApiResponse.Ok.class, payload);
+        return true;
+    }
+
 }

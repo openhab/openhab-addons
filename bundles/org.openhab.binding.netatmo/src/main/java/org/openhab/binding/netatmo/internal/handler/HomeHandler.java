@@ -28,11 +28,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.EnergyApi;
 import org.openhab.binding.netatmo.internal.api.HomeApi;
-import org.openhab.binding.netatmo.internal.api.ModuleType;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.FeatureArea;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.SecurityApi;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
@@ -78,7 +78,7 @@ public class HomeHandler extends DeviceWithEventHandler {
     @Override
     public void initialize() {
         super.initialize();
-        homeApi = apiBridge.getHomeApi();
+        homeApi = apiBridge.getRestManager(HomeApi.class);
         try {
             home = homeApi.getHomeList(config.id, null).iterator().next();
             Set<FeatureArea> capabilities = home.getModules().values().stream().map(m -> m.getType().features)
@@ -88,12 +88,12 @@ public class HomeHandler extends DeviceWithEventHandler {
             if (!capabilities.contains(FeatureArea.SECURITY)) {
                 toBeRemovedChannels.addAll(channelsOfGroup(GROUP_HOME_SECURITY));
             } else {
-                securityApi = apiBridge.getSecurityApi();
+                securityApi = Optional.of(apiBridge.getRestManager(SecurityApi.class));
             }
             if (!capabilities.contains(FeatureArea.ENERGY)) {
                 toBeRemovedChannels.addAll(channelsOfGroup(GROUP_HOME_ENERGY));
             } else {
-                energyApi = apiBridge.getEnergyApi();
+                energyApi = Optional.of(apiBridge.getRestManager(EnergyApi.class));
             }
 
             ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
@@ -162,7 +162,7 @@ public class HomeHandler extends DeviceWithEventHandler {
         } else {
             String channelName = channelUID.getIdWithoutGroup();
             if (CHANNEL_PLANNING.equals(channelName)) {
-                apiBridge.getEnergyApi().ifPresent(api -> {
+                energyApi.ifPresent(api -> {
                     tryApiCall(() -> api.switchSchedule(config.id, command.toString()));
                 });
             } else if (channelName.equals(CHANNEL_SETPOINT_MODE)) {
@@ -227,8 +227,10 @@ public class HomeHandler extends DeviceWithEventHandler {
     }
 
     public void callSetPersonAway(String personId, boolean away) {
-        tryApiCall(
-                () -> away ? homeApi.setPersonsAway(config.id, personId) : homeApi.setPersonsHome(config.id, personId));
+        energyApi.ifPresent(api -> {
+            tryApiCall(() -> away ? api.setPersonsAway(config.id, personId) : api.setPersonsHome(config.id, personId));
+        });
+
     }
 
     public void callSetRoomThermMode(String roomId, SetpointMode targetMode) {

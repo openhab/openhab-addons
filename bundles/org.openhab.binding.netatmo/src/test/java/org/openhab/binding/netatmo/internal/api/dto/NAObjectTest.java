@@ -23,8 +23,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.TrendDescription;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.TrendDescription;
+import org.openhab.binding.netatmo.internal.deserialization.NetatmoGson;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.ComponentContext;
@@ -42,7 +43,8 @@ public class NAObjectTest {
         HttpClientFactory httpClientFactory = mock(HttpClientFactory.class);
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
         when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
-        apiBridge = new ApiBridge(httpClientFactory, timeZoneProvider, componentContext);
+        NetatmoGson gson = new NetatmoGson(timeZoneProvider);
+        apiBridge = new ApiBridge(httpClientFactory, gson, componentContext);
     }
 
     @Test

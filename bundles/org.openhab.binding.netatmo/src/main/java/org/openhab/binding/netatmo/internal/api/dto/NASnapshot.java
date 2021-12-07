@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.api.dto;
 
-import static org.openhab.binding.netatmo.internal.api.NetatmoConstants.*;
+import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
 import java.net.MalformedURLException;
 import java.net.URI;

@@ -16,8 +16,8 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.ModuleType;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.SetpointMode;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 
 /**
  *

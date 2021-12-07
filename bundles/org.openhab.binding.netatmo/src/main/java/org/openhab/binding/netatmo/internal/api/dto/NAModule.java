@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.BatteryState;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.BatteryState;
 
 /**
  *

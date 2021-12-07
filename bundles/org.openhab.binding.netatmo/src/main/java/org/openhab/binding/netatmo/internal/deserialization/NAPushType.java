@@ -13,8 +13,8 @@
 package org.openhab.binding.netatmo.internal.deserialization;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.netatmo.internal.api.EventType;
-import org.openhab.binding.netatmo.internal.api.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.EventType;
+import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
  * This class holds informations of push_type field

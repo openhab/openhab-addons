@@ -14,7 +14,7 @@ package org.openhab.binding.netatmo.internal.api.dto;
 
 import java.util.List;
 
-import org.openhab.binding.netatmo.internal.api.NetatmoConstants.Scope;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
 
 /**
  * This is the Access Token Response, a simple value-object that holds the result of the

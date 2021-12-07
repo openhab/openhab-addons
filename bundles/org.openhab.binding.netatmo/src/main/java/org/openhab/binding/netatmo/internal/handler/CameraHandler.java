@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
+import org.openhab.binding.netatmo.internal.api.SecurityApi;
 import org.openhab.binding.netatmo.internal.api.dto.NAEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
@@ -69,7 +70,8 @@ public class CameraHandler extends DeviceWithEventHandler {
             if (camAddress != null) {
                 String localURL = camAddress.getLocalURL();
                 if (localURL != null) {
-                    tryApiCall(() -> apiBridge.getHomeApi().changeStatus(localURL, command == OnOffType.ON));
+                    tryApiCall(() -> apiBridge.getRestManager(SecurityApi.class).changeStatus(localURL,
+                            command == OnOffType.ON));
                 }
             }
         } else {
@@ -122,7 +124,7 @@ public class CameraHandler extends DeviceWithEventHandler {
 
     private @Nullable String pingVpnUrl(String vpnUrl) {
         try {
-            return apiBridge.getHomeApi().ping(vpnUrl);
+            return apiBridge.getRestManager(SecurityApi.class).ping(vpnUrl);
         } catch (NetatmoException e) {
             logger.warn("Error pinging camera : {}", e.getMessage());
             return null;

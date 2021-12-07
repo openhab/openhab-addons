@@ -40,10 +40,6 @@ public class MainHandler extends DeviceWithMeasureHandler {
 
     @Override
     protected NAMain updateReadings() throws NetatmoException {
-        WeatherApi api = apiBridge.getRestManager(WeatherApi.class);
-        if (api != null) {
-            return api.getStationData(config.id);
-        }
-        throw new NetatmoException("No restmanager available for Weather access");
+        return apiBridge.getRestManager(WeatherApi.class).getStationData(config.id);
     }
 }

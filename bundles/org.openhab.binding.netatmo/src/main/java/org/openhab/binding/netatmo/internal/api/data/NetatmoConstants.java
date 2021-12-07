@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.netatmo.internal.api;
+package org.openhab.binding.netatmo.internal.api.data;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.*;
@@ -195,20 +195,23 @@ public class NetatmoConstants {
     static final int[] RADIO_SIGNAL_LEVELS = new int[] { 90, 80, 70, 60 }; // Resp : low, medium, high, full
 
     public static enum FeatureArea {
-        AIR_CARE(Set.of(Scope.READ_HOMECOACH)),
-        WEATHER(Set.of(Scope.READ_STATION)),
-        ENERGY(Set.of(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT)),
+        AIR_CARE(Scope.READ_HOMECOACH),
+        WEATHER(Scope.READ_STATION),
+        ENERGY(Scope.READ_THERMOSTAT, Scope.WRITE_THERMOSTAT),
         SECURITY(Stream.of(WELCOME_SCOPES, PRESENCE_SCOPES, SMOKE_SCOPES, DOORBELL_SCOPES).flatMap(Set::stream)
-                .collect(Collectors.toSet())),
-        NONE(Set.of());
+                .toArray(Scope[]::new)),
+        NONE();
 
         public static final EnumSet<FeatureArea> asSet = EnumSet.allOf(FeatureArea.class);
+        public static final String ALL_SCOPES = asSet.stream().map(f -> f.scopes).flatMap(Set::stream)
+                .map(s -> s.name().toLowerCase()).collect(Collectors.joining(" "));
 
         public final Set<Scope> scopes;
 
-        FeatureArea(Set<Scope> scopes) {
-            this.scopes = scopes;
+        FeatureArea(Scope... scopes) {
+            this.scopes = Set.of(scopes);
         }
+
     }
 
     // Thermostat definitions
