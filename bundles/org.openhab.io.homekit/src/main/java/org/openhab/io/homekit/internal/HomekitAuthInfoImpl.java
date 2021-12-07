@@ -138,7 +138,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
                 }
             }
         } else {
-            logger.debug("deletion of users information is blocked by binding settings");
+            logger.debug("deletion of users information was blocked by binding settings");
         }
     }
 
