@@ -131,7 +131,8 @@ Based on a standard update period of 10mn by Netatmo systems - it will auto adap
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
 | co2                 | value                | Number:Dimensionless | Air quality                                      |
-| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
+| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 
@@ -157,14 +158,12 @@ All these channels are read only.
 | temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
-| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
+| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
-| battery             | status               | String               | Description of the battery status (*)            |
-
-(*) Can be UNDEF on some modules
 
 All these channels are read only.
 
@@ -189,14 +188,12 @@ All these channels are read only.
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
 | co2                 | value                | Number:Dimensionless | Air quality                                      |
-| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
+| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
-| battery             | status               | String               | Description of the battery status (*)            |
-
-(*) Can be UNDEF on some modules
 
 All these channels are read only.
 
@@ -211,14 +208,12 @@ All these channels are read only.
 | rain                | value                | Number:Length        | Quantity of water                                |
 | rain                | sum-1                | Number:Length        | Quantity of water on last hour                   |
 | rain                | sum-24               | Number:Length        | Quantity of water on last day                    |
-| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
+| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
-| battery             | status               | String               | Description of the battery status (*)            |
-
-(*) Can be UNDEF on some modules
 
 
 All these channels are read only.
@@ -237,14 +232,12 @@ All these channels are read only.
 | wind                | max-strength-date    | DateTime             | Timestamp when MaxWindStrength was recorded      |
 | wind                | gust-angle           | Number:Angle         | Direction of the last 5 minutes highest gust     |
 | wind                | gust-strength        | Number:Speed         | Speed of the last 5 minutes highest gust wind    |
-| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
+| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
-| battery             | status               | String               | Description of the battery status (*)            |
-
-(*) Can be UNDEF on some modules
 
 
 All these channels are read only.
@@ -266,16 +259,15 @@ All these channels are read only.
 | humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | pressure            | value                | Number:Pressure      | Current pressure                                 |
 | pressure            | absolute             | Number:Pressure      | Pressure at sea level                            |
-| pressure            | trend                | String               | Pressure evolution trend over time               |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
 | temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
 | temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
 | temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
-| temperature         | trend                | String               | Temperature evolution trend over time            |
 | health-index        | value                | Number               | Health index (*)                                 |
 | co2                 | value                | Number:Dimensionless | Air quality                                      |
-| timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
+| timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
+| timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 

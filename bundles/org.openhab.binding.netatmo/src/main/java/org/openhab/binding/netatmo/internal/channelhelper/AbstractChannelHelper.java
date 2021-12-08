@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.netatmo.internal.channelhelper;
 
+import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.GROUP_EXTENSION;
+
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,11 +35,14 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public abstract class AbstractChannelHelper {
     private @Nullable NAThing data;
-    private final Set<String> channelGroups;
+    private final Set<String> channelGroupTypes;
+    private final Set<String> channelGroups = new HashSet<>();
     private @Nullable MeasureClass measureClass = null;
 
     public AbstractChannelHelper(String... providedGroups) {
-        this.channelGroups = Set.of(providedGroups);
+        this.channelGroupTypes = Set.of(providedGroups);
+        // Sets the list of served groups base on group type names minus '-extended'
+        channelGroupTypes.forEach(groupType -> channelGroups.add(groupType.replace(GROUP_EXTENSION, "")));
     }
 
     public AbstractChannelHelper(String providedGroup, MeasureClass measureClass) {
@@ -82,8 +88,8 @@ public abstract class AbstractChannelHelper {
         return null;
     }
 
-    public Set<String> getChannelGroups() {
-        return channelGroups;
+    public Set<String> getChannelGroupTypes() {
+        return channelGroupTypes;
     }
 
     public Set<String> getMeasureChannels() {

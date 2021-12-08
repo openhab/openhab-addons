@@ -43,8 +43,7 @@ public class NAThing extends NAObject {
     private @Nullable String bridge;
 
     public boolean isReachable() {
-        // This is not implemented on all devices/modules, so if absent
-        // we consider it is reachable
+        // This is not implemented on all devices/modules, so if absent we consider it is reachable
         Boolean localReachable = this.reachable;
         return localReachable != null ? localReachable : true;
     }

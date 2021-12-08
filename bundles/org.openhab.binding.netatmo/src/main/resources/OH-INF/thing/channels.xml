@@ -24,6 +24,7 @@
 	<channel-type id="snapshot">
 		<item-type>Image</item-type>
 		<label>Event Snapshot</label>
+		<description>Capture image of the event.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -55,6 +56,7 @@
 	<channel-type id="person-count">
 		<item-type>Number</item-type>
 		<label>Person Count</label>
+		<description>Total number of Persons that are at home.</description>
 		<tags>
 			<tag>Status</tag>
 			<tag>Presence</tag>
@@ -65,6 +67,7 @@
 	<channel-type id="rain-quantity">
 		<item-type>Number:Length</item-type>
 		<label>Rain Quantity</label>
+		<description>Quantity of water over the period.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -72,6 +75,7 @@
 	<channel-type id="rain-intensity">
 		<item-type>Number:Speed</item-type>
 		<label>Rain Intensity</label>
+		<description>Precipitation intensity.</description>
 		<category>Rain</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -79,6 +83,7 @@
 	<channel-type id="setpoint-duration">
 		<item-type>Number:Time</item-type>
 		<label>Setpoint Duration</label>
+		<description>Default duration of manual setpoint changes.</description>
 		<category>time</category>
 		<state pattern="%d %unit%" min="5" max="720" step="5"/>
 	</channel-type>
@@ -86,6 +91,7 @@
 	<channel-type id="trend" advanced="true">
 		<item-type>String</item-type>
 		<label>Trend</label>
+		<description>Evolution of the measure over time.</description>
 		<category>Line</category>
 		<state readOnly="true" pattern="%s">
 			<options>
@@ -99,11 +105,12 @@
 	<channel-type id="video-status">
 		<item-type>String</item-type>
 		<label>Video Status</label>
+		<description>Status of the video (recording, deleted or available).</description>
 		<state readOnly="true">
 			<options>
-				<option value="RECORDING"/>
-				<option value="DELETED"/>
-				<option value="AVAILABLE"/>
+				<option value="RECORDING">Recording</option>
+				<option value="DELETED">Deleted</option>
+				<option value="AVAILABLE">Available</option>
 			</options>
 		</state>
 	</channel-type>
@@ -111,6 +118,7 @@
 	<channel-type id="setpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
+		<description>Thermostat temperature setpoint.</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="false" min="7" max="30" step="0.5"/>
 	</channel-type>
@@ -118,12 +126,13 @@
 	<channel-type id="th-mode">
 		<item-type>String</item-type>
 		<label>Thermostat Mode</label>
+		<description>Chosen thermostat mode (home, frost guard, manual, max).</description>
 		<state readOnly="false">
 			<options>
-				<option value="HOME"/>
-				<option value="FROST_GUARD"/>
-				<option value="MANUAL"/>
-				<option value="MAX"/>
+				<option value="HOME">Home</option>
+				<option value="FROST_GUARD">Frost Guard</option>
+				<option value="MANUAL">Manual</option>
+				<option value="MAX">Max</option>
 			</options>
 		</state>
 	</channel-type>
@@ -131,12 +140,13 @@
 	<channel-type id="energy-mode">
 		<item-type>String</item-type>
 		<label>House Mode</label>
+		<description>Chosen mode for the house (schedule, away, frost guard, manual).</description>
 		<state readOnly="false">
 			<options>
-				<option value="SCHEDULE"/>
-				<option value="AWAY"/>
-				<option value="FROST_GUARD"/>
-				<option value="MANUAL"/>
+				<option value="SCHEDULE">Following a weekly schedule</option>
+				<option value="AWAY">Applying the -away- temperature as defined by the user</option>
+				<option value="FROST_GUARD">Frost-guard</option>
+				<option value="MANUAL">Applying a manually set temperature setpoint</option>
 			</options>
 		</state>
 	</channel-type>
@@ -144,13 +154,15 @@
 	<channel-type id="room-heating-percent">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Heating Power</label>
+		<description>Percentage of heating power.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
-		<label>Measurement Time</label>
+		<label>Timestamp</label>
+		<description>Timestamp when data was measured.</description>
 		<category>time</category>
 		<tags>
 			<tag>Status</tag>
@@ -162,6 +174,7 @@
 	<channel-type id="co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
+		<description>Air Quality indicator.</description>
 		<category>carbondioxide</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -173,6 +186,7 @@
 	<channel-type id="noise">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
+		<description>Current Noise Level.</description>
 		<category>soundvolume</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -184,13 +198,14 @@
 	<channel-type id="health-index">
 		<item-type>Number</item-type>
 		<label>Health Index</label>
+		<description>Health index (healthy, fine, fair, poor, unhealthy).</description>
 		<state readOnly="true" pattern="%d">
 			<options>
-				<option value="0"/>
-				<option value="1"/>
-				<option value="2"/>
-				<option value="3"/>
-				<option value="4"/>
+				<option value="0">Healthy</option>
+				<option value="1">Fine</option>
+				<option value="2">Fair</option>
+				<option value="3">Poor</option>
+				<option value="4">Unhealthy</option>
 			</options>
 		</state>
 	</channel-type>
@@ -198,19 +213,21 @@
 	<channel-type id="humidex">
 		<item-type>Number</item-type>
 		<label>Humidex</label>
+		<description>Computed Humidex : felt temperature.</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
 	<channel-type id="humidex-scale">
 		<item-type>Number</item-type>
 		<label>Humidex Appreciation</label>
+		<description>Appreciation of the Humidex.</description>
 		<state readOnly="true" pattern="%d">
 			<options>
-				<option value="0"/>
-				<option value="1"/>
-				<option value="2"/>
-				<option value="3"/>
-				<option value="4"/>
+				<option value="0">Comfortable</option>
+				<option value="1">Some discomfort</option>
+				<option value="2">Great discomfort</option>
+				<option value="3">Dangerous</option>
+				<option value="4">Very dangerous</option>
 			</options>
 		</state>
 	</channel-type>
@@ -218,24 +235,25 @@
 	<channel-type id="event-type">
 		<item-type>String</item-type>
 		<label>Event Type</label>
+		<description>Description of the event.</description>
 		<state readOnly="true">
 			<options>
-				<option value="PERSON"/>
-				<option value="PERSON_AWAY"/>
-				<option value="OUTDOOR"/>
-				<option value="MOVEMENT"/>
-				<option value="NEW_MODULE"/>
-				<option value="MODULE_CONNECT"/>
-				<option value="MODULE_DISCONNECT"/>
-				<option value="MODULE_LOW_BATTERY"/>
-				<option value="MODULE_END_UPDATE"/>
-				<option value="CONNECTION"/>
-				<option value="DISCONNECTION"/>
-				<option value="ON"/>
-				<option value="OFF"/>
-				<option value="BOOT"/>
-				<option value="SD"/>
-				<option value="ALIM"/>
+				<option value="PERSON">Face detected</option>
+				<option value="PERSON_AWAY">Person has left home</option>
+				<option value="OUTDOOR">Motion detected by Presence</option>
+				<option value="MOVEMENT">Motion detected</option>
+				<option value="NEW_MODULE">New Module has been paired</option>
+				<option value="MODULE_CONNECT">Module is connected with the Indoor Camera</option>
+				<option value="MODULE_DISCONNECT">Module lost its connection with the Indoor Camera</option>
+				<option value="MODULE_LOW_BATTERY">Module's battery is low</option>
+				<option value="MODULE_END_UPDATE">Module's firmware update is over</option>
+				<option value="CONNECTION">Camera connected to Netatmo</option>
+				<option value="DISCONNECTION">Camera disconnected from Netatmo</option>
+				<option value="ON">Monitoring activated</option>
+				<option value="OFF">Monitoring stopped</option>
+				<option value="BOOT">Camera booting</option>
+				<option value="SD">SD card status changed</option>
+				<option value="ALIM">Power status changed</option>
 			</options>
 		</state>
 	</channel-type>
@@ -243,21 +261,22 @@
 	<channel-type id="event-subtype">
 		<item-type>String</item-type>
 		<label>Event Sub Type</label>
+		<description>Details of the event.</description>
 		<state readOnly="true">
 			<options>
-				<option value="MISSING_SD"/>
-				<option value="SD_INSERTED"/>
-				<option value="SD_FORMATED"/>
-				<option value="WORKING_SD"/>
-				<option value="DEFECTIVE_SD"/>
-				<option value="INCOMPATIBLE_SD_SPEED"/>
-				<option value="INSUFFICIENT_SD_SPACE"/>
-				<option value="INCORRECT_POWER"/>
-				<option value="CORRECT_POWER"/>
-				<option value="ARRIVAL"/>
-				<option value="HUMAN"/>
-				<option value="VEHICLE"/>
-				<option value="ANIMAL"/>
+				<option value="MISSING_SD">Missing SD Card</option>
+				<option value="SD_INSERTED">SD Card inserted</option>
+				<option value="SD_FORMATED">SD Card formated</option>
+				<option value="WORKING_SD">Working SD Card</option>
+				<option value="DEFECTIVE_SD">Defective SD Card</option>
+				<option value="INCOMPATIBLE_SD_SPEED">Incompatible SD Card speed</option>
+				<option value="INSUFFICIENT_SD_SPACE">Insufficient SD Card space</option>
+				<option value="INCORRECT_POWER">Incorrect power adapter</option>
+				<option value="CORRECT_POWER">Correct power adapter</option>
+				<option value="ARRIVAL">Person arrived</option>
+				<option value="HUMAN">Human seen</option>
+				<option value="VEHICLE">Car seen</option>
+				<option value="ANIMAL">Animal seen</option>
 			</options>
 		</state>
 	</channel-type>
@@ -290,6 +309,7 @@
 	<channel-type id="rssi" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Signal</label>
+		<description>Wi-Fi signal strength indicator.</description>
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>

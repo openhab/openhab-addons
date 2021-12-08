@@ -13,40 +13,30 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link PressureChannelHelper} handle specific behavior
- * of modules measuring pressure
+ * The {@link TemperatureExtendedChannelHelper} handle specific behavior
+ * of modules measuring temperature
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class PressureChannelHelper extends AbstractChannelHelper {
+public class TemperatureExtendedChannelHelper extends TemperatureChannelHelper {
 
-    public PressureChannelHelper() {
-        super(GROUP_PRESSURE, MeasureClass.PRESSURE);
-    }
-
-    protected PressureChannelHelper(String groupName) {
-        super(groupName, MeasureClass.PRESSURE);
+    public TemperatureExtendedChannelHelper() {
+        super(GROUP_TEMPERATURE_EXTENDED);
     }
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        switch (channelId) {
-            case CHANNEL_VALUE:
-                return toQuantityType(dashboard.getPressure(), MeasureClass.PRESSURE);
-            case CHANNEL_ABSOLUTE_PRESSURE:
-                return toQuantityType(dashboard.getAbsolutePressure(), MeasureClass.PRESSURE);
-        }
-        return null;
+        return CHANNEL_TREND.equals(channelId) ? toStringType(dashboard.getTempTrend())
+                : super.internalGetDashboard(channelId, dashboard);
     }
 }

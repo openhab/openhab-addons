@@ -8,6 +8,7 @@
 	<config-description uri="netatmo:sum_rain:config">
 		<parameter name="period" type="text">
 			<label>Period</label>
+			<description>Observation period for summing rain quantities.</description>
 			<options>
 				<option value="30min">30 minutes</option>
 				<option value="1hour">1 hour</option>
@@ -22,7 +23,8 @@
 
 	<config-description uri="netatmo:temp:config">
 		<parameter name="limit" type="text">
-			<label>Limit</label>
+			<label>Boundary</label>
+            <description>Defines the requested boundary.</description>
 			<options>
 				<option value="MIN">Minimum</option>
 				<option value="MAX">Maximum</option>
@@ -31,6 +33,7 @@
 		</parameter>
 		<parameter name="period" type="text">
 			<label>Period</label>
+            <description>Observation period for searched boundary.</description>
 			<options>
 				<option value="30min">30 minutes</option>
 				<option value="1hour">1 hour</option>
@@ -45,7 +48,8 @@
 
 	<config-description uri="netatmo:pressure:config">
 		<parameter name="limit" type="text">
-			<label>Limit</label>
+            <label>Boundary</label>
+            <description>Defines the requested boundary.</description>
 			<options>
 				<option value="MIN">Minimum</option>
 				<option value="MAX">Maximum</option>
@@ -54,6 +58,7 @@
 		</parameter>
 		<parameter name="period" type="text">
 			<label>Period</label>
+            <description>Observation period for the queried value.</description>
 			<options>
 				<option value="30min">30 minutes</option>
 				<option value="1hour">1 hour</option>
@@ -68,7 +73,8 @@
 
 	<config-description uri="netatmo:co2:config">
 		<parameter name="limit" type="text">
-			<label>Limit</label>
+            <label>Boundary</label>
+            <description>Defines the requested boundary.</description>
 			<options>
 				<option value="MIN">Minimum</option>
 				<option value="MAX">Maximum</option>
@@ -77,6 +83,7 @@
 		</parameter>
 		<parameter name="period" type="text">
 			<label>Period</label>
+            <description>Observation period for the queried value.</description>
 			<options>
 				<option value="30min">30 minutes</option>
 				<option value="1hour">1 hour</option>
@@ -91,7 +98,8 @@
 
 	<config-description uri="netatmo:noise:config">
 		<parameter name="limit" type="text">
-			<label>Limit</label>
+            <label>Boundary</label>
+            <description>Defines the requested boundary.</description>
 			<options>
 				<option value="MIN">Minimum</option>
 				<option value="MAX">Maximum</option>
@@ -100,6 +108,7 @@
 		</parameter>
 		<parameter name="period" type="text">
 			<label>Period</label>
+            <description>Observation period for the queried value.</description>
 			<options>
 				<option value="30min">30 minutes</option>
 				<option value="1hour">1 hour</option>
@@ -114,7 +123,8 @@
 
 	<config-description uri="netatmo:hum:config">
 		<parameter name="limit" type="text">
-			<label>Limit</label>
+            <label>Boundary</label>
+            <description>Defines the requested boundary.</description>
 			<options>
 				<option value="MIN">Minimum</option>
 				<option value="MAX">Maximum</option>
@@ -123,6 +133,7 @@
 		</parameter>
 		<parameter name="period" type="text">
 			<label>Period</label>
+            <description>Observation period for the queried value.</description>
 			<options>
 				<option value="30min">30 minutes</option>
 				<option value="1hour">1 hour</option>
@@ -137,15 +148,17 @@
 
 	<config-description uri="netatmo:timestamp:config">
 		<parameter name="limit" type="text">
-			<label>Limit</label>
+            <label>Boundary</label>
+            <description>Defines the requested boundary.</description>
 			<options>
-				<option value="DATE_MIN">Date Minimum</option>
-				<option value="DATE_MAX">Date Maximum</option>
+				<option value="DATE_MIN">Timestamp of minimum</option>
+				<option value="DATE_MAX">Timestamp of maximum</option>
 			</options>
 			<default>DATE_MIN</default>
 		</parameter>
 		<parameter name="period" type="text">
 			<label>Period</label>
+            <description>Observation period for the queried value.</description>
 			<options>
 				<option value="1week">This week</option>
 				<option value="1month">This month</option>
@@ -157,22 +170,26 @@
 	<config-description uri="netatmo:device">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
 			<label>Equipment ID</label>
+			<description>Id of the Device (mac address).</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:virtual">
 		<parameter name="id" type="text" required="true">
 			<label>UUID</label>
+			<description>UUID of the thing.</description>
 		</parameter>
 	</config-description>
 
 	<config-description uri="netatmo:configurable">
 		<parameter name="id" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" required="true">
 			<label>Equipment ID</label>
+            <description>Id of the Device (mac address).</description>
 		</parameter>
 
 		<parameter name="refreshInterval" type="integer" min="2000" unit="ms">
 			<label>Refresh Interval</label>
+			<description>The refresh interval to poll Netatmo API (in ms).</description>
 			<default>300000</default>
 			<advanced>true</advanced>
 		</parameter>

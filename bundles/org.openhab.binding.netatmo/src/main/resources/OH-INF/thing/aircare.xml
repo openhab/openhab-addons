@@ -10,5 +10,42 @@
 			<channel id="value" typeId="health-index"/>
 		</channels>
 	</channel-group-type>
+	
+    <channel-group-type id="temperature">
+        <label>Temperature</label>
+        <channels>
+            <channel id="value" typeId="system.outdoor-temperature">
+                <label>Temperature</label>
+            </channel>
+            <channel id="min-today" typeId="system.outdoor-temperature">
+                <label>Today min</label>
+                <description>Minimum temperature measured today.</description>
+            </channel>
+            <channel id="max-today" typeId="system.outdoor-temperature">
+                <label>Today max</label>
+                <description>Maximum temperature measured today.</description>
+            </channel>
+            <channel id="min-time" typeId="timestamp">
+                <label>Today Min Timestamp</label>
+                <description>Moment when temperature was measured at his minimum today.</description>
+            </channel>
+            <channel id="max-time" typeId="timestamp">
+                <label>Today Max Timestamp</label>
+                <description>Moment when temperature was measured at his maximum today.</description>
+            </channel>
+        </channels>
+    </channel-group-type>
+    
+    <channel-group-type id="pressure">
+        <label>Pressure</label>
+        <channels>
+            <channel id="value" typeId="system.barometric-pressure"/>
+            <channel id="absolute" typeId="system.barometric-pressure">
+                <label>Absolute Pressure</label>
+                <description>Pressure measured relative to a full vacuum.</description>
+            </channel>
+        </channels>
+    </channel-group-type>
+
 
 </thing:thing-descriptions>

@@ -93,9 +93,10 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
     }
 
     private List<ChannelGroupDefinition> getGroupDefinitions(ModuleType validThingType) {
-        return validThingType.groups.stream()
-                .map(group -> new ChannelGroupDefinition(group, new ChannelGroupTypeUID(BINDING_ID, group)))
-                .collect(Collectors.toList());
+        return validThingType.groups.stream().map(group -> {
+            String groupName = group.replace(GROUP_EXTENSION, "");
+            return new ChannelGroupDefinition(groupName, new ChannelGroupTypeUID(BINDING_ID, group));
+        }).collect(Collectors.toList());
     }
 
     private Map<String, String> getProperties(ModuleType supportedThingType) {

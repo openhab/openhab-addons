@@ -13,46 +13,36 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NAModule;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link BatteryChannelHelper} handle specific behavior
+ * The {@link BatteryExtendedChannelHelper} handle specific behavior
  * of modules using batteries
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class BatteryChannelHelper extends AbstractChannelHelper {
+public class BatteryExtendedChannelHelper extends BatteryChannelHelper {
 
-    public BatteryChannelHelper() {
-        super(GROUP_BATTERY);
-    }
-
-    protected BatteryChannelHelper(String groupName) {
-        super(groupName);
+    public BatteryExtendedChannelHelper() {
+        super(GROUP_BATTERY_EXTENDED);
     }
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (naThing instanceof NAModule) {
             NAModule module = (NAModule) naThing;
-            int percent = module.getBatteryPercent();
-            switch (channelId) {
-                case CHANNEL_VALUE:
-                    return percent >= 0 ? new DecimalType(percent) : UnDefType.NULL;
-                case CHANNEL_LOW_BATTERY:
-                    return percent >= 0 ? OnOffType.from(percent < 20) : UnDefType.NULL;
+            if (CHANNEL_BATTERY_STATUS.equals(CHANNEL_BATTERY_STATUS)) {
+                return toStringType(module.getBatteryState());
             }
         }
-        return null;
+        return super.internalGetProperty(channelId, naThing);
     }
 }

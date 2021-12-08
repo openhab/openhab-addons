@@ -35,6 +35,10 @@ public class TemperatureChannelHelper extends AbstractChannelHelper {
         super(GROUP_TEMPERATURE, MeasureClass.EXTERIOR_TEMPERATURE);
     }
 
+    protected TemperatureChannelHelper(String groupName) {
+        super(groupName, MeasureClass.EXTERIOR_TEMPERATURE);
+    }
+
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
         switch (channelId) {

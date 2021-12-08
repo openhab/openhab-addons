@@ -17,13 +17,12 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toDate
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.types.State;
 
 /**
  * The {@link TimestampChannelHelper} handle specific behavior
- * of modules using batteries
+ * of modules reporting last seen
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -35,13 +34,12 @@ public class TimestampChannelHelper extends AbstractChannelHelper {
         super(GROUP_TIMESTAMP);
     }
 
-    @Override
-    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
-        return CHANNEL_LAST_SEEN.equals(channelId) ? toDateTimeType(naThing.getLastSeen()) : null;
+    protected TimestampChannelHelper(String groupName) {
+        super(groupName);
     }
 
     @Override
-    protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return CHANNEL_LAST_SEEN.equals(channelId) ? toDateTimeType(dashboard.getTimeUtc()) : null;
+    protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
+        return CHANNEL_LAST_SEEN.equals(channelId) ? toDateTimeType(naThing.getLastSeen()) : null;
     }
 }

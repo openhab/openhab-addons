@@ -49,7 +49,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_HEALTH = "health";
     public static final String GROUP_HOME_ENERGY = "energy";
     public static final String GROUP_SIGNAL = "signal";
-    public static final String GROUP_ENERGY_BATTERY = "energy-battery";
+    public static final String GROUP_BATTERY = "battery";
     public static final String GROUP_HOME_SECURITY = "home-security";
     public static final String GROUP_WELCOME = "welcome";
     public static final String GROUP_PRESENCE = "presence";
@@ -60,6 +60,13 @@ public class NetatmoBindingConstants {
     public static final String GROUP_ROOM_PROPERTIES = "room-properties";
     public static final String GROUP_TH_PROPERTIES = "th-properties";
     public static final String GROUP_TH_SETPOINT = "setpoint";
+
+    // Alternative extended groups
+    public static final String GROUP_EXTENSION = "-extended";
+    public static final String GROUP_EXTENDED_TIMESTAMP = GROUP_TIMESTAMP + GROUP_EXTENSION;
+    public static final String GROUP_BATTERY_EXTENDED = GROUP_BATTERY + GROUP_EXTENSION;
+    public static final String GROUP_PRESSURE_EXTENDED = GROUP_PRESSURE + GROUP_EXTENSION;
+    public static final String GROUP_TEMPERATURE_EXTENDED = GROUP_TEMPERATURE + GROUP_EXTENSION;
 
     // Channel ids
     public static final String CHANNEL_VALUE = "value";
@@ -75,6 +82,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_HEAT_INDEX = "heat-index";
     public static final String CHANNEL_ABSOLUTE_PRESSURE = "absolute";
     public static final String CHANNEL_LAST_SEEN = "last-seen";
+    public static final String CHANNEL_MEASURE_TIMESTAMP = "measures";
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
     public static final String CHANNEL_BATTERY_STATUS = "status";
     public static final String CHANNEL_SIGNAL_STRENGTH = "strength";
