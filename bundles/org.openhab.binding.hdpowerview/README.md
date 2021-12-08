@@ -56,7 +56,7 @@ However, the configuration parameters are described below:
 | Configuration Parameter | Description |
 |-------------------------|-------------|
 | id                      | The ID of the PowerView shade in the app. Must be an integer. |
-| newSecondaryMode        | **Advanced** (for Thing type `shade` only): Set to `true` to migrate Thing type `shade` (legacy mode) to behave a Thing type `shade2` (new mode). |
+| newSecondaryMode        | **Advanced** (for Thing type `shade` only): Set to `true` to migrate Thing type `shade` (legacy mode) to behave as a Thing type `shade2` (new mode). |
 
 ## Channels
 
