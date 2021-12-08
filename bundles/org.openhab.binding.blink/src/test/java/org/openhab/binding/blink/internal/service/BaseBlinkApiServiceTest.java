@@ -128,6 +128,8 @@ class BaseBlinkApiServiceTest {
         doReturn(response).when(request).send();
         SimpleClass result = apiService.apiRequest("abc", "api/v1/hurz", HttpMethod.GET, null, null, SimpleClass.class);
         verify(gson).fromJson(jsonString, SimpleClass.class);
+        //noinspection ConstantConditions
+        assertThat(result.iam, is(notNullValue()));
         assertThat(result.iam, is("old"));
         assertThat(result.age, is(90));
     }

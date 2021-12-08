@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class AccountConfiguration {
 
-    public @NonNullByDefault({}) String email;
-    public @NonNullByDefault({}) String password;
+    public @NonNullByDefault({}) String email = "";
+    public @NonNullByDefault({}) String password = "";
     public @NonNullByDefault({}) int refreshInterval = 120;
 
 }

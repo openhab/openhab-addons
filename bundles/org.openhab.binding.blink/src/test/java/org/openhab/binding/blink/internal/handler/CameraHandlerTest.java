@@ -32,10 +32,10 @@ import com.google.gson.Gson;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
+@SuppressWarnings("ConstantConditions")
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class CameraHandlerTest {
@@ -81,8 +81,6 @@ public class CameraHandlerTest {
 
     @Test
     void testInitialize() {
-        if (cameraHandler.config == null)
-            fail("CameraHandler configuration is null");
         assertThat(cameraHandler.config, is(notNullValue()));
         assertThat(cameraHandler.config.cameraId, is(Long.parseLong(CAMERA_ID)));
         assertThat(cameraHandler.config.networkId, is(Long.parseLong(NETWORK_ID)));

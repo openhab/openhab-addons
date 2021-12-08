@@ -86,7 +86,8 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.setCallback(callback);
         accountHandler.initialize();
         waitForAssert(() -> {
-            assertThat(accountHandler.accountServlet, is(notNullValue()));
+            if (accountHandler.accountServlet == null)
+                fail("accountServlet is null");
             ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
             verify(callback, atLeastOnce()).statusUpdated(eq(bridge), statusCaptor.capture());
             assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));
@@ -146,6 +147,7 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.dispose();
         verify(accountHandler).cleanup();
         verify(servlet).dispose();
+        //noinspection ConstantConditions
         assertThat(accountHandler.accountServlet, is(nullValue()));
     }
 
@@ -157,6 +159,7 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.config = config;
         accountHandler.setOnline();
         // cache set
+        //noinspection ConstantConditions
         assertThat(accountHandler.homescreenCache, is(notNullValue()));
         // cache expiry
         Field expiry = ExpiringCache.class.getDeclaredField("expiry");
@@ -191,6 +194,7 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.blinkService = accountService;
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         doThrow(IOException.class).when(accountService).getDevices(ArgumentMatchers.any(BlinkAccount.class));
+        //noinspection ConstantConditions
         assertThat(accountHandler.loadDevices(), is(nullValue()));
     }
 
@@ -325,7 +329,6 @@ class AccountHandlerTest extends JavaTest {
     @Test
     void testGetBatteryStatusLowOFF() throws IOException {
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
-        BlinkHomescreen homescreen = testBlinkHomescreen();
         BlinkCamera apiCamera = new BlinkCamera(123L, 456L);
         apiCamera.battery = "ok";
         doReturn(apiCamera).when(accountHandler).getCameraState(any(), anyBoolean());
@@ -335,7 +338,6 @@ class AccountHandlerTest extends JavaTest {
     @Test
     void testGetBatteryStatusLowON() throws IOException {
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
-        BlinkHomescreen homescreen = testBlinkHomescreen();
         BlinkCamera apiCamera = new BlinkCamera(123L, 456L);
         apiCamera.battery = "somethingelse";
         doReturn(apiCamera).when(accountHandler).getCameraState(any(), anyBoolean());

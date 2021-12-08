@@ -49,9 +49,9 @@ public class BlinkHandlerFactory extends BaseThingHandlerFactory {
     static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT, THING_TYPE_CAMERA,
             THING_TYPE_NETWORK);
 
-    private Gson gson;
-    private HttpService httpService;
-    private HttpClientFactory httpClientFactory;
+    private final Gson gson;
+    private final HttpService httpService;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public BlinkHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory) {

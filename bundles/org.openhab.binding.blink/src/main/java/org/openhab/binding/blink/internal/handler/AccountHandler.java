@@ -44,8 +44,10 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link AccountHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link AccountHandler} is responsible for initializing the blink account which is used as a bridge
+ * for the blink things camera and network.
+ * <p>
+ * It also provides the methods for updating camera and network states.
  *
  * @author Matthias Oesterheld - Initial contribution
  */
@@ -59,10 +61,9 @@ public class AccountHandler extends BaseBridgeHandler {
     @Nullable AccountConfiguration config;
     AccountService blinkService;
     private final HttpService httpService;
-    private Gson gson;
     @Nullable AccountVerificationServlet accountServlet;
     @Nullable BlinkAccount blinkAccount;
-    @NonNullByDefault({}) ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
+    @Nullable ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
 
     public AccountHandler(Bridge bridge, HttpService httpService,
             BundleContext bundleContext, HttpClientFactory httpClientFactory,
@@ -70,7 +71,6 @@ public class AccountHandler extends BaseBridgeHandler {
         super(bridge);
         this.httpService = httpService;
         this.bundleContext = bundleContext;
-        this.gson = gson;
         this.blinkService = new AccountService(httpClientFactory.getCommonHttpClient(), gson);
     }
 
@@ -154,11 +154,14 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public void setOnline() {
-        this.homescreenCache = new ExpiringCache<>(Duration.ofSeconds(config.refreshInterval), this::loadDevices);
+        if (config != null)
+            this.homescreenCache = new ExpiringCache<>(Duration.ofSeconds(config.refreshInterval), this::loadDevices);
         updateStatus(ThingStatus.ONLINE);
     }
 
     public @Nullable BlinkHomescreen getDevices(boolean refresh) {
+        if (homescreenCache == null)
+            return null;
         if (refresh) {
             return homescreenCache.refreshValue();
         } else {

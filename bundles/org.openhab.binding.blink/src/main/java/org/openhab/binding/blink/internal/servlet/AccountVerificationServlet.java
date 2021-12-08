@@ -1,26 +1,28 @@
-/*
-  Copyright (c) 2010-2021 Contributors to the openHAB project
-  <p>
-  See the NOTICE file(s) distributed with this work for additional
-  information.
-  <p>
-  This program and the accompanying materials are made available under the
-  terms of the Eclipse Public License 2.0 which is available at
-  http://www.eclipse.org/legal/epl-2.0
-  <p>
-  SPDX-License-Identifier: EPL-2.0
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * <p>
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ * <p>
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ * <p>
+ * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.blink.internal.servlet;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.binding.blink.internal.service.AccountService;
 import org.osgi.framework.BundleContext;
@@ -29,8 +31,18 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link AccountVerificationServlet} class provides the servlet for validation of the 2-factor authentication pin
+ * provided by blink.
+ * <p>
+ * The content is loaded from the componentbundle resources (see validation.html)
+ *
+ * @author Matthias Oesterheld - Initial contribution
+ */
 @NonNullByDefault
 public class AccountVerificationServlet extends HttpServlet {
+
+    public static final long serialVersionUID = 666L;
 
     private static final String SETTINGS_THINGS = "/settings/things/";
     private final Logger logger = LoggerFactory.getLogger(AccountVerificationServlet.class);
@@ -48,9 +60,10 @@ public class AccountVerificationServlet extends HttpServlet {
         this.blinkService = blinkService;
 
         try {
-            servletUrl = "/blink/" + URLEncoder.encode(accountHandler.getThing().getUID().getId(), "UTF8");
+            servletUrl = "/blink/" + URLEncoder.encode(accountHandler.getThing().getUID().getId(),
+                    StandardCharsets.UTF_8);
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
-        } catch (NamespaceException | ServletException | UnsupportedEncodingException e) {
+        } catch (NamespaceException | ServletException e) {
             throw new IllegalStateException(e.getMessage());
         }
     }
@@ -61,17 +74,19 @@ public class AccountVerificationServlet extends HttpServlet {
 
     @Override
     protected void doGet(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
-            throws ServletException, IOException {
-        if (request == null) {
+            throws IOException {
+        if (response == null) {
             logger.warn("Ignoring received request without response.");
             return;
         }
-        if (response == null) {
+        if (request == null) {
             logger.warn("Ignoring illegal request.");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
-        if (request.getParameter("resend") != null) {
-            blinkService.login(accountHandler.getConfiguration(), accountHandler.getBlinkAccount().generatedClientId,
+        @Nullable BlinkAccount blinkAccount = accountHandler.getBlinkAccount();
+        if (request.getParameter("resend") != null && blinkAccount != null) {
+            blinkService.login(accountHandler.getConfiguration(), blinkAccount.generatedClientId,
                     true);
         }
         response.addHeader("content-type", "text/html;charset=UTF-8");
@@ -83,14 +98,15 @@ public class AccountVerificationServlet extends HttpServlet {
     }
 
     protected void doPost(@Nullable HttpServletRequest request, @Nullable HttpServletResponse response)
-            throws ServletException, IOException {
-        if (request == null) {
+            throws IOException {
+        if (response == null) {
             logger.warn("Ignoring received request without response.");
             return;
         }
-        if (response == null) {
+        if (request == null) {
             logger.warn("Ignoring illegal request.");
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
         }
         String pin = request.getParameter("pin");
         if (pin == null)

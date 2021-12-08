@@ -83,6 +83,7 @@ class BlinkDiscoveryServiceTest {
         verify(discoveryService).thingDiscovered(any());
     }
 
+    @Test
     void testDiscoverMulti() {
         doReturn(bridge).when(accountHandler).getThing();
         BlinkHomescreen homescreen = testHomescreen();

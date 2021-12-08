@@ -14,16 +14,14 @@ package org.openhab.binding.blink.internal.handler;
 
 import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -34,8 +32,8 @@ import com.google.gson.Gson;
 import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 /**
- * The {@link CameraHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link CameraHandler} is responsible for initializing camera thing and handling commands, which are
+ * sent to one of the camera's channels.
  *
  * @author Matthias Oesterheld - Initial contribution
  */
@@ -44,7 +42,7 @@ public class CameraHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
 
-    @NonNullByDefault({}) CameraConfiguration config;
+    @Nullable CameraConfiguration config;
     CameraService cameraService;
 
     public CameraHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) {
@@ -55,42 +53,53 @@ public class CameraHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (getBridge() == null || getBridge().getHandler() == null) {
+            @Nullable CameraConfiguration nonNullConfig = config;
+            @Nullable Bridge bridge = getBridge();
+            if (bridge == null || bridge.getHandler() == null) {
                 logger.warn("Cannot handle commands of blink things without a bridge: {}",
                         thing.getUID().getAsString());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge");
                 return;
             }
-            AccountHandler accountHandler = (AccountHandler) getBridge().getHandler();
+            if (nonNullConfig == null) {
+                logger.warn("Cannot handle commands of blink things without a thing configuration: {}",
+                        thing.getUID().getAsString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing configuration");
+                return;
+            }
+            AccountHandler accountHandler = (AccountHandler) bridge.getHandler();
+            if (accountHandler == null)
+                return; // never happens, but reduces compiler noise... makes me unhappy, though.
             if (CHANNEL_CAMERA_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    double temp = accountHandler.getTemperature(config);
+                    double temp = accountHandler.getTemperature(nonNullConfig);
                     updateState(CHANNEL_CAMERA_TEMPERATURE, new DecimalType(temp));
                 }
             } else if (CHANNEL_CAMERA_BATTERY.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(config));
+                    updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(nonNullConfig));
                 }
             } else if (CHANNEL_CAMERA_MOTIONDETECTION.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    updateState(CHANNEL_CAMERA_MOTIONDETECTION, accountHandler.getMotionDetection(config, false));
+                    updateState(CHANNEL_CAMERA_MOTIONDETECTION,
+                            accountHandler.getMotionDetection(nonNullConfig, false));
                 } else if (command instanceof OnOffType) {
                     OnOffType cmd = (OnOffType) command;
                     boolean enable = (cmd == OnOffType.ON);
-                    cameraService.motionDetection(accountHandler.getBlinkAccount(), config, enable);
+                    cameraService.motionDetection(accountHandler.getBlinkAccount(), nonNullConfig, enable);
                     // enable/disable is an async command in the api, changes might not be reflected in updateState
                     updateState(CHANNEL_CAMERA_MOTIONDETECTION, cmd);
                 }
             } else if (CHANNEL_CAMERA_SETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType)
                     updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
-                if (command instanceof OnOffType && command == OnOffType.ON) {
-                    cameraService.createThumbnail(accountHandler.getBlinkAccount(), config);
+                if (command == OnOffType.ON) {
+                    cameraService.createThumbnail(accountHandler.getBlinkAccount(), nonNullConfig);
                     updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
                 }
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    String imagePath = accountHandler.getCameraState(config, true).thumbnail;
+                    String imagePath = accountHandler.getCameraState(nonNullConfig, true).thumbnail;
                     updateState(CHANNEL_CAMERA_GETTHUMBNAIL,
                             new RawType(cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath),
                                     "image/jpeg"));

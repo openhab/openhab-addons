@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * <p>
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ * <p>
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ * <p>
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.blink.internal.discovery;
 
 import java.util.Set;
@@ -22,6 +34,12 @@ import org.slf4j.LoggerFactory;
 
 import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
+/**
+ * The {@link BlinkDiscoveryService} performs auto-discovery of camera and network things for an account bridge.
+ * Background Discovery is enabled by default.
+ *
+ * @author Matthias Oesterheld - Initial contribution
+ */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.blink")
 public class BlinkDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
@@ -57,6 +75,9 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
         discover();
     }
 
+    /**
+     * actual discovery of things based on homescreen api results is done here.
+     */
     void discover() {
         if (accountHandler == null) {
             logger.debug("Blink background discovery cancelled without accountHandler.");

@@ -75,7 +75,8 @@ class AccountServiceTest {
     @Test
     void testLoginReauthParams() throws IOException {
         AccountConfiguration config = testAccountConfiguration();
-        ArgumentCaptor<Map<String, String>> paramCaptor = ArgumentCaptor.forClass(Map.class);
+        @SuppressWarnings("unchecked") ArgumentCaptor<Map<String, String>> paramCaptor =
+                ArgumentCaptor.forClass(Map.class);
         doReturn(BlinkTestUtil.testBlinkAccount()).when(accountService)
                 .apiRequest(anyString(), anyString(), ArgumentMatchers.any(HttpMethod.class), isNull(),
                         paramCaptor.capture(), eq(BlinkAccount.class));

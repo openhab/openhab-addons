@@ -32,8 +32,8 @@ import com.google.gson.Gson;
 import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 /**
- * The {@link NetworkHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link NetworkHandler} is responsible for initializing network things and handling commands, which are
+ * sent to one of the network's channels.
  *
  * @author Matthias Oesterheld - Initial contribution
  */

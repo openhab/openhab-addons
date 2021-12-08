@@ -42,7 +42,7 @@ class BlinkHandlerFactoryTest {
     private static final String NETWORK = "network";
     private @Mock @NonNullByDefault({}) HttpService httpService;
     private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
-    private @Mock @NonNullByDefault({}) BundleContext bundleContext;
+    private @Mock @NonNullByDefault({}) BundleContext mockBundleContext;
 
     private BlinkHandlerFactory factory = new BlinkHandlerFactory(httpService, httpClientFactory);
 
@@ -60,7 +60,7 @@ class BlinkHandlerFactoryTest {
         factory = new BlinkHandlerFactory(httpService, httpClientFactory) {
             @Override
             protected BundleContext getBundleContext() {
-                return bundleContext;
+                return mockBundleContext;
             }
         };
     }
@@ -72,7 +72,7 @@ class BlinkHandlerFactoryTest {
 
     @ParameterizedTest
     @MethodSource("thingUIDs")
-    void supportsCorrectThingType(String uid) {
+    void supportsCorrectThingType(@Nullable String uid) {
         ThingTypeUID thingTypeUID = (uid == null) ?
                 new ThingTypeUID(BINDING_NAME, "hurz") :
                 new ThingTypeUID(BINDING_NAME, uid);

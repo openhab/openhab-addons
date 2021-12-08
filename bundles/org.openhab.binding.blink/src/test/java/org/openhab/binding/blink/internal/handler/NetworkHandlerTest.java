@@ -56,9 +56,10 @@ class NetworkHandlerTest {
         config.put("networkId", NETWORK_ID);
         when(thing.getConfiguration()).thenReturn(config);
         when(httpClientFactory.getCommonHttpClient()).thenReturn(new HttpClient());
-        when(account.getHandler()).thenReturn(accountHandler);
+        doReturn(accountHandler).when(account).getHandler();
         when(accountHandler.getNetworkArmed(anyString(), eq(false))).thenReturn(OnOffType.ON);
-        when(accountHandler.getBlinkAccount()).thenReturn(BlinkTestUtil.testBlinkAccount());
+        doReturn(BlinkTestUtil.testBlinkAccount()).when(accountHandler).getBlinkAccount();
+        //noinspection ConstantConditions
         networkHandler = new NetworkHandler(thing, httpClientFactory, gson) {
             @Override
             public @Nullable Bridge getBridge() {
