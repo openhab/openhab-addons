@@ -314,7 +314,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             loadMediaStateConfig(mediaStateJSONConfig);
         }
         adbConnection.configure(currentConfig.ip, currentConfig.port, currentConfig.timeout,
-                currentConfig.recordSeconds);
+                currentConfig.recordDuration);
         updateStatus(ThingStatus.UNKNOWN);
         connectionCheckerSchedule = scheduler.scheduleWithFixedDelay(this::checkConnection, 0,
                 currentConfig.refreshTime, TimeUnit.SECONDS);

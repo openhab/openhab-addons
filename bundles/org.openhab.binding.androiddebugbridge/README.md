@@ -35,7 +35,7 @@ As I can not find a way to identify android devices in the network the discovery
 | port | int | Device port listening to adb connections (default: 5555) |
 | refreshTime | int | Seconds between device status refreshes (default: 30) |
 | timeout | int | Command timeout in seconds (default: 5) |
-| recordSeconds | int | Record input time in seconds |
+| recordDuration | int | Record input duration in seconds |
 | mediaStateJSONConfig | String | Expects a JSON array. Allow to configure the media state detection method per app. Described in the following section |
 
 ## Media State Detection
@@ -58,7 +58,7 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 ## Record/Send input events
 As the execution of key events takes a while you can use input events an alternative way to control the device you could use input events. As they are pretty device specific you can use the record-input and recorded-input to store/send those events. 
 An example of what you can do:
-* You can send the command `UP` to the `record-input` channel the binding will them capture the events you send through your remote for the defined recordSeconds config for the thing, so press once the UP key on your remote and wait a while.
+* You can send the command `UP` to the `record-input` channel the binding will them capture the events you send through your remote for the defined recordDuration config for the thing, so press once the UP key on your remote and wait a while.
 * Now that you have recorded your input you can send the `UP` command to the `recorded-input` event and it will send the recorded event to the android device. 
 
 Please note that events could fail if the input method is removed, for example it fails if you clone the events of a bluetooth controller and the remote is offline.

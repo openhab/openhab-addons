@@ -47,7 +47,7 @@
 				<description>Command timeout seconds.</description>
 				<default>5</default>
 			</parameter>
-			<parameter name="recordSeconds" type="integer" required="true" min="3" max="20">
+			<parameter name="recordDuration" type="integer" required="true" min="3" max="20">
 				<label>Record Seconds</label>
 				<description>How much time the record-input channel wait for events to record</description>
 				<default>5</default>

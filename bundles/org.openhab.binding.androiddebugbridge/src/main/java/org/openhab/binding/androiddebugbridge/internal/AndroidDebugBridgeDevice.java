@@ -83,7 +83,7 @@ public class AndroidDebugBridgeDevice {
     private String ip = "127.0.0.1";
     private int port = 5555;
     private int timeoutSec = 5;
-    private int recordSeconds;
+    private int recordDuration;
     private @Nullable Socket socket;
     private @Nullable AdbConnection connection;
     private @Nullable Future<String> commandFuture;
@@ -92,11 +92,11 @@ public class AndroidDebugBridgeDevice {
         this.scheduler = scheduler;
     }
 
-    public void configure(String ip, int port, int timeout, int recordSeconds) {
+    public void configure(String ip, int port, int timeout, int recordDuration) {
         this.ip = ip;
         this.port = port;
         this.timeoutSec = timeout;
-        this.recordSeconds = recordSeconds;
+        this.recordDuration = recordDuration;
     }
 
     public void sendKeyEvent(String eventCode)
@@ -317,7 +317,7 @@ public class AndroidDebugBridgeDevice {
 
     public String recordInputEvents()
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
-        String out = runAdbShell(recordSeconds * 2, "getevent", "&", "sleep", Integer.toString(recordSeconds), "&&",
+        String out = runAdbShell(recordDuration * 2, "getevent", "&", "sleep", Integer.toString(recordDuration), "&&",
                 "exit");
         var matcher = INPUT_EVENT_PATTERN.matcher(out);
         var commandList = new ArrayList<String>();
