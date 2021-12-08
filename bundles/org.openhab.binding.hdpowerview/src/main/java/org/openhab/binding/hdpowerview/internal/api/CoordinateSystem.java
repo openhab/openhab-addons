@@ -51,19 +51,19 @@ public enum CoordinateSystem {
      *      shades: 0..65535
      *      vanes: 0..32767
      *
-     * Shade fully up: (top-down: open, bottom-up: closed)
+     * Shade fully up: (top-down: closed, bottom-up: open)
      *      posKind: 1
      *      position: 65535
      *
-     * Shade and vane fully down: (top-down: closed, bottom-up: open)
+     * Shade and vane fully down: (top-down: open, bottom-up: closed)
      *      posKind: 1
      *      position1: 0
      *
-     * ALTERNATE: Shade and vane fully down: (top-down: closed, bottom-up: open)
+     * ALTERNATE: Shade and vane fully down: (bottom-up: closed)
      *      posKind: 3
      *      position: 0
      *
-     * Shade fully down (closed) and vane fully up (open):
+     * Shade fully down (bottom-up: closed) and vane fully up (open):
      *      posKind: 3
      *      position: 32767
      *
