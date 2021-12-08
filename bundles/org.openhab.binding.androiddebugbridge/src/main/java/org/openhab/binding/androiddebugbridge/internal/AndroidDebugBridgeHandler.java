@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,6 +62,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private static final String SHUTDOWN_POWER_OFF = "POWER_OFF";
     private static final String SHUTDOWN_REBOOT = "REBOOT";
     private static final Gson GSON = new Gson();
+    private static final Pattern RECORD_NAME_PATTERN = Pattern.compile("^[A-Za-z0-9_]*$");
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeHandler.class);
     private final AndroidDebugBridgeDevice adbConnection;
     private int maxMediaVolume = 0;
@@ -187,24 +189,37 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         }
     }
 
-    private void recordDeviceInput(Command recordName)
+    private void recordDeviceInput(Command recordNameCommand)
             throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        var recordName = recordNameCommand.toFullString();
+        if (!RECORD_NAME_PATTERN.matcher(recordName).matches()) {
+            logger.warn("Invalid record name, accepts alphanumeric values with '_'.");
+            return;
+        }
         String recordPropertyName = getRecordPropertyName(recordName);
         logger.debug("RECORD: {}", recordPropertyName);
         if (!recordPropertyName.isEmpty() && !recordPropertyName.equals("NULL")) {
             var eventCommand = adbConnection.recordInputEvents();
             if (eventCommand.isEmpty()) {
-                this.getThing().setProperty(recordPropertyName, null);
-                logger.debug("Recorded {} deleted", recordPropertyName);
+                logger.debug("No events recorded");
+                if (this.getThing().getProperties().containsKey(recordPropertyName)) {
+                    this.getThing().setProperty(recordPropertyName, null);
+                    updateProperties(editProperties());
+                    logger.debug("Record {} deleted", recordName);
+                }
             } else {
-                this.getThing().setProperty(recordPropertyName, eventCommand);
-                logger.debug("Recorded {}:\n {}", recordPropertyName, eventCommand);
+                updateProperty(recordPropertyName, eventCommand);
+                logger.debug("New record {}: {}", recordName, eventCommand);
             }
         }
     }
 
+    private String getRecordPropertyName(String recordName) {
+        return String.format("input-record:%s", recordName);
+    }
+
     private String getRecordPropertyName(Command recordNameCommand) {
-        return String.format("input-record:%s", recordNameCommand.toFullString());
+        return getRecordPropertyName(recordNameCommand.toFullString());
     }
 
     private void handleMediaVolume(ChannelUID channelUID, Command command)

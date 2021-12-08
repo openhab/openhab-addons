@@ -56,7 +56,6 @@ public class AndroidDebugBridgeDevice {
     private static final Pattern TAP_EVENT_PATTERN = Pattern.compile("(?<x>\\d+),(?<y>\\d+)");
     private static final Pattern PACKAGE_NAME_PATTERN = Pattern
             .compile("^([A-Za-z]{1}[A-Za-z\\d_]*\\.)+[A-Za-z][A-Za-z\\d_]*$");
-    private static final Pattern ACTIVITY_NAME_PATTERN = Pattern.compile("^[A-Za-z\\.]*");
     private static final Pattern URL_PATTERN = Pattern.compile(
             "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$");
     private static final Pattern INPUT_EVENT_PATTERN = Pattern
@@ -167,7 +166,7 @@ public class AndroidDebugBridgeDevice {
             logger.warn("{} is not a valid package name", packageName);
             return;
         }
-        if (!ACTIVITY_NAME_PATTERN.matcher(activityName).matches()) {
+        if (!PACKAGE_NAME_PATTERN.matcher(activityName).matches()) {
             logger.warn("{} is not a valid activity name", activityName);
             return;
         }
