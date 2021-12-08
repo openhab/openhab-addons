@@ -24,8 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 public class HDPowerViewShadeConfiguration {
 
     public static final String ID = "id";
-    public static final String LEGACY_SECONDARY_MODE = "legacySecondaryMode";
+    public static final String NEW_SECONDARY_MODE = "newSecondaryMode";
 
     public @Nullable String id;
-    public @Nullable Boolean legacySecondaryMode;
+    public @Nullable Boolean newSecondaryMode;
 }

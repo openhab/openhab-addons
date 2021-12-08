@@ -13,10 +13,11 @@ By using a scene to control multiple shades at once, the shades will all begin m
 
 ## Supported Things
 
-| Thing           | Thing Type | Description        |
-|-----------------|------------|--------------------|
-| PowerView Hub   | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
-| PowerView Shade | Thing      | A motorized shade. |
+| Thing  | Thing Type | Description |
+|--------|------------|-------------|
+| hub    | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
+| shade2 | Thing      | A motorized shade. Recommended for new installations. |
+| shade  | Thing      | ***Not recommended for new installations!*** A "legacy mode" motorized shade. (see 'Note on Legacy Shades' below). |
 
 ## Discovery
 
@@ -52,14 +53,14 @@ PowerView shades should preferably be configured via the automatic discovery pro
 It is quite difficult to configure manually as the `id` of the shade is not exposed in the PowerView app.
 However, the configuration parameters are described below:
 
-| Configuration Parameter | Description                                                   |
-|-------------------------|---------------------------------------------------------------|
+| Configuration Parameter | Description |
+|-------------------------|-------------|
 | id                      | The ID of the PowerView shade in the app. Must be an integer. |
-| legacySecondaryMode     | A boolean value that forces the secondary rail's 0%..100% position to use legacy mode co-ordinates (see 'Note on Legacy Installations' below). By default on new installations its value is 'false'. |
+| newSecondaryMode        | **Advanced** (for Thing type `shade` only): Set to `true` to migrate Thing type `shade` (legacy mode) to behave a Thing type `shade2` (new mode). |
 
 ## Channels
 
-### Channels for PowerView Hub
+### Channels for Hub (Thing type `hub`)
 
 Scene and scene group channels will be added dynamically to the binding as they are discovered in the hub.
 Each scene/scene group channel will have an entry in the hub as shown below, whereby different scenes/scene groups
@@ -69,7 +70,7 @@ have different `id` values:
 |----------|-----------| ------------|
 | id       | Switch    | Turning this to ON will activate the scene/scene group. Scenes/scene groups are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
 
-### Channels for PowerView Shade
+### Channels for Shades (Thing types `shade2` and `shade`)
 
 A shade always implements a roller shutter channel `position` which controls the vertical position of the shade's (primary) rail.
 If the shade has slats or rotatable vanes, there is also a dimmer channel `vane` which controls the slat / vane position.
@@ -109,22 +110,17 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 | Dual action (upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%      | ![](doc/right.png)   |
 |                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ![](doc/left.png)    |
 
-### Note on Legacy Installations
+### Note on Legacy Shades (Thing type `shade`) 
 
-On older 'legacy' installations, the upper rail of dual action shades  functions in a so called `legacyMode`.
-Which is different from the above table, as shown in the table below.
+On older 'legacy' installations (Thing type `shade`), the upper rail of dual action shades functions differently from the above table, as shown in the table below.
 
 | Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent | Pebble Remote Button |
 |--------------------------|-------------------|-----------------------|------------------|----------------|---------|----------------------|
 | Dual action (upper rail) | `secondary`       | ▲                     | Up               | `CLOSED`       | 100%    | ![](doc/left.png)    |
 |                          |                   | ▼                     | Down             | `OPEN`         | 0%      | ![](doc/right.png)   |
 
-Legacy installations can be updated to the modern form of operation by setting the `secondary` Channel's *Configuration Parameter* named `legacyMode` to 'false', as shown below.
-
-| Secondary Channel Configuration Parameter | Description                                                             |
-|-------------------------------------------|-------------------------------------------------------------------------|
-| legacyMode                                | Boolean. Selects whether the Secondary Channel operates in legacy mode. |
-
+Legacy shades (Thing type `shade`) can be migrated to the modern form of operation (Thing type `shade2`) by setting the `newSecondaryMode` Configuration Parameter.
+See "Thing Configuration for Shades" above.
 
 ### Interdependency between Channel positions
 
@@ -179,7 +175,7 @@ end
 
 ```
 Bridge hdpowerview:hub:g24 "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"] {
-    Thing shade s50150 "Living Room Shade" @ "Living Room" [id="50150"]
+    Thing shade2 s50150 "Living Room Shade" @ "Living Room" [id="50150"]
 }
 ```
 

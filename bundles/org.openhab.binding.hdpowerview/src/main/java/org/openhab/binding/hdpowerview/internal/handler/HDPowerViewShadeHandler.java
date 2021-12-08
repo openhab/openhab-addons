@@ -34,6 +34,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -75,7 +76,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
     private int shadeCapabilities = -1;
-    private boolean newSecondaryMode;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -106,13 +106,34 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+
         /*
-         * Set newSecondaryMode if the legacySecondaryMode configuration parameter is not explicitly FALSE.
-         * For the avoidance of doubt: this means legacySecondaryMode is NEITHER..
-         * - NULL i.e. the real legacy case where the configuration parameter is missing, NOR
-         * - TRUE i.e. where the configuration parameter has been manually overridden.
+         * If the ThingTypeUid is THING_TYPE_SHADE (i.e. a "legacy secondary mode" Thing) and there is a
+         * newSecondaryMode configuration parameter with the value TRUE, then change our ThingTypeUid to
+         * THING_TYPE_SHADE2 (i.e. to a "new secondary mode" Thing).
          */
-        newSecondaryMode = Boolean.FALSE.equals(getConfigAs(HDPowerViewShadeConfiguration.class).legacySecondaryMode);
+        if (THING_TYPE_SHADE.getId().equals(getThing().getThingTypeUID().getId())) {
+            Boolean newSecModeParam = getConfigAs(HDPowerViewShadeConfiguration.class).newSecondaryMode;
+            boolean newSecModeValue = newSecModeParam != null ? newSecModeParam.booleanValue() : false;
+            logger.trace("New Secondary Mode: Config Param value:{}, Final value:{}", newSecModeParam, newSecModeValue);
+            if (newSecModeValue) {
+                Configuration configuration = getConfig();
+                configuration.remove(HDPowerViewShadeConfiguration.NEW_SECONDARY_MODE);
+                changeThingType(THING_TYPE_SHADE2, configuration);
+            }
+        }
+    }
+
+    /**
+     * We have just one single place where new/legacy mode position values are adjusted.
+     * This method is declared 'protected' so it may be overridden in extension classes.
+     *
+     * @param position (as a PercentType)
+     * @return fixed up position (as an int)
+     */
+    protected int fixupPosition(PercentType position) {
+        // Legacy Secondary Mode: return the position value.
+        return position.intValue();
     }
 
     @Override
@@ -147,11 +168,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_SECONDARY_POSITION:
                 if (command instanceof PercentType) {
-                    int position = ((PercentType) command).intValue();
-                    if (newSecondaryMode) {
-                        position = 100 - position;
-                    }
-                    moveShade(SECONDARY_RAIL, position);
+                    moveShade(SECONDARY_RAIL, fixupPosition((PercentType) command));
                 } else if (command instanceof UpDownType) {
                     moveShade(SECONDARY_RAIL, UpDownType.UP.equals(command) ? 0 : 100);
                 } else if (command instanceof StopMoveType) {
@@ -280,6 +297,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
+    private State fixupState(State state) {
+        return (state instanceof PercentType) ? new PercentType(fixupPosition(((PercentType) state))) : state;
+    }
+
     private void updateBindingStates(@Nullable ShadePosition shadePos) {
         if (shadePos == null) {
             logger.debug("The value of 'shadePosition' argument was null!");
@@ -289,11 +310,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             Capabilities caps = db.getCapabilities(shadeCapabilities);
             updateState(CHANNEL_SHADE_POSITION, shadePos.getState(caps, PRIMARY_RAIL));
             updateState(CHANNEL_SHADE_VANE, shadePos.getState(caps, VANE_TILT));
-            State newState = shadePos.getState(caps, SECONDARY_RAIL);
-            if (newSecondaryMode && (newState instanceof PercentType)) {
-                newState = new PercentType(100 - ((PercentType) newState).intValue());
-            }
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, newState);
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, fixupState(shadePos.getState(caps, SECONDARY_RAIL)));
             return;
         }
 

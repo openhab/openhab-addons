@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewShadeDiscoveryService;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
+import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewShade2Handler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewShadeHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
@@ -73,6 +74,8 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SHADE)) {
             return new HDPowerViewShadeHandler(thing);
+        } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SHADE2)) {
+            return new HDPowerViewShade2Handler(thing);
         }
 
         return null;

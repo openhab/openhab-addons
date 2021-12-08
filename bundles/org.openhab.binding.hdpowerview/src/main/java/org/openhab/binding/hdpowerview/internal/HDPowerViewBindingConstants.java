@@ -36,6 +36,7 @@ public class HDPowerViewBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HUB = new ThingTypeUID(BINDING_ID, "hub");
     public static final ThingTypeUID THING_TYPE_SHADE = new ThingTypeUID(BINDING_ID, "shade");
+    public static final ThingTypeUID THING_TYPE_SHADE2 = new ThingTypeUID(BINDING_ID, "shade2");
 
     // List of all Channel ids
     public static final String CHANNEL_SHADE_POSITION = "position";
@@ -60,6 +61,7 @@ public class HDPowerViewBindingConstants {
 
     static {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_HUB);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHADE2);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHADE);
     }
 }
