@@ -125,5 +125,4 @@ public class EnergyApi extends RestManager {
         post(uriBuilder, ApiResponse.Ok.class, payload);
         return true;
     }
-
 }

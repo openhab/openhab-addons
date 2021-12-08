@@ -150,7 +150,7 @@ public class ApiBridge {
     synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> classOfT, @Nullable String payload)
             throws NetatmoException {
         try {
-            logger.debug("executeUri {}  {} ", method.toString(), uri);
+            logger.trace("executeUri {}  {} ", method.toString(), uri);
 
             Request request = httpClient.newRequest(uri).method(method).timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
 
@@ -171,6 +171,8 @@ public class ApiBridge {
 
             Code statusCode = HttpStatus.getCode(response.getStatus());
             String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
+            logger.trace("executeUri returned : {} ", responseBody);
+
             if (statusCode == Code.OK) {
                 return deserialize(classOfT, responseBody);
             } else {
@@ -185,7 +187,7 @@ public class ApiBridge {
                 throw exception;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new NetatmoException("Exception while calling " + uri.toString(), e);
+            throw new NetatmoException(String.format("Exception while calling %s", uri.toString()), e);
         }
     }
 

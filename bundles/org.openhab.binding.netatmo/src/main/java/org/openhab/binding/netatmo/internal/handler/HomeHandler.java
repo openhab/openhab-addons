@@ -230,7 +230,6 @@ public class HomeHandler extends DeviceWithEventHandler {
         energyApi.ifPresent(api -> {
             tryApiCall(() -> away ? api.setPersonsAway(config.id, personId) : api.setPersonsHome(config.id, personId));
         });
-
     }
 
     public void callSetRoomThermMode(String roomId, SetpointMode targetMode) {

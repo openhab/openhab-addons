@@ -57,5 +57,4 @@ public class HomeApi extends RestManager {
         NAHomesDataResponse response = get(uriBuilder, NAHomesDataResponse.class);
         return response.getBody().getElements();
     }
-
 }

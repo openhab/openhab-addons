@@ -40,7 +40,7 @@ public class WeatherApi extends RestManager {
 
     /**
      *
-     * The method getstationsdata Returns data from a user&#x27;s Weather Stations (measures and device specific
+     * The method getStationsData Returns data from a user&#x27;s Weather Stations (measures and device specific
      * data).
      *
      * @param deviceId Id of the device you want to retrieve information of (optional)

@@ -56,7 +56,7 @@ public abstract class RestManager {
 
     private <T extends ApiResponse<?>> T executeUri(UriBuilder uriBuilder, HttpMethod method, Class<T> classOfT,
             @Nullable String payload) throws NetatmoException {
-        if (apiBridge.getConnectionStatus().equals(ConnectionStatus.SUCCESS) || requiredScopes.isEmpty()) {
+        if (ConnectionStatus.SUCCESS.equals(apiBridge.getConnectionStatus()) || requiredScopes.isEmpty()) {
             T response = apiBridge.executeUri(uriBuilder.build(), method, classOfT, payload);
             if (response instanceof ApiResponse.Ok) {
                 ApiResponse.Ok okResponse = (ApiResponse.Ok) response;

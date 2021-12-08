@@ -123,12 +123,12 @@ Based on a standard update period of 10mn by Netatmo systems - it will auto adap
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
 | humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
 | humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dew-point-depression | Number:Temperature   | Computed dewpoint depression                     |
+| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
-| temperature         | today-min            | Number:Temperature   | Minimum temperature on current day               |
-| temperature         | today-max            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-today            | Number:Temperature   | Timestamp of today's minimum temperature         |
-| temperature         | max_today            | Number:Temperature   | Timestamp of today's maximum temperature         |
+| temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
+| temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
+| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
+| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
 | co2                 | value                | Number:Dimensionless | Air quality                                      |
 | timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
@@ -150,19 +150,21 @@ All these channels are read only.
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
 | humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
 | humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dew-point-depression | Number:Temperature   | Computed dewpoint depression                     |
+| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
-| temperature         | today-min            | Number:Temperature   | Minimum temperature on current day               |
-| temperature         | today-max            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-today            | Number:Temperature   | Timestamp of today's minimum temperature         |
-| temperature         | max_today            | Number:Temperature   | Timestamp of today's maximum temperature         |
+| temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
+| temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
+| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
+| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
 | timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
+| battery             | status               | String               | Description of the battery status (*)            |
 
+(*) Can be UNDEF on some modules
 
 All these channels are read only.
 
@@ -174,21 +176,17 @@ All these channels are read only.
 
 | Channel Group       | Channel Id           | Item Type            | Description                                      |
 |---------------------|----------------------|----------------------|--------------------------------------------------|
-| pressure            | value                | Number:Pressure      | Current pressure                                 |
-| pressure            | absolute             | Number:Pressure      | Pressure at sea level                            |
-| pressure            | trend                | String               | Pressure evolution trend over time               |
-| noise               | value                | Number:Dimensionless | Current noise level                              |
 | humidity            | value                | Number:Dimensionless | Current humidity                                 |
 | humidity            | humidex              | Number               | Computed Humidex index                           |
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
 | humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
 | humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dew-point-depression | Number:Temperature   | Computed dewpoint depression                     |
+| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
-| temperature         | today-min            | Number:Temperature   | Minimum temperature on current day               |
-| temperature         | today-max            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-today            | Number:Temperature   | Timestamp of today's minimum temperature         |
-| temperature         | max_today            | Number:Temperature   | Timestamp of today's maximum temperature         |
+| temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
+| temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
+| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
+| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
 | co2                 | value                | Number:Dimensionless | Air quality                                      |
 | timestamp           | last-seen            | DateTime             | Timestamp when data was measured                 |
@@ -196,6 +194,9 @@ All these channels are read only.
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
+| battery             | status               | String               | Description of the battery status (*)            |
+
+(*) Can be UNDEF on some modules
 
 All these channels are read only.
 
@@ -215,6 +216,9 @@ All these channels are read only.
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
+| battery             | status               | String               | Description of the battery status (*)            |
+
+(*) Can be UNDEF on some modules
 
 
 All these channels are read only.
@@ -238,6 +242,9 @@ All these channels are read only.
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 | battery             | value                | Number               | Battery level                                    |
 | battery             | low-battery          | Switch               | Low battery                                      |
+| battery             | status               | String               | Description of the battery status (*)            |
+
+(*) Can be UNDEF on some modules
 
 
 All these channels are read only.
@@ -256,15 +263,15 @@ All these channels are read only.
 | humidity            | humidex-scale        | Number               | Humidex index appreciation                       |
 | humidity            | heat-index           | Number:Temperature   | Computed Heat Index                              |
 | humidity            | dewpoint             | Number:Temperature   | Computed dewpoint temperature                    |
-| humidity            | dew-point-depression | Number:Temperature   | Computed dewpoint depression                     |
+| humidity            | dewpoint-depression  | Number:Temperature   | Computed dewpoint depression                     |
 | pressure            | value                | Number:Pressure      | Current pressure                                 |
 | pressure            | absolute             | Number:Pressure      | Pressure at sea level                            |
 | pressure            | trend                | String               | Pressure evolution trend over time               |
 | temperature         | value                | Number:Temperature   | Current temperature                              |
-| temperature         | today-min            | Number:Temperature   | Minimum temperature on current day               |
-| temperature         | today-max            | Number:Temperature   | Maximum temperature on current day               |
-| temperature         | min-today            | Number:Temperature   | Timestamp of today's minimum temperature         |
-| temperature         | max_today            | Number:Temperature   | Timestamp of today's maximum temperature         |
+| temperature         | min-today            | Number:Temperature   | Minimum temperature on current day               |
+| temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
+| temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
+| temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
 | health-index        | value                | Number               | Health index (*)                                 |
 | co2                 | value                | Number:Dimensionless | Air quality                                      |
@@ -286,9 +293,10 @@ All these channels are read only.
 
 **Supported channels for the thermostat relay device:**
 
-| Channel Group       | Channel Id           | Item Type            | Description                                      |
-|---------------------|----------------------|----------------------|--------------------------------------------------|
-| signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
+| Channel Group       | Channel Id         | Item Type            | Description                                      |
+|---------------------|--------------------|----------------------|--------------------------------------------------|
+| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
+| signal              | value              | Number:Power         | Signal strength in dB                            |
 
 All these channels are read only.
 
@@ -303,13 +311,17 @@ All these channels are read only.
 | setpoint            | Number:Temperature | Thermostat temperature setpoint                            |
 | setpoint-mode       | String             | Chosen setpoint_mode (program, away, hg, manual, off, max) |
 | ThermRelayCmd       | Switch             | Indicates whether the furnace is heating or not            |
-| anticipating   | Switch             | Indicates is anticipating the schedule                     |
+| anticipating        | Switch             | Indicates is anticipating the schedule                     |
 | timestamp           | DateTime           | Timestamp when data was measured                           |
-| setpoint-end     | DateTime           | Thermostat goes back to schedule after that timestamp      |
-| last-message         | DateTime           | Last message emitted by the module                         |
-| low-battery          | Switch             | Low battery                                                |
-| battery-level           | Number             | Battery level                                              |
-| signal-strength     | Number             | Signal strength (0 for no signal, 1 for weak, 2 for average, 3 for good or 4 for excellent) |
+| setpoint-end        | DateTime           | Thermostat goes back to schedule after that timestamp      |
+| last-message        | DateTime           | Last message emitted by the module                         |
+| signal              | strength           | Number               | Signal strength (0 for no signal, 1 for weak...) |
+| signal              | value              | Number:Power         | Signal strength in dB                            |
+| battery             | value              | Number               | Battery level                                    |
+| battery             | low-battery        | Switch               | Low battery                                      |
+| battery             | status             | String               | Description of the battery status (*)            |
+
+(*) Can be UNDEF on some modules
 
 All these channels except setpoint, setpoint-mode and planning are read only.
 
@@ -406,12 +418,12 @@ Warnings:
 | cameraStatus                | Switch    | Read-write | State of the camera (video surveillance on/off)              |
 | cameraSdStatus              | Switch    | Read-only  | State of the SD card                                         |
 | cameraAlimStatus            | Switch    | Read-only  | State of the power connector                                 |
-| cameraIsLocal               | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| cameraIsLocal               | Switch    | Read-only  | indicates whether camera is on the same network than openHAB |
 | cameraLivePicture           | Image     | Read-only  | Camera Live Snapshot                                         |
 | cameraLivePictureUrl        | String    | Read-only  | Url of the live snapshot for this camera                     |
 | cameraLiveStreamUrl         | String    | Read-only  | Url of the live stream for this camera                       |
-| auto-mode    | Switch    | Read-write | When set the floodlight gets switched to auto instead of off |
-| floodlight            | Switch    | Read-write | Switch for the floodlight                                    |
+| auto-mode                   | Switch    | Read-write | When set the floodlight gets switched to auto instead of off |
+| floodlight                  | Switch    | Read-write | Switch for the floodlight                                    |
 
 
 ### Welcome Person
@@ -427,7 +439,7 @@ Person things are automatically created in discovery process for all known perso
 
 | Channel ID                    | Item Type | Description                                            |
 |-------------------------------|-----------|--------------------------------------------------------|
-| last-seen                      | DateTime  | Time when this person was last seen                    |
+| last-seen                     | DateTime  | Time when this person was last seen                    |
 | welcomePersonAtHome           | Switch    | Indicates if this person is known to be at home or not |
 | welcomePersonAvatarUrl        | String    | URL for the avatar of this person                      |
 | welcomePersonAvatar           | Image     | Avatar of this person                                  |
@@ -474,7 +486,7 @@ DateTime             Indoor_Max_Humidity_TS            "Max Humidity Today [%1$t
 Number               Indoor_Humidex                    "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:NAMain:home:inside:humidex" }
 Number:Temperature   Indoor_HeatIndex                  "HeatIndex [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:NAMain:home:inside:heat-index" }
 Number:Temperature   Indoor_Dewpoint                   "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:NAMain:home:inside:Dewpoint" }
-Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:NAMain:home:inside:dew-point-depression" }
+Number:Temperature   Indoor_DewpointDepression         "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:NAMain:home:inside:dewpoint-depression" }
 Number:Dimensionless Indoor_Co2                        "CO2 [%d %unit%]"                                            <carbondioxide>    { channel = "netatmo:NAMain:home:inside:Co2" }
 Number:Dimensionless Indoor_Min_Co2                    "Min CO2 Today [%.1f %unit%]"                                <carbondioxide>    { channel = "netatmo:NAMain:home:inside:MinCo2" }
 Number:Dimensionless Indoor_Max_Co2                    "Max CO2 Today [%.1f %unit%]"                                <carbondioxide>    { channel = "netatmo:NAMain:home:inside:MaxCo2" }
@@ -502,7 +514,7 @@ Number:Dimensionless Outdoor_Humidity                  "Humidity [%d %unit%]"   
 Number               Outdoor_Humidex                   "Humidex [%.0f]"                                             <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:humidex" }
 Number:Temperature   Outdoor_HeatIndex                 "heat-index [%.1f %unit%]"                                    <temperature_hot>  { channel = "netatmo:NAModule1:home:outside:HeatIndex" }
 Number:Temperature   Outdoor_Dewpoint                  "Dewpoint [%.1f %unit%]"                                     <temperature_cold> { channel = "netatmo:NAModule1:home:outside:Dewpoint" }
-Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:NAModule1:home:outside:dew-point-depression" }
+Number:Temperature   Outdoor_DewpointDepression        "DewpointDepression [%.1f %unit%]"                           <temperature_cold> { channel = "netatmo:NAModule1:home:outside:dewpoint-depression" }
 Number               Outdoor_RadioStatus               "RfStatus [%.0f / 5]"                                        <signal>           { channel = "netatmo:NAModule1:home:outside:signal-strength" }
 Switch               Outdoor_LowBattery                "LowBattery [%s]"                                            <siren>            { channel = "netatmo:NAModule1:home:outside:low-battery" }
 Number               Outdoor_BatteryVP                 "BatteryVP [%.0f %%]"                                        <battery>          { channel = "netatmo:NAModule1:home:outside:battery-level" }

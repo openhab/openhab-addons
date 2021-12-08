@@ -211,7 +211,6 @@ public class NetatmoConstants {
         FeatureArea(Scope... scopes) {
             this.scopes = Set.of(scopes);
         }
-
     }
 
     // Thermostat definitions
