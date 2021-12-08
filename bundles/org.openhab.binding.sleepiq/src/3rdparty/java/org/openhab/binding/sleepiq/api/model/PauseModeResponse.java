@@ -15,63 +15,52 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
-public class PauseMode
-{
+public class PauseModeResponse {
     private String accountId;
     private String bedId;
     private String pauseMode;
 
-    public String getAccountId()
-    {
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId)
-    {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 
-    public PauseMode withAccountId(String accountId)
-    {
+    public PauseModeResponse withAccountId(String accountId) {
         setAccountId(accountId);
         return this;
     }
 
-    public String getBedId()
-    {
+    public String getBedId() {
         return bedId;
     }
 
-    public void setBedId(String bedId)
-    {
+    public void setBedId(String bedId) {
         this.bedId = bedId;
     }
 
-    public PauseMode withBedId(String bedId)
-    {
+    public PauseModeResponse withBedId(String bedId) {
         setBedId(bedId);
         return this;
     }
 
-    public String getPauseMode()
-    {
+    public String getPauseMode() {
         return pauseMode;
     }
 
-    public void setPauseMode(String pauseMode)
-    {
+    public void setPauseMode(String pauseMode) {
         this.pauseMode = pauseMode;
     }
 
-    public PauseMode withPauseMode(String pauseMode)
-    {
+    public PauseModeResponse withPauseMode(String pauseMode) {
         setPauseMode(pauseMode);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((accountId == null) ? 0 : accountId.hashCode());
@@ -80,49 +69,36 @@ public class PauseMode
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof PauseMode))
-        {
+        if (!(obj instanceof PauseModeResponse)) {
             return false;
         }
-        PauseMode other = (PauseMode)obj;
-        if (accountId == null)
-        {
-            if (other.accountId != null)
-            {
+        PauseModeResponse other = (PauseModeResponse) obj;
+        if (accountId == null) {
+            if (other.accountId != null) {
                 return false;
             }
-        }
-        else if (!accountId.equals(other.accountId))
-        {
+        } else if (!accountId.equals(other.accountId)) {
             return false;
         }
-        if (bedId == null)
-        {
-            if (other.bedId != null)
-            {
+        if (bedId == null) {
+            if (other.bedId != null) {
                 return false;
             }
-        }
-        else if (!bedId.equals(other.bedId))
-        {
+        } else if (!bedId.equals(other.bedId)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("PauseMode [accountId=");
         builder.append(accountId);

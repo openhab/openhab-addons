@@ -19,8 +19,7 @@ import java.time.ZonedDateTime;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Bed
-{
+public class Bed {
     private ZonedDateTime registrationDate;
     private String sleeperRightId;
     private String base;
@@ -45,345 +44,281 @@ public class Bed
     private String zipCode;
     private String reference;
 
-    public ZonedDateTime getRegistrationDate()
-    {
+    public ZonedDateTime getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(ZonedDateTime registrationDate)
-    {
+    public void setRegistrationDate(ZonedDateTime registrationDate) {
         this.registrationDate = registrationDate;
     }
 
-    public Bed withRegistrationDate(ZonedDateTime registrationDate)
-    {
+    public Bed withRegistrationDate(ZonedDateTime registrationDate) {
         setRegistrationDate(registrationDate);
         return this;
     }
 
-    public String getSleeperRightId()
-    {
+    public String getSleeperRightId() {
         return sleeperRightId;
     }
 
-    public void setSleeperRightId(String sleeperRightId)
-    {
+    public void setSleeperRightId(String sleeperRightId) {
         this.sleeperRightId = sleeperRightId;
     }
 
-    public Bed withSleeperRightId(String sleeperRightId)
-    {
+    public Bed withSleeperRightId(String sleeperRightId) {
         setSleeperRightId(sleeperRightId);
         return this;
     }
 
-    public String getBase()
-    {
+    public String getBase() {
         return base;
     }
 
-    public void setBase(String base)
-    {
+    public void setBase(String base) {
         this.base = base;
     }
 
-    public Bed withBase(String base)
-    {
+    public Bed withBase(String base) {
         setBase(base);
         return this;
     }
 
-    public Long getReturnRequestStatus()
-    {
+    public Long getReturnRequestStatus() {
         return returnRequestStatus;
     }
 
-    public void setReturnRequestStatus(Long returnRequestStatus)
-    {
+    public void setReturnRequestStatus(Long returnRequestStatus) {
         this.returnRequestStatus = returnRequestStatus;
     }
 
-    public Bed withReturnRequestStatus(Long returnRequestStatus)
-    {
+    public Bed withReturnRequestStatus(Long returnRequestStatus) {
         setReturnRequestStatus(returnRequestStatus);
         return this;
     }
 
-    public String getSize()
-    {
+    public String getSize() {
         return size;
     }
 
-    public void setSize(String size)
-    {
+    public void setSize(String size) {
         this.size = size;
     }
 
-    public Bed withSize(String size)
-    {
+    public Bed withSize(String size) {
         setSize(size);
         return this;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public Bed withName(String name)
-    {
+    public Bed withName(String name) {
         setName(name);
         return this;
     }
 
-    public String getSerial()
-    {
+    public String getSerial() {
         return serial;
     }
 
-    public void setSerial(String serial)
-    {
+    public void setSerial(String serial) {
         this.serial = serial;
     }
 
-    public Bed withSerial(String serial)
-    {
+    public Bed withSerial(String serial) {
         setSerial(serial);
         return this;
     }
 
-    public Boolean isKidsBed()
-    {
+    public Boolean isKidsBed() {
         return kidsBed;
     }
 
-    public void setKidsBed(Boolean kidsBed)
-    {
+    public void setKidsBed(Boolean kidsBed) {
         this.kidsBed = kidsBed;
     }
 
-    public Bed withKidsBed(Boolean kidsBed)
-    {
+    public Bed withKidsBed(Boolean kidsBed) {
         setKidsBed(kidsBed);
         return this;
     }
 
-    public Boolean isDualSleep()
-    {
+    public Boolean isDualSleep() {
         return dualSleep;
     }
 
-    public void setDualSleep(Boolean dualSleep)
-    {
+    public void setDualSleep(Boolean dualSleep) {
         this.dualSleep = dualSleep;
     }
 
-    public Bed withDualSleep(Boolean dualSleep)
-    {
+    public Bed withDualSleep(Boolean dualSleep) {
         setDualSleep(dualSleep);
         return this;
     }
 
-    public String getBedId()
-    {
+    public String getBedId() {
         return bedId;
     }
 
-    public void setBedId(String bedId)
-    {
+    public void setBedId(String bedId) {
         this.bedId = bedId;
     }
 
-    public Bed withBedId(String bedId)
-    {
+    public Bed withBedId(String bedId) {
         setBedId(bedId);
         return this;
     }
 
-    public Long getStatus()
-    {
+    public Long getStatus() {
         return status;
     }
 
-    public void setStatus(Long status)
-    {
+    public void setStatus(Long status) {
         this.status = status;
     }
 
-    public Bed withStatus(Long status)
-    {
+    public Bed withStatus(Long status) {
         setStatus(status);
         return this;
     }
 
-    public String getSleeperLeftId()
-    {
+    public String getSleeperLeftId() {
         return sleeperLeftId;
     }
 
-    public void setSleeperLeftId(String sleeperLeftId)
-    {
+    public void setSleeperLeftId(String sleeperLeftId) {
         this.sleeperLeftId = sleeperLeftId;
     }
 
-    public Bed withSleeperLeftId(String sleeperLeftId)
-    {
+    public Bed withSleeperLeftId(String sleeperLeftId) {
         setSleeperLeftId(sleeperLeftId);
         return this;
     }
 
-    public String getVersion()
-    {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(String version)
-    {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public Bed withVersion(String version)
-    {
+    public Bed withVersion(String version) {
         setVersion(version);
         return this;
     }
 
-    public String getAccountId()
-    {
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId)
-    {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 
-    public Bed withAccountId(String accountId)
-    {
+    public Bed withAccountId(String accountId) {
         setAccountId(accountId);
         return this;
     }
 
-    public String getTimezone()
-    {
+    public String getTimezone() {
         return timezone;
     }
 
-    public void setTimezone(String timezone)
-    {
+    public void setTimezone(String timezone) {
         this.timezone = timezone;
     }
 
-    public Bed withTimezone(String timezone)
-    {
+    public Bed withTimezone(String timezone) {
         setTimezone(timezone);
         return this;
     }
 
-    public String getModel()
-    {
+    public String getModel() {
         return model;
     }
 
-    public void setModel(String model)
-    {
+    public void setModel(String model) {
         this.model = model;
     }
 
-    public Bed withModel(String model)
-    {
+    public Bed withModel(String model) {
         setModel(model);
         return this;
     }
 
-    public ZonedDateTime getPurchaseDate()
-    {
+    public ZonedDateTime getPurchaseDate() {
         return purchaseDate;
     }
 
-    public void setPurchaseDate(ZonedDateTime purchaseDate)
-    {
+    public void setPurchaseDate(ZonedDateTime purchaseDate) {
         this.purchaseDate = purchaseDate;
     }
 
-    public Bed withPurchaseDate(ZonedDateTime purchaseDate)
-    {
+    public Bed withPurchaseDate(ZonedDateTime purchaseDate) {
         setPurchaseDate(purchaseDate);
         return this;
     }
 
-    public String getMacAddress()
-    {
+    public String getMacAddress() {
         return macAddress;
     }
 
-    public void setMacAddress(String macAddress)
-    {
+    public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
     }
 
-    public Bed withMacAddress(String macAddress)
-    {
+    public Bed withMacAddress(String macAddress) {
         setMacAddress(macAddress);
         return this;
     }
 
-    public String getSku()
-    {
+    public String getSku() {
         return sku;
     }
 
-    public void setSku(String sku)
-    {
+    public void setSku(String sku) {
         this.sku = sku;
     }
 
-    public Bed withSku(String sku)
-    {
+    public Bed withSku(String sku) {
         setSku(sku);
         return this;
     }
 
-    public String getZipCode()
-    {
+    public String getZipCode() {
         return zipCode;
     }
 
-    public void setZipCode(String zipCode)
-    {
+    public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
 
-    public Bed withZipCode(String zipCode)
-    {
+    public Bed withZipCode(String zipCode) {
         setZipCode(zipCode);
         return this;
     }
 
-    public String getReference()
-    {
+    public String getReference() {
         return reference;
     }
 
-    public void setReference(String reference)
-    {
+    public void setReference(String reference) {
         this.reference = reference;
     }
 
-    public Bed withReference(String reference)
-    {
+    public Bed withReference(String reference) {
         setReference(reference);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((bedId == null) ? 0 : bedId.hashCode());
@@ -391,38 +326,29 @@ public class Bed
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Bed))
-        {
+        if (!(obj instanceof Bed)) {
             return false;
         }
-        Bed other = (Bed)obj;
-        if (bedId == null)
-        {
-            if (other.bedId != null)
-            {
+        Bed other = (Bed) obj;
+        if (bedId == null) {
+            if (other.bedId != null) {
                 return false;
             }
-        }
-        else if (!bedId.equals(other.bedId))
-        {
+        } else if (!bedId.equals(other.bedId)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Bed [registrationDate=");
         builder.append(registrationDate);

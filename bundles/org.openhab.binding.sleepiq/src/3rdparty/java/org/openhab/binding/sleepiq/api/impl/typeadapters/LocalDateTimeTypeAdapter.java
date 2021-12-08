@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
  */
 public class LocalDateTimeTypeAdapter extends DateTimeTypeAdapter<LocalDateTime> {
 
-  public LocalDateTimeTypeAdapter() {
-    super(LocalDateTime::parse);
-  }
+    public LocalDateTimeTypeAdapter() {
+        super(LocalDateTime::parse);
+    }
 }

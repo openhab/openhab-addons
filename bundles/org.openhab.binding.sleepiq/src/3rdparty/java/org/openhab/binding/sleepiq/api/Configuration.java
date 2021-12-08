@@ -16,19 +16,17 @@
 package org.openhab.binding.sleepiq.api;
 
 import java.net.URI;
-import java.util.logging.Level;
 
 /**
  * This class represents configuration parameters for using {@link SleepIQ}.
  *
  * @author Gregory Moyer
  */
-public class Configuration
-{
+public class Configuration {
     private String username;
     private String password;
 
-    private URI baseUri = URI.create("https://api.sleepiq.sleepnumber.com/rest");
+    private URI baseUri = URI.create("https://api.sleepiq.sleepnumber.com");
 
     private boolean logging = false;
 
@@ -37,8 +35,7 @@ public class Configuration
      *
      * @return the username
      */
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
@@ -49,8 +46,7 @@ public class Configuration
      * @param username
      *            the value to set
      */
-    public void setUsername(String username)
-    {
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -62,8 +58,7 @@ public class Configuration
      *            the value to set
      * @return this configuration instance
      */
-    public Configuration withUsername(String username)
-    {
+    public Configuration withUsername(String username) {
         setUsername(username);
         return this;
     }
@@ -73,8 +68,7 @@ public class Configuration
      *
      * @return the password
      */
-    public String getPassword()
-    {
+    public String getPassword() {
         return password;
     }
 
@@ -85,8 +79,7 @@ public class Configuration
      * @param password
      *            the value to set
      */
-    public void setPassword(String password)
-    {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -98,8 +91,7 @@ public class Configuration
      *            the value to set
      * @return this configuration instance
      */
-    public Configuration withPassword(String password)
-    {
+    public Configuration withPassword(String password) {
         setPassword(password);
         return this;
     }
@@ -109,8 +101,7 @@ public class Configuration
      *
      * @return the base URI
      */
-    public URI getBaseUri()
-    {
+    public URI getBaseUri() {
         return baseUri;
     }
 
@@ -121,8 +112,7 @@ public class Configuration
      * @param baseUri
      *            the value to set
      */
-    public void setBaseUri(URI baseUri)
-    {
+    public void setBaseUri(URI baseUri) {
         this.baseUri = baseUri;
     }
 
@@ -134,8 +124,7 @@ public class Configuration
      *            the value to set
      * @return this configuration instance
      */
-    public Configuration withBaseUri(URI baseUri)
-    {
+    public Configuration withBaseUri(URI baseUri) {
         setBaseUri(baseUri);
         return this;
     }
@@ -145,8 +134,7 @@ public class Configuration
      *
      * @return the logging flag
      */
-    public boolean isLogging()
-    {
+    public boolean isLogging() {
         return logging;
     }
 
@@ -158,8 +146,7 @@ public class Configuration
      * @param logging
      *            the value to set
      */
-    public void setLogging(boolean logging)
-    {
+    public void setLogging(boolean logging) {
         this.logging = logging;
     }
 
@@ -172,8 +159,7 @@ public class Configuration
      *            the value to set
      * @return this configuration instance
      */
-    public Configuration withLogging(boolean logging)
-    {
+    public Configuration withLogging(boolean logging) {
         setLogging(logging);
         return this;
     }

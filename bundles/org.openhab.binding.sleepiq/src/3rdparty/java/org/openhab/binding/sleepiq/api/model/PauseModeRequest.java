@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Gregory Moyer
+ * Copyright 2021 Mark Hilbush
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,73 +15,57 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
-import java.util.List;
+public class PauseModeRequest {
+    private String mode;
 
-public class FamilyStatus
-{
-    private List<BedStatus> beds;
-
-    public List<BedStatus> getBeds()
-    {
-        return beds;
+    public String getMode() {
+        return mode;
     }
 
-    public void setBeds(List<BedStatus> beds)
-    {
-        this.beds = beds;
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 
-    public FamilyStatus withBeds(List<BedStatus> beds)
-    {
-        setBeds(beds);
+    public PauseModeRequest withMode(String mode) {
+        setMode(mode);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((beds == null) ? 0 : beds.hashCode());
+        result = prime * result + ((mode == null) ? 0 : mode.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof FamilyStatus))
-        {
+        if (!(obj instanceof PauseModeRequest)) {
             return false;
         }
-        FamilyStatus other = (FamilyStatus)obj;
-        if (beds == null)
-        {
-            if (other.beds != null)
-            {
+        PauseModeRequest other = (PauseModeRequest) obj;
+        if (mode == null) {
+            if (other.mode != null) {
                 return false;
             }
-        }
-        else if (!beds.equals(other.beds))
-        {
+        } else if (!mode.equals(other.mode)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("FamilyStatus [beds=");
-        builder.append(beds);
+        builder.append("SleepNumberRequest [mode=");
+        builder.append(mode);
         builder.append("]");
         return builder.toString();
     }

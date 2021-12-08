@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Gregory Moyer
+ * Copyright 2021 Mark Hilbush
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@ package org.openhab.binding.sleepiq.api;
 
 import org.openhab.binding.sleepiq.api.model.Failure;
 
-public class LoginException extends SleepIQException {
+public class CommunicationException extends SleepIQException {
     private static final long serialVersionUID = 1L;
 
-    public LoginException(Failure failure) {
+    public CommunicationException(Failure failure) {
         super(failure);
     }
 
-    public LoginException(String message) {
+    public CommunicationException(String message) {
         super(message);
     }
 }

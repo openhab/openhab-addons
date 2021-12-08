@@ -38,14 +38,14 @@ public class FamilyStatusTest extends AbstractTest {
 
     @Test
     public void testSerializeAllFields() throws Exception {
-        FamilyStatus familyStatus = new FamilyStatus().withBeds(Arrays.asList(new BedStatus().withStatus(1L)));
+        FamilyStatusResponse familyStatus = new FamilyStatusResponse().withBeds(Arrays.asList(new BedStatus().withStatus(1L)));
         assertEquals(readJson("family-status.json"), gson.toJson(familyStatus));
     }
 
     @Test
     public void testDeserializeAllFields() throws Exception {
         try (FileReader reader = new FileReader(getTestDataFile("family-status.json"))) {
-            FamilyStatus familyStatus = gson.fromJson(reader, FamilyStatus.class);
+            FamilyStatusResponse familyStatus = gson.fromJson(reader, FamilyStatusResponse.class);
 
             List<BedStatus> beds = familyStatus.getBeds();
             assertNotNull(beds);

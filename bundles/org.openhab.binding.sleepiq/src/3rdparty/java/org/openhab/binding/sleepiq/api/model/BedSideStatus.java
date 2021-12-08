@@ -17,8 +17,7 @@ package org.openhab.binding.sleepiq.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class BedSideStatus
-{
+public class BedSideStatus {
     @SerializedName("isInBed")
     private Boolean inBed;
     private String alertDetailedMessage;
@@ -27,109 +26,89 @@ public class BedSideStatus
     private TimeSince lastLink;
     private Integer pressure; // appears to be in kPa
 
-    public Boolean isInBed()
-    {
+    public Boolean isInBed() {
         return inBed;
     }
 
-    public void setInBed(Boolean inBed)
-    {
+    public void setInBed(Boolean inBed) {
         this.inBed = inBed;
     }
 
-    public BedSideStatus withInBed(Boolean inBed)
-    {
+    public BedSideStatus withInBed(Boolean inBed) {
         setInBed(inBed);
         return this;
     }
 
-    public String getAlertDetailedMessage()
-    {
+    public String getAlertDetailedMessage() {
         return alertDetailedMessage;
     }
 
-    public void setAlertDetailedMessage(String alertDetailedMessage)
-    {
+    public void setAlertDetailedMessage(String alertDetailedMessage) {
         this.alertDetailedMessage = alertDetailedMessage;
     }
 
-    public BedSideStatus withAlertDetailedMessage(String alertDetailedMessage)
-    {
+    public BedSideStatus withAlertDetailedMessage(String alertDetailedMessage) {
         setAlertDetailedMessage(alertDetailedMessage);
         return this;
     }
 
-    public Integer getSleepNumber()
-    {
+    public Integer getSleepNumber() {
         return sleepNumber;
     }
 
-    public void setSleepNumber(Integer sleepNumber)
-    {
+    public void setSleepNumber(Integer sleepNumber) {
         this.sleepNumber = sleepNumber;
     }
 
-    public BedSideStatus withSleepNumber(Integer sleepNumber)
-    {
+    public BedSideStatus withSleepNumber(Integer sleepNumber) {
         setSleepNumber(sleepNumber);
         return this;
     }
 
-    public Long getAlertId()
-    {
+    public Long getAlertId() {
         return alertId;
     }
 
-    public void setAlertId(Long alertId)
-    {
+    public void setAlertId(Long alertId) {
         this.alertId = alertId;
     }
 
-    public BedSideStatus withAlertId(Long alertId)
-    {
+    public BedSideStatus withAlertId(Long alertId) {
         setAlertId(alertId);
         return this;
     }
 
-    public TimeSince getLastLink()
-    {
+    public TimeSince getLastLink() {
         return lastLink;
     }
 
-    public void setLastLink(TimeSince lastLink)
-    {
+    public void setLastLink(TimeSince lastLink) {
         this.lastLink = lastLink;
     }
 
-    public BedSideStatus withLastLink(TimeSince lastLink)
-    {
+    public BedSideStatus withLastLink(TimeSince lastLink) {
         setLastLink(lastLink);
         return this;
     }
 
-    public Integer getPressure()
-    {
+    public Integer getPressure() {
         return pressure;
     }
 
-    public void setPressure(Integer pressure)
-    {
+    public void setPressure(Integer pressure) {
         this.pressure = pressure;
     }
 
-    public BedSideStatus withPressure(Integer pressure)
-    {
+    public BedSideStatus withPressure(Integer pressure) {
         setPressure(pressure);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                 + ((alertDetailedMessage == null) ? 0 : alertDetailedMessage.hashCode());
+        result = prime * result + ((alertDetailedMessage == null) ? 0 : alertDetailedMessage.hashCode());
         result = prime * result + ((alertId == null) ? 0 : alertId.hashCode());
         result = prime * result + ((inBed == null) ? 0 : inBed.hashCode());
         result = prime * result + ((lastLink == null) ? 0 : lastLink.hashCode());
@@ -139,93 +118,64 @@ public class BedSideStatus
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof BedSideStatus))
-        {
+        if (!(obj instanceof BedSideStatus)) {
             return false;
         }
-        BedSideStatus other = (BedSideStatus)obj;
-        if (alertDetailedMessage == null)
-        {
-            if (other.alertDetailedMessage != null)
-            {
+        BedSideStatus other = (BedSideStatus) obj;
+        if (alertDetailedMessage == null) {
+            if (other.alertDetailedMessage != null) {
                 return false;
             }
-        }
-        else if (!alertDetailedMessage.equals(other.alertDetailedMessage))
-        {
+        } else if (!alertDetailedMessage.equals(other.alertDetailedMessage)) {
             return false;
         }
-        if (alertId == null)
-        {
-            if (other.alertId != null)
-            {
+        if (alertId == null) {
+            if (other.alertId != null) {
                 return false;
             }
-        }
-        else if (!alertId.equals(other.alertId))
-        {
+        } else if (!alertId.equals(other.alertId)) {
             return false;
         }
-        if (inBed == null)
-        {
-            if (other.inBed != null)
-            {
+        if (inBed == null) {
+            if (other.inBed != null) {
                 return false;
             }
-        }
-        else if (!inBed.equals(other.inBed))
-        {
+        } else if (!inBed.equals(other.inBed)) {
             return false;
         }
-        if (lastLink == null)
-        {
-            if (other.lastLink != null)
-            {
+        if (lastLink == null) {
+            if (other.lastLink != null) {
                 return false;
             }
-        }
-        else if (!lastLink.equals(other.lastLink))
-        {
+        } else if (!lastLink.equals(other.lastLink)) {
             return false;
         }
-        if (pressure == null)
-        {
-            if (other.pressure != null)
-            {
+        if (pressure == null) {
+            if (other.pressure != null) {
                 return false;
             }
-        }
-        else if (!pressure.equals(other.pressure))
-        {
+        } else if (!pressure.equals(other.pressure)) {
             return false;
         }
-        if (sleepNumber == null)
-        {
-            if (other.sleepNumber != null)
-            {
+        if (sleepNumber == null) {
+            if (other.sleepNumber != null) {
                 return false;
             }
-        }
-        else if (!sleepNumber.equals(other.sleepNumber))
-        {
+        } else if (!sleepNumber.equals(other.sleepNumber)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("BedSideStatus [inBed=");
         builder.append(inBed);

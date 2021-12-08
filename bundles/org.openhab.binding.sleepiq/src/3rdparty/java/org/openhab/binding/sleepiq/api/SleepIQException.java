@@ -17,20 +17,22 @@ package org.openhab.binding.sleepiq.api;
 
 import org.openhab.binding.sleepiq.api.model.Failure;
 
-public class SleepIQException extends Exception
-{
+public class SleepIQException extends Exception {
     private static final long serialVersionUID = 1L;
 
     private final Failure failure;
 
-    public SleepIQException(Failure failure)
-    {
+    public SleepIQException(Failure failure) {
         super(failure.getError().getMessage());
         this.failure = failure;
     }
 
-    public Failure getFailure()
-    {
+    public Failure getFailure() {
         return failure;
+    }
+
+    public SleepIQException(String message) {
+        super(message);
+        this.failure = null;
     }
 }

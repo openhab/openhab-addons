@@ -29,7 +29,7 @@ import java.time.LocalDate;
  */
 public class LocalDateTypeAdapter extends TemporalTypeAdapter<LocalDate> {
 
-  public LocalDateTypeAdapter() {
-    super(LocalDate::parse);
-  }
+    public LocalDateTypeAdapter() {
+        super(LocalDate::parse);
+    }
 }

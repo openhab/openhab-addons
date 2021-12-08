@@ -31,6 +31,7 @@ public abstract class AbstractTest {
         return getTestDataPath(name).toFile();
     }
 
+    @SuppressWarnings("null")
     protected Path getTestDataPath(String name) {
         String packageName = this.getClass().getPackage().getName();
 

@@ -29,7 +29,7 @@ import java.time.MonthDay;
  */
 public class MonthDayTypeAdapter extends TemporalTypeAdapter<MonthDay> {
 
-  public MonthDayTypeAdapter() {
-    super(MonthDay::parse);
-  }
+    public MonthDayTypeAdapter() {
+        super(MonthDay::parse);
+    }
 }

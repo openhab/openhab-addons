@@ -15,10 +15,11 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
+import org.openhab.binding.sleepiq.api.enums.Side;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Sleeper
-{
+public class Sleeper {
     private String firstName;
     private Boolean active;
     private Boolean emailValidated;
@@ -44,379 +45,309 @@ public class Sleeper
     private String email;
     private String avatar;
     private String lastLogin; // should be ZonedDateTime but provider passes string "null" when missing
-    private Integer side; // 0=left; 1=right
+    private Side side; // 0=left; 1=right
 
-    public String getFirstName()
-    {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName)
-    {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
-    public Sleeper withFirstName(String firstName)
-    {
+    public Sleeper withFirstName(String firstName) {
         setFirstName(firstName);
         return this;
     }
 
-    public Boolean isActive()
-    {
+    public Boolean isActive() {
         return active;
     }
 
-    public void setActive(Boolean active)
-    {
+    public void setActive(Boolean active) {
         this.active = active;
     }
 
-    public Sleeper withActive(Boolean active)
-    {
+    public Sleeper withActive(Boolean active) {
         setActive(active);
         return this;
     }
 
-    public Boolean isEmailValidated()
-    {
+    public Boolean isEmailValidated() {
         return emailValidated;
     }
 
-    public void setEmailValidated(Boolean emailValidated)
-    {
+    public void setEmailValidated(Boolean emailValidated) {
         this.emailValidated = emailValidated;
     }
 
-    public Sleeper withEmailValidated(Boolean emailValidated)
-    {
+    public Sleeper withEmailValidated(Boolean emailValidated) {
         setEmailValidated(emailValidated);
         return this;
     }
 
-    public Boolean isChild()
-    {
+    public Boolean isChild() {
         return child;
     }
 
-    public void setChild(Boolean child)
-    {
+    public void setChild(Boolean child) {
         this.child = child;
     }
 
-    public Sleeper withChild(Boolean child)
-    {
+    public Sleeper withChild(Boolean child) {
         setChild(child);
         return this;
     }
 
-    public String getBedId()
-    {
+    public String getBedId() {
         return bedId;
     }
 
-    public void setBedId(String bedId)
-    {
+    public void setBedId(String bedId) {
         this.bedId = bedId;
     }
 
-    public Sleeper withBedId(String bedId)
-    {
+    public Sleeper withBedId(String bedId) {
         setBedId(bedId);
         return this;
     }
 
-    public String getBirthYear()
-    {
+    public String getBirthYear() {
         return birthYear;
     }
 
-    public void setBirthYear(String birthYear)
-    {
+    public void setBirthYear(String birthYear) {
         this.birthYear = birthYear;
     }
 
-    public Sleeper withBirthYear(String birthYear)
-    {
+    public Sleeper withBirthYear(String birthYear) {
         setBirthYear(birthYear);
         return this;
     }
 
-    public String getZipCode()
-    {
+    public String getZipCode() {
         return zipCode;
     }
 
-    public void setZipCode(String zipCode)
-    {
+    public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
 
-    public Sleeper withZipCode(String zipCode)
-    {
+    public Sleeper withZipCode(String zipCode) {
         setZipCode(zipCode);
         return this;
     }
 
-    public String getTimezone()
-    {
+    public String getTimezone() {
         return timezone;
     }
 
-    public void setTimezone(String timezone)
-    {
+    public void setTimezone(String timezone) {
         this.timezone = timezone;
     }
 
-    public Sleeper withTimezone(String timezone)
-    {
+    public Sleeper withTimezone(String timezone) {
         setTimezone(timezone);
         return this;
     }
 
-    public Boolean isMale()
-    {
+    public Boolean isMale() {
         return male;
     }
 
-    public void setMale(Boolean male)
-    {
+    public void setMale(Boolean male) {
         this.male = male;
     }
 
-    public Sleeper withMale(Boolean male)
-    {
+    public Sleeper withMale(Boolean male) {
         setMale(male);
         return this;
     }
 
-    public Integer getWeight()
-    {
+    public Integer getWeight() {
         return weight;
     }
 
-    public void setWeight(Integer weight)
-    {
+    public void setWeight(Integer weight) {
         this.weight = weight;
     }
 
-    public Sleeper withWeight(Integer weight)
-    {
+    public Sleeper withWeight(Integer weight) {
         setWeight(weight);
         return this;
     }
 
-    public String getDuration()
-    {
+    public String getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration)
-    {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 
-    public Sleeper withDuration(String duration)
-    {
+    public Sleeper withDuration(String duration) {
         setDuration(duration);
         return this;
     }
 
-    public String getSleeperId()
-    {
+    public String getSleeperId() {
         return sleeperId;
     }
 
-    public void setSleeperId(String sleeperId)
-    {
+    public void setSleeperId(String sleeperId) {
         this.sleeperId = sleeperId;
     }
 
-    public Sleeper withSleeperId(String sleeperId)
-    {
+    public Sleeper withSleeperId(String sleeperId) {
         setSleeperId(sleeperId);
         return this;
     }
 
-    public Integer getHeight()
-    {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(Integer height)
-    {
+    public void setHeight(Integer height) {
         this.height = height;
     }
 
-    public Sleeper withHeight(Integer height)
-    {
+    public Sleeper withHeight(Integer height) {
         setHeight(height);
         return this;
     }
 
-    public Long getLicenseVersion()
-    {
+    public Long getLicenseVersion() {
         return licenseVersion;
     }
 
-    public void setLicenseVersion(Long licenseVersion)
-    {
+    public void setLicenseVersion(Long licenseVersion) {
         this.licenseVersion = licenseVersion;
     }
 
-    public Sleeper withLicenseVersion(Long licenseVersion)
-    {
+    public Sleeper withLicenseVersion(Long licenseVersion) {
         setLicenseVersion(licenseVersion);
         return this;
     }
 
-    public String getUsername()
-    {
+    public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username)
-    {
+    public void setUsername(String username) {
         this.username = username;
     }
 
-    public Sleeper withUsername(String username)
-    {
+    public Sleeper withUsername(String username) {
         setUsername(username);
         return this;
     }
 
-    public Integer getBirthMonth()
-    {
+    public Integer getBirthMonth() {
         return birthMonth;
     }
 
-    public void setBirthMonth(Integer birthMonth)
-    {
+    public void setBirthMonth(Integer birthMonth) {
         this.birthMonth = birthMonth;
     }
 
-    public Sleeper withBirthMonth(Integer birthMonth)
-    {
+    public Sleeper withBirthMonth(Integer birthMonth) {
         setBirthMonth(birthMonth);
         return this;
     }
 
-    public Integer getSleepGoal()
-    {
+    public Integer getSleepGoal() {
         return sleepGoal;
     }
 
-    public void setSleepGoal(Integer sleepGoal)
-    {
+    public void setSleepGoal(Integer sleepGoal) {
         this.sleepGoal = sleepGoal;
     }
 
-    public Sleeper withSleepGoal(Integer sleepGoal)
-    {
+    public Sleeper withSleepGoal(Integer sleepGoal) {
         setSleepGoal(sleepGoal);
         return this;
     }
 
-    public Boolean isAccountOwner()
-    {
+    public Boolean isAccountOwner() {
         return accountOwner;
     }
 
-    public void setAccountOwner(Boolean accountOwner)
-    {
+    public void setAccountOwner(Boolean accountOwner) {
         this.accountOwner = accountOwner;
     }
 
-    public Sleeper withAccountOwner(Boolean accountOwner)
-    {
+    public Sleeper withAccountOwner(Boolean accountOwner) {
         setAccountOwner(accountOwner);
         return this;
     }
 
-    public String getAccountId()
-    {
+    public String getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(String accountId)
-    {
+    public void setAccountId(String accountId) {
         this.accountId = accountId;
     }
 
-    public Sleeper withAccountId(String accountId)
-    {
+    public Sleeper withAccountId(String accountId) {
         setAccountId(accountId);
         return this;
     }
 
-    public String getEmail()
-    {
+    public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email)
-    {
+    public void setEmail(String email) {
         this.email = email;
     }
 
-    public Sleeper withEmail(String email)
-    {
+    public Sleeper withEmail(String email) {
         setEmail(email);
         return this;
     }
 
-    public String getAvatar()
-    {
+    public String getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(String avatar)
-    {
+    public void setAvatar(String avatar) {
         this.avatar = avatar;
     }
 
-    public Sleeper withAvatar(String avatar)
-    {
+    public Sleeper withAvatar(String avatar) {
         setAvatar(avatar);
         return this;
     }
 
-    public String getLastLogin()
-    {
+    public String getLastLogin() {
         return lastLogin;
     }
 
-    public void setLastLogin(String lastLogin)
-    {
+    public void setLastLogin(String lastLogin) {
         this.lastLogin = lastLogin;
     }
 
-    public Sleeper withLastLogin(String lastLogin)
-    {
+    public Sleeper withLastLogin(String lastLogin) {
         setLastLogin(lastLogin);
         return this;
     }
 
-    public Integer getSide()
-    {
+    public Side getSide() {
         return side;
     }
 
-    public void setSide(Integer side)
-    {
+    public void setSide(Side side) {
         this.side = side;
     }
 
-    public Sleeper withSide(Integer side)
-    {
+    public Sleeper withSide(Side side) {
         setSide(side);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((sleeperId == null) ? 0 : sleeperId.hashCode());
@@ -424,38 +355,29 @@ public class Sleeper
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Sleeper))
-        {
+        if (!(obj instanceof Sleeper)) {
             return false;
         }
-        Sleeper other = (Sleeper)obj;
-        if (sleeperId == null)
-        {
-            if (other.sleeperId != null)
-            {
+        Sleeper other = (Sleeper) obj;
+        if (sleeperId == null) {
+            if (other.sleeperId != null) {
                 return false;
             }
-        }
-        else if (!sleeperId.equals(other.sleeperId))
-        {
+        } else if (!sleeperId.equals(other.sleeperId)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Sleeper [firstName=");
         builder.append(firstName);

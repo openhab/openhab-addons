@@ -15,40 +15,48 @@
  */
 package org.openhab.binding.sleepiq.api.impl;
 
-public class Endpoints
-{
-    private static final String LOGIN = "login";
-    private static final String BED = "bed";
-    private static final String SLEEPER = "sleeper";
-    private static final String FAMILY_STATUS = "familyStatus";
-    private static final String PAUSE_MODE = "pauseMode";
+public class Endpoints {
+    private static final String LOGIN = "/rest/login";
+    private static final String BED = "/rest/bed";
+    private static final String SLEEPER = "/rest/sleeper";
+    private static final String FAMILY_STATUS = "/rest/bed/familyStatus";
+    private static final String PAUSE_MODE = "/rest/bed/%s/pauseMode";
+    private static final String SLEEP_DATA = "/rest/sleepData";
+    private static final String SET_SLEEP_NUMBER = "/rest/bed/%s/sleepNumber";
+    private static final String SET_PAUSE_MODE = "/rest/bed/%s/pauseMode";
 
-    public static String login()
-    {
+    public static String login() {
         return LOGIN;
     }
 
-    public static String bed()
-    {
+    public static String bed() {
         return BED;
     }
 
-    public static String sleeper()
-    {
+    public static String sleeper() {
         return SLEEPER;
     }
 
-    public static String familyStatus()
-    {
+    public static String familyStatus() {
         return FAMILY_STATUS;
     }
 
-    public static String pauseMode()
-    {
-        return PAUSE_MODE;
+    public static String pauseMode(String bedId) {
+        return String.format(PAUSE_MODE, bedId);
     }
 
-    // @formatter:off
-    private Endpoints() {}
-    // @formatter:on
+    public static String sleepData() {
+        return SLEEP_DATA;
+    }
+
+    public static String setSleepNumber(String bedId) {
+        return String.format(SET_SLEEP_NUMBER, bedId);
+    }
+
+    public static String setPauseMode(String bedId) {
+        return String.format(SET_PAUSE_MODE, bedId);
+    }
+
+    private Endpoints() {
+    }
 }

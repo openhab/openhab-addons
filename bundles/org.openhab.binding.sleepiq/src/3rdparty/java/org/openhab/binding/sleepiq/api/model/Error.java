@@ -17,48 +17,40 @@ package org.openhab.binding.sleepiq.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Error
-{
+public class Error {
     @SerializedName("Code")
     private Long code;
     @SerializedName("Message")
     private String message;
 
-    public Long getCode()
-    {
+    public Long getCode() {
         return code;
     }
 
-    public void setCode(Long code)
-    {
+    public void setCode(Long code) {
         this.code = code;
     }
 
-    public Error withCode(Long code)
-    {
+    public Error withCode(Long code) {
         setCode(code);
         return this;
     }
 
-    public String getMessage()
-    {
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message)
-    {
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    public Error withMessage(String message)
-    {
+    public Error withMessage(String message) {
         setMessage(message);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((code == null) ? 0 : code.hashCode());
@@ -66,38 +58,29 @@ public class Error
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Error))
-        {
+        if (!(obj instanceof Error)) {
             return false;
         }
-        Error other = (Error)obj;
-        if (code == null)
-        {
-            if (other.code != null)
-            {
+        Error other = (Error) obj;
+        if (code == null) {
+            if (other.code != null) {
                 return false;
             }
-        }
-        else if (!code.equals(other.code))
-        {
+        } else if (!code.equals(other.code)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Error [code=");
         builder.append(code);

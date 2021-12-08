@@ -29,7 +29,7 @@ import java.time.Period;
  */
 public class PeriodTypeAdapter extends TemporalTypeAdapter<Period> {
 
-  public PeriodTypeAdapter() {
-    super(Period::parse);
-  }
+    public PeriodTypeAdapter() {
+        super(Period::parse);
+    }
 }

@@ -14,10 +14,6 @@
 
   <name>openHAB Add-ons :: Bundles :: SleepIQ Binding</name>
 
-  <properties>
-    <dep.noembedding>provider-gson</dep.noembedding>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

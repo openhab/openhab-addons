@@ -36,7 +36,7 @@ public class PauseModeTest extends AbstractTest {
 
     @Test
     public void testSerializeAllFields() throws Exception {
-        PauseMode pauseMode = new PauseMode().withAccountId("-8888888888888888888").withBedId("-9999999999999999999")
+        PauseModeResponse pauseMode = new PauseModeResponse().withAccountId("-8888888888888888888").withBedId("-9999999999999999999")
                 .withPauseMode("off");
         assertEquals(readJson("pause-mode.json"), gson.toJson(pauseMode));
     }
@@ -44,7 +44,7 @@ public class PauseModeTest extends AbstractTest {
     @Test
     public void testDeserializeAllFields() throws Exception {
         try (FileReader reader = new FileReader(getTestDataFile("pause-mode.json"))) {
-            PauseMode pauseMode = gson.fromJson(reader, PauseMode.class);
+            PauseModeResponse pauseMode = gson.fromJson(reader, PauseModeResponse.class);
             assertEquals("-8888888888888888888", pauseMode.getAccountId());
             assertEquals("-9999999999999999999", pauseMode.getBedId());
             assertEquals("off", pauseMode.getPauseMode());

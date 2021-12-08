@@ -17,10 +17,8 @@ package org.openhab.binding.sleepiq.api.impl.typeadapters;
 
 import org.openhab.binding.sleepiq.api.model.TimeSince;
 
-public class TimeSinceTypeAdapter extends TemporalTypeAdapter<TimeSince>
-{
-    public TimeSinceTypeAdapter()
-    {
+public class TimeSinceTypeAdapter extends TemporalTypeAdapter<TimeSince> {
+    public TimeSinceTypeAdapter() {
         super(TimeSince::parse);
     }
 }

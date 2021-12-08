@@ -17,12 +17,10 @@ package org.openhab.binding.sleepiq.api;
 
 import org.openhab.binding.sleepiq.api.model.Failure;
 
-public class UnauthorizedException extends LoginException
-{
+public class UnauthorizedException extends LoginException {
     private static final long serialVersionUID = 1L;
 
-    public UnauthorizedException(Failure failure)
-    {
+    public UnauthorizedException(Failure failure) {
         super(failure);
     }
 }

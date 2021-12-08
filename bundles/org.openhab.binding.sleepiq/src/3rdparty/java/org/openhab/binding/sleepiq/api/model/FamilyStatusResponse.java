@@ -17,19 +17,19 @@ package org.openhab.binding.sleepiq.api.model;
 
 import java.util.List;
 
-public class SleepersResponse {
-    private List<Sleeper> sleepers;
+public class FamilyStatusResponse {
+    private List<BedStatus> beds;
 
-    public List<Sleeper> getSleepers() {
-        return sleepers;
+    public List<BedStatus> getBeds() {
+        return beds;
     }
 
-    public void setSleepers(List<Sleeper> sleepers) {
-        this.sleepers = sleepers;
+    public void setBeds(List<BedStatus> beds) {
+        this.beds = beds;
     }
 
-    public SleepersResponse withSleepers(List<Sleeper> sleepers) {
-        setSleepers(sleepers);
+    public FamilyStatusResponse withBeds(List<BedStatus> beds) {
+        setBeds(beds);
         return this;
     }
 
@@ -37,7 +37,7 @@ public class SleepersResponse {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((sleepers == null) ? 0 : sleepers.hashCode());
+        result = prime * result + ((beds == null) ? 0 : beds.hashCode());
         return result;
     }
 
@@ -49,15 +49,15 @@ public class SleepersResponse {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof SleepersResponse)) {
+        if (!(obj instanceof FamilyStatusResponse)) {
             return false;
         }
-        SleepersResponse other = (SleepersResponse) obj;
-        if (sleepers == null) {
-            if (other.sleepers != null) {
+        FamilyStatusResponse other = (FamilyStatusResponse) obj;
+        if (beds == null) {
+            if (other.beds != null) {
                 return false;
             }
-        } else if (!sleepers.equals(other.sleepers)) {
+        } else if (!beds.equals(other.beds)) {
             return false;
         }
         return true;
@@ -66,8 +66,8 @@ public class SleepersResponse {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("SleepersResponse [sleepers=");
-        builder.append(sleepers);
+        builder.append("FamilyStatus [beds=");
+        builder.append(beds);
         builder.append("]");
         return builder.toString();
     }

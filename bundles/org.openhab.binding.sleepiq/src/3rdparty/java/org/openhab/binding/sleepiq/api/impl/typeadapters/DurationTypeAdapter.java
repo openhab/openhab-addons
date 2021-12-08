@@ -29,7 +29,7 @@ import java.time.Duration;
  */
 public class DurationTypeAdapter extends TemporalTypeAdapter<Duration> {
 
-  public DurationTypeAdapter() {
-    super(Duration::parse);
-  }
+    public DurationTypeAdapter() {
+        super(Duration::parse);
+    }
 }

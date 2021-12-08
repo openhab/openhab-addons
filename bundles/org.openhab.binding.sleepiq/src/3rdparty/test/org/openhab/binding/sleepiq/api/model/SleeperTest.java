@@ -21,6 +21,7 @@ import java.io.FileReader;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.sleepiq.api.enums.Side;
 import org.openhab.binding.sleepiq.api.impl.GsonGenerator;
 import org.openhab.binding.sleepiq.api.test.AbstractTest;
 
@@ -40,7 +41,7 @@ public class SleeperTest extends AbstractTest {
                 .withAvatar("").withBedId("-9999999999999999999").withBirthMonth(6).withBirthYear("1970")
                 .withChild(false).withDuration("").withEmail("alice@domain.com").withEmailValidated(true)
                 .withFirstName("Alice").withHeight(64).withLastLogin("2017-02-17 20:19:36 CST").withLicenseVersion(6L)
-                .withMale(false).withSide(1).withSleeperId("-1111111111111111111").withSleepGoal(450)
+                .withMale(false).withSide(Side.RIGHT).withSleeperId("-1111111111111111111").withSleepGoal(450)
                 .withTimezone("US/Pacific").withUsername("alice@domain.com").withWeight(110).withZipCode("90210");
         assertEquals(readJson("sleeper.json"), gson.toJson(sleeper));
     }
@@ -71,7 +72,7 @@ public class SleeperTest extends AbstractTest {
             assertEquals("2017-02-17 20:19:36 CST", sleeper.getLastLogin());
             assertEquals(Long.valueOf(6L), sleeper.getLicenseVersion());
             assertEquals(false, sleeper.isMale());
-            assertEquals(Integer.valueOf(1), sleeper.getSide());
+            assertEquals(Side.RIGHT, sleeper.getSide());
             assertEquals("-1111111111111111111", sleeper.getSleeperId());
             assertEquals(Integer.valueOf(450), sleeper.getSleepGoal());
             assertEquals("US/Pacific", sleeper.getTimezone());

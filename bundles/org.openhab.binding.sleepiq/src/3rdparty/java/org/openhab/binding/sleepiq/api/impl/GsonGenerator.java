@@ -15,38 +15,37 @@
  */
 package org.openhab.binding.sleepiq.api.impl;
 
+import org.openhab.binding.sleepiq.api.enums.Side;
 import org.openhab.binding.sleepiq.api.impl.typeadapters.JSR310TypeAdapters;
+import org.openhab.binding.sleepiq.api.impl.typeadapters.SideTypeAdapter;
+import org.openhab.binding.sleepiq.api.impl.typeadapters.SleepNumberRequestAdapter;
 import org.openhab.binding.sleepiq.api.impl.typeadapters.TimeSinceTypeAdapter;
+import org.openhab.binding.sleepiq.api.model.SleepNumberRequest;
 import org.openhab.binding.sleepiq.api.model.TimeSince;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GsonGenerator
-{
-    public static Gson create()
-    {
+public class GsonGenerator {
+    public static Gson create() {
         return create(false);
     }
 
-    public static Gson create(boolean prettyPrint)
-    {
+    public static Gson create(boolean prettyPrint) {
         GsonBuilder builder = new GsonBuilder();
 
         // add Java 8 Time API support
         JSR310TypeAdapters.registerJSR310TypeAdapters(builder);
-
         builder.registerTypeAdapter(TimeSince.class, new TimeSinceTypeAdapter());
+        builder.registerTypeAdapter(SleepNumberRequest.class, new SleepNumberRequestAdapter());
+        builder.registerTypeAdapter(Side.class, new SideTypeAdapter());
 
-        if (prettyPrint)
-        {
+        if (prettyPrint) {
             builder.setPrettyPrinting();
         }
-
         return builder.create();
     }
 
-    // @formatter:off
-    private GsonGenerator() {}
-    // @formatter:on
+    private GsonGenerator() {
+    }
 }

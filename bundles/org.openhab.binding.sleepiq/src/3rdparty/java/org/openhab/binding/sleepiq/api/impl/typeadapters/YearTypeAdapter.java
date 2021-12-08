@@ -29,7 +29,7 @@ import java.time.Year;
  */
 public class YearTypeAdapter extends TemporalTypeAdapter<Year> {
 
-  public YearTypeAdapter() {
-    super(Year::parse);
-  }
+    public YearTypeAdapter() {
+        super(Year::parse);
+    }
 }

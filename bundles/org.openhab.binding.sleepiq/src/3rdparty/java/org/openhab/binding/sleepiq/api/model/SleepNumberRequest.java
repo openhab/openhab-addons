@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Gregory Moyer
+ * Copyright 2021 Mark Hilbush
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +15,12 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
-public class BedStatus {
-    private Long status;
+import org.openhab.binding.sleepiq.api.enums.Side;
+
+public class SleepNumberRequest {
     private String bedId;
-    private BedSideStatus leftSide;
-    private BedSideStatus rightSide;
-
-    public Long getStatus() {
-        return status;
-    }
-
-    public void setStatus(Long status) {
-        this.status = status;
-    }
-
-    public BedStatus withStatus(Long status) {
-        setStatus(status);
-        return this;
-    }
+    private Integer sleepNumber;
+    private Side side;
 
     public String getBedId() {
         return bedId;
@@ -42,34 +30,34 @@ public class BedStatus {
         this.bedId = bedId;
     }
 
-    public BedStatus withBedId(String bedId) {
+    public SleepNumberRequest withBedId(String bedId) {
         setBedId(bedId);
         return this;
     }
 
-    public BedSideStatus getLeftSide() {
-        return leftSide;
+    public Integer getSleepNumber() {
+        return sleepNumber;
     }
 
-    public void setLeftSide(BedSideStatus leftSide) {
-        this.leftSide = leftSide;
+    public void setSleepNumber(Integer sleepNumber) {
+        this.sleepNumber = sleepNumber;
     }
 
-    public BedStatus withLeftSide(BedSideStatus leftSide) {
-        setLeftSide(leftSide);
+    public SleepNumberRequest withSleepNumber(Integer sleepNumber) {
+        setSleepNumber(sleepNumber);
         return this;
     }
 
-    public BedSideStatus getRightSide() {
-        return rightSide;
+    public Side getSide() {
+        return side;
     }
 
-    public void setRightSide(BedSideStatus rightSide) {
-        this.rightSide = rightSide;
+    public void setSide(Side side) {
+        this.side = side;
     }
 
-    public BedStatus withRightSide(BedSideStatus rightSide) {
-        setRightSide(rightSide);
+    public SleepNumberRequest withSide(Side side) {
+        setSide(side);
         return this;
     }
 
@@ -78,6 +66,8 @@ public class BedStatus {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((bedId == null) ? 0 : bedId.hashCode());
+        result = prime * result + ((bedId == null) ? 0 : bedId.hashCode());
+        result = prime * result + ((side == null) ? 0 : side.hashCode());
         return result;
     }
 
@@ -89,15 +79,29 @@ public class BedStatus {
         if (obj == null) {
             return false;
         }
-        if (!(obj instanceof BedStatus)) {
+        if (!(obj instanceof SleepNumberRequest)) {
             return false;
         }
-        BedStatus other = (BedStatus) obj;
+        SleepNumberRequest other = (SleepNumberRequest) obj;
         if (bedId == null) {
             if (other.bedId != null) {
                 return false;
             }
         } else if (!bedId.equals(other.bedId)) {
+            return false;
+        }
+        if (sleepNumber == null) {
+            if (other.sleepNumber != null) {
+                return false;
+            }
+        } else if (sleepNumber.equals(other.sleepNumber)) {
+            return false;
+        }
+        if (side == null) {
+            if (other.side != null) {
+                return false;
+            }
+        } else if (!side.equals(other.side)) {
             return false;
         }
         return true;
@@ -106,14 +110,12 @@ public class BedStatus {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append("BedStatus [status=");
-        builder.append(status);
-        builder.append(", bedId=");
+        builder.append("SleepNumberRequest [bedId=");
         builder.append(bedId);
-        builder.append(", leftSide=");
-        builder.append(leftSide);
-        builder.append(", rightSide=");
-        builder.append(rightSide);
+        builder.append(", sleepNumber=");
+        builder.append(sleepNumber);
+        builder.append(", side=");
+        builder.append(side);
         builder.append("]");
         return builder.toString();
     }

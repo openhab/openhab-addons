@@ -15,153 +15,122 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
-public class LoginInfo
-{
+public class LoginInfo {
     private String userId;
     private String key;
     private Long registrationState;
     private Long edpLoginStatus;
     private String edpLoginMessage;
 
-    public String getUserId()
-    {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId)
-    {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public LoginInfo withUserId(String userId)
-    {
+    public LoginInfo withUserId(String userId) {
         setUserId(userId);
         return this;
     }
 
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
-    public void setKey(String key)
-    {
+    public void setKey(String key) {
         this.key = key;
     }
 
-    public LoginInfo withKey(String key)
-    {
+    public LoginInfo withKey(String key) {
         setKey(key);
         return this;
     }
 
-    public Long getRegistrationState()
-    {
+    public Long getRegistrationState() {
         return registrationState;
     }
 
-    public void setRegistrationState(Long registrationState)
-    {
+    public void setRegistrationState(Long registrationState) {
         this.registrationState = registrationState;
     }
 
-    public LoginInfo withRegistrationState(Long registrationState)
-    {
+    public LoginInfo withRegistrationState(Long registrationState) {
         setRegistrationState(registrationState);
         return this;
     }
 
-    public Long getEdpLoginStatus()
-    {
+    public Long getEdpLoginStatus() {
         return edpLoginStatus;
     }
 
-    public void setEdpLoginStatus(Long edpLoginStatus)
-    {
+    public void setEdpLoginStatus(Long edpLoginStatus) {
         this.edpLoginStatus = edpLoginStatus;
     }
 
-    public LoginInfo withEdpLoginStatus(Long edpLoginStatus)
-    {
+    public LoginInfo withEdpLoginStatus(Long edpLoginStatus) {
         setEdpLoginStatus(edpLoginStatus);
         return this;
     }
 
-    public String getEdpLoginMessage()
-    {
+    public String getEdpLoginMessage() {
         return edpLoginMessage;
     }
 
-    public void setEdpLoginMessage(String edpLoginMessage)
-    {
+    public void setEdpLoginMessage(String edpLoginMessage) {
         this.edpLoginMessage = edpLoginMessage;
     }
 
-    public LoginInfo withEdpLoginMessage(String edpLoginMessage)
-    {
+    public LoginInfo withEdpLoginMessage(String edpLoginMessage) {
         setEdpLoginMessage(edpLoginMessage);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((key == null) ? 0 : key.hashCode());
-        result = prime * result + (int)(registrationState ^ (registrationState >>> 32));
+        result = prime * result + (int) (registrationState ^ (registrationState >>> 32));
         result = prime * result + ((userId == null) ? 0 : userId.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof LoginInfo))
-        {
+        if (!(obj instanceof LoginInfo)) {
             return false;
         }
-        LoginInfo other = (LoginInfo)obj;
-        if (key == null)
-        {
-            if (other.key != null)
-            {
+        LoginInfo other = (LoginInfo) obj;
+        if (key == null) {
+            if (other.key != null) {
                 return false;
             }
-        }
-        else if (!key.equals(other.key))
-        {
+        } else if (!key.equals(other.key)) {
             return false;
         }
-        if (!registrationState.equals(other.registrationState))
-        {
+        if (!registrationState.equals(other.registrationState)) {
             return false;
         }
-        if (userId == null)
-        {
-            if (other.userId != null)
-            {
+        if (userId == null) {
+            if (other.userId != null) {
                 return false;
             }
-        }
-        else if (!userId.equals(other.userId))
-        {
+        } else if (!userId.equals(other.userId)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("LoginInfo [userId=");
         builder.append(userId);

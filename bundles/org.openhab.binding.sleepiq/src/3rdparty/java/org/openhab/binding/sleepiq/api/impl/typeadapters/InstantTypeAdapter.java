@@ -29,7 +29,7 @@ import java.time.Instant;
  */
 public class InstantTypeAdapter extends DateTimeTypeAdapter<Instant> {
 
-  public InstantTypeAdapter() {
-    super(Instant::parse);
-  }
+    public InstantTypeAdapter() {
+        super(Instant::parse);
+    }
 }

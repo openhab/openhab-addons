@@ -17,30 +17,25 @@ package org.openhab.binding.sleepiq.api.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Failure
-{
+public class Failure {
     @SerializedName("Error")
     private Error error;
 
-    public Error getError()
-    {
+    public Error getError() {
         return error;
     }
 
-    public void setError(Error error)
-    {
+    public void setError(Error error) {
         this.error = error;
     }
 
-    public Failure withError(Error error)
-    {
+    public Failure withError(Error error) {
         setError(error);
         return this;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((error == null) ? 0 : error.hashCode());
@@ -48,38 +43,29 @@ public class Failure
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-        {
+    public boolean equals(Object obj) {
+        if (this == obj) {
             return true;
         }
-        if (obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (!(obj instanceof Failure))
-        {
+        if (!(obj instanceof Failure)) {
             return false;
         }
-        Failure other = (Failure)obj;
-        if (error == null)
-        {
-            if (other.error != null)
-            {
+        Failure other = (Failure) obj;
+        if (error == null) {
+            if (other.error != null) {
                 return false;
             }
-        }
-        else if (!error.equals(other.error))
-        {
+        } else if (!error.equals(other.error)) {
             return false;
         }
         return true;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append("Failure [error=");
         builder.append(error);

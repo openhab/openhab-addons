@@ -17,12 +17,14 @@ package org.openhab.binding.sleepiq.api;
 
 import org.openhab.binding.sleepiq.api.model.Failure;
 
-public class BedNotFoundException extends SleepIQException
-{
+public class BedNotFoundException extends SleepIQException {
     private static final long serialVersionUID = 1L;
 
-    public BedNotFoundException(Failure failure)
-    {
+    public BedNotFoundException(Failure failure) {
         super(failure);
+    }
+
+    public BedNotFoundException(String message) {
+        super(message);
     }
 }

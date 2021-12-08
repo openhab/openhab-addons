@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.sleepiq.internal.handler;
 
-import org.openhab.binding.sleepiq.api.SleepIQ;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sleepiq.api.model.BedStatus;
+import org.openhab.binding.sleepiq.api.model.Sleeper;
 
 /**
  * The {@link BedStatusListener} is notified when a chamber is updated.
  *
  * @author Gregory Moyer - Initial contribution
  */
+@NonNullByDefault
 public interface BedStatusListener {
     /**
      * This method will be called whenever a new bed status is received by the cloud handler.
@@ -27,5 +30,7 @@ public interface BedStatusListener {
      * @param cloud the cloud service that can be used to gather additional information
      * @param status the status returned from the cloud service
      */
-    public void onBedStateChanged(SleepIQ cloud, BedStatus status);
+    public void onBedStateChanged(BedStatus status);
+
+    public void onSleeperChanged(@Nullable Sleeper sleeper);
 }
