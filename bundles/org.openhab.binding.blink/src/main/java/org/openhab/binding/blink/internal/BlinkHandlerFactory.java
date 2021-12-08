@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.blink.internal;
@@ -22,6 +22,7 @@ import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.binding.blink.internal.handler.CameraHandler;
 import org.openhab.binding.blink.internal.handler.NetworkHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -54,12 +55,15 @@ public class BlinkHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
     private final HttpService httpService;
     private final HttpClientFactory httpClientFactory;
+    private final NetworkAddressService networkAddressService;
 
     @Activate
-    public BlinkHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory) {
+    public BlinkHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory,
+            @Reference NetworkAddressService networkAddressService) {
         this.gson = new Gson();
         this.httpService = httpService;
         this.httpClientFactory = httpClientFactory;
+        this.networkAddressService = networkAddressService;
     }
 
     @Override
@@ -71,9 +75,10 @@ public class BlinkHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new AccountHandler((Bridge) thing, httpService, getBundleContext(), httpClientFactory, gson);
+            return new AccountHandler((Bridge) thing, httpService, getBundleContext(), networkAddressService,
+                    httpClientFactory, gson);
         } else if (THING_TYPE_CAMERA.equals(thingTypeUID)) {
-            return new CameraHandler(thing, httpClientFactory, gson);
+            return new CameraHandler(thing, httpService, networkAddressService, httpClientFactory, gson);
         } else if (THING_TYPE_NETWORK.equals(thingTypeUID)) {
             try {
                 return new NetworkHandler(thing, httpClientFactory, gson);

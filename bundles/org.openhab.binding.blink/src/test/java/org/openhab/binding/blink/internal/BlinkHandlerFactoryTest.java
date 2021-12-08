@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.blink.internal;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -20,6 +32,7 @@ import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.binding.blink.internal.handler.CameraHandler;
 import org.openhab.binding.blink.internal.handler.NetworkHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -28,8 +41,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 
 /**
- * The {@link BlinkHandlerFactory} is responsible for creating things and thing
- * handlers.
+ * Test class.
  *
  * @author Matthias Oesterheld - Initial contribution
  */
@@ -43,9 +55,11 @@ class BlinkHandlerFactoryTest {
     private static final String NETWORK = "network";
     private @Mock @NonNullByDefault({}) HttpService httpService;
     private @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
+    private @Mock @NonNullByDefault({}) NetworkAddressService networkAddressService;
     private @Mock @NonNullByDefault({}) BundleContext mockBundleContext;
 
-    private BlinkHandlerFactory factory = new BlinkHandlerFactory(httpService, httpClientFactory);
+    private BlinkHandlerFactory factory = new BlinkHandlerFactory(httpService, httpClientFactory,
+            networkAddressService);
 
     static List<@Nullable String> thingUIDs() {
         ArrayList<@Nullable String> uids = new ArrayList<>();
@@ -58,7 +72,7 @@ class BlinkHandlerFactoryTest {
 
     void setupMocks() {
         when(httpClientFactory.getCommonHttpClient()).thenReturn(new HttpClient());
-        factory = new BlinkHandlerFactory(httpService, httpClientFactory) {
+        factory = new BlinkHandlerFactory(httpService, httpClientFactory, networkAddressService) {
             @Override
             protected BundleContext getBundleContext() {
                 return mockBundleContext;

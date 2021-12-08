@@ -1,20 +1,24 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.blink.internal.handler;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,6 +35,7 @@ import org.openhab.binding.blink.internal.servlet.AccountVerificationServlet;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -48,7 +53,7 @@ import com.google.gson.Gson;
 /**
  * The {@link AccountHandler} is responsible for initializing the blink account which is used as a bridge
  * for the blink things camera and network.
- * <p>
+ *
  * It also provides the methods for updating camera and network states.
  *
  * @author Matthias Oesterheld - Initial contribution
@@ -64,6 +69,7 @@ public class AccountHandler extends BaseBridgeHandler {
     AccountConfiguration config;
     AccountService blinkService;
     private final HttpService httpService;
+    private final NetworkAddressService networkAddressService;
     @Nullable
     AccountVerificationServlet accountServlet;
     @Nullable
@@ -72,10 +78,11 @@ public class AccountHandler extends BaseBridgeHandler {
     ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
 
     public AccountHandler(Bridge bridge, HttpService httpService, BundleContext bundleContext,
-            HttpClientFactory httpClientFactory, Gson gson) {
+            NetworkAddressService networkAddressService, HttpClientFactory httpClientFactory, Gson gson) {
         super(bridge);
         this.httpService = httpService;
         this.bundleContext = bundleContext;
+        this.networkAddressService = networkAddressService;
         this.blinkService = new AccountService(httpClientFactory.getCommonHttpClient(), gson);
     }
 
@@ -121,7 +128,11 @@ public class AccountHandler extends BaseBridgeHandler {
                 // call login api
                 blinkAccount = blinkService.login(config, generatedClientId, start2FA);
                 properties.putAll(blinkAccount.toAccountProperties());
-                String validationUrl = "/blink/" + thing.getUID().getId();
+                // don't know how to get scheme and port from openhab, right now it's hardcoded...
+                String scheme = "http://";
+                int port = 8080;
+                String validationUrl = scheme + networkAddressService.getPrimaryIpv4HostAddress() + ":" + port
+                        + "/blink/" + thing.getUID().getId();
                 properties.put("validationUrl", validationUrl);
                 updateProperties(properties);
                 // do 2FA if necessary

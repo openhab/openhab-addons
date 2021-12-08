@@ -52,6 +52,9 @@ configuration parameters are:
 | networkId         | Internal blink network ID         |
 | cameraId          | Internal blink camera ID          |
 
+Besides the channels, the current thumbnail is also provided by a servlet. The url is set in the thing properties.
+![](doc/thumbnail-url.png)
+
 ### blink Network
 
 A blink network basically corresponds to the blink sync modules and groups cameras. A blink network can be armed,

@@ -1,18 +1,22 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.blink.internal.servlet;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -36,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link AccountVerificationServlet} class provides the servlet for validation of the 2-factor authentication pin
  * provided by blink.
- * <p>
+ *
  * The content is loaded from the componentbundle resources (see validation.html)
  *
  * @author Matthias Oesterheld - Initial contribution

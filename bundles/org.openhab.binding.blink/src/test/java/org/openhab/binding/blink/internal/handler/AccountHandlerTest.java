@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.blink.internal.handler;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -41,8 +53,13 @@ import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.test.java.JavaTest;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.BridgeImpl;
 import org.osgi.framework.BundleContext;
@@ -50,6 +67,11 @@ import org.osgi.service.http.HttpService;
 
 import com.google.gson.Gson;
 
+/**
+ * Test class.
+ *
+ * @author Matthias Oesterheld - Initial contribution
+ */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
@@ -75,6 +97,9 @@ class AccountHandlerTest extends JavaTest {
     @Mock
     @NonNullByDefault({})
     BundleContext bundleContext;
+    @Mock
+    @NonNullByDefault({})
+    NetworkAddressService networkAddressService;
     @Spy
     Bridge bridge = new BridgeImpl(THING_TYPE_UID, CLIENT_ID);
 
@@ -89,7 +114,8 @@ class AccountHandlerTest extends JavaTest {
         config.put("password", "derwolf");
         config.put("refreshInterval", 30);
         when(bridge.getConfiguration()).thenReturn(config);
-        accountHandler = spy(new AccountHandler(bridge, httpService, bundleContext, httpClientFactory, new Gson()));
+        accountHandler = spy(new AccountHandler(bridge, httpService, bundleContext, networkAddressService,
+                httpClientFactory, new Gson()));
     }
 
     @Test

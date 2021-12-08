@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.blink.internal.handler;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -29,14 +41,27 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
-import org.openhab.core.thing.*;
+import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.osgi.service.http.HttpService;
 
 import com.google.gson.Gson;
 
+/**
+ * Test class.
+ *
+ * @author Matthias Oesterheld - Initial contribution
+ */
 @SuppressWarnings("ConstantConditions")
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
@@ -68,6 +93,12 @@ public class CameraHandlerTest {
     HttpClientFactory httpClientFactory;
     @Mock
     @NonNullByDefault({})
+    HttpService httpService;
+    @Mock
+    @NonNullByDefault({})
+    NetworkAddressService networkAddressService;
+    @Mock
+    @NonNullByDefault({})
     Bridge account;
     @Mock
     @NonNullByDefault({})
@@ -80,7 +111,7 @@ public class CameraHandlerTest {
         config.put("cameraId", CAMERA_ID);
         config.put("networkId", NETWORK_ID);
         when(thing.getConfiguration()).thenReturn(config);
-        cameraHandler = new CameraHandler(thing, httpClientFactory, new Gson()) {
+        cameraHandler = new CameraHandler(thing, httpService, networkAddressService, httpClientFactory, new Gson()) {
             @SuppressWarnings("ConstantConditions")
             @Override
             protected @Nullable Bridge getBridge() {
@@ -126,7 +157,9 @@ public class CameraHandlerTest {
         doReturn(toBeReturned).when(accountHandler).getTemperature(any());
         cameraHandler.handleCommand(CHANNEL_CAMERA_TEMPERATURE, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
-        verify(accountHandler).getTemperature(cameraHandler.config);
+        CameraConfiguration handlerConfig = cameraHandler.config;
+        CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
+        verify(accountHandler).getTemperature(config);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_TEMPERATURE), stateCaptor.capture());
         assertThat(stateCaptor.getValue(), is(new DecimalType(toBeReturned)));
     }
@@ -137,7 +170,9 @@ public class CameraHandlerTest {
         doReturn(OnOffType.ON).when(accountHandler).getBattery(any());
         cameraHandler.handleCommand(CHANNEL_CAMERA_BATTERY, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
-        verify(accountHandler).getBattery(cameraHandler.config);
+        CameraConfiguration handlerConfig = cameraHandler.config;
+        CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
+        verify(accountHandler).getBattery(config);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_BATTERY), stateCaptor.capture());
         assertThat(stateCaptor.getValue(), is(OnOffType.ON));
     }
@@ -148,7 +183,9 @@ public class CameraHandlerTest {
         doReturn(OnOffType.ON).when(accountHandler).getMotionDetection(any(), eq(false));
         cameraHandler.handleCommand(CHANNEL_CAMERA_MOTIONDETECTION, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
-        verify(accountHandler).getMotionDetection(cameraHandler.config, false);
+        CameraConfiguration handlerConfig = cameraHandler.config;
+        CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
+        verify(accountHandler).getMotionDetection(config, false);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_MOTIONDETECTION), stateCaptor.capture());
         assertThat(stateCaptor.getValue(), is(OnOffType.ON));
     }
@@ -163,7 +200,9 @@ public class CameraHandlerTest {
         doReturn(123L).when(cameraService).motionDetection(ArgumentMatchers.any(BlinkAccount.class),
                 ArgumentMatchers.any(CameraConfiguration.class), anyBoolean());
         cameraHandler.handleCommand(CHANNEL_CAMERA_MOTIONDETECTION, OnOffType.ON);
-        verify(cameraService).motionDetection(blinkAccount, cameraHandler.config, true);
+        CameraConfiguration handlerConfig = cameraHandler.config;
+        CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
+        verify(cameraService).motionDetection(blinkAccount, config, true);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_MOTIONDETECTION), stateCaptor.capture());
         assertThat(stateCaptor.getValue(), is(OnOffType.ON));
@@ -196,7 +235,9 @@ public class CameraHandlerTest {
         RawType expected = new RawType(bytes, "image/jpeg");
         doReturn(bytes).when(cameraService).getThumbnail(ArgumentMatchers.any(BlinkAccount.class), anyString());
         cameraHandler.handleCommand(CHANNEL_CAMERA_GETTHUMBNAIL, RefreshType.REFRESH);
-        verify(accountHandler).getCameraState(cameraHandler.config, true);
+        CameraConfiguration handlerConfig = cameraHandler.config;
+        CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
+        verify(accountHandler).getCameraState(config, true);
         verify(cameraService).getThumbnail(blinkAccount, camera.thumbnail);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_GETTHUMBNAIL), stateCaptor.capture());

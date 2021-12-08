@@ -1,13 +1,13 @@
 /**
  * Copyright (c) 2010-2021 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.blink.internal.handler;
@@ -15,19 +15,27 @@ package org.openhab.binding.blink.internal.handler;
 import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.service.CameraService;
+import org.openhab.binding.blink.internal.servlet.ThumbnailServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
-import org.openhab.core.thing.*;
+import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +54,18 @@ public class CameraHandler extends BaseThingHandler {
 
     @Nullable
     CameraConfiguration config;
+    private final HttpService httpService;
+    private final NetworkAddressService networkAddressService;
     CameraService cameraService;
 
-    public CameraHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) {
+    @Nullable
+    ThumbnailServlet thumbnailServlet;
+
+    public CameraHandler(Thing thing, HttpService httpService, NetworkAddressService networkAddressService,
+            HttpClientFactory httpClientFactory, Gson gson) {
         super(thing);
+        this.httpService = httpService;
+        this.networkAddressService = networkAddressService;
         this.cameraService = new CameraService(httpClientFactory.getCommonHttpClient(), gson);
     }
 
@@ -114,9 +130,41 @@ public class CameraHandler extends BaseThingHandler {
         }
     }
 
+    public byte[] getThumbnail() throws IOException {
+        @Nullable
+        CameraConfiguration nonNullConfig = config;
+        @Nullable
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null) {
+            throw new IOException("No bridge");
+        }
+        if (nonNullConfig == null) {
+            throw new IOException("No config");
+        }
+        AccountHandler accountHandler = (AccountHandler) bridge.getHandler();
+        String imagePath = accountHandler.getCameraState(nonNullConfig, true).thumbnail;
+        return cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath);
+    }
+
     @Override
     public void initialize() {
         config = getConfigAs(CameraConfiguration.class);
+
+        if (thumbnailServlet == null) {
+            try {
+                thumbnailServlet = new ThumbnailServlet(httpService, this);
+                Map<String, String> properties = editProperties();
+                String scheme = "http://";
+                int port = 8080;
+                String imageUrl = scheme + networkAddressService.getPrimaryIpv4HostAddress() + ":" + port
+                        + "/blink/thumbnail/" + thing.getUID().getId();
+                properties.put("thumbnail", imageUrl);
+                updateProperties(properties);
+            } catch (IllegalStateException e) {
+                logger.warn("Failed to create account servlet", e);
+            }
+        }
+
         updateStatus(ThingStatus.ONLINE);
     }
 }
