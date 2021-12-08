@@ -405,7 +405,6 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         } else {
             logger.warn("Could not requestState(): deviceWhere is null");
         }
-
     }
 
     @Override
