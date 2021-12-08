@@ -16,10 +16,12 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
@@ -60,8 +62,8 @@ public class AccountVerificationServlet extends HttpServlet {
         this.blinkService = blinkService;
 
         try {
-            servletUrl = "/blink/" + URLEncoder.encode(accountHandler.getThing().getUID().getId(),
-                    StandardCharsets.UTF_8);
+            servletUrl = "/blink/"
+                    + URLEncoder.encode(accountHandler.getThing().getUID().getId(), StandardCharsets.UTF_8);
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
         } catch (NamespaceException | ServletException e) {
             throw new IllegalStateException(e.getMessage());
@@ -84,10 +86,10 @@ public class AccountVerificationServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        @Nullable BlinkAccount blinkAccount = accountHandler.getBlinkAccount();
+        @Nullable
+        BlinkAccount blinkAccount = accountHandler.getBlinkAccount();
         if (request.getParameter("resend") != null && blinkAccount != null) {
-            blinkService.login(accountHandler.getConfiguration(), blinkAccount.generatedClientId,
-                    true);
+            blinkService.login(accountHandler.getConfiguration(), blinkAccount.generatedClientId, true);
         }
         response.addHeader("content-type", "text/html;charset=UTF-8");
         try {
@@ -120,8 +122,7 @@ public class AccountVerificationServlet extends HttpServlet {
     }
 
     private void generateVerificationPage(PrintWriter writer, boolean validationError) throws IOException {
-        URL url = this.bundleContext.getBundle()
-                .getEntry("org/openhab/binding/blink/internal/servlet/validation.html");
+        URL url = this.bundleContext.getBundle().getEntry("org/openhab/binding/blink/internal/servlet/validation.html");
         if (url == null)
             throw new IllegalArgumentException("validation.html not found");
         InputStream ioStream = url.openStream();
@@ -132,18 +133,14 @@ public class AccountVerificationServlet extends HttpServlet {
         new BufferedReader(new InputStreamReader(ioStream)).lines().map(l -> {
             if ("{{error}}".equals(l.trim())) {
                 if (validationError) {
-                    return "<div class=\"error\">" +
-                            "    <b>Invalid 2 factor verification PIN code.</b><br/>\n" +
-                            "    The code is only valid for a 40 minute period. Please try disabling and enabling the blink Account Thing\n" +
-                            "    to generate a new PIN code if you think that might be the problem." +
-                            "</div>";
+                    return "<div class=\"error\">" + "    <b>Invalid 2 factor verification PIN code.</b><br/>\n"
+                            + "    The code is only valid for a 40 minute period. Please try disabling and enabling the blink Account Thing\n"
+                            + "    to generate a new PIN code if you think that might be the problem." + "</div>";
                 } else {
                     return "";
                 }
             }
             return l;
         }).forEach(writer::write);
-
     }
-
 }

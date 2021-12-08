@@ -15,7 +15,8 @@ package org.openhab.binding.blink.internal.dto;
 import java.util.List;
 
 /**
- * The {@link BlinkHomescreen} class is the DTO for the homescreen api call, wrapping networks and cameras with their states.
+ * The {@link BlinkHomescreen} class is the DTO for the homescreen api call, wrapping networks and cameras with their
+ * states.
  *
  * @author Matthias Oesterheld - Initial contribution
  */
@@ -23,5 +24,4 @@ public class BlinkHomescreen {
 
     public List<BlinkNetwork> networks;
     public List<BlinkCamera> cameras;
-
 }

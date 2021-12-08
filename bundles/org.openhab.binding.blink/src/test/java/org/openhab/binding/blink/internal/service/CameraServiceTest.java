@@ -1,7 +1,13 @@
 package org.openhab.binding.blink.internal.service;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -13,18 +19,15 @@ import org.openhab.binding.blink.internal.BlinkTestUtil;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCommand;
-import com.google.gson.Gson;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 class CameraServiceTest {
 
-    @NonNullByDefault({}) CameraService cameraService;
+    @NonNullByDefault({})
+    CameraService cameraService;
 
     @BeforeEach
     void setup() {
@@ -48,16 +51,16 @@ class CameraServiceTest {
         CameraConfiguration cameraConfiguration = testCameraConfiguration();
         BlinkCommand enableResult = new BlinkCommand();
         enableResult.id = 666L;
-        String enableUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId + "/enable";
+        String enableUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId
+                + "/enable";
         BlinkCommand disableResult = new BlinkCommand();
         disableResult.id = 777L;
-        String disableUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId + "/disable";
-        doReturn(enableResult).when(cameraService)
-                .apiRequest(blinkAccount.account.tier, enableUri, HttpMethod.POST, blinkAccount.auth.token, null,
-                        BlinkCommand.class);
-        doReturn(disableResult).when(cameraService)
-                .apiRequest(blinkAccount.account.tier, disableUri, HttpMethod.POST, blinkAccount.auth.token, null,
-                        BlinkCommand.class);
+        String disableUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId
+                + "/disable";
+        doReturn(enableResult).when(cameraService).apiRequest(blinkAccount.account.tier, enableUri, HttpMethod.POST,
+                blinkAccount.auth.token, null, BlinkCommand.class);
+        doReturn(disableResult).when(cameraService).apiRequest(blinkAccount.account.tier, disableUri, HttpMethod.POST,
+                blinkAccount.auth.token, null, BlinkCommand.class);
         assertThat(cameraService.motionDetection(blinkAccount, cameraConfiguration, true), is(enableResult.id));
         assertThat(cameraService.motionDetection(blinkAccount, cameraConfiguration, false), is(disableResult.id));
     }
@@ -68,10 +71,10 @@ class CameraServiceTest {
         CameraConfiguration cameraConfiguration = testCameraConfiguration();
         BlinkCommand expected = new BlinkCommand();
         expected.id = 666L;
-        String expectedUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId + "/thumbnail";
-        doReturn(expected).when(cameraService)
-                .apiRequest(blinkAccount.account.tier, expectedUri, HttpMethod.POST, blinkAccount.auth.token, null,
-                        BlinkCommand.class);
+        String expectedUri = "/network/" + cameraConfiguration.networkId + "/camera/" + cameraConfiguration.cameraId
+                + "/thumbnail";
+        doReturn(expected).when(cameraService).apiRequest(blinkAccount.account.tier, expectedUri, HttpMethod.POST,
+                blinkAccount.auth.token, null, BlinkCommand.class);
         assertThat(cameraService.createThumbnail(blinkAccount, cameraConfiguration), is(expected.id));
     }
 
@@ -80,8 +83,8 @@ class CameraServiceTest {
         BlinkAccount blinkAccount = BlinkTestUtil.testBlinkAccount();
         byte[] expectedImage = "iamanimage".getBytes(StandardCharsets.UTF_8);
         String imagePath = "/full/path/to/thumbnail.jpg";
-        doReturn(expectedImage).when(cameraService)
-                .rawRequest(blinkAccount.account.tier, imagePath, HttpMethod.GET, blinkAccount.auth.token, null);
+        doReturn(expectedImage).when(cameraService).rawRequest(blinkAccount.account.tier, imagePath, HttpMethod.GET,
+                blinkAccount.auth.token, null);
         assertThat(cameraService.getThumbnail(blinkAccount, imagePath), is(expectedImage));
     }
 
@@ -91,5 +94,4 @@ class CameraServiceTest {
         config.networkId = 567L;
         return config;
     }
-
 }

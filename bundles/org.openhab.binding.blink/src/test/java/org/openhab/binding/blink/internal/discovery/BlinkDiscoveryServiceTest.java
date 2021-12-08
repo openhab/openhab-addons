@@ -1,6 +1,12 @@
 package org.openhab.binding.blink.internal.discovery;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+
 import java.util.ArrayList;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,20 +20,19 @@ import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.internal.BridgeImpl;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 class BlinkDiscoveryServiceTest {
 
     private static final ThingTypeUID THING_TYPE_CAMERA = new ThingTypeUID("blink", "camera");
     private static final ThingTypeUID THING_TYPE_NETWORK = new ThingTypeUID("blink", "network");
-    @NonNullByDefault({}) BlinkDiscoveryService discoveryService;
-    @Mock @NonNullByDefault({}) AccountHandler accountHandler;
-    @NonNullByDefault({}) Thing bridge;
+    @NonNullByDefault({})
+    BlinkDiscoveryService discoveryService;
+    @Mock
+    @NonNullByDefault({})
+    AccountHandler accountHandler;
+    @NonNullByDefault({})
+    Thing bridge;
 
     @BeforeEach
     void setup() {
@@ -103,5 +108,4 @@ class BlinkDiscoveryServiceTest {
         discoveryService.discover();
         verify(discoveryService, times(4)).thingDiscovered(any());
     }
-
 }

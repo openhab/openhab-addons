@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+
 import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.blink.internal.config.NetworkConfiguration;
 import org.openhab.binding.blink.internal.service.NetworkService;
@@ -27,9 +30,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+import com.google.gson.Gson;
 
 /**
  * The {@link NetworkHandler} is responsible for initializing network things and handling commands, which are
@@ -53,8 +55,7 @@ public class NetworkHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (getBridge() == null || getBridge().getHandler() == null) {
-            logger.warn("Cannot handle commands of blink things without a bridge: {}",
-                    thing.getUID().getAsString());
+            logger.warn("Cannot handle commands of blink things without a bridge: {}", thing.getUID().getAsString());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge");
             return;
         }

@@ -1,10 +1,18 @@
 package org.openhab.binding.blink.internal.handler;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -39,14 +47,8 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.BridgeImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
-import com.google.gson.Gson;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
@@ -55,15 +57,29 @@ class AccountHandlerTest extends JavaTest {
 
     private static final String CLIENT_ID = "CLIENT_1234";
     private static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID("blink", "account");
-    @Mock @NonNullByDefault({}) HttpService httpService;
-    @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
-    @Mock @NonNullByDefault({}) AccountService accountService;
-    @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
-    @Mock @NonNullByDefault({}) ExpiringCache<BlinkHomescreen> cache;
-    @Mock @NonNullByDefault({}) BundleContext bundleContext;
-    @Spy Bridge bridge = new BridgeImpl(THING_TYPE_UID, CLIENT_ID);
+    @Mock
+    @NonNullByDefault({})
+    HttpService httpService;
+    @Mock
+    @NonNullByDefault({})
+    HttpClientFactory httpClientFactory;
+    @Mock
+    @NonNullByDefault({})
+    AccountService accountService;
+    @Mock
+    @NonNullByDefault({})
+    ThingHandlerCallback callback;
+    @Mock
+    @NonNullByDefault({})
+    ExpiringCache<BlinkHomescreen> cache;
+    @Mock
+    @NonNullByDefault({})
+    BundleContext bundleContext;
+    @Spy
+    Bridge bridge = new BridgeImpl(THING_TYPE_UID, CLIENT_ID);
 
-    @NonNullByDefault({}) AccountHandler accountHandler;
+    @NonNullByDefault({})
+    AccountHandler accountHandler;
 
     @BeforeEach
     void setup() {
@@ -147,7 +163,7 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.dispose();
         verify(accountHandler).cleanup();
         verify(servlet).dispose();
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         assertThat(accountHandler.accountServlet, is(nullValue()));
     }
 
@@ -159,7 +175,7 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.config = config;
         accountHandler.setOnline();
         // cache set
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         assertThat(accountHandler.homescreenCache, is(notNullValue()));
         // cache expiry
         Field expiry = ExpiringCache.class.getDeclaredField("expiry");
@@ -194,7 +210,7 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.blinkService = accountService;
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         doThrow(IOException.class).when(accountService).getDevices(ArgumentMatchers.any(BlinkAccount.class));
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         assertThat(accountHandler.loadDevices(), is(nullValue()));
     }
 
@@ -204,7 +220,8 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         BlinkHomescreen expected = testBlinkHomescreen();
         doReturn(expected).when(accountService).getDevices(ArgumentMatchers.any(BlinkAccount.class));
-        @Nullable BlinkHomescreen actual = accountHandler.loadDevices();
+        @Nullable
+        BlinkHomescreen actual = accountHandler.loadDevices();
         verify(accountService).getDevices(accountHandler.blinkAccount);
         assertThat(actual, is(expected));
     }

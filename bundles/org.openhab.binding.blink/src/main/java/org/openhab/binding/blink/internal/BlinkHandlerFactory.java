@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.blink.internal;
 
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+
 import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.handler.AccountHandler;
@@ -31,9 +34,8 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+import com.google.gson.Gson;
 
 /**
  * The {@link BlinkHandlerFactory} is responsible for creating things and thing

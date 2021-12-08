@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.AccountConfiguration;
@@ -41,6 +42,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 
 /**
@@ -58,16 +60,19 @@ public class AccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     BundleContext bundleContext;
 
-    @Nullable AccountConfiguration config;
+    @Nullable
+    AccountConfiguration config;
     AccountService blinkService;
     private final HttpService httpService;
-    @Nullable AccountVerificationServlet accountServlet;
-    @Nullable BlinkAccount blinkAccount;
-    @Nullable ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
+    @Nullable
+    AccountVerificationServlet accountServlet;
+    @Nullable
+    BlinkAccount blinkAccount;
+    @Nullable
+    ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
 
-    public AccountHandler(Bridge bridge, HttpService httpService,
-            BundleContext bundleContext, HttpClientFactory httpClientFactory,
-            Gson gson) {
+    public AccountHandler(Bridge bridge, HttpService httpService, BundleContext bundleContext,
+            HttpClientFactory httpClientFactory, Gson gson) {
         super(bridge);
         this.httpService = httpService;
         this.bundleContext = bundleContext;
@@ -122,8 +127,8 @@ public class AccountHandler extends BaseBridgeHandler {
                 // do 2FA if necessary
                 if (blinkAccount.account.client_verification_required) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "Waiting for 2 Factor Authentication. Please go to <youropenhab>" +
-                                    validationUrl + " to enter the PIN you received via SMS or email");
+                            "Waiting for 2 Factor Authentication. Please go to <youropenhab>" + validationUrl
+                                    + " to enter the PIN you received via SMS or email");
                 } else {
                     setOnline();
                 }
@@ -169,7 +174,8 @@ public class AccountHandler extends BaseBridgeHandler {
         }
     }
 
-    @Nullable BlinkHomescreen loadDevices() {
+    @Nullable
+    BlinkHomescreen loadDevices() {
         try {
             return blinkService.getDevices(blinkAccount);
         } catch (IOException e) {
@@ -197,10 +203,8 @@ public class AccountHandler extends BaseBridgeHandler {
             logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("No cameras found for account");
         }
-        List<BlinkCamera> cameras = devices.cameras.stream()
-                .filter(c -> Objects.equals(c.network_id, camera.networkId))
-                .filter(c -> Objects.equals(c.id, cameraId))
-                .collect(Collectors.toUnmodifiableList());
+        List<BlinkCamera> cameras = devices.cameras.stream().filter(c -> Objects.equals(c.network_id, camera.networkId))
+                .filter(c -> Objects.equals(c.id, cameraId)).collect(Collectors.toUnmodifiableList());
         if (cameras.size() > 1) {
             logger.error("More than one camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("More than one camera found for id " + cameraId);

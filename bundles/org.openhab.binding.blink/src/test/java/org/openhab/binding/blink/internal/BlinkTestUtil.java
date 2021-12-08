@@ -14,5 +14,4 @@ public class BlinkTestUtil {
         blinkAccount.auth.token = "abc";
         return blinkAccount;
     }
-
 }

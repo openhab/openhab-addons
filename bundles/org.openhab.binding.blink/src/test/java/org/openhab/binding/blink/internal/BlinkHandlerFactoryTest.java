@@ -1,7 +1,12 @@
 package org.openhab.binding.blink.internal;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -21,10 +26,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
-
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
 
 /**
  * The {@link BlinkHandlerFactory} is responsible for creating things and thing
@@ -73,9 +74,8 @@ class BlinkHandlerFactoryTest {
     @ParameterizedTest
     @MethodSource("thingUIDs")
     void supportsCorrectThingType(@Nullable String uid) {
-        ThingTypeUID thingTypeUID = (uid == null) ?
-                new ThingTypeUID(BINDING_NAME, "hurz") :
-                new ThingTypeUID(BINDING_NAME, uid);
+        ThingTypeUID thingTypeUID = (uid == null) ? new ThingTypeUID(BINDING_NAME, "hurz")
+                : new ThingTypeUID(BINDING_NAME, uid);
         assertThat(factory.supportsThingType(thingTypeUID), is(uid != null));
     }
 
@@ -119,5 +119,4 @@ class BlinkHandlerFactoryTest {
         assertThat(handler.getClass(), is(NetworkHandler.class));
         // could test assignment of field values of handler here
     }
-
 }

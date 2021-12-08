@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.IntStream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -25,6 +26,7 @@ import org.openhab.binding.blink.internal.config.AccountConfiguration;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkValidation;
+
 import com.google.gson.Gson;
 
 /**
@@ -71,13 +73,14 @@ public class AccountService extends BaseBlinkApiService {
      * This should only be necessary once for each clientId.
      *
      * @param account Login result from login API call
-     * @param pin     2FA pin sent to the account
+     * @param pin 2FA pin sent to the account
      * @return result of verification
      */
     public boolean verifyPin(@Nullable BlinkAccount account, String pin) throws IOException {
         if (account == null || account.account == null)
             throw new IllegalArgumentException("Trying to do 2FA without a login");
-        String uri = "/api/v4/account/" + account.account.account_id + "/client/" + account.account.client_id + "/pin/verify";
+        String uri = "/api/v4/account/" + account.account.account_id + "/client/" + account.account.client_id
+                + "/pin/verify";
         Map<String, String> params = new HashMap<>();
         params.put("pin", pin);
         BlinkValidation validation = apiRequest(account.account.tier, uri, HttpMethod.POST, account.auth.token, params,
@@ -96,13 +99,14 @@ public class AccountService extends BaseBlinkApiService {
 
     /**
      * Generates a client ID in the format used by the Blink API.
-     * This should be in the format as seen in <a href="https://www.drdsnell.com/projects/hubitat/drivers/BlinkAPI.groovy"/>BlinkAPI.groovy</a>
+     * This should be in the format as seen in
+     * <a href="https://www.drdsnell.com/projects/hubitat/drivers/BlinkAPI.groovy"/>BlinkAPI.groovy</a>
      *
      * @return random client id in Blink API format
      */
     public String generateClientId() {
-        return "BlinkCamera_" + randomNumber(4) + "-" + randomNumber(2) + "-" + randomNumber(2) + "-"
-                + randomNumber(2) + "-" + randomNumber(6);
+        return "BlinkCamera_" + randomNumber(4) + "-" + randomNumber(2) + "-" + randomNumber(2) + "-" + randomNumber(2)
+                + "-" + randomNumber(6);
     }
 
     /**
@@ -120,5 +124,4 @@ public class AccountService extends BaseBlinkApiService {
         IntStream.range(0, digits).forEach(i -> b.append(random.nextInt(10)));
         return b.toString();
     }
-
 }

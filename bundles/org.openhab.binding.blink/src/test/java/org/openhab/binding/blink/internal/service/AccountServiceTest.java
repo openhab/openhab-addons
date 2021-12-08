@@ -1,9 +1,15 @@
 package org.openhab.binding.blink.internal.service;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -16,17 +22,14 @@ import org.openhab.binding.blink.internal.config.AccountConfiguration;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkValidation;
-import com.google.gson.Gson;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.google.gson.Gson;
 
 @NonNullByDefault
 class AccountServiceTest {
 
-    @NonNullByDefault({}) AccountService accountService;
+    @NonNullByDefault({})
+    AccountService accountService;
 
     @BeforeEach
     void setup() {
@@ -67,19 +70,18 @@ class AccountServiceTest {
         params.put("password", config.password);
         params.put("unique_id", generatedClientId);
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-        doReturn(account).when(accountService)
-                .apiRequest("prod", "/api/v5/account/login", HttpMethod.POST, null, params, BlinkAccount.class);
+        doReturn(account).when(accountService).apiRequest("prod", "/api/v5/account/login", HttpMethod.POST, null,
+                params, BlinkAccount.class);
         assertThat(accountService.login(config, generatedClientId, true), is(account));
     }
 
     @Test
     void testLoginReauthParams() throws IOException {
         AccountConfiguration config = testAccountConfiguration();
-        @SuppressWarnings("unchecked") ArgumentCaptor<Map<String, String>> paramCaptor =
-                ArgumentCaptor.forClass(Map.class);
-        doReturn(BlinkTestUtil.testBlinkAccount()).when(accountService)
-                .apiRequest(anyString(), anyString(), ArgumentMatchers.any(HttpMethod.class), isNull(),
-                        paramCaptor.capture(), eq(BlinkAccount.class));
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> paramCaptor = ArgumentCaptor.forClass(Map.class);
+        doReturn(BlinkTestUtil.testBlinkAccount()).when(accountService).apiRequest(anyString(), anyString(),
+                ArgumentMatchers.any(HttpMethod.class), isNull(), paramCaptor.capture(), eq(BlinkAccount.class));
         accountService.login(config, "123", false);
         assertThat(paramCaptor.getValue().size(), is(4));
         accountService.login(config, "123", true);
@@ -91,9 +93,8 @@ class AccountServiceTest {
         String generatedClientId = "dummy_client";
         AccountConfiguration config = testAccountConfiguration();
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-        doReturn(account).when(accountService)
-                .apiRequest(anyString(), anyString(), ArgumentMatchers.any(HttpMethod.class), isNull(),
-                        anyMap(), eq(BlinkAccount.class));
+        doReturn(account).when(accountService).apiRequest(anyString(), anyString(),
+                ArgumentMatchers.any(HttpMethod.class), isNull(), anyMap(), eq(BlinkAccount.class));
         BlinkAccount resultAccount = accountService.login(config, generatedClientId, false);
         assertThat(resultAccount.generatedClientId, is(generatedClientId));
     }
@@ -103,9 +104,8 @@ class AccountServiceTest {
         AccountConfiguration config = testAccountConfiguration();
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
         account.account = null;
-        doReturn(account).when(accountService)
-                .apiRequest(anyString(), anyString(), ArgumentMatchers.any(HttpMethod.class), isNull(),
-                        anyMap(), eq(BlinkAccount.class));
+        doReturn(account).when(accountService).apiRequest(anyString(), anyString(),
+                ArgumentMatchers.any(HttpMethod.class), isNull(), anyMap(), eq(BlinkAccount.class));
         assertThrows(IOException.class, () -> accountService.login(config, "", false));
     }
 
@@ -127,23 +127,22 @@ class AccountServiceTest {
     void testVerifyPinApiCallAndParams() throws IOException {
         String pin = "123456";
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-        String uri = "/api/v4/account/" + account.account.account_id + "/client/" + account.account.client_id + "/pin/verify";
+        String uri = "/api/v4/account/" + account.account.account_id + "/client/" + account.account.client_id
+                + "/pin/verify";
         Map<String, String> params = new HashMap<>();
         params.put("pin", pin);
         BlinkValidation result = new BlinkValidation();
         result.valid = true;
-        doReturn(result).when(accountService)
-                .apiRequest(account.account.tier, uri, HttpMethod.POST, account.auth.token,
-                        params, BlinkValidation.class);
+        doReturn(result).when(accountService).apiRequest(account.account.tier, uri, HttpMethod.POST, account.auth.token,
+                params, BlinkValidation.class);
         assertThat(accountService.verifyPin(account, pin), is(true));
     }
 
     @Test
     void testVerifyPinInvalidResult() throws IOException {
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-        doReturn(null).when(accountService)
-                .apiRequest(anyString(), anyString(), ArgumentMatchers.any(HttpMethod.class), anyString(),
-                        anyMap(), eq(BlinkValidation.class));
+        doReturn(null).when(accountService).apiRequest(anyString(), anyString(), ArgumentMatchers.any(HttpMethod.class),
+                anyString(), anyMap(), eq(BlinkValidation.class));
         assertThat(accountService.verifyPin(account, ""), is(false));
     }
 
@@ -157,10 +156,8 @@ class AccountServiceTest {
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
         BlinkHomescreen result = new BlinkHomescreen();
         String uri = "/api/v3/accounts/" + account.account.account_id + "/homescreen";
-        doReturn(result).when(accountService)
-                .apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token,
-                        null, BlinkHomescreen.class);
+        doReturn(result).when(accountService).apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token,
+                null, BlinkHomescreen.class);
         assertThat(accountService.getDevices(account), is(result));
     }
-
 }

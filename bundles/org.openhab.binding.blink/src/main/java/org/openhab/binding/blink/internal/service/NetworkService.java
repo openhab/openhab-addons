@@ -13,12 +13,14 @@
 package org.openhab.binding.blink.internal.service;
 
 import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCommand;
+
 import com.google.gson.Gson;
 
 /**
@@ -35,9 +37,9 @@ public class NetworkService extends BaseBlinkApiService {
     /**
      * Arms or disarms the network
      *
-     * @param account   blink account
+     * @param account blink account
      * @param networkId network id
-     * @param enable    arm/disarm
+     * @param enable arm/disarm
      * @return command id
      */
     public Long arm(@Nullable BlinkAccount account, @Nullable String networkId, boolean enable) throws IOException {

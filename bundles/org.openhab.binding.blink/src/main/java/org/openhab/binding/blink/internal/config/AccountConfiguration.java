@@ -25,5 +25,4 @@ public class AccountConfiguration {
     public @NonNullByDefault({}) String email = "";
     public @NonNullByDefault({}) String password = "";
     public @NonNullByDefault({}) int refreshInterval = 120;
-
 }

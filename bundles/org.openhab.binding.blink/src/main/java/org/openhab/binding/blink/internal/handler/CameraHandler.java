@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+
 import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
@@ -27,9 +30,8 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+import com.google.gson.Gson;
 
 /**
  * The {@link CameraHandler} is responsible for initializing camera thing and handling commands, which are
@@ -42,7 +44,8 @@ public class CameraHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
 
-    @Nullable CameraConfiguration config;
+    @Nullable
+    CameraConfiguration config;
     CameraService cameraService;
 
     public CameraHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) {
@@ -53,8 +56,10 @@ public class CameraHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            @Nullable CameraConfiguration nonNullConfig = config;
-            @Nullable Bridge bridge = getBridge();
+            @Nullable
+            CameraConfiguration nonNullConfig = config;
+            @Nullable
+            Bridge bridge = getBridge();
             if (bridge == null || bridge.getHandler() == null) {
                 logger.warn("Cannot handle commands of blink things without a bridge: {}",
                         thing.getUID().getAsString());
@@ -100,9 +105,8 @@ public class CameraHandler extends BaseThingHandler {
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     String imagePath = accountHandler.getCameraState(nonNullConfig, true).thumbnail;
-                    updateState(CHANNEL_CAMERA_GETTHUMBNAIL,
-                            new RawType(cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath),
-                                    "image/jpeg"));
+                    updateState(CHANNEL_CAMERA_GETTHUMBNAIL, new RawType(
+                            cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath), "image/jpeg"));
                 }
             }
         } catch (IOException e) {

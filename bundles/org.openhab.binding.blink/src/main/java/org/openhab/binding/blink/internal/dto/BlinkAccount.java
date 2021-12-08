@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.blink.internal.dto;
 
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 /**
  * The {@link BlinkAccount} class is the DTO for the login api call.
@@ -47,13 +47,15 @@ public class BlinkAccount {
 
         @Override
         public String toString() {
-            return "Account{" + "account_id=" + account_id + ", user_id=" + user_id + ", client_id=" + client_id + ", tier='" + tier + '\'' + ", client_verification_required=" + client_verification_required + '}';
+            return "Account{" + "account_id=" + account_id + ", user_id=" + user_id + ", client_id=" + client_id
+                    + ", tier='" + tier + '\'' + ", client_verification_required=" + client_verification_required + '}';
         }
     }
 
     @Override
     public String toString() {
-        return "BlinkAccount{" + "account=" + account + ", auth=" + auth + ", generatedClientId='" + generatedClientId + '\'' + '}';
+        return "BlinkAccount{" + "account=" + account + ", auth=" + auth + ", generatedClientId='" + generatedClientId
+                + '\'' + '}';
     }
 
     public Map<String, String> toAccountProperties() {
@@ -64,5 +66,4 @@ public class BlinkAccount {
         props.put(PROPERTY_TOKEN, auth.token);
         return props;
     }
-
 }

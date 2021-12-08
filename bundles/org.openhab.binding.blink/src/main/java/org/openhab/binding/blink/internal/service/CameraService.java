@@ -13,6 +13,7 @@
 package org.openhab.binding.blink.internal.service;
 
 import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -20,6 +21,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCommand;
+
 import com.google.gson.Gson;
 
 /**
@@ -37,8 +39,8 @@ public class CameraService extends BaseBlinkApiService {
      * Call motion detection endpoints do enable/disable motion detection for the given camera.
      *
      * @param account blink account
-     * @param camera  blink camera
-     * @param enable  enable/disable
+     * @param camera blink camera
+     * @param enable enable/disable
      * @return blink async command ID
      */
     public Long motionDetection(@Nullable BlinkAccount account, @Nullable CameraConfiguration camera, boolean enable)
@@ -56,7 +58,7 @@ public class CameraService extends BaseBlinkApiService {
      * Call thumbnail endpoint to create a thumbnail for the given camera.
      *
      * @param account blink account
-     * @param camera  blink camera
+     * @param camera blink camera
      * @return blink async command ID
      */
     public Long createThumbnail(@Nullable BlinkAccount account, @Nullable CameraConfiguration camera)

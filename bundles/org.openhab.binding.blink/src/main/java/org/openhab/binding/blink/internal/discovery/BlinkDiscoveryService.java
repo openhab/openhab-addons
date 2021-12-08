@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.blink.internal.discovery;
 
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
@@ -32,8 +35,6 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
-
 /**
  * The {@link BlinkDiscoveryService} performs auto-discovery of camera and network things for an account bridge.
  * Background Discovery is enabled by default.
@@ -47,8 +48,10 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
     static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CAMERA, THING_TYPE_NETWORK);
     private final Logger logger = LoggerFactory.getLogger(BlinkDiscoveryService.class);
 
-    @Nullable AccountHandler accountHandler;
-    @Nullable ScheduledFuture<?> discoveryJob;
+    @Nullable
+    AccountHandler accountHandler;
+    @Nullable
+    ScheduledFuture<?> discoveryJob;
 
     public BlinkDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, 15, true);
@@ -94,21 +97,15 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
         logger.debug("Blink background discovery running for {}", bridgeUID.getAsString());
         homescreen.cameras.forEach(camera -> {
             ThingUID uid = new ThingUID(THING_TYPE_CAMERA, bridgeUID, Long.toString(camera.id));
-            DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid)
-                    .withLabel(camera.name)
-                    .withBridge(bridgeUID)
-                    .withProperty(PROPERTY_CAMERA_ID, camera.id)
-                    .withProperty(PROPERTY_NETWORK_ID, camera.network_id)
+            DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withLabel(camera.name).withBridge(bridgeUID)
+                    .withProperty(PROPERTY_CAMERA_ID, camera.id).withProperty(PROPERTY_NETWORK_ID, camera.network_id)
                     .withRepresentationProperty(PROPERTY_CAMERA_ID);
             thingDiscovered(dr.build());
         });
         homescreen.networks.forEach(network -> {
             ThingUID uid = new ThingUID(THING_TYPE_NETWORK, bridgeUID, Long.toString(network.id));
-            DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid)
-                    .withLabel(network.name)
-                    .withBridge(bridgeUID)
-                    .withProperty(PROPERTY_NETWORK_ID, network.id)
-                    .withRepresentationProperty(PROPERTY_NETWORK_ID);
+            DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withLabel(network.name).withBridge(bridgeUID)
+                    .withProperty(PROPERTY_NETWORK_ID, network.id).withRepresentationProperty(PROPERTY_NETWORK_ID);
             thingDiscovered(dr.build());
         });
     }
@@ -139,5 +136,4 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
     public void deactivate() {
         super.deactivate();
     }
-
 }

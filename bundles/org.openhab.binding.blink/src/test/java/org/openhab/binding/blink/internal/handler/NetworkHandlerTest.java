@@ -1,6 +1,12 @@
 package org.openhab.binding.blink.internal.handler;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+
 import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -24,12 +30,8 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import com.google.gson.Gson;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
@@ -38,16 +40,30 @@ class NetworkHandlerTest {
 
     private static final long NETWORK_ID = 123L;
     private static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID("blink", "network");
-    @NonNullByDefault({}) NetworkHandler networkHandler;
+    @NonNullByDefault({})
+    NetworkHandler networkHandler;
 
-    @Spy @NonNullByDefault({}) Thing thing = new ThingImpl(THING_TYPE_UID, Long.toString(NETWORK_ID));
-    @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
-    @Mock @NonNullByDefault({}) Bridge account;
-    @Mock @NonNullByDefault({}) AccountHandler accountHandler;
-    @Mock @NonNullByDefault({}) NetworkService networkService;
+    @Spy
+    @NonNullByDefault({})
+    Thing thing = new ThingImpl(THING_TYPE_UID, Long.toString(NETWORK_ID));
+    @Mock
+    @NonNullByDefault({})
+    ThingHandlerCallback callback;
+    @Mock
+    @NonNullByDefault({})
+    Bridge account;
+    @Mock
+    @NonNullByDefault({})
+    AccountHandler accountHandler;
+    @Mock
+    @NonNullByDefault({})
+    NetworkService networkService;
 
-    @NonNullByDefault({}) @Mock HttpClientFactory httpClientFactory;
-    @NonNullByDefault({}) Gson gson = new Gson();
+    @NonNullByDefault({})
+    @Mock
+    HttpClientFactory httpClientFactory;
+    @NonNullByDefault({})
+    Gson gson = new Gson();
 
     private final Configuration config = new Configuration();
 
@@ -59,7 +75,7 @@ class NetworkHandlerTest {
         doReturn(accountHandler).when(account).getHandler();
         when(accountHandler.getNetworkArmed(anyString(), eq(false))).thenReturn(OnOffType.ON);
         doReturn(BlinkTestUtil.testBlinkAccount()).when(accountHandler).getBlinkAccount();
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         networkHandler = new NetworkHandler(thing, httpClientFactory, gson) {
             @Override
             public @Nullable Bridge getBridge() {
@@ -92,8 +108,7 @@ class NetworkHandlerTest {
         };
         networkHandler.initialize();
         networkHandler.setCallback(callback);
-        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)),
-                "armed");
+        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
         networkHandler.handleCommand(testedChannel, RefreshType.REFRESH);
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusCaptor.capture());
@@ -103,8 +118,7 @@ class NetworkHandlerTest {
     @Test
     void testHandleArmCommandRefresh() throws IOException {
         networkHandler.initialize();
-        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)),
-                "armed");
+        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
         networkHandler.handleCommand(testedChannel, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(testedChannel), stateCaptor.capture());
@@ -115,8 +129,7 @@ class NetworkHandlerTest {
     @Test
     void testHandleArmCommandOn() throws IOException {
         networkHandler.initialize();
-        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)),
-                "armed");
+        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
         networkHandler.handleCommand(testedChannel, OnOffType.ON);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(networkService).arm(accountHandler.getBlinkAccount(), Long.toString(NETWORK_ID), true);
@@ -127,8 +140,7 @@ class NetworkHandlerTest {
     @Test
     void testHandleArmCommandOff() throws IOException {
         networkHandler.initialize();
-        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)),
-                "armed");
+        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
         networkHandler.handleCommand(testedChannel, OnOffType.OFF);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(networkService).arm(accountHandler.getBlinkAccount(), Long.toString(NETWORK_ID), false);
@@ -141,13 +153,11 @@ class NetworkHandlerTest {
         networkHandler.initialize();
         when(networkService.arm(any(BlinkAccount.class), anyString(), anyBoolean())).thenThrow(IOException.class);
         networkHandler.networkService = networkService;
-        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)),
-                "armed");
+        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
         networkHandler.handleCommand(testedChannel, OnOffType.OFF);
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(networkService).arm(accountHandler.getBlinkAccount(), Long.toString(NETWORK_ID), false);
         verify(callback, atLeast(1)).statusUpdated(eq(thing), statusCaptor.capture());
         assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
     }
-
 }

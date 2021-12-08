@@ -1,11 +1,17 @@
 package org.openhab.binding.blink.internal.service;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.IntStream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -23,24 +29,29 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import com.google.gson.Gson;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 class BaseBlinkApiServiceTest {
 
-    @Mock @NonNullByDefault({}) HttpClient httpClient;
-    @Spy Gson gson = new Gson();
-    @Mock @NonNullByDefault({}) Request request;
-    @Mock @NonNullByDefault({}) ContentResponse response;
+    @Mock
+    @NonNullByDefault({})
+    HttpClient httpClient;
+    @Spy
+    Gson gson = new Gson();
+    @Mock
+    @NonNullByDefault({})
+    Request request;
+    @Mock
+    @NonNullByDefault({})
+    ContentResponse response;
 
-    @InjectMocks @NonNullByDefault({}) BaseBlinkApiService apiService;
+    @InjectMocks
+    @NonNullByDefault({})
+    BaseBlinkApiService apiService;
 
     @BeforeEach
     void setup() {
@@ -104,7 +115,8 @@ class BaseBlinkApiServiceTest {
                 () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null));
         assertThat(exception.getCause(), is(notNullValue()));
         // assertThat(exception.getCause().getClass(), is(InterruptedException.class));
-        // would like to check if cause is a InterruptedException.class, but I'm in @NotNull @Nullable hell because of assertThrows
+        // would like to check if cause is a InterruptedException.class, but I'm in @NotNull @Nullable hell because of
+        // assertThrows
         doThrow(TimeoutException.class).when(request).send();
         exception = assertThrows(IOException.class,
                 () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null));
@@ -116,7 +128,8 @@ class BaseBlinkApiServiceTest {
     }
 
     static class SimpleClass {
-        @Nullable public String iam;
+        @Nullable
+        public String iam;
         public int age;
     }
 
@@ -128,10 +141,9 @@ class BaseBlinkApiServiceTest {
         doReturn(response).when(request).send();
         SimpleClass result = apiService.apiRequest("abc", "api/v1/hurz", HttpMethod.GET, null, null, SimpleClass.class);
         verify(gson).fromJson(jsonString, SimpleClass.class);
-        //noinspection ConstantConditions
+        // noinspection ConstantConditions
         assertThat(result.iam, is(notNullValue()));
         assertThat(result.iam, is("old"));
         assertThat(result.age, is(90));
     }
-
 }

@@ -1,7 +1,13 @@
 package org.openhab.binding.blink.internal.handler;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -28,12 +34,8 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import com.google.gson.Gson;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
+import com.google.gson.Gson;
 
 @SuppressWarnings("ConstantConditions")
 @ExtendWith(MockitoExtension.class)
@@ -53,13 +55,23 @@ public class CameraHandlerTest {
             new ThingUID(THING_TYPE_UID, CAMERA_ID), "setThumbnail");
     private static final ChannelUID CHANNEL_CAMERA_GETTHUMBNAIL = new ChannelUID(
             new ThingUID(THING_TYPE_UID, CAMERA_ID), "getThumbnail");
-    @NonNullByDefault({}) CameraHandler cameraHandler;
-    @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
+    @NonNullByDefault({})
+    CameraHandler cameraHandler;
+    @Mock
+    @NonNullByDefault({})
+    ThingHandlerCallback callback;
 
-    @Spy Thing thing = new ThingImpl(THING_TYPE_UID, CAMERA_ID);
-    @Mock @NonNullByDefault({}) HttpClientFactory httpClientFactory;
-    @Mock @NonNullByDefault({}) Bridge account;
-    @Mock @NonNullByDefault({}) AccountHandler accountHandler;
+    @Spy
+    Thing thing = new ThingImpl(THING_TYPE_UID, CAMERA_ID);
+    @Mock
+    @NonNullByDefault({})
+    HttpClientFactory httpClientFactory;
+    @Mock
+    @NonNullByDefault({})
+    Bridge account;
+    @Mock
+    @NonNullByDefault({})
+    AccountHandler accountHandler;
 
     @BeforeEach
     void setup() {

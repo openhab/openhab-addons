@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -25,6 +26,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 
 /**
@@ -43,7 +45,8 @@ public class BaseBlinkApiService {
     private final Logger logger = LoggerFactory.getLogger(BaseBlinkApiService.class);
 
     private static final String HEADER_TOKEN_AUTH = "token-auth";
-    @SuppressWarnings("FieldCanBeLocal") private final String BASE_URL = "https://rest-{tier}.immedia-semi.com";
+    @SuppressWarnings("FieldCanBeLocal")
+    private final String BASE_URL = "https://rest-{tier}.immedia-semi.com";
     static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
 
     HttpClient httpClient;
@@ -61,8 +64,7 @@ public class BaseBlinkApiService {
     }
 
     String request(String tier, String uri, HttpMethod method, @Nullable String token,
-            @Nullable Map<String, String> params)
-            throws IOException {
+            @Nullable Map<String, String> params) throws IOException {
         String url = createUrl(tier, uri);
         try {
             ContentResponse contentResponse = createRequestAndSend(url, method, token, params, true);
@@ -74,8 +76,7 @@ public class BaseBlinkApiService {
     }
 
     public byte[] rawRequest(String tier, String uri, HttpMethod method, @Nullable String token,
-            @Nullable Map<String, String> params)
-            throws IOException {
+            @Nullable Map<String, String> params) throws IOException {
         String url = createUrl(tier, uri);
         try {
             ContentResponse contentResponse = createRequestAndSend(url, method, token, params, false);
@@ -107,5 +108,4 @@ public class BaseBlinkApiService {
         }
         return contentResponse;
     }
-
 }

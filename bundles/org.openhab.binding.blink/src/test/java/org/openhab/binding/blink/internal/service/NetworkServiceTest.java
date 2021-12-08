@@ -1,6 +1,12 @@
 package org.openhab.binding.blink.internal.service;
 
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import java.io.IOException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
@@ -11,18 +17,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.blink.internal.BlinkTestUtil;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCommand;
-import com.google.gson.Gson;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import com.google.gson.Gson;
 
 @ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 class NetworkServiceTest {
 
-    @NonNullByDefault({}) NetworkService networkService;
+    @NonNullByDefault({})
+    NetworkService networkService;
 
     @BeforeEach
     void setup() {
@@ -46,15 +49,13 @@ class NetworkServiceTest {
         BlinkCommand expectedDisarmed = new BlinkCommand();
         expectedDisarmed.id = 777L;
         String armUri = "/api/v1/accounts/" + blinkAccount.account.account_id + "/networks/" + networkId + "/state/arm";
-        String disarmUri = "/api/v1/accounts/" + blinkAccount.account.account_id + "/networks/" + networkId + "/state/disarm";
-        doReturn(expectedArmed).when(networkService)
-                .apiRequest(blinkAccount.account.tier, armUri, HttpMethod.POST, blinkAccount.auth.token, null,
-                        BlinkCommand.class);
-        doReturn(expectedDisarmed).when(networkService)
-                .apiRequest(blinkAccount.account.tier, disarmUri, HttpMethod.POST, blinkAccount.auth.token, null,
-                        BlinkCommand.class);
+        String disarmUri = "/api/v1/accounts/" + blinkAccount.account.account_id + "/networks/" + networkId
+                + "/state/disarm";
+        doReturn(expectedArmed).when(networkService).apiRequest(blinkAccount.account.tier, armUri, HttpMethod.POST,
+                blinkAccount.auth.token, null, BlinkCommand.class);
+        doReturn(expectedDisarmed).when(networkService).apiRequest(blinkAccount.account.tier, disarmUri,
+                HttpMethod.POST, blinkAccount.auth.token, null, BlinkCommand.class);
         assertThat(networkService.arm(blinkAccount, networkId, true), is(expectedArmed.id));
         assertThat(networkService.arm(blinkAccount, networkId, false), is(expectedDisarmed.id));
     }
-
 }
