@@ -12,7 +12,11 @@ This binding was tested on the Fire TV Stick (android version 7.1.2, volume cont
 
 ## Discovery
 
-As I can not find a way to identify android devices in the network the discovery will try to connect through adb to all the reachable ip in the defined range, you could customize the discovery process through the binding options. **Your device will prompt a message requesting you to authorize the connection, you should check the option "Always allow connections from this device" (or something similar) and accept**.
+As I can not find a way to identify android devices in the network the discovery will try to connect through adb to all the reachable ip in the defined range.
+
+You could customize the discovery process through the binding options. 
+
+**Your device will prompt a message requesting you to authorize the connection, you should check the option "Always allow connections from this device" (or something similar) and accept**.
 
 ## Binding Configuration
 
@@ -56,12 +60,15 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 `[{"name": "com.amazon.tv.launcher", "mode": "idle"},{"name": "org.jellyfin.androidtv", "mode": "wake_lock", "wakeLockPlayStates": [2,3]},{"name": "com.amazon.firetv.youtube", "mode": "wake_lock", "wakeLockPlayStates": [2]}]`
 
 ## Record/Send input events
-As the execution of key events takes a while you can use input events an alternative way to control the device you could use input events. As they are pretty device specific you can use the record-input and recorded-input to store/send those events. 
-An example of what you can do:
-* You can send the command `UP` to the `record-input` channel the binding will them capture the events you send through your remote for the defined recordDuration config for the thing, so press once the UP key on your remote and wait a while.
-* Now that you have recorded your input you can send the `UP` command to the `recorded-input` event and it will send the recorded event to the android device. 
+As the execution of key events takes a while, you can use input events as an alternative way to control your device. 
 
-Please note that events could fail if the input method is removed, for example it fails if you clone the events of a bluetooth controller and the remote is offline.
+They are pretty device specific, so you should use the record-input and recorded-input channels to store/send those events.
+
+An example of what you can do:
+* You can send the command `UP` to the `record-input` channel the binding will then capture the events you send through your remote for the defined recordDuration config for the thing, so press once the UP key on your remote and wait a while.
+* Now that you have recorded your input, you can send the `UP` command to the `recorded-input` event and it will send the recorded event to the android device.
+
+Please note that events could fail if the input method is removed, for example it could fail if you clone the events of a bluetooth controller and the remote goes offline. This is happening for me when recording the Fire TV remote events but not for my Xiaomi TV which also has a bt remote controller.
 
 
 ## Channels
