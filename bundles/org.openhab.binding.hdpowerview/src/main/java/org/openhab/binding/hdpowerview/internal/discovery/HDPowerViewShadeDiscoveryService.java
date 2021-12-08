@@ -28,7 +28,6 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
-import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Type;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -99,22 +98,19 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                                 String id = Integer.toString(shadeData.id);
                                 ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
                                         bridgeUID, id);
+                                Integer caps = shadeData.capabilities;
+                                Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
+
                                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID)
+                                        .withLabel(shadeData.getName()).withBridge(bridgeUID)
                                         .withProperty(HDPowerViewShadeConfiguration.ID, id)
+                                        .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
+                                                db.getType(shadeData.type).toString())
+                                        .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
+                                                capabilities.toString())
                                         .withRepresentationProperty(HDPowerViewShadeConfiguration.ID);
 
                                 logger.debug("Hub discovered shade '{}'", id);
-
-                                Type type = db.getType(shadeData.type);
-                                builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
-                                        type.toString());
-
-                                Integer caps = shadeData.capabilities;
-                                Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
-                                builder = builder.withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
-                                        capabilities.toString());
-
-                                builder = builder.withLabel(shadeData.getName()).withBridge(bridgeUID);
                                 thingDiscovered(builder.build());
                             }
                         }
