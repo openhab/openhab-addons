@@ -112,7 +112,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
          * newSecondaryMode configuration parameter with the value TRUE, then change our ThingTypeUid to
          * THING_TYPE_SHADE2 (i.e. to a "new secondary mode" Thing).
          */
-        if (THING_TYPE_SHADE.getId().equals(getThing().getThingTypeUID().getId())) {
+        if (THING_TYPE_SHADE.equals(getThing().getThingTypeUID())) {
             Boolean newSecModeParam = getConfigAs(HDPowerViewShadeConfiguration.class).newSecondaryMode;
             boolean newSecModeValue = newSecModeParam != null ? newSecModeParam.booleanValue() : false;
             logger.trace("New Secondary Mode: Config Param value:{}, Final value:{}", newSecModeParam, newSecModeValue);
