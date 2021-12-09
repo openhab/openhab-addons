@@ -109,9 +109,9 @@ public class AVMFritzUpnpDiscoveryParticipant implements UpnpDiscoveryParticipan
                         if (modelName.startsWith(BOX_MODEL_NAME)) {
                             logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
                             return new ThingUID(BRIDGE_THING_TYPE, id);
-                        } else if (modelName.startsWith(POWERLINE_MODEL_NAME)) {
+                        } else if (POWERLINE546E_MODEL_NAME.equals(modelName)) {
                             logger.debug("discovered on {}", device.getIdentity().getDiscoveredOnLocalAddress());
-                            return new ThingUID(PL546E_STANDALONE_THING_TYPE, id);
+                            return new ThingUID(POWERLINE546E_STANDALONE_THING_TYPE, id);
                         }
                     }
                 }

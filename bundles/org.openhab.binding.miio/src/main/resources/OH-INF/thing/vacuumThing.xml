@@ -347,14 +347,14 @@
 		<item-type>DateTime</item-type>
 		<label>Cleaning Start</label>
 		<description>Last Cleaning Start Time</description>
-		<category>Date</category>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_end_time">
 		<item-type>DateTime</item-type>
 		<label>Cleaning End</label>
 		<description>Last Cleaning End Time</description>
-		<category>Date</category>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_duration">

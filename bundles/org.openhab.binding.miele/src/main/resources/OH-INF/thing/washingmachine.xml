@@ -29,7 +29,7 @@
 			<channel id="switch" typeId="switch"/>
 			<channel id="target" typeId="targetTemperature">
 				<label>Temperature</label>
-				<description>Temperature of the selected program</description>
+				<description>Temperature of the selected program (10 °C = cold)</description>
 			</channel>
 			<channel id="spinningspeed" typeId="spinningspeed"/>
 			<channel id="powerConsumption" typeId="powerConsumption"/>
