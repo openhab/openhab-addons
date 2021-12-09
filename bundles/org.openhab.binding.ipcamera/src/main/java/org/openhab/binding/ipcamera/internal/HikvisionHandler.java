@@ -65,6 +65,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         if (content.contains("hannelID>" + nvrChannel) || content.contains("<channelID>0</channelID>")) {
             final int debounce = 3;
             String eventType = Helper.fetchXML(content, "", "<eventType>");
+            ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
             switch (eventType) {
                 case "videoloss":
                     if (content.contains("<eventState>inactive</eventState>")) {
