@@ -13,11 +13,10 @@ By using a scene to control multiple shades at once, the shades will all begin m
 
 ## Supported Things
 
-| Thing  | Thing Type | Description |
-|--------|------------|-------------|
-| hub    | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
-| shade2 | Thing      | A motorized shade. Recommended for new installations. |
-| shade  | Thing      | ***Not recommended for new installations!*** A "legacy mode" motorized shade. (see 'Note on Legacy Shades' below). |
+| Thing | Thing Type | Description |
+|-------|------------|-------------|
+| hub   | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
+| shade | Thing      | A motorized shade. |
 
 ## Discovery
 
@@ -56,7 +55,6 @@ However, the configuration parameters are described below:
 | Configuration Parameter | Description |
 |-------------------------|-------------|
 | id                      | The ID of the PowerView shade in the app. Must be an integer. |
-| newSecondaryMode        | **Advanced** (for Thing type `shade` only): Set to `true` to migrate Thing type `shade` (legacy mode) to behave as a Thing type `shade2` (new mode). |
 
 ## Channels
 
@@ -70,7 +68,7 @@ have different `id` values:
 |----------|-----------| ------------|
 | id       | Switch    | Turning this to ON will activate the scene/scene group. Scenes/scene groups are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
 
-### Channels for Shades (Thing types `shade2` and `shade`)
+### Channels for Shades (Thing type `shade`)
 
 A shade always implements a roller shutter channel `position` which controls the vertical position of the shade's (primary) rail.
 If the shade has slats or rotatable vanes, there is also a dimmer channel `vane` which controls the slat / vane position.
@@ -95,32 +93,34 @@ And for horizontal shades, it maps the horizontal position of the "truck" to the
 
 Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
 
-| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent | Pebble Remote Button |
-|--------------------------|-------------------|-----------------------|------------------|----------------|---------|----------------------|
-| Single action bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                    |
-|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                    |
-| Single action top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%      | ▲                    |
-|                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ▼                    |
-| Single action right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      | ▲                    |
-|                          |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    | ▼                    |
-| Single action left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      | ▲                    |
-|                          |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    | ▼                    |
-| Dual action (lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                    |
-|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                    |
-| Dual action (upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%      | ![](doc/right.png)   |
-|                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ![](doc/left.png)    |
+| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent | Pebble Remote Button         |
+|--------------------------|-------------------|-----------------------|------------------|----------------|---------|------------------------------|
+| Single action<br>bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                            |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                            |
+| Single action<br>top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%      | ▲                            |
+|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ▼                            |
+| Single action<br>right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      | ▲                            |
+|                             |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    | ▼                            |
+| Single action<br>eft-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      | ▲                            |
+|                             |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    | ▼                            |
+| Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                            |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                            |
+| Dual action<br>(upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%<sup>1)</sup>   | ![](doc/right.png) |
+|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%<sup>1)</sup> | ![](doc/left.png)  |
 
-### Note on Legacy Shades (Thing type `shade`) 
+***<sup>1)</sup> BUG NOTE***: In openHAB versions v3.1.x and earlier, there was a bug in the handling of the position percent value of the `secondary` shade.
+Although the RollerShutter Up/Down commands functioned properly as described in the table above, the percent state values (e.g. displayed on a slider control), did not.
+After moving the shade, the percent value would initially display the correct value, but on the next refresh it would 'flip' to the **inverse** of the correct value.
+The details are shown in the following table.
+This bug has been fixed from openHAB v3.2.x (or later) —
+***so if you have rules that depend on the percent value, and you update from an earlier openHAB version to v3.2.x (or later), you will need to modify them!***
 
-On older 'legacy' installations (Thing type `shade`), the upper rail of dual action shades functions differently from the above table, as shown in the table below.
-
-| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent | Pebble Remote Button |
-|--------------------------|-------------------|-----------------------|------------------|----------------|---------|----------------------|
-| Dual action (upper rail) | `secondary`       | ▲                     | Up               | `CLOSED`       | 100%    | ![](doc/left.png)    |
-|                          |                   | ▼                     | Down             | `OPEN`         | 0%      | ![](doc/right.png)   |
-
-Legacy shades (Thing type `shade`) can be migrated to the modern form of operation (Thing type `shade2`) by setting the `newSecondaryMode` Configuration Parameter.
-See "Thing Configuration for Shades" above.
+| Channel     | UI Control Element | UI Control Command  | Immediate Action<br>on Shade State | Dimmer Percent Display<br>(Initial => Final) |
+|-------------|--------------------|---------------------|------------------------------------|----------------------------------------------|
+| `secondary` | RollerShutter      | Press `UP` button   | Rail moves Up (`CLOSED`)           | 0% (initial) => 100% (final)                 |
+|             |                    | Press `DOWN` button | Rail moves Down (`OPEN`)           | 100% (initial) => 0% (final)                 |
+|             | Dimmer             | Move slider to 0%   | Rail moves Up (`CLOSED`)           | 0% (initial) => 100% (final)                 |
+|             |                    | Move slider to 100% | Rail moves Down (`OPEN`)           | 100% (initial) => 0% (final)                 |
 
 ### Interdependency between Channel positions
 
@@ -175,7 +175,7 @@ end
 
 ```
 Bridge hdpowerview:hub:g24 "Luxaflex Hub" @ "Living Room" [host="192.168.1.123"] {
-    Thing shade2 s50150 "Living Room Shade" @ "Living Room" [id="50150"]
+    Thing shade s50150 "Living Room Shade" @ "Living Room" [id="50150"]
 }
 ```
 
