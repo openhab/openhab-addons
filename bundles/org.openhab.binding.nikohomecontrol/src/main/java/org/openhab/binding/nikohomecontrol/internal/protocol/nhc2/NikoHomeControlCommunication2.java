@@ -480,7 +480,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             booleanState = basicStateProperty.get().basicState;
         }
 
-        if ((booleanState != null) && NHCOFF.equals(booleanState)) {
+        if (NHCOFF.equals(booleanState)) {
             action.setBooleanState(false);
             logger.debug("setting action {} internally to OFF", action.getId());
         }
@@ -488,12 +488,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         if (dimmerProperty.isPresent()) {
             String brightness = dimmerProperty.get().brightness;
             if (brightness != null) {
-                action.setState(Integer.parseInt(brightness));
-                logger.debug("setting action {} internally to {}", action.getId(), dimmerProperty.get().brightness);
+                try {
+                    action.setState(Integer.parseInt(brightness));
+                    logger.debug("setting action {} internally to {}", action.getId(), dimmerProperty.get().brightness);
+                } catch (NumberFormatException e) {
+                    logger.debug("received invalid brightness value {} for dimmer {}", brightness, action.getId());
+                }
             }
         }
 
-        if ((booleanState != null) && NHCON.equals(booleanState)) {
+        if (NHCON.equals(booleanState)) {
             action.setBooleanState(true);
             logger.debug("setting action {} internally to ON", action.getId());
         }
@@ -505,7 +509,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 action.setState(Integer.parseInt(position));
                 logger.debug("setting action {} internally to {}", action.getId(), position);
             } catch (NumberFormatException e) {
-                logger.trace("received empty rollershutter {} position info", action.getId());
+                logger.trace("received empty or invalid rollershutter {} position info {}", action.getId(), position);
             }
         });
     }
@@ -631,9 +635,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 } else if (NHCOFF.equals(value)) {
                     property.status = value;
                 } else {
-                    action.setState(Integer.parseInt(value)); // set cached state to new brightness value to avoid
-                                                              // switching on with old brightness value before updating
-                                                              // to new value
+                    try {
+                        action.setState(Integer.parseInt(value)); // set cached state to new brightness value to avoid
+                                                                  // switching on with old brightness value before
+                                                                  // updating
+                                                                  // to new value
+                    } catch (NumberFormatException e) {
+                        logger.debug("internal error, trying to set invalid brightness value {} for dimmer {}", value,
+                                action.getId());
+                        return;
+                    }
+
                     // If the light is off, turn the light on before sending the brightness value, needs to happen
                     // in 2 separate messages.
                     if (!action.booleanState()) {
@@ -650,8 +662,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 } else if (NHCDOWN.equals(value)) {
                     property.position = "0";
                 } else {
-                    int position = Integer.parseInt(value);
-                    property.position = String.valueOf(position);
+                    property.position = value;
                 }
                 break;
         }
