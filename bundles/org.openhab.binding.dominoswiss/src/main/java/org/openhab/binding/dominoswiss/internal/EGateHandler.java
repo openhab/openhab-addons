@@ -84,6 +84,14 @@ public class EGateHandler extends BaseBridgeHandler {
 
         if (host != null && port > 0) {
             // Create a socket to eGate
+            try (Socket localEgateSocket = new Socket(host, port)) {
+                writer = new BufferedWriter(new OutputStreamWriter(localEgateSocket.getOutputStream()));
+                egateSocket = localEgateSocket;
+            } catch (IOException e) {
+                logger.debug("IOException in initialize: {} host {} port {}", e.toString(), host, port);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
+                egateSocket = null;
+            }
             pollingJob = scheduler.scheduleWithFixedDelay(this::pollingConfig, 0, 30, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
@@ -105,6 +113,11 @@ public class EGateHandler extends BaseBridgeHandler {
             BufferedReader localReader = reader;
             if (localReader != null) {
                 localReader.close();
+            }
+
+            BufferedWriter localWriter = writer;
+            if (localWriter != null) {
+                localWriter.close();
             }
             ScheduledFuture<?> localPollingJob = pollingJob;
             if (localPollingJob != null) {
@@ -210,21 +223,21 @@ public class EGateHandler extends BaseBridgeHandler {
 
     private void pollingConfig() {
         if (!isConnected()) {
-            Socket localSocket = egateSocket;
-
+            Socket localEGateSocket = egateSocket;
+            BufferedWriter localWriter = writer;
+            if (localEGateSocket == null || localWriter == null) {
+                return;
+            }
             synchronized (lock) {
                 try {
-                    localSocket.connect(new InetSocketAddress(host, port));
-                    localSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
-                    BufferedWriter localWriter = writer;
-                    localWriter = new BufferedWriter(new OutputStreamWriter(localSocket.getOutputStream()));
+                    localEGateSocket.connect(new InetSocketAddress(host, port));
+                    localEGateSocket.setSoTimeout(SOCKET_TIMEOUT_SEC);
                     localWriter.write("SilenceModeSet;Value=0;" + CR);
                     localWriter.flush();
-                    localSocket.close();
                 } catch (IOException e) {
                     logger.debug("IOException in pollingConfig: {} host {} port {}", e.toString(), host, port);
                     try {
-                        localSocket.close();
+                        localEGateSocket.close();
                         egateSocket = null;
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.toString());
                     } catch (IOException e1) {
