@@ -117,7 +117,6 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 break;
             case "AudioAnomaly":
             case "AudioMutation":
-                ipCameraHandler.logger.info("Audio Dahua event, Code={}, action={}", code, action);
                 if ("Start".equals(action)) {
                     ipCameraHandler.audioDetected();
                 } else if ("Stop".equals(action)) {
