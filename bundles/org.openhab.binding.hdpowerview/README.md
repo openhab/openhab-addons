@@ -103,7 +103,7 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 |                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ▼                            |
 | Single action<br>right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      | ▲                            |
 |                             |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    | ▼                            |
-| Single action<br>eft-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      | ▲                            |
+| Single action<br>left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      | ▲                            |
 |                             |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    | ▼                            |
 | Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                            |
 |                             |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                            |
