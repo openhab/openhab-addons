@@ -2368,13 +2368,13 @@
 		<description>A string that contains the type of motion alarm that was last triggered.</description>
 		<state readOnly="true"/>
 	</channel-type>
-	
-	   <channel-type id="lastEventData" advanced="true">
-        <item-type>String</item-type>
-        <label>Last Event Data</label>
-        <description>A string that contains detailed data on the last alarm that was triggered.</description>
-        <state readOnly="true"/>
-    </channel-type>	
+
+	<channel-type id="lastEventData" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Event Data</label>
+		<description>A string that contains detailed data on the last alarm that was triggered.</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="motionAlarm">
 		<item-type>Switch</item-type>
