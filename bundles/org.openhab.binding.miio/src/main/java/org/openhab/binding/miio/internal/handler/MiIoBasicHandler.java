@@ -382,9 +382,10 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             if (customRefreshIntervalCheck(miChannel) || !linkedChannelCheck(miChannel)) {
                 continue;
             }
-            String cmd = miChannel.getChannelCustomRefreshCommand();
+            final JsonElement para = miChannel.getCustomRefreshParameters();
+            String cmd = miChannel.getChannelCustomRefreshCommand() + (para != null ? para.toString() : "");
             if (!cmd.startsWith("/")) {
-                cmds.put(sendCommand(miChannel.getChannelCustomRefreshCommand()), miChannel.getChannel());
+                cmds.put(sendCommand(cmd), miChannel.getChannel());
             } else {
                 if (cloudServer.isBlank()) {
                     logger.debug("Cloudserver empty. Skipping refresh for {} channel '{}'", getThing().getUID(),

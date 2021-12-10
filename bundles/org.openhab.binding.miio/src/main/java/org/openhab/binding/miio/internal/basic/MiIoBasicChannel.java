@@ -22,6 +22,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.JsonElement;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -72,9 +73,15 @@ public class MiIoBasicChannel {
     @SerializedName("customRefreshCommand")
     @Expose
     private @Nullable String channelCustomRefreshCommand;
+    @SerializedName("customRefreshParameters")
+    @Expose
+    private @Nullable JsonElement customRefreshParameters;
     @SerializedName("transformation")
     @Expose
     private @Nullable String transformation;
+    @SerializedName("transformations")
+    @Expose
+    private @Nullable List<String> transformations;
     @SerializedName("ChannelGroup")
     @Expose
     private @Nullable String channelGroup;
@@ -231,6 +238,14 @@ public class MiIoBasicChannel {
         this.channelCustomRefreshCommand = channelCustomRefreshCommand;
     }
 
+    public @Nullable final JsonElement getCustomRefreshParameters() {
+        return customRefreshParameters;
+    }
+
+    public final void setCustomRefreshParameters(@Nullable JsonElement customRefreshParameters) {
+        this.customRefreshParameters = customRefreshParameters;
+    }
+
     public String getChannelGroup() {
         final @Nullable String channelGroup = this.channelGroup;
         return channelGroup != null ? channelGroup : "";
@@ -255,6 +270,28 @@ public class MiIoBasicChannel {
 
     public void setTransformation(@Nullable String transformation) {
         this.transformation = transformation;
+    }
+
+    public final List<String> getTransformations() {
+        List<String> transformations = this.transformations;
+        if (transformations == null) {
+            transformations = new ArrayList<>();
+        }
+        String transformation = this.transformation;
+        if (transformation != null) {
+            List<String> allTransformation = new ArrayList<>(List.of(transformation));
+            allTransformation.addAll(transformations);
+            return allTransformation;
+        }
+        return transformations;
+    }
+
+    public final void setTransformations(List<String> transformations) {
+        if (!transformations.isEmpty()) {
+            this.transformations = transformations;
+        } else {
+            this.transformations = null;
+        }
     }
 
     public @Nullable String getCategory() {

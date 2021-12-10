@@ -14,6 +14,7 @@
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
+				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -41,6 +42,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -64,6 +66,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": []
 			},
 			{
@@ -74,6 +77,7 @@
 				"channel": "on1",
 				"type": "Switch",
 				"refresh": true,
+				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -102,6 +106,7 @@
 				},
 				"refresh": true,
 				"transformation": "/100",
+				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -125,6 +130,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -148,6 +154,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -171,6 +178,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -193,6 +201,7 @@
 					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -216,6 +225,7 @@
 					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -239,6 +249,7 @@
 					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -255,6 +266,7 @@
 				"channel": "task-switch",
 				"type": "Switch",
 				"refresh": true,
+				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -273,6 +285,7 @@
 					"readOnly": true
 				},
 				"refresh": true,
+				"transformations": [],
 				"actions": []
 			},
 			{
@@ -296,6 +309,7 @@
 				"refresh": true,
 				"customRefreshCommand": "bt_gateway_status",
 				"transformation": "getJsonElement-gateway_status",
+				"transformations": [],
 				"actions": [
 					{
 						"command": "bt_gateway_enable",
@@ -335,8 +349,14 @@
 				},
 				"refresh": true,
 				"refreshInterval": 2,
-				"customRefreshCommand": "/device/get_bledevice_by_gateway [{\"dids\":[\"$deviceId$\"]}]",
+				"customRefreshCommand": "/device/get_bledevice_by_gateway",
+				"customRefreshParameters": {
+					"dids": [
+						"$deviceId$"
+					]
+				},
 				"transformation": "getDiDElement",
+				"transformations": [],
 				"actions": [],
 				"category": "bluetooth",
 				"readmeComment": "Note, refreshes every 2nd refresh. Channel requires cloud connectivity to function. Sample widget to visualise the (json) output available from the widget market"
