@@ -14,7 +14,6 @@
 				"channel": "on",
 				"type": "Switch",
 				"refresh": true,
-				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -42,7 +41,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": [],
 				"category": "temperature",
 				"tags": [
@@ -66,7 +64,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": []
 			},
 			{
@@ -77,7 +74,6 @@
 				"channel": "on1",
 				"type": "Switch",
 				"refresh": true,
-				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -130,7 +126,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -154,7 +149,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -178,7 +172,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -201,7 +194,6 @@
 					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -225,7 +217,6 @@
 					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -249,7 +240,6 @@
 					"pattern": "%.0f %unit%"
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -266,7 +256,6 @@
 				"channel": "task-switch",
 				"type": "Switch",
 				"refresh": true,
-				"transformations": [],
 				"actions": [
 					{
 						"command": "set_properties",
@@ -285,7 +274,6 @@
 					"readOnly": true
 				},
 				"refresh": true,
-				"transformations": [],
 				"actions": []
 			},
 			{

@@ -286,8 +286,8 @@ public class MiIoBasicChannel {
         return transformations;
     }
 
-    public final void setTransformations(List<String> transformations) {
-        if (!transformations.isEmpty()) {
+    public final void setTransformations(@Nullable List<String> transformations) {
+        if (transformations != null && !transformations.isEmpty()) {
             this.transformations = transformations;
         } else {
             this.transformations = null;
