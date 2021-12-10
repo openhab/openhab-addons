@@ -419,14 +419,14 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
     @Test
     public void testFailingPutProcessActionDoesNotSetTheDeviceToOffline() throws Exception {
         // given:
+        doThrow(MieleWebserviceException.class).when(getWebserviceMock()).putProcessAction(any(),
+                eq(ProcessAction.STOP));
+
         setUpBridgeAndThing();
 
         DeviceState deviceState = createDeviceStateMock(StateType.ON, "On");
         getBridgeHandler().onDeviceStateUpdated(deviceState);
         assertThingStatusIs(getThingHandler().getThing(), ThingStatus.ONLINE, ThingStatusDetail.NONE);
-
-        doThrow(MieleWebserviceException.class).when(getWebserviceMock()).putProcessAction(any(),
-                eq(ProcessAction.STOP));
 
         // when:
         getThingHandler().triggerProcessAction(ProcessAction.STOP);
@@ -513,13 +513,13 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
     @Test
     public void testFailingPutLightDoesNotSetTheDeviceToOffline() throws Exception {
         // given:
+        doThrow(MieleWebserviceException.class).when(getWebserviceMock()).putLight(any(), eq(true));
+
         setUpBridgeAndThing();
 
         DeviceState deviceState = createDeviceStateMock(StateType.ON, "On");
         getBridgeHandler().onDeviceStateUpdated(deviceState);
         assertThingStatusIs(getThingHandler().getThing(), ThingStatus.ONLINE, ThingStatusDetail.NONE);
-
-        doThrow(MieleWebserviceException.class).when(getWebserviceMock()).putLight(any(), eq(true));
 
         // when:
         getThingHandler().triggerLight(true);
