@@ -102,7 +102,6 @@
 				},
 				"refresh": true,
 				"transformation": "/100",
-				"transformations": [],
 				"actions": [],
 				"category": "energy",
 				"tags": [
@@ -297,7 +296,6 @@
 				"refresh": true,
 				"customRefreshCommand": "bt_gateway_status",
 				"transformation": "getJsonElement-gateway_status",
-				"transformations": [],
 				"actions": [
 					{
 						"command": "bt_gateway_enable",
@@ -344,7 +342,6 @@
 					]
 				},
 				"transformation": "getDiDElement",
-				"transformations": [],
 				"actions": [],
 				"category": "bluetooth",
 				"readmeComment": "Note, refreshes every 2nd refresh. Channel requires cloud connectivity to function. Sample widget to visualise the (json) output available from the widget market"
