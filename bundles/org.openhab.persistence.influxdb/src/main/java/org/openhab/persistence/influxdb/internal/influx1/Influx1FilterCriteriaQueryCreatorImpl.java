@@ -117,10 +117,10 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
 
     private String fullQualifiedTableName(String retentionPolicy, String tableName, boolean escapeTableName) {
         StringBuilder sb = new StringBuilder();
-        Appender.appendName("\"" + retentionPolicy + "\"", sb);
+        sb.append('"').append(retentionPolicy).append('"');
         sb.append(".");
         if (escapeTableName) {
-            Appender.appendName("\"" + tableName + "\"", sb);
+            sb.append('"').append(tableName).append('"');
         } else {
             sb.append(tableName);
         }
