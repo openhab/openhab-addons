@@ -149,10 +149,14 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     @Override
     public void dispose() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
-
         if (nhcComm != null) {
             nhcComm.stopEnergyMeter(energyMeterId);
+            NhcEnergyMeter nhcEnergyMeter = nhcComm.getEnergyMeters().get(energyMeterId);
+            if (nhcEnergyMeter != null) {
+                nhcEnergyMeter.unsetEventHandler();
+            }
         }
+        super.dispose();
     }
 
     private void updateProperties(NhcEnergyMeter nhcEnergyMeter) {

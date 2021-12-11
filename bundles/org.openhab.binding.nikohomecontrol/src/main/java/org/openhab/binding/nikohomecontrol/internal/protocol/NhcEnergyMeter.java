@@ -86,6 +86,15 @@ public abstract class NhcEnergyMeter {
     }
 
     /**
+     * This method should be called when an object implementing the {@NhcEnergyMeterEvent} interface is disposed.
+     * It resets the reference, so no updates go to the handler anymore.
+     *
+     */
+    public void unsetEventHandler() {
+        this.eventHandler = null;
+    }
+
+    /**
      * Get id of meter.
      *
      * @return id

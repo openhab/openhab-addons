@@ -221,6 +221,18 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         initialized = true;
     }
 
+    @Override
+    public void dispose() {
+        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
+        if (nhcComm != null) {
+            NhcThermostat nhcThermostat = nhcComm.getThermostats().get(thermostatId);
+            if (nhcThermostat != null) {
+                nhcThermostat.unsetEventHandler();
+            }
+        }
+        super.dispose();
+    }
+
     private void updateProperties(NhcThermostat nhcThermostat) {
         Map<String, String> properties = new HashMap<>();
 

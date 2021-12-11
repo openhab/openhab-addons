@@ -278,6 +278,18 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         initialized = true;
     }
 
+    @Override
+    public void dispose() {
+        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
+        if (nhcComm != null) {
+            NhcAction nhcAction = nhcComm.getActions().get(actionId);
+            if (nhcAction != null) {
+                nhcAction.unsetEventHandler();
+            }
+        }
+        super.dispose();
+    }
+
     private void updateProperties(NhcAction nhcAction) {
         Map<String, String> properties = new HashMap<>();
 
