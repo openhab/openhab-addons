@@ -227,8 +227,8 @@ public class HomeHandler extends DeviceWithEventHandler {
     }
 
     public void callSetPersonAway(String personId, boolean away) {
-        energyApi.ifPresent(api -> {
-            tryApiCall(() -> away ? api.setPersonsAway(config.id, personId) : api.setPersonsHome(config.id, personId));
+        securityApi.ifPresent(api -> {
+            tryApiCall(() -> away ? api.setPersonAway(config.id, personId) : api.setPersonHome(config.id, personId));
         });
     }
 

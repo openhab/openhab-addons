@@ -43,7 +43,8 @@ public abstract class NAEvent extends NAObject {
     }
 
     public String getMessage() {
-        return (message != null ? message.replace("<b>", "").replace("</b>", "") : "");
+        String localMessage = message;
+        return (localMessage != null ? localMessage.replace("<b>", "").replace("</b>", "") : "");
     }
 
     public abstract ZonedDateTime getTime();

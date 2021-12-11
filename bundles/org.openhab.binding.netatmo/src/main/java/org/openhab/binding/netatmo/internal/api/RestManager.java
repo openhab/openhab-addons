@@ -70,12 +70,30 @@ public abstract class RestManager {
         throw new NetatmoException("Request cancelled : API bridge is not connected.");
     }
 
-    protected UriBuilder getApiUriBuilder() {
-        return API_URI_BUILDER.clone();
+    private UriBuilder appendParams(UriBuilder builder, @Nullable Object... params) {
+        if (params.length % 2 != 0) {
+            throw new IllegalArgumentException("appendParams : params count must be even");
+        }
+        for (int i = 0; i < params.length && params.length > 0; i += 2) {
+            Object query = params[i];
+            if (query instanceof String) {
+                Object param = params[i + 1];
+                if (param != null) {
+                    builder.queryParam((String) params[i], param);
+                }
+            } else {
+                throw new IllegalArgumentException("appendParams : even parameters must be Strings");
+            }
+        }
+        return builder;
     }
 
-    protected UriBuilder getAppUriBuilder() {
-        return APP_URI_BUILDER.clone();
+    protected UriBuilder getApiUriBuilder(String path, @Nullable Object... params) {
+        return appendParams(API_URI_BUILDER.clone().path(path), params);
+    }
+
+    protected UriBuilder getAppUriBuilder(String path, @Nullable Object... params) {
+        return appendParams(APP_URI_BUILDER.clone().path(path), params);
     }
 
     public Set<Scope> getRequiredScopes() {

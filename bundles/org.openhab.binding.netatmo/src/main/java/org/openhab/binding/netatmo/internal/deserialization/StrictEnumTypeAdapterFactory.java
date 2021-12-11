@@ -44,7 +44,7 @@ public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
         return rawType.isEnum() ? newStrictEnumAdapter(gson.getDelegateAdapter(this, type)) : null;
     }
 
-    private <T> TypeAdapter<T> newStrictEnumAdapter(TypeAdapter<T> delegateAdapter) {
+    private <T> TypeAdapter<T> newStrictEnumAdapter(@NonNullByDefault({}) TypeAdapter<T> delegateAdapter) {
         return new TypeAdapter<T>() {
             @Override
             public void write(JsonWriter out, @Nullable T value) throws IOException {

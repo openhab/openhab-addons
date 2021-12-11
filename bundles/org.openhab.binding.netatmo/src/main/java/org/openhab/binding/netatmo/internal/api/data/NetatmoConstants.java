@@ -152,6 +152,7 @@ public class NetatmoConstants {
     public static final String PARM_URL = "url";
     public static final String PARM_CHANGESTATUS = "changestatus";
     public static final String PARM_FLOODLIGHTSET = "floodlight_set_config";
+    public static final String PARM_FAVORITES = "get_favorites";
 
     // Token scopes
     public static enum Scope {

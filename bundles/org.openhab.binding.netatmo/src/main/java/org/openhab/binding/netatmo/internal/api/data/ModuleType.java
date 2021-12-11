@@ -190,9 +190,9 @@ public enum ModuleType {
     }
 
     public Constructor<?> getHandlerConstructor() throws NoSuchMethodException, SecurityException {
-        if (handlerClass != null) {
-            return handlerClass.getConstructor(Bridge.class, List.class, ApiBridge.class,
-                    NetatmoDescriptionProvider.class);
+        Class<?> handler = handlerClass;
+        if (handler != null) {
+            return handler.getConstructor(Bridge.class, List.class, ApiBridge.class, NetatmoDescriptionProvider.class);
         }
         throw new IllegalArgumentException("This should not be called for module type : " + name() + ", file a bug.");
     }

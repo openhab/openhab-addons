@@ -52,11 +52,8 @@ public class WeatherApi extends RestManager {
      */
     public NAStationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
             throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETSTATION);
-        if (deviceId != null) {
-            uriBuilder.queryParam(PARM_DEVICEID, deviceId);
-        }
-        uriBuilder.queryParam("get_favorites", getFavorites);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETSTATION, PARM_DEVICEID, deviceId, PARM_FAVORITES,
+                getFavorites);
         NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
         return response;
     }
@@ -72,7 +69,7 @@ public class WeatherApi extends RestManager {
 
     public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
             MeasureClass measureClass) throws NetatmoException {
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, measureClass.apiDescriptor, 0, 0);
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, measureClass.apiDescriptor);
         return result.getSingleValue();
     }
 
@@ -83,26 +80,18 @@ public class WeatherApi extends RestManager {
             queryLimit += "_" + measureClass.apiDescriptor;
         }
 
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase(), 0, 0);
+        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase());
         return result.getSingleValue();
     }
 
     private NAMeasureBodyElem<?> getmeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
-            String measureType, long dateBegin, long dateEnd) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETMEASURE).queryParam(PARM_DEVICEID, deviceId)
-                .queryParam("real_time", true)
-                .queryParam("date_end", (dateEnd > 0 && dateEnd > dateBegin) ? dateEnd : "last")
-                .queryParam("optimize", true) // NAMeasuresResponse is not designed for optimize=false
-                .queryParam("type", measureType.toLowerCase());
+            String measureType) throws NetatmoException {
+        // NAMeasuresResponse is not designed for optimize=false
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETMEASURE, PARM_DEVICEID, deviceId, "real_time", true,
+                "date_end", "last", "optimize", true, "type", measureType.toLowerCase(), PARM_MODULEID, moduleId);
 
         if (scale != null) {
             uriBuilder.queryParam("scale", scale.toLowerCase());
-        }
-        if (moduleId != null) {
-            uriBuilder.queryParam(PARM_MODULEID, moduleId);
-        }
-        if (dateBegin > 0) {
-            uriBuilder.queryParam("date_begin", dateBegin);
         }
         if (measureType.startsWith("date")) {
             NADateMeasuresResponse response = get(uriBuilder, NADateMeasuresResponse.class);

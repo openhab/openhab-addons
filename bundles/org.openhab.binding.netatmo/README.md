@@ -271,7 +271,9 @@ All these channels are read only.
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
 | signal              | value                | Number:Power         | Signal strength in dB                            |
 
+
 (*) Health index values : 
+
 - 0 : healthy 
 - 1 : fine 
 - 2 : fair 

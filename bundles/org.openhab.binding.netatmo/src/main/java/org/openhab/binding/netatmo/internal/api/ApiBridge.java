@@ -193,7 +193,11 @@ public class ApiBridge {
 
     public <T> T deserialize(Class<T> classOfT, String serviceAnswer) throws NetatmoException {
         try {
-            return gson.fromJson(serviceAnswer, classOfT);
+            T result = gson.fromJson(serviceAnswer, classOfT);
+            if (result != null) {
+                return result;
+            }
+            throw new NetatmoException(String.format("Deserialization of '%s' resulted in null value", serviceAnswer));
         } catch (JsonSyntaxException e) {
             throw new NetatmoException(String.format("Unexpected error deserializing '%s'", serviceAnswer), e);
         }

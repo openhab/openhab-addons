@@ -42,9 +42,9 @@ class AuthenticationApi extends RestManager {
     private final ScheduledExecutorService scheduler;
     private @Nullable ScheduledFuture<?> refreshTokenJob;
 
-    AuthenticationApi(ApiBridge apiClient, NetatmoBindingConfiguration configuration,
+    AuthenticationApi(ApiBridge apiBridge, NetatmoBindingConfiguration configuration,
             ScheduledExecutorService scheduler) {
-        super(apiClient, FeatureArea.NONE);
+        super(apiBridge, FeatureArea.NONE);
         this.configuration = configuration;
         this.scheduler = scheduler;
     }

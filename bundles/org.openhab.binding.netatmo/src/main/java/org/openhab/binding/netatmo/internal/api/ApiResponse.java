@@ -32,7 +32,7 @@ public class ApiResponse<T> {
     }
 
     private @NonNullByDefault({}) String status;
-    private T body;
+    private @NonNullByDefault({}) T body;
 
     public String getStatus() {
         return status;

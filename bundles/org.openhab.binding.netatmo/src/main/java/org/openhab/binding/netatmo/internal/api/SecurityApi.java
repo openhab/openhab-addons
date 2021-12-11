@@ -47,7 +47,7 @@ public class SecurityApi extends RestManager {
      *             response body
      */
     public boolean dropWebhook() throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_DROPWEBHOOK);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_DROPWEBHOOK);
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
@@ -62,16 +62,14 @@ public class SecurityApi extends RestManager {
      *             response body
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_ADDWEBHOOK);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_ADDWEBHOOK);
         uriBuilder.queryParam(PARM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
     public Collection<NAHomeEvent> getLastEventsOf(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder().path(SPATH_GETLASTEVENT);
-        uriBuilder.queryParam(PARM_HOMEID, homeId);
-        uriBuilder.queryParam(PARM_PERSONID, personId);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETLASTEVENT, PARM_HOMEID, homeId, PARM_PERSONID, personId);
         NALastEventsDataResponse response = get(uriBuilder, NALastEventsDataResponse.class);
         return response.getBody().getElements();
     }
@@ -93,6 +91,20 @@ public class SecurityApi extends RestManager {
         UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARM_FLOODLIGHTSET);
         uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
         get(uriBuilder, ApiResponse.Ok.class);
+        return true;
+    }
+
+    public boolean setPersonAway(String homeId, String personId) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder(SPATH_PERSON_AWAY);
+        String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
+        post(uriBuilder, ApiResponse.Ok.class, payload);
+        return true;
+    }
+
+    public boolean setPersonHome(String homeId, String personId) throws NetatmoException {
+        UriBuilder uriBuilder = getAppUriBuilder(SPATH_PERSON_HOME);
+        String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
+        post(uriBuilder, ApiResponse.Ok.class, payload);
         return true;
     }
 }
