@@ -34,14 +34,15 @@ public class MQTTProtocol {
         public int ordered;
         @SerializedName("pmap_id")
         public String pmapId;
-        public String user_pmapv_id;
+        @SerializedName("user_pmapv_id")
+        public String userPmapvId;
         public List<Region> regions;
 
         public CleanRoomsRequest(String cmd, String mapId, String[] pregions, String[] types, String user_mapv_id) {
             super(cmd);
             ordered = 1;
             pmapId = mapId;
-            user_pmapv_id = user_mapv_id;
+            userPmapvId = user_mapv_id;
 
             regions = new ArrayList<Region>();
             for (int i = 0; (i < pregions.length) && (i < types.length); i++) {
