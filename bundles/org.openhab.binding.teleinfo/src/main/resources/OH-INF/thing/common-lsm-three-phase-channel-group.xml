@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="threePhasedLSMGroupType">
-		<label>threePhasedLSMPGroup</label>
-		<description>Linky Standard Mode three-phased channels</description>
+		<label>Linky Standard Mode Three-phased Channels</label>
+		<description>Three-phased channels for Linky telemeter in standard teleinformation mode</description>
 		<category>Energy</category>
 		<channels>
 
