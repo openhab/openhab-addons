@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.LocaleProvider;
@@ -43,5 +45,9 @@ public class HDPowerViewTranslationProvider {
             return text;
         }
         return key;
+    }
+
+    public Locale getLocale() {
+        return localeProvider.getLocale();
     }
 }
