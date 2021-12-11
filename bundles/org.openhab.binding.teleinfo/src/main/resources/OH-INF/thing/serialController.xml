@@ -30,7 +30,7 @@
 				<limitToOptions>true</limitToOptions>
 			</parameter>
 			<parameter name="verifyChecksum" type="boolean" required="true">
-				<label>Checksum verification</label>
+				<label>Checksum Verification</label>
 				<description>Activate checksum verification</description>
 				<default>true</default>
 				<advanced>true</advanced>

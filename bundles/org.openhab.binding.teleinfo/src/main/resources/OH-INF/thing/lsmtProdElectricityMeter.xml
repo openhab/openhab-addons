@@ -9,7 +9,7 @@
 			<bridge-type-ref id="serialcontroller"/>
 		</supported-bridge-type-refs>
 
-		<label>Linky Three-phase producer</label>
+		<label>Linky Three-phase Producer</label>
 		<description>Three-phase producer Linky Electricity meter in standard mode</description>
 
 		<channel-groups>
