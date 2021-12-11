@@ -50,10 +50,6 @@ public class XmlRpcClient extends RpcClient<String> {
     }
 
     @Override
-    public void dispose() {
-    }
-
-    @Override
     public RpcRequest<String> createRpcRequest(String methodName) {
         return new XmlRpcRequest(methodName);
     }

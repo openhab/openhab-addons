@@ -40,6 +40,7 @@ public class BinRpcClient extends RpcClient<byte[]> {
 
     @Override
     public void dispose() {
+        super.dispose();
         socketHandler.flush();
     }
 

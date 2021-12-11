@@ -74,11 +74,6 @@ public abstract class RpcClient<T> {
     }
 
     /**
-     * Disposes the client.
-     */
-    public abstract void dispose();
-
-    /**
      * Returns a RpcRequest for this client.
      */
     protected abstract RpcRequest<T> createRpcRequest(String methodName);
@@ -128,7 +123,16 @@ public abstract class RpcClient<T> {
                 logger.error("Callback registration for interface {} timed out", hmInterface.getName());
                 throw new IOException("Unable to reconnect in time");
             }
+            future = null;
         }
+    }
+
+    /**
+     * Disposes the client.
+     */
+    public void dispose() {
+        if (future != null)
+            future.cancel(true);
     }
 
     /**
