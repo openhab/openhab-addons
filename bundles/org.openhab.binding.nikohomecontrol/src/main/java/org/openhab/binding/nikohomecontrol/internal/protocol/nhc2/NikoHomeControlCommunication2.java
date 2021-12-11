@@ -362,7 +362,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     .orElse(null);
         }
 
-        if ("action".equals(device.type)) {
+        if ("action".equals(device.type) || "virtual".equals(device.type)) {
             if (!actions.containsKey(device.uuid)) {
                 logger.debug("adding action device {}, {}", device.uuid, device.name);
 
@@ -382,6 +382,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     case "socket":
                     case "switched-generic":
                     case "switched-fan":
+                    case "flag":
                         actionType = ActionType.RELAY;
                         break;
                     case "dimmer":
@@ -480,7 +481,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             booleanState = basicStateProperty.get().basicState;
         }
 
-        if (NHCOFF.equals(booleanState)) {
+        if (NHCOFF.equals(booleanState) || NHCFALSE.equals(booleanState)) {
             action.setBooleanState(false);
             logger.debug("setting action {} internally to OFF", action.getId());
         }
@@ -497,7 +498,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             }
         }
 
-        if (NHCON.equals(booleanState)) {
+        if (NHCON.equals(booleanState) || NHCTRUE.equals(booleanState)) {
             action.setBooleanState(true);
             logger.debug("setting action {} internally to ON", action.getId());
         }
