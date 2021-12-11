@@ -83,6 +83,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         logger.debug("Creating DBusBlueZ device with address '{}'", address);
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public synchronized void updateBlueZDevice(@Nullable BluetoothDevice blueZDevice) {
         if (this.device != null && this.device == blueZDevice) {
             return;

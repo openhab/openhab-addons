@@ -24,12 +24,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Sensor Id. Example 56923</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="DIGIMAX">Digimax, TLX7506</option>
 					<option value="DIGIMAX_SHORT">Digimax with short format (no set point)</option>

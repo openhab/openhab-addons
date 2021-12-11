@@ -262,7 +262,7 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
 
     protected void updateTask(PlugwiseDeviceTask task) {
         if (task.shouldBeScheduled()) {
-            if (!task.isScheduled() || task.getConfiguredInterval() != task.getInterval()) {
+            if (!task.isScheduled() || !task.getConfiguredInterval().equals(task.getInterval())) {
                 if (task.isScheduled()) {
                     task.stop();
                 }

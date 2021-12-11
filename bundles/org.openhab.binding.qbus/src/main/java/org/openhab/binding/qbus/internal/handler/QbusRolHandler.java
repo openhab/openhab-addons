@@ -218,7 +218,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
             } else if (command instanceof PercentType) {
                 PercentType p = (PercentType) command;
                 int pp = p.intValue();
-                if (p == PercentType.ZERO) {
+                if (PercentType.ZERO.equals(p)) {
                     qRol.execute(0, snr);
                 } else {
                     qRol.execute(pp, snr);
@@ -264,7 +264,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
                 }
             } else if (command instanceof PercentType) {
                 int percentToInt = ((PercentType) command).intValue();
-                if (command == PercentType.ZERO) {
+                if (PercentType.ZERO.equals(command)) {
                     qRol.executeSlats(0, snr);
                 } else {
                     qRol.executeSlats(percentToInt, snr);

@@ -109,7 +109,7 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
 
     @Override
     public void handleCommand(String channel, Command command) {
-        logger.debug("Received channel: {}, command: {}", channel, command);
+        logger.trace("Received channel: {}, command: {}", channel, command);
 
         if (!started) {
             return;

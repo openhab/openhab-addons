@@ -9,7 +9,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -27,7 +26,6 @@
 				"property": "angle_enable",
 				"friendlyName": "Rotation",
 				"channel": "angleEnable",
-				"channelType": "angleEnable",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -41,9 +39,11 @@
 				"property": "use_time",
 				"friendlyName": "Run Time",
 				"channel": "usedhours",
-				"channelType": "usedhours",
 				"type": "Number:Time",
 				"unit": "hours",
+				"stateDescription": {
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"transformation": "SecondsToHours",
 				"ChannelGroup": "Status",
@@ -54,8 +54,13 @@
 				"property": "angle",
 				"friendlyName": "Angle",
 				"channel": "angle",
-				"channelType": "angle",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 360,
+					"step": 1,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -69,8 +74,13 @@
 				"property": "poweroff_time",
 				"friendlyName": "Timer",
 				"channel": "poweroffTime",
-				"channelType": "poweroffTime",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 28800,
+					"step": 1,
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -84,7 +94,6 @@
 				"property": "buzzer",
 				"friendlyName": "Buzzer",
 				"channel": "buzzer",
-				"channelType": "buzzer",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -127,8 +136,13 @@
 				"property": "speed_level",
 				"friendlyName": "Speed Level",
 				"channel": "speedLevel",
-				"channelType": "speedLevel",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 99,
+					"step": 1,
+					"pattern": "%.0f%%"
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -142,8 +156,10 @@
 				"property": "speed",
 				"friendlyName": "Speed",
 				"channel": "speed",
-				"channelType": "speed",
 				"type": "Number",
+				"stateDescription": {
+					"pattern": "%.0f"
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -157,8 +173,13 @@
 				"property": "natural_level",
 				"friendlyName": "Natural Level",
 				"channel": "naturalLevel",
-				"channelType": "naturalLevel",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 99,
+					"step": 1,
+					"pattern": "%.0f%%"
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -172,8 +193,23 @@
 				"property": "",
 				"friendlyName": "Move Direction",
 				"channel": "move",
-				"channelType": "move",
 				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "",
+							"label": "None"
+						},
+						{
+							"value": "left",
+							"label": "Left"
+						},
+						{
+							"value": "right",
+							"label": "Right"
+						}
+					]
+				},
 				"refresh": true,
 				"ChannelGroup": "actions",
 				"actions": [
@@ -181,7 +217,8 @@
 						"command": "set_move",
 						"parameterType": "STRING"
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"\"\u003d\"None\",\"left\"\u003d\"Left\",\"right\"\u003d\"Right\"]`"
 			}
 		]
 	}

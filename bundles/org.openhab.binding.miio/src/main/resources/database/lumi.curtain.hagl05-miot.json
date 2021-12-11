@@ -12,7 +12,6 @@
 				"piid": 1,
 				"friendlyName": "Curtain - Device Fault",
 				"channel": "fault",
-				"channelType": "LumiCurtainHagl05_fault",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -28,13 +27,56 @@
 				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\"]`"
 			},
 			{
+				"property": "motor-control",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Curtain - Motor Control",
+				"channel": "motor_control",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Pause"
+						},
+						{
+							"value": "1",
+							"label": "Open"
+						},
+						{
+							"value": "2",
+							"label": "Close"
+						},
+						{
+							"value": "3",
+							"label": "auto"
+						}
+					]
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Pause\",\"1\"\u003d\"Open\",\"2\"\u003d\"Close\",\"3\"\u003d\"auto\"]`"
+			},
+			{
 				"property": "current-position",
 				"siid": 2,
 				"piid": 3,
 				"friendlyName": "Curtain - Current Position",
 				"channel": "current-position",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
 			},
@@ -44,7 +86,6 @@
 				"piid": 6,
 				"friendlyName": "Curtain - Status",
 				"channel": "status",
-				"channelType": "LumiCurtainHagl05_status",
 				"type": "Number",
 				"stateDescription": {
 					"readOnly": true,
@@ -77,8 +118,14 @@
 				"piid": 7,
 				"friendlyName": "Curtain - Target Position",
 				"channel": "target-position",
-				"channelType": "miot_uint8",
-				"type": "Number",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -93,7 +140,6 @@
 				"piid": 1,
 				"friendlyName": "curtain_cfg - Manual Enabled",
 				"channel": "manual-enabled",
-				"channelType": "LumiCurtainHagl05_manual-enabled",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -120,9 +166,8 @@
 				"property": "polarity",
 				"siid": 4,
 				"piid": 2,
-				"friendlyName": "curtain_cfg - Polarity",
+				"friendlyName": "Curtain_cfg - Polarity",
 				"channel": "polarity",
-				"channelType": "LumiCurtainHagl05_polarity",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -151,7 +196,6 @@
 				"piid": 3,
 				"friendlyName": "curtain_cfg - Position Limit",
 				"channel": "pos-limit",
-				"channelType": "LumiCurtainHagl05_pos-limit",
 				"type": "Number",
 				"stateDescription": {
 					"options": [
@@ -178,10 +222,9 @@
 				"property": "en-night-tip-light",
 				"siid": 4,
 				"piid": 4,
-				"friendlyName": "Set Night Tip Light",
-				"channel": "en-night-tip-light",
-				"channelType": "LumiCurtainHagl05_en-night-tip-light",
-				"type": "Switch",
+				"friendlyName": "Curtain_cfg - En_night_tip_light",
+				"channel": "en_night_tip_light",
+				"type": "Number",
 				"stateDescription": {
 					"options": [
 						{
@@ -207,12 +250,39 @@
 				"property": "run-time",
 				"siid": 4,
 				"piid": 5,
-				"friendlyName": "curtain_cfg - Run-time",
+				"friendlyName": "Curtain_cfg - Run-time",
 				"channel": "run-time",
-				"channelType": "miot_int32",
 				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 255,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
 				"refresh": true,
 				"actions": []
+			},
+			{
+				"property": "adjust-value",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Motor_controller - Adjust_value",
+				"channel": "adjust_value",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": -100,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": false,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
 			}
 		],
 		"experimental": true

@@ -1,7 +1,8 @@
-# Xiaomi Mi IO Binding
+# Xiaomi Wifi devices (Mi IO) Binding
 
 This binding is used to control Xiaomi products implementing the Mi IO protocol. 
-This is a set of wifi devices from Xiaomi that are part of the Mi Ecosystem which is branded as MiJia.
+This protocol is used for most of Xiaomi Mi Ecosystem wifi devices which is branded as MiJia.
+If your Xiaomi wifi device is controlled by the mihome app, most likely it communicates using the Mi IO protocol and can communicate with openHAB using this binding.
 
 ![MIIO logo](doc/miio.png)
 
@@ -12,9 +13,9 @@ The following things types are available:
 | ThingType        | Description                                                                                                              |
 |------------------|--------------------------------------------------------------------------------------------------------------------------|
 | miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
-| miio:vacuum      | For Xiaomi Robot Vacuum products                                                                                         |
-| miio:basic       | For several basic devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
-| miio:unsupported | For experimenting with other devices which use the Mi IO protocol                                                        |
+| miio:vacuum      | For Xiaomi/RoboRock Robot Vacuum products                                                                                         |
+| miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
+| miio:unsupported | For experimenting with other devices which use the Mi IO protocol or to build experimental support                                                       |
 
 # Discovery
 

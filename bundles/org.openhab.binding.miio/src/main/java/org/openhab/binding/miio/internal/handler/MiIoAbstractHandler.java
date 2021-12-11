@@ -50,6 +50,8 @@ import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -60,6 +62,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +85,9 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected static final int MAX_QUEUE = 5;
     protected static final Gson GSON = new GsonBuilder().create();
     protected static final String TIMESTAMP = "timestamp";
+    protected final Bundle bundle;
+    protected final TranslationProvider i18nProvider;
+    protected final LocaleProvider localeProvider;
 
     protected ScheduledExecutorService miIoScheduler = new ScheduledThreadPoolExecutor(3,
             new NamedThreadFactory("binding-" + getThing().getUID().getAsString(), true));
@@ -114,10 +121,13 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected MiIoDatabaseWatchService miIoDatabaseWatchService;
 
     public MiIoAbstractHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            CloudConnector cloudConnector) {
+            CloudConnector cloudConnector, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         super(thing);
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.cloudConnector = cloudConnector;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
+        this.bundle = FrameworkUtil.getBundle(this.getClass());
     }
 
     @Override
@@ -150,12 +160,12 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
         if (configuration.host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "IP address required. Configure IP address");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-ip");
             return;
         }
         if (!tokenCheckPass(configuration.token)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Token required. Configure token");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-token");
             return;
         }
         this.cloudServer = configuration.cloudServer;
@@ -395,7 +405,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         }
         if (deviceId.isBlank() && !getCloudServer().isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cloud communication requires defined deviceId in the config");
+                    "@text/offline.config-error-cloud");
             return null;
         }
         if (deviceId.length() == 8 && deviceId.matches("^.*[a-zA-Z]+.*$")) {
@@ -590,7 +600,8 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             String label = getThing().getLabel();
             if (label == null || label.startsWith("Xiaomi Mi Device")) {
                 ThingBuilder thingBuilder = editThing();
-                thingBuilder.withLabel(miDevice.getDescription());
+                label = getLocalText(I18N_THING_PREFIX + modelId, miDevice.getDescription());
+                thingBuilder.withLabel(label);
                 updateThing(thingBuilder.build());
             }
             logger.info("Mi Device model {} identified as: {}. Does not match thingtype {}. Changing thingtype to {}",
@@ -642,6 +653,15 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
             }
         } catch (Exception e) {
             logger.debug("Error while handing message {}", response.getResponse(), e);
+        }
+    }
+
+    protected String getLocalText(String key, String defaultText) {
+        try {
+            String text = i18nProvider.getText(bundle, key, defaultText, localeProvider.getLocale());
+            return text != null ? text : defaultText;
+        } catch (IllegalArgumentException e) {
+            return defaultText;
         }
     }
 }

@@ -13,9 +13,10 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.PROTOCOL_PROPERTY_NAME;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_TUMBLE_DRYER;
 
-import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -39,8 +40,8 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
 
     private final Logger logger = LoggerFactory.getLogger(TumbleDryerHandler.class);
 
-    public TumbleDryerHandler(Thing thing) {
-        super(thing, TumbleDryerChannelSelector.class, "TumbleDryer");
+    public TumbleDryerHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+        super(thing, i18nProvider, localeProvider, TumbleDryerChannelSelector.class, MIELE_DEVICE_CLASS_TUMBLE_DRYER);
     }
 
     @Override
@@ -49,8 +50,6 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
 
         String channelID = channelUID.getId();
         String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
-        String protocol = getThing().getProperties().get(PROTOCOL_PROPERTY_NAME);
-        var applianceIdentifier = new FullyQualifiedApplianceIdentifier(applianceId, protocol);
 
         TumbleDryerChannelSelector selector = (TumbleDryerChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -60,9 +59,9 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "start");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "start");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(applianceIdentifier, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stop");
                         }
                         break;
                     }
@@ -75,7 +74,7 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
                 }
             }
             // process result
-            if (isResultProcessable(result)) {
+            if (result != null && isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {

@@ -7,6 +7,11 @@ This binding controls a [TiVo](https://www.tivo.com/) Digital Video Recorder (DV
 ## Supported Things
 
 Most TiVo DVRs that support network remote control can be managed/supported by this binding.
+Please note that beyond sending a full set of control commands, the network control protocol is very limited.
+The only feedback provided is the currently tuned channel number and whether or not the channel is recording.
+
+It is possible to control a TiVo at a deeper level through an authenticated API. See the kmttg project for more details.
+There are no current plans to add any of the authenticated API features to this binding.
 
 All TiVo devices must:
 
@@ -121,8 +126,9 @@ VIDEO_MODE_NATIVE
 
 **tivo.things**
 
-```java
+```
 tivo:sckt:Living_Room "Living Room TiVo" [ host="192.168.0.19" ]
+
 ```
 
 **tivo.items:**
@@ -155,8 +161,8 @@ sitemap tivo label="Tivo Central" {
         Switch      item=TiVo_IRCmd           label="Channel"      icon="screen"   mappings=["CHANNELDOWN"="CH -","CHANNELUP"="CH +"]
         Switch      item=TiVo_IRCmd           label="Media"        icon="screen"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="▶", /*(DVD TiVo only!) "STOP"="⏹",*/ "FORWARD"="⏩", "RECORD"="⏺" ]
         Switch      item=TiVo_MenuScreen      label="Menus"        icon="screen"   mappings=["TIVO"="Home", "LIVETV"="Live Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "NETFLIX"="Netflix", SEARCH="Search" ]
-        Switch      item=TiVo_SetChannel      label="Fav TV"       icon="screen"   mappings=[2.1="CBS", 4.1="NBC", 7.1="ABC", 11.1="FOX", 5.2="AntennaTV"]            
-        Switch      item=TiVo_IRCmd           label="Navigation"   icon="screen"   mappings=["UP"="˄", "DOWN"="˅", "LEFT"="<", "RIGHT"=">", "SELECT"="Select", "EXIT"="Exit" ]                
+        Switch      item=TiVo_SetChannel      label="Fav TV"       icon="screen"   mappings=[2.1="CBS", 4.1="NBC", 7.1="ABC", 11.1="FOX", 5.2="AntennaTV"]
+        Switch      item=TiVo_IRCmd           label="Navigation"   icon="screen"   mappings=["UP"="˄", "DOWN"="˅", "LEFT"="<", "RIGHT"=">", "SELECT"="Select", "EXIT"="Exit" ]
         Switch      item=TiVo_IRCmd           label="Actions"      icon="screen"   mappings=["ACTION_A"="Red","ACTION_B"="Green","ACTION_C"="Yellow","ACTION_D"="Blue"]
         Switch      item=TiVo_IRCmd           label="Likes"        icon="screen"   mappings=["THUMBSUP"="Thumbs Up", "THUMBSDOWN"="Thumbs Down"]
         Switch      item=TiVo_IRCmd           label="Remote"       icon="screen"   mappings=["FIND_REMOTE"="Find Remote"]
@@ -213,11 +219,11 @@ when
     Item TiVo_KeyboardStr received update
 then
     if (TiVo_KeyboardStr.state != NULL && TiVo_KeyboardStr.state.toString.length > 0) {
-        
+
         // Command to get us to the TiVo search menu
         sendCommand(TiVo_MenuScreen, "SEARCH")
         Thread::sleep(1000)
-        
+
         var i = 0
         var char txt = ""
         var srch = TiVo_KeyboardStr.state.toString.toUpperCase
