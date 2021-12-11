@@ -68,7 +68,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
         if (startIndex > 0) {
             endIndex = content.lastIndexOf("}");
             if (endIndex > 0) {
-                String data = content.substring(startIndex, endIndex);
+                String data = content.substring(startIndex + 6, endIndex + 1);
                 ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(data));
             }
         }

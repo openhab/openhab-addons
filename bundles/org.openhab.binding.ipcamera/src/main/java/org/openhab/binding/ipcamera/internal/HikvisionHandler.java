@@ -121,7 +121,11 @@ public class HikvisionHandler extends ChannelDuplexHandler {
             String content = msg.toString();
             logger.trace("HTTP Result back from camera is \t:{}:", content);
             if (content.startsWith("--boundary")) {// Alarm checking goes in here//
-                processEvent(content);
+                int startIndex = content.indexOf("<");// skip to start of XML content
+                if (startIndex != -1) {
+                    String eventData = content.substring(startIndex, content.length());
+                    processEvent(eventData);
+                }
             } else {
                 String replyElement = Helper.fetchXML(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<");
                 switch (replyElement) {
