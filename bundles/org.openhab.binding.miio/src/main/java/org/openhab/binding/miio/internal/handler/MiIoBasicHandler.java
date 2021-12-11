@@ -49,6 +49,8 @@ import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -106,8 +108,9 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
 
     public MiIoBasicHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry,
-            BasicChannelTypeProvider basicChannelTypeProvider) {
-        super(thing, miIoDatabaseWatchService, cloudConnector);
+            BasicChannelTypeProvider basicChannelTypeProvider, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
+        super(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider, localeProvider);
         this.channelTypeRegistry = channelTypeRegistry;
         this.basicChannelTypeProvider = basicChannelTypeProvider;
     }
@@ -173,6 +176,30 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         } else {
                             logger.debug("Could not convert QuantityType to '{}'", miIoBasicChannel.getUnit());
                             command = new DecimalType(((QuantityType<?>) command).toBigDecimal());
+                        }
+                    }
+                    if (paramType == CommandParameterType.OPENCLOSE) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? "open" : "close");
+                        } else {
+                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                    || "1".contentEquals(command.toString())) ? "open" : "close");
+                        }
+                    }
+                    if (paramType == CommandParameterType.OPENCLOSENUMBER) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? 1 : 0);
+                        } else {
+                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                    || "1".contentEquals(command.toString())) ? 1 : 0);
+                        }
+                    }
+                    if (paramType == CommandParameterType.OPENCLOSESWITCH) {
+                        if (command instanceof OpenClosedType) {
+                            value = new JsonPrimitive(command == OpenClosedType.OPEN ? "on" : "off");
+                        } else {
+                            value = new JsonPrimitive(("ON".contentEquals(command.toString().toUpperCase())
+                                    || "1".contentEquals(command.toString())) ? "on" : "off");
                         }
                     }
                     if (paramType == CommandParameterType.COLOR) {
@@ -428,6 +455,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         try {
             JsonObject deviceMapping = Utils.convertFileToJSON(fn);
             logger.debug("Using device database: {} for device {}", fn.getFile(), deviceName);
+            String key = fn.getFile().replaceFirst("/database/", "").split("json")[0];
             Gson gson = new GsonBuilder().serializeNulls().create();
             miioDevice = gson.fromJson(deviceMapping, MiIoBasicDevice.class);
             for (Channel ch : getThing().getChannels()) {
@@ -451,7 +479,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     logger.debug("properties {}", miChannel);
                     if (!miChannel.getType().isEmpty()) {
                         basicChannelTypeProvider.addChannelType(miChannel, deviceName);
-                        ChannelUID channelUID = addChannel(thingBuilder, miChannel, deviceName);
+                        ChannelUID channelUID = addChannel(thingBuilder, miChannel, deviceName, key);
                         if (channelUID != null) {
                             actions.put(channelUID, miChannel);
                             channelsAdded++;
@@ -481,7 +509,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         return false;
     }
 
-    private @Nullable ChannelUID addChannel(ThingBuilder thingBuilder, MiIoBasicChannel miChannel, String model) {
+    private @Nullable ChannelUID addChannel(ThingBuilder thingBuilder, MiIoBasicChannel miChannel, String model,
+            String key) {
         String channel = miChannel.getChannel();
         String dataType = miChannel.getType();
         if (channel.isEmpty() || dataType.isEmpty()) {
@@ -490,7 +519,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             return null;
         }
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channel);
-        ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(miChannel.getFriendlyName());
+        String label = getLocalText(I18N_CHANNEL_PREFIX + key + channel, miChannel.getFriendlyName());
+        ChannelBuilder newChannel = ChannelBuilder.create(channelUID, dataType).withLabel(label);
         boolean useGeneratedChannelType = false;
         if (!miChannel.getChannelType().isBlank()) {
             ChannelTypeUID channelTypeUID = new ChannelTypeUID(miChannel.getChannelType());
@@ -630,8 +660,8 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     } else {
                         String strVal = val.getAsString().toLowerCase();
                         updateState(basicChannel.getChannel(),
-                                "on".equals(strVal) || "true".equals(strVal) || "1".equals(strVal) ? OpenClosedType.OPEN
-                                        : OpenClosedType.CLOSED);
+                                "open".equals(strVal) || "on".equals(strVal) || "true".equals(strVal)
+                                        || "1".equals(strVal) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                     }
                     break;
                 case "color":
@@ -706,6 +736,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
             switch (response.getCommand()) {
                 case MIIO_INFO:
                     break;
+                case GET_DEVICE_PROPERTY_EXP:
                 case GET_VALUE:
                 case GET_PROPERTIES:
                 case GET_PROPERTY:

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="sncf"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="station">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Station</label>
+
+		<channel-groups>
+			<channel-group id="arrivals" typeId="passage">
+				<label>Next Arrival</label>
+			</channel-group>
+			<channel-group id="departures" typeId="passage">
+				<label>Next Departure</label>
+			</channel-group>
+		</channel-groups>
+
+		<representation-property>stopPointId</representation-property>
+
+		<config-description>
+			<parameter name="stopPointId" type="text" required="true">
+				<label>Station ID</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="passage">
+		<label>Other</label>
+		<channels>
+			<channel id="direction" typeId="direction"/>
+			<channel id="lineName" typeId="lineName"/>
+			<channel id="name" typeId="name"/>
+			<channel id="network" typeId="network"/>
+			<channel id="timestamp" typeId="timestamp"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="direction">
+		<item-type>String</item-type>
+		<label>Direction</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="lineName">
+		<item-type>String</item-type>
+		<label>Line</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="name" advanced="true">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="network" advanced="true">
+		<item-type>String</item-type>
+		<label>Network</label>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+</thing:thing-descriptions>

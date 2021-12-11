@@ -48,6 +48,9 @@ public class MiIoBasicChannel {
     @SerializedName("channel")
     @Expose
     private @Nullable String channel;
+    @SerializedName("description")
+    @Expose
+    private @Nullable String description;
     @SerializedName("channelType")
     @Expose
     private @Nullable String channelType;
@@ -140,6 +143,15 @@ public class MiIoBasicChannel {
 
     public void setChannel(@Nullable String channel) {
         this.channel = channel;
+    }
+
+    public String getDescription() {
+        final String description = this.description;
+        return description != null ? description : "";
+    }
+
+    public void setDescription(@Nullable String description) {
+        this.description = description;
     }
 
     public String getChannelType() {
