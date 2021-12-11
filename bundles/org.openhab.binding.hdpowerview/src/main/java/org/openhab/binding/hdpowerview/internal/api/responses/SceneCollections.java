@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * State of all Scenes in an HD PowerView hub
+ * State of all Scene Collections in an HD PowerView hub
  *
  * @author Jacob Laursen - Initial contribution
  */
@@ -38,12 +38,44 @@ public class SceneCollections {
      */
     @SuppressWarnings("null")
     @NonNullByDefault
-    public static class SceneCollection {
+    public static class SceneCollection implements Comparable<SceneCollection> {
         public int id;
         public @Nullable String name;
         public int order;
         public int colorId;
         public int iconId;
+
+        @Override
+        public boolean equals(@Nullable Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof SceneCollection)) {
+                return false;
+            }
+            SceneCollection other = (SceneCollection) o;
+
+            return this.id == other.id && this.name.equals(other.name) && this.order == other.order
+                    && this.colorId == other.colorId && this.iconId == other.iconId;
+        }
+
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + id;
+            result = prime * result + (name == null ? 0 : name.hashCode());
+            result = prime * result + order;
+            result = prime * result + colorId;
+            result = prime * result + iconId;
+
+            return result;
+        }
+
+        @Override
+        public int compareTo(SceneCollection other) {
+            return Integer.compare(order, other.order);
+        }
 
         public String getName() {
             return new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8);
