@@ -38,11 +38,11 @@ public class MQTTProtocol {
         public String userPmapvId;
         public List<Region> regions;
 
-        public CleanRoomsRequest(String cmd, String mapId, String[] pregions, String[] types, String user_mapv_id) {
+        public CleanRoomsRequest(String cmd, String mapId, String[] pregions, String[] types, String userPmapvId) {
             super(cmd);
             ordered = 1;
             pmapId = mapId;
-            userPmapvId = user_mapv_id;
+            this.userPmapvId = userPmapvId;
 
             regions = new ArrayList<Region>();
             for (int i = 0; (i < pregions.length) && (i < types.length); i++) {

@@ -189,38 +189,38 @@ public class RoombaHandler extends BaseThingHandler {
                         String[] params = cmds[1].split(";");
 
                         String mapId = params[0];
-                        String user_mapv_id;
+                        String userPmapvId;
                         if (params.length >= 3) {
-                            user_mapv_id = params[2];
+                            userPmapvId = params[2];
                         } else {
-                            user_mapv_id = null;
+                            userPmapvId = null;
                         }
 
-                        String[] ArrayRegions = params[1].split(",");
-                        String regionIds[] = new String[ArrayRegions.length];
-                        String regionType[] = new String[ArrayRegions.length];
+                        String[] regions = params[1].split(",");
+                        String regionIds[] = new String[regions.length];
+                        String regionTypes[] = new String[regions.length];
 
-                        for (int i = 0; i < ArrayRegions.length; i++) {
-                            String[] ArrayRegionDetails = ArrayRegions[i].split("=");
+                        for (int i = 0; i < regions.length; i++) {
+                            String[] regionDetails = regions[i].split("=");
 
-                            if (ArrayRegionDetails.length >= 2) {
-                                if (ArrayRegionDetails[0].equals("r")) {
-                                    regionIds[i] = ArrayRegionDetails[1];
-                                    regionType[i] = "rid";
-                                } else if (ArrayRegionDetails[0].equals("z")) {
-                                    regionIds[i] = ArrayRegionDetails[1];
-                                    regionType[i] = "zid";
+                            if (regionDetails.length >= 2) {
+                                if (regionDetails[0].equals("r")) {
+                                    regionIds[i] = regionDetails[1];
+                                    regionTypes[i] = "rid";
+                                } else if (regionDetails[0].equals("z")) {
+                                    regionIds[i] = regionDetails[1];
+                                    regionTypes[i] = "zid";
                                 } else {
-                                    regionIds[i] = ArrayRegionDetails[0];
-                                    regionType[i] = "rid";
+                                    regionIds[i] = regionDetails[0];
+                                    regionTypes[i] = "rid";
                                 }
                             } else {
-                                regionIds[i] = ArrayRegionDetails[0];
-                                regionType[i] = "rid";
+                                regionIds[i] = regionDetails[0];
+                                regionTypes[i] = "rid";
                             }
                         }
                         MQTTProtocol.Request request = new MQTTProtocol.CleanRoomsRequest("start", mapId, regionIds,
-                                regionType, user_mapv_id);
+                                regionTypes, userPmapvId);
                         connection.send(request.getTopic(), gson.toJson(request));
                     } else {
                         logger.warn("Invalid request: {}", cmd);
