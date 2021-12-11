@@ -196,7 +196,11 @@
     <module>org.openhab.binding.dlinksmarthome</module>
         
     <module>org.openhab.binding.dmx</module>
+<<<<<<< HEAD
         
+=======
+    <module>org.openhab.binding.dominoswiss</module>
+>>>>>>> 15b83cc40f ([dominoswiss] Initial contribution (#11585))
     <module>org.openhab.binding.doorbird</module>
         
     <module>org.openhab.binding.draytonwiser</module>
