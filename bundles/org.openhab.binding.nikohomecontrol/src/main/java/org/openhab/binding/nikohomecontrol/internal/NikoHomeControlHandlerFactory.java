@@ -21,6 +21,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridg
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlEnergyMeterHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -43,6 +44,7 @@ import org.osgi.service.component.annotations.Reference;
 public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     private @NonNullByDefault({}) NetworkAddressService networkAddressService;
+    private @NonNullByDefault({}) TimeZoneProvider timeZoneProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -53,9 +55,9 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (BRIDGE_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             if (BRIDGEII_THING_TYPE.equals(thing.getThingTypeUID())) {
-                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService);
+                return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider);
             } else {
-                return new NikoHomeControlBridgeHandler1((Bridge) thing);
+                return new NikoHomeControlBridgeHandler1((Bridge) thing, timeZoneProvider);
             }
         } else if (THING_TYPE_THERMOSTAT.equals(thing.getThingTypeUID())) {
             return new NikoHomeControlThermostatHandler(thing);
@@ -75,5 +77,14 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
         this.networkAddressService = null;
+    }
+
+    @Reference
+    protected void setTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
+    }
+
+    protected void unsetTimeZoneProvider(TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = null;
     }
 }

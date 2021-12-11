@@ -15,11 +15,13 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.THREAD_NAME_PREFIX;
 
 import java.net.InetAddress;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -37,8 +39,8 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlBridgeHandler1.class);
 
-    public NikoHomeControlBridgeHandler1(Bridge nikoHomeControlBridge) {
-        super(nikoHomeControlBridge);
+    public NikoHomeControlBridgeHandler1(Bridge nikoHomeControlBridge, TimeZoneProvider timeZoneProvider) {
+        super(nikoHomeControlBridge, timeZoneProvider);
     }
 
     @Override
@@ -47,6 +49,7 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
 
         InetAddress addr = getAddr();
         int port = getPort();
+        ZoneId timeZoneId = timeZoneProvider.getTimeZone();
 
         logger.debug("bridge handler host {}, port {}", addr, port);
 

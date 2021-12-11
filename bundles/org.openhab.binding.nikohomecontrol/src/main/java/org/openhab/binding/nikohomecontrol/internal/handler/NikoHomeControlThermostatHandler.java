@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.handler;
 
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
+import static org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlConstants.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
@@ -31,6 +32,7 @@ import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlComm
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcThermostat2;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -87,6 +89,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void handleCommandSelection(ChannelUID channelUID, Command command) {
         NhcThermostat nhcThermostat = this.nhcThermostat;
         if (nhcThermostat == null) {
@@ -105,16 +108,21 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         switch (channelUID.getId()) {
             case CHANNEL_MEASURED:
             case CHANNEL_DEMAND:
+            case CHANNEL_HEATING_DEMAND:
                 updateStatus(ThingStatus.ONLINE);
                 break;
-
             case CHANNEL_MODE:
                 if (command instanceof DecimalType) {
                     nhcThermostat.executeMode(((DecimalType) command).intValue());
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
-
+            case CHANNEL_HEATING_MODE:
+                if (command instanceof StringType) {
+                    nhcThermostat.executeMode(command.toString());
+                }
+                updateStatus(ThingStatus.ONLINE);
+                break;
             case CHANNEL_SETPOINT:
                 QuantityType<Temperature> setpoint = null;
                 if (command instanceof QuantityType) {
@@ -131,7 +139,6 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                 }
                 updateStatus(ThingStatus.ONLINE);
                 break;
-
             case CHANNEL_OVERRULETIME:
                 if (command instanceof DecimalType) {
                     int overruletime = ((DecimalType) command).intValue();
@@ -255,7 +262,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
             return;
         }
 
-        updateState(CHANNEL_MEASURED, new QuantityType<>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
+        updateState(CHANNEL_MEASURED, new QuantityType<>(measured / 10.0, CELSIUS));
 
         int overruletime = nhcThermostat.getRemainingOverruletime();
         updateState(CHANNEL_OVERRULETIME, new DecimalType(overruletime));
@@ -271,8 +278,10 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         }
 
         updateState(CHANNEL_MODE, new DecimalType(mode));
+        updateState(CHANNEL_HEATING_MODE, new StringType(THERMOSTATMODES[mode]));
 
         updateState(CHANNEL_DEMAND, new DecimalType(demand));
+        updateState(CHANNEL_HEATING_DEMAND, new StringType(THERMOSTATDEMAND[Math.abs(demand) <= 1 ? (demand + 1) : 0]));
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -286,14 +295,14 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     private void scheduleRefreshOverruletime(NhcThermostat nhcThermostat) {
         cancelRefreshTimer();
 
-        if (nhcThermostat.getRemainingOverruletime() <= 0) {
+        if (nhcThermostat.getRemainingOverruletime() == 0) {
             return;
         }
 
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
             int remainingTime = nhcThermostat.getRemainingOverruletime();
             updateState(CHANNEL_OVERRULETIME, new DecimalType(remainingTime));
-            if (remainingTime <= 0) {
+            if (remainingTime == 0) {
                 cancelRefreshTimer();
             }
         }, 1, 1, TimeUnit.MINUTES);
