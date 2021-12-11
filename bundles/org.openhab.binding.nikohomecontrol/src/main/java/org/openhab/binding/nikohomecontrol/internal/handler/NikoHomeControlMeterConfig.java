@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,13 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link NikoHomeControlEnergyMeterConfig} is the config class for Niko Home Control Thermostats.
+ * {@link NikoHomeControlMeterConfig} is the config class for Niko Home Control Thermostats.
  *
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlEnergyMeterConfig {
-    public String energyMeterId = "";
+public class NikoHomeControlMeterConfig {
+    public String meterId = "";
+    public int refresh = 10;
+    public boolean invert = false;
 }

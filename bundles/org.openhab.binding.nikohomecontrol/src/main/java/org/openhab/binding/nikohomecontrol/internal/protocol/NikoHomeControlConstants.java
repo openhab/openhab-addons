@@ -31,6 +31,23 @@ public class NikoHomeControlConstants {
         GENERIC
     }
 
+    // Access control types abstracted from NhcI and NhcII access control types
+    public static enum AccessType {
+        BASE,
+        RINGANDCOMEIN,
+        BELLBUTTON,
+        GENERIC
+    }
+
+    // Meter types abstracted from NhcI and NhcII meter types
+    public static enum MeterType {
+        ENERGY_LIVE,
+        ENERGY,
+        GAS,
+        WATER,
+        GENERIC
+    }
+
     // switch and dimmer constants in the Nhc layer
     public static final String NHCON = "On";
     public static final String NHCOFF = "Off";
@@ -44,6 +61,13 @@ public class NikoHomeControlConstants {
     public static final String NHCDOWN = "Down";
     public static final String NHCUP = "Up";
     public static final String NHCSTOP = "Stop";
+
+    // doorlock, bell and video constants in the Nhc layer
+    public static final String NHCOPEN = "Open";
+    public static final String NHCCLOSED = "Closed";
+    public static final String NHCIDLE = "Idle";
+    public static final String NHCRINGING = "Ringing";
+    public static final String NHCACTIVE = "Active";
 
     // NhcII thermostat modes
     public static final String[] THERMOSTATMODES = { "Day", "Night", "Eco", "Off", "Cool", "Prog1", "Prog2", "Prog3" };
