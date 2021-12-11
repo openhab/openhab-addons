@@ -16,6 +16,19 @@
           "loop": true
         }
       ]
+    },
+    {
+      "owner": "openhab-compile-warnings",
+      "severity": "warning",
+      "pattern": [
+        {
+          "regexp": "^\\[WARNING\\] (.+\\.java):\\[(.+),(.+)\\] (.*)$",
+          "file": 1,
+          "line": 2,
+          "col": 3,
+          "message": 4
+        }
+      ]
     }
   ]
 }
