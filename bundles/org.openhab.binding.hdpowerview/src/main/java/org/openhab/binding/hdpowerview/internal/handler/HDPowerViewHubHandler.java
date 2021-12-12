@@ -131,8 +131,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             int id = Integer.parseInt(channelUID.getIdWithoutGroup());
             if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
                 webTargets.activateScene(id);
+                pollShades();
             } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
                 webTargets.activateSceneCollection(id);
+                pollShades();
             } else if (automationChannelTypeUID.equals(channel.getChannelTypeUID())) {
                 webTargets.enableScheduledEvent(id, OnOffType.ON.equals(command));
             }
