@@ -41,7 +41,6 @@ public class JSDependencyTracker extends DependencyTracker {
 
     @Activate
     public void activate() {
-
         File directory = new File(LIB_PATH);
         if (!directory.exists()) {
             if (!directory.mkdirs()) {
