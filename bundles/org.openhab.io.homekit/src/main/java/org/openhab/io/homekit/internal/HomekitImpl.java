@@ -94,7 +94,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         this.changeListener = new HomekitChangeListener(itemRegistry, settings, metadataRegistry, storageService);
         try {
             authInfo = new HomekitAuthInfoImpl(storageService.getStorage(HomekitAuthInfoImpl.STORAGE_KEY), settings.pin,
-                    settings.setupId);
+                    settings.setupId, settings.blockUserDeletion);
             startHomekitServer();
         } catch (IOException | InvalidAlgorithmParameterException e) {
             logger.warn("cannot activate HomeKit binding. {}", e.getMessage());

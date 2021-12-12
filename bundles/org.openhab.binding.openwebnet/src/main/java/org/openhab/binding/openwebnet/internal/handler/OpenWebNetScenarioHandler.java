@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.binding.openwebnet.internal.actions.OpenWebNetCENActions;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -36,6 +37,7 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.CEN;
 import org.openwebnet4j.message.CEN.Pressure;
@@ -51,8 +53,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link OpenWebNetScenarioHandler} is responsible for handling commands/messages for CEN/CEN+ Scenarios. It
- * extends the abstract {@link OpenWebNetThingHandler}.
+ * The {@link OpenWebNetScenarioHandler} is responsible for handling CEN/CEN+ Scenarios messages and Dry Contact / IR
+ * Interfaces messages.
+ * It extends the abstract {@link OpenWebNetThingHandler}.
  *
  * @author Massimo Valla - Initial contribution
  */
@@ -112,13 +115,21 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
         }
     }
 
+    private boolean isDryContactIR = false;
     private boolean isCENPlus = false;
+    private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
+    // for this handler
+    protected static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 10000; // interval in msec before sending another all
+    // devices refresh request
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.SCENARIO_SUPPORTED_THING_TYPES;
 
     public OpenWebNetScenarioHandler(Thing thing) {
         super(thing);
-        if (OpenWebNetBindingConstants.THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL.equals(thing.getThingTypeUID())) {
+        if (OpenWebNetBindingConstants.THING_TYPE_BUS_DRY_CONTACT_IR.equals(thing.getThingTypeUID())) {
+            isDryContactIR = true;
+            logger.debug("created DryContact/IR device for thing: {}", getThing().getUID());
+        } else if (OpenWebNetBindingConstants.THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL.equals(thing.getThingTypeUID())) {
             isCENPlus = true;
             logger.debug("created CEN+ device for thing: {}", getThing().getUID());
         } else {
@@ -156,7 +167,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     @Override
     protected String ownIdPrefix() {
-        if (isCENPlus) {
+        if (isCENPlus || isDryContactIR) {
             return Who.CEN_PLUS_SCENARIO_SCHEDULER.value().toString();
         } else {
             return Who.CEN_SCENARIO_SCHEDULER.value().toString();
@@ -167,13 +178,33 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     protected void handleMessage(BaseOpenMessage msg) {
         super.handleMessage(msg);
         if (msg.isCommand()) {
-            triggerChannel((CEN) msg);
+            if (isDryContactIR) {
+                updateDryContactIRState((CENPlusScenario) msg);
+            } else {
+                triggerButtonChannel((CEN) msg);
+            }
         } else {
             logger.debug("handleMessage() Ignoring unsupported DIM for thing {}. Frame={}", getThing().getUID(), msg);
         }
     }
 
-    private void triggerChannel(CEN cenMsg) {
+    private void updateDryContactIRState(CENPlusScenario msg) {
+        logger.debug("updateDryContactIRState() for thing: {}", thing.getUID());
+        try {
+            if (msg.isOn()) {
+                updateState(CHANNEL_DRY_CONTACT_IR, OnOffType.ON);
+            } else if (msg.isOff()) {
+                updateState(CHANNEL_DRY_CONTACT_IR, OnOffType.OFF);
+            } else {
+                logger.debug("updateDryContactIRState() Ignoring unsupported WHAT for thing {}. Frame={}",
+                        getThing().getUID(), msg);
+            }
+        } catch (FrameException fe) {
+            logger.warn("updateDryContactIRState() Ignoring invalid frame {}", msg);
+        }
+    }
+
+    private void triggerButtonChannel(CEN cenMsg) {
         Integer buttonNumber;
         try {
             buttonNumber = cenMsg.getButtonNumber();
@@ -244,7 +275,6 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                     return;
             }
         }
-
         triggerChannel(channel.getUID(), pressEv.toString());
     }
 
@@ -326,21 +356,59 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void handleChannelCommand(ChannelUID channel, Command command) {
-        logger.warn("CEN/CEN+ channels are trigger channels and do not handle commands");
+        logger.warn("CEN/CEN+ and DryContact/IR have read-only channels. Ignoring command {} for channel {}", command,
+                channel);
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-        logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
+        if (isDryContactIR) {
+            if (refreshAll) {
+                long now = System.currentTimeMillis();
+                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
+                    try {
+                        send(CENPlusScenario.requestStatus("30"));
+                        lastAllDevicesRefreshTS = now;
+                    } catch (OWNException e) {
+                        logger.warn("Excpetion while requesting all DryContact/IR devices refresh: {}", e.getMessage());
+                    }
+                } else {
+                    logger.debug("Refresh all devices just sent...");
+                }
+            } else {
+                requestState();
+            }
+        } else {
+            logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
+        }
+    }
+
+    @Override
+    protected void requestChannelState(ChannelUID channel) {
+        if (isDryContactIR) {
+            requestState();
+        } else {
+            logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
+        }
+    }
+
+    /* helper method to request DryContact/IR device state */
+    private void requestState() {
+        Where w = deviceWhere;
+        if (w != null) {
+            try {
+                send(CENPlusScenario.requestStatus(w.value()));
+            } catch (OWNException e) {
+                logger.warn("requestState() Exception while requesting device state: {} for thing {}", e.getMessage(),
+                        thing.getUID());
+            }
+        } else {
+            logger.warn("Could not requestState(): deviceWhere is null");
+        }
     }
 
     @Override
     protected Where buildBusWhere(String wStr) throws IllegalArgumentException {
         return new WhereCEN(wStr);
-    }
-
-    @Override
-    protected void requestChannelState(ChannelUID channel) {
-        logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
     }
 }
