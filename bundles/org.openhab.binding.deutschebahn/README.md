@@ -59,6 +59,9 @@ If an channel has multiple values, like the channels `arrival#planned-path` and 
 only one of the values must match the given expression. So you can specify an filter like `departure#planned-path="Hannover Hbf"`
 to easy display only trains that will go to Hannover Hbf.
 
+If the filtered value is not present for a train, for example if you filter a departure attribute but train ends at the selected station,
+the filter will not match.
+
 ### Configuring the trains
 
 Once you've created the timetable you can add train-things that represent the trains within this timetable.
