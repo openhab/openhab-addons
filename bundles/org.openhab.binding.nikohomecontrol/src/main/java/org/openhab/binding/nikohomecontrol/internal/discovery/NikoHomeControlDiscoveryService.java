@@ -123,7 +123,8 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
     private void addActionDevice(ThingUID uid, String actionId, String thingName, @Nullable String thingLocation) {
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(thingName).withProperty(CONFIG_ACTION_ID, actionId);
+                .withLabel(thingName).withProperty(CONFIG_ACTION_ID, actionId)
+                .withRepresentationProperty(CONFIG_ACTION_ID);
         if (thingLocation != null) {
             discoveryResultBuilder.withProperty("Location", thingLocation);
         }
@@ -133,7 +134,8 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
     private void addThermostatDevice(ThingUID uid, String thermostatId, String thingName,
             @Nullable String thingLocation) {
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(thingName).withProperty(CONFIG_THERMOSTAT_ID, thermostatId);
+                .withLabel(thingName).withProperty(CONFIG_THERMOSTAT_ID, thermostatId)
+                .withRepresentationProperty(CONFIG_THERMOSTAT_ID);
         if (thingLocation != null) {
             discoveryResultBuilder.withProperty("Location", thingLocation);
         }
@@ -142,7 +144,8 @@ public class NikoHomeControlDiscoveryService extends AbstractDiscoveryService {
 
     private void addEnergyMeterDevice(ThingUID uid, String energyMeterId, String thingName) {
         DiscoveryResultBuilder discoveryResultBuilder = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(thingName).withProperty(CONFIG_ENERGYMETER_ID, energyMeterId);
+                .withLabel(thingName).withProperty(CONFIG_ENERGYMETER_ID, energyMeterId)
+                .withRepresentationProperty(CONFIG_ENERGYMETER_ID);
         thingDiscovered(discoveryResultBuilder.build());
     }
 
