@@ -81,27 +81,36 @@ public final class FilterParser {
         }
 
         @Override
-        public State handle(OperatorToken operator) throws FilterParserException {
+        public State handle(OrOperator operator) throws FilterParserException {
             final TimetableStopPredicate currentResult = this.result;
             this.result = null;
-            switch (operator) {
-                case AND:
-                    if (currentResult == null) {
-                        throw new FilterParserException("Invalid filter.");
-                    }
-                    return new AndState(this, currentResult);
-                case OR:
-                    if (currentResult == null) {
-                        throw new FilterParserException("Invalid filter.");
-                    }
-                    return new OrState(this, currentResult);
-                case BRACKET_OPEN:
-                    return new SubQueryState(this);
-                case BRACKET_CLOSE:
-                    throw new FilterParserException("Invalid filter.");
-                default:
-                    throw new FilterParserException("Unknown operator: " + operator);
+            if (currentResult == null) {
+                throw new FilterParserException(
+                        "Invalid filter: first argument missing for '|' at " + operator.getPosition());
             }
+            return new OrState(this, currentResult);
+        }
+
+        @Override
+        public State handle(AndOperator operator) throws FilterParserException {
+            final TimetableStopPredicate currentResult = this.result;
+            this.result = null;
+            if (currentResult == null) {
+                throw new FilterParserException(
+                        "Invalid filter: first argument missing for '&' at " + operator.getPosition());
+            }
+            return new AndState(this, currentResult);
+        }
+
+        @Override
+        public State handle(BracketOpenToken token) throws FilterParserException {
+            this.result = null;
+            return new SubQueryState(this);
+        }
+
+        @Override
+        public State handle(BracketCloseToken token) throws FilterParserException {
+            throw new FilterParserException("Unexpected token " + token.toString() + " at " + token.getPosition());
         }
 
         @Override
@@ -110,7 +119,7 @@ public final class FilterParser {
                 this.result = predicate;
                 return this;
             } else {
-                throw new FilterParserException("Invalid filter.");
+                throw new FilterParserException("Invalid filter: Operator for multiple filters missing.");
             }
         }
 
@@ -120,7 +129,7 @@ public final class FilterParser {
             if (currentResult != null) {
                 return currentResult;
             }
-            throw new FilterParserException("Invalid filter");
+            throw new FilterParserException("Invalid filter.");
         }
     }
 
@@ -137,17 +146,26 @@ public final class FilterParser {
         }
 
         @Override
-        public State handle(OperatorToken operator) throws FilterParserException {
-            switch (operator) {
-                case AND:
-                case OR:
-                case BRACKET_CLOSE:
-                    throw new FilterParserException("Invalid second argument for '&' operator.");
-                case BRACKET_OPEN:
-                    return new SubQueryState(this);
-                default:
-                    throw new FilterParserException("Unknown operator: " + operator);
-            }
+        public State handle(OrOperator operator) throws FilterParserException {
+            throw new FilterParserException("Invalid second argument for '&' operator " + operator.toString() + " at "
+                    + operator.getPosition());
+        }
+
+        @Override
+        public State handle(AndOperator operator) throws FilterParserException {
+            throw new FilterParserException("Invalid second argument for '&' operator " + operator.toString() + " at "
+                    + operator.getPosition());
+        }
+
+        @Override
+        public State handle(BracketOpenToken token) throws FilterParserException {
+            return new SubQueryState(this);
+        }
+
+        @Override
+        public State handle(BracketCloseToken token) throws FilterParserException {
+            throw new FilterParserException(
+                    "Invalid second argument for '&' operator " + token.toString() + " at " + token.getPosition());
         }
 
         @Override
@@ -174,17 +192,26 @@ public final class FilterParser {
         }
 
         @Override
-        public State handle(OperatorToken operator) throws FilterParserException {
-            switch (operator) {
-                case AND:
-                case OR:
-                case BRACKET_CLOSE:
-                    throw new FilterParserException("Invalid second argument for '|' operator.");
-                case BRACKET_OPEN:
-                    return new SubQueryState(this);
-                default:
-                    throw new FilterParserException("Unknown operator: " + operator);
-            }
+        public State handle(OrOperator operator) throws FilterParserException {
+            throw new FilterParserException("Invalid second argument for '|' operator " + operator.toString() + " at "
+                    + operator.getPosition());
+        }
+
+        @Override
+        public State handle(AndOperator operator) throws FilterParserException {
+            throw new FilterParserException("Invalid second argument for '|' operator " + operator.toString() + " at "
+                    + operator.getPosition());
+        }
+
+        @Override
+        public State handle(BracketOpenToken token) throws FilterParserException {
+            return new SubQueryState(this);
+        }
+
+        @Override
+        public State handle(BracketCloseToken token) throws FilterParserException {
+            throw new FilterParserException(
+                    "Invalid second argument for '|' operator " + token.toString() + " at " + token.getPosition());
         }
 
         @Override
@@ -211,30 +238,37 @@ public final class FilterParser {
         }
 
         @Override
-        public State handle(OperatorToken operator) throws FilterParserException {
+        public State handle(OrOperator operator) throws FilterParserException {
             TimetableStopPredicate result = this.currentResult;
-
-            switch (operator) {
-                case AND:
-                    if (result == null) {
-                        throw new FilterParserException("Operator '&' must not be first element in subquery.");
-                    }
-                    return new AndState(this, result);
-                case OR:
-                    if (result == null) {
-                        throw new FilterParserException("Operator '|' must not be first element in subquery.");
-                    }
-                    return new OrState(this, result);
-                case BRACKET_CLOSE:
-                    if (result == null) {
-                        throw new FilterParserException("Subquery must not be empty.");
-                    }
-                    return publishResultToPrevious(result);
-                case BRACKET_OPEN:
-                    return new SubQueryState(this);
-                default:
-                    throw new FilterParserException("Unknown operator: " + operator);
+            if (result == null) {
+                throw new FilterParserException(
+                        "Operator '|' at " + operator.getPosition() + " must not be first element in subquery.");
             }
+            return new OrState(this, result);
+        }
+
+        @Override
+        public State handle(AndOperator operator) throws FilterParserException {
+            TimetableStopPredicate result = this.currentResult;
+            if (result == null) {
+                throw new FilterParserException(
+                        "Operator '&' at" + operator.getPosition() + " must not be first element in subquery.");
+            }
+            return new AndState(this, result);
+        }
+
+        @Override
+        public State handle(BracketOpenToken token) throws FilterParserException {
+            return new SubQueryState(this);
+        }
+
+        @Override
+        public State handle(BracketCloseToken token) throws FilterParserException {
+            TimetableStopPredicate result = this.currentResult;
+            if (result == null) {
+                throw new FilterParserException("Subquery must not be empty at " + token.getPosition());
+            }
+            return publishResultToPrevious(result);
         }
 
         @Override

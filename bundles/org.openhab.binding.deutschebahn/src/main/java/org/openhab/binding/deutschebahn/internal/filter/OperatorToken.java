@@ -15,35 +15,17 @@ package org.openhab.binding.deutschebahn.internal.filter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Operator Tokens within filter expressions.
+ * Abstraction for all operators.
  * 
- * @author Sönke Küper - Initial contribution.
+ * @author Sönke Küper - initial contribution.
  */
 @NonNullByDefault
-public enum OperatorToken implements FilterToken {
+public abstract class OperatorToken extends FilterToken {
 
     /**
-     * And Token.
+     * Creates an new {@link OperatorToken}.
      */
-    AND,
-
-    /**
-     * Or-Token.
-     */
-    OR,
-
-    /**
-     * Opening bracket.
-     */
-    BRACKET_OPEN,
-
-    /**
-     * Closing bracket.
-     */
-    BRACKET_CLOSE;
-
-    @Override
-    public <R> R accept(FilterTokenVisitor<R> visitor) throws FilterParserException {
-        return visitor.handle(this);
+    public OperatorToken(int position) {
+        super(position);
     }
 }

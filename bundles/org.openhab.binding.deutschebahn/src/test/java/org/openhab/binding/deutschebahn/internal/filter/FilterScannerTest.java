@@ -30,16 +30,18 @@ import org.junit.jupiter.api.Test;
 public class FilterScannerTest {
 
     private static void assertAttributeEquals(FilterToken token, String expectedChannelGroup,
-            String expectedChannelName, String expectedFilter) {
+            String expectedChannelName, String expectedFilter, int expectedPosition) {
         assertThat(token, is(instanceOf(ChannelNameEquals.class)));
         ChannelNameEquals actual = (ChannelNameEquals) token;
         assertThat(actual.getChannelGroup(), is(expectedChannelGroup));
         assertThat(actual.getChannelName(), is(expectedChannelName));
         assertThat(actual.getFilterValue().toString(), is(expectedFilter));
+        assertThat(actual.getPosition(), is(expectedPosition));
     }
 
     private static void assertOperator(FilterToken token, OperatorToken expected) {
-        assertThat(token, is(expected));
+        assertThat(token.getClass(), is(expected.getClass()));
+        assertThat(token.getPosition(), is(expected.getPosition()));
     }
 
     private static List<FilterToken> processInput(String input, int expectedCount) throws FilterScannerException {
@@ -52,14 +54,14 @@ public class FilterScannerTest {
     public void testSimpleAttributEquals() throws FilterScannerException {
         String input = "trip#number=\"20\"";
         List<FilterToken> tokens = processInput(input, 1);
-        assertAttributeEquals(tokens.get(0), "trip", "number", "20");
+        assertAttributeEquals(tokens.get(0), "trip", "number", "20", 1);
     }
 
     @Test
     public void testAttributeEqualsWithWhitespace() throws FilterScannerException {
         String input = "departure#planned-path=\"Hannover Hbf\"";
         List<FilterToken> tokens = processInput(input, 1);
-        assertAttributeEquals(tokens.get(0), "departure", "planned-path", "Hannover Hbf");
+        assertAttributeEquals(tokens.get(0), "departure", "planned-path", "Hannover Hbf", 1);
     }
 
     @Test
@@ -99,14 +101,14 @@ public class FilterScannerTest {
     public void testComplexExample() throws FilterScannerException {
         String input = "trip#category=\"RE\" & (departure#line=\"17\" | departure#line=\"57\") & departure#planned-path=\"Cologne\"";
         List<FilterToken> tokens = processInput(input, 9);
-        assertAttributeEquals(tokens.get(0), "trip", "category", "RE");
-        assertOperator(tokens.get(1), OperatorToken.AND);
-        assertOperator(tokens.get(2), OperatorToken.BRACKET_OPEN);
-        assertAttributeEquals(tokens.get(3), "departure", "line", "17");
-        assertOperator(tokens.get(4), OperatorToken.OR);
-        assertAttributeEquals(tokens.get(5), "departure", "line", "57");
-        assertOperator(tokens.get(6), OperatorToken.BRACKET_CLOSE);
-        assertOperator(tokens.get(7), OperatorToken.AND);
-        assertAttributeEquals(tokens.get(8), "departure", "planned-path", "Cologne");
+        assertAttributeEquals(tokens.get(0), "trip", "category", "RE", 1);
+        assertOperator(tokens.get(1), new AndOperator(20));
+        assertOperator(tokens.get(2), new BracketOpenToken(22));
+        assertAttributeEquals(tokens.get(3), "departure", "line", "17", 23);
+        assertOperator(tokens.get(4), new OrOperator(43));
+        assertAttributeEquals(tokens.get(5), "departure", "line", "57", 45);
+        assertOperator(tokens.get(6), new BracketCloseToken(64));
+        assertOperator(tokens.get(7), new AndOperator(66));
+        assertAttributeEquals(tokens.get(8), "departure", "planned-path", "Cologne", 68);
     }
 }

@@ -27,7 +27,7 @@ import org.openhab.binding.deutschebahn.internal.TripLabelAttribute;
  * @author Sönke Küper - initial contribution.
  */
 @NonNullByDefault
-public final class ChannelNameEquals implements FilterToken {
+public final class ChannelNameEquals extends FilterToken {
 
     private final String channelName;
     private final Pattern filterValue;
@@ -36,7 +36,8 @@ public final class ChannelNameEquals implements FilterToken {
     /**
      * Creates an new {@link ChannelNameEquals}.
      */
-    public ChannelNameEquals(String channelGroup, String channelName, Pattern filterPattern) {
+    public ChannelNameEquals(int position, String channelGroup, String channelName, Pattern filterPattern) {
+        super(position);
         this.channelGroup = channelGroup;
         this.channelName = channelName;
         this.filterValue = filterPattern;
@@ -61,6 +62,11 @@ public final class ChannelNameEquals implements FilterToken {
      */
     public Pattern getFilterValue() {
         return filterValue;
+    }
+
+    @Override
+    public String toString() {
+        return this.channelGroup + "#" + channelName + "=\"" + this.filterValue.toString() + "\"";
     }
 
     @Override

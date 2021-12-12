@@ -67,16 +67,16 @@ public final class FilterScanner {
             switch (currentChar) {
                 // Handle all operator tokens
                 case '&':
-                    result.add(OperatorToken.AND);
+                    result.add(new AndOperator(position));
                     return this;
                 case '|':
-                    result.add(OperatorToken.OR);
+                    result.add(new OrOperator(position));
                     return this;
                 case '(':
-                    result.add(OperatorToken.BRACKET_OPEN);
+                    result.add(new BracketOpenToken(position));
                     return this;
                 case ')':
-                    result.add(OperatorToken.BRACKET_CLOSE);
+                    result.add(new BracketCloseToken(position));
                     return this;
                 default:
                     final ChannelNameState channelNameState = new ChannelNameState();
@@ -95,6 +95,7 @@ public final class FilterScanner {
     private final class ChannelNameState implements State {
 
         private final StringBuilder channelName = new StringBuilder();
+        private int startPosition = -1;
 
         @Override
         public State handle(int position, final char currentChar) throws FilterScannerException {
@@ -118,7 +119,7 @@ public final class FilterScanner {
                     throw new FilterScannerException(position, "Invalid channel name: " + channelNameValue);
                 }
 
-                return new ExpectQuotesState(matcher.group(1), matcher.group(2));
+                return new ExpectQuotesState(startPosition, matcher.group(1), matcher.group(2));
             }
 
             if (OP_CHARS.contains(currentChar)) {
@@ -126,6 +127,9 @@ public final class FilterScanner {
             }
 
             this.channelName.append(currentChar);
+            if (startPosition == -1) {
+                startPosition = position;
+            }
             return this;
         }
 
@@ -140,13 +144,15 @@ public final class FilterScanner {
      */
     private final class ExpectQuotesState implements State {
 
+        private final int startPosition;
         private final String channelName;
         private String channelGroup;
 
         /**
          * Creates an new {@link ExpectQuotesState}.
          */
-        public ExpectQuotesState(final String channelGroup, String channelName) {
+        public ExpectQuotesState(int startPosition, final String channelGroup, String channelName) {
+            this.startPosition = startPosition;
             this.channelGroup = channelGroup;
             this.channelName = channelName;
         }
@@ -156,7 +162,7 @@ public final class FilterScanner {
             if (currentChar != '"') {
                 throw new FilterScannerException(position, "Filter value must start with quotes");
             }
-            return new FilterValueState(channelGroup, channelName);
+            return new FilterValueState(startPosition, channelGroup, channelName);
         }
 
         @Override
@@ -170,6 +176,7 @@ public final class FilterScanner {
      */
     private final class FilterValueState implements State {
 
+        private final int startPosition;
         private final String channelGroup;
         private final String channelName;
         private final StringBuilder filterValue;
@@ -177,7 +184,8 @@ public final class FilterScanner {
         /**
          * Creates an new {@link FilterValueState}.
          */
-        public FilterValueState(String channelGroup, String channelName) {
+        public FilterValueState(int startPosition, String channelGroup, String channelName) {
+            this.startPosition = startPosition;
             this.channelGroup = channelGroup;
             this.channelName = channelName;
             this.filterValue = new StringBuilder();
@@ -197,7 +205,8 @@ public final class FilterScanner {
         public void finish(int position) throws FilterScannerException {
             String filterPattern = this.filterValue.toString();
             try {
-                result.add(new ChannelNameEquals(this.channelGroup, this.channelName, Pattern.compile(filterPattern)));
+                result.add(new ChannelNameEquals(startPosition, this.channelGroup, this.channelName,
+                        Pattern.compile(filterPattern)));
             } catch (PatternSyntaxException e) {
                 throw new FilterScannerException(position, "Filter pattern is invalid: " + filterPattern, e);
             }

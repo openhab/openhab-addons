@@ -30,7 +30,22 @@ public interface FilterTokenVisitor<R> {
     public abstract R handle(ChannelNameEquals equals) throws FilterParserException;
 
     /**
-     * Handles {@link OperatorToken}.
+     * Handles {@link OrOperator}.
      */
-    public abstract R handle(OperatorToken operator) throws FilterParserException;
+    public abstract R handle(OrOperator operator) throws FilterParserException;
+
+    /**
+     * Handles {@link AndOperator}.
+     */
+    public abstract R handle(AndOperator operator) throws FilterParserException;
+
+    /**
+     * Handles {@link BracketOpenToken}.
+     */
+    public abstract R handle(BracketOpenToken token) throws FilterParserException;
+
+    /**
+     * Handles {@link BracketCloseToken}.
+     */
+    public abstract R handle(BracketCloseToken token) throws FilterParserException;
 }

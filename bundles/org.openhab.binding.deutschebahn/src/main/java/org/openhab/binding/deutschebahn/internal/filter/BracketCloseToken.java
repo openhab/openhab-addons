@@ -15,31 +15,27 @@ package org.openhab.binding.deutschebahn.internal.filter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A token representing a part of an filter expression.
+ * A token representing an closing bracket.
  * 
  * @author Sönke Küper - Initial contribution.
  */
 @NonNullByDefault
-public abstract class FilterToken {
-
-    private final int position;
+public final class BracketCloseToken extends OperatorToken {
 
     /**
-     * Creates an new {@link FilterToken}.
+     * Creates new {@link BracketCloseToken}.
      */
-    public FilterToken(int position) {
-        this.position = position;
+    public BracketCloseToken(int position) {
+        super(position);
     }
 
-    /**
-     * Returns the start position of the token.
-     */
-    public final int getPosition() {
-        return position;
+    @Override
+    public String toString() {
+        return ")";
     }
 
-    /**
-     * Accept for {@link FilterTokenVisitor}.
-     */
-    public abstract <R> R accept(FilterTokenVisitor<R> visitor) throws FilterParserException;
+    @Override
+    public <R> R accept(FilterTokenVisitor<R> visitor) throws FilterParserException {
+        return visitor.handle(this);
+    }
 }
