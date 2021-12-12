@@ -74,7 +74,7 @@ public class MiIoSendCommand {
     }
 
     public JsonElement getParams() {
-        return commandJson.has("params") ? commandJson.get("params").getAsJsonArray() : new JsonArray();
+        return commandJson.has("params") ? commandJson.get("params") : new JsonArray();
     }
 
     public JsonObject getResponse() {
