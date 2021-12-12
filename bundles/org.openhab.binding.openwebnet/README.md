@@ -45,6 +45,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 | Temperature Control  | `4`          | `bus_thermo_zone`, `bus_thermo_sensor` | Thermo zones management and temperature sensors (probes). NOTE Central Units (4 or 99 zones) are not fully supported yet. See [Channels - Thermo](#configuring-thermo) for more details. | Successfully tested: H/LN4691, HS4692, KG4691; thermo sensors: L/N/NT4577 + 3455 |
 | CEN & CEN+ Scenarios  | `15` & `25`  | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | CEN/CEN+ scenarios events and virtual activation | Successfully tested: scenario buttons: HC/HD/HS/L/N/NT4680 |
+| Dry Contact and IR Interfaces | `25`  | `bus_dry_contact_ir`        | Dry Contacts and IR Interfaces                                  | Successfully tested: contact interfaces F428 and 3477;  IR sensors: HC/HD/HS/L/N/NT4610             |
 | Energy Management    | `18`         | `bus_energy_meter`                  | Energy Management                                                | Successfully tested: F520, F521 |
 
 ### For ZigBee (Radio)
@@ -123,12 +124,13 @@ Devices can be discovered automatically using an Inbox Scan after a gateway has 
 For any manually added device, you must configure:
 
 - the associated gateway (`Parent Bridge` menu)
-- the `where` config parameter (`OpenWebNet Device Address`):
+- the `where` configuration parameter (`OpenWebNet Address`):
     - example for BUS/SCS:
         - light device with WHERE address Point to Point `A=2 PL=4` --> `where="24"`
         - light device with WHERE address Point to Point `A=03 PL=11` on local bus --> `where="0311#4#01"`
         - CEN scenario with WHERE address Point to Point `A=05 PL=12` --> `where="0512"`
         - CEN+ configured scenario `5`: add a `2` before --> `where="25"`
+        - Dry Contact or IR Interface `99`: add a `3` before --> `where="399"`
     - example for ZigBee devices: `where=765432101#9`. The ID of the device (ADDR part) is usually written in hexadecimal on the device itself, for example `ID 0074CBB1`: convert to decimal (`7654321`) and add `01#9` at the end to obtain `where=765432101#9`. For 2-unit switch devices (`zb_on_off_switch2u`), last part should be `00#9`.
  
 
@@ -138,13 +140,13 @@ In BTicino MyHOME Thermoregulation (WHO=4) each **zone** has associated a thermo
 
 Thermo zones can be configured defining a `bus_thermo_zone` Thing for each zone with the following parameters:
 
-- the `where` config parameter (`OpenWebNet Device Address`):
+- the `where` configuration parameter (`OpenWebNet Address`):
     - example BUS/SCS Thermo zone `1` --> `where="1"` 
-- the `standAlone` config parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
+- the `standAlone` configuration parameter (`boolean`, default: `true`): identifies if the zone is managed or not by a Central Unit (4 or 99 zones). `standAlone=true` means no Central Unit is present in the system.
 
 Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with the following parameters:
 
-- the `where` config parameter (`OpenWebNet Device Address`):
+- the `where` configuration parameter (`OpenWebNet Address`):
     - example sensor `5` of external zone `00` --> `where="500"`
     - example: slave sensor `3` of zone `2` --> `where="302"`
 
@@ -155,7 +157,7 @@ Systems with Central Units (4 or 99 zones) are not fully supported yet.
 
 ## Channels 
 
-### Lighting, Automation, Power meter and CEN/CEN+ Scenario Events channels
+### Lighting, Automation, Power meter, CEN/CEN+ Scenario Events and Dry Contact / IR Interfaces channels
 
 | Channel Type ID (channel ID)             | Applies to Thing Type IDs                                     | Item Type     | Description                                           | Read/Write |
 | ---------------------------------------- | ------------------------------------------------------------- | ------------- | ----------------------------------------------------- | :--------: |
@@ -163,6 +165,7 @@ Systems with Central Units (4 or 99 zones) are not fully supported yet.
 | `brightness`                             | `bus_dimmer`, `zb_dimmer`                                     | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`) |    R/W     |
 | `shutter`                                | `bus_automation`                                              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
 | `button#X`         | `bus_cen_scenario_control`, `bus_cenplus_scenario_control` | String        | Trigger channel for CEN/CEN+ scenario events [see possible values](#cen-cen-channels)  |     R (TRIGGER)      |
+| `sensor`                              |  `bus_dry_contact_ir`                                    | Switch        | Indicates if a Dry Contact Interface is `ON`/`OFF`, or if a IR Sensor is detecting movement (`ON`), or not  (`OFF`) |     R      |
 | `power`                                  | `bus_energy_meter`                                            | Number:Power  | The current active power usage from Energy Meter      |     R      |
 
 ### Thermo channels
@@ -233,6 +236,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
       bus_cen_scenario_control      LR_CEN_scenario      "Living Room CEN"          [ where="51", buttons="4,3,8"]
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
+      bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
 }
 ```
 
@@ -275,8 +279,9 @@ String              iLR_zone_cv                 "Conditioning valves"         (g
 
 Number:Temperature  iEXT_temp                   "Temperature [%.1f %unit%]"   (gExternal) { channel="openwebnet:bus_thermo_sensor:mybridge:EXT_tempsensor:temperature" }
 
-String	              iCENPlusProxyItem	           "CEN+ Proxy Item"					
+String	            iCENPlusProxyItem	        "CEN+ Proxy Item"
 
+Switch              iLR_IR_sensor               "Sensor"                                        { channel="openwebnet:bus_dry_contact_ir:mybridge:LR_IR_sensor:sensor" }
 
 ```
 
@@ -299,6 +304,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
           Default item=iLR_switch           icon="light"
           Default item=iLR_dimmer           icon="light"
           Default item=iLR_shutter
+          Switch  item=iLR_IR_sensor        mappings=[ON="Presence", OFF="No Presence"]
     }
 
     Frame label="Energy Meters" icon="energy"
