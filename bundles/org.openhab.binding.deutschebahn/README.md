@@ -40,7 +40,27 @@ In addition you can configure if only arrivals, only departures or all trains sh
 | `accessToken` | | Yes | The access token for the timetable api within the developer portal of Deutsche Bahn. |
 | `evaNo` | | Yes | The eva nr. of the train station for which the timetable will be requested.|
 | `trainFilter` |  | Yes | Selects the trains that will be displayed in the timetable. Either only arrivals, only departures or all trains can be displayed. |
+| `additionalFilter` | | No | Specifies additional filters for trains, that should be displayed within the timetable. |
 
+** Additional filter **
+If you only want to display certain trains within your timetable, you can specify an additional filter. This will be evaluated when loading trains,
+and only trains that matches the given filter will be contained within the timetable.
+
+To specify an advanced filter you can
+
+- specify a filter for the value of a given channel. Therefore you must specify the channel name (with channel group) and specify a compare value like this: 
+`departure#line="RE60"` this will select all trains with line RE60
+- use regular expressions for expected channel values, for example:  `departure#line="RE.*"`, this will match all lines starting with "RE".
+- combine multiple statements as "and" conjunction by using `&`. If used, both parts must match, for example: `departure#line="RE60" & trip#category="WFB"`
+- combine multiple statements as "or" disjunction by using `|`. If used, one of the parts must match, for example: `departure#line="RE60" | departure#line="RE60"`
+- use brackets to build more complex queries like `trip#category="RE" AND (departure#line="17" OR departure#line="57")`
+
+If a channel has multiple values, like the channels `arrival#planned-path` and `departure#planned-path` have a list of stations,
+only one of the values must match the given expression. So you can specify a filter like `departure#planned-path="Hannover Hbf"`
+to easily display only trains that will go to Hannover Hbf.
+
+If the filtered value is not present for a train, for example if you filter a departure attribute but train ends at the selected station,
+the filter will not match.
 
 ### Configuring the trains
 
