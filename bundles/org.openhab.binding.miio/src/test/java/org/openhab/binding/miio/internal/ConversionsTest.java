@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +37,48 @@ import com.google.gson.JsonPrimitive;
 public class ConversionsTest {
 
     @Test
+    public void getDidElementTest() {
+        Map<String, Object> deviceVariables = new HashMap<>();
+        String transformation = "getDidElement";
+        JsonElement validInput = new JsonPrimitive(
+                "{\"361185596\":\"{\\\"C812105B04000400\\\":\\\"-92\\\",\\\"blt.3.17q3si5345k00\\\":\\\"-54\\\",\\\"blt.4.10heul64og400\\\":\\\"-73\\\"}\"}");
+
+        // test no did in deviceVariables
+        JsonElement value = validInput;
+        JsonElement transformedResponse = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(transformedResponse);
+        assertEquals(value, transformedResponse);
+
+        // test valid input & response
+        deviceVariables.put("deviceId", "361185596");
+        value = validInput;
+        transformedResponse = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(transformedResponse);
+        assertEquals(new JsonPrimitive(
+                "{\"C812105B04000400\":\"-92\",\"blt.3.17q3si5345k00\":\"-54\",\"blt.4.10heul64og400\":\"-73\"}"),
+                transformedResponse);
+
+        // test non json
+        value = new JsonPrimitive("some non json value");
+        transformedResponse = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(transformedResponse);
+        assertEquals(value, transformedResponse);
+
+        // test different did in deviceVariables
+        deviceVariables.put("deviceId", "ABC185596");
+        value = validInput;
+        transformedResponse = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(transformedResponse);
+        assertEquals(value, transformedResponse);
+
+        // test empty input
+        value = new JsonPrimitive("");
+        transformedResponse = Conversions.execute(transformation, value, deviceVariables);
+        assertNotNull(transformedResponse);
+        assertEquals(value, transformedResponse);
+    }
+
+    @Test
     public void getJsonElementTest() {
 
         Map<String, Object> deviceVariables = Collections.emptyMap();
@@ -54,11 +97,6 @@ public class ConversionsTest {
         assertEquals(value, resp);
 
         transformation = "getJsonElement-test";
-
-        // test without deviceVariables
-        resp = Conversions.execute(transformation, value, null);
-        assertNotNull(resp);
-        assertEquals(new JsonPrimitive("testresponse"), resp);
 
         // test non json
         value = new JsonPrimitive("some non json value");
