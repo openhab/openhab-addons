@@ -634,8 +634,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
         if (!response.getSender().isBlank() && !response.getSender().contentEquals(getThing().getUID().getAsString())) {
             for (Entry<Thing, MiIoLumiHandler> entry : childDevices.entrySet()) {
                 if (entry.getKey().getUID().getAsString().contentEquals(response.getSender())) {
-                    // TODO: change to trace
-                    logger.debug("Submit response to to child {} -> {}", response.getSender(), entry.getKey().getUID());
+                    logger.trace("Submit response to to child {} -> {}", response.getSender(), entry.getKey().getUID());
                     entry.getValue().onMessageReceived(response);
                     return;
                 }

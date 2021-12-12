@@ -53,30 +53,23 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
     public void initialize() {
         super.initialize();
         isIdentified = false;
+        updateStatus(ThingStatus.UNKNOWN);
 
         final MiIoBindingConfiguration config = this.configuration;
         if (config != null && config.deviceId.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Missing required deviceId");
-            logger.info("Missing required deviceId for {} {}", getThing().getUID(), getThing().getLabel());
             return;
         }
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "No device bridge has been configured");
-            logger.info("Missing Bridge for {} {}", getThing().getUID(), getThing().getLabel());
             return;
         } else {
-            logger.info("Bridge for {} {} = {} {} ({})", getThing().getUID(), getThing().getLabel(),
+            logger.debug("Bridge for {} {} = {} {} ({})", getThing().getUID(), getThing().getLabel(),
                     bridge.getBridgeUID(), bridge.getLabel(), bridge.getHandler());
         }
-
         bridgeHandler = null;
-        if (ThingStatus.ONLINE != bridge.getStatus()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Nullable

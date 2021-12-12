@@ -92,6 +92,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
     }
 
     private String getCloudDiscoveryMode() {
+        final Configuration miioConfig = this.miioConfig;
         if (miioConfig != null) {
             try {
                 Dictionary<String, @Nullable Object> properties = miioConfig.getProperties();
@@ -338,9 +339,10 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      * Stops the {@link ReceiverThread} thread
      */
     private synchronized void stopReceiverThreat() {
+        final Thread socketReceiveThread = this.socketReceiveThread;
         if (socketReceiveThread != null) {
             socketReceiveThread.interrupt();
-            socketReceiveThread = null;
+            this.socketReceiveThread = null;
         }
         closeSocket();
     }

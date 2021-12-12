@@ -385,7 +385,7 @@ public class ReadmeHelper {
         return i18nEntries;
     }
 
-    public static <K extends Comparable, V> Map<K, V> sortByKeys(Map<K, V> map) {
+    public static <K extends Comparable<?>, V> Map<K, V> sortByKeys(Map<K, V> map) {
         return new TreeMap<>(map);
     }
 

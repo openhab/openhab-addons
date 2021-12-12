@@ -114,6 +114,9 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
             try {
                 JsonObject deviceMapping = Utils.convertFileToJSON(db);
                 MiIoBasicDevice devdb = GSON.fromJson(deviceMapping, MiIoBasicDevice.class);
+                if (devdb == null) {
+                    continue;
+                }
                 for (String id : devdb.getDevice().getId()) {
                     workingDatabaseList.put(id, db);
                 }
