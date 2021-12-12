@@ -88,6 +88,7 @@ org.openhab.homekit:thermostatTargetModeAuto=Auto
 org.openhab.homekit:thermostatTargetModeOff=Off
 org.openhab.homekit:networkInterface=192.168.0.6
 org.openhab.homekit:useOHmDNS=false
+org.openhab.homekit:blockUserDeletion=false
 org.openhab.homekit:name=openHAB
 ```
 
@@ -98,6 +99,7 @@ org.openhab.homekit:name=openHAB
 | networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address configured for openHAB.                                                                                  | (none)        |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
 | useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.   | false  |
+| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices.                                              | false         |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                 | false         |
@@ -585,7 +587,7 @@ or using UI
 |                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
 |                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
 |                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
-|                      |                             | ColorTemperature             | Number                   | NOT WORKING on iOS 14.x. Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
+|                      |                             | ColorTemperature             | Number                   | Color temperature represented in reciprocal megaKelvin. The default value range is from 50 to 400. Color temperature should not be used in combination with hue, saturation and brightness. It supports following configuration parameters: minValue, maxValue                                                                                                                                                 |
 | Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      |                             | CurrentFanState              | Number                   | current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                             |
@@ -743,6 +745,13 @@ In order to get logs from the underlying library used to implement the HomeKit p
 ```
 openhab> log:set TRACE io.github.hapjava
 openhab> log:tail io.github.hapjava
+```
+
+In order to enable detailed logs of openHAB HomeKit binding
+
+```
+openhab> log:set TRACE org.openhab.io.homekit.internal
+openhab> log:tail org.openhab.io.homekit.internal
 ```
 
 ## Console commands

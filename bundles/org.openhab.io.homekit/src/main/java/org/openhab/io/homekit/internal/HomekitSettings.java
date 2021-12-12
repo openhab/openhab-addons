@@ -32,6 +32,7 @@ public class HomekitSettings {
     public int startDelay = 30;
     public boolean useFahrenheitTemperature = false;
     public boolean useOHmDNS = false;
+    public boolean blockUserDeletion = false;
     public String thermostatTargetModeHeat = "HeatOn";
     public String thermostatTargetModeCool = "CoolOn";
     public String thermostatTargetModeAuto = "Auto";
@@ -80,6 +81,8 @@ public class HomekitSettings {
                 return false;
             }
         } else if (!useOHmDNS != other.useOHmDNS) {
+            return false;
+        } else if (!blockUserDeletion != other.blockUserDeletion) {
             return false;
         } else if (!pin.equals(other.pin)) {
             return false;
