@@ -201,9 +201,9 @@ public class ShadeCapabilitiesDatabase {
         }
 
         /**
-         * Check if the Capabilities class instance supports a vane.
+         * Check if the Capabilities class instance supports a vane/tilt function (by means of a second motor).
          *
-         * @return true if it supports a vane.
+         * @return true if it supports a vane/tilt function (by means of a second motor).
          */
         public boolean supportsTiltAnywhere() {
             return supportsTiltAnywhere;
