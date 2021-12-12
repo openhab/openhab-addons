@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
@@ -26,8 +28,20 @@ import org.openhab.core.types.State;
 public interface AttributeSelection {
 
     /**
+     * Returns the value for this attribute.
+     */
+    @Nullable
+    public abstract Object getValue(TimetableStop stop);
+
+    /**
      * Returns the {@link State} that should be set for the channels'value for this attribute.
      */
     @Nullable
     public abstract State getState(TimetableStop stop);
+
+    /**
+     * Returns a list of values as string list.
+     * Returns empty list if value is not present, singleton list if attribute is not single-valued.
+     */
+    public abstract List<String> getStringValues(TimetableStop t);
 }
