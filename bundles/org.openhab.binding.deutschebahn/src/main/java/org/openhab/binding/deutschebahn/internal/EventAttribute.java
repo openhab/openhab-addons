@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -55,145 +56,155 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      * Planned Path.
      */
     public static final EventAttribute<String, StringType> PPTH = new EventAttribute<>("planned-path", Event::getPpth,
-            Event::setPpth, StringType::new, StringType.class);
+            Event::setPpth, StringType::new, EventAttribute::splitOnPipeToList, StringType.class);
 
     /**
      * Changed Path.
      */
     public static final EventAttribute<String, StringType> CPTH = new EventAttribute<>("changed-path", Event::getCpth,
-            Event::setCpth, StringType::new, StringType.class);
+            Event::setCpth, StringType::new, EventAttribute::splitOnPipeToList, StringType.class);
     /**
      * Planned platform.
      */
     public static final EventAttribute<String, StringType> PP = new EventAttribute<>("planned-platform", Event::getPp,
-            Event::setPp, StringType::new, StringType.class);
+            Event::setPp, StringType::new, EventAttribute::singletonList, StringType.class);
     /**
      * Changed platform.
      */
     public static final EventAttribute<String, StringType> CP = new EventAttribute<>("changed-platform", Event::getCp,
-            Event::setCp, StringType::new, StringType.class);
+            Event::setCp, StringType::new, EventAttribute::singletonList, StringType.class);
     /**
      * Planned time.
      */
     public static final EventAttribute<Date, DateTimeType> PT = new EventAttribute<>("planned-time",
-            getDate(Event::getPt), setDate(Event::setPt), EventAttribute::createDateTimeType, DateTimeType.class);
+            getDate(Event::getPt), setDate(Event::setPt), EventAttribute::createDateTimeType,
+            EventAttribute::mapDateToStringList, DateTimeType.class);
     /**
      * Changed time.
      */
     public static final EventAttribute<Date, DateTimeType> CT = new EventAttribute<>("changed-time",
-            getDate(Event::getCt), setDate(Event::setCt), EventAttribute::createDateTimeType, DateTimeType.class);
+            getDate(Event::getCt), setDate(Event::setCt), EventAttribute::createDateTimeType,
+            EventAttribute::mapDateToStringList, DateTimeType.class);
     /**
      * Planned status.
      */
     public static final EventAttribute<EventStatus, StringType> PS = new EventAttribute<>("planned-status",
-            Event::getPs, Event::setPs, EventAttribute::fromEventStatus, StringType.class);
+            Event::getPs, Event::setPs, EventAttribute::fromEventStatus, EventAttribute::listFromEventStatus,
+            StringType.class);
     /**
      * Changed status.
      */
     public static final EventAttribute<EventStatus, StringType> CS = new EventAttribute<>("changed-status",
-            Event::getCs, Event::setCs, EventAttribute::fromEventStatus, StringType.class);
+            Event::getCs, Event::setCs, EventAttribute::fromEventStatus, EventAttribute::listFromEventStatus,
+            StringType.class);
     /**
      * Hidden.
      */
     public static final EventAttribute<Integer, OnOffType> HI = new EventAttribute<>("hidden", Event::getHi,
-            Event::setHi, EventAttribute::parseHidden, OnOffType.class);
+            Event::setHi, EventAttribute::parseHidden, EventAttribute::mapIntegerToStringList, OnOffType.class);
     /**
      * Cancellation time.
      */
     public static final EventAttribute<Date, DateTimeType> CLT = new EventAttribute<>("cancellation-time",
-            getDate(Event::getClt), setDate(Event::setClt), EventAttribute::createDateTimeType, DateTimeType.class);
+            getDate(Event::getClt), setDate(Event::setClt), EventAttribute::createDateTimeType,
+            EventAttribute::mapDateToStringList, DateTimeType.class);
     /**
      * Wing.
      */
     public static final EventAttribute<String, StringType> WINGS = new EventAttribute<>("wings", Event::getWings,
-            Event::setWings, StringType::new, StringType.class);
+            Event::setWings, StringType::new, EventAttribute::splitOnPipeToList, StringType.class);
     /**
      * Transition.
      */
     public static final EventAttribute<String, StringType> TRA = new EventAttribute<>("transition", Event::getTra,
-            Event::setTra, StringType::new, StringType.class);
+            Event::setTra, StringType::new, EventAttribute::singletonList, StringType.class);
     /**
      * Planned distant endpoint.
      */
     public static final EventAttribute<String, StringType> PDE = new EventAttribute<>("planned-distant-endpoint",
-            Event::getPde, Event::setPde, StringType::new, StringType.class);
+            Event::getPde, Event::setPde, StringType::new, EventAttribute::singletonList, StringType.class);
     /**
      * Changed distant endpoint.
      */
     public static final EventAttribute<String, StringType> CDE = new EventAttribute<>("changed-distant-endpoint",
-            Event::getCde, Event::setCde, StringType::new, StringType.class);
+            Event::getCde, Event::setCde, StringType::new, EventAttribute::singletonList, StringType.class);
     /**
      * Distant change.
      */
     public static final EventAttribute<Integer, DecimalType> DC = new EventAttribute<>("distant-change", Event::getDc,
-            Event::setDc, DecimalType::new, DecimalType.class);
+            Event::setDc, DecimalType::new, EventAttribute::mapIntegerToStringList, DecimalType.class);
     /**
      * Line.
      */
     public static final EventAttribute<String, StringType> L = new EventAttribute<>("line", Event::getL, Event::setL,
-            StringType::new, StringType.class);
+            StringType::new, EventAttribute::singletonList, StringType.class);
 
     /**
      * Messages.
      */
     public static final EventAttribute<List<Message>, StringType> MESSAGES = new EventAttribute<>("messages",
-            EventAttribute.getMessages(), EventAttribute::setMessages, EventAttribute::mapMessages, StringType.class);
+            EventAttribute.getMessages(), EventAttribute::setMessages, EventAttribute::mapMessages,
+            EventAttribute::mapMessagesToList, StringType.class);
 
     /**
      * Planned Start station.
      */
     public static final EventAttribute<String, StringType> PLANNED_START_STATION = new EventAttribute<>(
             "planned-start-station", EventAttribute.getSingleStationFromPath(Event::getPpth, true),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), StringType::new, EventAttribute::singletonList, StringType.class);
 
     /**
      * Planned Previous stations.
      */
-    public static final EventAttribute<String, StringType> PLANNED_PREVIOUS_STATIONS = new EventAttribute<>(
+    public static final EventAttribute<List<String>, StringType> PLANNED_PREVIOUS_STATIONS = new EventAttribute<>(
             "planned-previous-stations", EventAttribute.getIntermediateStationsFromPath(Event::getPpth, true),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), EventAttribute::fromStringList, EventAttribute::nullToEmptyList,
+            StringType.class);
 
     /**
      * Planned Target station.
      */
     public static final EventAttribute<String, StringType> PLANNED_TARGET_STATION = new EventAttribute<>(
             "planned-target-station", EventAttribute.getSingleStationFromPath(Event::getPpth, false),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), StringType::new, EventAttribute::singletonList, StringType.class);
 
     /**
      * Planned Following stations.
      */
-    public static final EventAttribute<String, StringType> PLANNED_FOLLOWING_STATIONS = new EventAttribute<>(
+    public static final EventAttribute<List<String>, StringType> PLANNED_FOLLOWING_STATIONS = new EventAttribute<>(
             "planned-following-stations", EventAttribute.getIntermediateStationsFromPath(Event::getPpth, false),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), EventAttribute::fromStringList, EventAttribute::nullToEmptyList,
+            StringType.class);
 
     /**
      * Changed Start station.
      */
     public static final EventAttribute<String, StringType> CHANGED_START_STATION = new EventAttribute<>(
             "changed-start-station", EventAttribute.getSingleStationFromPath(Event::getCpth, true),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), StringType::new, EventAttribute::singletonList, StringType.class);
 
     /**
      * Changed Previous stations.
      */
-    public static final EventAttribute<String, StringType> CHANGED_PREVIOUS_STATIONS = new EventAttribute<>(
+    public static final EventAttribute<List<String>, StringType> CHANGED_PREVIOUS_STATIONS = new EventAttribute<>(
             "changed-previous-stations", EventAttribute.getIntermediateStationsFromPath(Event::getCpth, true),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), EventAttribute::fromStringList, EventAttribute::nullToEmptyList,
+            StringType.class);
 
     /**
      * Changed Target station.
      */
     public static final EventAttribute<String, StringType> CHANGED_TARGET_STATION = new EventAttribute<>(
             "changed-target-station", EventAttribute.getSingleStationFromPath(Event::getCpth, false),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), StringType::new, EventAttribute::singletonList, StringType.class);
 
     /**
      * Changed Following stations.
      */
-    public static final EventAttribute<String, StringType> CHANGED_FOLLOWING_STATIONS = new EventAttribute<>(
+    public static final EventAttribute<List<String>, StringType> CHANGED_FOLLOWING_STATIONS = new EventAttribute<>(
             "changed-following-stations", EventAttribute.getIntermediateStationsFromPath(Event::getCpth, false),
-            EventAttribute.voidSetter(), StringType::new, StringType.class);
+            EventAttribute.voidSetter(), EventAttribute::fromStringList, EventAttribute::nullToEmptyList,
+            StringType.class);
 
     /**
      * List containing all known {@link EventAttribute}.
@@ -214,12 +225,36 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
             final Function<Event, @Nullable VALUE_TYPE> getter, //
             final BiConsumer<Event, VALUE_TYPE> setter, //
             final Function<VALUE_TYPE, @Nullable STATE_TYPE> getState, //
+            final Function<VALUE_TYPE, List<String>> valueToList, //
             final Class<STATE_TYPE> stateType) {
-        super(channelTypeName, getter, setter, getState, stateType);
+        super(channelTypeName, getter, setter, getState, valueToList, stateType);
     }
 
     private static StringType fromEventStatus(final EventStatus value) {
         return new StringType(value.value());
+    }
+
+    private static List<String> listFromEventStatus(final @Nullable EventStatus value) {
+        if (value == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.singletonList(value.value());
+        }
+    }
+
+    private static StringType fromStringList(final List<String> value) {
+        return new StringType(value.stream().collect(Collectors.joining(" - ")));
+    }
+
+    private static List<String> nullToEmptyList(@Nullable final List<String> value) {
+        return value == null ? Collections.emptyList() : value;
+    }
+
+    /**
+     * Returns a list containing only the given value or empty list if value is <code>null</code>.
+     */
+    private static List<String> singletonList(@Nullable String value) {
+        return value == null ? Collections.emptyList() : Collections.singletonList(value);
     }
 
     private static OnOffType parseHidden(@Nullable Integer value) {
@@ -291,6 +326,24 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
         }
     }
 
+    /**
+     * Maps the status codes from the messages into string list.
+     */
+    private static List<String> mapMessagesToList(final @Nullable List<Message> messages) {
+        if (messages == null || messages.isEmpty()) {
+            return Collections.emptyList();
+        } else {
+            return messages //
+                    .stream()//
+                    .filter((Message message) -> message.getC() != null) //
+                    .map(Message::getC) //
+                    .distinct() //
+                    .map(MessageCodes::getMessage) //
+                    .filter((String messageText) -> !messageText.isEmpty()) //
+                    .collect(Collectors.toList());
+        }
+    }
+
     private static Function<Event, @Nullable List<Message>> getMessages() {
         return new Function<Event, @Nullable List<Message>>() {
 
@@ -303,6 +356,22 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
                 }
             }
         };
+    }
+
+    private static List<String> mapIntegerToStringList(@Nullable Integer value) {
+        if (value == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.singletonList(String.valueOf(value));
+        }
+    }
+
+    private static List<String> mapDateToStringList(@Nullable Date value) {
+        if (value == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.singletonList(DATETIME_FORMAT.format(value));
+        }
     }
 
     /**
@@ -337,7 +406,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
      * @param removeFirst if <code>true</code> the first value will be removed, <code>false</code> will remove the last
      *            value.
      */
-    private static Function<Event, @Nullable String> getIntermediateStationsFromPath(
+    private static Function<Event, @Nullable List<String>> getIntermediateStationsFromPath(
             final Function<Event, @Nullable String> getPath, boolean removeFirst) {
         return (final Event event) -> {
             final String path = getPath.apply(event);
@@ -351,7 +420,7 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
             } else {
                 stations = stations.limit(stationValues.length - 1);
             }
-            return stations.collect(Collectors.joining(" - "));
+            return stations.collect(Collectors.toList());
         };
     }
 
@@ -370,6 +439,10 @@ public final class EventAttribute<VALUE_TYPE, STATE_TYPE extends State>
 
     private static String[] splitPath(final String path) {
         return path.split("\\|");
+    }
+
+    private static List<String> splitOnPipeToList(final String value) {
+        return Arrays.asList(value.split("\\|"));
     }
 
     /**
