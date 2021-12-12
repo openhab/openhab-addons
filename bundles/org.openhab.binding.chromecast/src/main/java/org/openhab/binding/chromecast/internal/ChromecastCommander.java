@@ -134,22 +134,6 @@ public class ChromecastCommander {
 
     private void handleControl(final Command command) {
         try {
-            if (command instanceof NextPreviousType) {
-                // Next is implemented by seeking to the end of the current media
-                if (command == NextPreviousType.NEXT) {
-
-                    Double duration = statusUpdater.getLastDuration();
-                    if (duration != null) {
-                        chromeCast.seek(duration.doubleValue() - 5);
-                    } else {
-                        logger.info("{} command failed - unknown media duration", command);
-                    }
-                } else {
-                    logger.info("{} command not yet implemented", command);
-                    return;
-                }
-            }
-
             Application app = chromeCast.getRunningApp();
             statusUpdater.updateStatus(ThingStatus.ONLINE);
             if (app == null) {
@@ -175,6 +159,23 @@ public class ChromecastCommander {
                     logger.info("{} command not supported by current media", command);
                 }
             }
+
+            if (command instanceof NextPreviousType) {
+                // Next is implemented by seeking to the end of the current media
+                if (command == NextPreviousType.NEXT) {
+
+                    Double duration = statusUpdater.getLastDuration();
+                    if (duration != null) {
+                        chromeCast.seek(duration.doubleValue() - 5);
+                    } else {
+                        logger.info("{} command failed - unknown media duration", command);
+                    }
+                } else {
+                    logger.info("{} command not yet implemented", command);
+                    return;
+                }
+            }
+
         } catch (final IOException e) {
             logger.debug("{} command failed: {}", command, e.getMessage());
             statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());
