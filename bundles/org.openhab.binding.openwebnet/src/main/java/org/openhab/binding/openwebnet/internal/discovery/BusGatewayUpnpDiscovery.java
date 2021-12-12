@@ -150,10 +150,10 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        logger.info("Found device {}", device.getType());
+        logger.debug("Found device {}", device.getType());
         DeviceInfo devInfo = new DeviceInfo(device);
         if (!devInfo.manufacturer.matches("<unknown>")) {
-            logger.info("                              |- {} ({})", devInfo.modelName, devInfo.manufacturer);
+            logger.debug("                              |- {} ({})", devInfo.modelName, devInfo.manufacturer);
         }
         ThingUID thingId = generateThingUID(devInfo);
         if (thingId != null) {
@@ -226,7 +226,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     }
                 }
             }
-            logger.info("Found BTicino device: not a OpenWebNet gateway or is not supported (UDN={})", idString);
+            logger.info("Found BTicino device: not a OpenWebNet gateway or not supported (UDN={})", idString);
         }
         return null;
     }
