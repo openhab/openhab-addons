@@ -2415,60 +2415,63 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
-| state                | Number               | State                                    |            |
-| mode                 | Number               | Mode                                     |            |
-| err_state            | Number               | Error                                    |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
+| state                | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
+| mode                 | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
+| err_state            | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
 | battery_life         | Number               | Battery                                  |            |
-| box_type             | Number               | Box type                                 |            |
+| box_type             | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
 | mop_type             | Number               | mop_type                                 |            |
+| mop_route            | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
 | s_time               | Number               | Clean time                               |            |
 | s_area               | Number               | Clean Area                               |            |
-| suction_grade        | Number               | suction_grade                            |            |
-| water_grade          | Number               | water_grade                              |            |
+| suction_grade        | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
+| water_grade          | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
 | remember_map         | Number               | remember_map                             |            |
 | has_map              | Number               | has_map                                  |            |
-| is_mop               | Number               | is_mop                                   |            |
+| is_mop               | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
 | has_newmap           | Number               | has_newmap                               |            |
 
 ### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v7">viomi.vacuum.v7</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
-| state                | Number               | State                                    |            |
-| mode                 | Number               | Mode                                     |            |
-| err_state            | Number               | Error                                    |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
+| state                | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
+| mode                 | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
+| err_state            | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
 | battery_life         | Number               | Battery                                  |            |
-| box_type             | Number               | Box type                                 |            |
+| box_type             | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
 | mop_type             | Number               | mop_type                                 |            |
+| mop_route            | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
 | s_time               | Number               | Clean time                               |            |
 | s_area               | Number               | Clean Area                               |            |
-| suction_grade        | Number               | suction_grade                            |            |
-| water_grade          | Number               | water_grade                              |            |
+| suction_grade        | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
+| water_grade          | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
 | remember_map         | Number               | remember_map                             |            |
 | has_map              | Number               | has_map                                  |            |
-| is_mop               | Number               | is_mop                                   |            |
+| is_mop               | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
 | has_newmap           | Number               | has_newmap                               |            |
 
 ### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
-| state                | Number               | State                                    |            |
-| mode                 | Number               | Mode                                     |            |
-| err_state            | Number               | Error                                    |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
+| state                | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
+| mode                 | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
+| err_state            | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
 | battery_life         | Number               | Battery                                  |            |
-| box_type             | Number               | Box type                                 |            |
+| box_type             | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
 | mop_type             | Number               | mop_type                                 |            |
+| mop_route            | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
 | s_time               | Number               | Clean time                               |            |
 | s_area               | Number               | Clean Area                               |            |
-| suction_grade        | Number               | suction_grade                            |            |
-| water_grade          | Number               | water_grade                              |            |
+| suction_grade        | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
+| water_grade          | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
 | remember_map         | Number               | remember_map                             |            |
 | has_map              | Number               | has_map                                  |            |
-| is_mop               | Number               | is_mop                                   |            |
+| is_mop               | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
 | has_newmap           | Number               | has_newmap                               |            |
 
 ### Viomi S9 (<a name="viomi-vacuum-v18">viomi.vacuum.v18</a>) Channels
@@ -7716,11 +7719,12 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 Group G_vacuum "Viomi Cleaning Robot V-RVCLM21B" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
 Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
 Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
 Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
 Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
 Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
 Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
@@ -7739,11 +7743,12 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
 Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
 Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
 Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
 Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
 Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
 Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
@@ -7762,11 +7767,12 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
 Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
 Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
 Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
 Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
 Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
 Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
