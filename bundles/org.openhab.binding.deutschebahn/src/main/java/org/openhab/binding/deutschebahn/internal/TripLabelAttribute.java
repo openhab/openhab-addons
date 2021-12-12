@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -44,29 +46,30 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
      * Trip category.
      */
     public static final TripLabelAttribute<String, StringType> C = new TripLabelAttribute<>("category", TripLabel::getC,
-            TripLabel::setC, StringType::new, StringType.class);
+            TripLabel::setC, StringType::new, TripLabelAttribute::singletonList, StringType.class);
 
     /**
      * Number.
      */
     public static final TripLabelAttribute<String, StringType> N = new TripLabelAttribute<>("number", TripLabel::getN,
-            TripLabel::setN, StringType::new, StringType.class);
+            TripLabel::setN, StringType::new, TripLabelAttribute::singletonList, StringType.class);
 
     /**
      * Filter flags.
      */
     public static final TripLabelAttribute<String, StringType> F = new TripLabelAttribute<>("filter-flags",
-            TripLabel::getF, TripLabel::setF, StringType::new, StringType.class);
+            TripLabel::getF, TripLabel::setF, StringType::new, TripLabelAttribute::singletonList, StringType.class);
     /**
      * Trip Type.
      */
     public static final TripLabelAttribute<TripType, StringType> T = new TripLabelAttribute<>("trip-type",
-            TripLabel::getT, TripLabel::setT, TripLabelAttribute::fromTripType, StringType.class);
+            TripLabel::getT, TripLabel::setT, TripLabelAttribute::fromTripType, TripLabelAttribute::listFromTripType,
+            StringType.class);
     /**
      * Owner.
      */
     public static final TripLabelAttribute<String, StringType> O = new TripLabelAttribute<>("owner", TripLabel::getO,
-            TripLabel::setO, StringType::new, StringType.class);
+            TripLabel::setO, StringType::new, TripLabelAttribute::singletonList, StringType.class);
 
     /**
      * Creates an new {@link TripLabelAttribute}.
@@ -79,8 +82,9 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
             final Function<TripLabel, @Nullable VALUE_TYPE> getter, //
             final BiConsumer<TripLabel, VALUE_TYPE> setter, //
             final Function<VALUE_TYPE, @Nullable STATE_TYPE> getState, //
+            final Function<VALUE_TYPE, List<String>> valueToList, //
             final Class<STATE_TYPE> stateType) {
-        super(channelTypeName, getter, setter, getState, stateType);
+        super(channelTypeName, getter, setter, getState, valueToList, stateType);
     }
 
     @Nullable
@@ -92,8 +96,39 @@ public final class TripLabelAttribute<VALUE_TYPE, STATE_TYPE extends State> exte
         return super.getState(stop.getTl());
     }
 
+    @Override
+    public @Nullable Object getValue(TimetableStop stop) {
+        if (stop.getTl() == null) {
+            return UnDefType.UNDEF;
+        }
+        return super.getValue(stop.getTl());
+    }
+
+    @Override
+    public List<String> getStringValues(TimetableStop stop) {
+        if (stop.getTl() == null) {
+            return Collections.emptyList();
+        }
+        return this.getStringValues(stop.getTl());
+    }
+
     private static StringType fromTripType(final TripType value) {
         return new StringType(value.value());
+    }
+
+    private static List<String> listFromTripType(@Nullable final TripType value) {
+        if (value == null) {
+            return Collections.emptyList();
+        } else {
+            return Collections.singletonList(value.value());
+        }
+    }
+
+    /**
+     * Returns a list containing only the given value or empty list if value is <code>null</code>.
+     */
+    private static List<String> singletonList(@Nullable String value) {
+        return value == null ? Collections.emptyList() : Collections.singletonList(value);
     }
 
     /**

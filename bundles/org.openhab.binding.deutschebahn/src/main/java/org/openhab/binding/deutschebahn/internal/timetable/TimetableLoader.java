@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.deutschebahn.internal.EventAttribute;
 import org.openhab.binding.deutschebahn.internal.EventType;
-import org.openhab.binding.deutschebahn.internal.TimetableStopFilter;
+import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Event;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.Timetable;
 import org.openhab.binding.deutschebahn.internal.timetable.dto.TimetableStop;
@@ -60,7 +60,7 @@ public final class TimetableLoader {
     private final Map<String, TimetableStop> cachedChanges;
 
     private final TimetablesV1Api api;
-    private final TimetableStopFilter stopFilter;
+    private final TimetableStopPredicate stopPredicate;
     private final TimetableStopComparator comparator;
     private final Supplier<Date> currentTimeProvider;
     private int stopCount;
@@ -76,14 +76,15 @@ public final class TimetableLoader {
      * Creates an new {@link TimetableLoader}.
      *
      * @param api {@link TimetablesV1Api} to use.
-     * @param stopFilter Filter for selection of loaded {@link TimetableStop}.
+     * @param stopPredicate Filter for selection of loaded {@link TimetableStop}.
      * @param requestedStopCount Count of stops to be loaded on each call.
      * @param currentTimeProvider {@link Supplier} for the current time.
      */
-    public TimetableLoader(final TimetablesV1Api api, final TimetableStopFilter stopFilter, final EventType eventToSort,
-            final Supplier<Date> currentTimeProvider, final String evaNo, final int requestedStopCount) {
+    public TimetableLoader(final TimetablesV1Api api, final TimetableStopPredicate stopPredicate,
+            final EventType eventToSort, final Supplier<Date> currentTimeProvider, final String evaNo,
+            final int requestedStopCount) {
         this.api = api;
-        this.stopFilter = stopFilter;
+        this.stopPredicate = stopPredicate;
         this.currentTimeProvider = currentTimeProvider;
         this.evaNo = evaNo;
         this.stopCount = requestedStopCount;
@@ -206,7 +207,7 @@ public final class TimetableLoader {
             final List<TimetableStop> stops = timetable //
                     .getS() //
                     .stream() //
-                    .filter(this.stopFilter) //
+                    .filter(this.stopPredicate) //
                     .collect(Collectors.toList());
 
             // Merge the loaded stops with the cached changes and put them into the plan cache.
