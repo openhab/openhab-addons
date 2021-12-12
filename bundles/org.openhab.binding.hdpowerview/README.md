@@ -60,12 +60,15 @@ However, the configuration parameters are described below:
 
 ### Channels for PowerView Hub
 
-Scene channels will be added dynamically to the binding as they are discovered in the hub.
-Each scene channel will have an entry in the hub as shown below, whereby different scenes have different `id` values:
+Scene, scene group and automation channels will be added dynamically to the binding as they are discovered in the hub.
+Each will have an entry in the hub as shown below, whereby different scenes, scene groups and automations
+have different `id` values:
 
-| Channel  | Item Type | Description |
-|----------|-----------| ------------|
-| id | Switch | Turning this to ON will activate the scene. Scenes are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
+| Channel Group | Channel | Item Type | Description |
+|---------------|---------|-----------|-------------|
+| scenes        | id      | Switch    | Setting this to ON will activate the scene. Scenes are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
+| sceneGroups   | id      | Switch    | Setting this to ON will activate the scene group. Scene groups are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
+| automations   | id      | Switch    | Setting this to ON will enable the automation, while OFF will disable it. |
 
 ### Channels for PowerView Shade
 
@@ -180,7 +183,7 @@ Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm 
 Scene items:
 
 ```
-Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:22663", autoupdate="false"}
+Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:scenes#22663", autoupdate="false"}
 ```
 
 ### `demo.sitemap` File

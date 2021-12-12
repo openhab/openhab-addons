@@ -93,7 +93,6 @@ public class MiIoAsyncCommunication {
         this.timeout = timeout;
         this.cloudConnector = cloudConnector;
         setId(id);
-        startReceiver();
     }
 
     protected List<MiIoMessageListener> getListeners() {
@@ -149,7 +148,7 @@ public class MiIoAsyncCommunication {
                 fullCommand.add("params", JsonParser.parseString(params));
             }
             MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command), fullCommand,
-                    cloudServer);
+                    cloudServer, sender);
             concurrentLinkedQueue.add(sendCmd);
             if (logger.isDebugEnabled()) {
                 // Obfuscate part of the token to allow sharing of the logfiles
@@ -183,10 +182,7 @@ public class MiIoAsyncCommunication {
                             miIoSendCommand.getCloudServer());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
                 } else {
-                    String data = miIoSendCommand.getParams().isJsonArray()
-                            && miIoSendCommand.getParams().getAsJsonArray().size() > 0
-                                    ? miIoSendCommand.getParams().getAsJsonArray().get(0).toString()
-                                    : "";
+                    String data = miIoSendCommand.getParams().toString();
                     logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
                             data);
                     decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
@@ -249,7 +245,7 @@ public class MiIoAsyncCommunication {
     public synchronized void startReceiver() {
         MessageSenderThread senderThread = this.senderThread;
         if (senderThread == null || !senderThread.isAlive()) {
-            senderThread = new MessageSenderThread(deviceId);
+            senderThread = new MessageSenderThread(deviceId.isBlank() ? "?" + ip : deviceId);
             senderThread.start();
             this.senderThread = senderThread;
         }
@@ -435,7 +431,7 @@ public class MiIoAsyncCommunication {
         if (socket == null || socket.isClosed()) {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
-            logger.debug("Opening socket on port: {} ", socket.getLocalPort());
+            logger.debug("Opening socket on port: {} ({} {})", socket.getLocalPort(), deviceId, ip);
             this.socket = socket;
             return socket;
         } else {
@@ -497,6 +493,10 @@ public class MiIoAsyncCommunication {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+        MessageSenderThread senderThread = this.senderThread;
+        if (senderThread != null) {
+            senderThread.setName("OH-binding-miio-MessageSenderThread-" + deviceId);
+        }
     }
 
     public int getQueueLength() {

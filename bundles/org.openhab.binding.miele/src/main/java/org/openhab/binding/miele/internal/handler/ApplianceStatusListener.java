@@ -44,14 +44,6 @@ public interface ApplianceStatusListener {
     void onAppliancePropertyChanged(FullyQualifiedApplianceIdentifier applianceIdentifier, DeviceProperty dp);
 
     /**
-     * This method is called whenever a "property" of the given appliance has changed.
-     *
-     * @param serialNumber The serial number of the appliance that has changed
-     * @param dco the POJO containing the new state of the property
-     */
-    void onAppliancePropertyChanged(String serialNumber, DeviceProperty dp);
-
-    /**
      * This method is called whenever an appliance is removed.
      *
      * @param appliance The XGW homedevice definition of the appliance that was removed

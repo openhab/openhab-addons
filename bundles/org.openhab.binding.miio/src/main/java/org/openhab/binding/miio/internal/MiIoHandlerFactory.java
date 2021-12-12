@@ -29,6 +29,8 @@ import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -60,6 +62,8 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private CloudConnector cloudConnector;
     private ChannelTypeRegistry channelTypeRegistry;
     private BasicChannelTypeProvider basicChannelTypeProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
     private @Nullable Future<Boolean> scheduledTask;
     private final Logger logger = LoggerFactory.getLogger(MiIoHandlerFactory.class);
 
@@ -67,11 +71,14 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     public MiIoHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
-            @Reference BasicChannelTypeProvider basicChannelTypeProvider, Map<String, Object> properties) {
+            @Reference BasicChannelTypeProvider basicChannelTypeProvider, @Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider, Map<String, Object> properties) {
         this.httpClientFactory = httpClientFactory;
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.basicChannelTypeProvider = basicChannelTypeProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
         this.cloudConnector = cloudConnector;
         @Nullable
         String username = (String) properties.get("username");
@@ -82,7 +89,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         cloudConnector.setCredentials(username, password, country);
         try {
             if (!scheduler.isShutdown()) {
-                scheduledTask = scheduler.submit(() -> cloudConnector.isConnected());
+                scheduledTask = scheduler.submit(() -> cloudConnector.isConnected(true));
             } else {
                 logger.debug("Unexpected: ScheduledExecutorService is shutdown.");
             }
@@ -108,16 +115,18 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MIIO)) {
-            return new MiIoGenericHandler(thing, miIoDatabaseWatchService, cloudConnector);
+            return new MiIoGenericHandler(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider,
+                    localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
             return new MiIoBasicHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
-                    basicChannelTypeProvider);
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
-            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
+            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    i18nProvider, localeProvider);
         }
         return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector,
-                httpClientFactory.getCommonHttpClient());
+                httpClientFactory.getCommonHttpClient(), i18nProvider, localeProvider);
     }
 }

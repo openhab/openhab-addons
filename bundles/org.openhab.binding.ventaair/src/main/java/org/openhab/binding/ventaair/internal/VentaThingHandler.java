@@ -159,7 +159,7 @@ public class VentaThingHandler extends BaseThingHandler {
         if (config.macAddress.isEmpty()) {
             return "Mac Address not set, use discovery to find the correct one";
         }
-        if (config.deviceType == BigDecimal.ZERO) {
+        if (BigDecimal.ZERO.equals(config.deviceType)) {
             return "Device Type not set, use discovery to find the correct one";
         }
         if (config.pollingTime.compareTo(BigDecimal.ZERO) <= 0) {

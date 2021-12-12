@@ -28,8 +28,10 @@ public class MieleBindingConstants {
 
     public static final String BINDING_ID = "miele";
     public static final String APPLIANCE_ID = "uid";
-    public static final String DEVICE_CLASS = "dc";
-    public static final String PROTOCOL_PROPERTY_NAME = "protocol";
+    public static final String DEVICE_CLASS = "deviceClass";
+    public static final String MODEL_PROPERTY_NAME = "model";
+    public static final String PROTOCOL_ADAPTER_PROPERTY_NAME = "protocolAdapter";
+    public static final String CONNECTION_TYPE_PROPERTY_NAME = "connectionType";
 
     // JSON-RPC property names
     public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
@@ -65,8 +67,14 @@ public class MieleBindingConstants {
 
     // Miele devices classes
     public static final String MIELE_DEVICE_CLASS_COFFEE_SYSTEM = "CoffeeSystem";
+    public static final String MIELE_DEVICE_CLASS_DISHWASHER = "Dishwasher";
     public static final String MIELE_DEVICE_CLASS_FRIDGE = "Fridge";
     public static final String MIELE_DEVICE_CLASS_FRIDGE_FREEZER = "FridgeFreezer";
+    public static final String MIELE_DEVICE_CLASS_HOB = "Hob";
+    public static final String MIELE_DEVICE_CLASS_HOOD = "Hood";
+    public static final String MIELE_DEVICE_CLASS_OVEN = "Oven";
+    public static final String MIELE_DEVICE_CLASS_TUMBLE_DRYER = "TumbleDryer";
+    public static final String MIELE_DEVICE_CLASS_WASHING_MACHINE = "WashingMachine";
 
     // Miele appliance states
     public static final int STATE_UNKNOWN = 0;
@@ -89,12 +97,21 @@ public class MieleBindingConstants {
     public static final int STATE_NOT_CONNECTED = 255;
 
     // Miele missing string prefixes
+    public static final String MISSING_STATE_TEXT_PREFIX = "state.";
     public static final String MISSING_PROGRAM_TEXT_PREFIX = "program.";
     public static final String MISSING_PHASE_TEXT_PREFIX = "phase.";
+
+    // Miele appliance localization text prefixes
+    public static final String MIELE_COFFEE_MACHINE_TEXT_PREFIX = "coffeemachine.";
+    public static final String MIELE_DISHWASHER_TEXT_PREFIX = "dishwasher.";
+    public static final String MIELE_OVEN_TEXT_PREFIX = "oven.";
+    public static final String MIELE_TUMBLE_DRYER_TEXT_PREFIX = "tumbledryer.";
+    public static final String MIELE_WASHING_MACHINE_TEXT_PREFIX = "washingmachine.";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String INTERFACE = "interface";
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
+    public static final String LANGUAGE = "language";
 }

@@ -67,6 +67,7 @@ public class HeritableFuture<T> extends CompletableFuture<T> {
         return new HeritableFuture<>(this);
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected void setParentFuture(Supplier<@Nullable Future<?>> futureSupplier) {
         synchronized (futureLock) {
             var future = futureSupplier.get();

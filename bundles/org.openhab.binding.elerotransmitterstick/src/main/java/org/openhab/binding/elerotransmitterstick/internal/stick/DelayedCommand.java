@@ -30,6 +30,7 @@ public class DelayedCommand extends Command {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public int compareTo(Delayed delayed) {
         if (delayed == this) {
             return 0;

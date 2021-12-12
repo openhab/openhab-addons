@@ -13,6 +13,7 @@
 package org.openhab.binding.dwdunwetter.internal.dto;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * Comperator to sort a Warning first by Severity, second by the onSet date.
@@ -28,7 +29,7 @@ public class SeverityComparator implements Comparator<DwdWarningData> {
 
         int result = Integer.compare(o1.getSeverity().getOrder(), o2.getSeverity().getOrder());
         if (result == 0) {
-            if (o1.getOnset() == o2.getOnset()) {
+            if (Objects.equals(o1.getOnset(), o2.getOnset())) {
                 return 0;
             } else if (o1.getOnset() == null) {
                 return -1;

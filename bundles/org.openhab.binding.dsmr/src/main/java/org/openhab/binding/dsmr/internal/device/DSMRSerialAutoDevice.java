@@ -223,6 +223,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     /**
      * Switches the baudrate on the serial port.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void switchBaudrate() {
         if (lastSwitchedBaudrateNanos + SWITCHING_BAUDRATE_TIMEOUT_NANOS > System.nanoTime()) {
             // Ignore switching baudrate if this is called within the timeout after a previous switch.

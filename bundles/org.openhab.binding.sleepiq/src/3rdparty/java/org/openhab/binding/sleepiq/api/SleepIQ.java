@@ -17,6 +17,8 @@ package org.openhab.binding.sleepiq.api;
 
 import java.util.List;
 
+import javax.ws.rs.client.ClientBuilder;
+
 import org.openhab.binding.sleepiq.api.impl.SleepIQImpl;
 import org.openhab.binding.sleepiq.api.model.Bed;
 import org.openhab.binding.sleepiq.api.model.FamilyStatus;
@@ -29,8 +31,7 @@ import org.openhab.binding.sleepiq.api.model.Sleeper;
  *
  * @author Gregory Moyer
  */
-public interface SleepIQ
-{
+public interface SleepIQ {
     /**
      * Login to the {@link Configuration configured} account. This method is not
      * required to be called before other methods because all methods must
@@ -94,8 +95,7 @@ public interface SleepIQ
      *            the configuration to use for the new instance
      * @return a concrete implementation of this interface
      */
-    public static SleepIQ create(Configuration config)
-    {
-        return new SleepIQImpl(config);
+    public static SleepIQ create(Configuration config, ClientBuilder clientBuilder) {
+        return new SleepIQImpl(config, clientBuilder);
     }
 }

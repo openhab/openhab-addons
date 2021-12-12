@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '.github/**/*.md'
+  pull_request:
+    branches:
+      - 'main'
+    paths-ignore:
+      - '.github/**/*.md'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [ '11' ]
+        maven: [ '3.8.4']
+        os: [ 'ubuntu-20.04' ]
+    name: Build (Java ${{ matrix.java }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        if: github.head_ref == ''
+        uses: actions/checkout@v2
+
+      - name: Checkout merge
+        if: github.head_ref != ''
+        uses: actions/checkout@v2
+        with:
+          ref: refs/pull/${{github.event.pull_request.number}}/merge
+
+      - name: Set up Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.m2/repository
+            !~/.m2/repository/org/openhab
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+
+      - name: Set up Maven ${{ matrix.maven }}
+        uses: stCarolas/setup-maven@v4.2
+        with:
+          maven-version: ${{ matrix.maven }}
+
+      - name: Register Problem Matchers
+        id: problem_matchers
+        run: |
+          echo "::add-matcher::.github/openhab-compile-problems.json"
+
+      - name: Get Changed Files
+        id: files
+        uses: Ana06/get-changed-files@v2.0.0
+        with:
+          format: 'csv'
+
+      - name: Build
+        id: build
+        run: './.github/scripts/maven-build'
+        env:
+          CHANGED_FILES: ${{ steps.files.outputs.all }}
+          MAVEN_OPTS: >-
+            -Xmx2g
+            -Dmaven.wagon.http.retryHandler.count=5
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=25
+            -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+
+      - name: Upload Build Log
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-log-java-${{ matrix.java }}-${{ matrix.os }}
+          path: build.log
+
+      - name: Upload SAT Summary Report
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: sat-summary-report
+          path: target/summary_report.html
+
+      - name: Report SAT Errors as Annotations
+        uses: ghys/checkstyle-github-action@main
+        if: ${{ always() && ((steps.build.outcome == 'success') || (steps.build.outcome == 'failure')) }}
+        with:
+          title: CheckStyle Violations
+          path: '**/checkstyle-result.xml'
+          mode: inline

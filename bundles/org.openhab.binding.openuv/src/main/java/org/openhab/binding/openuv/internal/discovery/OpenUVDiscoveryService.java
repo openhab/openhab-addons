@@ -50,7 +50,10 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof OpenUVBridgeHandler) {
-            this.bridgeHandler = (OpenUVBridgeHandler) handler;
+            OpenUVBridgeHandler localHandler = (OpenUVBridgeHandler) handler;
+            this.bridgeHandler = localHandler;
+            this.i18nProvider = localHandler.getI18nProvider();
+            this.localeProvider = localHandler.getLocaleProvider();
         }
     }
 
@@ -73,7 +76,8 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
             if (location != null) {
                 ThingUID bridgeUID = bridge.getThing().getUID();
                 thingDiscovered(DiscoveryResultBuilder
-                        .create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL)).withLabel("Local UV Report")
+                        .create(new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL))
+                        .withLabel("@text/discovery.openuv.uvreport.local.label")
                         .withProperty(ReportConfiguration.LOCATION, location.toString())
                         .withRepresentationProperty(ReportConfiguration.LOCATION).withBridge(bridgeUID).build());
             } else {

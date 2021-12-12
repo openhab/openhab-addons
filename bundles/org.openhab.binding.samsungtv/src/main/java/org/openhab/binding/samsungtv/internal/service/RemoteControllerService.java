@@ -174,7 +174,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
             supported = new ArrayList<>(supported);
             supported.addAll(extraSupportedCommandsWebSocket);
         }
-        logger.debug("getSupportedChannelNames: {}", supported);
+        logger.trace("getSupportedChannelNames: {}", supported);
         return supported;
     }
 
@@ -254,7 +254,7 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
 
     @Override
     public void handleCommand(String channel, Command command) {
-        logger.debug("Received channel: {}, command: {}", channel, command);
+        logger.trace("Received channel: {}, command: {}", channel, command);
         if (command == RefreshType.REFRESH) {
             return;
         }
