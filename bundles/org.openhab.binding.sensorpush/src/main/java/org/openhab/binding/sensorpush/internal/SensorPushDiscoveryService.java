@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SensorPushDiscoveryService} handles discovery of sensors as they are identified by the bridge handler.
- * Requests from the framework to startScan() just clear the discovered sensor set. The next scheduled poll will
- * re-discover all sensors.
+ * Requests from the framework to startScan() will initiate a call to the bridge handler's pollSensors() method.
+ * Otherwise the bridge handler will poll for sensors every other poll interval.
  *
  * @author Bob Adair - Initial contribution
  */
@@ -55,6 +55,9 @@ public class SensorPushDiscoveryService extends AbstractDiscoveryService impleme
     protected void startScan() {
         logger.trace("Starting discovery scan");
         discoveredSensorSet.clear();
+        if (bridgeHandler != null) {
+            bridgeHandler.pollSensors();
+        }
     }
 
     public void processSensor(Sensor sensor) {
