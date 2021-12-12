@@ -95,7 +95,7 @@ public class JavaScriptTransformationService implements TransformationService, C
 
         if (filenameOrInlineScript.startsWith("|")) {
             // inline java script
-            cScript = manager.compileScript(filenameOrInlineScript.substring(1));
+            cScript = manager.getCompiledScriptByInlineScript(filenameOrInlineScript.substring(1));
         } else {
             String filename = filenameOrInlineScript;
 
@@ -116,7 +116,7 @@ public class JavaScriptTransformationService implements TransformationService, C
                 }
             }
 
-            cScript = manager.getScript(filename);
+            cScript = manager.getCompiledScriptByFilename(filename);
         }
 
         try {
