@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.generic;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -23,12 +22,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
@@ -195,19 +192,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
         // We do not set the thing to ONLINE here in the AbstractBase, that is the responsibility of a derived
         // class.
         try {
-            Collection<CompletableFuture<@Nullable Void>> futures = availabilityStates.values().stream().map(s -> {
-                if (s != null) {
-                    return s.start(connection, scheduler, 0);
-                }
-                return CompletableFuture.allOf();
-            }).collect(Collectors.toList());
-
-            futures.add(start(connection));
-
-            futures.stream().collect(FutureCollector.allOf()).exceptionally(e -> {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-                return null;
-            }).get(subscribeTimeout, TimeUnit.MILLISECONDS);
+            start(connection).get(subscribeTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Did not receive all required topics");

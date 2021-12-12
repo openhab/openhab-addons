@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -48,7 +49,7 @@ import tuwien.auto.calimero.mgmt.ManagementClient;
 import tuwien.auto.calimero.mgmt.ManagementClientImpl;
 import tuwien.auto.calimero.mgmt.ManagementProcedures;
 import tuwien.auto.calimero.mgmt.ManagementProceduresImpl;
-import tuwien.auto.calimero.process.ProcessCommunicationBase;
+import tuwien.auto.calimero.process.ProcessCommunication;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 import tuwien.auto.calimero.process.ProcessEvent;
@@ -181,17 +182,17 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             managementProcedures = new ManagementProceduresImpl(link);
 
             ManagementClient managementClient = new ManagementClientImpl(link);
-            managementClient.setResponseTimeout(responseTimeout);
+            managementClient.responseTimeout(Duration.ofSeconds(responseTimeout));
             this.managementClient = managementClient;
 
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link);
-            processCommunicator.setResponseTimeout(responseTimeout);
+            processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link);
+            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, null);
             this.responseCommunicator = responseCommunicator;
 
             link.addLinkListener(this);
@@ -439,7 +440,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
     }
 
-    private void sendToKNX(ProcessCommunicationBase communicator, KNXNetworkLink link, GroupAddress groupAddress,
+    private void sendToKNX(ProcessCommunication communicator, KNXNetworkLink link, GroupAddress groupAddress,
             String dpt, Type type) throws KNXException {
         if (!connectIfNotAutomatic()) {
             return;

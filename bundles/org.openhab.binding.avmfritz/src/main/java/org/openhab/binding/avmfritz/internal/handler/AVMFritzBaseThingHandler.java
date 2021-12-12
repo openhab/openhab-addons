@@ -143,9 +143,6 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             if (device.isHeatingThermostat()) {
                 updateHeatingThermostat(device.getHkr());
             }
-            if (device.isHANFUNUnit() && device.isHANFUNOnOff()) {
-                updateSimpleOnOffUnit(device.getSimpleOnOffUnit());
-            }
             if (device instanceof DeviceModel) {
                 DeviceModel deviceModel = (DeviceModel) device;
                 if (deviceModel.isTemperatureSensor()) {
@@ -164,6 +161,8 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel());
                 } else if (deviceModel.isDimmableLight()) {
                     updateDimmableLight(deviceModel.getLevelControlModel());
+                } else if (device.isHANFUNUnit() && device.isHANFUNOnOff()) {
+                    updateSimpleOnOffUnit(device.getSimpleOnOffUnit());
                 }
             }
         }
@@ -208,10 +207,9 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
             @Nullable LevelControlModel levelControlModel) {
         if (colorControlModel != null && levelControlModel != null) {
             DecimalType hue = new DecimalType(colorControlModel.hue);
-            PercentType saturation = new PercentType(colorControlModel.saturation);
+            PercentType saturation = ColorControlModel.toPercent(colorControlModel.saturation);
             PercentType brightness = new PercentType(levelControlModel.getLevelPercentage());
             updateThingChannelState(CHANNEL_COLOR, new HSBType(hue, saturation, brightness));
-            updateThingChannelState(CHANNEL_BRIGHTNESS, brightness);
         }
     }
 
@@ -414,10 +412,12 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                 if (command instanceof HSBType) {
                     HSBType hsbType = (HSBType) command;
                     brightness = hsbType.getBrightness().toBigDecimal();
-                    fritzBox.setHueAndSaturation(ain, hsbType.getHue().intValue(), hsbType.getSaturation().intValue(),
-                            0);
+                    fritzBox.setHueAndSaturation(ain, hsbType.getHue().intValue(),
+                            ColorControlModel.fromPercent(hsbType.getSaturation()), 0);
                 } else if (command instanceof PercentType) {
                     brightness = ((PercentType) command).toBigDecimal();
+                } else if (command instanceof OnOffType) {
+                    fritzBox.setSwitch(ain, OnOffType.ON.equals(command));
                 }
                 if (brightness != null) {
                     fritzBox.setLevelPercentage(ain, brightness);

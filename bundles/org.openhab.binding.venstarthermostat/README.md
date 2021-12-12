@@ -24,7 +24,7 @@ to enter them in the thermostat configuration in openHAB.
 
 ## Discovery
 
-Once the binding is installed it will attempt to auto discovery Venstar thermostats located on the local network.
+Once the binding is installed it will attempt to auto discover Venstar thermostats located on the local network.
 These will appear as Things in the system Inbox.
 After adding the Inbox item, enter the user name and password from the physical thermostat in the Thing's configuration.
 
@@ -56,7 +56,7 @@ After adding the Inbox item, enter the user name and password from the physical 
 | humidity           | Number             | Humidity                              |                                                        |
 | fanMode            | String             | Fan Mode                              |                                                        |
 | fanModeRaw         | Number             | Fan Mode Raw (Read Only)              | 0 (Auto) 1 (On)                                        |
-| fanState           | String             | Fan State (Read Only)                 |                                                        |
+| fanState           | Switch             | Fan State (Read Only)                 |                                                        |
 | fanStateRaw        | Number             | Fan State Raw (Read Only)             | 0 (Off) 1 (On)                                         |
 | scheduleMode       | String             | Current Schedule Mode                 |                                                        |
 | scheduleModeRaw    | Number             | Current Schedule mode Raw (Read Only) | 0(Disabled) 1(Enabled)                                 |
@@ -119,7 +119,7 @@ Number Guest_HVAC_Humidity                  "Humidity [%d %%]"      {channel="ve
 String Guest_HVAC_State                     "State [%s]"            {channel="venstarthermostat:colorTouchThermostat:001122334455:systemState"}
 String Guest_Away_Mode                      "Away Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:awayMode"}
 String Guest_Fan_Mode                      "Fan Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:fanMode"}
-String Guest_Fan_State                      "Fan State [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:fanState"}
+Switch Guest_Fan_State                      "Fan State"             {channel="venstarthermostat:colorTouchThermostat:001122334455:fanState"}
 String Guest_Schedule_Mode                      "Schedule Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:scheduleMode"}
 String Guest_Schedule_Part                      "Schedule Part [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:schedulePart"}
 DateTime Guest_timestampDay0                 "Date/Time Last Update [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:timestampDay0"}
@@ -144,7 +144,7 @@ sitemap demo label="Venstar Color Thermostat Demo"
     Switch item=Guest_Away_Mode mappings=[home=Home,away=Away]
     Text item=Guest_HVAC_State
     Switch item=Guest_Fan_Mode mappings=[auto=Auto, on=On]
-    Text item=Guest_Fan_State
+    Switch item=Guest_Fan_State mappings=[on=On,off=Off]
     Switch item=Guest_Schedule_Mode mappings=[enabled=Enabled,disabled=Disabled]
     Text item=Guest_Schedule_Part
     Text item=Guest_timestampDay0
