@@ -113,7 +113,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
+        if (RefreshType.REFRESH == command) {
             requestRefreshShadePositions();
             return;
         }
@@ -129,14 +129,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 throw new ProcessingException("Web targets not initialized");
             }
             int id = Integer.parseInt(channelUID.getIdWithoutGroup());
-            if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
+            if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateScene(id);
                 pollShades();
-            } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
+            } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateSceneCollection(id);
                 pollShades();
             } else if (automationChannelTypeUID.equals(channel.getChannelTypeUID())) {
-                webTargets.enableScheduledEvent(id, OnOffType.ON.equals(command));
+                webTargets.enableScheduledEvent(id, OnOffType.ON == command);
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
