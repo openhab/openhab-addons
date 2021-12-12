@@ -364,12 +364,12 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         @Override
         public String getAttributeLocalName(int index) {
-            return Introspector.decapitalize(super.getAttributeLocalName(index));
+            return Introspector.decapitalize(super.getAttributeLocalName(index)).intern();
         }
 
         @Override
         public String getLocalName() {
-            return Introspector.decapitalize(super.getLocalName());
+            return Introspector.decapitalize(super.getLocalName()).intern();
         }
     }
 }
