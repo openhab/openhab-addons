@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Activate;
 /**
  * Base class to offer support for script extension providers
  *
- * @author Jonathan Gilbert
+ * @author Jonathan Gilbert - Initial contribution
  */
 public abstract class ScriptDisposalAwareScriptExtensionProvider
         implements ScriptExtensionProvider, ScriptDisposalAware {

@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Allows scripts to register for lifecycle events
  *
- * @author Jonathan Gilbert
+ * @author Jonathan Gilbert - Initial contribution
  */
 public class Lifecycle implements ScriptDisposalAware {
     private static final Logger logger = LoggerFactory.getLogger(Lifecycle.class);
