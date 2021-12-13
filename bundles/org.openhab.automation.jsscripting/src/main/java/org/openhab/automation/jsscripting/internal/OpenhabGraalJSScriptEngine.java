@@ -10,12 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.automation.jsscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.SeekableByteChannel;
@@ -43,8 +41,8 @@ import org.graalvm.polyglot.Engine;
 import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
+import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
 import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocable;
-import org.openhab.core.OpenHAB;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +60,6 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
-    private static final String MODULE_DIR = String.join(File.separator, OpenHAB.getConfigFolder(), "automation", "lib",
-            "javascript", "personal");
     // final CommonJS search path for our library
     private static final Path LOCAL_NODE_PATH = Paths.get("/node_modules");
 
@@ -85,9 +81,8 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
                 Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
                         .build(),
                 Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
-                        .option("js.commonjs-require-cwd", MODULE_DIR).option("js.nashorn-compat", "true") // to
-                                                                                                           // ease
-                                                                                                           // migration
+                        .option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
+                        .option("js.nashorn-compat", "true") // to ease migration
                         .option("js.ecmascript-version", "2021") // nashorn compat will enforce es5 compatibility, we
                                                                  // want ecma2021
                         .option("js.commonjs-require", "true") // enable CommonJS module support

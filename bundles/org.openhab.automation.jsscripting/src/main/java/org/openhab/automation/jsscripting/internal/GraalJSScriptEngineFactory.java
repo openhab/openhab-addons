@@ -27,8 +27,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 
-import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
-
 /**
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
  *
@@ -43,13 +41,24 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
     private boolean injectionEnabled;
 
+    public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
+
     @Override
     public List<String> getScriptTypes() {
         List<String> scriptTypes = new ArrayList<>();
-        GraalJSEngineFactory graalJSEngineFactory = new GraalJSEngineFactory();
 
-        scriptTypes.addAll(graalJSEngineFactory.getMimeTypes());
-        scriptTypes.addAll(graalJSEngineFactory.getExtensions());
+        /*
+         * Whilst we run in parallel with Nashorn, we use a custom mime-type to avoid
+         * disrupting Nashorn scripts. When Nashorn is removed, we take over the standard
+         * JS runtime.
+         */
+
+        // GraalJSEngineFactory graalJSEngineFactory = new GraalJSEngineFactory();
+        //
+        // scriptTypes.addAll(graalJSEngineFactory.getMimeTypes());
+        // scriptTypes.addAll(graalJSEngineFactory.getExtensions());
+
+        scriptTypes.add(MIME_TYPE);
 
         return Collections.unmodifiableList(scriptTypes);
     }
