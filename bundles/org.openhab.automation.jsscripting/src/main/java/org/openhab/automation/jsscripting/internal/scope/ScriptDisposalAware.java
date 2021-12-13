@@ -10,18 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.teleinfo.internal.data;
+
+package org.openhab.automation.jsscripting.internal.scope;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Define the evolution option values
- * 
- * @author Olivier MARCEAU - Initial contribution
+ * Specifies that an object is aware of script disposal events
  *
+ * @author Jonathan Gilbert - Initial contribution
  */
 @NonNullByDefault
-public enum Evolution {
-    ICC,
-    NONE
+public interface ScriptDisposalAware {
+
+    /**
+     * Indicates that the script has been disposed
+     *
+     * @param scriptIdentifier the identifier for the script
+     */
+    void unload(String scriptIdentifier);
 }
