@@ -185,7 +185,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
         try {
             eval(globalScript);
         } catch (ScriptException e) {
-            LOGGER.error("Could not inject gloabl script", e);
+            LOGGER.error("Could not inject global script", e);
         }
     }
 }
