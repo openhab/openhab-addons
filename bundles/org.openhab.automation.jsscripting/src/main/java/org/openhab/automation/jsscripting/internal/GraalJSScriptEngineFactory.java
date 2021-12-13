@@ -20,15 +20,26 @@ import java.util.Map;
 import javax.script.ScriptEngine;
 
 import org.openhab.core.automation.module.script.ScriptEngineFactory;
+import org.openhab.core.config.core.ConfigurableService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 
 /**
  * An implementation of {@link ScriptEngineFactory} with customizations for GraalJS ScriptEngines.
  *
  * @author Jonathan Gilbert - Initial contribution
+ * @author Dan Cunningham - Script injections
  */
-@Component(service = ScriptEngineFactory.class)
+@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jsscripting", property = Constants.SERVICE_PID
+        + "=org.openhab.automation.jsscripting")
+@ConfigurableService(category = "automation", label = "JS Scripting", description_uri = "automation:jsscripting")
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
+    private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
+    private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
+    private boolean injectionEnabled;
 
     public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
 
@@ -59,7 +70,18 @@ public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
 
     @Override
     public ScriptEngine createScriptEngine(String scriptType) {
-        OpenhabGraalJSScriptEngine engine = new OpenhabGraalJSScriptEngine();
-        return new DebuggingGraalScriptEngine<>(engine);
+        return new DebuggingGraalScriptEngine<>(
+                new OpenhabGraalJSScriptEngine(injectionEnabled ? INJECTION_CODE : null));
+    }
+
+    @Activate
+    protected void activate(BundleContext context, Map<String, ?> config) {
+        modified(config);
+    }
+
+    @Modified
+    protected void modified(Map<String, ?> config) {
+        Object injectionEnabled = config.get(CFG_INJECTION_ENABLED);
+        this.injectionEnabled = injectionEnabled == null || (Boolean) injectionEnabled;
     }
 }
