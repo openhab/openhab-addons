@@ -586,7 +586,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         if (responseData != null) {
-            logger.debug("The request '{}' yields '{}'", requestData, responseData);
+            logger.trace("The request '{}' yields '{}'", requestData, responseData);
             JsonObject resp = (JsonObject) JsonParser.parseReader(new StringReader(responseData));
 
             result = resp.get("result");

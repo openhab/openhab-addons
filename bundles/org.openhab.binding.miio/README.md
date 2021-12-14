@@ -341,6 +341,7 @@ Currently the miio binding supports more than 310 different models.
 | Roborock Vacuum T7 v3        | miio:vacuum      | [roborock.vacuum.t7v3](#roborock-vacuum-t7v3) | Yes       |            |
 | Roborock Vacuum S6           | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes       |            |
 | Mi Robot Vacuum              | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes       |            |
+| ROIDMI EVE vacuum            | miio:basic       | [roidmi.vacuum.v60](#roidmi-vacuum-v60) | Yes       |            |
 | PTX OneKey Switch (WIFI)     | miio:basic       | [090615.switch.xswitch01](#090615-switch-xswitch01) | Yes       |            |
 | PTX Twokey switch(wifi)      | miio:basic       | [090615.switch.xswitch02](#090615-switch-xswitch02) | Yes       |            |
 | PTX ThreeKey Switch (WIFI)   | miio:basic       | [090615.switch.xswitch03](#090615-switch-xswitch03) | Yes       |            |
@@ -700,6 +701,7 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | task-switch          | Switch               | Imilab Timer - Task Switch               |            |
 | countdown-info       | Switch               | Imilab Timer - Countdown Info            |            |
 | bt-gw                | String               | BT Gateway                               | Value mapping `["disable"="Disable","enable"="Enable"]` |
+| bt-gw-devices        | String               | Connected BT Gateway Devices             | Note, refreshes every 2nd refresh. Channel requires cloud connectivity to function. Sample widget to visualise the (json) output available from the widget market |
 
 ### Mi Smart Plug WiFi (<a name="chuangmi-plug-hmi205">chuangmi.plug.hmi205</a>) Channels
 
@@ -2364,6 +2366,59 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 | elec_leakage         | Number:ElectricCurrent | Electic Leakage                          |            |
 | temperature          | Number:Temperature   | Temperature                              |            |
 
+### ROIDMI EVE vacuum (<a name="roidmi-vacuum-v60">roidmi.vacuum.v60</a>) Channels
+
+| Channel              | Type                 | Description                              | Comment    |
+|----------------------|----------------------|------------------------------------------|------------|
+| actions              | String               | Actions                                  | Value mapping `["vacuum-start-sweep"="Vacuum Start Sweep","vacuum-stop-sweeping"="Vacuum Stop Sweeping","vacuum-start-room-sweep"="Vacuum Start Room Sweep","battery-start-charge"="Battery Start Charge","filter-reset-filter-life"="Filter Reset Filter Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","brush-cleaner-reset-brush-life"="Brush Cleaner Reset Brush Life","custom-find-robot"="Custom Find Robot","custom-stop-find-charge"="Custom Stop Find Charge","custom-continue-sweep"="Custom Continue Sweep","custom-start-dust"="Custom Start Dust","custom-pause"="Custom Pause","custom-pause-find-charge"="Custom Pause Find Charge","custom-continue-find-charge"="Custom Continue Find Charge","custom-update-audio"="Custom Update Audio","custom-set-voice"="Custom Set Voice","map-request-path"="Map Request Path","map-change-area-name"="Map Change Area Name","map-set-auto-area"="Map Set Auto Area","map-local-map"="Map Local Map","map-area-custom"="Map Area Custom","map-area-order"="Map Area Order","sweep-start-sweep"="Sweep Start Sweep"]` |
+| status               | Number               | Robot Cleaner - Status                   | Value mapping `["1"="Dormant","2"="Idle","3"="Paused","4"="Sweeping","5"="Go Charging","6"="Charging","7"="Error","8"="Rfctrl","9"="Fullcharge","10"="Shutdown","11"="Findchargerpause"]` |
+| fault                | Number               | Robot Cleaner - Device Fault             | Value mapping `["0"="No Faults","1"="Low Battery Find Charger","2"="Low Battery And Poweroff","3"="Wheel Trap","4"="Collision Error","5"="Tile Do Task","6"="Lidar Point Error","7"="Front Wall Error","8"="Psd Dirty","9"="Middle Brush Fatal","10"="Sid Brush","11"="Fan Speed Error","12"="Lidar Cover","13"="Garbage Box Full","14"="Garbage Box Out","15"="Garbage Box Full Out","16"="Physical Trapped","17"="Pick Up Do Task","18"="No Water Box Do Task","19"="Water Box Empty","20"="Clean Cannot Arrive","21"="Start Form Forbid","22"="Drop","23"="Kit Water Pump","24"="Find Charger Failed","25"="Low Power Clean"]` |
+| mode                 | Number               | Robot Cleaner - Mode                     | Value mapping `["1"="Silent","2"="Basic","3"="Strong","4"="Full Speed","0"="Sweep"]` |
+| sweep_type           | Number               | Robot Cleaner - Sweep Type               | Value mapping `["0"="Sweep","1"="Mop","2"="Mop And Sweep"]` |
+| on                   | Number               | Robot Cleaner - Switch Status            | Value mapping `["1"="Open"]` |
+| battery_level        | Number:Dimensionless | Battery - Battery Level                  |            |
+| charging_state       | Number               | Battery - Charging State                 | Value mapping `["1"="Charging","2"="Not charging","3"="Not chargeable"]` |
+| volume               | Number:Dimensionless | Speaker - Volume                         |            |
+| mute                 | Switch               | Speaker - Mute                           |            |
+| filter_life_level    | Number:Dimensionless | Filter - Filter Life Level               |            |
+| filter_left_time     | Number:Time          | Filter - Filter Left Time                |            |
+| brush_left_time      | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush_life_level     | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| brush_left_time1     | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush_life_level1    | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| brush_left_time2     | Number:Time          | Brush Cleaner - Brush Left Time          |            |
+| brush_life_level2    | Number:Dimensionless | Brush Cleaner - Brush Life Level         |            |
+| mop                  | Switch               | Custom - Mop                             |            |
+| work_station_freq    | Number               | Custom - Work Station Freq               |            |
+| timing               | String               | Custom - Timing                          |            |
+| clean_area           | Number               | Custom - Clean Area                      |            |
+| uid                  | String               | Custom - Uid                             |            |
+| auto_boost           | Switch               | Custom - Auto Boost                      |            |
+| forbid_mode          | String               | Custom - Forbid Mode                     |            |
+| water_level          | Number               | Custom - Water Level                     | Value mapping `["1"="First","2"="Second","3"="Three","4"="Fourth","0"="Mop"]` |
+| total_clean_time     | Number:Time          | Custom - Total Clean Time                |            |
+| total_clean_areas    | Number               | Custom - Total Clean Areas               |            |
+| clean_counts         | Number               | Custom - Clean Counts                    |            |
+| clean_time           | Number:Time          | Custom - Clean Time                      |            |
+| double_clean         | Switch               | Custom - Double Clean                    |            |
+| edge_sweep           | Switch               | Custom - Edge Sweep                      |            |
+| led_switch           | Switch               | Custom - Led Switch                      |            |
+| lidar_collision      | Switch               | Custom - Lidar Collision                 |            |
+| station_key          | Switch               | Custom - Station Key                     |            |
+| station_led          | Switch               | Custom - Station Led                     |            |
+| current_audio        | String               | Custom - Current Audio                   |            |
+| progress             | String               | Custom - Progress                        |            |
+| station_type         | Number               | Custom - Station Type                    |            |
+| voice_conf           | String               | Custom - Voice Conf                      |            |
+| clean_path           | String               | Map - Clean Path                         |            |
+| restricted_zone      | String               | Map - Restricted Zone                    |            |
+| auto_area            | String               | Map - Auto Area                          |            |
+| map_memory           | Switch               | Map - Map Memory                         |            |
+| map_name             | String               | Map - Map Name                           |            |
+| use_auto_area        | Switch               | Map - Use Auto Area                      |            |
+| path_type            | Number               | Map - Path Type                          | Value mapping `["0"="Normal","1"="Y-Mopping","2"="Repeat-Mopping"]` |
+| sweep_mode           | Number               | Sweep - Sweep Mode                       | Value mapping `["1"="Total","2"="Area","3"="Curpoint","4"="Point","7"="Smart","8"="AmartArea","9"="DepthTotal","10"="AlongWall","0"="Idle"]` |
+
 ### PTX OneKey Switch (WIFI) (<a name="090615-switch-xswitch01">090615.switch.xswitch01</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
@@ -2415,60 +2470,63 @@ Note, not all the values need to be in the json file, e.g. a subset of the param
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
-| state                | Number               | State                                    |            |
-| mode                 | Number               | Mode                                     |            |
-| err_state            | Number               | Error                                    |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
+| state                | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
+| mode                 | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
+| err_state            | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
 | battery_life         | Number               | Battery                                  |            |
-| box_type             | Number               | Box type                                 |            |
+| box_type             | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
 | mop_type             | Number               | mop_type                                 |            |
+| mop_route            | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
 | s_time               | Number               | Clean time                               |            |
 | s_area               | Number               | Clean Area                               |            |
-| suction_grade        | Number               | suction_grade                            |            |
-| water_grade          | Number               | water_grade                              |            |
+| suction_grade        | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
+| water_grade          | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
 | remember_map         | Number               | remember_map                             |            |
 | has_map              | Number               | has_map                                  |            |
-| is_mop               | Number               | is_mop                                   |            |
+| is_mop               | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
 | has_newmap           | Number               | has_newmap                               |            |
 
 ### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v7">viomi.vacuum.v7</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
-| state                | Number               | State                                    |            |
-| mode                 | Number               | Mode                                     |            |
-| err_state            | Number               | Error                                    |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
+| state                | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
+| mode                 | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
+| err_state            | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
 | battery_life         | Number               | Battery                                  |            |
-| box_type             | Number               | Box type                                 |            |
+| box_type             | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
 | mop_type             | Number               | mop_type                                 |            |
+| mop_route            | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
 | s_time               | Number               | Clean time                               |            |
 | s_area               | Number               | Clean Area                               |            |
-| suction_grade        | Number               | suction_grade                            |            |
-| water_grade          | Number               | water_grade                              |            |
+| suction_grade        | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
+| water_grade          | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
 | remember_map         | Number               | remember_map                             |            |
 | has_map              | Number               | has_map                                  |            |
-| is_mop               | Number               | is_mop                                   |            |
+| is_mop               | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
 | has_newmap           | Number               | has_newmap                               |            |
 
 ### Mi Robot Vacuum-Mop P (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
 
 | Channel              | Type                 | Description                              | Comment    |
 |----------------------|----------------------|------------------------------------------|------------|
-| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause"]` |
-| state                | Number               | State                                    |            |
-| mode                 | Number               | Mode                                     |            |
-| err_state            | Number               | Error                                    |            |
+| vacuumaction         | Number               | Vacuum Action                            | Value mapping `["1"="Start","0"="Stop","2"="Pause","3"="Dock"]` |
+| state                | Number               | State                                    | Value mapping `["0"="Idle Undocked","1"="Idle","2"="Paused","3"="Sweeping","4"="Go Charging","5"="Charging","6"="Sweeping and Mopping","7"="Mopping"]` |
+| mode                 | Number               | Clean Mode                               | Value mapping `["0"="Everywhere","1"="Edges","2"="Surface","3"="Fixed Location"]` |
+| err_state            | Number               | Error                                    | Value mapping `["0"="Sleeping and not charging","500"="Radar timed out","501"="Wheels stuck","502"="Low battery","503"="Dust bin missing","508"="Uneven ground","509"="Cliff sensor erro","510"="Collision sensor error","511"="Could not return to dock","512"="Could not return to dock","513"="Could not navigate","514"="Vacuum stuck","515"="Charging erro","516"="Mop temperature error","521"="Water tank is not installed","522"="Mop is not installed","525"="Insufficient water in water tank","527"="Remove mop","528"="Dust bin missing","529"="Mop and water tank missing","530"="Mop and water tank missin","531"="Water tank is not installed","2101"="Unsufficient battery, continuing cleaning after recharge","2103"="Charging","2104"="Fully charged"]` |
 | battery_life         | Number               | Battery                                  |            |
-| box_type             | Number               | Box type                                 |            |
+| box_type             | Number               | Box type                                 | Value mapping `["0"="No Bin","1"="Sweep","2"="Mop","3"="Sweep and Mop"]` |
 | mop_type             | Number               | mop_type                                 |            |
+| mop_route            | Number               | Mop Route                                | Value mapping `["0"="S-Pattern","1"="Y-Pattern"]` |
 | s_time               | Number               | Clean time                               |            |
 | s_area               | Number               | Clean Area                               |            |
-| suction_grade        | Number               | suction_grade                            |            |
-| water_grade          | Number               | water_grade                              |            |
+| suction_grade        | Number               | suction_grade                            | Value mapping `["0"="Silent","1"="Basic","2"="Medium","3"="Strong"]` |
+| water_grade          | Number               | water_grade                              | Value mapping `["11"="Low","12"="Medium","13"="High"]` |
 | remember_map         | Number               | remember_map                             |            |
 | has_map              | Number               | has_map                                  |            |
-| is_mop               | Number               | is_mop                                   |            |
+| is_mop               | Number               | is_mop                                   | Value mapping `["0"="Vacuum","1"="Vacuum And Mop","2"="Mop","3"="CleanZone","4"="CleanSpot"]` |
 | has_newmap           | Number               | has_newmap                               |            |
 
 ### Viomi S9 (<a name="viomi-vacuum-v18">viomi.vacuum.v18</a>) Channels
@@ -5663,6 +5721,7 @@ Number:Time countdown "Imilab Timer - Countdown" (G_plug) {channel="miio:basic:p
 Switch task_switch "Imilab Timer - Task Switch" (G_plug) {channel="miio:basic:plug:task-switch"}
 Switch countdown_info "Imilab Timer - Countdown Info" (G_plug) {channel="miio:basic:plug:countdown-info"}
 String bt_gw "BT Gateway" (G_plug) {channel="miio:basic:plug:bt-gw"}
+String bt_gw_devices "Connected BT Gateway Devices" (G_plug) {channel="miio:basic:plug:bt-gw-devices"}
 ```
 
 ### Mi Smart Plug WiFi (chuangmi.plug.hmi205) item file lines
@@ -7646,6 +7705,62 @@ Number:ElectricCurrent elec_leakage "Electic Leakage" (G_powerstrip) {channel="m
 Number:Temperature temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
 ```
 
+### ROIDMI EVE vacuum (roidmi.vacuum.v60) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```
+Group G_vacuum "ROIDMI EVE vacuum" <status>
+String actions "Actions" (G_vacuum) {channel="miio:basic:vacuum:actions"}
+Number status "Robot Cleaner - Status" (G_vacuum) {channel="miio:basic:vacuum:status"}
+Number fault "Robot Cleaner - Device Fault" (G_vacuum) {channel="miio:basic:vacuum:fault"}
+Number mode "Robot Cleaner - Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number sweep_type "Robot Cleaner - Sweep Type" (G_vacuum) {channel="miio:basic:vacuum:sweep_type"}
+Number on "Robot Cleaner - Switch Status" (G_vacuum) {channel="miio:basic:vacuum:on"}
+Number:Dimensionless battery_level "Battery - Battery Level" (G_vacuum) {channel="miio:basic:vacuum:battery_level"}
+Number charging_state "Battery - Charging State" (G_vacuum) {channel="miio:basic:vacuum:charging_state"}
+Number:Dimensionless volume "Speaker - Volume" (G_vacuum) {channel="miio:basic:vacuum:volume"}
+Switch mute "Speaker - Mute" (G_vacuum) {channel="miio:basic:vacuum:mute"}
+Number:Dimensionless filter_life_level "Filter - Filter Life Level" (G_vacuum) {channel="miio:basic:vacuum:filter_life_level"}
+Number:Time filter_left_time "Filter - Filter Left Time" (G_vacuum) {channel="miio:basic:vacuum:filter_left_time"}
+Number:Time brush_left_time "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time"}
+Number:Dimensionless brush_life_level "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level"}
+Number:Time brush_left_time1 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time1"}
+Number:Dimensionless brush_life_level1 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level1"}
+Number:Time brush_left_time2 "Brush Cleaner - Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:brush_left_time2"}
+Number:Dimensionless brush_life_level2 "Brush Cleaner - Brush Life Level" (G_vacuum) {channel="miio:basic:vacuum:brush_life_level2"}
+Switch mop "Custom - Mop" (G_vacuum) {channel="miio:basic:vacuum:mop"}
+Number work_station_freq "Custom - Work Station Freq" (G_vacuum) {channel="miio:basic:vacuum:work_station_freq"}
+String timing "Custom - Timing" (G_vacuum) {channel="miio:basic:vacuum:timing"}
+Number clean_area "Custom - Clean Area" (G_vacuum) {channel="miio:basic:vacuum:clean_area"}
+String uid "Custom - Uid" (G_vacuum) {channel="miio:basic:vacuum:uid"}
+Switch auto_boost "Custom - Auto Boost" (G_vacuum) {channel="miio:basic:vacuum:auto_boost"}
+String forbid_mode "Custom - Forbid Mode" (G_vacuum) {channel="miio:basic:vacuum:forbid_mode"}
+Number water_level "Custom - Water Level" (G_vacuum) {channel="miio:basic:vacuum:water_level"}
+Number:Time total_clean_time "Custom - Total Clean Time" (G_vacuum) {channel="miio:basic:vacuum:total_clean_time"}
+Number total_clean_areas "Custom - Total Clean Areas" (G_vacuum) {channel="miio:basic:vacuum:total_clean_areas"}
+Number clean_counts "Custom - Clean Counts" (G_vacuum) {channel="miio:basic:vacuum:clean_counts"}
+Number:Time clean_time "Custom - Clean Time" (G_vacuum) {channel="miio:basic:vacuum:clean_time"}
+Switch double_clean "Custom - Double Clean" (G_vacuum) {channel="miio:basic:vacuum:double_clean"}
+Switch edge_sweep "Custom - Edge Sweep" (G_vacuum) {channel="miio:basic:vacuum:edge_sweep"}
+Switch led_switch "Custom - Led Switch" (G_vacuum) {channel="miio:basic:vacuum:led_switch"}
+Switch lidar_collision "Custom - Lidar Collision" (G_vacuum) {channel="miio:basic:vacuum:lidar_collision"}
+Switch station_key "Custom - Station Key" (G_vacuum) {channel="miio:basic:vacuum:station_key"}
+Switch station_led "Custom - Station Led" (G_vacuum) {channel="miio:basic:vacuum:station_led"}
+String current_audio "Custom - Current Audio" (G_vacuum) {channel="miio:basic:vacuum:current_audio"}
+String progress "Custom - Progress" (G_vacuum) {channel="miio:basic:vacuum:progress"}
+Number station_type "Custom - Station Type" (G_vacuum) {channel="miio:basic:vacuum:station_type"}
+String voice_conf "Custom - Voice Conf" (G_vacuum) {channel="miio:basic:vacuum:voice_conf"}
+String clean_path "Map - Clean Path" (G_vacuum) {channel="miio:basic:vacuum:clean_path"}
+String restricted_zone "Map - Restricted Zone" (G_vacuum) {channel="miio:basic:vacuum:restricted_zone"}
+String auto_area "Map - Auto Area" (G_vacuum) {channel="miio:basic:vacuum:auto_area"}
+Switch map_memory "Map - Map Memory" (G_vacuum) {channel="miio:basic:vacuum:map_memory"}
+String map_name "Map - Map Name" (G_vacuum) {channel="miio:basic:vacuum:map_name"}
+Switch use_auto_area "Map - Use Auto Area" (G_vacuum) {channel="miio:basic:vacuum:use_auto_area"}
+Number path_type "Map - Path Type" (G_vacuum) {channel="miio:basic:vacuum:path_type"}
+Number sweep_mode "Sweep - Sweep Mode" (G_vacuum) {channel="miio:basic:vacuum:sweep_mode"}
+```
+
 ### PTX OneKey Switch (WIFI) (090615.switch.xswitch01) item file lines
 
 note: Autogenerated example. Replace the id (switch) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -7716,11 +7831,12 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 Group G_vacuum "Viomi Cleaning Robot V-RVCLM21B" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
 Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
 Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
 Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
 Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
 Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
 Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
@@ -7739,11 +7855,12 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
 Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
 Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
 Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
 Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
 Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
 Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
@@ -7762,11 +7879,12 @@ note: Autogenerated example. Replace the id (vacuum) in the channel with your ow
 Group G_vacuum "Mi Robot Vacuum-Mop P" <status>
 Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
-Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number mode "Clean Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
 Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
 Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
 Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
 Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number mop_route "Mop Route" (G_vacuum) {channel="miio:basic:vacuum:mop_route"}
 Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
 Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
 Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
