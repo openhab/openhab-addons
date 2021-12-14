@@ -33,13 +33,13 @@ import org.osgi.service.component.annotations.Modified;
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
  */
-@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.automation.jsscripting", property = Constants.SERVICE_PID
-        + "=org.openhab.automation.jsscripting")
+@Component(service = ScriptEngineFactory.class, configurationPid = "org.openhab.jsscripting", property = Constants.SERVICE_PID
+        + "=org.openhab.jsscripting")
 @ConfigurableService(category = "automation", label = "JS Scripting", description_uri = "automation:jsscripting")
 public final class GraalJSScriptEngineFactory implements ScriptEngineFactory {
     private static final String CFG_INJECTION_ENABLED = "injectionEnabled";
     private static final String INJECTION_CODE = "Object.assign(this, require('openhab'));";
-    private boolean injectionEnabled;
+    private boolean injectionEnabled = true;
 
     public static final String MIME_TYPE = "application/javascript;version=ECMAScript-2021";
 
