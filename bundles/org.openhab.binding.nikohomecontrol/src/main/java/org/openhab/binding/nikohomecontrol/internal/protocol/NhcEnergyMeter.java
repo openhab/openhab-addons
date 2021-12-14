@@ -36,14 +36,16 @@ public abstract class NhcEnergyMeter {
 
     protected String id;
     protected String name;
+    protected @Nullable String location;
     // This can be null as long as we do not receive power readings
     protected volatile @Nullable Integer power = null;
 
     private @Nullable NhcEnergyMeterEvent eventHandler;
 
-    protected NhcEnergyMeter(String id, String name, NikoHomeControlCommunication nhcComm) {
+    protected NhcEnergyMeter(String id, String name, @Nullable String location, NikoHomeControlCommunication nhcComm) {
         this.id = id;
         this.name = name;
+        this.location = location;
         this.nhcComm = nhcComm;
     }
 
@@ -99,6 +101,15 @@ public abstract class NhcEnergyMeter {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Get location name of energy meter.
+     *
+     * @return location name
+     */
+    public @Nullable String getLocation() {
+        return location;
     }
 
     /**

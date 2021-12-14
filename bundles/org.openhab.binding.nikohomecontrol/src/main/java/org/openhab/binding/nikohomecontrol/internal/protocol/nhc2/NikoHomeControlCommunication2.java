@@ -364,7 +364,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
         if ("action".equals(device.type) || "virtual".equals(device.type)) {
             if (!actions.containsKey(device.uuid)) {
-                logger.debug("adding action device {}, {}", device.uuid, device.name);
+                logger.debug("adding action device {} model {}, {}", device.uuid, device.model, device.name);
 
                 ActionType actionType;
                 switch (device.model) {
@@ -396,30 +396,33 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         break;
                     default:
                         actionType = ActionType.GENERIC;
-                        logger.debug("device model {} not recognised, default to GENERIC action", device.model);
+                        logger.debug("device type {} and model {} not recognised for {}, {}, ignoring", device.type,
+                                device.model, device.uuid, device.name);
+                        return;
                 }
 
-                NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
-                        actionType, location, this);
+                NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.type, device.technology,
+                        device.model, location, actionType, this);
                 actions.put(device.uuid, nhcAction);
             }
         } else if ("thermostat".equals(device.type)) {
             if (!thermostats.containsKey(device.uuid)) {
-                logger.debug("adding thermostat device {}, {}", device.uuid, device.name);
+                logger.debug("adding thermostat device {} model {}, {}", device.uuid, device.model, device.name);
 
-                NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.model,
-                        device.technology, location, this);
+                NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.type,
+                        device.technology, device.model, location, this);
                 thermostats.put(device.uuid, nhcThermostat);
             }
-        } else if ("centralmeter".equals(device.type)) {
+        } else if ("centralmeter".equals(device.type) || "energyhome".equals(device.type)) {
             if (!energyMeters.containsKey(device.uuid)) {
-                logger.debug("adding centralmeter device {}, {}", device.uuid, device.name);
-                NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
-                        device.technology, this, scheduler);
+                logger.debug("adding energy meter device {} model {}, {}", device.uuid, device.model, device.name);
+                NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.type,
+                        device.technology, device.model, location, this, scheduler);
                 energyMeters.put(device.uuid, nhcEnergyMeter);
             }
         } else {
-            logger.debug("device type {} not supported for {}, {}", device.type, device.uuid, device.name);
+            logger.debug("device type {} and model {} not supported for {}, {}", device.type, device.model, device.uuid,
+                    device.name);
         }
     }
 
@@ -579,18 +582,23 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateEnergyMeterState(NhcEnergyMeter2 energyMeter, List<NhcProperty> deviceProperties) {
-        deviceProperties.stream().map(p -> p.electricalPower).filter(Objects::nonNull).findFirst()
-                .ifPresent(electricalPower -> {
-                    try {
-                        // Sometimes API sends a fractional part, although API should only send whole units in W,
-                        // therefore drop fractional part
-                        energyMeter.setPower((int) Double.parseDouble(electricalPower));
-                        logger.trace("setting energy meter {} power to {}", energyMeter.getId(), electricalPower);
-                    } catch (NumberFormatException e) {
-                        energyMeter.setPower(null);
-                        logger.trace("received empty energy meter {} power reading", energyMeter.getId());
-                    }
-                });
+        try {
+            Optional<Integer> electricalPower = deviceProperties.stream().map(p -> p.electricalPower)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                    .filter(Objects::nonNull).findFirst();
+            Optional<Integer> powerFromGrid = deviceProperties.stream().map(p -> p.electricalPowerFromGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                    .filter(Objects::nonNull).findFirst();
+            Optional<Integer> powerToGrid = deviceProperties.stream().map(p -> p.electricalPowerToGrid)
+                    .map(s -> (!((s == null) || s.isEmpty())) ? Math.round(Float.parseFloat(s)) : null)
+                    .filter(Objects::nonNull).findFirst();
+            int power = electricalPower.orElse(powerFromGrid.orElse(0) - powerToGrid.orElse(0));
+            logger.trace("setting energy meter {} power to {}", energyMeter.getId(), electricalPower);
+            energyMeter.setPower(power);
+        } catch (NumberFormatException e) {
+            energyMeter.setPower(null);
+            logger.trace("received empty energy meter {} power reading", energyMeter.getId());
+        }
     }
 
     @Override
