@@ -329,7 +329,7 @@ public class AndroidDebugBridgeDevice {
                 int n3 = Integer.parseInt(matcher.group("n3"), 16);
                 commandList.add(String.format("sendevent /%s %d %d %d", inputPath, n1, n2, n3));
             }
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             logger.warn("NumberFormatException while parsing events, aborting");
             return "";
         }
