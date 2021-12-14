@@ -31,6 +31,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.UnDefType;
@@ -241,5 +242,17 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
     private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
         Bridge nhcBridge = getBridge();
         return nhcBridge != null ? (NikoHomeControlBridgeHandler) nhcBridge.getHandler() : null;
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo statusInfo) {
+        ThingStatus status = statusInfo.getStatus();
+        if (ThingStatus.ONLINE.equals(status)) {
+            updateStatus(ThingStatus.ONLINE);
+        } else if (ThingStatus.OFFLINE.equals(status)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+        }
     }
 }
