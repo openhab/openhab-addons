@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.miio.internal.handler;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
+import org.openhab.binding.miio.internal.MiIoSendCommand;
 import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
@@ -136,6 +139,7 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
                     refreshCustomProperties(midevice, true);
                     return;
                 }
+                deviceVariables.put(TIMESTAMP, Instant.now().getEpochSecond());
                 logger.debug("Refresh properties for child device {}", getThing().getLabel());
                 refreshProperties(midevice, config.deviceId);
                 logger.debug("Refresh custom commands for child device {}", getThing().getLabel());
@@ -145,6 +149,15 @@ public class MiIoLumiHandler extends MiIoBasicHandler {
             }
         } catch (Exception e) {
             logger.debug("Error while performing periodic refresh for '{}': {}", getThing().getUID(), e.getMessage());
+        }
+    }
+
+    @Override
+    public void onMessageReceived(MiIoSendCommand response) {
+        super.onMessageReceived(response);
+        if (!response.isError() && (!response.getSender().isBlank()
+                && response.getSender().contentEquals(getThing().getUID().getAsString()))) {
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 }
