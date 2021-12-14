@@ -321,12 +321,17 @@ public class AndroidDebugBridgeDevice {
                 "exit");
         var matcher = INPUT_EVENT_PATTERN.matcher(out);
         var commandList = new ArrayList<String>();
-        while (matcher.find()) {
-            String inputPath = matcher.group("input");
-            int n1 = Integer.parseInt(matcher.group("n1"), 16);
-            int n2 = Integer.parseInt(matcher.group("n2"), 16);
-            int n3 = Integer.parseInt(matcher.group("n3"), 16);
-            commandList.add(String.format("sendevent /%s %d %d %d", inputPath, n1, n2, n3));
+        try {
+            while (matcher.find()) {
+                String inputPath = matcher.group("input");
+                int n1 = Integer.parseInt(matcher.group("n1"), 16);
+                int n2 = Integer.parseInt(matcher.group("n2"), 16);
+                int n3 = Integer.parseInt(matcher.group("n3"), 16);
+                commandList.add(String.format("sendevent /%s %d %d %d", inputPath, n1, n2, n3));
+            }
+        }catch (NumberFormatException e){
+            logger.warn("NumberFormatException while parsing events, aborting");
+            return "";
         }
         return String.join(" && ", commandList);
     }
