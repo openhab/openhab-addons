@@ -95,6 +95,12 @@
 				<advanced>true</advanced>
 				<default>9292</default>
 			</parameter>
+			<parameter name="callbackRegTimeout" type="integer" min="30">
+				<label>Callback Reg. Timeout</label>
+				<description>Maximum time in seconds for callback registration in the Homematic gateway.</description>
+				<advanced>true</advanced>
+				<default>120</default>
+			</parameter>
 			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
 				<label>Install Mode Duration</label>
 				<description>Time in seconds that the controller will be in install mode when a device discovery is initiated</description>

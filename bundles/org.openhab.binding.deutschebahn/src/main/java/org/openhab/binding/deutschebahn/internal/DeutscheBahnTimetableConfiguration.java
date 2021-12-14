@@ -12,7 +12,16 @@
  */
 package org.openhab.binding.deutschebahn.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.deutschebahn.internal.filter.FilterParser;
+import org.openhab.binding.deutschebahn.internal.filter.FilterParserException;
+import org.openhab.binding.deutschebahn.internal.filter.FilterScanner;
+import org.openhab.binding.deutschebahn.internal.filter.FilterScannerException;
+import org.openhab.binding.deutschebahn.internal.filter.FilterToken;
+import org.openhab.binding.deutschebahn.internal.filter.TimetableStopPredicate;
 
 /**
  * The {@link DeutscheBahnTimetableConfiguration} for the Timetable bridge-type.
@@ -38,9 +47,27 @@ public class DeutscheBahnTimetableConfiguration {
     public String trainFilter = "";
 
     /**
+     * Specifies additional filters for trains to be displayed within the timetable.
+     */
+    public String additionalFilter = "";
+
+    /**
      * Returns the {@link TimetableStopFilter}.
      */
-    public TimetableStopFilter getTimetableStopFilter() {
+    public TimetableStopFilter getTrainFilterFilter() {
         return TimetableStopFilter.valueOf(this.trainFilter.toUpperCase());
+    }
+
+    /**
+     * Returns the additional configured {@link TimetableStopPredicate} or <code>null</code> if not specified.
+     */
+    public @Nullable TimetableStopPredicate getAdditionalFilter() throws FilterScannerException, FilterParserException {
+        if (additionalFilter.isBlank()) {
+            return null;
+        } else {
+            final FilterScanner scanner = new FilterScanner();
+            final List<FilterToken> filterTokens = scanner.processInput(additionalFilter);
+            return FilterParser.parse(filterTokens);
+        }
     }
 }

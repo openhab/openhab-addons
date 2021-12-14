@@ -58,6 +58,8 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
+    private int callbackRegistrationRetries;
+    private int callbackRegTimeout;
 
     /**
      * Returns the Homematic gateway address.
@@ -113,6 +115,20 @@ public class HomematicConfig {
      */
     public void setBinCallbackPort(int binCallbackPort) {
         this.binCallbackPort = binCallbackPort;
+    }
+
+    /**
+     * Sets timeout for callback registration.
+     */
+    public void setCallbackRegTimeout(int timeout) {
+        this.callbackRegTimeout = timeout;
+    }
+
+    /**
+     * Returns timeout for callback registrations.
+     */
+    public int getCallbackRegTimeout() {
+        return callbackRegTimeout;
     }
 
     /**
