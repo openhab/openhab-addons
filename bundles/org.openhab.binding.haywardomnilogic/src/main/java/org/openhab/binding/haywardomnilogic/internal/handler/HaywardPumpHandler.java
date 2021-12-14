@@ -152,7 +152,7 @@ public class HaywardPumpHandler extends HaywardThingHandler {
                         }
 
                         // Speed Select
-                        data = bridgehandler.evaluateXPath("//Filter/@pumpSpeed", xmlResponse);
+                        data = bridgehandler.evaluateXPath("//Pump/@pumpSpeed", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_PUMP_SPEEDSELECT, data.get(i));
 
                         // State
