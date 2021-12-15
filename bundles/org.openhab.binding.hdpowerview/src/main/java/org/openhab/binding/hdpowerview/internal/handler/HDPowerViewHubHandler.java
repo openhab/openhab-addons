@@ -169,6 +169,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         sceneCache.clear();
         sceneCollectionCache.clear();
         scheduledEventCache.clear();
+        deprecatedChannelsCreated = false;
     }
 
     public @Nullable HDPowerViewWebTargets getWebTargets() {
