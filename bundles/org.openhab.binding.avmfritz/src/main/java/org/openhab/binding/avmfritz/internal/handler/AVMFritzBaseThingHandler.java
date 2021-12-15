@@ -158,7 +158,7 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
                     updateLevelControl(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isColorLight()) {
                     updateColorLight(deviceModel.getColorControlModel(), deviceModel.getLevelControlModel());
-                } else if (deviceModel.isDimmableLight()) {
+                } else if (deviceModel.isDimmableLight() && !deviceModel.isHANFUNBlinds()) {
                     updateDimmableLight(deviceModel.getLevelControlModel());
                 } else if (deviceModel.isHANFUNUnit() && deviceModel.isHANFUNOnOff()) {
                     updateSimpleOnOffUnit(deviceModel.getSimpleOnOffUnit());
