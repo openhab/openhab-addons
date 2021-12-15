@@ -160,12 +160,30 @@ public abstract class NhcThermostat {
     }
 
     /**
-     * Get location name of action.
+     * Set name of thermostat.
+     *
+     * @param thermostat name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Get location name of thermostat.
      *
      * @return location name
      */
     public @Nullable String getLocation() {
         return location;
+    }
+
+    /**
+     * Set location of thermostat.
+     *
+     * @param thermostat location
+     */
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
     /**

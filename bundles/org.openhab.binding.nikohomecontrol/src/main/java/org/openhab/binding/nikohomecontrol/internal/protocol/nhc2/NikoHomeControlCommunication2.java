@@ -363,63 +363,74 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         if ("action".equals(device.type) || "virtual".equals(device.type)) {
-            if (!actions.containsKey(device.uuid)) {
+            ActionType actionType;
+            switch (device.model) {
+                case "generic":
+                case "pir":
+                case "simulation":
+                case "comfort":
+                case "alarms":
+                case "alloff":
+                case "overallcomfort":
+                case "garagedoor":
+                    actionType = ActionType.TRIGGER;
+                    break;
+                case "light":
+                case "socket":
+                case "switched-generic":
+                case "switched-fan":
+                case "flag":
+                    actionType = ActionType.RELAY;
+                    break;
+                case "dimmer":
+                    actionType = ActionType.DIMMER;
+                    break;
+                case "rolldownshutter":
+                case "sunblind":
+                case "venetianblind":
+                case "gate":
+                    actionType = ActionType.ROLLERSHUTTER;
+                    break;
+                default:
+                    actionType = ActionType.GENERIC;
+                    logger.debug("device type {} and model {} not recognised for {}, {}, ignoring", device.type,
+                            device.model, device.uuid, device.name);
+                    return;
+            }
+
+            NhcAction nhcAction = actions.get(device.uuid);
+            if (nhcAction != null) {
+                // update name and location so discovery will see updated name and location
+                nhcAction.setName(device.name);
+                nhcAction.setLocation(location);
+            } else {
                 logger.debug("adding action device {} model {}, {}", device.uuid, device.model, device.name);
-
-                ActionType actionType;
-                switch (device.model) {
-                    case "generic":
-                    case "pir":
-                    case "simulation":
-                    case "comfort":
-                    case "alarms":
-                    case "alloff":
-                    case "overallcomfort":
-                    case "garagedoor":
-                        actionType = ActionType.TRIGGER;
-                        break;
-                    case "light":
-                    case "socket":
-                    case "switched-generic":
-                    case "switched-fan":
-                    case "flag":
-                        actionType = ActionType.RELAY;
-                        break;
-                    case "dimmer":
-                        actionType = ActionType.DIMMER;
-                        break;
-                    case "rolldownshutter":
-                    case "sunblind":
-                    case "venetianblind":
-                    case "gate":
-                        actionType = ActionType.ROLLERSHUTTER;
-                        break;
-                    default:
-                        actionType = ActionType.GENERIC;
-                        logger.debug("device type {} and model {} not recognised for {}, {}, ignoring", device.type,
-                                device.model, device.uuid, device.name);
-                        return;
-                }
-
-                NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.type, device.technology,
-                        device.model, location, actionType, this);
-                actions.put(device.uuid, nhcAction);
+                nhcAction = new NhcAction2(device.uuid, device.name, device.type, device.technology, device.model,
+                        location, actionType, this);
             }
+            actions.put(device.uuid, nhcAction);
         } else if ("thermostat".equals(device.type)) {
-            if (!thermostats.containsKey(device.uuid)) {
+            NhcThermostat nhcThermostat = thermostats.get(device.uuid);
+            if (nhcThermostat != null) {
+                nhcThermostat.setName(device.name);
+                nhcThermostat.setLocation(location);
+            } else {
                 logger.debug("adding thermostat device {} model {}, {}", device.uuid, device.model, device.name);
-
-                NhcThermostat2 nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.type,
-                        device.technology, device.model, location, this);
-                thermostats.put(device.uuid, nhcThermostat);
+                nhcThermostat = new NhcThermostat2(device.uuid, device.name, device.type, device.technology,
+                        device.model, location, this);
             }
+            thermostats.put(device.uuid, nhcThermostat);
         } else if ("centralmeter".equals(device.type) || "energyhome".equals(device.type)) {
-            if (!energyMeters.containsKey(device.uuid)) {
+            NhcEnergyMeter nhcEnergyMeter = energyMeters.get(device.uuid);
+            if (nhcEnergyMeter != null) {
+                nhcEnergyMeter.setName(device.name);
+                nhcEnergyMeter.setLocation(location);
+            } else {
                 logger.debug("adding energy meter device {} model {}, {}", device.uuid, device.model, device.name);
-                NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.type,
-                        device.technology, device.model, location, this, scheduler);
-                energyMeters.put(device.uuid, nhcEnergyMeter);
+                nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.type, device.technology,
+                        device.model, location, this, scheduler);
             }
+            energyMeters.put(device.uuid, nhcEnergyMeter);
         } else {
             logger.debug("device type {} and model {} not supported for {}, {}", device.type, device.model, device.uuid,
                     device.name);
@@ -887,7 +898,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (error != null) {
-            logger.debug("Connection state: {}", state, error);
+            logger.debug("Connection state: {}, error", state, error);
             String message = error.getLocalizedMessage();
             message = (message != null) ? message : "@text/offline.communication-error";
             if (!MqttConnectionState.CONNECTING.equals(state)) {

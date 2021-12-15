@@ -104,12 +104,30 @@ public abstract class NhcEnergyMeter {
     }
 
     /**
-     * Get location name of energy meter.
+     * Set name of energyMeters meter.
+     *
+     * @param energyMeters meter name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Get location name of energyMeters meter.
      *
      * @return location name
      */
     public @Nullable String getLocation() {
         return location;
+    }
+
+    /**
+     * Set location of energyMeters meter.
+     *
+     * @param energyMeters meter location
+     */
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
     /**

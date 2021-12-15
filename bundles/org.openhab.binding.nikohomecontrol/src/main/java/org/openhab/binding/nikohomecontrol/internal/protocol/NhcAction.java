@@ -84,6 +84,15 @@ public abstract class NhcAction {
     }
 
     /**
+     * Set name of action.
+     *
+     * @param action name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Get type of action identified.
      * <p>
      * ActionType can be RELAY (for simple light or socket switch), DIMMER, ROLLERSHUTTER, TRIGGER or GENERIC.
@@ -101,6 +110,15 @@ public abstract class NhcAction {
      */
     public @Nullable String getLocation() {
         return location;
+    }
+
+    /**
+     * Set location of action.
+     *
+     * @param action location
+     */
+    public void setLocation(@Nullable String location) {
+        this.location = location;
     }
 
     /**
