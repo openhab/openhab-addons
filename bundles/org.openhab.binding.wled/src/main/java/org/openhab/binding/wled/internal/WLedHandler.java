@@ -305,6 +305,7 @@ public class WLedHandler extends BaseThingHandler {
             future.cancel(true);
             pollingFuture = null;
         }
+        api = null; // re-initialize api after configuration change
     }
 
     @Override
