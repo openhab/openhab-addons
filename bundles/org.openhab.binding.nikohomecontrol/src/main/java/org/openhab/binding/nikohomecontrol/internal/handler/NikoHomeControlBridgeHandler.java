@@ -152,11 +152,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public void controllerOnline() {
         bridgeOnline();
-
-        int refreshInterval = getConfig().as(NikoHomeControlBridgeConfig.class).refresh;
-        if (refreshTimer == null) {
-            setupRefreshTimer(refreshInterval);
-        }
     }
 
     /**
