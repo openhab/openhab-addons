@@ -28,7 +28,7 @@ public class Measurements {
     private double humidity;
 
     @SerializedName(value = "Dust")
-    private int dust;
+    private double dust;
 
     @SerializedName(value = "WaterLevel")
     private int waterLevel;
@@ -44,7 +44,7 @@ public class Measurements {
         return humidity;
     }
 
-    public int getDust() {
+    public double getDust() {
         return dust;
     }
 
