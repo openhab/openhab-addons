@@ -14,6 +14,8 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1;
@@ -45,8 +47,15 @@ public abstract class NikoHomeControlCommunication {
 
     protected final NhcControllerEvent handler;
 
-    protected NikoHomeControlCommunication(NhcControllerEvent handler) {
+    protected final ScheduledExecutorService scheduler;
+
+    // restart attempts
+    private volatile int delay = 0;
+    private volatile int attempt = 0;
+
+    protected NikoHomeControlCommunication(NhcControllerEvent handler, ScheduledExecutorService scheduler) {
         this.handler = handler;
+        this.scheduler = scheduler;
     }
 
     /**
@@ -68,6 +77,27 @@ public abstract class NikoHomeControlCommunication {
         logger.debug("restart communication from thread {}", Thread.currentThread().getId());
 
         startCommunication();
+    }
+
+    private void checkAndRestartCommunication() {
+        restartCommunication();
+        if (!communicationActive()) {
+            attempt++;
+            delay = (attempt == 1) ? 0 : ((attempt == 2) ? 30 : ((attempt <= 5) ? 60 : 300));
+            logger.debug("schedule communication restart in {} seconds", delay);
+            scheduler.schedule(this::checkAndRestartCommunication, delay, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * Close and restart communication with Niko Home Control system. This method will keep doing multiple reconnection
+     * attempts, starting immediately, then after 30 seconds, 3 times with a minute interval and every 5 minutes
+     * thereafter until the connection is re-established.
+     */
+    public void scheduleRestartCommunication() {
+        delay = 0;
+        attempt = 0;
+        checkAndRestartCommunication();
     }
 
     /**

@@ -84,8 +84,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private volatile @Nullable CompletableFuture<Boolean> communicationStarted;
 
-    private ScheduledExecutorService scheduler;
-
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
 
     /**
@@ -98,9 +96,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      */
     public NikoHomeControlCommunication2(NhcControllerEvent handler, String clientId,
             ScheduledExecutorService scheduler) throws CertificateException {
-        super(handler);
+        super(handler, scheduler);
         mqttConnection = new NhcMqttConnection2(clientId, this, this);
-        this.scheduler = scheduler;
     }
 
     @Override
@@ -832,6 +829,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             if (!communicationActive()) {
                 message = (message != null) ? message : "@text/offline.communication-error";
                 connectionLost(message);
+                // Keep on trying to restart, but don't send message anymore
+                scheduleRestartCommunication();
             }
         }
     }
@@ -898,12 +897,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             logger.debug("Connection state: {}, error", state, error);
             String message = error.getLocalizedMessage();
             message = (message != null) ? message : "@text/offline.communication-error";
+            connectionLost(message);
             if (!MqttConnectionState.CONNECTING.equals(state)) {
                 // This is a connection loss, try to restart
-                restartCommunication();
-            }
-            if (!communicationActive()) {
-                connectionLost(message);
+                scheduleRestartCommunication();
             }
         } else {
             logger.trace("Connection state: {}", state);
