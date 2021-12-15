@@ -54,7 +54,8 @@ public class HaywardPumpHandler extends HaywardThingHandler {
             setStateDescriptions();
             updateStatus(ThingStatus.ONLINE);
         } catch (HaywardException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unable to setPumpHandler StateDescriptions");
         }
     }
 
