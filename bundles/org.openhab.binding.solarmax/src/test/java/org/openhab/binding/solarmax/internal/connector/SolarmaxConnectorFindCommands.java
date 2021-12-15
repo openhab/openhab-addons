@@ -311,7 +311,7 @@ public class SolarmaxConnectorFindCommands {
     static String getCommandString(List<String> commandList) {
         String commandString = "";
         for (String command : commandList) {
-            if (commandString != "") {
+            if (!commandString.equals("")) {
                 commandString = commandString + ";";
             }
             commandString = commandString + command;

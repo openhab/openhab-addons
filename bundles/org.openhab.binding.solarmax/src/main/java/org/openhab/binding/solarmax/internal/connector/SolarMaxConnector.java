@@ -148,7 +148,7 @@ public class SolarMaxConnector {
     static String getCommandString(List<SolarMaxCommandKey> commandList) {
         String commandString = "";
         for (SolarMaxCommandKey command : commandList) {
-            if (commandString != "") {
+            if (!commandString.equals("")) {
                 commandString = commandString + ";";
             }
             commandString = commandString + command.getCommandKey();

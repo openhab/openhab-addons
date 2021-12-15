@@ -10,7 +10,7 @@
 
     <artifactId>org.openhab.addons.reactor</artifactId>
 
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
 
   </parent>
 
@@ -559,9 +559,9 @@
     <module>org.openhab.binding.solarlog</module>
 
     <module>org.openhab.binding.solarmax</module>
-        
+
     <module>org.openhab.binding.solarwatt</module>
-        
+
     <module>org.openhab.binding.somfymylink</module>
 
     <module>org.openhab.binding.somfytahoma</module>
