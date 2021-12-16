@@ -73,6 +73,9 @@ public class ChromecastStatusUpdater {
     private @Nullable String appSessionId;
     private PercentType volume = PercentType.ZERO;
 
+    // Null is valid value for last duration
+    private @Nullable Double lastDuration = null;
+
     public ChromecastStatusUpdater(Thing thing, ChromecastHandler callback) {
         this.thing = thing;
         this.callback = callback;
@@ -80,6 +83,10 @@ public class ChromecastStatusUpdater {
 
     public PercentType getVolume() {
         return volume;
+    }
+
+    public @Nullable Double getLastDuration() {
+        return lastDuration;
     }
 
     public @Nullable String getAppSessionId() {
@@ -186,6 +193,7 @@ public class ChromecastStatusUpdater {
         if (media != null) {
             metadataType = media.getMetadataType().name();
 
+            lastDuration = media.duration;
             // duration can be null when a new song is about to play.
             if (media.duration != null) {
                 duration = new QuantityType<>(media.duration, Units.SECOND);
