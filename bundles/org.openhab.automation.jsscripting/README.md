@@ -313,8 +313,7 @@ See [openhab-js : actions.ScriptExecution ](https://openhab.github.io/openhab-js
 
 
 ```javascript
-let ZonedDateTime = Java.type('java.time.ZonedDateTime');
-let now = ZonedDateTime.now();
+let now = time.ZonedDateTime.now();
 
 // Function to run when the timer goes off.
 function timerOver () {
