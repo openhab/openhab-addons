@@ -245,7 +245,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         value = new JsonPrimitive(command.toString().toLowerCase());
                     }
                     if (paramType == CommandParameterType.EMPTY) {
-                        value = new JsonArray();
+                        value = parameters.deepCopy();
                     }
                     final MiIoDeviceActionCondition miIoDeviceActionCondition = action.getCondition();
                     if (miIoDeviceActionCondition != null) {
