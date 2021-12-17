@@ -25,6 +25,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileAttribute;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +40,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Value;
 import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
@@ -77,10 +81,27 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
     public OpenhabGraalJSScriptEngine(@Nullable String injectionCode) {
         super(null); // delegate depends on fields not yet initialised, so we cannot set it immediately
         this.globalScript = GLOBAL_REQUIRE + (injectionCode != null ? injectionCode : "");
+
+        // Custom translate JS Objects - > Java Objects
+        HostAccess hostAccess = HostAccess.newBuilder(HostAccess.ALL)
+                // Translate JS-Joda ZonedDateTime to java.time.ZonedDateTime
+                .targetTypeMapping(Value.class, ZonedDateTime.class, (v) -> v.hasMember("withFixedOffsetZone"), v -> {
+                    return ZonedDateTime
+                            .parse(v.invokeMember("withFixedOffsetZone").invokeMember("toString").asString());
+                }, HostAccess.TargetMappingPrecedence.LOW)
+
+                // Translate JS-Joda Duration to java.time.Duration
+                .targetTypeMapping(Value.class, Duration.class,
+                        // picking two members to check as Duration has many common function names
+                        (v) -> v.hasMember("minusDuration") && v.hasMember("toNanos"), v -> {
+                            return Duration.ofNanos(v.invokeMember("toNanos").asLong());
+                        }, HostAccess.TargetMappingPrecedence.LOW)
+                .build();
+
         delegate = GraalJSScriptEngine.create(
                 Engine.newBuilder().allowExperimentalOptions(true).option("engine.WarnInterpreterOnly", "false")
                         .build(),
-                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true)
+                Context.newBuilder("js").allowExperimentalOptions(true).allowAllAccess(true).allowHostAccess(hostAccess)
                         .option("js.commonjs-require-cwd", JSDependencyTracker.LIB_PATH)
                         .option("js.nashorn-compat", "true") // to ease migration
                         .option("js.ecmascript-version", "2021") // nashorn compat will enforce es5 compatibility, we
