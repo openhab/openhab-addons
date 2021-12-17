@@ -198,19 +198,17 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
         }
         String recordPropertyName = getRecordPropertyName(recordName);
         logger.debug("RECORD: {}", recordPropertyName);
-        if (!recordPropertyName.isEmpty() && !recordPropertyName.equals("NULL")) {
-            var eventCommand = adbConnection.recordInputEvents();
-            if (eventCommand.isEmpty()) {
-                logger.debug("No events recorded");
-                if (this.getThing().getProperties().containsKey(recordPropertyName)) {
-                    this.getThing().setProperty(recordPropertyName, null);
-                    updateProperties(editProperties());
-                    logger.debug("Record {} deleted", recordName);
-                }
-            } else {
-                updateProperty(recordPropertyName, eventCommand);
-                logger.debug("New record {}: {}", recordName, eventCommand);
+        var eventCommand = adbConnection.recordInputEvents();
+        if (eventCommand.isEmpty()) {
+            logger.debug("No events recorded");
+            if (this.getThing().getProperties().containsKey(recordPropertyName)) {
+                this.getThing().setProperty(recordPropertyName, null);
+                updateProperties(editProperties());
+                logger.debug("Record {} deleted", recordName);
             }
+        } else {
+            updateProperty(recordPropertyName, eventCommand);
+            logger.debug("New record {}: {}", recordName, eventCommand);
         }
     }
 
