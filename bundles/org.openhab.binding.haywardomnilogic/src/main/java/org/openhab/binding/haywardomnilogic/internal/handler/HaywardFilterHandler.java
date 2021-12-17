@@ -14,7 +14,9 @@ package org.openhab.binding.haywardomnilogic.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
@@ -29,6 +31,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragment;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.StateOption;
@@ -43,6 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class HaywardFilterHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardFilterHandler.class);
+    private Map<String, State> channelStates = new HashMap<>();
 
     public HaywardFilterHandler(Thing thing) {
         super(thing);
@@ -167,6 +171,7 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                         // lastSpeed
                         data = bridgehandler.evaluateXPath("//Filter/@lastSpeed", xmlResponse);
                         updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i));
+                        channelStates.putAll(updateData(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED, data.get(i)));
                     }
                 }
                 this.updateStatus(ThingStatus.ONLINE);
@@ -197,7 +202,8 @@ public class HaywardFilterHandler extends HaywardThingHandler {
                     switch (channelUID.getId()) {
                         case HaywardBindingConstants.CHANNEL_FILTER_ENABLE:
                             if (command == OnOffType.ON) {
-                                cmdString = filterMaxSpeed;
+                                cmdString = channelStates.get(HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED)
+                                        .format("%d");
                             } else {
                                 cmdString = "0";
                             }

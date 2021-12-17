@@ -13,6 +13,9 @@
 
 package org.openhab.binding.haywardomnilogic.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
 import org.openhab.core.library.types.DecimalType;
@@ -119,14 +122,17 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
         }
     }
 
-    public void updateData(String channelID, String data) {
+    public Map<String, State> updateData(String channelID, String data) {
+        Map<String, State> channelStates = new HashMap<>();
         Channel chan = getThing().getChannel(channelID);
         if (chan != null) {
             String acceptedItemType = chan.getAcceptedItemType();
             if (acceptedItemType != null) {
                 State state = toState(acceptedItemType, channelID, data);
                 updateState(chan.getUID(), state);
+                channelStates.put(channelID, state);
             }
         }
+        return channelStates;
     }
 }
