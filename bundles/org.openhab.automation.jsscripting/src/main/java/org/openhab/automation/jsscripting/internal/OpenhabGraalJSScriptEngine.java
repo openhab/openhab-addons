@@ -14,6 +14,7 @@ package org.openhab.automation.jsscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.SeekableByteChannel;
@@ -65,7 +66,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
     private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     // final CommonJS search path for our library
-    private static final Path LOCAL_NODE_PATH = Paths.get("/node_modules");
+    private static final Path LOCAL_NODE_PATH = Paths.get(File.separator + "node_modules");
 
     // these fields start as null because they are populated on first use
     private @NonNullByDefault({}) String engineIdentifier;
