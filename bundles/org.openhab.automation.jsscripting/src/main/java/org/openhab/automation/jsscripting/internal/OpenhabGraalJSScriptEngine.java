@@ -14,7 +14,6 @@ package org.openhab.automation.jsscripting.internal;
 
 import static org.openhab.core.automation.module.script.ScriptEngineFactory.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.SeekableByteChannel;
@@ -66,7 +65,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
     private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";
     private static final String REQUIRE_WRAPPER_NAME = "__wraprequire__";
     // final CommonJS search path for our library
-    private static final Path LOCAL_NODE_PATH = Paths.get(File.separator + "node_modules");
+    private static final Path NODE_DIR = Paths.get("node_modules");
 
     // these fields start as null because they are populated on first use
     private @NonNullByDefault({}) String engineIdentifier;
@@ -116,10 +115,11 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
                                 if (scriptDependencyListener != null) {
                                     scriptDependencyListener.accept(path.toString());
                                 }
+
                                 if (path.toString().endsWith(".js")) {
                                     SeekableByteChannel sbc = null;
-                                    if (path.startsWith(LOCAL_NODE_PATH)) {
-                                        InputStream is = getClass().getResourceAsStream(path.toString());
+                                    if (isRootNodePath(path)) {
+                                        InputStream is = getClass().getResourceAsStream(nodeFileToResource(path));
                                         if (is == null) {
                                             throw new IOException("Could not read " + path.toString());
                                         }
@@ -137,8 +137,8 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
                             @Override
                             public void checkAccess(Path path, Set<? extends AccessMode> modes,
                                     LinkOption... linkOptions) throws IOException {
-                                if (path.startsWith(LOCAL_NODE_PATH)) {
-                                    if (getClass().getResource(path.toString()) == null) {
+                                if (isRootNodePath(path)) {
+                                    if (getClass().getResource(nodeFileToResource(path)) == null) {
                                         throw new NoSuchFileException(path.toString());
                                     }
                                 } else {
@@ -149,7 +149,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
                             @Override
                             public Map<String, Object> readAttributes(Path path, String attributes,
                                     LinkOption... options) throws IOException {
-                                if (path.startsWith(LOCAL_NODE_PATH)) {
+                                if (isRootNodePath(path)) {
                                     return Collections.singletonMap("isRegularFile", true);
                                 }
                                 return super.readAttributes(path, attributes, options);
@@ -157,7 +157,7 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
 
                             @Override
                             public Path toRealPath(Path path, LinkOption... linkOptions) throws IOException {
-                                if (path.startsWith(LOCAL_NODE_PATH)) {
+                                if (isRootNodePath(path)) {
                                     return path;
                                 }
                                 return super.toRealPath(path, linkOptions);
@@ -209,5 +209,25 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
         } catch (ScriptException e) {
             LOGGER.error("Could not inject global script", e);
         }
+    }
+
+    /**
+     * Tests if this is a root node directory, `/node_modules`, `C:\node_modules`, etc...
+     *
+     * @param path
+     * @return
+     */
+    private boolean isRootNodePath(Path path) {
+        return path.startsWith(path.getRoot().resolve(NODE_DIR));
+    }
+
+    /**
+     * Converts a root node path to a class resource path for loading local modules
+     *
+     * @param path
+     * @return
+     */
+    private String nodeFileToResource(Path path) {
+        return "/" + NODE_DIR + "/" + path.getFileName();
     }
 }
