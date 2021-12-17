@@ -25,7 +25,7 @@
     <graal.version>21.3.0</graal.version>
     <asm.version>6.2.1</asm.version>
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@1.2.0</ohjs.version>
+    <ohjs.version>openhab@1.2.1</ohjs.version>
   </properties>
 
   <build>
