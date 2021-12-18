@@ -69,7 +69,6 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         logger.debug("Received command {} for channel {}", command, channelUID);
 
         if (!(command instanceof RefreshType)) {
@@ -97,13 +96,13 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
             sendCommand(gatewayCommand);
 
-            if (code.equals(GatewayCommandCode.ControlSetpoint)) {
+            if (code.equals(GatewayCommandCode.CONTROLSETPOINT)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
                     updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT, UnDefType.UNDEF);
                 }
                 updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
                         OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
-            } else if (code.equals(GatewayCommandCode.ControlSetpoint2)) {
+            } else if (code.equals(GatewayCommandCode.CONTROLSETPOINT2)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
                     updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT, UnDefType.UNDEF);
                 }
@@ -127,7 +126,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
     public void receiveMessage(Message message) {
         int msgId = message.getID();
 
-        if (!DataItemGroup.dataItemGroups.containsKey(msgId)) {
+        if (!DataItemGroup.DATAITEMGROUPS.containsKey(msgId)) {
             logger.debug("Unsupported message id {}", msgId);
             return;
         }
@@ -248,23 +247,23 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
     private @Nullable String getGatewayCodeFromChannel(String channel) throws IllegalArgumentException {
         switch (channel) {
             case CHANNEL_OVERRIDE_SETPOINT_TEMPORARY:
-                return GatewayCommandCode.TemperatureTemporary;
+                return GatewayCommandCode.TEMPERATURETEMPORARY;
             case CHANNEL_OVERRIDE_SETPOINT_CONSTANT:
-                return GatewayCommandCode.TemperatureConstant;
+                return GatewayCommandCode.TEMPERATURECONSTANT;
             case CHANNEL_OUTSIDE_TEMPERATURE:
-                return GatewayCommandCode.TemperatureOutside;
+                return GatewayCommandCode.TEMPERATUREOUTSIDE;
             case CHANNEL_OVERRIDE_DHW_SETPOINT:
-                return GatewayCommandCode.SetpointWater;
+                return GatewayCommandCode.SETPOINTWATER;
             case CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT:
-                return GatewayCommandCode.ControlSetpoint;
+                return GatewayCommandCode.CONTROLSETPOINT;
             case CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED:
-                return GatewayCommandCode.CentralHeating;
+                return GatewayCommandCode.CENTRALHEATING;
             case CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT:
-                return GatewayCommandCode.ControlSetpoint2;
+                return GatewayCommandCode.CONTROLSETPOINT2;
             case CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED:
-                return GatewayCommandCode.CentralHeating2;
+                return GatewayCommandCode.CENTRALHEATING2;
             case CHANNEL_OVERRIDE_VENTILATION_SETPOINT:
-                return GatewayCommandCode.VentilationSetpoint;
+                return GatewayCommandCode.VENTILATIONSETPOINT;
             case CHANNEL_SEND_COMMAND:
                 return null;
             default:

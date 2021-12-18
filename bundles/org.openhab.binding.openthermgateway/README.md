@@ -425,6 +425,7 @@ In this case, you can make the OpenTherm Gateway act as a master device by sendi
 With openHAB rules, you can use the `sendcommand` channel of the `openthermgateway` bridge to periodically send PM commands to the OpenTherm Gateway.
 
 Example:
+
 ```
 SendCommand.sendCommand("PM=10")
 ```

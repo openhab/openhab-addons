@@ -84,7 +84,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     }
 
     public void receiveMessage(Message message) {
-        DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
+        DataItem[] dataItems = DataItemGroup.DATAITEMGROUPS.get(message.getID());
 
         if (dataItems == null) {
             logger.debug("No DataItem found for message id {}", message.getID());
@@ -95,7 +95,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             if (dataItem instanceof TspFhbSizeDataItem) {
                 logger.debug("Received TSP or FHB size message {} ({})", message.getID(), dataItem.getSubject());
 
-                VerifyTspFhbChannels(((TspFhbSizeDataItem) dataItem).getValueId(),
+                verifyTspFhbChannels(((TspFhbSizeDataItem) dataItem).getValueId(),
                         message.getUInt(dataItem.getByteType()));
             } else {
                 String channelId = dataItem.getChannelId(message);
@@ -112,7 +112,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
         }
     }
 
-    private void VerifyTspFhbChannels(int id, int size) {
+    private void verifyTspFhbChannels(int id, int size) {
         // Dynamically create TSP or FHB value channels based on TSP or FHB size message
         ThingHandlerCallback callback = getCallback();
 
@@ -121,7 +121,7 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        DataItem[] dataItems = DataItemGroup.dataItemGroups.get(id);
+        DataItem[] dataItems = DataItemGroup.DATAITEMGROUPS.get(id);
 
         if (dataItems == null) {
             logger.debug("Unable to find dataItem for id {}", id);

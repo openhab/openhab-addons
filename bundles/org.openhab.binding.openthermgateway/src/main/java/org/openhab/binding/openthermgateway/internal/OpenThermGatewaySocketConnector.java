@@ -79,9 +79,9 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 // Make writer accessible on class level
                 writer = wrt;
 
-                sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
+                sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTREPORT, "A"));
                 // Set the OTGW to report every message it receives and transmits
-                sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintSummary, "0"));
+                sendCommand(GatewayCommand.parse(GatewayCommandCode.PRINTSUMMARY, "0"));
 
                 while (!stopping && !Thread.currentThread().isInterrupted()) {
                     @Nullable

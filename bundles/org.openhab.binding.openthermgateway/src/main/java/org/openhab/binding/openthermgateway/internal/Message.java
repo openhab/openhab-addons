@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class Message {
 
-    private static final Pattern messagePattern = Pattern.compile("[TBRA]{1}[A-F0-9]{8}");
+    private static final Pattern MESSAGEPATTERN = Pattern.compile("[TBRA]{1}[A-F0-9]{8}");
 
     private CodeType codeType;
     private MessageType messageType;
@@ -146,7 +146,7 @@ public class Message {
     }
 
     public static @Nullable Message parse(String message) {
-        if (messagePattern.matcher(message).matches()) {
+        if (MESSAGEPATTERN.matcher(message).matches()) {
             // For now, only parse TBRA codes
             CodeType codeType = CodeType.valueOf(message.substring(0, 1));
             MessageType messageType = getMessageType(message.substring(1, 3));

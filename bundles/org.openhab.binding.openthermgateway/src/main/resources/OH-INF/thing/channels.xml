@@ -401,7 +401,7 @@
 
 	<channel-type id="vh_ventilationenable">
 		<item-type>Switch</item-type>
-		<label>Ventilation Enabled</label>
+		<label>Ventilation</label>
 		<description>Ventilation enabled</description>
 		<state readOnly="true"/>
 	</channel-type>

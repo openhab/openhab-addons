@@ -27,7 +27,7 @@ import org.openhab.core.library.unit.Units;
 @NonNullByDefault
 public class DataItemGroup {
 
-    public static final Map<Integer, DataItem[]> dataItemGroups = createDataItemGroups();
+    public static final Map<Integer, DataItem[]> DATAITEMGROUPS = createDataItemGroups();
 
     private static Map<Integer, DataItem[]> createDataItemGroups() {
         HashMap<Integer, DataItem[]> g = new HashMap<>();
@@ -126,8 +126,10 @@ public class DataItemGroup {
         g.put(26, new DataItem[] { new FloatDataItem(Msg.READ, "dhwtemp", SIUnits.CELSIUS) });
         g.put(27, new DataItem[] { new FloatDataItem(Msg.READ, "outsidetemp", SIUnits.CELSIUS) });
         g.put(28, new DataItem[] { new FloatDataItem(Msg.READ, "returntemp", SIUnits.CELSIUS) });
-        g.put(29, new DataItem[] { new FloatDataItem(Msg.READ, "solstortemp") });
-        g.put(30, new DataItem[] { new FloatDataItem(Msg.READ, "solcolltemp") });
+
+        g.put(29, new DataItem[] { new FloatDataItem(Msg.READ, "ss_temperature") });
+        g.put(30, new DataItem[] { new FloatDataItem(Msg.READ, "ss_collectortemperature") });
+
         g.put(31, new DataItem[] { new FloatDataItem(Msg.READ, "flowtemp2") });
         g.put(32, new DataItem[] { new FloatDataItem(Msg.READ, "dhw2temp") });
         g.put(33, new DataItem[] { new UIntDataItem(Msg.READ, ByteType.BOTH, "exhausttemp") });
@@ -192,6 +194,23 @@ public class DataItemGroup {
                         new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 5, "rof5"),
                         new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 6, "rof6"),
                         new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 7, "rof7") });
+
+        g.put(101,
+                new DataItem[] { new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 0, "rof0"),
+                        new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 1, "rof1"),
+                        new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 2, "rof2"),
+                        new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 3, "rof3"),
+                        new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 4, "rof4"),
+                        new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 5, "rof5"),
+                        new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 6, "rof6"),
+                        new FlagDataItem(Msg.READ, ByteType.HIGHBYTE, 7, "rof7") });
+        g.put(102, new DataItem[] {});
+
+        g.put(105, new DataItem[] { new TspFhbSizeDataItem(Msg.READ, ByteType.HIGHBYTE, 106, "ss_tspnumber") });
+        g.put(106, new DataItem[] { new TspFhbValueDataItem(Msg.READ, "ss_tspentry") });
+
+        g.put(107, new DataItem[] { new TspFhbSizeDataItem(Msg.READ, ByteType.HIGHBYTE, 108, "ss_fhbnumber") });
+        g.put(108, new DataItem[] { new TspFhbValueDataItem(Msg.READ, "ss_fhbentry") });
         g.put(113, new DataItem[] { new UIntDataItem(Msg.READ, ByteType.BOTH, "unsuccessfulburnerstarts") });
         g.put(115, new DataItem[] { new UIntDataItem(Msg.READ, ByteType.BOTH, "oemdiagcode") });
         g.put(116, new DataItem[] { new UIntDataItem(Msg.READ, ByteType.BOTH, "burnerstarts") });
