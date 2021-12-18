@@ -144,7 +144,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
             case SCS_THERMO_CENTRAL_UNIT: {
-                logger.warn("newDiscoveryResult() deviceType={} is not supported yet (WHERE={})", deviceType, where);
+                // TODO: is this required? no way to enter here...
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMO_CU;
+                deviceWho = Who.THERMOREGULATION;
                 break;
             }
             case SCS_ENERGY_METER: {
@@ -188,7 +191,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
         DiscoveryResult discoveryResult = null;
 
-        String whereConfig = bridgeHandler.normalizeWhere(where);
+        String whereConfig = where.value();
         if (where instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
             logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
             thingRemoved(thingUID); // remove previously discovered thing
