@@ -144,7 +144,10 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
             case SCS_THERMO_CENTRAL_UNIT: {
-                logger.warn("newDiscoveryResult() deviceType={} is not supported yet (WHERE={})", deviceType, where);
+                // TODO: is this required? no way to enter here...
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_THERMO_CU;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_THERMO_CU;
+                deviceWho = Who.THERMOREGULATION;
                 break;
             }
             case SCS_ENERGY_METER: {

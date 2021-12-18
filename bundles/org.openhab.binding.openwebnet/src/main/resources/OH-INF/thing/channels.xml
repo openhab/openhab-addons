@@ -170,6 +170,25 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="localMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Local Offset</label>
+		<description>Local knob status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="PROTECTION">PROTECTION</option>
+				<option value="PLUS_3">+3</option>
+				<option value="PLUS_2">+2</option>
+				<option value="PLUS_1">+1</option>
+				<option value="NORMAL">0</option>
+				<option value="MINUS_1">-1</option>
+				<option value="MINUS_2">-2</option>
+				<option value="MINUS_3">-3</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- Energy channels -->
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
