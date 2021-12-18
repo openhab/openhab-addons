@@ -14,12 +14,12 @@ package org.openhab.binding.hue.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.State;
-import org.openhab.binding.hue.internal.State.AlertMode;
-import org.openhab.binding.hue.internal.State.ColorMode;
-import org.openhab.binding.hue.internal.State.Effect;
-import org.openhab.binding.hue.internal.StateUpdate;
 import org.openhab.binding.hue.internal.dto.ColorTemperature;
+import org.openhab.binding.hue.internal.dto.State;
+import org.openhab.binding.hue.internal.dto.State.AlertMode;
+import org.openhab.binding.hue.internal.dto.State.ColorMode;
+import org.openhab.binding.hue.internal.dto.State.Effect;
+import org.openhab.binding.hue.internal.dto.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;

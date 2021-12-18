@@ -15,8 +15,8 @@ package org.openhab.binding.hue.internal.handler;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.hue.internal.FullGroup;
-import org.openhab.binding.hue.internal.Scene;
+import org.openhab.binding.hue.internal.dto.FullGroup;
+import org.openhab.binding.hue.internal.dto.Scene;
 
 /**
  * The {@link GroupStatusListener} is notified when a group status has changed or a group has been removed or added.
