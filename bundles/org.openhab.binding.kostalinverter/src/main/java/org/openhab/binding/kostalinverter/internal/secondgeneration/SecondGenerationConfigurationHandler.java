@@ -43,8 +43,7 @@ import com.google.gson.JsonParser;
 public class SecondGenerationConfigurationHandler {
 
     public static void executeConfigurationChanges(HttpClient httpClient, String url, String username, String password,
-            String dxsId, String value)
-            throws InterruptedException, ExecutionException, TimeoutException, NoSuchAlgorithmException {
+            String dxsId, String value) throws InterruptedException, ExecutionException, TimeoutException {
         String urlLogin = url + "/api/login.json?";
         String salt = "";
         String sessionId = "";
@@ -64,7 +63,12 @@ public class SecondGenerationConfigurationHandler {
             salt = authenticateJsonObject.get("salt").getAsString();
 
             String saltedPassword = new StringBuilder(password).append(salt).toString();
-            MessageDigest mDigest = MessageDigest.getInstance("SHA1");
+            MessageDigest mDigest = null;
+            try {
+                mDigest = MessageDigest.getInstance("SHA1");
+            } catch (NoSuchAlgorithmException e) {
+                logger.debug("MessageDigest problems: ", e);
+            }
 
             byte[] mDigestedPassword = mDigest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
             StringBuilder loginPostStringBuilder = new StringBuilder();
