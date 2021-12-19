@@ -155,7 +155,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
             } catch (HubProcessingException e) {
                 logger.warn("Error connecting to bridge: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (HubMaintenanceException e) {
                 // exceptions are logged in HDPowerViewWebTargets
             }
