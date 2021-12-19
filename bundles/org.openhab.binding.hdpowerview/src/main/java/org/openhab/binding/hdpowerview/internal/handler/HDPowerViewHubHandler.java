@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -87,7 +86,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private long hardRefreshBatteryLevelInterval;
 
     private @Nullable HDPowerViewWebTargets webTargets;
-    private @Nullable Future<?> pollShadesOnceFuture;
     private @Nullable ScheduledFuture<?> pollFuture;
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
@@ -133,10 +131,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             int id = Integer.parseInt(channelUID.getIdWithoutGroup());
             if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateScene(id);
-                pollShadesAsync();
+                pollShades();
             } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateSceneCollection(id);
-                pollShadesAsync();
+                pollShades();
             } else if (automationChannelTypeUID.equals(channel.getChannelTypeUID())) {
                 webTargets.enableScheduledEvent(id, OnOffType.ON == command);
             }
@@ -145,21 +143,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         } catch (NumberFormatException | HubProcessingException e) {
             logger.debug("Unexpected error {}", e.getMessage());
         }
-    }
-
-    private synchronized void pollShadesAsync() {
-        pollShadesOnceFuture = scheduler.submit(() -> {
-            try {
-                pollShades();
-            } catch (JsonParseException e) {
-                logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
-            } catch (HubProcessingException e) {
-                logger.warn("Error connecting to bridge: {}", e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            } catch (HubMaintenanceException e) {
-                // exceptions are logged in HDPowerViewWebTargets
-            }
-        });
     }
 
     @Override
@@ -204,7 +187,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
         stopPoll();
-        cancelShadesPollOnce();
     }
 
     private void schedulePoll() {
@@ -256,14 +238,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         this.hardRefreshBatteryLevelFuture = null;
     }
 
-    private synchronized void cancelShadesPollOnce() {
-        Future<?> future = this.pollShadesOnceFuture;
-        if (future != null) {
-            future.cancel(true);
-        }
-        this.pollShadesOnceFuture = null;
-    }
-
     private synchronized void poll() {
         try {
             logger.debug("Polling for state");
@@ -286,7 +260,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private synchronized void pollShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+    private void pollShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
