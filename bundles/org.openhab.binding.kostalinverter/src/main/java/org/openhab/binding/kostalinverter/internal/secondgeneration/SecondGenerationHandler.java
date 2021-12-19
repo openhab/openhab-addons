@@ -345,7 +345,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
         } catch (TimeoutException e) {
             logger.debug("Connection to inverter disturbed during configuration");
         }
-
     }
 
     // Method callURL connect to inverter for value scraping
