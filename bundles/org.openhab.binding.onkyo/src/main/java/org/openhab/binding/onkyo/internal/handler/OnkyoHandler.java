@@ -500,12 +500,12 @@ public class OnkyoHandler extends UpnpAudioSinkHandler implements OnkyoEventList
                 case AUDIOINFO:
                     updateState(CHANNEL_AUDIOINFO, convertDeviceValueToOpenHabState(data.getValue(), StringType.class));
                     logger.debug("audioinfo message: '{}'", data.getValue());
-                    updateState(CHANNEL_AUDIO_IN_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 0, 3));
-                    updateState(CHANNEL_AUDIO_OUT_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 4, 6));
+                    updateState(CHANNEL_AUDIO_IN_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 0, 2));
+                    updateState(CHANNEL_AUDIO_OUT_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 3, 5));
                     break;
                 case VIDEOINFO:
-                    updateState(CHANNEL_VIDEO_IN_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 0, 4));
-                    updateState(CHANNEL_VIDEO_OUT_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 5, 8));
+                    updateState(CHANNEL_VIDEO_IN_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 0, 3));
+                    updateState(CHANNEL_VIDEO_OUT_INFO, OnkyoParserHelper.infoBuilder(data.getValue(), 4, 7));
                     break;
                 case INFO:
                     processInfo(data.getValue());

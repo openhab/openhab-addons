@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.onkyo.internal;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
 
 /**
  * Helper to parse messages.
@@ -24,24 +27,21 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 public final class OnkyoParserHelper {
 
-    public static State infoBuilder(String data, int from, int to) {
-        StringBuilder builder = new StringBuilder();
-        int end = to;
-        String[] element = data.split(",");
-        if (element.length < from) {
-            return StringType.EMPTY;
+    /**
+     * Slices the string, removing empty values
+     *
+     * @param data comma separated string
+     * @param startIndex initial index of the range to be copied
+     * @param endIndex final index of the range to be copied (inclusive)
+     * @return formatted StringType
+     */
+    public static StringType infoBuilder(String data, int startIndex, int endIndex) {
+        String[] params = data.split(",");
+        int toIndex = endIndex < params.length ? endIndex + 1 : params.length;
+        if (params.length >= startIndex) {
+            return new StringType(Stream.of(Arrays.copyOfRange(params, startIndex, toIndex))
+                    .filter(p -> p.trim().length() > 0).map(p -> p.trim()).collect(Collectors.joining(", ", "", "")));
         }
-        if (element.length < end) {
-            end = element.length;
-        }
-        boolean firstElement = true;
-        for (int i = from; i < end; i++) {
-            if (!element[i].isEmpty() && !firstElement) {
-                builder.append(", ");
-            }
-            builder.append(element[i]);
-            firstElement = false;
-        }
-        return new StringType(builder.toString());
+        return StringType.EMPTY;
     }
 }

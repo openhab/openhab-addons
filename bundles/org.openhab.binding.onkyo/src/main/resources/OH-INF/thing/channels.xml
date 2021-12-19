@@ -192,13 +192,13 @@
 		<item-type>String</item-type>
 		<label>Audio Input Info</label>
 		<description>Audio Input Stream Information</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="audioOut" advanced="true">
 		<item-type>String</item-type>
 		<label>Audio Output Info</label>
 		<description>Audio Output Stream Information</description>
-		<state readOnly="true"></state>
+		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 	<channel-type id="videoIn" advanced="true">
 		<item-type>String</item-type>
