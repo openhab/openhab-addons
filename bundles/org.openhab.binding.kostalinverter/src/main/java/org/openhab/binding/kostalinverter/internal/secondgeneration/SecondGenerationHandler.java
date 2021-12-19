@@ -13,7 +13,6 @@
 package org.openhab.binding.kostalinverter.internal.secondgeneration;
 
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -339,9 +338,12 @@ public class SecondGenerationHandler extends BaseThingHandler {
         try {
             SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClientHandleCommand, url, username,
                     password, dxsEntriesConf, valueConfiguration);
-        } catch (NoSuchAlgorithmException | InterruptedException | ExecutionException | TimeoutException e) {
-            logger.debug("Connection to inverter disturbed during configuration changes");
-            e.printStackTrace();
+        } catch (InterruptedException e) {
+            logger.debug("Connection to inverter disturbed during configuration");
+        } catch (ExecutionException e) {
+            logger.debug("Connection to inverter disturbed during configuration");
+        } catch (TimeoutException e) {
+            logger.debug("Connection to inverter disturbed during configuration");
         }
 
     }
@@ -351,9 +353,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
         String jsonDxsResponse = "";
         try {
             jsonDxsResponse = httpClient.GET(dxsEntriesCall).getContentAsString();
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e2) {
             logger.debug("Connection to inverter disturbed during scrape");
-            e.printStackTrace();
         }
         return jsonDxsResponse;
     }
