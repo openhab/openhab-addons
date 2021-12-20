@@ -26,6 +26,7 @@
 		<parameter name="hasBattery" type="boolean" required="false">
 			<label>Inverter Type</label>
 			<description>Type of inverter, with/without battery.</description>
+			<default>false</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
