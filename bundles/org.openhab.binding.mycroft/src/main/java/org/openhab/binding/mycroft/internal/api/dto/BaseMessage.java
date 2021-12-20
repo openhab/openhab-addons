@@ -15,6 +15,7 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This is the base message class for all messages circulating on the Mycroft bus.
  *
  * @author Gwendal Roulleau - Initial contribution
  */
