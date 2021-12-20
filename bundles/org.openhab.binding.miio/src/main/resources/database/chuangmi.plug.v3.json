@@ -10,7 +10,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -29,7 +28,6 @@
 				"property": "usb_on",
 				"friendlyName": "USB",
 				"channel": "usb",
-				"channelType": "usb",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",
@@ -45,7 +43,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true
@@ -62,7 +60,6 @@
 				"property": "wifi_led",
 				"friendlyName": "Wifi LED",
 				"channel": "led",
-				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"ChannelGroup": "actions",

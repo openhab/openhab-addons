@@ -23,11 +23,11 @@ There are different types of things: the simple one (`basic`), multisensors buil
 
 ## Discovery
 
-Discovery is supported for things. You have to add the bridges manually.  
+Discovery is supported for things. You have to add the bridges manually.
 
 ## Thing Configuration
 
-It is strongly recommended to use discovery and Paper UI for thing configuration.
+It is strongly recommended to add things using discovery and configure them using the UI.
 Please note that:
 
 * All things need a bridge.
@@ -46,7 +46,7 @@ The `address` parameter is used to denote the location of the owserver instance.
 It supports both, a hostname or an IP address. 
 
 The `port` parameter is used to adjust non-standard OWFS installations.
-It defaults to `4304`, which is the default of each OWFS installation.  
+It defaults to `4304`, which is the default of each OWFS installation.
 
 Bridges of type `owserver` are extensible with channels of type `owfs-number` and `owfs-string`. 
   

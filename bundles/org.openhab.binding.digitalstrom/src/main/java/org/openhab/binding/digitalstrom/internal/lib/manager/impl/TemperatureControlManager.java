@@ -30,7 +30,7 @@ import org.openhab.binding.digitalstrom.internal.lib.listener.SystemStateChangeL
 import org.openhab.binding.digitalstrom.internal.lib.listener.TemperatureControlStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.manager.ConnectionManager;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.DsAPI;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -406,7 +406,7 @@ public class TemperatureControlManager implements EventHandler, TemperatureContr
     public boolean pushControlValue(Integer zoneID, Float newValue) {
         if (checkAndGetTemperatureControlStatus(zoneID) != null) {
             if (dSapi.pushZoneSensorValue(connectionMananager.getSessionToken(), zoneID, null,
-                    FuncNameAndColorGroupEnum.TEMPERATION_CONTROL.getFunctionalColorGroup(), null, newValue,
+                    ApplicationGroup.TEMPERATURE_CONTROL.getId(), null, newValue,
                     SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE)) {
                 addEcho(zoneID, SensorEnum.ROOM_TEMPERATURE_CONTROL_VARIABLE, newValue);
                 return true;

@@ -8,7 +8,7 @@
 	<thing-type id="PLAY1" listed="false">
 		<!-- Label without column (:) because of device pairing name restrictions -->
 		<label>PLAY 1</label>
-		<description>Represents SONOS PLAY:1 Zone Player</description>
+		<description>Represents SONOS PLAY:1 speaker</description>
 
 		<channels>
 			<channel id="add" typeId="add"/>
@@ -37,7 +37,6 @@
 			<channel id="playqueue" typeId="playqueue"/>
 			<channel id="playtrack" typeId="playtrack"/>
 			<channel id="playuri" typeId="playuri"/>
-			<channel id="publicaddress" typeId="publicaddress"/>
 			<channel id="radio" typeId="radio"/>
 			<channel id="remove" typeId="remove"/>
 			<channel id="restore" typeId="restore"/>

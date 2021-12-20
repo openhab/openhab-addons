@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="vdr" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="vdr">
+		<label>VDR</label>
+		<description>VDR - The Video Disk Recorder (https://tvdr.de)</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="channel" typeId="vdrChannel"/>
+			<channel id="channelName" typeId="vdrChannelName"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="recording" typeId="vdrRecordingActive"/>
+			<channel id="diskUsage" typeId="vdrDiskUsage"/>
+			<channel id="message" typeId="vdrMessage"/>
+			<channel id="keyCode" typeId="vdrKeyCode"/>
+			<channel id="currentEventTitle" typeId="vdrEventTitle">
+				<label>Current EPG Event Title</label>
+			</channel>
+			<channel id="currentEventSubTitle" typeId="vdrEventSubTitle">
+				<label>Current EPG Event Sub Title</label>
+			</channel>
+			<channel id="currentEventBegin" typeId="vdrEventBegin">
+				<label>Current EPG Event Begin</label>
+			</channel>
+			<channel id="currentEventEnd" typeId="vdrEventEnd">
+				<label>Current EPG Event End</label>
+			</channel>
+			<channel id="currentEventDuration" typeId="vdrEventDuration">
+				<label>Current EPG Event Duration in Minutes</label>
+			</channel>
+			<channel id="nextEventTitle" typeId="vdrEventTitle">
+				<label>Next EPG Event Title</label>
+			</channel>
+			<channel id="nextEventSubTitle" typeId="vdrEventSubTitle">
+				<label>Next EPG Event Sub Title</label>
+			</channel>
+			<channel id="nextEventBegin" typeId="vdrEventBegin">
+				<label>Next EPG Event Begin</label>
+			</channel>
+			<channel id="nextEventEnd" typeId="vdrEventEnd">
+				<label>Next EPG Event End</label>
+			</channel>
+			<channel id="nextEventDuration" typeId="vdrEventDuration">
+				<label>Next EPG Event Duration in Minutes</label>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="version">VDR Version</property>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP Address of VDR instance</description>
+			</parameter>
+			<parameter name="port" type="integer" required="false">
+				<label>SVDRP Port</label>
+				<description>SVDRP Port of VDR instance</description>
+				<default>6419</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="0" unit="s">
+				<label>Refresh Interval</label>
+				<description>Interval in seconds the data from VDR instance is refreshed</description>
+				<advanced>true</advanced>
+				<default>30</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="vdrMessage">
+		<item-type>String</item-type>
+		<label>Display Message</label>
+		<description>Send Message to be displayed on VDR</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="vdrChannel">
+		<item-type>Number</item-type>
+		<label>Channel Number</label>
+		<description>Current Channel Number</description>
+		<state readOnly="false" pattern="%d"/>
+	</channel-type>
+	<channel-type id="vdrChannelName">
+		<item-type>String</item-type>
+		<label>Channel Name</label>
+		<description>Current Channel Name</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vdrRecordingActive">
+		<item-type>Switch</item-type>
+		<label>Recording Active</label>
+		<description>ON if a recording is active</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vdrDiskUsage">
+		<item-type>Number</item-type>
+		<label>Disk Usage</label>
+		<description>Current Disk Usage in %</description>
+		<state readOnly="true" min="0" max="100" step="1" pattern="%d %%"/>
+	</channel-type>
+	<channel-type id="vdrKeyCode">
+		<item-type>String</item-type>
+		<label>VDR Key Code</label>
+		<description>Send Key Code of Remote Control to VDR</description>
+		<command>
+			<options>
+				<option value="Up">Up</option>
+				<option value="Down">Down</option>
+				<option value="Menu">Menu</option>
+				<option value="Ok">Ok</option>
+				<option value="Back">Back</option>
+				<option value="Left">Left</option>
+				<option value="Right">Right</option>
+				<option value="Red">Red</option>
+				<option value="Green">Green</option>
+				<option value="Yellow">Yellow</option>
+				<option value="Blue">Blue</option>
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="Info">Info</option>
+				<option value="Play/Pause">Play/Pause</option>
+				<option value="Play">Play</option>
+				<option value="Pause">Pause</option>
+				<option value="Stop">Stop</option>
+				<option value="Record">Record</option>
+				<option value="FastFwd">FastFwd</option>
+				<option value="FastRew">FastRew</option>
+				<option value="Next">Next</option>
+				<option value="Prev">Prev</option>
+				<option value="Power">Power</option>
+				<option value="Channel+">Channel+</option>
+				<option value="Channel-">Channel-</option>
+				<option value="PrevChannel">PrevChannel</option>
+				<option value="Volume+">Volume+</option>
+				<option value="Volume-">Volume-</option>
+				<option value="Mute">Mute</option>
+				<option value="Audio">Audio</option>
+				<option value="Subtitles">Subtitles</option>
+				<option value="Schedule">Schedule</option>
+				<option value="Channels">Channels</option>
+				<option value="Timers">Timers</option>
+				<option value="Recordings">Recordings</option>
+				<option value="Setup">Setup</option>
+				<option value="Commands">Commands</option>
+				<option value="User0">User0</option>
+				<option value="User1">User1</option>
+				<option value="User2">User2</option>
+				<option value="User3">User3</option>
+				<option value="User4">User4</option>
+				<option value="User5">User5</option>
+				<option value="User6">User6</option>
+				<option value="User7">User7</option>
+				<option value="User8">User8</option>
+				<option value="User9">User9</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="vdrEventTitle">
+		<item-type>String</item-type>
+		<label>Event Title</label>
+		<description>Title of EPG Event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vdrEventSubTitle">
+		<item-type>String</item-type>
+		<label>Event Sub Title</label>
+		<description>Sub Title of EPG Event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vdrEventBegin">
+		<item-type>DateTime</item-type>
+		<label>Event Start Time</label>
+		<description>Start Time of EPG Event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vdrEventEnd">
+		<item-type>DateTime</item-type>
+		<label>Event End Time</label>
+		<description>End Time of EPG Event</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vdrEventDuration">
+		<item-type>Number:Time</item-type>
+		<label>Event Duration</label>
+		<description>Duration of EPG Event in Minutes</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

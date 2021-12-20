@@ -39,9 +39,11 @@ This binding supports the following thing types
 
 The binding consists of a Bridge (the API connection), and a number of Things, which relates to the individual hardware devices and pets.
 Sure Petcare things can be configured either through the online configuration utility via discovery, or manually through a 'surepetcare.things' configuration file.
-The Bridge will not be autodiscovered and must be added manually. This can be done via bridge thing configuration file or via PaperUI. That is because the Sure Petcare API requires authentication credentials to communicate with the service.
+The Bridge is not automatically discovered and must be added manually.
+That is because the Sure Petcare API requires authentication credentials to communicate with the service.
 
-After adding the Bridge, it will go ONLINE, and after a short while, the discovery process for household, devices and pets will start. When new hardware is discovered it will appear in the Inbox.
+After adding the Bridge, it will go ONLINE, and after a short while, the discovery process for household, devices and pets will start.
+When new hardware is discovered it will appear in the Inbox.
 
 ## Things and their channels
 
@@ -149,8 +151,6 @@ Channel names in **bold** are read/write, everything else is read-only
 ## Manual configuration
 
 ### Things configuration
-
-If you use the label parameter (after the @ sign) you then have these things grouped in single tabs on PaperUI Control.
 
 ```
 Bridge surepetcare:bridge:bridge1 "Demo API Bridge" @ "SurePetcare" [ username="<USERNAME>", password="<PASSWORD>", refreshIntervalTopology=36000, refreshIntervalStatus=300 ]
@@ -357,7 +357,9 @@ sitemap surepetcare label="My home automation" {
 
 ### Using Group Items
 
-You can also set pet locations with a group item. Please Note: the location for each pet gets updated only if the current location is not already the location you want to set. This can be very useful if you have alot of pets that often enter the home by any window/door.
+You can also set pet locations with a group item.
+Please Note: the location for each pet gets updated only if the current location is not already the location you want to set.
+This can be very useful if you have alot of pets that often enter the home by any window/door.
 Your .items file should contain this:
 
 ```

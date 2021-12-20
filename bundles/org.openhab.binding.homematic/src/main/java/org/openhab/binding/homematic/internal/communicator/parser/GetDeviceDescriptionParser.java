@@ -48,7 +48,7 @@ public class GetDeviceDescriptionParser extends CommonRpcParser<Object[], GetDev
      * Returns the parsed firmware version.
      */
     public String getFirmware() {
-        return firmware;
+        return firmware == null ? "" : firmware;
     }
 
     /**

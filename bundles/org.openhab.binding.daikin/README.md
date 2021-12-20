@@ -48,6 +48,9 @@ For the BRP072A42 and BRP072C42:
 | cmpfrequency | The compressor frequency                                                                    |
 | specialmode  | The special mode currently active (OFF, STREAMER, ECO, POWERFUL, POWERFUL & STREAMER, ECO & STREAMER). Not all modes might be available on the unit. |
 | specialmode-powerful | Turns the powerful mode on/off for the air conditioning unit.                       |
+| energyheatingtoday         | The energy consumption when heating for today                                 |
+| energyheatingthisweek      | The energy consumption when heating for this week                             |
+| energyheatinglastweek      | The energy consumption when heating for last week                             |
 | energyheatingcurrentyear-1 | The energy consumption when heating for current year January                  |
 | energyheatingcurrentyear-2 | The energy consumption when heating for current year February                 |
 | energyheatingcurrentyear-3 | The energy consumption when heating for current year March                    |
@@ -60,6 +63,9 @@ For the BRP072A42 and BRP072C42:
 | energyheatingcurrentyear-10| The energy consumption when heating for current year October                  |
 | energyheatingcurrentyear-11| The energy consumption when heating for current year November                 |
 | energyheatingcurrentyear-12| The energy consumption when heating for current year December                 |
+| energycoolingtoday         | The energy consumption when cooling for today                                 |
+| energycoolingthisweek      | The energy consumption when cooling for this week                             |
+| energycoolinglastweek      | The energy consumption when cooling for last week                             |
 | energycoolingcurrentyear-1 | The energy consumption when cooling for current year January                  |
 | energycoolingcurrentyear-2 | The energy consumption when cooling for current year February                 |
 | energycoolingcurrentyear-3 | The energy consumption when cooling for current year March                    |

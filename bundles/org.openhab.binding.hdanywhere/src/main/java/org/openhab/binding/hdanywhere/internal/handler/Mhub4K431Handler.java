@@ -151,7 +151,7 @@ public class Mhub4K431Handler extends BaseThingHandler {
                 httpHeaders.setProperty("Cookie", "logintype-88=01");
 
                 try {
-                    String response = HttpUtil.executeUrl(httpMethod, url, httpHeaders, stream,
+                    HttpUtil.executeUrl(httpMethod, url, httpHeaders, stream,
                             "application/x-www-form-urlencoded; charset=UTF-8", timeout);
                 } catch (IOException e) {
                     logger.debug("Communication with device failed", e);

@@ -68,8 +68,10 @@ public class LightStateConverter {
      * @return light state representing the {@link HSBType}.
      */
     public static StateUpdate toColorLightState(HSBType hsbType, State lightState) {
-        StateUpdate stateUpdate = ColorMode.XY.equals(lightState.getColorMode()) ? toXYColorLightState(hsbType)
-                : toHSBColorLightState(hsbType);
+        // XY color is the implicit default: Use XY color mode if i) no color mode is set or ii) if the bulb is in
+        // CT mode or iii) already in XY mode. Only if the bulb is in HS mode, use this one.
+        StateUpdate stateUpdate = ColorMode.HS.equals(lightState.getColorMode()) ? toHSBColorLightState(hsbType)
+                : toXYColorLightState(hsbType);
 
         int brightness = (int) Math.floor(hsbType.getBrightness().doubleValue() * BRIGHTNESS_FACTOR);
         if (brightness > 0) {

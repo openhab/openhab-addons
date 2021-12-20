@@ -17,6 +17,7 @@ import static org.eclipse.jetty.http.HttpMethod.GET;
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -58,6 +59,7 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
         this.handler = handler;
     }
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);
@@ -66,13 +68,16 @@ public class FritzAhaUpdateCallback extends FritzAhaReauthCallback {
             try {
                 XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                 Unmarshaller unmarshaller = JAXBUtils.JAXBCONTEXT_DEVICES.createUnmarshaller();
-                DeviceListModel model = (DeviceListModel) unmarshaller.unmarshal(xsr);
+                DeviceListModel model = unmarshaller.unmarshal(xsr, DeviceListModel.class).getValue();
                 if (model != null) {
                     handler.onDeviceListAdded(model.getDevicelist());
                 } else {
                     logger.debug("no model in response");
                 }
                 handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            } catch (UnmarshalException e) {
+                logger.debug("Failed to unmarshal XML document: {}", e.getMessage());
+                handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (JAXBException | XMLStreamException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
                 handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

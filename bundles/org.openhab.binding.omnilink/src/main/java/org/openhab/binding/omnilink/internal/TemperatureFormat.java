@@ -72,7 +72,7 @@ public enum TemperatureFormat {
     public abstract int formatToOmni(float format);
 
     /**
-     * Get the number which identifies this format as defined by the omniprotocol.
+     * Get the number which identifies this format as defined by the OmniLink protocol.
      *
      * @return Number which identifies this temperature format.
      */

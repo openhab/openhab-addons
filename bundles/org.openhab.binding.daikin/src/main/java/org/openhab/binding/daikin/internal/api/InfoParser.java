@@ -67,7 +67,6 @@ public class InfoParser {
         }
         try {
             return Optional.of(Stream.of(value.split("/")).map(val -> Integer.parseInt(val)).toArray(Integer[]::new));
-
         } catch (NumberFormatException e) {
             return Optional.empty();
         }

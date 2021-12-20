@@ -64,7 +64,7 @@ public class PMHandlerTest {
          * Test if config status is 0 = CONFIG_OK for valid configuration. Take real int for comparison instead of
          * BaseHandler constants - in case of change test needs to be adapted
          */
-        assertEquals(ConfigStatus.OK, pmHandler.getConfigStatus(), "Handler Configuration status");
+        assertEquals(ConfigStatus.EXTERNAL_SENSOR_OK, pmHandler.getConfigStatus(), "Handler Configuration status");
     }
 
     @Test
@@ -161,11 +161,34 @@ public class PMHandlerTest {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         // String sensorid taken from thing-types.xml
-        properties.put("sensorid", 12345);
+        properties.put("ipAdress", "192.168.178.1");
         t.setConfiguration(properties);
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
         UpdateStatus result = pmHandler.updateChannels(null);
         assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
+    }
+
+    @Test
+    public void testInternalPMSensor() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("sensorid", 12345);
+        t.setConfiguration(properties);
+
+        PMHandlerExtension pmHandler = new PMHandlerExtension(t);
+        pmHandler.initialize();
+        String pmJson = FileReader.readFileInString("src/test/resources/internal-data.json");
+        if (pmJson != null) {
+            UpdateStatus result = pmHandler.updateChannels("[" + pmJson + "]");
+            assertEquals(UpdateStatus.OK, result, "Valid update");
+            assertEquals(QuantityType.valueOf(4.3, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM25Cache(), "PM25");
+            assertEquals(QuantityType.valueOf(10.5, Units.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM100Cache(),
+                    "PM100");
+        } else {
+            assertTrue(false);
+        }
     }
 }

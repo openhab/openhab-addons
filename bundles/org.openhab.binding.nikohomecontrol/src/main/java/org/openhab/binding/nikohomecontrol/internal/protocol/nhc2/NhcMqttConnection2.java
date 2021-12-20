@@ -158,7 +158,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     }
 
     private MqttBrokerConnection createMqttConnection() throws MqttException {
-        MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
+        MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, false, clientId);
         connection.setTrustManagers(trustManagers);
         connection.setCredentials(profile, token);
         connection.setQos(1);

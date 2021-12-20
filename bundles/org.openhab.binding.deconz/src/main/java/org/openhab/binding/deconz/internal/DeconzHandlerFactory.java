@@ -18,9 +18,20 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.deconz.internal.handler.*;
+import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
+import org.openhab.binding.deconz.internal.handler.GroupThingHandler;
+import org.openhab.binding.deconz.internal.handler.LightThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
-import org.openhab.binding.deconz.internal.types.*;
+import org.openhab.binding.deconz.internal.types.GroupType;
+import org.openhab.binding.deconz.internal.types.GroupTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.LightType;
+import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ResourceType;
+import org.openhab.binding.deconz.internal.types.ResourceTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
+import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
@@ -54,14 +65,14 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
     private final Gson gson;
     private final WebSocketFactory webSocketFactory;
     private final HttpClientFactory httpClientFactory;
-    private final StateDescriptionProvider stateDescriptionProvider;
-    private final CommandDescriptionProvider commandDescriptionProvider;
+    private final DeconzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Activate
     public DeconzHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
             final @Reference HttpClientFactory httpClientFactory,
-            final @Reference StateDescriptionProvider stateDescriptionProvider,
-            final @Reference CommandDescriptionProvider commandDescriptionProvider) {
+            final @Reference DeconzDynamicStateDescriptionProvider stateDescriptionProvider,
+            final @Reference DeconzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         this.webSocketFactory = webSocketFactory;
         this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;

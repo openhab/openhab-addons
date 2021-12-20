@@ -48,7 +48,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Filter Speed</label>
 		<description>Filter Speed in %</description>
-		<state min="0" max="100" step="1.0" pattern="%1f %unit%" readOnly="false"/>
+		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="filterState">
@@ -77,7 +77,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
 		<description>Last Speed</description>
-		<state pattern="%1f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

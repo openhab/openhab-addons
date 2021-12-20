@@ -1,5 +1,7 @@
 # RadioThermostat Binding
 
+![RadioThermostat logo](doc/index.jpg)
+
 This binding connects RadioThermostat/3M Filtrete models CT30, CT50/3M50, CT80, etc. with built-in Wi-Fi module to openHAB.
 
 The binding retrieves and periodically updates all basic system information from the thermostat.
@@ -40,37 +42,39 @@ The thing has a few configuration parameters:
 | isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false.                                                                                                                                                       |
 | disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                                                                                                                                                                         |
 | setpointMode    | Controls temporary or absolute setpoint mode. In "temporary" mode the thermostat will temporarily maintain the given setpoint, returning to its program after a time. In "absolute" mode the thermostat will ignore its program maintaining the given setpoint. |
+| clockSync       | Flag to enable the binding to sync the internal clock on the thermostat to match the openHAB host's system clock. Use if the thermostat is not setup to connect to the manufacturer's cloud server. Sync occurs at binding startup and every hour thereafter.   |
 
 ## Channels
 
 The thermostat information that is retrieved is available as these channels:
 
-| Channel ID             | Item Type            | Description                                                               |
-|------------------------|----------------------|---------------------------------------------------------------------------|
-| temperature            | Number:Temperature   | The current temperature reading of the thermostat                         |
-| humidity               | Number:Dimensionless | The current humidity reading of the thermostat (CT80 only)                |
-| mode                   | Number               | The current operating mode of the HVAC system                             |
-| fan_mode               | Number               | The current operating mode of the fan                                     |
-| program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)     |
-| set_point              | Number:Temperature   | The current temperature set point of the thermostat                       |
-| status                 | Number               | Indicates the current running status of the HVAC system                   |
-| fan_status             | Number               | Indicates the current fan status of the HVAC system                       |
-| override               | Number               | Indicates if the normal program set-point has been manually overridden    |
-| hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely |
-| day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)       |
-| hour                   | Number               | The current hour of the day reported by the thermostat  (24 hr)           |
-| minute                 | Number               | The current minute past the hour reported by the thermostat               |
-| dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm) |
-| today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                     |
-| today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                     |
-| yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                 |
-| yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                 |
+| Channel ID             | Item Type            | Description                                                                                                                        |
+|------------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| temperature            | Number:Temperature   | The current temperature reading of the thermostat                                                                                  |
+| humidity               | Number:Dimensionless | The current humidity reading of the thermostat (CT80 only)                                                                         |
+| mode                   | Number               | The current operating mode of the HVAC system                                                                                      |
+| fan_mode               | Number               | The current operating mode of the fan                                                                                              |
+| program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)                                                              |
+| set_point              | Number:Temperature   | The current temperature set point of the thermostat                                                                                |
+| status                 | Number               | Indicates the current running status of the HVAC system                                                                            |
+| fan_status             | Number               | Indicates the current fan status of the HVAC system                                                                                |
+| override               | Number               | Indicates if the normal program set-point has been manually overridden                                                             |
+| hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely                                                          |
+| remote_temp            | Number:Temperature   | Override the internal temperature as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
+| day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)                                                                |
+| hour                   | Number               | The current hour of the day reported by the thermostat  (24 hr)                                                                    |
+| minute                 | Number               | The current minute past the hour reported by the thermostat                                                                        |
+| dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm)                                                          |
+| today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                                                                              |
+| today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                              |
+| yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                          |
+| yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                          |
 
 ## Full Example
 
 radiotherm.map:
 
-```text
+```
 UNDEF_stus=-
 NULL_stus=-
 -_stus=-
@@ -113,14 +117,14 @@ NULL_over=-
 
 radiotherm.things:
 
-```java
+```
 radiothermostat:rtherm:mytherm1 "My 1st floor thermostat" [ hostName="192.168.10.1", refresh=2, logRefresh=10, isCT80=false, disableLogs=false, setpointMode="temporary" ]
 radiothermostat:rtherm:mytherm2 "My 2nd floor thermostat" [ hostName="mythermhost2", refresh=1, logRefresh=20, isCT80=true, disableLogs=false, setpointMode="absolute" ]
 ```
 
 radiotherm.items:
 
-```java
+```
 Number:Temperature  Therm_Temp  "Current Temperature [%.1f °F] " <temperature>  { channel="radiothermostat:rtherm:mytherm1:temperature" }
 // Humidity only supported on CT80
 Number Therm_Hum                "Current Humidity [%d %%]" <temperature>        { channel="radiothermostat:rtherm:mytherm1:humidity" }
@@ -145,13 +149,16 @@ Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channe
 Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
 Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
 
+// Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
+Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>     { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
+
 // A virtual switch used to trigger a rule to send a json command to the thermostat
 Switch Therm_mysetting   "Send my preferred setting"
 ```
 
 radiotherm.sitemap:
 
-```perl
+```
 sitemap radiotherm label="My Thermostat" {
     Frame label="My 1st floor thermostat" {
         Text item=Therm_Temp icon="temperature" valuecolor=[>76="orange",>67.5="green",<=67.5="blue"]
@@ -167,9 +174,12 @@ sitemap radiotherm label="My Thermostat" {
         Text item=Therm_Override icon="smoke"
         Switch item=Therm_Hold icon="smoke"
 
+        // Example of overriding the thermostat's temperature reading
+        Switch item=Therm_Rtemp label="Remote Temp" icon="temperature" mappings=[60="60", 75="75", 80="80", -1="Reset"]
+
         // Virtual switch/button to trigger a rule to send a custom command
         // The ON value displays in the button
-        Switch item=Therm_mysetting mappings=[ON="Heat, 58, hold"]
+        Switch item=Therm_mysetting mappings=[ON="Heat, 68, hold"]
 
         Text item=Therm_Day
         Text item=Therm_Hour
@@ -186,7 +196,7 @@ sitemap radiotherm label="My Thermostat" {
 
 radiotherm.rules:
 
-```java
+```
 rule "Send my thermostat command"
 when
   Item Therm_mysetting received command
@@ -198,6 +208,6 @@ then
   }
   // JSON to send directly to the thermostat's '/tstat' endpoint
   // See RadioThermostat_CT50_Honeywell_Wifi_API_V1.3.pdf for more detail
-  actions.sendRawCommand('{"hold":1, "t_heat":' + "58" + ', "tmode":1}')
+  actions.sendRawCommand('{"hold":1, "t_heat":' + "68" + ', "tmode":1}')
 end
 ```

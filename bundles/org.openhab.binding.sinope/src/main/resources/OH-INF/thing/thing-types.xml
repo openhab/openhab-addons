@@ -8,26 +8,23 @@
 		<description>A Sinopé Gateway</description>
 
 		<config-description>
-			<parameter name="hostname" type="text">
+			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
 				<description>Hostname of the Sinopé Gateway</description>
 				<context>network-address</context>
-				<required>true</required>
 			</parameter>
 			<parameter name="port" type="integer">
 				<label>Port</label>
 				<description>The port that the Sinopé Gateway listens on</description>
 				<default>4550</default>
 			</parameter>
-			<parameter name="gatewayId" type="text">
+			<parameter name="gatewayId" type="text" required="true">
 				<label>Gateway ID</label>
 				<description>The Sinopé gateway ID (as printed on the back-side, e.g. "xxxx xxxx xxxx xxxx")</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="apiKey" type="text">
+			<parameter name="apiKey" type="text" required="true">
 				<label>API Key</label>
 				<description>Use sinope-core application to generate your api key</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
 				<label>Refresh Interval</label>

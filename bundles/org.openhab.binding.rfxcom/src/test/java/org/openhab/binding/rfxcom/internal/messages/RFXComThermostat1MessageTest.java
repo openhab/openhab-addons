@@ -31,7 +31,8 @@ public class RFXComThermostat1MessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0940001B6B1816150270";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComThermostat1Message msg = (RFXComThermostat1Message) RFXComMessageFactory.createMessage(message);
+        RFXComThermostat1Message msg = (RFXComThermostat1Message) RFXComMessageFactoryImpl.INSTANCE
+                .createMessage(message);
         assertEquals(RFXComThermostat1Message.SubType.DIGIMAX, msg.subType, "SubType");
         assertEquals(27, (short) (msg.seqNbr & 0xFF), "Seq Number");
         assertEquals("27416", msg.getDeviceId(), "Sensor Id");

@@ -34,9 +34,9 @@ __Important!__
 Please note that only one bridge is required to establish a connection.
 Adding a second bridge can cause trouble with the connection.
 
-It is recommended to use the Paper UI to setup the system and add all players and groups.
+It is recommended to use the UI to setup the system and add all players and groups.
 The bridge is discovered through UPnP in the local network.
-Once it is added the players and groups are discovered via the bridge and placed in the Paper UI Inbox.
+Once it is added the players and groups are discovered via the bridge and placed in the Inbox.
 
 ## Binding Configuration
 
@@ -80,7 +80,7 @@ Thing heos:player:player1 "name" [pid="123456789"]
 PID behind the heos:player:--- should be changed as required.
 It is recommended to use the Player PID.
 If the PID isn't known it can be discovered by establishing a Telnet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
-Another way is to use Paper UI to discover the Player via the bridge and get the PID.
+Another way is to use the UI to discover the Player via the bridge and get the PID.
 For further details refer to the [HEOS CLI](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
 
 ### Group Configuration
@@ -91,8 +91,9 @@ Player have the following configuration parameter
 |-----------------  |------------------------------------------------------------------------------------- | --------- |
 | members           | The members of the groups. These are the player IDs. IDs have to be separated by ";" | yes       |
 
-If you use Paper UI to manage your Things (which is the preferred way), you can also set up your group automatically from Paper UI.
-Groups will automatically appear in the Inbox if that Group is active. To do this, build your Group from the HEOS app, then the group will appear in the Inbox.
+Groups will automatically appear in the Inbox if that Group is active.
+To do this, build your Group from the HEOS app, then the group will appear in the Inbox.
+
 ```
 Thing heos:group:group1 "name" [members="45345634;35534567"]
 ```

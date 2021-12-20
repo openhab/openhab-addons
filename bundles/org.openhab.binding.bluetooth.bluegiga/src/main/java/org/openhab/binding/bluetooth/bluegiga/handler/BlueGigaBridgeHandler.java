@@ -30,7 +30,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
@@ -411,10 +410,16 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
             // Ignore all as RXTX seems to send arbitrary exceptions when BlueGiga module is detached
         } finally {
             outputStream.ifPresent(output -> {
-                IOUtils.closeQuietly(output);
+                try {
+                    output.close();
+                } catch (IOException e) {
+                }
             });
             inputStream.ifPresent(input -> {
-                IOUtils.closeQuietly(input);
+                try {
+                    input.close();
+                } catch (IOException e) {
+                }
             });
             sp.close();
             logger.debug("Closed serial port.");

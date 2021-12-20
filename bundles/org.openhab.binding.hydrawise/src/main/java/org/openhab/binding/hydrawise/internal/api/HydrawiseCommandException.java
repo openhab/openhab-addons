@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.hydrawise.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown when command responses return a error message
  *
  * @author Dan Cunningham - Initial contribution
  */
-@SuppressWarnings("serial")
+@NonNullByDefault
 public class HydrawiseCommandException extends Exception {
+    private static final long serialVersionUID = 1L;
+
     public HydrawiseCommandException(String message) {
         super(message);
     }

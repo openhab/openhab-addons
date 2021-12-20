@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SensorInfo {
-    private static final Logger logger = LoggerFactory.getLogger(SensorInfo.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SensorInfo.class);
 
     public Optional<Double> indoortemp = Optional.empty();
     public Optional<Double> indoorhumidity = Optional.empty();
@@ -38,7 +38,7 @@ public class SensorInfo {
     }
 
     public static SensorInfo parse(String response) {
-        logger.debug("Parsing string: \"{}\"", response);
+        LOGGER.debug("Parsing string: \"{}\"", response);
 
         Map<String, String> responseMap = InfoParser.parse(response);
 

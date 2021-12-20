@@ -36,10 +36,9 @@
 			<property name="vendor">Denon</property>
 		</properties>
 		<config-description>
-			<parameter name="members" type="text" readOnly="false">
+			<parameter name="members" type="text" readOnly="false" required="true">
 				<label>The Group Member Player IDs</label>
 				<description>Shows the player IDs of the members of this group</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

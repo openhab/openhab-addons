@@ -73,6 +73,7 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_ALBUM_ART = "player#albumArt";
     public static final String CHANNEL_ALBUM_ART_URL = "player#albumArtUrl";
     public static final String CHANNEL_LISTENMODE = "player#listenmode";
+    public static final String CHANNEL_AUDIOINFO = "player#audioinfo";
     public static final String CHANNEL_PLAY_URI = "player#playuri";
 
     public static final String CHANNEL_NET_MENU_TITLE = "netmenu#title";
@@ -88,6 +89,11 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_NET_MENU7 = "netmenu#item7";
     public static final String CHANNEL_NET_MENU8 = "netmenu#item8";
     public static final String CHANNEL_NET_MENU9 = "netmenu#item9";
+
+    public final static String CHANNEL_AUDIO_IN_INFO = "info#audioIn";
+    public final static String CHANNEL_AUDIO_OUT_INFO = "info#audioOut";
+    public final static String CHANNEL_VIDEO_IN_INFO = "info#videoIn";
+    public final static String CHANNEL_VIDEO_OUT_INFO = "info#videoOut";
 
     // Used for Discovery service
     public static final String MANUFACTURER = "ONKYO";

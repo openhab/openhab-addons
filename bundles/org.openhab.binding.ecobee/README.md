@@ -47,6 +47,7 @@ Once logged in, select the **Developer** option from the menu.
 If you don't see the **Developer** option on the menu, then something went wrong with the previous step.
 
 4. Finally, create a new application.
+
 Give the application a name and fill in the application summary.
 Select the **Ecobee PIN** Authorization Method, then press **Create**.
 You now should see the **API key** for the application you just created.

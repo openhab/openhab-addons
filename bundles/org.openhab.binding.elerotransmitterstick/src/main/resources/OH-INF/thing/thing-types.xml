@@ -38,10 +38,9 @@
 		</channels>
 
 		<config-description>
-			<parameter name="channelId" type="integer" min="1" max="15" step="1" readOnly="true">
+			<parameter name="channelId" type="integer" min="1" max="15" step="1" readOnly="true" required="true">
 				<label>Channel ID</label>
 				<description>The id of this channel.</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

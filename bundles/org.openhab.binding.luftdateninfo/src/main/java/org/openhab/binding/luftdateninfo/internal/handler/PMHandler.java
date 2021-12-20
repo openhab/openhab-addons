@@ -13,7 +13,7 @@
 package org.openhab.binding.luftdateninfo.internal.handler;
 
 import static org.openhab.binding.luftdateninfo.internal.LuftdatenInfoBindingConstants.*;
-import static org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler.*;
+import static org.openhab.binding.luftdateninfo.internal.utils.Constants.*;
 
 import java.util.List;
 
@@ -49,11 +49,11 @@ public class PMHandler extends BaseSensorHandler {
             if (valueList != null) {
                 if (HTTPHandler.getHandler().isParticulate(valueList)) {
                     valueList.forEach(v -> {
-                        if (v.getValueType().equals(P1)) {
+                        if (v.getValueType().endsWith(P1)) {
                             pm100Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     Units.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM100_CHANNEL, pm100Cache);
-                        } else if (v.getValueType().equals(P2)) {
+                        } else if (v.getValueType().endsWith(P2)) {
                             pm25Cache = QuantityType.valueOf(NumberUtils.round(v.getValue(), 1),
                                     Units.MICROGRAM_PER_CUBICMETRE);
                             updateState(PM25_CHANNEL, pm25Cache);

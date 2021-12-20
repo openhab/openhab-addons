@@ -59,7 +59,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\",\"4\"\u003d\"Level 4\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Level 1\",\"2\"\u003d\"Level 2\",\"3\"\u003d\"Level 3\",\"4\"\u003d\"Level 4\"]`"
 			},
 			{
 				"property": "horizontal-swing",
@@ -123,7 +123,7 @@
 						"parameterType": "NUMBER"
 					}
 				],
-				"readmeComment": "Value mapping [\"0\"\u003d\"Natural Wind\",\"1\"\u003d\"Straight Wind\"]"
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Natural Wind\",\"1\"\u003d\"Straight Wind\"]`"
 			},
 			{
 				"property": "off-delay",
@@ -288,7 +288,7 @@
 				},
 				"refresh": true,
 				"actions": [],
-				"readmeComment": "Value mapping [\"1\"\u003d\"power\",\"2\"\u003d\"swing\",\"0\"\u003d\"No Button Pressed\"]"
+				"readmeComment": "Value mapping `[\"1\"\u003d\"power\",\"2\"\u003d\"swing\",\"0\"\u003d\"No Button Pressed\"]`"
 			},
 			{
 				"property": "battery-state",

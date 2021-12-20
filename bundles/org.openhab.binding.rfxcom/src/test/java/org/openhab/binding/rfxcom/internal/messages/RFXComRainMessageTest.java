@@ -32,7 +32,7 @@ public class RFXComRainMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0B550217B6000000004D3C69";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComRainMessage msg = (RFXComRainMessage) RFXComMessageFactory.createMessage(message);
+        RFXComRainMessage msg = (RFXComRainMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(RAIN2, msg.subType, "SubType");
         assertEquals(23, msg.seqNbr, "Seq Number");
         assertEquals("46592", msg.getDeviceId(), "Sensor Id");

@@ -8,7 +8,7 @@
 	<thing-type id="rtherm">
 		<label>Thermostat</label>
 		<description>
-			A Thermostat to Control the House's HVAC System
+			CT30, CT50/3M50 or CT80 Wi-Fi Thermostat
 		</description>
 
 		<channels>
@@ -22,6 +22,7 @@
 			<channel id="hold" typeId="hold"/>
 			<channel id="status" typeId="status"/>
 			<channel id="fan_status" typeId="fan_status"/>
+			<channel id="remote_temp" typeId="remote_temp"/>
 			<channel id="day" typeId="t_day"/>
 			<channel id="hour" typeId="t_hour"/>
 			<channel id="minute" typeId="t_minute"/>
@@ -67,7 +68,11 @@
 					<option value="temporary">Temporary</option>
 				</options>
 			</parameter>
-
+			<parameter name="clockSync" type="boolean">
+				<label>Enable Thermostat Clock Sync</label>
+				<description>Optional Flag to snyc the thermostat's clock with the host system clock</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -155,6 +160,14 @@
 		<label>Fan Status</label>
 		<description>Indicates the Current Fan Status of the HVAC System</description>
 		<state min="0" max="2" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="remote_temp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Remote Temperature</label>
+		<description>The remote temperature takes the place of the ambient temperature as read by the local thermostat
+			temperature sensor</description>
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="t_day" advanced="true">

@@ -487,7 +487,7 @@ public class LxServerHandler extends BaseThingHandler implements LxServerHandler
 
                 state.setStateValue(update.getValue());
             });
-            if (perStateUuid.size() == 0) {
+            if (perStateUuid.isEmpty()) {
                 logger.debug("[{}] State update UUID={} has empty controls table", debugId, update.getUuid());
             }
         } else {

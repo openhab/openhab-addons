@@ -69,7 +69,17 @@ import io.github.hapjava.characteristics.impl.common.StatusFaultCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusFaultEnum;
 import io.github.hapjava.characteristics.impl.common.StatusTamperedCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusTamperedEnum;
-import io.github.hapjava.characteristics.impl.fan.*;
+import io.github.hapjava.characteristics.impl.fan.CurrentFanStateCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.CurrentFanStateEnum;
+import io.github.hapjava.characteristics.impl.fan.LockPhysicalControlsCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.LockPhysicalControlsEnum;
+import io.github.hapjava.characteristics.impl.fan.RotationDirectionCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.RotationDirectionEnum;
+import io.github.hapjava.characteristics.impl.fan.RotationSpeedCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.SwingModeCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.SwingModeEnum;
+import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
+import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
@@ -199,15 +209,16 @@ public class HomekitCharacteristicFactory {
         }
     }
 
-    private static int getIntFromItem(HomekitTaggedItem taggedItem) {
-        int value = 0;
+    private static int getIntFromItem(HomekitTaggedItem taggedItem, int defaultValue) {
+        int value = defaultValue;
         final State state = taggedItem.getItem().getState();
         if (state instanceof PercentType) {
             value = ((PercentType) state).intValue();
         } else if (state instanceof DecimalType) {
             value = ((DecimalType) state).intValue();
         } else if (state instanceof UnDefType) {
-            logger.debug("Item state {} is UNDEF {}.", state, taggedItem.getName());
+            logger.debug("Item state {} is UNDEF {}. Returning default value {}", state, taggedItem.getName(),
+                    defaultValue);
         } else {
             logger.warn(
                     "Item state {} is not supported for {}. Only PercentType and DecimalType (0/100) are supported.",
@@ -217,23 +228,24 @@ public class HomekitCharacteristicFactory {
     }
 
     /** special method for tilts. it converts percentage to angle */
-    private static int getAngleFromItem(HomekitTaggedItem taggedItem) {
-        int value = 0;
+    private static int getAngleFromItem(HomekitTaggedItem taggedItem, int defaultValue) {
+        int value = defaultValue;
         final State state = taggedItem.getItem().getState();
         if (state instanceof PercentType) {
             value = (int) ((((PercentType) state).intValue() * 90.0) / 50.0 - 90.0);
         } else {
-            value = getIntFromItem(taggedItem);
+            value = getIntFromItem(taggedItem, defaultValue);
         }
         return value;
     }
 
-    private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem) {
-        return () -> CompletableFuture.completedFuture(getAngleFromItem(taggedItem));
+    private static Supplier<CompletableFuture<Integer>> getAngleSupplier(HomekitTaggedItem taggedItem,
+            int defaultValue) {
+        return () -> CompletableFuture.completedFuture(getAngleFromItem(taggedItem, defaultValue));
     }
 
-    private static Supplier<CompletableFuture<Integer>> getIntSupplier(HomekitTaggedItem taggedItem) {
-        return () -> CompletableFuture.completedFuture(getIntFromItem(taggedItem));
+    private static Supplier<CompletableFuture<Integer>> getIntSupplier(HomekitTaggedItem taggedItem, int defaultValue) {
+        return () -> CompletableFuture.completedFuture(getIntFromItem(taggedItem, defaultValue));
     }
 
     private static ExceptionalConsumer<Integer> setIntConsumer(HomekitTaggedItem taggedItem) {
@@ -389,28 +401,28 @@ public class HomekitCharacteristicFactory {
 
     private static CurrentHorizontalTiltAngleCharacteristic createCurrentHorizontalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CurrentHorizontalTiltAngleCharacteristic(getAngleSupplier(taggedItem),
+        return new CurrentHorizontalTiltAngleCharacteristic(getAngleSupplier(taggedItem, 0),
                 getSubscriber(taggedItem, CURRENT_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, CURRENT_HORIZONTAL_TILT_ANGLE, updater));
     }
 
     private static CurrentVerticalTiltAngleCharacteristic createCurrentVerticalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CurrentVerticalTiltAngleCharacteristic(getAngleSupplier(taggedItem),
+        return new CurrentVerticalTiltAngleCharacteristic(getAngleSupplier(taggedItem, 0),
                 getSubscriber(taggedItem, CURRENT_VERTICAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, CURRENT_VERTICAL_TILT_ANGLE, updater));
     }
 
     private static TargetHorizontalTiltAngleCharacteristic createTargetHorizontalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new TargetHorizontalTiltAngleCharacteristic(getAngleSupplier(taggedItem), setAngleConsumer(taggedItem),
-                getSubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater),
+        return new TargetHorizontalTiltAngleCharacteristic(getAngleSupplier(taggedItem, 0),
+                setAngleConsumer(taggedItem), getSubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater));
     }
 
     private static TargetVerticalTiltAngleCharacteristic createTargetVerticalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new TargetVerticalTiltAngleCharacteristic(getAngleSupplier(taggedItem), setAngleConsumer(taggedItem),
+        return new TargetVerticalTiltAngleCharacteristic(getAngleSupplier(taggedItem, 0), setAngleConsumer(taggedItem),
                 getSubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater),
                 getUnsubscriber(taggedItem, TARGET_HORIZONTAL_TILT_ANGLE, updater));
     }
@@ -480,7 +492,12 @@ public class HomekitCharacteristicFactory {
 
     private static ColorTemperatureCharacteristic createColorTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new ColorTemperatureCharacteristic(getIntSupplier(taggedItem), setIntConsumer(taggedItem),
+        int minValue = taggedItem.getConfigurationAsInt(HomekitTaggedItem.MIN_VALUE,
+                ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE);
+        return new ColorTemperatureCharacteristic(minValue,
+                taggedItem.getConfigurationAsInt(HomekitTaggedItem.MAX_VALUE,
+                        ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE),
+                getIntSupplier(taggedItem, minValue), setIntConsumer(taggedItem),
                 getSubscriber(taggedItem, COLOR_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COLOR_TEMPERATURE, updater));
     }
@@ -555,14 +572,14 @@ public class HomekitCharacteristicFactory {
 
     private static RotationSpeedCharacteristic createRotationSpeedCharacteristic(HomekitTaggedItem item,
             HomekitAccessoryUpdater updater) {
-        return new RotationSpeedCharacteristic(getIntSupplier(item), setPercentConsumer(item),
+        return new RotationSpeedCharacteristic(getIntSupplier(item, 0), setPercentConsumer(item),
                 getSubscriber(item, ROTATION_SPEED, updater), getUnsubscriber(item, ROTATION_SPEED, updater));
     }
 
     private static SetDurationCharacteristic createDurationCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new SetDurationCharacteristic(() -> {
-            int value = getIntFromItem(taggedItem);
+            int value = getIntFromItem(taggedItem, 0);
             final @Nullable Map<String, Object> itemConfiguration = taggedItem.getConfiguration();
             if ((value == 0) && (itemConfiguration != null)) { // check for default duration
                 final Object duration = itemConfiguration.get(HomekitValveImpl.CONFIG_DEFAULT_DURATION);
@@ -580,14 +597,14 @@ public class HomekitCharacteristicFactory {
 
     private static RemainingDurationCharacteristic createRemainingDurationCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new RemainingDurationCharacteristic(getIntSupplier(taggedItem),
+        return new RemainingDurationCharacteristic(getIntSupplier(taggedItem, 0),
                 getSubscriber(taggedItem, REMAINING_DURATION, updater),
                 getUnsubscriber(taggedItem, REMAINING_DURATION, updater));
     }
 
     private static VolumeCharacteristic createVolumeCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new VolumeCharacteristic(getIntSupplier(taggedItem),
+        return new VolumeCharacteristic(getIntSupplier(taggedItem, 0),
                 (volume) -> ((NumberItem) taggedItem.getItem()).send(new DecimalType(volume)),
                 getSubscriber(taggedItem, DURATION, updater), getUnsubscriber(taggedItem, DURATION, updater));
     }

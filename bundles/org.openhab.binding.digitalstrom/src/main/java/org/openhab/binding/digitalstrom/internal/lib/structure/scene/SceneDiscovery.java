@@ -26,7 +26,7 @@ import org.openhab.binding.digitalstrom.internal.lib.manager.SceneManager;
 import org.openhab.binding.digitalstrom.internal.lib.manager.StructureManager;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.constants.JSONApiResponseKeysEnum;
 import org.openhab.binding.digitalstrom.internal.lib.serverconnection.impl.JSONResponseHandler;
-import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.ApartmentSceneEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.ZoneSceneEnum;
@@ -263,8 +263,9 @@ public class SceneDiscovery {
                                             groupIdInter = null;
                                         }
                                         if (groupID != null) {
-                                            if (FunctionalColorGroupEnum.getColorGroup(groupID)
-                                                    .equals(FunctionalColorGroupEnum.YELLOW)) {
+
+                                            if (ApplicationGroup.Color.YELLOW
+                                                    .equals(ApplicationGroup.getGroup(groupID).getColor())) {
                                                 discoverScene(SceneEnum.AUTO_OFF.getSceneNumber(), groupID);
                                             }
                                             String response = connectionManager.getHttpTransport()

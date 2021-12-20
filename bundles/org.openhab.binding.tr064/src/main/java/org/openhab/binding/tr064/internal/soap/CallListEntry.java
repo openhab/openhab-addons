@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.tr064.internal.soap;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,7 +30,7 @@ import org.openhab.binding.tr064.internal.dto.additions.Call;
  */
 @NonNullByDefault
 public class CallListEntry {
-    private static final SimpleDateFormat DATE_FORMAT_PARSER = new SimpleDateFormat("dd.MM.yy hh:mm");
+    private static final DateTimeFormatter DATE_FORMAT_PARSER = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
     public @Nullable String localNumber;
     public @Nullable String remoteNumber;
     public @Nullable Date date;
@@ -37,8 +39,9 @@ public class CallListEntry {
 
     public CallListEntry(Call call) {
         try {
-            date = DATE_FORMAT_PARSER.parse(call.getDate());
-        } catch (ParseException e) {
+            date = Date.from(
+                    LocalDateTime.parse(call.getDate(), DATE_FORMAT_PARSER).atZone(ZoneId.systemDefault()).toInstant());
+        } catch (DateTimeParseException e) {
             // ignore parsing error
             date = null;
         }

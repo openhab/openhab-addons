@@ -15,6 +15,7 @@ package org.openhab.binding.modbus.handler;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,6 +32,7 @@ import org.openhab.core.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.core.io.transport.modbus.ModbusReadCallback;
 import org.openhab.core.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.core.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.core.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.core.io.transport.modbus.PollTask;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -96,6 +98,10 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
         @Override
         public synchronized void handle(AsyncModbusReadResult result) {
+            // Casting to allow registers.orElse(null) below..
+            Optional<@Nullable ModbusRegisterArray> registers = (Optional<@Nullable ModbusRegisterArray>) result
+                    .getRegisters();
+            lastPolledDataCache.set(registers.orElse(null));
             handleResult(new PollResult(result));
         }
 
@@ -177,7 +183,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
 
-    private final static List<String> SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES
+    private static final List<String> SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES
             .keySet().stream().sorted().collect(Collectors.toUnmodifiableList());
 
     private @NonNullByDefault({}) ModbusPollerConfiguration config;
@@ -186,6 +192,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private volatile @Nullable ModbusReadRequestBlueprint request;
     private volatile boolean disposed;
     private volatile List<ModbusDataThingHandler> childCallbacks = new CopyOnWriteArrayList<>();
+    private volatile AtomicReference<@Nullable ModbusRegisterArray> lastPolledDataCache = new AtomicReference<>();
     private @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
     private ReadCallbackDelegator callbackDelegator = new ReadCallbackDelegator();
@@ -288,6 +295,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         unregisterPollTask();
         this.callbackDelegator.resetCache();
         comms = null;
+        lastPolledDataCache.set(null);
     }
 
     /**
@@ -420,6 +428,20 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         if (localRequest == null) {
             return;
         }
+        ModbusRegisterArray possiblyMutatedCache = lastPolledDataCache.get();
+        AtomicStampedValue<PollResult> lastPollResult = callbackDelegator.lastResult;
+        if (lastPollResult != null && possiblyMutatedCache != null) {
+            AsyncModbusReadResult lastSuccessfulPollResult = lastPollResult.getValue().result;
+            if (lastSuccessfulPollResult != null) {
+                ModbusRegisterArray lastRegisters = ((Optional<@Nullable ModbusRegisterArray>) lastSuccessfulPollResult
+                        .getRegisters()).orElse(null);
+                if (lastRegisters != null && !possiblyMutatedCache.equals(lastRegisters)) {
+                    // Register has been mutated in between by a data thing that writes "individual bits"
+                    // Invalidate cache for a fresh poll
+                    callbackDelegator.resetCache();
+                }
+            }
+        }
 
         long oldDataThreshold = System.currentTimeMillis() - cacheMillis;
         boolean cacheWasRecentEnoughForUpdate = cacheMillis > 0
@@ -437,5 +459,9 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
                 localComms.submitOneTimePoll(localRequest, callbackDelegator, callbackDelegator);
             }
         }
+    }
+
+    public AtomicReference<@Nullable ModbusRegisterArray> getLastPolledDataCache() {
+        return lastPolledDataCache;
     }
 }

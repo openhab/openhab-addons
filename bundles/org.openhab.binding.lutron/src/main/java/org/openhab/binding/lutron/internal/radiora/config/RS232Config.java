@@ -12,39 +12,30 @@
  */
 package org.openhab.binding.lutron.internal.radiora.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration class for RS232 thing type.
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class RS232Config {
 
-    private String portName;
-    private int baud = 9600;
-    private int zoneMapQueryInterval = 60;
+    public String portName = "";
+    public int baud = 9600;
+    public int zoneMapQueryInterval = 60;
 
     public String getPortName() {
         return portName;
-    }
-
-    public void setPortName(String portName) {
-        this.portName = portName;
     }
 
     public int getBaud() {
         return baud;
     }
 
-    public void setBaud(int baud) {
-        this.baud = baud;
-    }
-
     public int getZoneMapQueryInterval() {
         return zoneMapQueryInterval;
-    }
-
-    public void setZoneMapQueryInterval(int zoneMapQueryInterval) {
-        this.zoneMapQueryInterval = zoneMapQueryInterval;
     }
 }

@@ -12,22 +12,17 @@
  */
 package org.openhab.binding.rfxcom.internal.config;
 
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidParameterException;
+import org.openhab.binding.rfxcom.internal.messages.RFXComDeviceMessage;
+
 /**
- * Configuration class for RfxcomBinding device.
+ * Configuration interface for RFXCom devices.
  *
  * @author Pauli Anttila - Initial contribution
+ * @author James Hewitt-Thomas - Convert to interface and add validation and matching
  */
+public interface RFXComDeviceConfiguration {
+    public void parseAndValidate() throws RFXComInvalidParameterException;
 
-public class RFXComDeviceConfiguration {
-    public static final String DEVICE_ID_LABEL = "deviceId";
-    public static final String SUB_TYPE_LABEL = "subType";
-    public static final String PULSE_LABEL = "pulse";
-    public static final String ON_COMMAND_ID_LABEL = "onCommandId";
-    public static final String OFF_COMMAND_ID_LABEL = "offCommandId";
-
-    public String deviceId;
-    public String subType;
-    public Integer pulse;
-    public Integer onCommandId;
-    public Integer offCommandId;
+    public boolean matchesMessage(RFXComDeviceMessage message);
 }

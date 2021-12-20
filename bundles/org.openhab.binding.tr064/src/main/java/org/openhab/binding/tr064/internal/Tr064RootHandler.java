@@ -12,13 +12,19 @@
  */
 package org.openhab.binding.tr064.internal;
 
-import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_FRITZBOX;
-import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYPE_GENERIC;
+import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -48,7 +54,12 @@ import org.openhab.binding.tr064.internal.soap.SOAPValueConverter;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
 import org.openhab.core.cache.ExpiringCacheMap;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ThingBuilder;

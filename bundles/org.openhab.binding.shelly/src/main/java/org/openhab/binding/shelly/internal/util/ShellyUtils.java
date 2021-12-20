@@ -52,8 +52,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class ShellyUtils {
-    private final static String PRE = "Unable to create object of type ";
-    public final static DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
+    private static final String PRE = "Unable to create object of type ";
+    public static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
         @Nullable
@@ -96,6 +96,7 @@ public class ShellyUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> Class<T> wrap(Class<T> type) {
         if (type == int.class) {
             return (Class<T>) Integer.class;

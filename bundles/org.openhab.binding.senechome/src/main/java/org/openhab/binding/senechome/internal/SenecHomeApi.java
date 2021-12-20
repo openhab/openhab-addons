@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.MalformedJsonException;
 
 /**
  * The {@link SenecHomeApi} class configures http client and
@@ -63,7 +65,6 @@ public class SenecHomeApi {
      *
      * To receive new values, just modify the Json objects and add them to the thing channels
      *
-     * @param hostname Hostname or ip address of senec battery
      * @return Instance of SenecHomeResponse
      * @throws MalformedURLException Configuration/URL is wrong
      * @throws IOException Communication failed
@@ -75,14 +76,34 @@ public class SenecHomeApi {
         Request request = httpClient.newRequest(location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
         request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
-        ContentResponse response = request.method(HttpMethod.POST)
-                .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
-
-        if (response.getStatus() == HttpStatus.OK_200) {
-            return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
-        } else {
-            logger.trace("Got unexpected response code {}", response.getStatus());
-            throw new IOException("Got unexpected response code " + response.getStatus());
+        ContentResponse response = null;
+        try {
+            response = request.method(HttpMethod.POST)
+                    .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
+            if (response.getStatus() == HttpStatus.OK_200) {
+                return Objects.requireNonNull(gson.fromJson(response.getContentAsString(), SenecHomeResponse.class));
+            } else {
+                logger.trace("Got unexpected response code {}", response.getStatus());
+                throw new IOException("Got unexpected response code " + response.getStatus());
+            }
+        } catch (MalformedJsonException | JsonSyntaxException | InterruptedException | TimeoutException
+                | ExecutionException e) {
+            String errorMessage = "\nlocation: " + location;
+            errorMessage += "\nrequest: " + request.toString();
+            errorMessage += "\nrequest.getHeaders: " + request.getHeaders();
+            if (response == null) {
+                errorMessage += "\nresponse: null";
+            } else {
+                errorMessage += "\nresponse: " + response.toString();
+                errorMessage += "\nresponse.getHeaders: " + response.getHeaders();
+                if (response.getContent() == null) {
+                    errorMessage += "\nresponse.getContent is null";
+                } else {
+                    errorMessage += "\nresponse.getContentAsString: " + response.getContentAsString();
+                }
+            }
+            logger.trace("Issue with getting SenecHomeResponse\n{}", errorMessage);
+            throw e;
         }
     }
 }

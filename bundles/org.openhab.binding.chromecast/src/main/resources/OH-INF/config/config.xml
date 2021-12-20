@@ -5,11 +5,10 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:chromecast:device">
-		<parameter name="ipAddress" type="text">
+		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>Network Address</label>
 			<description>Network address of the Chromecast device.</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="port" type="integer">
 			<label>Network Port</label>

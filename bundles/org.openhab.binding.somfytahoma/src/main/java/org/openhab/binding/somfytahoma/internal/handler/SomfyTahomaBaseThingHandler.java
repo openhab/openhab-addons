@@ -47,6 +47,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -123,13 +124,15 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private void createRSSIChannel() {
         if (thing.getChannel(RSSI) == null) {
             logger.debug("{} Creating a rssi channel", url);
-            createChannel(RSSI, "Number", "RSSI Level");
+            ChannelTypeUID rssi = new ChannelTypeUID(BINDING_ID, "rssi");
+            createChannel(RSSI, "Number", "RSSI Level", rssi);
         }
     }
 
-    private void createChannel(String name, String type, String label) {
+    private void createChannel(String name, String type, String label, ChannelTypeUID channelType) {
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), type).withLabel(label).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), type).withLabel(label)
+                .withType(channelType).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
@@ -151,7 +154,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         return localBridge != null ? (SomfyTahomaBridgeHandler) localBridge.getHandler() : null;
     }
 
-    private String getURL() {
+    protected String getURL() {
         return getThing().getConfiguration().get("url") != null ? getThing().getConfiguration().get("url").toString()
                 : "";
     }
@@ -176,6 +179,17 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         SomfyTahomaBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             handler.sendCommand(url, cmd, param, EXEC_URL + "apply");
+        }
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd) {
+        sendCommandToSameDevicesInPlace(cmd, "[]");
+    }
+
+    protected void sendCommandToSameDevicesInPlace(String cmd, String param) {
+        SomfyTahomaBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            handler.sendCommandToSameDevicesInPlace(url, cmd, param, EXEC_URL + "apply");
         }
     }
 
@@ -412,7 +426,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
         Map<String, String> properties = new HashMap<>();
         for (SomfyTahomaState state : states) {
             logger.trace("{} processing state: {} with value: {}", url, state.getName(), state.getValue());
-            properties.put(state.getName(), state.getValue().toString());
+            properties.put(state.getName(), TYPE_NONE != state.getType() ? state.getValue().toString() : "");
             if (RSSI_LEVEL_STATE.equals(state.getName())) {
                 // RSSI channel is a dynamic one
                 updateRSSIChannel(state);

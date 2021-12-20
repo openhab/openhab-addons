@@ -33,7 +33,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.util.StreamReaderDelegate;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response;
@@ -310,7 +309,8 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
                 XMLInputFactory xif = XMLInputFactory.newInstance();
                 xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
                 xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
-                XMLStreamReader xsr = xif.createXMLStreamReader(IOUtils.toInputStream(result));
+                XMLStreamReader xsr = xif
+                        .createXMLStreamReader(new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8)));
                 xsr = new PropertyRenamerDelegate(xsr);
 
                 @SuppressWarnings("unchecked")
@@ -344,7 +344,8 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
                 JAXBContext jcResponse = JAXBContext.newInstance(response);
 
                 @SuppressWarnings("unchecked")
-                T obj = (T) jcResponse.createUnmarshaller().unmarshal(IOUtils.toInputStream(result));
+                T obj = (T) jcResponse.createUnmarshaller()
+                        .unmarshal(new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8)));
 
                 return obj;
             }
@@ -363,12 +364,12 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
 
         @Override
         public String getAttributeLocalName(int index) {
-            return Introspector.decapitalize(super.getAttributeLocalName(index));
+            return Introspector.decapitalize(super.getAttributeLocalName(index)).intern();
         }
 
         @Override
         public String getLocalName() {
-            return Introspector.decapitalize(super.getLocalName());
+            return Introspector.decapitalize(super.getLocalName()).intern();
         }
     }
 }

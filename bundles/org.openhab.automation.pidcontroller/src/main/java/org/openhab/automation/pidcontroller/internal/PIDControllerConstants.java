@@ -36,5 +36,5 @@ public class PIDControllerConstants {
     public static final String I_INSPECTOR = "iInspector";
     public static final String D_INSPECTOR = "dInspector";
     public static final String E_INSPECTOR = "eInspector";
-    public static final String OUTPUT = "output";
+    public static final String COMMAND = "command";
 }

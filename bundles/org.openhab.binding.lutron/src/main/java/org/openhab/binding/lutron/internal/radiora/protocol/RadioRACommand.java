@@ -14,12 +14,15 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Abstract base class for commands.
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public abstract class RadioRACommand {
 
     protected static final String FIELD_SEPARATOR = ",";

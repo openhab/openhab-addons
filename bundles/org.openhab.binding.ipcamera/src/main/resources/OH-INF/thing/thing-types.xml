@@ -76,17 +76,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
-			</parameter>
-
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -218,10 +211,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -291,13 +284,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique for each
-					camera.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -327,6 +313,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -447,10 +434,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -558,13 +545,6 @@
 				<default>0</default>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -580,6 +560,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
@@ -699,10 +680,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -770,13 +751,6 @@
 				</description>
 				<default>0</default>
 				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -887,6 +861,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -905,6 +880,7 @@
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="lastEventData" typeId="lastEventData"/>
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
@@ -997,10 +973,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1145,13 +1121,6 @@
 				</description>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
-			</parameter>
-
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
 				<label>IP Whitelist</label>
 				<description>Enter any IP's inside (brackets) that you wish to allow to access the video stream. 'DISABLE' will
@@ -1184,6 +1153,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1271,10 +1241,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1342,13 +1312,6 @@
 				</description>
 				<default>0</default>
 				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -1450,6 +1413,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1542,10 +1506,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1613,13 +1577,6 @@
 				</description>
 				<default>0</default>
 				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -1734,6 +1691,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1753,6 +1711,7 @@
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="lastEventData" typeId="lastEventData"/>
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
@@ -1838,10 +1797,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1909,13 +1868,6 @@
 				</description>
 				<default>0</default>
 				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -2025,6 +1977,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -2121,10 +2074,10 @@
 
 			<parameter name="ffmpegOutput" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Output Folder</label>
-				<description>The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this
-					format, c:\openhabconf\html\ipcamera\
+				<description>Leave this blank and the binding will use the openHAB userdata folder. Alternatively, a unique path for
+					each camera that ends with a slash and has write permissions can be entered.
 				</description>
-				<default>/etc/openhab/html/camera1/</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -2192,13 +2145,6 @@
 				</description>
 				<default>0</default>
 				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
-				<label>Server Port</label>
-				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
-				</description>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -2300,6 +2246,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -2419,6 +2366,13 @@
 		<item-type>String</item-type>
 		<label>Last Motion Type</label>
 		<description>A string that contains the type of motion alarm that was last triggered.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastEventData" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Event Data</label>
+		<description>A string that contains detailed data on the last alarm that was triggered.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

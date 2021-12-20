@@ -15,7 +15,13 @@ package org.openhab.binding.tr064.internal.phonebook;
 import static java.util.Comparator.comparing;
 
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -124,7 +130,7 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
                         thingName + " - " + phonebook.getName()))
                 .collect(Collectors.toList());
 
-        if (parameterOptions.size() > 0) {
+        if (!parameterOptions.isEmpty()) {
             parameterOptions.add(new ParameterOption(thingUid, thingName));
         }
 

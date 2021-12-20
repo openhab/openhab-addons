@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.lutron.internal.radiora.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Base class for Feedback from RadioRA
  *
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class RadioRAFeedback {
 
     public String[] parse(String msg, int numParams) {

@@ -93,10 +93,10 @@ public interface ConnectionListener {
      * <ul>
      * <li>{@link #WRONG_APP_TOKEN} if the given application-token can't be used.</li>
      * <li>{@link #WRONG_USER_OR_PASSWORD} if the given user name or password can't be used.</li>
-     * <li>{@link #NO_USER_PASSWORD} if no user name or password is set and the given application-token can't be used.
-     * <li>{@link #HOST_NOT_FOUND} if the host can't be found.
-     * <li>{@link #INVALID_URL} if the the URL is invalid.
-     * </li>
+     * <li>{@link #NO_USER_PASSWORD} if no user name or password is set and the given application-token can't be
+     * used.</li>
+     * <li>{@link #HOST_NOT_FOUND} if the host can't be found.</li>
+     * <li>{@link #INVALID_URL} if the the URL is invalid.</li>
      * </ul>
      *
      * @param newConnectionState of the connection

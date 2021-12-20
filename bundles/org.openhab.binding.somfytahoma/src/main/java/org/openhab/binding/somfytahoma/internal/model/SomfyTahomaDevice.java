@@ -35,6 +35,7 @@ public class SomfyTahomaDevice {
     private SomfyTahomaDeviceDefinition definition = new SomfyTahomaDeviceDefinition();
     private List<SomfyTahomaState> states = new ArrayList<>();
     private List<SomfyTahomaState> attributes = new ArrayList<>();
+    private String placeOID = "";
 
     public String getLabel() {
         return label;
@@ -56,6 +57,10 @@ public class SomfyTahomaDevice {
         return widget;
     }
 
+    public void setWidget(String widget) {
+        this.widget = widget;
+    }
+
     public SomfyTahomaDeviceDefinition getDefinition() {
         return definition;
     }
@@ -66,5 +71,13 @@ public class SomfyTahomaDevice {
 
     public List<SomfyTahomaState> getAttributes() {
         return attributes;
+    }
+
+    public String getPlaceOID() {
+        return placeOID;
+    }
+
+    public void setPlaceOID(String placeOID) {
+        this.placeOID = placeOID;
     }
 }

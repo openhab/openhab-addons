@@ -43,7 +43,6 @@
 				<b>... to generate an auth-code and paste it here</b>. After initial authorization, this code is not needed anymore.]]></description>
 			</parameter>
 			<parameter name="websocketidletimeout" type="integer" min="0" max="3600" unit="s" groupName="advanced">
-				<required>false</required>
 				<unitLabel>seconds</unitLabel>
 				<label>WebSocket Idle Timeout in Seconds</label>
 				<description>The WebSocket is the connection to the innogy service that listens to status updates. If no data is

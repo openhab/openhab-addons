@@ -25,7 +25,6 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public abstract class HusqvarnaApi {
-
     private final HttpClient httpClient;
     protected final Gson gson;
 

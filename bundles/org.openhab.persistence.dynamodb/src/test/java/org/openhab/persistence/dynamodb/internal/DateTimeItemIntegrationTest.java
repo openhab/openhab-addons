@@ -30,6 +30,7 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest {
+    public static final boolean LEGACY_MODE = false;
 
     private static final String NAME = "datetime";
     private static final ZonedDateTime ZDT1 = ZonedDateTime.parse("2016-06-15T10:00:00Z");
@@ -42,6 +43,7 @@ public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest 
     private static final DateTimeType STATE2 = new DateTimeType(ZDT2.withZoneSameInstant(ZoneOffset.ofHours(5)));
     private static final DateTimeType STATE_BETWEEN = new DateTimeType(ZDT_BETWEEN);
 
+    @SuppressWarnings("null")
     @BeforeAll
     public static void storeData() throws InterruptedException {
         DateTimeItem item = (DateTimeItem) ITEMS.get(NAME);
@@ -57,7 +59,6 @@ public class DateTimeItemIntegrationTest extends AbstractTwoItemIntegrationTest 
         service.store(item);
         Thread.sleep(10);
         afterStore2 = ZonedDateTime.now();
-
         LOGGER.info("Created item between {} and {}", AbstractDynamoDBItem.DATEFORMATTER.format(beforeStore),
                 AbstractDynamoDBItem.DATEFORMATTER.format(afterStore1));
     }

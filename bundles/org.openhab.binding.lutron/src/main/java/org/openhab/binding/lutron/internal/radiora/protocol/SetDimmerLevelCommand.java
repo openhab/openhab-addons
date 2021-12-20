@@ -15,6 +15,9 @@ package org.openhab.binding.lutron.internal.radiora.protocol;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Set Dimmer Level (SDL)
  * Set an individual Dimmer’s light level.
@@ -22,15 +25,18 @@ import java.util.List;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public class SetDimmerLevelCommand extends RadioRACommand {
 
     private int zoneNumber; // 1 to 32
     private int dimmerLevel; // 0 to 100
-    private Integer fadeSec; // 0 to 240 (optional)
+    private @Nullable Integer fadeSec; // 0 to 240 (optional)
+    private int system; // 1 or 2, or 0 for none
 
-    public SetDimmerLevelCommand(int zoneNumber, int dimmerLevel) {
+    public SetDimmerLevelCommand(int zoneNumber, int dimmerLevel, int system) {
         this.zoneNumber = zoneNumber;
         this.dimmerLevel = dimmerLevel;
+        this.system = system;
     }
 
     public void setFadeSeconds(int seconds) {
@@ -50,6 +56,10 @@ public class SetDimmerLevelCommand extends RadioRACommand {
 
         if (fadeSec != null) {
             args.add(String.valueOf(fadeSec));
+        }
+
+        if (system == 1 || system == 2) {
+            args.add("S" + String.valueOf(system));
         }
 
         return args;

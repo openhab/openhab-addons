@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.knx.internal.client;
 
+import java.time.Duration;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -183,18 +184,18 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             managementProcedures = new ManagementProceduresImpl(link);
 
             ManagementClient managementClient = new ManagementClientImpl(link);
-            managementClient.setResponseTimeout(responseTimeout);
+            managementClient.responseTimeout(Duration.ofSeconds(responseTimeout));
             this.managementClient = managementClient;
 
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
-            SecureApplicationLayer sal = new SecureApplicationLayer(link, Security.defaultInstallation());
-            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link, sal);
-            processCommunicator.setResponseTimeout(responseTimeout);
+            ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link);
+            processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, sal);
+            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, null);
+
             this.responseCommunicator = responseCommunicator;
 
             link.addLinkListener(this);

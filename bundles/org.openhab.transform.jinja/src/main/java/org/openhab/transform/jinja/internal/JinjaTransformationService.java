@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubspot.jinjava.Jinjava;
+import com.hubspot.jinjava.JinjavaConfig;
+import com.hubspot.jinjava.interpret.FatalTemplateErrorsException;
 
 /**
  * <p>
@@ -45,7 +47,8 @@ public class JinjaTransformationService implements TransformationService {
 
     private final Logger logger = LoggerFactory.getLogger(JinjaTransformationService.class);
 
-    private Jinjava jinjava = new Jinjava();
+    private final JinjavaConfig config = JinjavaConfig.newBuilder().withFailOnUnknownTokens(true).build();
+    private final Jinjava jinjava = new Jinjava(config);
 
     /**
      * Transforms the input <code>value</code> by Jinja template.
@@ -56,9 +59,11 @@ public class JinjaTransformationService implements TransformationService {
      */
     @Override
     public @Nullable String transform(String template, String value) throws TransformationException {
+        String transformationResult;
+        Map<String, @Nullable Object> bindings = new HashMap<>();
+
         logger.debug("about to transform '{}' by the function '{}'", value, template);
 
-        Map<String, @Nullable Object> bindings = new HashMap<>();
         bindings.put("value", value);
 
         try {
@@ -68,7 +73,11 @@ public class JinjaTransformationService implements TransformationService {
             // ok, then value_json is null...
         }
 
-        String transformationResult = jinjava.render(template, bindings);
+        try {
+            transformationResult = jinjava.render(template, bindings);
+        } catch (FatalTemplateErrorsException e) {
+            throw new TransformationException("An error occurred while transformation. " + e.getMessage(), e);
+        }
 
         logger.debug("transformation resulted in '{}'", transformationResult);
 

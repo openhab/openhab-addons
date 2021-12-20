@@ -61,7 +61,7 @@ public class DummyRuleRegistry implements RuleRegistry {
 
     @Override
     public Rule add(Rule element) {
-        Rule put = items.put(element.getUID(), element);
+        items.put(element.getUID(), element);
         for (RegistryChangeListener<Rule> l : listeners) {
             l.added(element);
         }

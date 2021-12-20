@@ -12,7 +12,11 @@
  */
 package org.openhab.binding.smartthings.internal.discovery;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -76,7 +80,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     protected void unsetSmartthingsHubCommand(SmartthingsHubCommand hubCommand) {
         // Make sure it is this handleFactory that should be unset
-        if (hubCommand == smartthingsHubCommand) {
+        if (Objects.equals(hubCommand, smartthingsHubCommand)) {
             this.smartthingsHubCommand = null;
         }
     }

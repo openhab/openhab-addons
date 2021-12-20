@@ -20,8 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorData;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
-import org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
+import org.openhab.binding.luftdateninfo.internal.utils.Constants;
 
 import com.google.gson.Gson;
 
@@ -44,16 +44,16 @@ public class DTOTest {
         SensorData d = valueArray[0];
         // Assure latest data is taken
         String dateStr = d.getTimeStamp();
-        if (dateStr.equals("2020-06-09 06:38:08")) {
+        if ("2020-06-09 06:38:08".equals(dateStr)) {
             // take newer one
             d = valueArray[1];
         }
         List<SensorDataValue> sensorDataVaueList = d.getSensorDataValues();
         assertNotNull(d);
         sensorDataVaueList.forEach(v -> {
-            if (v.getValueType().equals(HTTPHandler.TEMPERATURE)) {
+            if (Constants.TEMPERATURE.equals(v.getValueType())) {
                 assertEquals("22.70", v.getValue(), "Temperature");
-            } else if (v.getValueType().equals(HTTPHandler.HUMIDITY)) {
+            } else if (Constants.HUMIDITY.equals(v.getValueType())) {
                 assertEquals("61.00", v.getValue(), "Humidity");
             }
         });

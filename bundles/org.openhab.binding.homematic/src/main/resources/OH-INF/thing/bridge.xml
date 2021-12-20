@@ -37,11 +37,6 @@
 				<label>Callback Network Address</label>
 				<description>Callback network address of the runtime, default is auto-discovery</description>
 			</parameter>
-			<parameter name="bindAddress" type="text">
-				<context>network-address</context>
-				<label>Bind Address</label>
-				<description>The address the XML-/BINRPC server binds to, default is callbackHost</description>
-			</parameter>
 			<parameter name="xmlCallbackPort" type="integer">
 				<label>XML-RPC Callback Port</label>
 				<description>Callback port of the binding's XML-RPC server. If no value is specified, xmlCallbackPort starts with
@@ -99,6 +94,12 @@
 				<description>The port number of the Group daemon</description>
 				<advanced>true</advanced>
 				<default>9292</default>
+			</parameter>
+			<parameter name="callbackRegTimeout" type="integer" min="30">
+				<label>Callback Reg. Timeout</label>
+				<description>Maximum time in seconds for callback registration in the Homematic gateway.</description>
+				<advanced>true</advanced>
+				<default>120</default>
 			</parameter>
 			<parameter name="installModeDuration" type="integer" min="10" max="300" unit="s">
 				<label>Install Mode Duration</label>

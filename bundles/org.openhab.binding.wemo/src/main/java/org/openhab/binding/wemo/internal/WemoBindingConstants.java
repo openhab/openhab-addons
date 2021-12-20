@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -26,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Hans-Jörg Merk - Initial contribution
  * @author Mihir Patil - Added standby switch
  */
+@NonNullByDefault
 public class WemoBindingConstants {
 
     public static final String BINDING_ID = "wemo";
@@ -109,8 +111,8 @@ public class WemoBindingConstants {
     public static final String UDN = "udn";
     public static final String DEVICE_ID = "deviceID";
     public static final String POLLINGINTERVALL = "pollingInterval";
-
-    public static final int SUBSCRIPTION_DURATION = 600;
+    public static final int DEFAULT_REFRESH_INTERVALL_SECONDS = 60;
+    public static final int SUBSCRIPTION_DURATION_SECONDS = 600;
     public static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
     public static final String HTTP_CALL_CONTENT_HEADER = "text/xml; charset=utf-8";
 

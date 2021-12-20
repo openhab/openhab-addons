@@ -34,6 +34,17 @@ public class RFXComInterfaceControlMessage extends RFXComBaseMessage {
         data[5] = transceiverType.toByte();
         data[6] = (byte) (configuration.transmitPower + 18);
 
+        /*
+         * These are actually dependent on the type of device and
+         * firmware, this list is mainly for RFXtrx443 at 433.92MHz,
+         * which most of our users use.
+         *
+         * TODO: At some point, we should reconcile this with the SDK
+         * and accommodate for other devices and protocols. This is
+         * probably not worth doing until someone needs it and has
+         * suitable devices to test with!
+         */
+
         //@formatter:off
         data[7] = (byte) (
                   (configuration.enableUndecoded        ? 0x80 : 0x00)

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.homeconnect</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Home Connect Binding</name>
+
+  <properties>
+    <bnd.importpackage>android.*;resolution:="optional",com.android.*;resolution:="optional",dalvik.*;resolution:="optional",org.apache.harmony.*;resolution:="optional",org.conscrypt.*;resolution:="optional",sun.*;resolution:="optional",javax.annotation.meta.*;resolution:="optional",com.fasterxml.jackson.*;resolution:="optional",com.sun.jdi.*;resolution:="optional"</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+
+    <!--Thymeleaf -->
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf</artifactId>
+      <version>3.0.11.RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.thymeleaf.extras</groupId>
+      <artifactId>thymeleaf-extras-java8time</artifactId>
+      <version>3.0.4.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>ognl</groupId>
+      <artifactId>ognl</artifactId>
+      <version>3.1.12</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.javassist</groupId>
+      <artifactId>javassist</artifactId>
+      <version>3.20.0-GA</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.attoparser</groupId>
+      <artifactId>attoparser</artifactId>
+      <version>2.0.5.RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.unbescape</groupId>
+      <artifactId>unbescape</artifactId>
+      <version>1.1.6.RELEASE</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- lib for rate limiting -->
+    <dependency>
+      <groupId>com.github.vladimir-bukhtoyarov</groupId>
+      <artifactId>bucket4j-core</artifactId>
+      <version>4.10.0</version>
+    </dependency>
+  </dependencies>
+</project>

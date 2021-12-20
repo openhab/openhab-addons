@@ -115,6 +115,7 @@ public class TiVoHandler extends BaseThingHandler {
     }
 
     public void setStatusOffline() {
+        lastConnectionStatus = ConnectionStatus.UNKNOWN;
         this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Power on device or check network configuration/connection.");
     }
@@ -212,8 +213,9 @@ public class TiVoHandler extends BaseThingHandler {
         };
 
         if (tivoConfigData.isKeepConnActive()) {
-            // Run once
-            refreshJob = scheduler.schedule(runnable, INIT_POLLING_DELAY_S, TimeUnit.SECONDS);
+            // Run once every 12 hours to keep the connection from going stale
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, INIT_POLLING_DELAY_S, POLLING_DELAY_12HR_S,
+                    TimeUnit.SECONDS);
             logger.debug("Status collection '{}' will start in '{}' seconds.", getThing().getUID(),
                     INIT_POLLING_DELAY_S);
         } else if (tivoConfigData.doPollChanges()) {

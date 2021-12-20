@@ -17,6 +17,7 @@ import static org.eclipse.jetty.http.HttpMethod.GET;
 import java.io.StringReader;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -54,6 +55,7 @@ public class FritzAhaUpdateTemplatesCallback extends FritzAhaReauthCallback {
         this.handler = handler;
     }
 
+    @SuppressWarnings({ "null", "unused" })
     @Override
     public void execute(int status, String response) {
         super.execute(status, response);
@@ -62,12 +64,14 @@ public class FritzAhaUpdateTemplatesCallback extends FritzAhaReauthCallback {
             try {
                 XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
                 Unmarshaller unmarshaller = JAXBUtils.JAXBCONTEXT_TEMPLATES.createUnmarshaller();
-                TemplateListModel model = (TemplateListModel) unmarshaller.unmarshal(xsr);
+                TemplateListModel model = unmarshaller.unmarshal(xsr, TemplateListModel.class).getValue();
                 if (model != null) {
                     handler.addTemplateList(model.getTemplates());
                 } else {
                     logger.debug("no template in response");
                 }
+            } catch (UnmarshalException e) {
+                logger.debug("Failed to unmarshal XML document: {}", e.getMessage());
             } catch (JAXBException | XMLStreamException e) {
                 logger.error("Exception creating Unmarshaller: {}", e.getLocalizedMessage(), e);
             }

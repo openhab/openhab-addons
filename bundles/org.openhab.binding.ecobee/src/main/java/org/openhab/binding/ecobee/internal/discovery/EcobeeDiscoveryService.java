@@ -153,7 +153,7 @@ public class EcobeeDiscoveryService extends AbstractDiscoveryService implements 
 
     private synchronized void discoverSensors() {
         List<Thing> thermostatThings = bridgeHandler.getThing().getThings();
-        if (thermostatThings.size() == 0) {
+        if (thermostatThings.isEmpty()) {
             logger.debug("EcobeeDiscovery: Skipping sensor discovery because there are no thermostat things");
             return;
         }

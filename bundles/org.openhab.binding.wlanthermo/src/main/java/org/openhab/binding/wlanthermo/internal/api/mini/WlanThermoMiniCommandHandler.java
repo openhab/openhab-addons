@@ -15,7 +15,7 @@ package org.openhab.binding.wlanthermo.internal.api.mini;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 import static org.openhab.binding.wlanthermo.internal.WlanThermoUtil.requireNonNull;
 
-import java.awt.*;
+import java.awt.Color;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -24,8 +24,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
 import org.openhab.binding.wlanthermo.internal.WlanThermoInputException;
 import org.openhab.binding.wlanthermo.internal.WlanThermoUnknownChannelException;
-import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.*;
-import org.openhab.core.library.types.*;
+import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.App;
+import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.Channel;
+import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.Data;
+import org.openhab.binding.wlanthermo.internal.api.mini.dto.builtin.Pit;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;

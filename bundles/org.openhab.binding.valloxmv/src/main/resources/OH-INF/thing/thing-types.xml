@@ -55,7 +55,6 @@
 			<parameter name="updateinterval" type="integer" required="false">
 				<label>Update Interval</label>
 				<description>Data update interval in seconds (default: 60s)</description>
-				<required>false</required>
 				<default>60</default>
 			</parameter>
 		</config-description>

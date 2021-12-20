@@ -97,8 +97,8 @@ class DataInputStreamWithTimeout implements Closeable {
             pollException = null;
             slipMessageQueue.clear();
 
-            // loop forever or until externally interrupted
-            while (!Thread.interrupted()) {
+            // loop forever; on shutdown interrupt() gets called to break out of the loop
+            while (true) {
                 try {
                     if (interrupted) {
                         // fully flush the input buffer
@@ -132,7 +132,10 @@ class DataInputStreamWithTimeout implements Closeable {
                         i = 0;
                     }
                 } catch (SocketTimeoutException e) {
-                    // socket read time outs are OK => keep on polling
+                    // socket read time outs are OK => keep on polling; unless interrupted
+                    if (interrupted) {
+                        break;
+                    }
                     continue;
                 } catch (IOException e) {
                     // any other exception => stop polling
@@ -207,7 +210,6 @@ class DataInputStreamWithTimeout implements Closeable {
                 Thread.sleep(SLEEP_INTERVAL_MSECS);
             } catch (InterruptedException e) {
                 logger.debug("readSlipMessage() => thread interrupt");
-                throw new IOException("Thread Interrupted");
             }
         }
         logger.debug("readSlipMessage() => no slip message after {}mS => time out", timeoutMSecs);

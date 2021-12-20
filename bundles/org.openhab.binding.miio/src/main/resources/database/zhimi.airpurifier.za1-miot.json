@@ -1,0 +1,659 @@
+{
+	"deviceMapping": {
+		"id": [
+			"zhimi.airpurifier.za1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "on",
+				"siid": 2,
+				"piid": 1,
+				"friendlyName": "Air Purifier - Switch Status",
+				"channel": "on",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "fault",
+				"siid": 2,
+				"piid": 2,
+				"friendlyName": "Air Purifier - Fault",
+				"channel": "fault",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No faults"
+						},
+						{
+							"value": "1",
+							"label": "m1_run"
+						},
+						{
+							"value": "2",
+							"label": "m1_stuck"
+						},
+						{
+							"value": "3",
+							"label": "no_sensor"
+						},
+						{
+							"value": "4",
+							"label": "error_hum"
+						},
+						{
+							"value": "5",
+							"label": "error_temp"
+						},
+						{
+							"value": "6",
+							"label": "timer_error1"
+						},
+						{
+							"value": "7",
+							"label": "timer_error2"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No faults\",\"1\"\u003d\"m1_run\",\"2\"\u003d\"m1_stuck\",\"3\"\u003d\"no_sensor\",\"4\"\u003d\"error_hum\",\"5\"\u003d\"error_temp\",\"6\"\u003d\"timer_error1\",\"7\"\u003d\"timer_error2\"]`"
+			},
+			{
+				"property": "mode",
+				"siid": 2,
+				"piid": 5,
+				"friendlyName": "Air Purifier - Mode",
+				"channel": "mode",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Auto"
+						},
+						{
+							"value": "1",
+							"label": "Sleep"
+						},
+						{
+							"value": "2",
+							"label": "Favorite"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Auto\",\"1\"\u003d\"Sleep\",\"2\"\u003d\"Favorite\"]`"
+			},
+			{
+				"property": "air-quality",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Environment - Air Quality",
+				"channel": "air_quality",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 500,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 6,
+				"friendlyName": "Environment - PM2 5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Environment - Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Environment - Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-life-level",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Filter - Filter Life Level",
+				"channel": "filter_life_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "filter-used-time",
+				"siid": 4,
+				"piid": 5,
+				"friendlyName": "Filter - Filter Used Time",
+				"channel": "filter_used_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 15000,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "alarm",
+				"siid": 5,
+				"piid": 1,
+				"friendlyName": "Alarm - Alarm",
+				"channel": "alarm",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "brightness",
+				"siid": 6,
+				"piid": 1,
+				"friendlyName": "Indicator Light - Brightness",
+				"channel": "brightness",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Bright"
+						},
+						{
+							"value": "1",
+							"label": "Light"
+						},
+						{
+							"value": "2",
+							"label": "Off"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Bright\",\"1\"\u003d\"Light\",\"2\"\u003d\"Off\"]`"
+			},
+			{
+				"property": "physical-controls-locked",
+				"siid": 7,
+				"piid": 1,
+				"friendlyName": "Physical Control Locked - Physical Control Locked",
+				"channel": "physical_controls_locked",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "filter-max-time",
+				"siid": 9,
+				"piid": 1,
+				"friendlyName": "Filter Time - Filter Max Time",
+				"channel": "filter_max_time",
+				"type": "Number:Time",
+				"unit": "hours",
+				"stateDescription": {
+					"minimum": 2000,
+					"maximum": 6000,
+					"step": 1,
+					"pattern": "%.0f %unit%"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "favorite-fan-level",
+				"siid": 10,
+				"piid": 10,
+				"friendlyName": "Motor Speed - Favorite Fan Level",
+				"channel": "favorite_fan_level",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 14,
+					"step": 1,
+					"pattern": "%.0f"
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "motor-speed",
+				"siid": 10,
+				"piid": 11,
+				"friendlyName": "Motor Speed - Motor Speed",
+				"channel": "motor_speed",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 3000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "use-time",
+				"siid": 12,
+				"piid": 1,
+				"friendlyName": "Use Time - Use Time",
+				"channel": "use_time",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "purify-volume",
+				"siid": 13,
+				"piid": 1,
+				"friendlyName": "Aqi - Purify Volume",
+				"channel": "purify_volume",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 2147483647,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "average-aqi",
+				"siid": 13,
+				"piid": 2,
+				"friendlyName": "Aqi - Average Aqi",
+				"channel": "average_aqi",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 600,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "aqi-zone",
+				"siid": 13,
+				"piid": 4,
+				"friendlyName": "Aqi - Aqi Zone",
+				"channel": "aqi_zone",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "sensor-state",
+				"siid": 13,
+				"piid": 5,
+				"friendlyName": "Aqi - Sensor State",
+				"channel": "sensor_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "waiting"
+						},
+						{
+							"value": "1",
+							"label": "ready"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"waiting\",\"1\"\u003d\"ready\"]`"
+			},
+			{
+				"property": "rfid-tag",
+				"siid": 14,
+				"piid": 1,
+				"friendlyName": "Rfid - Rfid Tag",
+				"channel": "rfid_tag",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-factory-id",
+				"siid": 14,
+				"piid": 2,
+				"friendlyName": "Rfid - Rfid Factory Id",
+				"channel": "rfid_factory_id",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-product-id",
+				"siid": 14,
+				"piid": 3,
+				"friendlyName": "Rfid - Rfid Product Id",
+				"channel": "rfid_product_id",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-time",
+				"siid": 14,
+				"piid": 4,
+				"friendlyName": "Rfid - Rfid Time",
+				"channel": "rfid_time",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "rfid-serial-num",
+				"siid": 14,
+				"piid": 5,
+				"friendlyName": "Rfid - Rfid Serial Num",
+				"channel": "rfid_serial_num",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "reboot-cause",
+				"siid": 15,
+				"piid": 6,
+				"friendlyName": "Others - Reboot Cause",
+				"channel": "reboot_cause",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "hardware"
+						},
+						{
+							"value": "1",
+							"label": "human"
+						},
+						{
+							"value": "2",
+							"label": "upgrade"
+						},
+						{
+							"value": "3",
+							"label": "watchdog"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"hardware\",\"1\"\u003d\"human\",\"2\"\u003d\"upgrade\",\"3\"\u003d\"watchdog\"]`"
+			},
+			{
+				"property": "hw-version",
+				"siid": 15,
+				"piid": 8,
+				"friendlyName": "Others - Hw Version",
+				"channel": "hw_version",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "sgp-ethanol",
+				"siid": 15,
+				"piid": 9,
+				"friendlyName": "Others - Sgp Ethanol",
+				"channel": "sgp_ethanol",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "sgp-serial",
+				"siid": 15,
+				"piid": 10,
+				"friendlyName": "Others - Sgp Serial",
+				"channel": "sgp_serial",
+				"type": "Number",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": -1,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "sgp-version",
+				"siid": 15,
+				"piid": 11,
+				"friendlyName": "Others - Sgp Version",
+				"channel": "sgp_version",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "country-code",
+				"siid": 15,
+				"piid": 12,
+				"friendlyName": "Others - Country Code",
+				"channel": "country_code",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "America"
+						},
+						{
+							"value": "2",
+							"label": "Canada"
+						},
+						{
+							"value": "3",
+							"label": "Singapore"
+						},
+						{
+							"value": "4",
+							"label": "Europe"
+						},
+						{
+							"value": "5",
+							"label": "Australian"
+						},
+						{
+							"value": "6",
+							"label": "Korea"
+						},
+						{
+							"value": "7",
+							"label": "China"
+						},
+						{
+							"value": "8",
+							"label": "France"
+						},
+						{
+							"value": "9",
+							"label": "Japanese"
+						},
+						{
+							"value": "10",
+							"label": "Taiwan"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "NUMBER"
+					}
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"America\",\"2\"\u003d\"Canada\",\"3\"\u003d\"Singapore\",\"4\"\u003d\"Europe\",\"5\"\u003d\"Australian\",\"6\"\u003d\"Korea\",\"7\"\u003d\"China\",\"8\"\u003d\"France\",\"9\"\u003d\"Japanese\",\"10\"\u003d\"Taiwan\"]`"
+			},
+			{
+				"property": "gesture-status",
+				"siid": 15,
+				"piid": 13,
+				"friendlyName": "Others - Gesture Status",
+				"channel": "gesture_status",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			}
+		],
+		"experimental": true
+	}
+}

@@ -54,6 +54,8 @@ import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -97,7 +99,9 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     private static final long SCENE_POLLING_INTERVAL = TimeUnit.SECONDS.convert(10, TimeUnit.MINUTES);
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
-    private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
+    private final HueStateDescriptionProvider stateDescriptionOptionProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
     private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
@@ -164,14 +168,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             } catch (IOException e) {
                 return false;
             } catch (ApiException e) {
-                if (e.getMessage().contains("SocketTimeout") || e.getMessage().contains("ConnectException")
-                        || e.getMessage().contains("SocketException")
-                        || e.getMessage().contains("NoRouteToHostException")) {
-                    return false;
-                } else {
-                    // this seems to be only an authentication issue
-                    return true;
-                }
+                String message = e.getMessage();
+                return message != null && //
+                        !message.contains("SocketTimeout") && //
+                        !message.contains("ConnectException") && //
+                        !message.contains("SocketException") && //
+                        !message.contains("NoRouteToHostException");
             }
             return true;
         }
@@ -405,9 +407,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private List<String> consoleScenesList = new ArrayList<>();
 
-    public HueBridgeHandler(Bridge bridge, HueStateDescriptionOptionProvider stateDescriptionOptionProvider) {
+    public HueBridgeHandler(Bridge bridge, HueStateDescriptionProvider stateDescriptionOptionProvider,
+            TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         super(bridge);
         this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -686,6 +691,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             if (hueBridge == null) {
                 hueBridge = new HueBridge(ip, hueBridgeConfig.getPort(), hueBridgeConfig.getProtocol(), scheduler);
                 hueBridge.setTimeout(5000);
+
+                updateStatus(ThingStatus.UNKNOWN);
 
                 // Try a first connection that will fail, then try to authenticate,
                 // and finally change the bridge status to ONLINE
@@ -1039,5 +1046,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         } else {
             return List.of();
         }
+    }
+
+    public TranslationProvider getI18nProvider() {
+        return i18nProvider;
+    }
+
+    public LocaleProvider getLocaleProvider() {
+        return localeProvider;
     }
 }

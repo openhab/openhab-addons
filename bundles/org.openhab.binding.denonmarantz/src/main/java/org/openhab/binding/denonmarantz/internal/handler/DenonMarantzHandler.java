@@ -197,10 +197,9 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     }
 
     /**
-     * Try to auto configure the connection type (Telnet or HTTP)
-     * for Things not added through Paper UI.
+     * Try to auto configure the connection type (Telnet or HTTP) for unmanaged Things.
      */
-    private void autoConfigure() {
+    private void autoConfigure() throws InterruptedException {
         /*
          * The isTelnet parameter has no default.
          * When not set we will try to auto-detect the correct values
@@ -223,7 +222,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     telnetEnable = false;
                     httpApiUsable = true;
                 }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            } catch (TimeoutException | ExecutionException e) {
                 logger.debug("Error when trying to access AVR using HTTP on port 80, reverting to Telnet mode.", e);
             }
 
@@ -239,7 +238,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                         httpPort = 8080;
                         httpApiUsable = true;
                     }
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                } catch (TimeoutException | ExecutionException e) {
                     logger.debug("Additionally tried to connect to port 8080, this also failed", e);
                 }
             }
@@ -255,7 +254,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     response = httpClient.newRequest("http://" + host + ":" + httpPort + "/goform/Deviceinfo.xml")
                             .timeout(3, TimeUnit.SECONDS).send();
                     status = response.getStatus();
-                } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                } catch (TimeoutException | ExecutionException e) {
                     logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count", e);
                 }
 
@@ -303,7 +302,12 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
         // Configure Connection type (Telnet/HTTP) and number of zones
         // Note: this only happens for discovered Things
-        autoConfigure();
+        try {
+            autoConfigure();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
 
         if (!checkConfiguration()) {
             return;

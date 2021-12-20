@@ -33,7 +33,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Air Temp</label>
 		<description>Air Temp</description>
-		<state pattern="%1f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="backyardstatus">

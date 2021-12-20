@@ -75,18 +75,16 @@
 		<representation-property>mac</representation-property>
 
 		<config-description>
-			<parameter name="hostname" type="text">
+			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
 				<description>The host name or IP address of the myStrom bulb.</description>
 				<context>network-address</context>
 				<default>localhost</default>
-				<required>true</required>
 			</parameter>
-			<parameter name="refresh" type="integer" unit="s" min="1">
+			<parameter name="refresh" type="integer" unit="s" min="1" required="true">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
-				<required>true</required>
 			</parameter>
 		</config-description>
 

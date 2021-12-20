@@ -24,7 +24,7 @@
 		</channels>
 
 		<properties>
-			<property name="signalLevels">86,71,56</property>
+			<property name="signalLevels">99,84,69,54</property>
 			<property name="refreshPeriod">3600000</property>
 		</properties>
 

@@ -34,7 +34,7 @@ public class RFXComTemperatureHumidityBarometricMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0D54020EE90000C9270203E70439";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComTemperatureHumidityBarometricMessage msg = (RFXComTemperatureHumidityBarometricMessage) RFXComMessageFactory
+        RFXComTemperatureHumidityBarometricMessage msg = (RFXComTemperatureHumidityBarometricMessage) RFXComMessageFactoryImpl.INSTANCE
                 .createMessage(message);
         assertEquals(THB2, msg.subType, "SubType");
         assertEquals(14, msg.seqNbr, "Seq Number");

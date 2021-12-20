@@ -189,7 +189,7 @@ public class EvdevDevice implements Closeable {
 
     public Collection<Key> enumerateKeys() {
         int minKey = 0;
-        int maxKey = 255 - 1;
+        int maxKey = lib.event_type_get_max(EvdevLibrary.Type.KEY.intValue());
         List<Key> result = new ArrayList<>();
         for (int i = minKey; i <= maxKey; i++) {
             if (has(EvdevLibrary.Type.KEY, i)) {
@@ -214,6 +214,11 @@ public class EvdevDevice implements Closeable {
 
         public String getName() {
             return lib.event_code_get_name(EvdevLibrary.Type.KEY.intValue(), code);
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(code);
         }
     }
 

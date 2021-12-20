@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class GroupConfig {
-    private int pollTime, serverPort;
+    private int pollTime;
     private boolean motionChangesOrder = true;
     private String ipWhitelist = "";
     private String ffmpegLocation = "";
@@ -61,10 +61,6 @@ public class GroupConfig {
 
     public String getFfmpegOutput() {
         return ffmpegOutput;
-    }
-
-    public int getServerPort() {
-        return serverPort;
     }
 
     public int getPollTime() {

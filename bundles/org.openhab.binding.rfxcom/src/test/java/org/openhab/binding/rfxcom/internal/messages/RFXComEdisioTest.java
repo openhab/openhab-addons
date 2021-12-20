@@ -28,6 +28,7 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplemente
 public class RFXComEdisioTest {
     @Test
     public void checkNotImplemented() {
-        assertThrows(RFXComMessageNotImplementedException.class, () -> RFXComMessageFactory.createMessage(EDISIO));
+        assertThrows(RFXComMessageNotImplementedException.class,
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(EDISIO, null, null, null));
     }
 }

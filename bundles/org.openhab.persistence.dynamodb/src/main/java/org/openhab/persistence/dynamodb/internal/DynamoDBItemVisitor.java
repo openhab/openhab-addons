@@ -21,9 +21,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public interface DynamoDBItemVisitor {
+public interface DynamoDBItemVisitor<T> {
 
-    public void visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);
+    public T visit(DynamoDBBigDecimalItem dynamoBigDecimalItem);
 
-    public void visit(DynamoDBStringItem dynamoStringItem);
+    public T visit(DynamoDBStringItem dynamoStringItem);
 }

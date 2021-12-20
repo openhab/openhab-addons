@@ -143,6 +143,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void addBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;
@@ -164,6 +165,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void removeBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;

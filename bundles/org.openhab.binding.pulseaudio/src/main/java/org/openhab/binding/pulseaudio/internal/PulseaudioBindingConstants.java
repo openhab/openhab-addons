@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.pulseaudio.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -51,13 +48,10 @@ public class PulseaudioBindingConstants {
     public static final String BRIDGE_PARAMETER_REFRESH_INTERVAL = "refresh";
 
     public static final String DEVICE_PARAMETER_NAME = "name";
+    public static final String DEVICE_PARAMETER_AUDIO_SINK_ACTIVATION = "activateSimpleProtocolSink";
+    public static final String DEVICE_PARAMETER_AUDIO_SINK_PORT = "simpleProtocolSinkPort";
+    public static final String DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT = "simpleProtocolSinkIdleTimeout";
 
-    public static final Map<String, Boolean> TYPE_FILTERS = new HashMap<>();
-
-    static {
-        TYPE_FILTERS.put(SINK_THING_TYPE.getId(), true);
-        TYPE_FILTERS.put(SINK_INPUT_THING_TYPE.getId(), false);
-        TYPE_FILTERS.put(SOURCE_THING_TYPE.getId(), false);
-        TYPE_FILTERS.put(SOURCE_OUTPUT_THING_TYPE.getId(), false);
-    }
+    public static final String MODULE_SIMPLE_PROTOCOL_TCP_NAME = "module-simple-protocol-tcp";
+    public static final int MODULE_SIMPLE_PROTOCOL_TCP_DEFAULT_PORT = 4711;
 }

@@ -10,7 +10,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -29,7 +28,7 @@
 				"friendlyName": "Temperature",
 				"channel": "temperature",
 				"type": "Number:Temperature",
-				"unit": "CELCIUS",
+				"unit": "CELSIUS",
 				"stateDescription": {
 					"pattern": "%.1f %unit%",
 					"readOnly": true
@@ -46,7 +45,6 @@
 				"property": "wifi_led",
 				"friendlyName": "Indicator light",
 				"channel": "led",
-				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

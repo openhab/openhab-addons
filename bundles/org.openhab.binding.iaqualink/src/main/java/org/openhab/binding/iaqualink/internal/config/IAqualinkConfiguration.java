@@ -12,36 +12,39 @@
  */
 package org.openhab.binding.iaqualink.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Configuration properties for connecting to a iAqualink Account
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
+@NonNullByDefault
 public class IAqualinkConfiguration {
 
     /**
      * user to us when connecting to the account
      */
-    public String userName;
+    public String userName = "";
 
     /**
      * password to us when connecting to the account
      */
-    public String password;
+    public String password = "";
 
     /**
      * Option serialId of the pool controller to connect to, only useful if you have more then one controller
      */
-    public String serialId;
+    public String serialId = "";
 
     /**
      * fixed API key provided by iAqualink clients (Android, IOS) , unknown if this will change in the future.
      */
-    public String apiKey;
+    public String apiKey = "";
 
     /**
      * Rate we poll for new data
      */
-    public int refresh;
+    public int refresh = 30;
 }

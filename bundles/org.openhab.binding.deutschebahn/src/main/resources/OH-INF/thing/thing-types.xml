@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="deutschebahn"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="timetable">
+
+		<label>Deutsche Bahn Timetable</label>
+		<description>Connection to the timetable API of Deutsche Bahn. Provides timetable data that can be displayed using the
+			train things.</description>
+
+		<config-description>
+			<parameter name="accessToken" type="text" required="true">
+				<label>Access Token</label>
+				<description>Access Token from Deutsche Bahn developer portal for accessing the webservice api.</description>
+			</parameter>
+			<parameter name="evaNo" type="text" required="true" pattern="80\d{5,5}">
+				<label>EvaNo of Station</label>
+				<description>evaNo of the station, for which the timetable should be requested. see
+					https://data.deutschebahn.com/dataset.tags.EVA-Nr..html</description>
+			</parameter>
+			<parameter name="trainFilter" type="text" readOnly="false">
+				<advanced>true</advanced>
+				<default>departures</default>
+				<label>Train Filter</label>
+				<description>Selects the trains that will be be displayed in this timetable. If not set only departures will be
+					provided.</description>
+				<options>
+					<option value="all">All</option>
+					<option value="arrivals">Arrivals</option>
+					<option value="departures">Departures</option>
+				</options>
+			</parameter>
+			<parameter name="additionalFilter" type="text" required="false">
+				<advanced>true</advanced>
+				<label>Additional Filter</label>
+				<description>Specifies additional filters for trains, that should be displayed within the timetable.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="train">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="timetable"/>
+		</supported-bridge-type-refs>
+		<label>Train</label>
+		<description>Displays informations about an train within the given timetable at one station.</description>
+		<channel-groups>
+			<channel-group typeId="tripAttributes" id="trip">
+				<label>Trip</label>
+				<description>Contains all informations about the trip of the train.
+				</description>
+			</channel-group>
+			<channel-group typeId="eventAttributes" id="arrival">
+				<label>Arrival</label>
+				<description>Contains all informations about the arrival of the train at the station.
+					Channels may be empty, if the
+					trains starts at this station.
+				</description>
+			</channel-group>
+			<channel-group typeId="eventAttributes" id="departure">
+				<label>Departure</label>
+				<description>Contains all informations about the departure of the train at the station.
+					Channels may be empty, if the
+					trains ends at this station.
+				</description>
+			</channel-group>
+		</channel-groups>
+		<config-description>
+			<parameter name="position" type="decimal" min="1">
+				<label>Position</label>
+				<description>Selects the position of the train in the timetable.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="tripAttributes">
+		<label>Trip Attributes</label>
+		<description>Contains all informations about the trip of the train.</description>
+		<channels>
+			<channel typeId="category" id="category"/>
+			<channel typeId="number" id="number"/>
+			<channel typeId="filter-flags" id="filter-flags"/>
+			<channel typeId="trip-type" id="trip-type"/>
+			<channel typeId="owner" id="owner"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="eventAttributes">
+		<label>Event Attributes</label>
+		<description>Contains all attributes for an event (arrival / departure) of an train at the station.</description>
+		<channels>
+			<channel typeId="planned-path" id="planned-path"/>
+			<channel typeId="changed-path" id="changed-path"/>
+			<channel typeId="planned-platform" id="planned-platform"/>
+			<channel typeId="changed-platform" id="changed-platform"/>
+			<channel typeId="planned-time" id="planned-time"/>
+			<channel typeId="changed-time" id="changed-time"/>
+			<channel typeId="planned-status" id="planned-status"/>
+			<channel typeId="changed-status" id="changed-status"/>
+			<channel typeId="cancellation-time" id="cancellation-time"/>
+			<channel typeId="line" id="line"/>
+			<channel typeId="messages" id="messages"/>
+			<channel typeId="hidden" id="hidden"/>
+			<channel typeId="wings" id="wings"/>
+			<channel typeId="transition" id="transition"/>
+			<channel typeId="planned-distant-endpoint" id="planned-distant-endpoint"/>
+			<channel typeId="changed-distant-endpoint" id="changed-distant-endpoint"/>
+			<channel typeId="distant-change" id="distant-change"/>
+			<channel typeId="planned-final-station" id="planned-final-station"/>
+			<channel typeId="planned-intermediate-stations" id="planned-intermediate-stations"/>
+			<channel typeId="changed-final-station" id="changed-final-station"/>
+			<channel typeId="changed-intermediate-stations" id="changed-intermediate-stations"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Channel Types for trip label attributes. -->
+	<channel-type id="category">
+		<item-type>String</item-type>
+		<label>Category</label>
+		<description>Provides the category of the trip, e.g. "ICE" or "RE".</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>String</item-type>
+		<label>Number</label>
+		<description>Provides the trip/train number, e.g. "4523".</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="filter-flags" advanced="true">
+		<item-type>String</item-type>
+		<label>Filter Flags</label>
+		<description>Provides the filter flags.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="trip-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Trip Type</label>
+		<description>Provides the type of the trip.</description>
+		<state readOnly="true">
+			<options>
+				<option value="p"/>
+				<option value="e"/>
+				<option value="z"/>
+				<option value="s"/>
+				<option value="h"/>
+				<option value="n"/>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="owner" advanced="true">
+		<item-type>String</item-type>
+		<label>Owner</label>
+		<description>Provides the owner of the train. A unique short-form and only intended to map a trip to specific evu
+			(EisenbahnVerkehrsUnternehmen).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Channel types for event attributes. -->
+	<channel-type id="planned-platform">
+		<item-type>String</item-type>
+		<label>Planned Platform</label>
+		<description>Provides the planned platform of a train.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="changed-platform">
+		<item-type>String</item-type>
+		<label>Changed Platform</label>
+		<description>Provides the changed platform of a train.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="planned-time">
+		<item-type>DateTime</item-type>
+		<label>Planned Time</label>
+		<description>Provides the planned time of a train.</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="changed-time">
+		<item-type>DateTime</item-type>
+		<label>Changed Time</label>
+		<description>Provides the changed time of a train.</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="planned-status">
+		<item-type>String</item-type>
+		<label>Planned Status</label>
+		<description>Provides the planned status of a train.</description>
+		<state readOnly="true">
+			<options>
+				<option value="p">Planned</option>
+				<option value="a">Added</option>
+				<option value="c">Cancelled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="changed-status">
+		<item-type>String</item-type>
+		<label>Changed Status</label>
+		<description>Provides the changed status of a train.</description>
+		<state readOnly="true">
+			<options>
+				<option value="p">Planned</option>
+				<option value="a">Added</option>
+				<option value="c">Cancelled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="line">
+		<item-type>String</item-type>
+		<label>Line</label>
+		<description>The line indicator.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="messages">
+		<item-type>String</item-type>
+		<label>Messages</label>
+		<description>Messages for this train. Contains all translated codes from the messages of the selected train stop.
+			Multiple messages will be separated with an single dash.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Advanced channels -->
+	<channel-type id="cancellation-time" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Cancellation Time</label>
+		<description>Time when the cancellation of this stop was created.</description>
+		<state readOnly="true" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="planned-path" advanced="true">
+		<item-type>String</item-type>
+		<label>Planned Path</label>
+		<description>Provides the planned path of a train.
+			For arrival, the path indicates the stations that come before the
+			current station. The first element then is the trip’s
+			start station. For departure, the path indicates the stations
+			that come after the current station. The last ele-ment
+			in the path then is the trip’s destination station. Note that
+			the current station is never included in the path
+			(neither for arrival nor for departure).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="changed-path" advanced="true">
+		<item-type>String</item-type>
+		<label>Changed Path</label>
+		<description>Provides the planned path of a train.
+			For arrival, the path indicates the stations that come before the
+			current station. The first element then is the trip’s
+			start station. For departure, the path indicates the stations
+			that come after the current station. The last ele-ment
+			in the path then is the trip’s destination station. Note that
+			the current station is never included in the path
+			(neither for arrival nor for departure).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="hidden" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Hidden</label>
+		<description>On if the event should not be shown, because travellers are not supposed to enter or exit the train
+			at
+			this stop.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="wings" advanced="true">
+		<item-type>String</item-type>
+		<label>Wings</label>
+		<description>A sequence of trip id separated by the pipe symbols (“|”).</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="transition" advanced="true">
+		<item-type>String</item-type>
+		<label>Transition</label>
+		<description>Trip id of the next or previous train of a shared train. At the start stop this references the previous
+			trip, at the last stop it references the next trip.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="planned-distant-endpoint" advanced="true">
+		<item-type>String</item-type>
+		<label>Planned Distant Endpoint</label>
+		<description>Planned distant endpoint.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="changed-distant-endpoint" advanced="true">
+		<item-type>String</item-type>
+		<label>Changed Distant Endpoint</label>
+		<description>Changed distant endpoint.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="distant-change" advanced="true">
+		<item-type>Number</item-type>
+		<label>Distant Change</label>
+		<description>distant change</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Channels with derived values from other channels -->
+	<channel-type id="planned-final-station">
+		<item-type>String</item-type>
+		<label>Planned Final Station</label>
+		<description>Planned final station of the train. For arrivals the starting station is returned, for departures the
+			target station is returned.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="planned-intermediate-stations">
+		<item-type>String</item-type>
+		<label>Planned Intermediate Stations</label>
+		<description>Returns the planned stations this train came from (for arrivals) or the stations this train will go to
+			(for departures). Stations will be separated by single dash.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="changed-final-station">
+		<item-type>String</item-type>
+		<label>Changed Final Station</label>
+		<description>Changed final station of the train. For arrivals the starting station is returned, for departures the
+			target station is returned.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="changed-intermediate-stations">
+		<item-type>String</item-type>
+		<label>Changed Intermediate Stations</label>
+		<description>Returns the changed stations this train came from (for arrivals) or the stations this train will go to
+			(for departures). Stations will be separated by single dash.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

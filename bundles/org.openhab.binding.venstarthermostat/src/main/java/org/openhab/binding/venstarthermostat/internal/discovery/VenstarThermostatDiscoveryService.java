@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.venstarthermostat.internal.VenstarThermostatBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Refactoring and Improvements
  */
 
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.venstarthermostat")
 public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(VenstarThermostatDiscoveryService.class);
@@ -57,7 +60,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
     private static final String SSDP_MATCH = "colortouch:ecp";
     private static final int BACKGROUND_SCAN_INTERVAL_SECONDS = 300;
 
-    private ScheduledFuture<?> scheduledFuture = null;
+    private @Nullable ScheduledFuture<?> scheduledFuture = null;
 
     public VenstarThermostatDiscoveryService() {
         super(VenstarThermostatBindingConstants.SUPPORTED_THING_TYPES, 30, true);
@@ -67,14 +70,15 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Background Scan");
         stopBackgroundDiscovery();
-        scheduledFuture = scheduler.scheduleAtFixedRate(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS,
+        scheduledFuture = scheduler.scheduleWithFixedDelay(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS,
                 TimeUnit.SECONDS);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scheduledFuture != null && !scheduledFuture.isCancelled()) {
-            scheduledFuture.cancel(true);
+        ScheduledFuture<?> scheduledFutureLocal = scheduledFuture;
+        if (scheduledFutureLocal != null && !scheduledFutureLocal.isCancelled()) {
+            scheduledFutureLocal.cancel(true);
         }
     }
 
@@ -112,7 +116,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
      * @throws SocketException
      * @throws UnsupportedEncodingException
      */
-    private MulticastSocket sendDiscoveryBroacast(NetworkInterface ni)
+    private @Nullable MulticastSocket sendDiscoveryBroacast(NetworkInterface ni)
             throws UnknownHostException, SocketException, UnsupportedEncodingException {
         InetAddress m = InetAddress.getByName("239.255.255.250");
         final int port = 1900;

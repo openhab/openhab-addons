@@ -220,4 +220,8 @@ public final class SqueezeBoxNotificationListener implements SqueezeBoxPlayerEve
     @Override
     public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
     }
+
+    @Override
+    public void connectedStateChangeEvent(String mac, boolean connected) {
+    }
 }

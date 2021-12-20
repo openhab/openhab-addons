@@ -38,7 +38,6 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
  */
 @NonNullByDefault
 public class AutomowerBridge {
-
     private final OAuthClientService authService;
     private final String appKey;
     private final String userName;
@@ -96,7 +95,6 @@ public class AutomowerBridge {
      */
     public void sendAutomowerCommand(String id, AutomowerCommand command, long commandDuration)
             throws AutomowerCommunicationException {
-
         MowerCommandAttributes attributes = new MowerCommandAttributes();
         attributes.setDuration(commandDuration);
 

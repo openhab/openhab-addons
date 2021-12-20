@@ -124,7 +124,7 @@ public class ValloxMVHandler extends BaseThingHandler {
                 // Not writable channel
                 return;
             }
-            if (strUpdateValue != "") {
+            if (!strUpdateValue.isEmpty()) {
                 if (readDataJob != null) {
                     // Re-schedule readDataJob to read device values after data write
                     // Avoid re-scheduling job several times in case of subsequent data writes
@@ -159,12 +159,14 @@ public class ValloxMVHandler extends BaseThingHandler {
     }
 
     private void scheduleReadDataJob(int initialDelay) {
-        if (initialDelay < 0)
+        if (initialDelay < 0) {
             initialDelay = 0;
+        }
 
         readDataInterval = getConfigAs(ValloxMVConfig.class).getUpdateinterval();
-        if (readDataInterval < 15)
+        if (readDataInterval < 15) {
             readDataInterval = 60;
+        }
 
         logger.debug("Data table request interval {} seconds, Request in {} seconds", readDataInterval, initialDelay);
 

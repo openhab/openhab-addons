@@ -277,7 +277,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
         String channelId = channelUID.getIdWithoutGroup();
         String groupId = channelUID.getGroupId();
         if (groupId == null) {
-            logger.info("Can't handle command because channel's groupId is null");
+            logger.info("Can't handle command '{}' because channel's groupId is null", command);
             return;
         }
         ThermostatDTO thermostat = new ThermostatDTO();
@@ -317,7 +317,7 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
     }
 
     private void setField(Field field, Object object, Command command) {
-        logger.info("Setting field '{}.{}' to value '{}'", object.getClass().getSimpleName().toLowerCase(),
+        logger.debug("Setting field '{}.{}' to value '{}'", object.getClass().getSimpleName().toLowerCase(),
                 field.getName(), command);
         Class<?> fieldClass = field.getType();
         try {

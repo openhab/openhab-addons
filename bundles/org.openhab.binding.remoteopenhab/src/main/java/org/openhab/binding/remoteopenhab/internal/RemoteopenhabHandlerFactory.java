@@ -33,6 +33,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.remoteopenhab.internal.handler.RemoteopenhabBridgeHandler;
 import org.openhab.binding.remoteopenhab.internal.handler.RemoteopenhabThingHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -75,7 +77,10 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
     private final SseEventSourceFactory eventSourceFactory;
     private final RemoteopenhabChannelTypeProvider channelTypeProvider;
     private final RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider;
     private final Gson jsonParser;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     private HttpClient httpClientTrustingCert;
 
@@ -83,14 +88,19 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
     public RemoteopenhabHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference ClientBuilder clientBuilder, final @Reference SseEventSourceFactory eventSourceFactory,
             final @Reference RemoteopenhabChannelTypeProvider channelTypeProvider,
-            final @Reference RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider) {
+            final @Reference RemoteopenhabStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference RemoteopenhabCommandDescriptionOptionProvider commandDescriptionProvider,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.httpClientTrustingCert = httpClientFactory.createHttpClient(RemoteopenhabBindingConstants.BINDING_ID);
         this.clientBuilder = clientBuilder;
         this.eventSourceFactory = eventSourceFactory;
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.jsonParser = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
 
         try {
             SSLContext sslContext = SSLContext.getInstance("SSL");
@@ -196,7 +206,8 @@ public class RemoteopenhabHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(RemoteopenhabBindingConstants.BRIDGE_TYPE_SERVER)) {
             return new RemoteopenhabBridgeHandler((Bridge) thing, httpClient, httpClientTrustingCert, clientBuilder,
-                    eventSourceFactory, channelTypeProvider, stateDescriptionProvider, jsonParser);
+                    eventSourceFactory, channelTypeProvider, stateDescriptionProvider, commandDescriptionProvider,
+                    jsonParser, i18nProvider, localeProvider);
         } else if (RemoteopenhabBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new RemoteopenhabThingHandler(thing);
         }

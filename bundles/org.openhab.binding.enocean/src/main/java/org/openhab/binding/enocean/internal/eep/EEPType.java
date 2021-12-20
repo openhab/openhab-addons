@@ -108,6 +108,7 @@ import org.openhab.binding.enocean.internal.eep.A5_30.A5_30_03_ELTAKO;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Blinds;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Dimming;
 import org.openhab.binding.enocean.internal.eep.A5_38.A5_38_08_Switching;
+import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFRM;
 import org.openhab.binding.enocean.internal.eep.A5_3F.A5_3F_7F_EltakoFSB;
 import org.openhab.binding.enocean.internal.eep.Base.PTM200Message;
 import org.openhab.binding.enocean.internal.eep.Base.UTEResponse;
@@ -136,6 +137,8 @@ import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12;
 import org.openhab.binding.enocean.internal.eep.D2_01.D2_01_12_NodON;
 import org.openhab.binding.enocean.internal.eep.D2_03.D2_03_0A;
 import org.openhab.binding.enocean.internal.eep.D2_05.D2_05_00;
+import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_01;
+import org.openhab.binding.enocean.internal.eep.D2_06.D2_06_50;
 import org.openhab.binding.enocean.internal.eep.D2_14.D2_14_30;
 import org.openhab.binding.enocean.internal.eep.D2_50.D2_50;
 import org.openhab.binding.enocean.internal.eep.D5_00.D5_00_01;
@@ -177,13 +180,14 @@ public enum EEPType {
             CHANNEL_DOUBLEPRESS, CHANNEL_LONGPRESS, CHANNEL_BATTERY_LEVEL),
 
     RockerSwitch2RockerStyle1(RORG.RPS, 0x02, 0x01, false, F6_02_01.class, THING_TYPE_ROCKERSWITCH,
-            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_VIRTUALSWITCHA,
-            CHANNEL_VIRTUALROLLERSHUTTERA, CHANNEL_VIRTUALROCKERSWITCHB, CHANNEL_ROCKERSWITCHLISTENERSWITCH,
-            CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER),
+            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_ROCKERSWITCH_ACTION,
+            CHANNEL_VIRTUALSWITCHA, CHANNEL_VIRTUALROLLERSHUTTERA, CHANNEL_VIRTUALROCKERSWITCHB,
+            CHANNEL_ROCKERSWITCHLISTENERSWITCH, CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER),
+
     RockerSwitch2RockerStyle2(RORG.RPS, 0x02, 0x02, false, F6_02_02.class, THING_TYPE_ROCKERSWITCH,
-            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_VIRTUALSWITCHA,
-            CHANNEL_VIRTUALROLLERSHUTTERA, CHANNEL_VIRTUALROCKERSWITCHB, CHANNEL_ROCKERSWITCHLISTENERSWITCH,
-            CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER),
+            CHANNEL_ROCKERSWITCH_CHANNELA, CHANNEL_ROCKERSWITCH_CHANNELB, CHANNEL_ROCKERSWITCH_ACTION,
+            CHANNEL_VIRTUALSWITCHA, CHANNEL_VIRTUALROLLERSHUTTERA, CHANNEL_VIRTUALROCKERSWITCHB,
+            CHANNEL_ROCKERSWITCHLISTENERSWITCH, CHANNEL_ROCKERSWITCHLISTENERROLLERSHUTTER),
 
     MechanicalHandle00(RORG.RPS, 0x10, 0x00, false, F6_10_00.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT),
@@ -193,6 +197,10 @@ public enum EEPType {
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_BATTERY_VOLTAGE),
     MechanicalHandle03(RORG._4BS, 0x14, 0x0A, false, A5_14_0A.class, THING_TYPE_MECHANICALHANDLE,
             CHANNEL_WINDOWHANDLESTATE, CHANNEL_CONTACT, CHANNEL_VIBRATION, CHANNEL_BATTERY_VOLTAGE),
+    MechanicalHandle04(RORG.VLD, 0x06, 0x01, false, "Soda", 0x0043, D2_06_01.class, THING_TYPE_MECHANICALHANDLE,
+            CHANNEL_WINDOWHANDLESTATE, CHANNEL_WINDOWSASHSTATE, CHANNEL_MOTIONDETECTION, CHANNEL_INDOORAIRTEMPERATURE,
+            CHANNEL_HUMIDITY, CHANNEL_ILLUMINATION, CHANNEL_BATTERY_LEVEL, CHANNEL_WINDOWBREACHEVENT,
+            CHANNEL_PROTECTIONPLUSEVENT, CHANNEL_PUSHBUTTON, CHANNEL_PUSHBUTTON2, CHANNEL_VACATIONMODETOGGLEEVENT),
 
     ContactAndSwitch01(RORG._1BS, 0x00, 0x01, false, D5_00_01.class, THING_TYPE_CONTACT, CHANNEL_CONTACT),
     ContactAndSwitch02(RORG._4BS, 0x14, 0x01, false, A5_14_01.class, THING_TYPE_CONTACT, CHANNEL_BATTERY_VOLTAGE,
@@ -399,6 +407,19 @@ public enum EEPType {
                 }
             }),
 
+    EltakoFRM(RORG._4BS, 0x3f, 0x7f, false, false, "EltakoFRM", 0, A5_3F_7F_EltakoFRM.class, THING_TYPE_ROLLERSHUTTER,
+            0, new Hashtable<String, Configuration>() {
+                private static final long serialVersionUID = 1L;
+                {
+                    put(CHANNEL_ROLLERSHUTTER, new Configuration());
+                    put(CHANNEL_TEACHINCMD, new Configuration() {
+                        {
+                            put(PARAMETER_CHANNEL_TeachInMSG, "fff80d80");
+                        }
+                    });
+                }
+            }),
+
     Thermostat(RORG._4BS, 0x20, 0x04, false, true, A5_20_04.class, THING_TYPE_THERMOSTAT, CHANNEL_VALVE_POSITION,
             CHANNEL_BUTTON_LOCK, CHANNEL_DISPLAY_ORIENTATION, CHANNEL_TEMPERATURE_SETPOINT, CHANNEL_TEMPERATURE,
             CHANNEL_FEED_TEMPERATURE, CHANNEL_MEASUREMENT_CONTROL, CHANNEL_FAILURE_CODE, CHANNEL_WAKEUPCYCLE,
@@ -449,6 +470,11 @@ public enum EEPType {
             CHANNEL_GENERAL_SWITCHINGA, CHANNEL_GENERAL_SWITCHINGB),
 
     Rollershutter_D2(RORG.VLD, 0x05, 0x00, true, D2_05_00.class, THING_TYPE_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER),
+
+    WindowSashHandleSensor_50(RORG.VLD, 0x06, 0x50, false, "Siegenia", 0x005D, D2_06_50.class,
+            THING_TYPE_WINDOWSASHHANDLESENSOR, CHANNEL_WINDOWHANDLESTATE, CHANNEL_WINDOWSASHSTATE,
+            CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERYLOW, CHANNEL_WINDOWBREACHEVENT, CHANNEL_WINDOWCALIBRATIONSTATE,
+            CHANNEL_WINDOWCALIBRATIONSTEP),
 
     MultiFunctionSensor_30(RORG.VLD, 0x14, 0x30, false, D2_14_30.class, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR,
             CHANNEL_SMOKEDETECTION, CHANNEL_SENSORFAULT, CHANNEL_TIMESINCELASTMAINTENANCE, CHANNEL_BATTERY_LEVEL,

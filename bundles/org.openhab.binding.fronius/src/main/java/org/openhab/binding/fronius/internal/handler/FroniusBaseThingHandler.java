@@ -44,6 +44,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Gerrit Beine - Initial contribution
  * @author Thomas Rokohl - Refactoring to merge the concepts
+ * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  */
 public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
@@ -198,7 +199,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             if (!resultOk) {
                 logger.debug("Error in fronius response: {}", errorMsg);
             }
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | NumberFormatException e) {
             errorMsg = "Invalid JSON data received";
             logger.debug("Error running fronius request: {}", e.getMessage());
         } catch (IOException | IllegalStateException e) {

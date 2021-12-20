@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.comfoair.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -27,6 +29,10 @@ public class ComfoAirBindingConstants {
     private static final String BINDING_ID = "comfoair";
 
     public static final ThingTypeUID THING_TYPE_COMFOAIR_GENERIC = new ThingTypeUID(BINDING_ID, "comfoair");
+    public static final ThingTypeUID THING_TYPE_COMFOAIR_WHR930 = new ThingTypeUID(BINDING_ID, "WHR930");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_COMFOAIR_GENERIC,
+            THING_TYPE_COMFOAIR_WHR930);
 
     // Thing properties
     public static final String PROPERTY_SOFTWARE_MAIN_VERSION = "SOFTWARE_VERSION_MAIN";

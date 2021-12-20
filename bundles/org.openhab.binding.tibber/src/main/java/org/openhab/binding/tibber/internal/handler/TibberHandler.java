@@ -125,10 +125,10 @@ public class TibberHandler extends BaseThingHandler {
                         .getAsJsonObject("features").get("realTimeConsumptionEnabled").toString();
 
                 if ("true".equals(rtEnabled)) {
-                    logger.debug("Pulse associated with HomeId: Live stream will be started");
+                    logger.info("Pulse associated with HomeId: Live stream will be started");
                     open();
                 } else {
-                    logger.debug("No Pulse associated with HomeId: No live stream will be started");
+                    logger.info("No Pulse associated with HomeId: No live stream will be started");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -246,7 +246,7 @@ public class TibberHandler extends BaseThingHandler {
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
         if ("true".equals(rtEnabled) && !isConnected()) {
-            logger.debug("Attempting to reopen Websocket connection");
+            logger.info("Attempting to reopen Websocket connection");
             open();
         }
     }
@@ -288,7 +288,7 @@ public class TibberHandler extends BaseThingHandler {
             WebSocketClient client = this.client;
             if (client != null) {
                 try {
-                    logger.debug("Stopping and Terminating Websocket connection");
+                    logger.warn("Stopping and Terminating Websocket connection");
                     client.stop();
                     client.destroy();
                 } catch (Exception e) {
@@ -301,18 +301,21 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     public void open() {
-        if (isConnected()) {
-            logger.debug("Open: connection is already open");
-        } else {
+        WebSocketClient client = this.client;
+        if (client == null || !client.isRunning()) {
+            if (client != null) {
+                try {
+                    client.stop();
+                } catch (Exception e) {
+                    logger.warn("Failed to stop websocket client: {}", e.getMessage());
+                }
+            }
             sslContextFactory.setTrustAll(true);
             sslContextFactory.setEndpointIdentificationAlgorithm(null);
 
-            WebSocketClient client = this.client;
-            if (client == null) {
-                client = new WebSocketClient(sslContextFactory, websocketExecutor);
-                client.setMaxIdleTimeout(600 * 1000);
-                this.client = client;
-            }
+            client = new WebSocketClient(sslContextFactory, websocketExecutor);
+            client.setMaxIdleTimeout(600 * 1000);
+            this.client = client;
 
             TibberWebSocketListener socket = this.socket;
             if (socket == null) {
@@ -325,19 +328,21 @@ public class TibberHandler extends BaseThingHandler {
             newRequest.setSubProtocols("graphql-subscriptions");
 
             try {
-                logger.debug("Starting Websocket connection");
+                logger.info("Starting Websocket connection");
                 client.start();
             } catch (Exception e) {
                 logger.warn("Websocket Start Exception: {}", e.getMessage());
             }
             try {
-                logger.debug("Connecting Websocket connection");
+                logger.info("Connecting Websocket connection");
                 sessionFuture = client.connect(socket, new URI(SUBSCRIPTION_URL), newRequest);
             } catch (IOException e) {
                 logger.warn("Websocket Connect Exception: {}", e.getMessage());
             } catch (URISyntaxException e) {
                 logger.warn("Websocket URI Exception: {}", e.getMessage());
             }
+        } else {
+            logger.warn("Open: Websocket client already running");
         }
     }
 
@@ -348,7 +353,7 @@ public class TibberHandler extends BaseThingHandler {
             try {
                 TibberWebSocketListener socket = this.socket;
                 if (socket != null) {
-                    logger.debug("Sending websocket disconnect message");
+                    logger.info("Sending websocket disconnect message");
                     socket.sendMessage(disconnect);
                 } else {
                     logger.debug("Socket unable to send disconnect message: Socket is null");
@@ -390,7 +395,7 @@ public class TibberHandler extends BaseThingHandler {
             String connection = "{\"type\":\"connection_init\", \"payload\":\"token=" + tibberConfig.getToken() + "\"}";
             try {
                 if (socket != null) {
-                    logger.debug("Sending websocket connect message");
+                    logger.info("Sending websocket connect message");
                     socket.sendMessage(connection);
                 } else {
                     logger.debug("Socket unable to send connect message: Socket is null");
@@ -402,20 +407,16 @@ public class TibberHandler extends BaseThingHandler {
 
         @OnWebSocketClose
         public void onClose(int statusCode, String reason) {
-            logger.debug("Closing a WebSocket due to {}", reason);
+            logger.info("Closing a WebSocket due to {}", reason);
             WebSocketClient client = TibberHandler.this.client;
             if (client != null && client.isRunning()) {
                 try {
-                    logger.debug("Stopping and Terminating Websocket connection");
+                    logger.info("Stopping and Terminating Websocket connection");
                     client.stop();
-                    client.destroy();
                 } catch (Exception e) {
                     logger.warn("Websocket Client Stop Exception: {}", e.getMessage());
                 }
             }
-            TibberHandler.this.session = null;
-            TibberHandler.this.client = null;
-            TibberHandler.this.socket = null;
         }
 
         @OnWebSocketError
@@ -428,7 +429,7 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketMessage
         public void onMessage(String message) {
             if (message.contains("connection_ack")) {
-                logger.debug("Connected to Server");
+                logger.info("Connected to Server");
                 startSubscription();
             } else if (message.contains("error") || message.contains("terminate")) {
                 logger.debug("Error/terminate received from server: {}", message);

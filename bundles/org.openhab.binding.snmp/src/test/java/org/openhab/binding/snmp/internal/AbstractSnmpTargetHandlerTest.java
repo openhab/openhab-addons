@@ -170,6 +170,11 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
 
     protected void setup(ChannelTypeUID channelTypeUID, SnmpChannelMode channelMode, SnmpDatatype datatype,
             String onValue, String offValue, String exceptionValue) {
+        setup(channelTypeUID, channelMode, datatype, onValue, offValue, exceptionValue, null);
+    }
+
+    protected void setup(ChannelTypeUID channelTypeUID, SnmpChannelMode channelMode, SnmpDatatype datatype,
+            String onValue, String offValue, String exceptionValue, String unit) {
         Map<String, Object> channelConfig = new HashMap<>();
         Map<String, Object> thingConfig = new HashMap<>();
         mocks = MockitoAnnotations.openMocks(this);
@@ -194,6 +199,9 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
             }
             if (exceptionValue != null) {
                 channelConfig.put("exceptionValue", exceptionValue);
+            }
+            if (unit != null) {
+                channelConfig.put("unit", unit);
             }
             Channel channel = ChannelBuilder.create(CHANNEL_UID, itemType).withType(channelTypeUID)
                     .withConfiguration(new Configuration(channelConfig)).build();

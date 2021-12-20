@@ -1,0 +1,2085 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="luxtronikheatpump"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="temperatureHeatingCircuitFlow">
+		<item-type>Number:Temperature</item-type>
+		<label>Flow Temp. Heating Circuit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHeatingCircuitReturn">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Temp. Heating Circuit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHeatingCircuitReturnTarget">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Temp. Target Heating Circuit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureBufferTankReturn" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Return Temp. in Buffer Tank</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHotGas" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Gas Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOutside">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOutsideMean">
+		<item-type>Number:Temperature</item-type>
+		<label>Avg. 24h-Temp. Outside (Limiting)</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHotWater">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Water Actual Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHeatSourceInlet" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Source Inlet Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHeatSourceOutlet" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Source Outlet Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureMixingCircuit1Flow" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing Circuit 1 Flow Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureMixingCircuit1FlowTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing Circuit 1 Flow Target Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureRoomStation" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Room Station 1</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureMixingCircuit2Flow" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing Circuit 2 Flow Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureMixingCircuit2FlowTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing Circuit 2 Flow Target Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureSolarCollector" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Collector Sensor</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureSolarTank" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Solar Tank Sensor</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureExternalEnergySource" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Sensor Ext. Energy Source</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputASD" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input Defrost/Brine/Flow</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputHotWaterThermostat" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Domestic Hot Water Thermostat"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputUtilityLock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Utility Lock"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputHighPressureCoolingCircuit" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "High Pressure Cooling Circuit</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputMotorProtectionOK" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Motor Protection OK"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputLowPressure" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Low Pressure"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputPEX" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Monitoring Contact for Potentiostat"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputSwimmingPoolThermostat" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input "Swimming Pool Thermostat"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputDefrostValve" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Defrost Valve"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputBUP" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Domestic Hot Water Pump/Changeover Valve"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputHeatingCirculationPump" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Heating Circulation Pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuit1Open" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing Circuit 1 Open"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuit1Closed" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing Circuit 1 Closed"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputVentilation" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Ventilation"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputVBO" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Brine Pump/Fan"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputCompressor1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Compressor 1"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputCompressor2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Compressor 2"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputCirculationPump" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Circulation Pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputZUP" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Auxiliary Circulation Pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputControlSignalAdditionalHeating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Control Signal add. Heating"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputFaultSignalAdditionalHeating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Control Signal add. Heating/Fault Signal"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputAuxiliaryHeater3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Auxiliary Heater 3"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuitPump2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Pump Mixing Circuit 2"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputSolarChargePump" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Solar Charge Pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputSwimmingPoolPump" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Swimming Pool Pump"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuit2Closed" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing Circuit 2 Closed"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuit2Open" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing Circuit 2 Up"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalCompressor1">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Compressor 1</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pulsesCompressor1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pulses Compressor 1</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalCompressor2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Compressor 2</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pulsesCompressor2" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pulses Compressor 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalSecondHeatGenerator1" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time 2nd Heat Generator 1</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalSecondHeatGenerator2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time 2nd Heat Generator 2</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalSecondHeatGenerator3" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time 2nd Heat Generator 3</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalHeatPump">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Heat Pump</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalHeating">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Heating</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalHotWater">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Hot Water</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalCooling">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Cooling</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeCurrentHeatPump" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Runtime Heat Pump</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeCurrentSecondHeatGenerator1" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Runtime 2nd Heat Generator 1</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeCurrentSecondHeatGenerator2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Runtime 2nd Heat Generator 2</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="mainsOnDelay" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Mains on Delay</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switchingCycleLockOff" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Switching Cycle Lock Off</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switchingCycleLockOn" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Switching Cycle Lock On</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="compressorIdleTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Compressor Idle Time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatingControllerMoreTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Heating Controller More Time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatingControllerLessTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Heating Controller Less Time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeCurrentThermalDisinfection" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Runtime Thermal Disinfection</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeHotWaterLock" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hot Water Lock</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bivalenceStage" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bivalence Stage</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">One Compressor may run</option>
+				<option value="2">Two Compressors may run</option>
+				<option value="3">Additional Heat Generator may run</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="operatingStatus">
+		<item-type>Number</item-type>
+		<label>Operating Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Heating</option>
+				<option value="1">Hot water</option>
+				<option value="2">Swimming pool / Photovoltaics</option>
+				<option value="3">Utility lock</option>
+				<option value="4">Defrost</option>
+				<option value="5">No requirement</option>
+				<option value="6">Heating ext. energy source</option>
+				<option value="7">Cooling mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="errorTime0">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Error 0</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="errorTime1" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Error 1</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="errorTime2" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Error 2</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="errorTime3" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Error 3</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="errorTime4" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Error 4</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errorCode0">
+		<item-type>Number</item-type>
+		<label>Error Code Error 0</label>
+		<state readOnly="true">
+			<options>
+				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
+				<option value="702">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.702</option>
+				<option value="703">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.703</option>
+				<option value="704">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.704</option>
+				<option value="705">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.705</option>
+				<option value="706">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.706</option>
+				<option value="707">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.707</option>
+				<option value="708">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.708</option>
+				<option value="709">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.709</option>
+				<option value="710">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.710</option>
+				<option value="711">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.711</option>
+				<option value="712">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.712</option>
+				<option value="713">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.713</option>
+				<option value="714">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.714</option>
+				<option value="715">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.715</option>
+				<option value="716">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.716</option>
+				<option value="717">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.717</option>
+				<option value="718">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.718</option>
+				<option value="719">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.719</option>
+				<option value="720">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.720</option>
+				<option value="721">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.721</option>
+				<option value="722">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.722</option>
+				<option value="723">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.723</option>
+				<option value="724">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.724</option>
+				<option value="725">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.725</option>
+				<option value="726">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.726</option>
+				<option value="727">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.727</option>
+				<option value="728">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.728</option>
+				<option value="729">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.729</option>
+				<option value="730">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.731</option>
+				<option value="732">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.732</option>
+				<option value="733">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.733</option>
+				<option value="734">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.734</option>
+				<option value="735">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.735</option>
+				<option value="736">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.736</option>
+				<option value="737">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.737</option>
+				<option value="738">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.739</option>
+				<option value="750">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.750</option>
+				<option value="751">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.751</option>
+				<option value="752">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.752</option>
+				<option value="755">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.755</option>
+				<option value="756">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.756</option>
+				<option value="757">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.757</option>
+				<option value="758">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.758</option>
+				<option value="759">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.759</option>
+				<option value="760">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.760</option>
+				<option value="761">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.761</option>
+				<option value="762">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.762</option>
+				<option value="763">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.763</option>
+				<option value="764">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.764</option>
+				<option value="765">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.765</option>
+				<option value="766">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.766</option>
+				<option value="767">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.769</option>
+				<option value="770">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.770</option>
+				<option value="771">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.771</option>
+				<option value="776">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.776</option>
+				<option value="777">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.777</option>
+				<option value="778">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.778</option>
+				<option value="779">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.779</option>
+				<option value="780">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.780</option>
+				<option value="781">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.781</option>
+				<option value="782">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.782</option>
+				<option value="783">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.783</option>
+				<option value="784">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.784</option>
+				<option value="785">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.785</option>
+				<option value="786">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.786</option>
+				<option value="787">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.787</option>
+				<option value="788">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.788</option>
+				<option value="789">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.789</option>
+				<option value="790">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.790</option>
+				<option value="791">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.791</option>
+				<option value="792">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.792</option>
+				<option value="793">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.807</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="errorCode1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error Code Error 1</label>
+		<state readOnly="true">
+			<options>
+				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
+				<option value="702">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.702</option>
+				<option value="703">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.703</option>
+				<option value="704">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.704</option>
+				<option value="705">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.705</option>
+				<option value="706">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.706</option>
+				<option value="707">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.707</option>
+				<option value="708">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.708</option>
+				<option value="709">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.709</option>
+				<option value="710">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.710</option>
+				<option value="711">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.711</option>
+				<option value="712">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.712</option>
+				<option value="713">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.713</option>
+				<option value="714">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.714</option>
+				<option value="715">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.715</option>
+				<option value="716">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.716</option>
+				<option value="717">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.717</option>
+				<option value="718">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.718</option>
+				<option value="719">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.719</option>
+				<option value="720">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.720</option>
+				<option value="721">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.721</option>
+				<option value="722">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.722</option>
+				<option value="723">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.723</option>
+				<option value="724">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.724</option>
+				<option value="725">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.725</option>
+				<option value="726">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.726</option>
+				<option value="727">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.727</option>
+				<option value="728">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.728</option>
+				<option value="729">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.729</option>
+				<option value="730">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.731</option>
+				<option value="732">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.732</option>
+				<option value="733">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.733</option>
+				<option value="734">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.734</option>
+				<option value="735">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.735</option>
+				<option value="736">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.736</option>
+				<option value="737">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.737</option>
+				<option value="738">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.739</option>
+				<option value="750">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.750</option>
+				<option value="751">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.751</option>
+				<option value="752">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.752</option>
+				<option value="755">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.755</option>
+				<option value="756">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.756</option>
+				<option value="757">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.757</option>
+				<option value="758">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.758</option>
+				<option value="759">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.759</option>
+				<option value="760">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.760</option>
+				<option value="761">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.761</option>
+				<option value="762">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.762</option>
+				<option value="763">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.763</option>
+				<option value="764">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.764</option>
+				<option value="765">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.765</option>
+				<option value="766">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.766</option>
+				<option value="767">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.769</option>
+				<option value="770">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.770</option>
+				<option value="771">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.771</option>
+				<option value="776">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.776</option>
+				<option value="777">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.777</option>
+				<option value="778">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.778</option>
+				<option value="779">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.779</option>
+				<option value="780">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.780</option>
+				<option value="781">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.781</option>
+				<option value="782">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.782</option>
+				<option value="783">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.783</option>
+				<option value="784">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.784</option>
+				<option value="785">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.785</option>
+				<option value="786">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.786</option>
+				<option value="787">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.787</option>
+				<option value="788">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.788</option>
+				<option value="789">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.789</option>
+				<option value="790">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.790</option>
+				<option value="791">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.791</option>
+				<option value="792">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.792</option>
+				<option value="793">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.807</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="errorCode2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error Code Error 2</label>
+		<state readOnly="true">
+			<options>
+				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
+				<option value="702">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.702</option>
+				<option value="703">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.703</option>
+				<option value="704">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.704</option>
+				<option value="705">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.705</option>
+				<option value="706">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.706</option>
+				<option value="707">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.707</option>
+				<option value="708">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.708</option>
+				<option value="709">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.709</option>
+				<option value="710">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.710</option>
+				<option value="711">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.711</option>
+				<option value="712">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.712</option>
+				<option value="713">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.713</option>
+				<option value="714">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.714</option>
+				<option value="715">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.715</option>
+				<option value="716">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.716</option>
+				<option value="717">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.717</option>
+				<option value="718">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.718</option>
+				<option value="719">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.719</option>
+				<option value="720">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.720</option>
+				<option value="721">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.721</option>
+				<option value="722">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.722</option>
+				<option value="723">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.723</option>
+				<option value="724">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.724</option>
+				<option value="725">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.725</option>
+				<option value="726">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.726</option>
+				<option value="727">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.727</option>
+				<option value="728">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.728</option>
+				<option value="729">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.729</option>
+				<option value="730">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.731</option>
+				<option value="732">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.732</option>
+				<option value="733">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.733</option>
+				<option value="734">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.734</option>
+				<option value="735">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.735</option>
+				<option value="736">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.736</option>
+				<option value="737">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.737</option>
+				<option value="738">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.739</option>
+				<option value="750">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.750</option>
+				<option value="751">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.751</option>
+				<option value="752">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.752</option>
+				<option value="755">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.755</option>
+				<option value="756">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.756</option>
+				<option value="757">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.757</option>
+				<option value="758">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.758</option>
+				<option value="759">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.759</option>
+				<option value="760">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.760</option>
+				<option value="761">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.761</option>
+				<option value="762">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.762</option>
+				<option value="763">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.763</option>
+				<option value="764">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.764</option>
+				<option value="765">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.765</option>
+				<option value="766">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.766</option>
+				<option value="767">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.769</option>
+				<option value="770">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.770</option>
+				<option value="771">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.771</option>
+				<option value="776">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.776</option>
+				<option value="777">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.777</option>
+				<option value="778">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.778</option>
+				<option value="779">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.779</option>
+				<option value="780">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.780</option>
+				<option value="781">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.781</option>
+				<option value="782">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.782</option>
+				<option value="783">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.783</option>
+				<option value="784">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.784</option>
+				<option value="785">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.785</option>
+				<option value="786">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.786</option>
+				<option value="787">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.787</option>
+				<option value="788">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.788</option>
+				<option value="789">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.789</option>
+				<option value="790">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.790</option>
+				<option value="791">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.791</option>
+				<option value="792">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.792</option>
+				<option value="793">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.807</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="errorCode3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error Code Error 3</label>
+		<state readOnly="true">
+			<options>
+				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
+				<option value="702">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.702</option>
+				<option value="703">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.703</option>
+				<option value="704">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.704</option>
+				<option value="705">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.705</option>
+				<option value="706">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.706</option>
+				<option value="707">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.707</option>
+				<option value="708">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.708</option>
+				<option value="709">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.709</option>
+				<option value="710">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.710</option>
+				<option value="711">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.711</option>
+				<option value="712">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.712</option>
+				<option value="713">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.713</option>
+				<option value="714">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.714</option>
+				<option value="715">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.715</option>
+				<option value="716">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.716</option>
+				<option value="717">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.717</option>
+				<option value="718">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.718</option>
+				<option value="719">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.719</option>
+				<option value="720">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.720</option>
+				<option value="721">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.721</option>
+				<option value="722">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.722</option>
+				<option value="723">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.723</option>
+				<option value="724">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.724</option>
+				<option value="725">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.725</option>
+				<option value="726">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.726</option>
+				<option value="727">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.727</option>
+				<option value="728">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.728</option>
+				<option value="729">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.729</option>
+				<option value="730">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.731</option>
+				<option value="732">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.732</option>
+				<option value="733">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.733</option>
+				<option value="734">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.734</option>
+				<option value="735">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.735</option>
+				<option value="736">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.736</option>
+				<option value="737">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.737</option>
+				<option value="738">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.739</option>
+				<option value="750">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.750</option>
+				<option value="751">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.751</option>
+				<option value="752">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.752</option>
+				<option value="755">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.755</option>
+				<option value="756">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.756</option>
+				<option value="757">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.757</option>
+				<option value="758">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.758</option>
+				<option value="759">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.759</option>
+				<option value="760">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.760</option>
+				<option value="761">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.761</option>
+				<option value="762">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.762</option>
+				<option value="763">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.763</option>
+				<option value="764">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.764</option>
+				<option value="765">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.765</option>
+				<option value="766">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.766</option>
+				<option value="767">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.769</option>
+				<option value="770">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.770</option>
+				<option value="771">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.771</option>
+				<option value="776">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.776</option>
+				<option value="777">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.777</option>
+				<option value="778">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.778</option>
+				<option value="779">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.779</option>
+				<option value="780">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.780</option>
+				<option value="781">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.781</option>
+				<option value="782">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.782</option>
+				<option value="783">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.783</option>
+				<option value="784">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.784</option>
+				<option value="785">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.785</option>
+				<option value="786">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.786</option>
+				<option value="787">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.787</option>
+				<option value="788">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.788</option>
+				<option value="789">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.789</option>
+				<option value="790">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.790</option>
+				<option value="791">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.791</option>
+				<option value="792">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.792</option>
+				<option value="793">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.807</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="errorCode4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error Code Error 4</label>
+		<state readOnly="true">
+			<options>
+				<option value="701">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.701</option>
+				<option value="702">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.702</option>
+				<option value="703">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.703</option>
+				<option value="704">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.704</option>
+				<option value="705">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.705</option>
+				<option value="706">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.706</option>
+				<option value="707">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.707</option>
+				<option value="708">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.708</option>
+				<option value="709">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.709</option>
+				<option value="710">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.710</option>
+				<option value="711">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.711</option>
+				<option value="712">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.712</option>
+				<option value="713">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.713</option>
+				<option value="714">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.714</option>
+				<option value="715">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.715</option>
+				<option value="716">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.716</option>
+				<option value="717">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.717</option>
+				<option value="718">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.718</option>
+				<option value="719">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.719</option>
+				<option value="720">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.720</option>
+				<option value="721">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.721</option>
+				<option value="722">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.722</option>
+				<option value="723">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.723</option>
+				<option value="724">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.724</option>
+				<option value="725">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.725</option>
+				<option value="726">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.726</option>
+				<option value="727">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.727</option>
+				<option value="728">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.728</option>
+				<option value="729">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.729</option>
+				<option value="730">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.730</option>
+				<option value="731">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.731</option>
+				<option value="732">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.732</option>
+				<option value="733">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.733</option>
+				<option value="734">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.734</option>
+				<option value="735">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.735</option>
+				<option value="736">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.736</option>
+				<option value="737">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.737</option>
+				<option value="738">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.738</option>
+				<option value="739">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.739</option>
+				<option value="750">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.750</option>
+				<option value="751">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.751</option>
+				<option value="752">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.752</option>
+				<option value="755">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.755</option>
+				<option value="756">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.756</option>
+				<option value="757">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.757</option>
+				<option value="758">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.758</option>
+				<option value="759">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.759</option>
+				<option value="760">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.760</option>
+				<option value="761">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.761</option>
+				<option value="762">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.762</option>
+				<option value="763">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.763</option>
+				<option value="764">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.764</option>
+				<option value="765">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.765</option>
+				<option value="766">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.766</option>
+				<option value="767">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.767</option>
+				<option value="768">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.768</option>
+				<option value="769">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.769</option>
+				<option value="770">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.770</option>
+				<option value="771">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.771</option>
+				<option value="776">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.776</option>
+				<option value="777">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.777</option>
+				<option value="778">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.778</option>
+				<option value="779">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.779</option>
+				<option value="780">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.780</option>
+				<option value="781">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.781</option>
+				<option value="782">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.782</option>
+				<option value="783">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.783</option>
+				<option value="784">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.784</option>
+				<option value="785">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.785</option>
+				<option value="786">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.786</option>
+				<option value="787">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.787</option>
+				<option value="788">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.788</option>
+				<option value="789">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.789</option>
+				<option value="790">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.790</option>
+				<option value="791">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.791</option>
+				<option value="792">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.792</option>
+				<option value="793">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.793</option>
+				<option value="794">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.794</option>
+				<option value="795">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.795</option>
+				<option value="796">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.796</option>
+				<option value="797">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.797</option>
+				<option value="798">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.798</option>
+				<option value="799">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.799</option>
+				<option value="800">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.800</option>
+				<option value="802">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.802</option>
+				<option value="803">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.803</option>
+				<option value="806">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.806</option>
+				<option value="807">@text/channel-type.luxtronikheatpump.errorCodeX.state.option.807</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="errorCountInMemory" advanced="true">
+		<item-type>Number</item-type>
+		<label>Number of Errors</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shutdownReason0">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 0</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="shutdownReason1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 1</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="shutdownReason2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 2</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="shutdownReason3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 3</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="shutdownReason4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 4</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="shutdownTime0">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 0</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="shutdownTime1" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 1</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="shutdownTime2" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 2</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="shutdownTime3" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 3</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="shutdownTime4" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 4</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="comfortBoardInstalled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Comfort Board Installed</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menuStateLine1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Line 1</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.menuStateLine1.state.option.7</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="menuStateLine2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Line 2</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">@text/channel-type.luxtronikheatpump.menuStateLine2.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.menuStateLine2.state.option.1</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="menuStateLine3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Line 3</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.9</option>
+				<option value="10">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.10</option>
+				<option value="12">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.12</option>
+				<option value="13">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.13</option>
+				<option value="14">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.14</option>
+				<option value="16">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.16</option>
+				<option value="17">@text/channel-type.luxtronikheatpump.menuStateLine3.state.option.17</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="menuStateTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Status Time</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menuStateFull">
+		<item-type>String</item-type>
+		<label>Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bakeoutProgramStage" advanced="true">
+		<item-type>Number</item-type>
+		<label>Stage Bakeout Program</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bakeoutProgramTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Bakeout Program</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bakeoutProgramTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Runtime Bakeout Program</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="iconHotWater" advanced="true">
+		<item-type>Switch</item-type>
+		<label>DHW Active/Inactive Icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="iconHeater" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heater Icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="iconMixingCircuit1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Circuit 1 Icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="iconMixingCircuit2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Circuit 2 Icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="shortProgramSetting" advanced="true">
+		<item-type>Number</item-type>
+		<label>Short Program Setting</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="statusSlave1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 1</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="statusSlave2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="statusSlave3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 3</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="statusSlave4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 4</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="statusSlave5" advanced="true">
+		<item-type>Number</item-type>
+		<label>Status Slave 5</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentTimestamp" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Current Time of Heat Pump</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="iconMixingCircuit3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Mixing Circuit 3 Icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureMixingCircuit3FlowTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing Circuit 3 Flow Temp. Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureMixingCircuit3Flow" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Mixing Circuit 3 Flow Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuit3Close" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing Circuit 3 Close"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuit3Open" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output "Mixing Circuit 3 Open"</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputMixingCircuitPump3" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Pump Mixing Circuit 3</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeUntilDefrost" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Time until Defrost</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureRoomStation2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Room Station 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureRoomStation3" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Room Station 3</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="iconTimeSwitchSwimmingPool" advanced="true">
+		<item-type>Number</item-type>
+		<label>Time Switch Swimming Pool Icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalSwimmingPool" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Swimming Pool</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="coolingRelease" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Release Cooling</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputAnalog" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Input Signal</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="iconCirculationPump" advanced="true">
+		<item-type>Number</item-type>
+		<label>Circulation Pumps Icon</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatMeterHeating">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter Heating</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatMeterHotWater">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter Domestic Water</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatMeterSwimmingPool">
+		<item-type>Number:Energy</item-type>
+		<label>Heat Meter Swimming Pool</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatMeterTotalSinceReset">
+		<item-type>Number:Energy</item-type>
+		<label>Total Heat Meter (since Reset)</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatMeterFlowRate">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Heat Meter Flow Rate</label>
+		<category>Flow</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputAnalog1" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Output 1</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputAnalog2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Output 2</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeLockSecondHotGasCompressor" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Lock 2nd Compressor Hot Gas</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureSupplyAir" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Supply Air Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureExhaustAir" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Exhaust Air Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="runtimeTotalSolar" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time Solar</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputAnalog3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Output 3</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputAnalog4" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Output 4</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputSupplyAirFan" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Supply Air Fan (Defrost)</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputExhaustFan" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Exhaust Fan</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputVSK" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output VSK</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputFRH" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output FRH</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputAnalog2" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Input 2</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputAnalog3" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Input 3</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputSAX" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input SAX</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputSPL" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input SPL</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ventilationBoardInstalled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Ventilation Board Installed</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="flowRateHeatSource" advanced="true">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Flow Rate Heat Source</label>
+		<category>Flow</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="linBusInstalled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>LIN BUS Installed</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureSuctionEvaporator" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Suction Evaporator</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureSuctionCompressor" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Suction Compressor</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureCompressorHeating" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Compressor Heating</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOverheating" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOverheatingTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="highPressure" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>High Pressure</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lowPressure" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Low Pressure</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputCompressorHeating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output Compressor Heating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="controlSignalCirculatingPump" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Control Signal Circulating Pump</label>
+		<category>Energy</category>
+		<state pattern="%.1f %%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fanSpeed" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<category>Frequency</category>
+		<state pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureSafetyLimitFloorHeating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Safety Temp. Limiter Floor Heating</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerTargetValue" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Power Target Value</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerActualValue" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Power Actual Value</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureFlowTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Flow Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operatingStatusSECBoard" advanced="true">
+		<item-type>Number</item-type>
+		<label>SEC Board Operating Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Cooling</option>
+				<option value="2">Heating</option>
+				<option value="3">Malfunction</option>
+				<option value="4">Transition</option>
+				<option value="5">Defrost</option>
+				<option value="6">Waiting</option>
+				<option value="7">Waiting</option>
+				<option value="8">Transition</option>
+				<option value="9">Stop</option>
+				<option value="10">Manual</option>
+				<option value="11">Simulation Start</option>
+				<option value="12">Utility lock</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fourWayValve" advanced="true">
+		<item-type>Number</item-type>
+		<label>Four-way Valve</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="compressorSpeed" advanced="true">
+		<item-type>Number</item-type>
+		<label>Compressor Speed</label>
+		<state pattern="%.1f rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureCompressorEVI" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Compressor Temp. EVI</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureIntakeEVI" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Intake Temp. EVI</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOverheatingEVI" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating EVI</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOverheatingTargetEVI" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating EVI Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureCondensation" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Condensation Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureLiquidEEV" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Liquid Temp. EEV</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHypothermiaEEV" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hypothermia EEV</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="pressureEVI" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure EVI</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="voltageInverter" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage Inverter</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHotGas2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Gas Temp. Sensor 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHeatSourceInlet2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Sensor Heat Source Inlet 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureIntakeEvaporator2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Intake Temp. Evaporator 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureIntakeCompressor2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Intake Temp. Compressor 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureCompressor2Heating" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Compressor 2 Heating</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOverheating2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureOverheatingTarget2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Overheating Target 2</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="highPressure2" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>High Pressure 2</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lowPressure2" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Low Pressure 2</label>
+		<category>Pressure</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="inputSwitchHighPressure2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Input Pressure Switch High Pressure 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputDefrostValve2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output Defrost Valve 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputVBO2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Output Brine Pump/Fan 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputCompressor1_2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressor Output 1 / 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputCompressorHeating2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Compressor Output Heating 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="secondShutdownReason0" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 0 (Memory 2)</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="secondShutdownReason1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 1 (Memory 2)</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="secondShutdownReason2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 2 (Memory 2)</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="secondShutdownReason3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 3 (Memory 2)</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="secondShutdownReason4" advanced="true">
+		<item-type>Number</item-type>
+		<label>Reason Shutdown 4 (Memory 2)</label>
+		<state readOnly="true">
+			<options>
+				<option value="1">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.4</option>
+				<option value="5">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.5</option>
+				<option value="6">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.6</option>
+				<option value="7">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.7</option>
+				<option value="8">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.8</option>
+				<option value="9">@text/channel-type.luxtronikheatpump.SwitchoffX_file_NrX.state.option.9</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="secondShutdownTime0" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 0 (Memory 2)</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="secondShutdownTime1" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 1 (Memory 2)</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="secondShutdownTime2" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 2 (Memory 2)</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="secondShutdownTime3" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 3 (Memory 2)</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="secondShutdownTime4" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp Shutdown 4 (Memory 2)</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureRoom" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temp. Actual Value</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureRoomTarget" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Room Temp. Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperatureHotWaterTop" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temp. Domestic Water Top</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="frequencyCompressor" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Compressor Frequency</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="temperatureHeatingParallelShift">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Temp. (Offset)</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" min="-10" max="10" step="0.5"></state>
+	</channel-type>
+
+	<channel-type id="temperatureHotWaterCoverage">
+		<item-type>Number:Temperature</item-type>
+		<label>Coverage Hot Water Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
+	</channel-type>
+
+	<channel-type id="heatingMode">
+		<item-type>Number</item-type>
+		<label>Heating Mode</label>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.luxtronikheatpump.operationMode.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.operationMode.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.operationMode.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.operationMode.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.operationMode.state.option.4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hotWaterMode">
+		<item-type>Number</item-type>
+		<label>Hot Water Operating Mode</label>
+		<state>
+			<options>
+				<option value="0">@text/channel-type.luxtronikheatpump.operationMode.state.option.0</option>
+				<option value="1">@text/channel-type.luxtronikheatpump.operationMode.state.option.1</option>
+				<option value="2">@text/channel-type.luxtronikheatpump.operationMode.state.option.2</option>
+				<option value="3">@text/channel-type.luxtronikheatpump.operationMode.state.option.3</option>
+				<option value="4">@text/channel-type.luxtronikheatpump.operationMode.state.option.4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionMonday" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Mon)</label>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionTuesday" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Tue)</label>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionWednesday" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Wed)</label>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionThursday" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Thu)</label>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionFriday" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Fri)</label>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionSaturday" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Sat)</label>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionSunday" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Sun)</label>
+	</channel-type>
+
+	<channel-type id="thermalDisinfectionPermanent" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Thermal Disinfection (Permanent)</label>
+	</channel-type>
+
+	<channel-type id="temperatureHotWaterTarget">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Water Target Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
+	</channel-type>
+
+	<channel-type id="comfortCoolingMode">
+		<item-type>Number</item-type>
+		<label>Comfort Cooling Mode</label>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperatureComfortCoolingATRelease">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort Cooling AT Release</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="temperatureComfortCoolingATReleaseTarget">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort Cooling AT Release Target</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="temperatureHeatingLimit">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Heating Limit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="comfortCoolingATExcess">
+		<item-type>Number:Time</item-type>
+		<label>AT Excess</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" step="1"></state>
+	</channel-type>
+
+	<channel-type id="comfortCoolingATUndercut">
+		<item-type>Number:Time</item-type>
+		<label>AT Undercut</label>
+		<category>Time</category>
+		<state pattern="%.1f %unit%" step="1"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1088,7 +1088,7 @@ class AtlonaPro3PortocolHandler {
 
         @Override
         public void responseReceived(String response) {
-            if (response == null || response == "") {
+            if (response == null || response.isEmpty()) {
                 return;
             }
 

@@ -30,12 +30,6 @@ public class DanfossAirUnitBindingConstants {
 
     public static String BINDING_ID = "danfossairunit";
 
-    // List of all Thing Type UIDs
-    public static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
-
-    // List of all Channel ids
-    public static String CHANNEL_1 = "channel1";
-
     // The only thing type UIDs
     public static ThingTypeUID THING_TYPE_AIRUNIT = new ThingTypeUID(BINDING_ID, "airunit");
 

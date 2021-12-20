@@ -19,7 +19,11 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.*;
+import java.util.Collections;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
@@ -125,7 +129,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     private void discoverWithADB(String ip, int port) throws InterruptedException, AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         var device = new AndroidDebugBridgeDevice(scheduler);
-        device.configure(ip, port, 10);
+        device.configure(ip, port, 10, 0);
         try {
             device.connect();
             logger.debug("connected adb at {}:{}", ip, port);

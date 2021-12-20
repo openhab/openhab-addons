@@ -13,13 +13,13 @@
 package org.openhab.voice.marytts.internal;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 
 import javax.sound.sampled.AudioInputStream;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSource;
@@ -54,10 +54,21 @@ class MaryTTSAudioStream extends FixedLengthAudioStream {
      * @throws IOException
      */
     public MaryTTSAudioStream(AudioInputStream inputStream, AudioFormat audioFormat) throws IOException {
-        rawAudio = IOUtils.toByteArray(inputStream);
+        // The length of an AudioInputStream is expressed in sample frames, not bytes so readAllBytes() cannot be used.
+        rawAudio = inputStreamToBytes(inputStream);
         this.length = rawAudio.length + 36;
         this.inputStream = new SequenceInputStream(getWavHeaderInputStream(length), new ByteArrayInputStream(rawAudio));
         this.audioFormat = audioFormat;
+    }
+
+    private byte[] inputStreamToBytes(InputStream inputStream) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        int n = 0;
+        byte[] buffer = new byte[4096];
+        while (-1 != (n = inputStream.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+        return output.toByteArray();
     }
 
     @Override
@@ -146,7 +157,10 @@ class MaryTTSAudioStream extends FixedLengthAudioStream {
 
     @Override
     public synchronized void reset() throws IOException {
-        IOUtils.closeQuietly(inputStream);
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+        }
         this.inputStream = new SequenceInputStream(getWavHeaderInputStream(length), new ByteArrayInputStream(rawAudio));
     }
 

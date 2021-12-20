@@ -12,50 +12,50 @@
  */
 package org.openhab.binding.opensprinkler.internal.handler;
 
+import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.MAX_TIME_SECONDS;
+
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
+ * @author Chris Graham - Initial contribution
  * @author Florian Schmidt - Refactoring
  */
 @NonNullByDefault
 public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected BigDecimal nextDurationTime = MAX_TIME_SECONDS;
+
+    @Nullable
+    OpenSprinklerHttpBridgeHandler bridgeHandler;
+
     public OpenSprinklerBaseHandler(Thing thing) {
         super(thing);
     }
 
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        super.bridgeStatusChanged(bridgeStatusInfo);
-
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN);
-        }
-    }
-
-    @Nullable
-    protected OpenSprinklerApi getApi() {
-        Bridge bridge = getBridge();
-        if (bridge == null) {
-            return null;
-        }
-        BridgeHandler handler = bridge.getHandler();
-        if (!(handler instanceof OpenSprinklerBaseBridgeHandler)) {
+    protected @Nullable OpenSprinklerApi getApi() {
+        OpenSprinklerHttpBridgeHandler localBridge = bridgeHandler;
+        if (localBridge == null) {
             return null;
         }
         try {
-            return ((OpenSprinklerBaseBridgeHandler) handler).getApi();
+            return localBridge.getApi();
         } catch (IllegalStateException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
             return null;
         }
     }
@@ -67,6 +67,34 @@ public abstract class OpenSprinklerBaseHandler extends BaseThingHandler {
         if (getApi() != null) {
             updateStatus(ThingStatus.ONLINE);
         }
+    }
+
+    protected void handleNextDurationCommand(ChannelUID channelUID, Command command) {
+        if (!(command instanceof QuantityType<?>)) {
+            logger.warn("Ignoring implausible non-QuantityType command for NEXT_DURATION");
+            return;
+        }
+        QuantityType<?> quantity = (QuantityType<?>) command;
+        quantity = quantity.toUnit(Units.SECOND);
+        if (quantity != null) {
+            nextDurationTime = quantity.toBigDecimal();
+            updateState(channelUID, quantity);
+        }
+    }
+
+    protected BigDecimal nextDurationValue() {
+        return nextDurationTime;
+    }
+
+    @Override
+    public void initialize() {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No HTTP Bridge thing selected");
+            return;
+        }
+        bridgeHandler = (OpenSprinklerHttpBridgeHandler) bridge.getHandler();
+        updateStatus(ThingStatus.ONLINE);
     }
 
     protected abstract void updateChannel(ChannelUID uid);

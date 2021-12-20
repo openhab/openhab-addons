@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sdm_thermostat" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="sdm_account"/>
+		</supported-bridge-type-refs>
+
+		<label>Nest Thermostat</label>
+		<description>A Thermostat to control the various aspects of the house's HVAC system</description>
+
+		<channels>
+			<channel id="ambient_humidity" typeId="SDMAmbientHumidity"/>
+			<channel id="ambient_temperature" typeId="SDMAmbientTemperature"/>
+			<channel id="fan_timer_mode" typeId="SDMFanTimerMode"/>
+			<channel id="fan_timer_timeout" typeId="SDMFanTimerTimeout"/>
+			<channel id="temperature_heat" typeId="SDMTemperatureHeat"/>
+			<channel id="temperature_cool" typeId="SDMTemperatureCool"/>
+			<channel id="current_mode" typeId="SDMCurrentMode"/>
+			<channel id="current_eco_mode" typeId="SDMCurrentEcoMode"/>
+			<channel id="target_temperature" typeId="SDMTargetTemperature"/>
+			<channel id="minimum_temperature" typeId="SDMMinimumTemperature"/>
+			<channel id="maximum_temperature" typeId="SDMMaximumTemperature"/>
+			<channel id="hvac_status" typeId="SDMHVACStatus"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:nest:sdm_device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

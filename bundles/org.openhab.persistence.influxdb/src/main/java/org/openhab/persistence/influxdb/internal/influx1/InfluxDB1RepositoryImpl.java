@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -171,8 +173,7 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
             } else {
                 for (QueryResult.Series series : seriess) {
                     logger.trace("series {}", series.toString());
-                    String itemName = series.getName();
-                    List<List<Object>> valuess = series.getValues();
+                    List<List<@Nullable Object>> valuess = series.getValues();
                     if (valuess == null) {
                         logger.debug("query returned no values");
                     } else {
@@ -196,12 +197,14 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                                 throw new IllegalStateException("missing column");
                             }
                             for (int i = 0; i < valuess.size(); i++) {
-                                Double rawTime = (Double) valuess.get(i).get(timestampColumn);
+                                Double rawTime = (Double) Objects.requireNonNull(valuess.get(i).get(timestampColumn));
                                 Instant time = Instant.ofEpochMilli(rawTime.longValue());
+                                @Nullable
                                 Object value = valuess.get(i).get(valueColumn);
-                                if (itemNameColumn != null) {
-                                    itemName = (String) valuess.get(i).get(itemNameColumn);
-                                }
+                                var currentI = i;
+                                String itemName = Optional.ofNullable(itemNameColumn)
+                                        .flatMap(inc -> Optional.ofNullable((String) valuess.get(currentI).get(inc)))
+                                        .orElse(series.getName());
                                 logger.trace("adding historic item {}: time {} value {}", itemName, time, value);
                                 rows.add(new InfluxRow(time, itemName, value));
                             }

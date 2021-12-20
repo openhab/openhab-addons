@@ -64,11 +64,7 @@ public class MadokaMessageTest {
 
     @Test
     public void testParseOperationHours() {
-        String s = "390001120201004004DC0B00004104F40300004204642300004304000000004404000000004504000000004604000000004704000000004800";
-
         MadokaValue mv = new MadokaValue(0, 4, new byte[] { (byte) 0xF4, 0x03, 0x00, 0x00 });
-        // MadokaValue mv = new MadokaValue(0, 4, new byte[] { 0x00, 0x00, 0x03, (byte) 0xF4 });
-
         Long v = mv.getComputedValue(ByteOrder.LITTLE_ENDIAN);
         assertEquals(1012, v);
     }

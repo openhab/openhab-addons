@@ -1,0 +1,943 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ecotouch"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="geo">
+		<label>Waterkotte EcoTouch Geo</label>
+		<description>Waterkotte EcoTouch Geo heat pump</description>
+		<category>HVAC</category>
+
+		<channels>
+			<channel id="temperature_outside" typeId="temperature_outside"/>
+			<channel id="temperature_outside_1h" typeId="temperature_outside_1h"/>
+			<channel id="temperature_outside_24h" typeId="temperature_outside_24h"/>
+			<channel id="temperature_source_in" typeId="temperature_source_in"/>
+			<channel id="temperature_source_out" typeId="temperature_source_out"/>
+			<channel id="temperature_evaporation" typeId="temperature_evaporation"/>
+			<channel id="temperature_suction" typeId="temperature_suction"/>
+			<channel id="pressure_evaporation" typeId="pressure_evaporation"/>
+			<channel id="temperature_return_set" typeId="temperature_return_set"/>
+			<channel id="temperature_return" typeId="temperature_return"/>
+			<channel id="temperature_flow" typeId="temperature_flow"/>
+			<channel id="temperature_condensation" typeId="temperature_condensation"/>
+			<channel id="pressure_condensation" typeId="pressure_condensation"/>
+			<channel id="temperature_storage" typeId="temperature_storage"/>
+			<channel id="temperature_room" typeId="temperature_room"/>
+			<channel id="temperature_room_1h" typeId="temperature_room_1h"/>
+			<channel id="temperature_water" typeId="temperature_water"/>
+			<channel id="temperature_pool" typeId="temperature_pool"/>
+			<channel id="temperature_solar" typeId="temperature_solar"/>
+			<channel id="temperature_solar_flow" typeId="temperature_solar_flow"/>
+			<channel id="position_expansion_valve" typeId="position_expansion_valve"/>
+			<channel id="power_compressor" typeId="power_compressor"/>
+			<channel id="power_heating" typeId="power_heating"/>
+			<channel id="power_cooling" typeId="power_cooling"/>
+			<channel id="cop_heating" typeId="cop_heating"/>
+			<channel id="cop_cooling" typeId="cop_cooling"/>
+			<channel id="temperature_heating_return" typeId="temperature_heating_return"/>
+			<channel id="temperature_heating_set" typeId="temperature_heating_set"/>
+			<channel id="temperature_heating_set2" typeId="temperature_heating_set2"/>
+			<channel id="temperature_cooling_return" typeId="temperature_cooling_return"/>
+			<channel id="temperature_cooling_set" typeId="temperature_cooling_set"/>
+			<channel id="temperature_cooling_set2" typeId="temperature_cooling_set2"/>
+			<channel id="temperature_water_set" typeId="temperature_water_set"/>
+			<channel id="temperature_water_set2" typeId="temperature_water_set2"/>
+			<channel id="temperature_pool_set" typeId="temperature_pool_set"/>
+			<channel id="temperature_pool_set2" typeId="temperature_pool_set2"/>
+			<channel id="compressor_power" typeId="compressor_power"/>
+			<channel id="percent_heat_circ_pump" typeId="percent_heat_circ_pump"/>
+			<channel id="percent_source_pump" typeId="percent_source_pump"/>
+			<channel id="percent_compressor" typeId="percent_compressor"/>
+			<channel id="hysteresis_heating" typeId="hysteresis_heating"/>
+			<channel id="temperature2_outside_1h" typeId="temperature2_outside_1h"/>
+			<channel id="nviNormAussen" typeId="nviNormAussen"/>
+			<channel id="nviHeizkreisNorm" typeId="nviHeizkreisNorm"/>
+			<channel id="nviTHeizgrenze" typeId="nviTHeizgrenze"/>
+			<channel id="nviTHeizgrenzeSoll" typeId="nviTHeizgrenzeSoll"/>
+			<channel id="maxVLTemp" typeId="maxVLTemp"/>
+			<channel id="tempSet0Deg" typeId="tempSet0Deg"/>
+			<channel id="coolEnableTemp" typeId="coolEnableTemp"/>
+			<channel id="nviSollKuehlen" typeId="nviSollKuehlen"/>
+			<channel id="tempchange_heating_pv" typeId="tempchange_heating_pv"/>
+			<channel id="tempchange_cooling_pv" typeId="tempchange_cooling_pv"/>
+			<channel id="tempchange_warmwater_pv" typeId="tempchange_warmwater_pv"/>
+			<channel id="tempchange_pool_pv" typeId="tempchange_pool_pv"/>
+			<channel id="version_controller" typeId="version_controller"/>
+			<channel id="version_controller_build" typeId="version_controller_build"/>
+			<channel id="version_bios" typeId="version_bios"/>
+			<channel id="date_day" typeId="date_day"/>
+			<channel id="date_month" typeId="date_month"/>
+			<channel id="date_year" typeId="date_year"/>
+			<channel id="time_hour" typeId="time_hour"/>
+			<channel id="time_minute" typeId="time_minute"/>
+			<channel id="operating_hours_compressor1" typeId="operating_hours_compressor1"/>
+			<channel id="operating_hours_compressor2" typeId="operating_hours_compressor2"/>
+			<channel id="operating_hours_circulation_pump" typeId="operating_hours_circulation_pump"/>
+			<channel id="operating_hours_source_pump" typeId="operating_hours_source_pump"/>
+			<channel id="operating_hours_solar" typeId="operating_hours_solar"/>
+			<channel id="enable_heating" typeId="enable_heating"/>
+			<channel id="enable_cooling" typeId="enable_cooling"/>
+			<channel id="enable_warmwater" typeId="enable_warmwater"/>
+			<channel id="enable_pool" typeId="enable_pool"/>
+			<channel id="enable_pv" typeId="enable_pv"/>
+			<channel id="state" typeId="state"/>
+			<channel id="state_sourcepump" typeId="state_sourcepump"/>
+			<channel id="state_heatingpump" typeId="state_heatingpump"/>
+			<channel id="state_evd" typeId="state_evd"/>
+			<channel id="state_compressor1" typeId="state_compressor1"/>
+			<channel id="state_compressor2" typeId="state_compressor2"/>
+			<channel id="state_extheater" typeId="state_extheater"/>
+			<channel id="state_alarm" typeId="state_alarm"/>
+			<channel id="state_cooling" typeId="state_cooling"/>
+			<channel id="state_water" typeId="state_water"/>
+			<channel id="state_pool" typeId="state_pool"/>
+			<channel id="state_solar" typeId="state_solar"/>
+			<channel id="state_cooling4way" typeId="state_cooling4way"/>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="interruptions" typeId="interruptions"/>
+			<channel id="state_service" typeId="state_service"/>
+			<channel id="adapt_heating" typeId="adapt_heating"/>
+			<channel id="manual_heatingpump" typeId="manual_heatingpump"/>
+			<channel id="manual_sourcepump" typeId="manual_sourcepump"/>
+			<channel id="manual_solarpump1" typeId="manual_solarpump1"/>
+			<channel id="manual_solarpump2" typeId="manual_solarpump2"/>
+			<channel id="manual_tankpump" typeId="manual_tankpump"/>
+			<channel id="manual_valve" typeId="manual_valve"/>
+			<channel id="manual_poolvalve" typeId="manual_poolvalve"/>
+			<channel id="manual_coolvalve" typeId="manual_coolvalve"/>
+			<channel id="manual_4wayvalve" typeId="manual_4wayvalve"/>
+			<channel id="manual_multiext" typeId="manual_multiext"/>
+
+			<channel id="ecovent_temp_exhaust_air" typeId="ecovent_temp_exhaust_air"/>
+			<channel id="ecovent_temp_exit_air" typeId="ecovent_temp_exit_air"/>
+			<channel id="ecovent_temp_outdoor_air" typeId="ecovent_temp_outdoor_air"/>
+			<channel id="ecovent_temp_supply_air" typeId="ecovent_temp_supply_air"/>
+			<channel id="ecovent_CO2_value" typeId="ecovent_CO2_value"/>
+			<channel id="ecovent_moisture_value" typeId="ecovent_moisture_value"/>
+			<channel id="ecovent_output_y1" typeId="ecovent_output_y1"/>
+			<channel id="ecovent_mode" typeId="ecovent_mode"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<context>network-address</context>
+				<label>Address of Heat Pump</label>
+				<description>Enter the IP address or the hostname of the EcoTouch display unit</description>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Since Waterkotte Display software version 1.6.xx, the username default value is waterkotte. Prior to
+					that, the username default was admin</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
+					that, the password default was wtkadmin</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
+				<default>60</default>
+				<label>Refresh Interval</label>
+				<description>This is the refresh interval in seconds for all channels.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="air">
+		<label>Waterkotte EcoTouch Air</label>
+		<description>Waterkotte EcoTouch Air heat pump</description>
+		<category>HVAC</category>
+
+		<channels>
+			<channel id="temperature_outside" typeId="temperature_outside"/>
+			<channel id="temperature_outside_1h" typeId="temperature_outside_1h"/>
+			<channel id="temperature_outside_24h" typeId="temperature_outside_24h"/>
+			<channel id="temperature_source_in" typeId="temperature_source_in"/>
+			<channel id="temperature_source_out" typeId="temperature_source_out"/>
+			<channel id="temperature_evaporation" typeId="temperature_evaporation"/>
+			<channel id="temperature_suction" typeId="temperature_suction"/>
+			<channel id="pressure_evaporation" typeId="pressure_evaporation"/>
+			<channel id="temperature_return_set" typeId="temperature_return_set"/>
+			<channel id="temperature_return" typeId="temperature_return"/>
+			<channel id="temperature_flow" typeId="temperature_flow"/>
+			<channel id="temperature_condensation" typeId="temperature_condensation"/>
+			<channel id="pressure_condensation" typeId="pressure_condensation"/>
+			<channel id="temperature_storage" typeId="temperature_storage"/>
+			<channel id="temperature_room" typeId="temperature_room"/>
+			<channel id="temperature_room_1h" typeId="temperature_room_1h"/>
+			<channel id="temperature_water" typeId="temperature_water"/>
+			<channel id="temperature_pool" typeId="temperature_pool"/>
+			<channel id="temperature_solar" typeId="temperature_solar"/>
+			<channel id="temperature_solar_flow" typeId="temperature_solar_flow"/>
+			<channel id="position_expansion_valve" typeId="position_expansion_valve"/>
+			<channel id="power_compressor" typeId="power_compressor"/>
+			<channel id="power_heating" typeId="power_heating"/>
+			<channel id="power_cooling" typeId="power_cooling"/>
+			<channel id="cop_heating" typeId="cop_heating"/>
+			<channel id="cop_cooling" typeId="cop_cooling"/>
+			<channel id="temperature_heating_return" typeId="temperature_heating_return"/>
+			<channel id="temperature_heating_set" typeId="temperature_heating_set"/>
+			<channel id="temperature_heating_set2" typeId="temperature_heating_set2"/>
+			<channel id="temperature_cooling_return" typeId="temperature_cooling_return"/>
+			<channel id="temperature_cooling_set" typeId="temperature_cooling_set"/>
+			<channel id="temperature_cooling_set2" typeId="temperature_cooling_set2"/>
+			<channel id="temperature_water_set" typeId="temperature_water_set"/>
+			<channel id="temperature_water_set2" typeId="temperature_water_set2"/>
+			<channel id="temperature_pool_set" typeId="temperature_pool_set"/>
+			<channel id="temperature_pool_set2" typeId="temperature_pool_set2"/>
+			<channel id="compressor_power" typeId="compressor_power"/>
+			<channel id="percent_heat_circ_pump" typeId="percent_heat_circ_pump"/>
+			<channel id="percent_source_pump" typeId="percent_source_pump"/>
+			<channel id="percent_compressor" typeId="percent_compressor"/>
+			<channel id="hysteresis_heating" typeId="hysteresis_heating"/>
+			<channel id="temperature2_outside_1h" typeId="temperature2_outside_1h"/>
+			<channel id="nviNormAussen" typeId="nviNormAussen"/>
+			<channel id="nviHeizkreisNorm" typeId="nviHeizkreisNorm"/>
+			<channel id="nviTHeizgrenze" typeId="nviTHeizgrenze"/>
+			<channel id="nviTHeizgrenzeSoll" typeId="nviTHeizgrenzeSoll"/>
+			<channel id="maxVLTemp" typeId="maxVLTemp"/>
+			<channel id="tempSet0Deg" typeId="tempSet0Deg"/>
+			<channel id="coolEnableTemp" typeId="coolEnableTemp"/>
+			<channel id="nviSollKuehlen" typeId="nviSollKuehlen"/>
+			<channel id="tempchange_heating_pv" typeId="tempchange_heating_pv"/>
+			<channel id="tempchange_cooling_pv" typeId="tempchange_cooling_pv"/>
+			<channel id="tempchange_warmwater_pv" typeId="tempchange_warmwater_pv"/>
+			<channel id="tempchange_pool_pv" typeId="tempchange_pool_pv"/>
+			<channel id="version_controller" typeId="version_controller"/>
+			<channel id="version_controller_build" typeId="version_controller_build"/>
+			<channel id="version_bios" typeId="version_bios"/>
+			<channel id="date_day" typeId="date_day"/>
+			<channel id="date_month" typeId="date_month"/>
+			<channel id="date_year" typeId="date_year"/>
+			<channel id="time_hour" typeId="time_hour"/>
+			<channel id="time_minute" typeId="time_minute"/>
+			<channel id="operating_hours_compressor1" typeId="operating_hours_compressor1"/>
+			<channel id="operating_hours_compressor2" typeId="operating_hours_compressor2"/>
+			<channel id="operating_hours_circulation_pump" typeId="operating_hours_circulation_pump"/>
+			<channel id="operating_hours_source_pump" typeId="operating_hours_source_pump"/>
+			<channel id="operating_hours_solar" typeId="operating_hours_solar"/>
+			<channel id="enable_heating" typeId="enable_heating"/>
+			<channel id="enable_cooling" typeId="enable_cooling"/>
+			<channel id="enable_warmwater" typeId="enable_warmwater"/>
+			<channel id="enable_pool" typeId="enable_pool"/>
+			<channel id="enable_pv" typeId="enable_pv"/>
+			<channel id="state" typeId="state"/>
+			<channel id="state_sourcepump" typeId="state_sourcepump"/>
+			<channel id="state_heatingpump" typeId="state_heatingpump"/>
+			<channel id="state_evd" typeId="state_evd"/>
+			<channel id="state_compressor1" typeId="state_compressor1"/>
+			<channel id="state_compressor2" typeId="state_compressor2"/>
+			<channel id="state_extheater" typeId="state_extheater"/>
+			<channel id="state_alarm" typeId="state_alarm"/>
+			<channel id="state_cooling" typeId="state_cooling"/>
+			<channel id="state_water" typeId="state_water"/>
+			<channel id="state_pool" typeId="state_pool"/>
+			<channel id="state_solar" typeId="state_solar"/>
+			<channel id="state_cooling4way" typeId="state_cooling4way"/>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="interruptions" typeId="interruptions"/>
+			<channel id="state_service" typeId="state_service"/>
+			<channel id="adapt_heating" typeId="adapt_heating"/>
+			<channel id="manual_heatingpump" typeId="manual_heatingpump"/>
+			<channel id="manual_sourcepump" typeId="manual_sourcepump"/>
+			<channel id="manual_solarpump1" typeId="manual_solarpump1"/>
+			<channel id="manual_solarpump2" typeId="manual_solarpump2"/>
+			<channel id="manual_tankpump" typeId="manual_tankpump"/>
+			<channel id="manual_valve" typeId="manual_valve"/>
+			<channel id="manual_poolvalve" typeId="manual_poolvalve"/>
+			<channel id="manual_coolvalve" typeId="manual_coolvalve"/>
+			<channel id="manual_4wayvalve" typeId="manual_4wayvalve"/>
+			<channel id="manual_multiext" typeId="manual_multiext"/>
+
+			<channel id="temperature_surrounding" typeId="temperature_surrounding"/>
+			<channel id="temperature_suction_air" typeId="temperature_suction_air"/>
+			<channel id="temperature_sump" typeId="temperature_sump"/>
+
+			<channel id="ecovent_temp_exhaust_air" typeId="ecovent_temp_exhaust_air"/>
+			<channel id="ecovent_temp_exit_air" typeId="ecovent_temp_exit_air"/>
+			<channel id="ecovent_temp_outdoor_air" typeId="ecovent_temp_outdoor_air"/>
+			<channel id="ecovent_temp_supply_air" typeId="ecovent_temp_supply_air"/>
+			<channel id="ecovent_CO2_value" typeId="ecovent_CO2_value"/>
+			<channel id="ecovent_moisture_value" typeId="ecovent_moisture_value"/>
+			<channel id="ecovent_output_y1" typeId="ecovent_output_y1"/>
+			<channel id="ecovent_mode" typeId="ecovent_mode"/>
+		</channels>
+
+		<config-description>
+			<parameter name="ip" type="text" required="true">
+				<context>network-address</context>
+				<label>Address of Heat Pump</label>
+				<description>Enter the IP address or the hostname of the EcoTouch display unit</description>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Since Waterkotte Display software version 1.6.xx, the username default value is waterkotte. Prior to
+					that, the username default was admin</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Since Waterkotte Display software version 1.6.xx, the password default value is waterkotte. Prior to
+					that, the password default was wtkadmin</description>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false" min="10" unit="s">
+				<default>60</default>
+				<label>Refresh Interval</label>
+				<description>This is the refresh interval in seconds for all channels.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="temperature_outside">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Outside</label>
+		<description>The current outside temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_outside_1h" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Average Temperature 1h</label>
+		<description>The outside temperature averaged over one hour</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_outside_24h">
+		<item-type>Number:Temperature</item-type>
+		<label>Average Temperature 24h</label>
+		<description>The outside temperature averaged over one day</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_source_in">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Source In</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_source_out">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Source Out</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_evaporation" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Evaporation</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_suction" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Suction</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="pressure_evaporation" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure Evaporation</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_return_set">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Return Set</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_return">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Return</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_flow">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Flow</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_condensation" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Condensation</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="pressure_condensation" advanced="true">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure Condensation</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_storage" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Storage</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_room">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Room</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_room_1h">
+		<item-type>Number:Temperature</item-type>
+		<label>Avg. Room Temp 1h</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_water">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Water</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_pool" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Pool</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_solar" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Solar</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_solar_flow" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Solar Flow</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="position_expansion_valve" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Position Expansion Valve</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="power_compressor">
+		<item-type>Number:Power</item-type>
+		<label>Power Compressor</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="power_heating">
+		<item-type>Number:Power</item-type>
+		<label>Power Heating</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="power_cooling">
+		<item-type>Number:Power</item-type>
+		<label>Power Cooling</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="cop_heating">
+		<item-type>Number:Dimensionless</item-type>
+		<label>COP Heating</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="cop_cooling">
+		<item-type>Number:Dimensionless</item-type>
+		<label>COP Cooling</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_heating_return">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Return</label>
+		<description>Temperature Heating Return</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_heating_set">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Set</label>
+		<description>Temperature Heating Setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_heating_set2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Set BMS</label>
+		<description>Temperature Heating Setpoint BMS</description>
+		<category>Temperature</category>
+		<state min="15" max="65" readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_cooling_return">
+		<item-type>Number:Temperature</item-type>
+		<label>Cooling Return</label>
+		<description>Temperature Cooling Return</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_cooling_set" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Cooling Set</label>
+		<description>Temperature Cooling Setpoint</description>
+		<category>Temperature</category>
+		<state min="15" readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_cooling_set2">
+		<item-type>Number:Temperature</item-type>
+		<label>Cooling Set BMS</label>
+		<description>Temperature Cooling Setpoint BMS</description>
+		<category>Temperature</category>
+		<state min="5" max="26" readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_water_set" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Water Set</label>
+		<description>Temperature Water Setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_water_set2">
+		<item-type>Number:Temperature</item-type>
+		<label>Water Set BMS</label>
+		<description>Temperature Water Setpoint BMS</description>
+		<category>Temperature</category>
+		<state min="28" max="70" readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_pool_set" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Pool Set</label>
+		<description>Temperature Pool Setpoint</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_pool_set2" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Pool Set BMS</label>
+		<description>Temperature Pool Setpoint BMS</description>
+		<category>Temperature</category>
+		<state min="15" max="40" readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="compressor_power" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percent Power Compressor</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="percent_heat_circ_pump" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percent Circulation Pump</label>
+		<description>Percent Heating Circulation Pump</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="percent_source_pump" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percent Source Pump</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="percent_compressor" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percent Compressor</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="hysteresis_heating" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Hysteresis Heating</label>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature2_outside_1h" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Outside 1h Average</label>
+		<description>Temperature Outside 1h Average (A90)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="nviNormAussen" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>nviNormAussen</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="nviHeizkreisNorm" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>nviHeizkreisNorm</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="nviTHeizgrenze" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>nviTHeizgrenze</label>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="nviTHeizgrenzeSoll" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>nviTHeizgrenze Setpoint</label>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="maxVLTemp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>maxVLTemp</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="tempSet0Deg" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Set 0°C</label>
+		<description>Heating Setpoint at 0°C Outside</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="coolEnableTemp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Cooling Enable</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="nviSollKuehlen" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>nviSollKuehlen</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="tempchange_heating_pv" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Change Heating PV</label>
+		<description>Temperature Change Heating if PV</description>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="tempchange_cooling_pv" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Change Cooling PV</label>
+		<description>Temperature Change Cooling if PV</description>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="tempchange_warmwater_pv" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Change Water PV</label>
+		<description>Temperature Change Water if PV</description>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="tempchange_pool_pv" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Change Pool PV</label>
+		<description>Temperature Change Pool if PV</description>
+		<category>Temperature</category>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="version_controller" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Version Controller</label>
+		<description>Version Display Controller</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="version_controller_build" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Build Number Controller</label>
+		<description>Build Number Display Controller</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="version_bios" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Version BIOS</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="date_day" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Day</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="date_month" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Month</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="date_year" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Year</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="time_hour" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Hour</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="time_minute" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Minute</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="operating_hours_compressor1" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours Compressor 1</label>
+		<description>Operating Hours Compressor 1</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="operating_hours_compressor2" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours Compressor 2</label>
+		<description>Operating Hours Compressor 2</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="operating_hours_circulation_pump" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours Circulation Pump</label>
+		<description>Operating Hours Circulation Pump</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="operating_hours_source_pump" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours Source Pump</label>
+		<description>Operating Hours Source Pump</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="operating_hours_solar" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Hours Solar</label>
+		<description>Operating Hours Solar</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="enable_heating">
+		<item-type>Switch</item-type>
+		<label>Enable Heating</label>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="enable_cooling">
+		<item-type>Switch</item-type>
+		<label>Enable Cooling</label>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="enable_warmwater">
+		<item-type>Switch</item-type>
+		<label>Enable Water</label>
+		<description>Enable Warm Water</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="enable_pool" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enable Pool</label>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="enable_pv" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enable PV</label>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="state" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>State</label>
+		<description>A Bitfield which encodes the state of all valves, pumps and compressors</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_sourcepump" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Source Pump</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_heatingpump" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Heating Pump</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_evd" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State EVD</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_compressor1" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Compressor 1</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_compressor2" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Compressor 2</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_extheater" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State External Heater</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_alarm">
+		<item-type>Switch</item-type>
+		<label>State Alarm</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_cooling" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Cooling</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_water" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Water</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_pool" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Pool</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_solar" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Solar</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_cooling4way" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Cooling4Way</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="alarm">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Alarm</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="interruptions" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Interruptions</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="state_service" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State Service Mode</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="adapt_heating">
+		<item-type>Number:Temperature</item-type>
+		<label>Adapt Heating</label>
+		<description>Adjust the Heating Temperature by an Offset</description>
+		<category>Temperature</category>
+		<state min="-2" max="2" step="0.5" readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_heatingpump" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Heating Pump</label>
+		<description>Operating Mode Heating Pump</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_sourcepump" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Source Pump</label>
+		<description>Operating Mode Source Pump</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_solarpump1" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Solar Pump</label>
+		<description>Operating Mode Solar Pump</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_solarpump2" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Solar Pump 2</label>
+		<description>Operating Mode Solar Pump 2</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_tankpump" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Tank Pump</label>
+		<description>Operating Mode Tank Pump</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_valve" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Valve</label>
+		<description>Operating Mode Valve</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_poolvalve" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Pool Valve</label>
+		<description>Operating Mode Pool Valve</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_coolvalve" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Cooling Valve</label>
+		<description>Operating Mode Cooling Valve</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_4wayvalve" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable 4Way Valve</label>
+		<description>Operating Mode 4Way Valve</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="manual_multiext" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Enable Multi Ouput</label>
+		<description>Operating Mode Multi Ouput Ext</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<!-- The following tags are only available for Air Heat Pumps -->
+	<channel-type id="temperature_surrounding">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Surrounding</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_suction_air">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Suction Air</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature_sump">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Sump</label>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<!-- The following tags are only available, if an Ecovent System is attached to the Ecotouch -->
+	<channel-type id="ecovent_temp_exhaust_air">
+		<item-type>Number:Temperature</item-type>
+		<label>EcoVent Exhaust Air</label>
+		<description>EcoVent Temperature Exhaust Air</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ecovent_temp_exit_air">
+		<item-type>Number:Temperature</item-type>
+		<label>EcoVent Exit Air</label>
+		<description>EcoVent Temperature Exit Air</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ecovent_temp_outdoor_air">
+		<item-type>Number:Temperature</item-type>
+		<label>EcoVent Outdoor Air</label>
+		<description>EcoVent Temperature Outdoor Air</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ecovent_temp_supply_air">
+		<item-type>Number:Temperature</item-type>
+		<label>EcoVent Supply Air</label>
+		<description>EcoVent Temperature Supply Air</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ecovent_CO2_value">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EcoVent CO2</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ecovent_moisture_value">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EcoVent Air Moisture</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ecovent_output_y1">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EcoVent Fan</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="ecovent_mode">
+		<item-type>Number:Dimensionless</item-type>
+		<label>EcoVent Mode</label>
+		<description>EcoVent Mode (0..5: Day, Night, Timer, Party, Vacation, Bypass)</description>
+		<state min="0" max="5" step="1" readOnly="false"/>
+	</channel-type>
+
+</thing:thing-descriptions>

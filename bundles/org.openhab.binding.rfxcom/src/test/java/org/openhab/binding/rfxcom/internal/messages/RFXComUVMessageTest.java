@@ -32,7 +32,7 @@ public class RFXComUVMessageTest {
         String hexMessage = "095703123421194731E9";
 
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComUVMessage msg = (RFXComUVMessage) RFXComMessageFactory.createMessage(message);
+        RFXComUVMessage msg = (RFXComUVMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
 
         assertEquals(RFXComUVMessage.SubType.UV3, msg.subType, "SubType");
         assertEquals(18, msg.seqNbr, "Seq Number");
@@ -54,7 +54,7 @@ public class RFXComUVMessageTest {
         String hexMessage = "09570312342119C731E9";
 
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComUVMessage msg = (RFXComUVMessage) RFXComMessageFactory.createMessage(message);
+        RFXComUVMessage msg = (RFXComUVMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
 
         assertEquals(RFXComUVMessage.SubType.UV3, msg.subType, "SubType");
         assertEquals(18, msg.seqNbr, "Seq Number");

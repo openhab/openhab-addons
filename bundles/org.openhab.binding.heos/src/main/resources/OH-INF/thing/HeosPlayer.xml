@@ -38,10 +38,9 @@
 		</properties>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
-			<parameter name="pid" type="text" readOnly="false">
+			<parameter name="pid" type="text" readOnly="false" required="true">
 				<label>Player ID</label>
 				<description>The internal Player ID</description>
-				<required>true</required>
 			</parameter>
 		</config-description>
 	</thing-type>

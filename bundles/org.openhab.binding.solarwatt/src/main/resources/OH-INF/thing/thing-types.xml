@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarwatt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="energymanager">
+		<label>Solarwatt Energymanager</label>
+		<description>Solarwatt Energymanager is the bridge to all things attached to the PV production system.
+		</description>
+
+		<representation-property>hostname</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:energymanager"/>
+	</bridge-type>
+
+	<thing-type id="evstation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>EV Station</label>
+		<description>Electric vehicle charger station</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
+	<thing-type id="batteryconverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Battery Converter</label>
+		<description>Battery converter to supply AC from battery storage.</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
+	<thing-type id="location">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Location</label>
+		<description>Location aggregates all things taking part in the production process.</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
+	<thing-type id="pvplant">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>PV Plant</label>
+		<description>Photovoltaic plant generating DC from solar energy.</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
+	<thing-type id="gridflow">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Gridflow</label>
+		<description>Gridflow regulates interaction with the external power grid.</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
+	<thing-type id="powermeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Power Meter</label>
+		<description>Power meter for produced or consumed energy</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
+	<thing-type id="inverter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="energymanager"/>
+		</supported-bridge-type-refs>
+
+		<label>Inverter</label>
+		<description>Inverter supplying AC from DC.</description>
+
+		<representation-property>IdName</representation-property>
+
+		<config-description-ref uri="thing-type:solarwatt:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

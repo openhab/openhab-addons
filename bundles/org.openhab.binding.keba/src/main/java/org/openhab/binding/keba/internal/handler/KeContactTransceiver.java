@@ -254,7 +254,7 @@ public class KeContactTransceiver {
                                                     new Object[] { new String(theBuffer.array()),
                                                             theChannel.getLocalAddress(),
                                                             theChannel.getRemoteAddress() });
-                                            int byteswritten = theChannel.write(theBuffer);
+                                            theChannel.write(theBuffer);
                                         } catch (NotYetConnectedException e) {
                                             theHandler.updateStatus(ThingStatus.OFFLINE,
                                                     ThingStatusDetail.COMMUNICATION_ERROR,

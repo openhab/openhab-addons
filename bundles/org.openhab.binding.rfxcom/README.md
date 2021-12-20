@@ -136,15 +136,10 @@ Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
 
 ## Thing Configuration
 
-Available configuration parameters are:
-
-| Applies to | Parameter Label | Parameter ID | Description                                                          | Required | Default |
-|------------|-----------------|--------------|----------------------------------------------------------------------|----------|---------|
-| All things | Device ID       | deviceId     | (Unique) id of the device, for example "100001.1", "B.8" or "286169" | true     |         |
-| All things | Sub type        | subType      | Sub type, note that every thing-type has its own sub types           | true     |         |
-| Lighting4  | Pulse           | pulse        | Pulse length used by the device, only used when sending              | false    | 350     |
-| Lighting4  | On command ID   | onCommandId  | Id of the command which should be send to turn the device ON         | false    | 1       |
-| Lighting4  | Off command ID  | offCommandId | Id of the command which should be send to turn the device OFF        | false    | 4       |
+Configuration parameters are listed alongside each thing type. Most devices only require a deviceId and
+a subType, but some things require additional configuration. The deviceId is used both when receiving and
+transmitting messages, the subType is mainly used when sending messages, but it can vary between device
+types.
 
 ## Channels
 
@@ -171,10 +166,11 @@ This binding currently supports following channel types:
 | mood            | Number        | Mood channel.                                                                      |
 | motion          | Switch        | Motion detection sensor state.                                                     |
 | pressure        | Number        | Barometric value in hPa.                                                           |
+| pulses          | String        | Space separated decimal pulse lengths for a raw message in usec.                   |
 | rainrate        | Number        | Rain fall rate in millimeters per hour.                                            |
 | raintotal       | Number        | Total rain in millimeters.                                                         |
 | rawmessage      | String        | Hexadecimal representation of the raw RFXCOM msg incl. header and payload          |
-| rawpayload      | String        | Hexadecimal representation of payload RFXCOM messages                              |
+| rawpayload      | String        | Hexadecimal representation of the payload of RFXCOM messages                       |
 | setpoint        | Number        | Requested temperature.                                                             |
 | shutter         | Rollershutter | Shutter/blind channel.                                                             |
 | status          | String        | Status channel.                                                                    |
@@ -229,6 +225,7 @@ This binding currently supports the following things / message types:
 *   [lighting5 - RFXCOM Lighting5 Actuator](#lighting5---rfxcom-lighting5-actuator)
 *   [lighting6 - RFXCOM Lighting6 Actuator](#lighting6---rfxcom-lighting6-actuator)
 *   [rain - RFXCOM Rain Sensor](#rain---rfxcom-rain-sensor)
+*   [raw - RFXCOM Raw Messages](#raw---rfxcom-raw-messages)
 *   [rfxsensor - RFXCOM rfxsensor](#rfxsensor)
 *   [rfy - RFXCOM Rfy Actuator](#rfy---rfxcom-rfy-actuator)
 *   [security1 - RFXCOM Security1 Sensor](#security1---rfxcom-security1-sensor)
@@ -264,7 +261,7 @@ A BBQ Temperature device
 
 ### blinds1 - RFXCOM Blinds1 Actuator
 
-A Blinds1 device
+A Blinds1 device. Not all blinds support all commands.
 
 #### Channels
 
@@ -290,11 +287,22 @@ A Blinds1 device
         *   T2 - A-OK RF01
         *   T3 - A-OK AC114/AC123
         *   T4 - Raex YR1326
-        *   T5 - Media Mount
-        *   T6 - DC106/Rohrmotor24-RMF/Yooda
+        *   T5 - Media Mount (warning - directions reversed)
+        *   T6 - DC106/Rohrmotor24-RMF/Yooda/Dooya/ESMO/Brel/Quitidom
         *   T7 - Forest
         *   T8 - Chamberlain CS4330CN
+        *   T9 - Sunpery/BTX
+        *   T10 - Dolat DLM-1, Topstar
         *   T11 - ASP
+        *   T12 - Confexx CNF24-2435
+        *   T13 - Screenline
+        *   T14 - Hualite
+        *   T15 - Motostar
+        *   T16 - Zemismart
+        *   T17 - Gaposa
+        *   T18 - Cherubini
+        *   T19 - Louvolite One Touch Vogue motor
+        *   T20 - OZRoll
 
 ### chime - RFXCOM Chime
 
@@ -427,7 +435,7 @@ A DateTime device
 
 A group of fan devices
 
-#### Standard Fan
+#### fan - Standard Fan
 
 A Fan device
 
@@ -462,7 +470,7 @@ Switch item=FanLightSwitch label="Light" mappings=[ON="On"]
 Switch item=FanSpeedSwitch label="Speed" mappings=[LOW=Low, MED=Medium, HI=High]
 ```
 
-#### Falmec fan
+#### fan_falmec - Falmec fan
 
 A Falmec Fan device
 
@@ -484,7 +492,7 @@ A Falmec Fan device
     *   Specifies device sub type.
         *   FALMEC - Falmec
 
-#### Lucci Air DC fan
+#### fan_lucci_dc - Lucci Air DC fan
 
 A Lucci Air DC fan device
 
@@ -505,7 +513,7 @@ A Lucci Air DC fan device
     *   Specifies device sub type.
         *   LUCCI_AIR_DC - Lucci Air DC
 
-#### Lucci Air DC II fan
+#### fan_lucci_dc_ii - Lucci Air DC II fan
 
 A Lucci Air DC II fan device
 
@@ -526,6 +534,28 @@ A Lucci Air DC II fan device
 *   subType - Sub Type
     *   Specifies device sub type.
         *   LUCCI_AIR_DC_II - Lucci Air DC II
+        
+#### fan_novy - Novy extractor fan
+
+A Novy extractor fan.
+
+##### Channels
+
+| Name         | Channel Type                        | Item Type     | Remarks                  |
+|--------------|-------------------------------------|---------------|--------------------------|
+| command      | [command](#channels)                | Switch        |                          |
+| commandString| [commandString](#channels)          | String        | Options: POWER, UP, DOWN, LIGHT, LEARN, RESET_FILTER |
+| fanSpeed     | [fanspeedcontrol](#channels)        | RollerShutter | Options: UP / DOWN       |
+| fanLight     | [fanlight](#channels)               | Switch        |                          |
+| signalLevel  | [system.signal-strength](#channels) | Number        |                          |
+
+##### Configuration Options
+
+*   deviceId - Device Id
+    *   Device id, example 47360
+*   subType - Sub Type
+    *   Specifies device sub type.
+        *   NOVY - Novy extractor fan
 
 ### energy - RFXCOM Energy Sensor
 
@@ -655,7 +685,27 @@ A Lighting2 device
 
 ### lighting4 - RFXCOM Lighting4 Actuator
 
-A Lighting4 device
+A Lighting4 device. The specification for the PT2262 protocol includes 3 bytes for data. By
+convention, the first 20 bits of this is used for deviceId, and the last 4 bits is used for
+command, which gives us a total of 16 commands per device.
+
+Depending on your device, you may have only one command, one pair of commands (on/off), or
+any other multiple, for example, a set of 4 sockets with an on/off pair for each and an
+additional pair for "all".
+
+Different device manufactures using this protocol will use different schemes for their
+commands, so to configure a thing using the lighting4 protocol, you must specify at least
+one commandId in the thing configuration. If a device has multiple sets of commands, you
+can configure multiple things with the same device id, but different commandIds.
+
+Some devices will expect a specific pulse length. If required, that can also be specified
+as a thing configuration parameter.
+
+Previously, openHAB would attempt to guess at the meaning of a commandId if it was not
+specified in the thing configuration based on devices seen in the wild. Due to the varying
+nature of devices, this behaviour is deprecated and will be removed in a future openHAB
+version. Until then, commands 1, 3, 5-13 and 15 are considered ON and 0, 2, 4 and 14 are
+considered OFF when the `onCommandId` or `offCommandId` for a device is not specified.
 
 #### Channels
 
@@ -674,64 +724,46 @@ A Lighting4 device
 *   subType - Sub Type
     *   Specifies device sub type.
 
-    *   PT2262 - PT2262
+        *   PT2262 - PT2262
 
 *   pulse - Pulse length
     *   Pulse length of the device
 
 *   onCommandId - On command
-    *   Specifies command to be send when ON must be transmitted
-
-        *   0 - OFF (value 0)
-        *   1 - ON (value 1)
-        *   2 - OFF (value 2)
-        *   3 - ON (value 3)
-        *   4 - OFF (value 4)
-        *   5 - ON (value 5)
-        *   6 - value 6
-        *   7 - ON (value 7)
-        *   8 - value 8
-        *   9 - ON (value 9)
-        *   10 - ON (value 10)
-        *   11 - ON (value 11)
-        *   12 - ON (value 12)
-        *   13 - value 13
-        *   14 - OFF (value 14)
-        *   15 - value 15
+    *   Specifies command that represents ON for this device.
 
 *   offCommandId - Off command
-    *   Specifies command to be send when OFF must be transmitted
+    *   Specifies command that represents OFF for this device.
 
-        *   0 - OFF (value 0)
-        *   1 - ON (value 1)
-        *   2 - OFF (value 2)
-        *   3 - ON (value 3)
-        *   4 - OFF (value 4)
-        *   5 - ON (value 5)
-        *   6 - value 6
-        *   7 - ON (value 7)
-        *   8 - value 8
-        *   9 - ON (value 9)
-        *   10 - ON (value 10)
-        *   11 - ON (value 11)
-        *   12 - ON (value 12)
-        *   13 - value 13
-        *   14 - OFF (value 14)
-        *   15 - value 15
+*   openCommandId - Open command
+    *   Specifies command that represents OPEN for this device.
+    
+*   closedCommandId - Closed command
+    *   Specifies command that represents CLOSED for this device.
+
+#### Discovering commandId values
+
+There are a number of ways to detect the commandId values for your device.
+
+- You can turn on DEBUG messages for the rfxcom binding by adding the line
+  `<Logger level="DEBUG" name="org.openhab.binding.rfxcom"/>`
+  to your `log4j2.xml`. You will then be able to see the commandId in the log
+  file when you trigger the device.
+  
+- You can link a Number Item to the commandId channel. The item will be updated with the
+  detected commandId when you trigger the device.
+  
+- You can use RFXmngr to look at the data from the device. Use the last letter/number
+  of the hexadecimal "Code", and convert it from hexadecimal to decimal.
 
 #### Examples
 
-The support for lighting 4 in RFXCOM is less complete because a lot of different devices use the same chips and can not easily be distinguished.
-
-So some extra configuration can be used for fine tuning the behavior of your Lighting4 devices.
-When configuring, three extra fields are available, being the the pulse length, and a separate command id for both on and off.
-If your item is auto-discovered normally the on or off command should be recognized properly.
-
-For a USB attached RFXCOM on Windows the configuration could look like this (note that the `onCommandId`, `offCommandId` and `pulse` are all optional):
+For a USB attached RFXCOM on Windows the configuration could look like this (note the `pulse` is optional):
 
 ```
 Bridge rfxcom:bridge:238adf67 [ serialPort="COM4" ] {
-    Thing lighting4 17745  [deviceId="17745",  subType="PT2262", onCommandId=7, offCommandId=4, pulse=800]
+    Thing lighting4 17745a  [deviceId="17745",  subType="PT2262", onCommandId=7, offCommandId=4]
+    Thing lighting4 17745b  [deviceId="17745",  subType="PT2262", onCommandId=10, offCommandId=2]
     Thing lighting4 motion [deviceId="286169", subType="PT2262", onCommandId=9, pulse=392]
 }
 ```
@@ -739,30 +771,31 @@ Bridge rfxcom:bridge:238adf67 [ serialPort="COM4" ] {
 Your items file could look like this:
 
 ```
-Switch Switch                               {channel="rfxcom:lighting4:238adf67:17745:command"}
-Number SwitchCommandId "Command ID [%d]"    {channel="rfxcom:lighting4:238adf67:17745:commandId"}
+Number SocketCommandId            {channel="rfxcom:lighting4:238adf67:17745a:commandId"}
+Switch SocketA                    {channel="rfxcom:lighting4:238adf67:17745a:command"}
+Switch SocketB                    {channel="rfxcom:lighting4:238adf67:17745b:command"}
 ```
 
-And if you want random actions on your relay you could for example do like this:
+#### Known commandIds
 
-```
-rule "Set random relay variations"
-    when
-        System started or
-        Time cron "/20 * * * * ?"
-    then
-        SwitchCommandId.sendCommand((Math::random * 15.9).intValue)
-end
-```
+These are some commandIds from the field that may match your devices.
 
-#### Devices:
-
-| Brand | What          | Action      | Command ID | Supported | Source | 
-|-------|---------------|-------------|------------|-----------|--------|
-| Kerui | Motion Sensor | Motion      | 10         | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
-| Kerui | Door Contact  | door open   | 14         | as OFF    | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
-| Kerui | Door Contact  | door closed | 7          | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
-| Kerui | Door Contact  | tamper      | 7          | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Brand | What          | Action      | Command ID | Source | 
+|-------|---------------|-------------|------------|--------|
+| Kerui | Motion Sensor | Motion      | 10         | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | door open   | 14         | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | door closed | 7          | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | tamper      | 11         | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Energenie | 4 Socket Power Bar | Socket 1 on  | 15 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 1 off | 14 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 2 on  | 7  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 2 off | 6  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 3 on  | 11 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 3 off | 10 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 4 on  | 3  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 4 off | 2  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | All on       | 13 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | All off      | 12 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
 
 ### lighting5 - RFXCOM Lighting5 Actuator
 
@@ -882,6 +915,113 @@ A Rain device
         *   RAIN4 - UPM RG700
         *   RAIN5 - WS2300
         *   RAIN6 - La Crosse TX5
+        *   RAIN9 - TFA 30.3233.1
+
+
+### raw - RFXCOM Raw Messages
+
+Raw messages. These messages are included in the Pro firmware and represent messages
+for which the device does not understand the protocol. The raw message is a list of the
+length of the RF pulses before they have been interpreted as bytes.
+
+You can also send raw messages by recording the pulses of an incoming message and
+using them to configure a raw thing item.
+
+#### Channels
+
+| Name       | Channel Type              | Item Type | Remarks     |
+|------------|---------------------------|-----------|-------------|
+| rawMessage | [rawmessage](#channels)   | String    |             |
+| rawPayload | [rawpayload](#channels)   | String    |             |
+| pulses     | [pulses](#channels)       | String    |             |
+
+#### Configuration Options
+
+*   deviceId - Device Id
+    *   Raw items cannot provide a device ID, so to receive RAW messages use
+        a Device Id of RAW. For transmit only devices, use any Device Id.
+
+*   subType - Sub Type
+    *   Specifies message sub type.
+
+        *   RAW_PACKET1
+        *   RAW_PACKET2
+        *   RAW_PACKET3
+        *   RAW_PACKET4
+
+*   repeat - Repeat
+    *   Number of times to repeat message on transmit. Defaults to 5.
+
+*   onPulses - On Pulses
+    *   Pulses to send for an ON command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   offPulses - Off Pulses
+    *   Pulses to send for an OFF command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   openPulses - Open Pulses
+    *   Pulses to send for an OPEN command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+*   closedPulses - Closed Pulses
+    *   Pulses to send for an CLOSED command. Space delimited pulse lengths
+        in usec. Must be an even number of pulse lengths, with a maximum
+        of 142 total pulses. Max pulse length is 65535. Pulses of value 0
+        will be transmitted as 10000. See the RFXtfx user guide for more
+        information.
+
+#### Examples
+
+This can be used to transmit raw messages.
+
+The first step is to work out the right pulses for the device. You can do this using RFXmngr, or
+you can do this using openhab:
+
+1. Set up a RAW thing to receive raw pulses:
+
+    ```
+    Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {
+        Thing raw RAW [ deviceId="RAW", subType="RAW_PACKET1" ]
+    }
+    ```
+
+2. Add an item to see what the pulses are:
+
+    ```
+    String RawPulses { channel="rfxcom:raw:rfxtrx0:RAW:pulses" }
+    ```
+
+3. Activate the device and look at the pulses that are set. Look for a higher value in the pulses, that is
+   likely to be a gap for a repeat. Take the pulses from before the gap. Make sure there are an
+   even number, and if not, drop a 0 on the end.
+
+Now you have the pulses, set up a send device:
+
+1. Set up a RAW thing to send a command:
+
+    ```
+    Bridge rfxcom:tcpbridge:rfxtrx0 [ host="192.168.42.10", port=10001, enableUndecoded=true ] {
+        Thing raw MySwitch [ deviceId="MySwitch", subType="RAW_PACKET1", onPulses="100 200 300 0", offPulses="400 500 600 0" ]
+    }
+    ```
+
+2. Add an item to send the command:
+
+    ```
+    Switch MySwitch { channel="rfxcom:raw:rfxtrx0:MySwitch:command" }
+    ```
+
+3. Use the command to send the raw message.
 
 ### rfxsensor - RFXCOM RFXSensor 
 
@@ -1170,7 +1310,12 @@ A Thermostat3 device.
 
 ### undecoded - RFXCOM Undecoded RF Messages
 
-Any messages that RFXCOM can receive but not decode.
+Undecoded messages are messages where RFCOM understands the protocol and has converted
+the raw RF pulses into bytes, but has not attempted to decode the bytes into meaningful
+data.
+
+Undecoded message are receive only, there is not way to transmit an undecoded message.
+If you need to repeat an undecoded message, consider looking at Raw messages instead.
 
 #### Channels
 
@@ -1210,7 +1355,10 @@ Any messages that RFXCOM can receive but not decode.
         *   RTS - RTS
         *   SELECT\_PLUS - Select Plus
         *   HOME\_CONFORT - Home Confort
-
+        *   EDISIO - Edisio
+        *   HONEYWELL - Honeywell
+        *   FUNKBUS - Gira Funk-Bussystem
+        *   BYRONSX - Byron SX
 
 ### uv - RFXCOM UV/Temperature Sensor
 

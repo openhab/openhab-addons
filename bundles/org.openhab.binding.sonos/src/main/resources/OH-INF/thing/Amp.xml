@@ -58,6 +58,7 @@
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
 			<!-- Extended SONOS channels -->
 			<channel id="analoglinein" typeId="linein"/>
+			<channel id="codec" typeId="codec"/>
 			<channel id="publicanalogaddress" typeId="publicaddress"/>
 			<channel id="digitallinein" typeId="linein"/>
 			<channel id="publicdigitaladdress" typeId="publicaddress"/>

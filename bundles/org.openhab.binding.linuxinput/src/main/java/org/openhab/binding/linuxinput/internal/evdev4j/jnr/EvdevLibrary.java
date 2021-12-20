@@ -98,6 +98,8 @@ public interface EvdevLibrary {
 
     int enable_event_type(@In Handle handle, int type);
 
+    int event_type_get_max(int type);
+
     int disable_event_type(@In Handle handle, int type);
 
     boolean has_event_code(@In Handle handle, int type, int code);

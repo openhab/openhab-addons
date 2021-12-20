@@ -6,10 +6,9 @@
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:innogysmarthome:config">
-		<parameter name="id" type="text">
+		<parameter name="id" type="text" required="true">
 			<label>ID</label>
 			<description>The identifier uniquely identifies this device.</description>
-			<required>true</required>
 		</parameter>
 	</config-description>
 

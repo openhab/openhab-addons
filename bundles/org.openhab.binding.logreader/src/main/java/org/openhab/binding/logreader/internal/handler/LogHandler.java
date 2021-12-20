@@ -17,6 +17,8 @@ import static org.openhab.binding.logreader.internal.LogReaderBindingConstants.*
 import java.time.ZonedDateTime;
 import java.util.regex.PatternSyntaxException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.logreader.internal.config.LogReaderConfiguration;
 import org.openhab.binding.logreader.internal.filereader.api.FileReaderListener;
 import org.openhab.binding.logreader.internal.filereader.api.LogFileReader;
@@ -42,16 +44,17 @@ import org.slf4j.LoggerFactory;
  * @author Miika Jukka - Initial contribution
  * @author Pauli Anttila - Rewrite
  */
+@NonNullByDefault
 public class LogHandler extends BaseThingHandler implements FileReaderListener {
     private final Logger logger = LoggerFactory.getLogger(LogHandler.class);
 
-    private LogReaderConfiguration configuration;
+    private final LogFileReader fileReader;
 
-    private LogFileReader fileReader;
+    private @NonNullByDefault({}) LogReaderConfiguration configuration;
 
-    private SearchEngine errorEngine;
-    private SearchEngine warningEngine;
-    private SearchEngine customEngine;
+    private @Nullable SearchEngine errorEngine;
+    private @Nullable SearchEngine warningEngine;
+    private @Nullable SearchEngine customEngine;
 
     public LogHandler(Thing thing, LogFileReader fileReader) {
         super(thing);
@@ -97,8 +100,9 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
         try {
             warningEngine = new SearchEngine(configuration.warningPatterns, configuration.warningBlacklistingPatterns);
             errorEngine = new SearchEngine(configuration.errorPatterns, configuration.errorBlacklistingPatterns);
-            customEngine = new SearchEngine(configuration.customPatterns, configuration.customBlacklistingPatterns);
-
+            String customPatterns = configuration.customPatterns;
+            customEngine = new SearchEngine(customPatterns != null ? customPatterns : "",
+                    configuration.customBlacklistingPatterns);
         } catch (PatternSyntaxException e) {
             logger.debug("Illegal search pattern syntax '{}'. ", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
@@ -124,13 +128,17 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
         shutdown();
     }
 
-    private void updateChannel(ChannelUID channelUID, Command command, SearchEngine matcher) {
-        if (command instanceof DecimalType) {
-            matcher.setMatchCount(((DecimalType) command).longValue());
-        } else if (command instanceof RefreshType) {
-            updateState(channelUID.getId(), new DecimalType(matcher.getMatchCount()));
+    private void updateChannel(ChannelUID channelUID, Command command, @Nullable SearchEngine matcher) {
+        if (matcher != null) {
+            if (command instanceof DecimalType) {
+                matcher.setMatchCount(((DecimalType) command).longValue());
+            } else if (command instanceof RefreshType) {
+                updateState(channelUID.getId(), new DecimalType(matcher.getMatchCount()));
+            } else {
+                logger.debug("Unsupported command '{}' received for channel '{}'", command, channelUID);
+            }
         } else {
-            logger.debug("Unsupported command '{}' received for channel '{}'", command, channelUID);
+            logger.debug("Cannot update channel as SearchEngine is null.");
         }
     }
 
@@ -171,7 +179,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     }
 
     @Override
-    public void handle(String line) {
+    public void handle(@Nullable String line) {
         if (line == null) {
             return;
         }
@@ -180,17 +188,17 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
             updateStatus(ThingStatus.ONLINE);
         }
 
-        if (errorEngine.isMatching(line)) {
+        if (errorEngine != null && errorEngine.isMatching(line)) {
             updateChannelIfLinked(CHANNEL_ERRORS, new DecimalType(errorEngine.getMatchCount()));
             updateChannelIfLinked(CHANNEL_LASTERROR, new StringType(line));
             triggerChannel(CHANNEL_NEWERROR, line);
         }
-        if (warningEngine.isMatching(line)) {
+        if (warningEngine != null && warningEngine.isMatching(line)) {
             updateChannelIfLinked(CHANNEL_WARNINGS, new DecimalType(warningEngine.getMatchCount()));
             updateChannelIfLinked(CHANNEL_LASTWARNING, new StringType(line));
             triggerChannel(CHANNEL_NEWWARNING, line);
         }
-        if (customEngine.isMatching(line)) {
+        if (customEngine != null && customEngine.isMatching(line)) {
             updateChannelIfLinked(CHANNEL_CUSTOMEVENTS, new DecimalType(customEngine.getMatchCount()));
             updateChannelIfLinked(CHANNEL_LASTCUSTOMEVENT, new StringType(line));
             triggerChannel(CHANNEL_NEWCUSTOM, line);
@@ -198,7 +206,7 @@ public class LogHandler extends BaseThingHandler implements FileReaderListener {
     }
 
     @Override
-    public void handle(Exception ex) {
+    public void handle(@Nullable Exception ex) {
         final String msg = ex != null ? ex.getMessage() : "";
         logger.debug("Error while trying to read log file: {}. ", msg, ex);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, msg);

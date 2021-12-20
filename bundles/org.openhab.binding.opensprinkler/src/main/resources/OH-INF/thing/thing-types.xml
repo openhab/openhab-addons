@@ -5,22 +5,24 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="http">
-		<label>OpenSprinkler HTTP Interface</label>
+		<label>OpenSprinkler HTTP Bridge</label>
 		<description>A connection to a stand alone OpenSprinkler device which communicates over HTTP.</description>
 
 		<config-description>
-			<parameter name="hostname" type="text">
+			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
 				<description>The host name or IP address of the OpenSprinkler Web API interface. It may or may not start with the
 					protocol, e.g. in order to use https:// instead of the default http://.</description>
 				<default>localhost</default>
 			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535">
+			<parameter name="port" type="integer" min="1" max="65535" required="true">
 				<label>Port</label>
 				<description>Port of the OpenSprinkler Web API interface.</description>
 				<default>80</default>
+				<advanced>true</advanced>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
 				<label>Password</label>
 				<description>The admin password used to access the Web API interface.</description>
 				<default>opendoor</default>
@@ -55,12 +57,14 @@
 			<channel id="queued" typeId="queued"></channel>
 			<channel id="remainingWaterTime" typeId="remainingWaterTime"></channel>
 			<channel id="nextDuration" typeId="nextDuration"></channel>
+			<channel id="ignoreRain" typeId="ignoreRain"></channel>
 		</channels>
 
 		<config-description>
 			<parameter name="stationIndex" type="integer" required="true">
 				<label>Station Index</label>
 				<description>The index of the station, starting with 0, of the station.</description>
+				<default>0</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -74,30 +78,84 @@
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>
+			<channel id="sensor2" typeId="sensor2"></channel>
 			<channel id="waterlevel" typeId="waterlevel"></channel>
+			<channel id="currentDraw" typeId="currentDraw"></channel>
+			<channel id="signalStrength" typeId="system.signal-strength"></channel>
+			<channel id="flowSensorCount" typeId="flowSensorCount"></channel>
+			<channel id="programs" typeId="programs"></channel>
+			<channel id="stations" typeId="stations"></channel>
+			<channel id="nextDuration" typeId="nextDuration"></channel>
+			<channel id="resetStations" typeId="resetStations"></channel>
+			<channel id="enablePrograms" typeId="enablePrograms"></channel>
+			<channel id="rainDelay" typeId="rainDelay"></channel>
 		</channels>
 	</thing-type>
 
 	<channel-type id="rainsensor">
 		<item-type>Switch</item-type>
-		<label>Rain</label>
+		<label>Rain Sensor</label>
 		<description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
 		<category>Sensor</category>
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="sensor2">
+		<item-type>Switch</item-type>
+		<label>Sensor 2</label>
+		<description>Sensor 2 can be setup as a rain, flow or soil moisture sensor.</description>
+		<category>Sensor</category>
+		<state readOnly="true"/>
+	</channel-type>
 
 	<channel-type id="waterlevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Water Level</label>
-		<description>The current water level in percent</description>
+		<description>The current watering level in percent</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="flowSensorCount">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Flow Sensor Count</label>
+		<description>A count of how many pulses the water flow sensor has given.</description>
+		<category>Flow</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentDraw">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current Draw</label>
+		<description>The current draw in mA</description>
+		<category>Energy</category>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="stationState">
 		<item-type>Switch</item-type>
-		<label>Station</label>
+		<label>Station State</label>
 		<description>Controls a station on the OpenSprinkler device.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="ignoreRain">
+		<item-type>Switch</item-type>
+		<label>Station Ignores Rain</label>
+		<description>The station will ignore forecasted rain.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="resetStations">
+		<item-type>Switch</item-type>
+		<label>Reset Stations</label>
+		<description>Resets all stations back to CLOSED.</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="enablePrograms">
+		<item-type>Switch</item-type>
+		<label>Enable Programs</label>
+		<description>Allow programs to auto run, when OFF, manually started stations still work.</description>
 		<category>Switch</category>
 	</channel-type>
 
@@ -113,13 +171,39 @@
 		<item-type>Number:Time</item-type>
 		<label>Remaining Water Time</label>
 		<description>Read-only property of the remaining water time of the station.</description>
+		<category>Time</category>
 		<state readOnly="true" pattern="%.0f min"/>
 	</channel-type>
 
 	<channel-type id="nextDuration">
 		<item-type>Number:Time</item-type>
-		<label>Next Open Duration</label>
+		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
+		<category>Time</category>
 		<state readOnly="false" pattern="%.0f min"/>
+	</channel-type>
+
+	<channel-type id="rainDelay">
+		<item-type>Number:Time</item-type>
+		<label>Rain Delay</label>
+		<description>The amount of time in hours to delay the running of any program.</description>
+		<category>Time</category>
+		<state readOnly="false" pattern="%.0f h"/>
+	</channel-type>
+
+	<channel-type id="programs">
+		<item-type>String</item-type>
+		<label>Run Program</label>
+		<description>Run a program that is saved inside the OpenSprinkler Device.</description>
+		<state readOnly="false">
+		</state>
+	</channel-type>
+
+	<channel-type id="stations">
+		<item-type>String</item-type>
+		<label>Open Station</label>
+		<description>Opens the solenoid of a single station.</description>
+		<state readOnly="false">
+		</state>
 	</channel-type>
 </thing:thing-descriptions>

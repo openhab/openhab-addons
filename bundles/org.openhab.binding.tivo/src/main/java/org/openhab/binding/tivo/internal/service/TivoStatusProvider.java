@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
@@ -84,6 +85,13 @@ public class TivoStatusProvider {
             logger.debug(" statusRefresh '{}' - EXISTING status data - '{}'", tivoConfigData.getCfgIdentifier(),
                     tivoStatusData.toString());
         }
+
+        // this will close the connection and re-open every 12 hours
+        if (tivoConfigData.isKeepConnActive()) {
+            connTivoDisconnect();
+            doNappTime();
+        }
+
         connTivoConnect();
         doNappTime();
         if (!tivoConfigData.isKeepConnActive()) {
@@ -434,7 +442,7 @@ public class TivoStatusProvider {
 
                     try {
                         receivedData = reader.readLine();
-                    } catch (SocketTimeoutException e) {
+                    } catch (SocketTimeoutException | SocketException e) {
                         // Do nothing. Just allow the thread to check if it has to stop.
                     }
 

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ventaair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lw60t">
+		<label>LW60-T VentaAir Humidifier</label>
+		<description>Thing for Venta Air LW60-T Humidifiers</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="targetHumidity" typeId="targetHumidity"/>
+			<channel id="timer" typeId="timer"/>
+			<channel id="sleepMode" typeId="sleepMode"/>
+			<channel id="childLock" typeId="childLock"/>
+			<channel id="automatic" typeId="automatic"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="waterLevel" typeId="waterLevel"/>
+			<channel id="fanRPM" typeId="fanRPM"/>
+			<channel id="cleanMode" typeId="cleanMode"/>
+			<channel id="timerTimePassed" typeId="timerTimePassed"/>
+			<channel id="operationTime" typeId="operationTime"/>
+			<channel id="discReplaceTime" typeId="discReplaceTime"/>
+			<channel id="cleaningTime" typeId="cleaningTime"/>
+		</channels>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:ventaair:humidifier"/>
+
+	</thing-type>
+
+	<!-- Generic type has boost channel and maybe in the future other channels -->
+	<thing-type id="generic">
+		<label>Generic Humidifier/Cleaner</label>
+		<description>Thing for Venta Air Humidifiers/Cleaners</description>
+
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="targetHumidity" typeId="targetHumidity"/>
+			<channel id="timer" typeId="timer"/>
+			<channel id="sleepMode" typeId="sleepMode"/>
+			<channel id="boost" typeId="boost"/>
+			<channel id="childLock" typeId="childLock"/>
+			<channel id="automatic" typeId="automatic"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="waterLevel" typeId="waterLevel"/>
+			<channel id="fanRPM" typeId="fanRPM"/>
+			<channel id="cleanMode" typeId="cleanMode"/>
+			<channel id="timerTimePassed" typeId="timerTimePassed"/>
+			<channel id="operationTime" typeId="operationTime"/>
+			<channel id="discReplaceTime" typeId="discReplaceTime"/>
+			<channel id="cleaningTime" typeId="cleaningTime"/>
+		</channels>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:ventaair:humidifier"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>

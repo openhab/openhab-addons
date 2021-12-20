@@ -14,6 +14,7 @@ package org.openhab.binding.ihc.internal.ws.projectfile;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +25,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.io.FileUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.slf4j.Logger;
@@ -76,7 +76,10 @@ public class ProjectFileUtils {
      */
     public static void saveToFile(String filePath, byte[] data) throws IhcExecption {
         try {
-            FileUtils.writeByteArrayToFile(new File(filePath), data);
+            try (FileOutputStream stream = new FileOutputStream(filePath)) {
+                stream.write(data);
+                stream.flush();
+            }
         } catch (IOException e) {
             throw new IhcExecption(e);
         }

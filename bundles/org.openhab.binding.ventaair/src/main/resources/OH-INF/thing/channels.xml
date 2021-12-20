@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ventaair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="fanSpeed">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+		<description>Speed of the ventilation fan (0-5)</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="targetHumidity">
+		<item-type>Number</item-type>
+		<label>Target Humidity</label>
+		<description>Target Humidity (30-70)</description>
+		<category>Humidity</category>
+		<state readOnly="false">
+			<options>
+				<option value="30">30 %</option>
+				<option value="35">35 %</option>
+				<option value="40">40 %</option>
+				<option value="45">45 %</option>
+				<option value="50">50 %</option>
+				<option value="55">55 %</option>
+				<option value="60">60 %</option>
+				<option value="65">65 %</option>
+				<option value="70">70 %</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timer">
+		<item-type>Number</item-type>
+		<label>Timer</label>
+		<description>Timer (0,1,3,5,7,9h)</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">1 hour</option>
+				<option value="3">3 hours</option>
+				<option value="5">5 hours</option>
+				<option value="7">7 hours</option>
+				<option value="9">9 hours</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timerTimePassed">
+		<item-type>Number:Time</item-type>
+		<label>Timer Time Passed</label>
+		<description>Time that has passed since set by the Timer</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sleepMode">
+		<item-type>Switch</item-type>
+		<label>Sleep Mode</label>
+		<description>Sleep Mode</description>
+	</channel-type>
+
+	<channel-type id="boost">
+		<item-type>Switch</item-type>
+		<label>Boost</label>
+		<description>Boost</description>
+	</channel-type>
+
+	<channel-type id="childLock">
+		<item-type>Switch</item-type>
+		<label>Child Lock</label>
+		<description>Child Lock</description>
+	</channel-type>
+
+	<channel-type id="automatic">
+		<item-type>Switch</item-type>
+		<label>Automatic</label>
+		<description>Automatic</description>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current Temperature</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimenionsless</item-type>
+		<label>Humidity</label>
+		<description>Current Humidity</description>
+		<category>Humidity</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="waterLevel">
+		<item-type>Number</item-type>
+		<label>Water Level</label>
+		<description>Water Level</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Critical</option>
+				<option value="1">Refill tank</option>
+				<option value="2">OK</option>
+				<option value="3">Full</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fanRPM">
+		<item-type>Number</item-type>
+		<label>Fan RPM</label>
+		<description>Fan RPM</description>
+		<state pattern="%d RPM" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cleanMode">
+		<item-type>Switch</item-type>
+		<label>Cleaning Mode</label>
+		<description>Device is in cleaning mode (ON)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operationTime">
+		<item-type>Number:Time</item-type>
+		<label>Operation Time</label>
+		<description>Operation Time since the device was first started (in hours)</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="discReplaceTime">
+		<item-type>Number:Time</item-type>
+		<label>Hygiene Disc Replacement</label>
+		<description>Time until the Hygiene Disc should be replaced (in hours)</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cleaningTime">
+		<item-type>Number:Time</item-type>
+		<label>Cleaning Time</label>
+		<description>Time until next cleaning (in hours)</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -12,14 +12,28 @@
  */
 package org.openhab.binding.pilight.internal;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Collections;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.pilight.internal.dto.*;
+import org.openhab.binding.pilight.internal.dto.Action;
+import org.openhab.binding.pilight.internal.dto.AllStatus;
+import org.openhab.binding.pilight.internal.dto.Identification;
+import org.openhab.binding.pilight.internal.dto.Message;
+import org.openhab.binding.pilight.internal.dto.Options;
+import org.openhab.binding.pilight.internal.dto.Response;
+import org.openhab.binding.pilight.internal.dto.Status;
+import org.openhab.binding.pilight.internal.dto.Version;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
@@ -148,6 +162,7 @@ public class PilightConnector implements Runnable, Closeable {
     /**
      * Stops the listener
      */
+    @Override
     public void close() {
         disconnect();
         Thread.currentThread().interrupt();

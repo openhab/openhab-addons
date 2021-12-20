@@ -32,9 +32,8 @@ The supported thing types are:
 
 ## Discovery
 
-Manually initiated Auto-discovery is supported if Kaleidescape components are accessible on the same IP subnet of the openHAB server.
-Since discovery involves scanning all IP addresses in the subnet range for an open socket, the discovery must be initiated by the user.
-In the Inbox, select Search For Things and then choose the Kaleidescape System Binding to initiate discovery.
+Manually initiated Auto-discovery will locate all suported Kaleidescape components if they are on the same IP subnet of the openHAB server.
+In the Inbox, select Search For Things and then choose the Kaleidescape System Binding to initiate a discovery scan.
 
 ## Binding Configuration
 
@@ -45,14 +44,16 @@ All settings are through thing configuration parameters.
 
 The thing has the following configuration parameters:
 
-| Parameter Label        | Parameter ID  | Description                                                                        | Accepted values                                      |
-|------------------------|---------------|------------------------------------------------------------------------------------|------------------------------------------------------|
-| Address                | host          | Host name or IP address of the Kaleidescape component                              | A host name or IP address                            |
-| Port                   | port          | Communication port of the IP connection                                            | 10000 (default - should not need to change)          |
-| Serial Port            | serialPort    | Serial port for connecting directly a component                                    | Serial port name (optional)                          |
-| Update Period          | updatePeriod  | Tells the component how often time status updates should be sent (see notes below) | 0 or 1 are the currently accepted values (default 0) |
-| Volume Control Enabled | volumeEnabled | Enable the volume and mute controls in the K iPad & phone apps                     | Boolean (default false)                              |
-| Initial Volume Setting | initialVolume | Initial volume level set when the binding starts up                                | 0 to 75 (default 25)                                 |
+| Parameter Label          | Parameter ID           | Description                                                                                                                          | Accepted values                                      |
+|--------------------------|------------------------|--------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
+| Address                  | host                   | Host name or IP address of the Kaleidescape component                                                                                | A host name or IP address                            |
+| Port                     | port                   | Communication port of the IP connection                                                                                              | 10000 (default - should not need to change)          |
+| Serial Port              | serialPort             | Serial port for connecting directly a component                                                                                      | Serial port name (optional)                          |
+| Update Period            | updatePeriod           | Tells the component how often time status updates should be sent (see notes below)                                                   | 0 or 1 are the currently accepted values (default 0) |
+| Volume Control Enabled   | volumeEnabled          | Enable the volume and mute controls in the K iPad & phone apps                                                                       | Boolean (default false)                              |
+| Initial Volume Setting   | initialVolume          | Initial volume level set when the binding starts up                                                                                  | 0 to 75 (default 25)                                 |
+| Load Highlighted Details | loadHighlightedDetails | When enabled the binding will automatically load the the metadata channels when the selected item in the UI (Movie or Album) changes | Boolean (default false)                              |
+| Load Album Details       | loadAlbumDetails       | When enabled the binding will automatically load the metadata channels for the currently playing Album                               | Boolean (default false) N/A for Alto and Strato      |
 
 Some notes:
 
@@ -77,7 +78,7 @@ The following channels are available:
 | ui#power                   | Switch      | Turn the zone On or Off (system standby)                                                                         |
 | ui#volume                  | Dimmer      | A virtual volume that tracks the volume in K control apps, use as a proxy to adjust a real volume item via rules |
 | ui#mute                    | Switch      | A virtual mute switch that tracks the mute status in K control apps, use as a proxy to control a real mute item  |
-| ui#control                 | Player      | Control Movie Playback e.g. start/pause/next/previous/ffward/rewind                                              |
+| ui#control                 | Player      | Control Movie Playback e.g. play/pause/next/previous/ffward/rewind                                              |
 | ui#title_name              | String      | The title of the movie currently playing                                                                         |
 | ui#play_mode               | String      | The current playback mode of the movie                                                                           |
 | ui#play_speed              | String      | The speed of playback scanning                                                                                   |
@@ -111,7 +112,7 @@ The following channels are available:
 | ui#user_input              | String      | Indicates if the user is being prompted for input, what type of input, and any currently entered characters      |
 | ui#user_input_prompt       | String      | Indicates user input prompt info and properties currently shown on screen                                        |
 | -- music channels (not available on Alto and Strato) --                                                                                                     |
-| music#control              | Player      | Control Music Playback e.g. start/pause/next/previous/ffward/rewind                                              |
+| music#control              | Player      | Control Music Playback e.g. play/pause/next/previous/ffward/rewind                                              |
 | music#repeat               | Switch      | Controls repeat playback for music                                                                               |
 | music#random               | Switch      | Controls random playback for music                                                                               |
 | music#track                | String      | The name of the currently playing track                                                                          |
@@ -152,14 +153,16 @@ The following channels are available:
 
 kaleidescape.things:
 
-```java
-kaleidescape:player:myzone1 "M500 Living Rm" [host="192.168.1.10", updatePeriod=0, volumeEnabled=true, initialVolume=20]
-kaleidescape:cinemaone:myzone2 "My Cinema One" [host="192.168.1.11", updatePeriod=0, volumeEnabled=true, initialVolume=20]
+```
+kaleidescape:player:myzone1 "M500 Living Rm" [ host="192.168.1.10", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
+kaleidescape:cinemaone:myzone2 "My Cinema One" [ host="192.168.1.11", updatePeriod=0, loadHighlightedDetails=true, loadAlbumDetails=true ]
+kaleidescape:strato:myzone3 "Strato Theater Rm" [ host="192.168.1.12", updatePeriod=0, loadHighlightedDetails=true ]
+
 ```
 
 kaleidescape.items:
 
-```java
+```
 // Virtual switch to send a command, see sitemap and rules below
 Switch z1_GoMovieCovers   "Go to Movie Covers"
 
@@ -239,11 +242,12 @@ String z1_Detail_ColorDescription "Color Description: [%s]" { channel="kaleidesc
 String z1_Detail_Country "Country: [%s]" { channel="kaleidescape:player:myzone1:detail#country" }
 String z1_Detail_AspectRatio "Aspect Ratio: [%s]" { channel="kaleidescape:player:myzone1:detail#aspect_ratio" }
 String z1_Detail_DiscLocation "Disc Location: [%s]" { channel="kaleidescape:player:myzone1:detail#disc_location" }
+
 ```
 
 ksecondsformat.js:
 
-```java
+```
 (function(totalSeconds) {
     if (isNaN(totalSeconds)) {
         return '-';
@@ -265,7 +269,7 @@ ksecondsformat.js:
 
 kaleidescape.sitemap:
 
-```perl
+```
 sitemap kaleidescape label="Kaleidescape" {
     Frame label="Zone 1" {
         Image item=z1_Detail_CoverArt
@@ -351,7 +355,7 @@ sitemap kaleidescape label="Kaleidescape" {
 
 kaleidescape.rules:
 
-```java
+```
 var int lightPercent
 val kactions = getActions("kaleidescape","kaleidescape:player:myzone1")
 
@@ -360,7 +364,7 @@ rule "Go to Movie Covers"
 when
     Item z1_GoMovieCovers received command
 then
-    if(null === kactions) {
+    if (null === kactions) {
       logInfo("kactions", "Actions not found, check thing ID")
       return
     }
@@ -372,7 +376,7 @@ rule "Play Script - Great Vistas"
 when
     Item z1_PlayScript received command
 then
-    if(null === kactions) {
+    if (null === kactions) {
       logInfo("kactions", "Actions not found, check thing ID")
       return
     }
@@ -389,11 +393,44 @@ then
     }
 end
 
+rule "Bring up Lights when movie is over"
+when
+    Item z1_Ui_MovieLocation changed from "Main content" to "End Credits"
+then
+    // fade the lights up slowly while the credits are rolling 
+    lightPercent = 0
+    while (lightPercent < 100) {
+        lightPercent = lightPercent + 5
+        logInfo("k rules", "lights at " + lightPercent.toString + " percent")
+        // myLightItem.sendCommand(lightPercent)
+        Thread::sleep(5000) 
+    }
+end
+
+rule "Bring up Lights at 20 percent during intermission"
+when
+    Item z1_Ui_MovieLocation changed from "Main content" to "Intermission"
+then
+    // myLightItem.sendCommand(20)
+    logInfo("k rules", "intermission started")
+end
+
+rule "Turn lights back off when intermission over"
+when
+    Item z1_Ui_MovieLocation changed from "Intermission" to "Main content"
+then
+    // myLightItem.sendCommand(OFF)
+    logInfo("k rules", "intermission over")
+end
+
+// The following are no longer required since the thing configuration will enable automatic loading of metatdata.
+// However the examples are still valid for advanced use cases where retrieving metadata from an arbitrary content handle is desired.
+
 rule "Load selected item Metadata"
 when
     Item z1_Ui_HighlightedSelection changed
 then
-    if(null === kactions) {
+    if (null === kactions) {
       logInfo("kactions", "Actions not found, check thing ID")
       return
     }
@@ -404,40 +441,10 @@ rule "Load Metadata for currently playing album"
 when
     Item z1_Music_AlbumHandle changed
 then
-    if(null === kactions) {
+    if (null === kactions) {
       logInfo("kactions", "Actions not found, check thing ID")
       return
     }
     kactions.sendKCommand("GET_CONTENT_DETAILS:" + z1_Music_AlbumHandle.state.toString + ":")
-end
-
-rule "Bring up Lights when movie is over"
-when
-    Item z1_Ui_MovieLocation changed from "Main content" to "End Credits"
-then
-    // fade the lights up slowly while the credits are rolling 
-    lightPercent = 0
-    while (lightPercent < 100) {
-        lightPercent = lightPercent + 5
-        logInfo("k rules", "lights at " + lightPercent.toString + " percent")
-        //myLightItem.sendCommand(lightPercent)
-        Thread::sleep(5000) 
-    }
-end
-
-rule "Bring up Lights at 20 percent during intermission"
-when
-    Item z1_Ui_MovieLocation changed from "Main content" to "Intermission"
-then
-    //myLightItem.sendCommand(20)
-    logInfo("k rules", "intermission started")
-end
-
-rule "Turn lights back off when intermission over"
-when
-    Item z1_Ui_MovieLocation changed from "Intermission" to "Main content"
-then
-    //myLightItem.sendCommand(OFF)
-    logInfo("k rules", "intermission over")
 end
 ```

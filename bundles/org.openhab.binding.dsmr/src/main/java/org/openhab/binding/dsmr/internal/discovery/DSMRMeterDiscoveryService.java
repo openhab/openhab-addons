@@ -14,13 +14,13 @@ package org.openhab.binding.dsmr.internal.discovery;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectType;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
@@ -29,10 +29,10 @@ import org.openhab.binding.dsmr.internal.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.handler.DSMRMeterHandler;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,22 +43,41 @@ import org.slf4j.LoggerFactory;
  * @author Hilbrand Bouwkamp - Refactored code to detect meters during actual discovery phase.
  */
 @NonNullByDefault
-public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P1TelegramListener {
+public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P1TelegramListener, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(DSMRMeterDiscoveryService.class);
 
     /**
      * The {@link DSMRBridgeHandler} instance
      */
-    private final DSMRBridgeHandler dsmrBridgeHandler;
+    private @NonNullByDefault({}) DSMRBridgeHandler dsmrBridgeHandler;
 
     /**
      * Constructs a new {@link DSMRMeterDiscoveryService} attached to the give bridge handler.
      *
      * @param dsmrBridgeHandler The bridge handler this discovery service is attached to
      */
-    public DSMRMeterDiscoveryService(DSMRBridgeHandler dsmrBridgeHandler) {
-        this.dsmrBridgeHandler = dsmrBridgeHandler;
+    public DSMRMeterDiscoveryService() {
+        super();
+        this.i18nProvider = DSMRI18nProviderTracker.i18nProvider;
+        this.localeProvider = DSMRI18nProviderTracker.localeProvider;
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return dsmrBridgeHandler;
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof DSMRBridgeHandler) {
+            dsmrBridgeHandler = (DSMRBridgeHandler) handler;
+        }
     }
 
     @Override
@@ -81,7 +100,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
         if (logger.isDebugEnabled()) {
             logger.debug("Detect meters from #{} objects", telegram.getCosemObjects().size());
         }
-        final Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> detectedMeters = meterDetector
+        final Entry<Collection<DSMRMeterDescriptor>, List<CosemObject>> detectedMeters = meterDetector
                 .detectMeters(telegram);
         verifyUnregisteredCosemObjects(telegram, detectedMeters.getValue());
         validateConfiguredMeters(dsmrBridgeHandler.getThing().getThings(),
@@ -89,17 +108,16 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
         detectedMeters.getKey().forEach(m -> meterDiscovered(m, dsmrBridgeHandler.getThing().getUID()));
     }
 
-    protected void verifyUnregisteredCosemObjects(P1Telegram telegram,
-            Map<CosemObjectType, CosemObject> undetectedCosemObjects) {
-        if (!undetectedCosemObjects.isEmpty()) {
-            if (undetectedCosemObjects.entrySet().stream()
-                    .anyMatch(e -> e.getKey() == CosemObjectType.METER_EQUIPMENT_IDENTIFIER
-                            && e.getValue().getCosemValues().entrySet().stream().anyMatch(
+    protected void verifyUnregisteredCosemObjects(P1Telegram telegram, List<CosemObject> list) {
+        if (!list.isEmpty()) {
+            if (list.stream()
+                    .anyMatch(e -> e.getType() == CosemObjectType.METER_EQUIPMENT_IDENTIFIER
+                            && e.getCosemValues().entrySet().stream().anyMatch(
                                     cv -> cv.getValue() instanceof StringType && cv.getValue().toString().isEmpty()))) {
                 // Unregistered meter detected. log to the user.
                 reportUnregisteredMeters();
             } else {
-                reportUnrecognizedCosemObjects(undetectedCosemObjects);
+                reportUnrecognizedCosemObjects(list);
                 logger.info("There are unrecognized cosem values in the data received from the meter,"
                         + " which means some meters might not be detected. Please report your raw data as reference: {}",
                         telegram.getRawTelegram());
@@ -118,11 +136,10 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
     /**
      * Called when Unrecognized cosem objects where found. This can be a bug or a new meter not yet supported.
      *
-     * @param unidentifiedCosemObjects Map with the unrecognized.
+     * @param list Map with the unrecognized.
      */
-    protected void reportUnrecognizedCosemObjects(Map<CosemObjectType, CosemObject> unidentifiedCosemObjects) {
-        unidentifiedCosemObjects
-                .forEach((k, v) -> logger.info("Unrecognized cosem object '{}' found in the data: {}", k, v));
+    protected void reportUnrecognizedCosemObjects(List<CosemObject> list) {
+        list.forEach(c -> logger.info("Unrecognized cosem object '{}' found in the data: {}", c.getType(), c));
     }
 
     /**
@@ -178,21 +195,5 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
                         + "But the following unconfigured meters are found in the data received from the meter: {}",
                 invalidConfigured.stream().map(m -> m.name()).collect(Collectors.joining(", ")),
                 unconfiguredMeters.stream().map(m -> m.name()).collect(Collectors.joining(", ")));
-    }
-
-    public void setLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    public void unsetLocaleProvider() {
-        this.localeProvider = null;
-    }
-
-    public void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    public void unsetTranslationProvider() {
-        this.i18nProvider = null;
     }
 }

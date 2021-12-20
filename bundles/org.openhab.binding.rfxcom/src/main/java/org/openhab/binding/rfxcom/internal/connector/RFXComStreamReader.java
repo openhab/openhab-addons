@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.rfxcom.internal.connector;
 
+import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.MAX_RFXCOM_MESSAGE_LEN;
+
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -30,7 +32,6 @@ import org.slf4j.LoggerFactory;
 public class RFXComStreamReader extends Thread {
     private final Logger logger = LoggerFactory.getLogger(RFXComStreamReader.class);
     private static final int MAX_READ_TIMEOUTS = 4;
-    private static final int MAX_RFXCOM_MESSAGE_LEN = 256;
 
     private RFXComBaseConnector connector;
 
@@ -62,7 +63,7 @@ public class RFXComStreamReader extends Thread {
             while (!Thread.interrupted()) {
                 // First byte tells us how long the packet is
                 int bytesRead = connector.read(buf, 0, 1);
-                int packetLength = buf[0];
+                int packetLength = Byte.toUnsignedInt(buf[0]);
 
                 if (bytesRead > 0 && packetLength > 0) {
                     logger.trace("Message length is {} bytes", packetLength);

@@ -214,7 +214,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
         }
     }
 
-    private void onActivity() {
+    protected void onActivity() {
         this.lastActivityTime = ZonedDateTime.now();
     }
 
@@ -241,27 +241,12 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     }
 
     @Override
-    public void onCharacteristicReadComplete(BluetoothCharacteristic characteristic, BluetoothCompletionStatus status) {
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            onActivity();
-        }
-    }
-
-    @Override
-    public void onCharacteristicWriteComplete(BluetoothCharacteristic characteristic,
-            BluetoothCompletionStatus status) {
-        if (status == BluetoothCompletionStatus.SUCCESS) {
-            onActivity();
-        }
-    }
-
-    @Override
-    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic) {
+    public void onCharacteristicUpdate(BluetoothCharacteristic characteristic, byte[] value) {
         onActivity();
     }
 
     @Override
-    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
+    public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor, byte[] value) {
         onActivity();
     }
 

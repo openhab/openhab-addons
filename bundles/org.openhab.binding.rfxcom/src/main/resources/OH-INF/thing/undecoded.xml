@@ -22,12 +22,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Undecoded items cannot provide a device ID, so this value is always UNDECODED.</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="AC">AC</option>
 					<option value="ARC">ARC</option>
@@ -52,6 +52,10 @@
 					<option value="RTS">RTS</option>
 					<option value="SELECT_PLUS">Select Plus</option>
 					<option value="HOME_CONFORT">Home Confort</option>
+					<option value="EDISIO">Edisio</option>
+					<option value="HONEYWELL">Honeywell</option>
+					<option value="FUNKBUS">Gira Funk-Bussystem</option>
+					<option value="BYRONSX">Byron SX</option>
 				</options>
 			</parameter>
 		</config-description>

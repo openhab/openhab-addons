@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 import org.openhab.binding.xmppclient.internal.XMPPClient;
 import org.openhab.binding.xmppclient.internal.action.XMPPActions;
 import org.openhab.core.thing.Bridge;

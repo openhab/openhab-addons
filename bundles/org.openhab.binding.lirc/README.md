@@ -1,6 +1,6 @@
 # LIRC Binding
 
-This binding integrates infrared transceivers through [LIRC](http://www.lirc.org) or [WinLIRC](http://winlirc.sourceforge.net).
+This binding integrates infrared transceivers through [LIRC](https://www.lirc.org) or [WinLIRC](http://winlirc.sourceforge.net).
 
 A list of remote configuration files for LIRC is available [here](http://lirc-remotes.sourceforge.net/remotes-table.html).
 

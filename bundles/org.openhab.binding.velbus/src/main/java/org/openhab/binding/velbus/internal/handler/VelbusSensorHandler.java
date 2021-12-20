@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
+import org.openhab.binding.velbus.internal.packets.VelbusButtonPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusFeedbackLEDPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.core.library.types.StringType;
@@ -36,6 +37,7 @@ import org.openhab.core.types.Command;
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Add button simulation
  */
 @NonNullByDefault
 public class VelbusSensorHandler extends VelbusThingHandler {
@@ -47,6 +49,9 @@ public class VelbusSensorHandler extends VelbusThingHandler {
     private static final StringType FAST_BLINK_LED = new StringType("FAST_BLINK_LED");
     private static final StringType VERY_FAST_BLINK_LED = new StringType("VERY_FAST_BLINK_LED");
     private static final StringType CLEAR_LED = new StringType("CLEAR_LED");
+
+    private static final StringType PRESSED = new StringType("PRESSED");
+    private static final StringType LONG_PRESSED = new StringType("LONG_PRESSED");
 
     public VelbusSensorHandler(Thing thing) {
         this(thing, 0);
@@ -89,10 +94,42 @@ public class VelbusSensorHandler extends VelbusThingHandler {
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
         }
+
+        if (isButtonChannel(channelUID) && command instanceof StringType) {
+            StringType stringTypeCommand = (StringType) command;
+
+            if (stringTypeCommand.equals(PRESSED) || stringTypeCommand.equals(LONG_PRESSED)) {
+                VelbusButtonPacket packet = new VelbusButtonPacket(getModuleAddress().getChannelIdentifier(channelUID));
+
+                packet.Pressed();
+                velbusBridgeHandler.sendPacket(packet.getBytes());
+                triggerChannel("input#CH" + getModuleAddress().getChannelNumber(channelUID),
+                        CommonTriggerEvents.PRESSED);
+
+                if (stringTypeCommand.equals(LONG_PRESSED)) {
+                    packet.LongPressed();
+                    velbusBridgeHandler.sendPacket(packet.getBytes());
+                    triggerChannel("input#CH" + getModuleAddress().getChannelNumber(channelUID),
+                            CommonTriggerEvents.LONG_PRESSED);
+                }
+
+                packet.Released();
+                velbusBridgeHandler.sendPacket(packet.getBytes());
+                triggerChannel("input#CH" + getModuleAddress().getChannelNumber(channelUID),
+                        CommonTriggerEvents.RELEASED);
+            } else {
+                throw new UnsupportedOperationException(
+                        "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
+            }
+        }
     }
 
     private boolean isFeedbackChannel(ChannelUID channelUID) {
         return "feedback".equals(channelUID.getGroupId());
+    }
+
+    private boolean isButtonChannel(ChannelUID channelUID) {
+        return "button".equals(channelUID.getGroupId());
     }
 
     @Override

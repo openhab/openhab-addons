@@ -58,7 +58,7 @@ public class Group {
      * @return modifiability of group
      */
     public boolean isModifiable() {
-        return !id.equals("0");
+        return !"0".equals(id);
     }
 
     /**

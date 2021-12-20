@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<timetable station='Lehrte'>
+  <s id="1839271107440507858-2108161258-10">
+    <tl t="p" o="R0" c="ENO" n="83516"/>
+    <ar pt="2108161340" pp="3" l="RE30" ppth="Wolfsburg Hbf|Fallersleben|Calberlah|Gifhorn|Leiferde(b Gifhorn)|Meinersen|Dedenhausen|Dollbergen|Immensen-Arpke"/>
+  </s>
+  <s id="6363484950342149752-2108161316-1">
+    <tl t="p" o="R0" c="ENO" n="83517"/>
+    <dp pt="2108161316" pp="3" l="RE30" ppth="Immensen-Arpke|Dollbergen|Dedenhausen|Meinersen|Leiferde(b Gifhorn)|Gifhorn|Calberlah|Fallersleben|Wolfsburg Hbf"/>
+  </s>
+  <s id="6972591298753273939-2108161306-5">
+    <tl f="S" t="p" o="800244" c="S" n="99038"/>
+    <ar pt="2108161329" pp="14" l="3" ppth="Hildesheim Hbf|Harsum|Algermissen|Sehnde"/>
+    <dp pt="2108161334" pp="14" l="3" ppth="Aligse|Burgdorf|Otze|Ehlershausen|Celle"/>
+  </s>
+  <s id="8991753824982033162-2108161355-1">
+    <tl f="S" t="p" o="800244" c="S" n="99117"/>
+    <dp pt="2108161355" pp="13" l="3" ppth="Ahlten|Hannover Anderten-Misburg|Hannover Karl-Wiechert-Allee|Hannover-Kleefeld|Hannover Hbf"/>
+  </s>
+  <s id="-1273850417038046266-2108161312-6">
+    <tl f="D" t="p" o="W3" c="WFB" n="95830"/>
+    <ar pt="2108161344" pp="14" l="RE70" ppth="Braunschweig Hbf|Vechelde|Peine|V&#246;hrum|H&#228;melerwald"/>
+    <dp pt="2108161347" pp="14" l="RE70" ppth="Hannover Hbf|Wunstorf|Haste|Stadthagen|B&#252;ckeburg|Minden(Westf)|Porta Westfalica|Bad Oeynhausen|L&#246;hne(Westf)|Herford|Bielefeld Hbf"/>
+  </s>
+  <s id="8517329334682501948-2108161247-6">
+    <tl f="S" t="p" o="800244" c="S" n="99116"/>
+    <ar pt="2108161310" pp="13" l="7" ppth="Hannover Hbf|Hannover-Kleefeld|Hannover Karl-Wiechert-Allee|Hannover Anderten-Misburg|Ahlten"/>
+  </s>
+  <s id="-1057899669668012215-2108161311-6">
+    <tl f="S" t="p" o="800244" c="S" n="99039"/>
+    <ar pt="2108161334" pp="13" l="3" ppth="Celle|Ehlershausen|Otze|Burgdorf|Aligse"/>
+    <dp pt="2108161338" pp="13" l="3" ppth="Sehnde|Algermissen|Harsum|Hildesheim Hbf"/>
+  </s>
+  <s id="1425903371853713152-2108161038-20">
+    <tl f="D" t="p" o="W3" c="WFB" n="95779"/>
+    <ar pt="2108161315" pp="14" l="RE60" ppth="Rheine|H&#246;rstel|Ibbenb&#252;ren-Esch|Ibbenb&#252;ren|Ibbenb&#252;ren-Laggenbeck|Osnabr&#252;ck Altstadt|Osnabr&#252;ck Hbf|Melle|B&#252;nde(Westf)|Kirchlengern|L&#246;hne(Westf)|Bad Oeynhausen|Porta Westfalica|Minden(Westf)|B&#252;ckeburg|Stadthagen|Haste|Wunstorf|Hannover Hbf"/>
+    <dp pt="2108161318" pp="14" l="RE60" ppth="H&#228;melerwald|V&#246;hrum|Peine|Vechelde|Braunschweig Hbf"/>
+  </s>
+</timetable>

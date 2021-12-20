@@ -104,9 +104,16 @@ public class CloudConnector {
     }
 
     public boolean isConnected() {
+        return isConnected(false);
+    }
+
+    public boolean isConnected(boolean force) {
         final MiCloudConnector cl = cloudConnector;
         if (cl != null && cl.hasLoginToken()) {
             return true;
+        }
+        if (force) {
+            logonCache.invalidateValue();
         }
         final @Nullable Boolean c = logonCache.getValue();
         if (c != null && c.booleanValue()) {
@@ -122,6 +129,14 @@ public class CloudConnector {
             throw new MiCloudException("Cannot execute request. Cloud service not available");
         }
         return cl.sendRPCCommand(device, country.trim().toLowerCase(), command.getCommandString());
+    }
+
+    public String sendCloudCommand(String urlPart, String country, String parameters) throws MiCloudException {
+        final @Nullable MiCloudConnector cl = this.cloudConnector;
+        if (cl == null || !isConnected()) {
+            throw new MiCloudException("Cannot execute request. Cloud service not available");
+        }
+        return cl.request(urlPart.startsWith("/") ? urlPart : "/" + urlPart, country, parameters);
     }
 
     public @Nullable RawType getMap(String mapId, String country) throws MiCloudException {
@@ -208,10 +223,9 @@ public class CloudConnector {
         if (deviceListState != DeviceListState.AVAILABLE) {
             return null;
         }
-        String did = Long.toString(Long.parseUnsignedLong(id, 16));
         List<CloudDeviceDTO> devicedata = new ArrayList<>();
         for (CloudDeviceDTO deviceDetails : deviceList) {
-            if (deviceDetails.getDid().contentEquals(did)) {
+            if (deviceDetails.getDid().contentEquals(id)) {
                 devicedata.add(deviceDetails);
             }
         }

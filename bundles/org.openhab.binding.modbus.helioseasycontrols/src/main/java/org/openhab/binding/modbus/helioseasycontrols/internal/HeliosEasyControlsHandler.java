@@ -854,8 +854,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     }
                     switch (itemType) {
                         case "Number":
-                            if (((variableType.equals(HeliosVariable.TYPE_INTEGER))
-                                    || (variableType == HeliosVariable.TYPE_FLOAT)) && (!value.equals("-"))) {
+                            if (((HeliosVariable.TYPE_INTEGER.equals(variableType))
+                                    || (HeliosVariable.TYPE_FLOAT.equals(variableType))) && (!value.equals("-"))) {
                                 State state = null;
                                 if (v.getUnit() == null) {
                                     state = DecimalType.valueOf(value);

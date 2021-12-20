@@ -34,7 +34,7 @@ public class ShellyApiException extends Exception {
     private static final long serialVersionUID = -5809459454769761821L;
 
     private ShellyApiResult apiResult = new ShellyApiResult();
-    private static String NONE = "none";
+    private static final String NONE = "none";
 
     public ShellyApiException(Exception exception) {
         super(exception);
@@ -117,7 +117,7 @@ public class ShellyApiException extends Exception {
     }
 
     private boolean isEmpty() {
-        return nonNullString(super.getMessage()).equals(NONE);
+        return NONE.equals(nonNullString(super.getMessage()));
     }
 
     private static String nonNullString(@Nullable String s) {

@@ -53,7 +53,7 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="jrmTimeChannels" advanced="true">
+	<channel-group-type id="jrmTimeChannels">
 		<label>JRM time Channels</label>
 		<description>Time for shutter channels in seconds with an accuracy of 1/10 seconds.</description>
 		<channels>

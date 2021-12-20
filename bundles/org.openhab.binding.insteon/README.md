@@ -3,7 +3,7 @@
 Insteon is a home area networking technology developed primarily for connecting light switches and loads.
 Insteon devices send messages either via the power line, or by means of radio frequency (RF) waves, or both (dual-band.
 A considerable number of Insteon compatible devices such as switchable relays, thermostats, sensors etc are available.
-More about Insteon can be found on [Wikipedia](http://en.wikipedia.org/wiki/Insteon).
+More about Insteon can be found on [Wikipedia](https://en.wikipedia.org/wiki/Insteon).
 
 This binding provides access to the Insteon network by means of either an Insteon PowerLinc Modem (PLM), a legacy Insteon Hub 2242-222 or the current 2245-222 Insteon Hub.
 The modem can be connected to the openHAB server either via a serial port (Model 2413S) or a USB port (Model 2413U.
@@ -358,7 +358,7 @@ Switch fOutBot "Front Outlet Bottom" <socket> { channel="insteon:device:home:AAB
 ```
 
 This will give you individual control of each outlet.
-    
+
 ### Mini Remotes
 
 Link the mini remote to be a controller of the modem by using the set button.
@@ -480,7 +480,7 @@ Put something like this into your .items file:
     Switch doorLock "Front Door [MAP(lock.map):%s]"  { channel="insteon:device:home:AABBCC:switch" }
 ```
 
-and create a file "lock.map" in the transforms directory with these entries: 
+and create a file "lock.map" in the transforms directory with these entries:
 
 ```
     ON=Lock
@@ -695,7 +695,7 @@ See the example below:
 
 **Items**
 
-``` 
+```
     Number:Power  iMeterWatts   "iMeter [%d watts]"   { channel="insteon:device:home:AABBCC:watts" }
     Number:Energy iMeterKwh     "iMeter [%.04f kWh]"  { channel="insteon:device:home:AABBCC:kWh" }
     Switch        iMeterUpdate  "iMeter Update"       { channel="insteon:device:home:AABBCC:update" }
@@ -820,7 +820,7 @@ See [logging in openHAB](https://www.openhab.org/docs/administration/logging.htm
 ### Device Permissions / Linux Device Locks
 
 When openHAB is running as a non-root user (Linux/OSX) it is important to ensure it has write access not just to the PLM device, but to the os lock directory.
-Under openSUSE this is `/run/lock` and is managed by the **lock** group. 
+Under openSUSE this is `/run/lock` and is managed by the **lock** group.
 
 Example commands to grant openHAB access (adjust for your distribution):
 
@@ -851,13 +851,13 @@ Where the `my_own_devices.xml` file defines a new device like this:
     </xml>
 ```
 
-Finding the Insteon product key can be tricky since Insteon has not updated the product key table (http://www.insteon.com/pdf/insteon_devcats_and_product_keys_20081008.pdf) since 2008.
+Finding the Insteon product key can be tricky since Insteon has not updated the product key table (https://www.insteon.com/pdf/insteon_devcats_and_product_keys_20081008.pdf) since 2008.
 If a web search does not turn up the product key, make one up, starting with "F", like: F00.00.99.
 Avoid duplicate keys by finding the highest fake product key in the `device_types.xml` file, and incrementing by one.
 
 ### Adding New Device Features
 
-If you can't can't build a new device out of the existing device features (for a complete list see `device_features.xml`) you can add new features by specifying a file (let's call it `my_own_features.xml`) with the "additionalDevices" option in the network config parameters:
+If you can't build a new device out of the existing device features (for a complete list see `device_features.xml`) you can add new features by specifying a file (let's call it `my_own_features.xml`) with the "additionalDevices" option in the network config parameters:
 
     additionalFeatures="/usr/local/openhab/rt/my_own_features.xml"
 

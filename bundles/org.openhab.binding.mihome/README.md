@@ -102,7 +102,7 @@ __Hints:__
 
 ## Removing devices from the gateway
 
-If you remove a Thing in PaperUI it will also trigger the gateway to unpair the device.
+If you remove a Thing it will also trigger the gateway to unpair the device.
 It will only reappear in your Inbox, if you connect it to the gateway again.
 Just follow the instructions in ["Connecting devices to the gateway"](#connecting-devices-to-the-gateway).
 

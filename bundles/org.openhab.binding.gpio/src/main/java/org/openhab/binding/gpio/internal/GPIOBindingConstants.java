@@ -21,6 +21,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * used across the whole binding.
  *
  * @author Nils Bauer - Initial contribution
+ * @author Martin Dagarin - Pull Up/Down GPIO pin
  */
 @NonNullByDefault
 public class GPIOBindingConstants {
@@ -41,6 +42,12 @@ public class GPIOBindingConstants {
     public static final String INVERT = "invert";
     public static final String DEBOUNCING_TIME = "debouncing_time";
     public static final String STRICT_DEBOUNCING = "debouncing_strict";
+    public static final String PULLUPDOWN_RESISTOR = "pullupdown";
+
+    // Pull Up/Down modes
+    public static final String PUD_OFF = "OFF";
+    public static final String PUD_DOWN = "DOWN";
+    public static final String PUD_UP = "UP";
 
     // GPIO config properties
     public static final String GPIO_ID = "gpioId";

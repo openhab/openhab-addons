@@ -81,11 +81,12 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
                 TimeUnit.SECONDS);
     }
 
-    @SuppressWarnings("null")
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scheduledFuture != null && !scheduledFuture.isCancelled()) {
+        ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
+        if (scheduledFuture != null) {
             scheduledFuture.cancel(true);
+            this.scheduledFuture = null;
         }
     }
 

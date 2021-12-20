@@ -33,7 +33,7 @@ public class RFXComChimeMessageTest {
     public void testSomeMessages() throws RFXComException {
         String hexMessage = "0716020900A1F350";
         byte[] message = HexUtils.hexToBytes(hexMessage);
-        RFXComChimeMessage msg = (RFXComChimeMessage) RFXComMessageFactory.createMessage(message);
+        RFXComChimeMessage msg = (RFXComChimeMessage) RFXComMessageFactoryImpl.INSTANCE.createMessage(message);
         assertEquals(SubType.SELECTPLUS, msg.subType, "SubType");
         assertEquals(9, msg.seqNbr, "Seq Number");
         assertEquals("41459", msg.getDeviceId(), "Sensor Id");

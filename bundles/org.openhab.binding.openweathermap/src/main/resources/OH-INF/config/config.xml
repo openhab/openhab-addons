@@ -11,7 +11,7 @@
 			<label>API Key</label>
 			<description>API key to access the OpenWeatherMap API.</description>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" min="10" unit="min">
+		<parameter name="refreshInterval" type="integer" min="1" unit="min">
 			<label>Refresh Interval</label>
 			<description>Specifies the refresh interval (in minutes).</description>
 			<default>60</default>
@@ -133,6 +133,11 @@
 		<parameter name="forecastMinutes" type="integer" min="0" max="60" step="1">
 			<label>Number of Minutes</label>
 			<description>Number of minutes for minutely precipitation forecast.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="numberOfAlerts" type="integer" min="0" max="5" step="1">
+			<label>Number of Alerts</label>
+			<description>Number of alerts to be shown.</description>
 			<default>0</default>
 		</parameter>
 	</config-description>

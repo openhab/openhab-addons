@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -97,15 +96,15 @@ public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
     }
 
     private Bridge buildBridge() {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(CONFIG_IP_ADDRESS, "fritz.box");
-        properties.put(CONFIG_PROTOCOL, "http");
-        properties.put(CONFIG_USER, "user");
-        properties.put(CONFIG_PASSWORD, "password");
-        properties.put(CONFIG_POLLING_INTERVAL, 15);
-        properties.put(CONFIG_SYNC_TIMEOUT, 2000);
-
-        return BridgeBuilder.create(BRIDGE_THING_TYPE, "1").withLabel(BOX_MODEL_NAME)
-                .withConfiguration(new Configuration(properties)).build();
+        return BridgeBuilder.create(BRIDGE_THING_TYPE, "1") //
+                .withLabel(BOX_MODEL_NAME) //
+                .withConfiguration(new Configuration(Map.of( //
+                        CONFIG_IP_ADDRESS, "fritz.box", //
+                        CONFIG_PROTOCOL, "http", //
+                        CONFIG_USER, "user", //
+                        CONFIG_PASSWORD, "password", //
+                        CONFIG_POLLING_INTERVAL, 15, //
+                        CONFIG_SYNC_TIMEOUT, 2000))) //
+                .build();
     }
 }

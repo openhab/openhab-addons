@@ -1,0 +1,6 @@
+{
+  "command": "sdm.devices.commands.ThermostatTemperatureSetpoint.SetHeat",
+  "params": {
+    "heatCelsius": 15.0
+  }
+}

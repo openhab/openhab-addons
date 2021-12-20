@@ -13,25 +13,21 @@
 		</channels>
 		<representation-property>vendor</representation-property>
 		<config-description>
-			<parameter name="ipAddress" type="text">
+			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
 				<label>Network Address</label>
 				<description>Network address of the HEOS bridge.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="username" type="text">
+			<parameter name="username" type="text" required="false">
 				<label>Username</label>
 				<description>Username for login to the HEOS account.</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="false">
 				<context>password</context>
 				<label>Password</label>
 				<description>Password for login to the HEOS account</description>
-				<required>false</required>
 			</parameter>
-			<parameter name="heartbeat" type="integer" min="3" max="3600" unit="s">
-				<required>false</required>
+			<parameter name="heartbeat" type="integer" min="3" max="3600" unit="s" required="false">
 				<unitLabel>seconds</unitLabel>
 				<label>Heartbeat</label>
 				<description>The time in seconds for the HEOS Heartbeat (default = 60 s)</description>

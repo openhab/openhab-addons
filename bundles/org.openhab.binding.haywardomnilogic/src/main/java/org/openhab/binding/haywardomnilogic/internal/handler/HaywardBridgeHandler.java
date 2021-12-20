@@ -101,7 +101,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
         initializeFuture = scheduler.schedule(this::scheduledInitialize, 1, TimeUnit.SECONDS);
         return;
     }
@@ -143,7 +142,10 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 return;
             }
 
-            updateStatus(ThingStatus.ONLINE);
+            if (this.thing.getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+
             logger.debug("Succesfully opened connection to Hayward's server: {} Username:{}", config.endpointUrl,
                     config.username);
 
@@ -184,7 +186,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         status = evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
-        if (!(status.equals("0"))) {
+        if (!("0".equals(status))) {
             logger.debug("Hayward Connection thing: Login XML response: {}", xmlResponse);
             return false;
         }
@@ -232,7 +234,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         status = evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse).get(0);
 
-        if (!(status.equals("0"))) {
+        if (!("0".equals(status))) {
             logger.debug("Hayward Connection thing: getSiteList XML response: {}", xmlResponse);
             return false;
         }
@@ -350,6 +352,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                     commFailureCount++;
                     return;
                 }
+                updateStatus(ThingStatus.ONLINE);
             } catch (HaywardException e) {
                 logger.debug("Hayward Connection thing: Exception during poll: {}", e.getMessage());
             } catch (InterruptedException e) {
@@ -424,15 +427,15 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
             int status = httpResponse.getStatus();
             String xmlResponse = httpResponse.getContentAsString();
 
-            List<String> statusMessages = evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()",
-                    xmlResponse);
-            if (!(statusMessages.isEmpty())) {
-                statusMessage = statusMessages.get(0);
-            } else {
-                statusMessage = httpResponse.getReason();
-            }
-
             if (status == 200) {
+                List<String> statusMessages = evaluateXPath(
+                        "/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse);
+                if (!(statusMessages.isEmpty())) {
+                    statusMessage = statusMessages.get(0);
+                } else {
+                    statusMessage = httpResponse.getReason();
+                }
+
                 if (logger.isTraceEnabled()) {
                     logger.trace("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
                             urlParameters);
@@ -444,7 +447,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Hayward Connection thing:  {} Hayward http command: {}", getCallingMethod(),
                             urlParameters);
-                    logger.debug("Hayward Connection thing:  {} Hayward http response: {}", getCallingMethod(), status);
+                    logger.debug("Hayward Connection thing:  {} Hayward http response: {} {}", getCallingMethod(),
+                            status, xmlResponse);
                 }
                 return "";
             }

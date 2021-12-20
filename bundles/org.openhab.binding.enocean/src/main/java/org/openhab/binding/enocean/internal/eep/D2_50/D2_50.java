@@ -44,6 +44,7 @@ public class D2_50 extends _VLDMessage {
     protected static final byte MT_CONTROL = 0x20;
     protected static final byte MT_BASIC_STATUS = 0x40;
     protected static final byte MT_EXTENDED_STATUS = 0x60; // not yet implemented
+    protected static final byte MT_UNKNOWN_STATUS = (byte) 0x80; // Sent by some systems during teach in
 
     protected static final byte rmtMask = (byte) 0x0f;
     protected static final byte RMT_BASIC_STATUS = 0x00;
@@ -177,7 +178,10 @@ public class D2_50 extends _VLDMessage {
                 return bytes.length == 14;
             case MT_EXTENDED_STATUS: // MT_EXTENDED_STATUS is not yet supported, however return true to avoid Exceptions
                 return true;
+            case MT_UNKNOWN_STATUS:
+                return true;
             default:
+                logger.error("Invalid data, unknown message type: {} ({})", getMessageType(bytes[0]), bytes);
                 return false;
         }
     }

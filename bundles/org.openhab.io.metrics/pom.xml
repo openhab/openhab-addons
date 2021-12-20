@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.io.metrics</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: IO :: Metrics Service</name>
+
+  <properties>
+    <micrometer.version>1.6.3</micrometer.version>
+    <bnd.importpackage>io.micrometer.core.*;resolution:=optional;ch.qos.logback.*;resolution:=optional,com.codahale.*;resolution:=optional,com.github.benmanes.caffeine.*;resolution:=optional;com.mongodb.*;resolution:=optional,com.netflix.*;resolution:=optional;com.sun.management.*;resolution:=optional,io.netty.*;resolution:=optional;javax.annotation.meta.*;resolution:=optional,javax.cache.*;resolution:=optional,javax.persistence.*;resolution:=optional,net.sf.ehcache.*;resolution:=optional,okhttp3.*;resolution:=optional,org.apache.catalina.*;resolution:=optional,org.apache.http.*;resolution:=optional,org.apache.kafka.*;resolution:=optional,org.apache.logging.*;resolution:=optional,org.aspectj.*;resolution:=optional,org.hibernate.*;resolution:=optional,org.jooq.*;resolution:=optional,org.reactivestreams.*;resolution:=optional,reactor.*;resolution:=optional,rx.*;resolution:=optional</bnd.importpackage>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-core</artifactId>
+      <version>${micrometer.version}</version>
+      <scope>provided</scope><!-- is already included in the openhab.core.io.monitor dependency -->
+    </dependency>
+    <dependency>
+      <groupId>org.hdrhistogram</groupId>
+      <artifactId>HdrHistogram</artifactId>
+      <version>2.1.12</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.latencyutils</groupId>
+      <artifactId>LatencyUtils</artifactId>
+      <version>2.0.3</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>HdrHistogram</artifactId>
+          <groupId>org.hdrhistogram</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
+      <version>4.0.7</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-jmx</artifactId>
+      <version>${micrometer.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <version>${micrometer.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient_common</artifactId>
+      <version>0.9.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.prometheus</groupId>
+      <artifactId>simpleclient</artifactId>
+      <version>0.9.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-influx</artifactId>
+      <version>${micrometer.version}</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-api</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.core.bundles</groupId>
+      <artifactId>org.openhab.core.io.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>

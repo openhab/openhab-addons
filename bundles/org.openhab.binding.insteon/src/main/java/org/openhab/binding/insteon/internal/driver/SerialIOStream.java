@@ -58,7 +58,7 @@ public class SerialIOStream extends IOStream {
             } else {
                 String key = paramParts[0];
                 String value = paramParts[1];
-                if (key.equals("baudRate")) {
+                if ("baudRate".equals(key)) {
                     try {
                         baudRate = Integer.parseInt(value);
                     } catch (NumberFormatException e) {

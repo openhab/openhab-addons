@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.logreader.internal.filereader.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for log file readers.
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 public interface LogFileReader {
 
     /**

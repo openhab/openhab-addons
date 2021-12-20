@@ -48,8 +48,8 @@ import org.openhab.core.thing.ThingUID;
 public class WemoDiscoveryParticipantTest {
     UpnpDiscoveryParticipant participant = new WemoDiscoveryParticipant();
 
-    private final String DEVICE_UDN = GenericWemoOSGiTest.DEVICE_MANUFACTURER + "_3434xxx";
-    private final String DEVICE_FRIENDLY_NAME = "Wemo Test";
+    private static final String DEVICE_UDN = GenericWemoOSGiTest.DEVICE_MANUFACTURER + "_3434xxx";
+    private static final String DEVICE_FRIENDLY_NAME = "Wemo Test";
 
     RemoteDevice createUpnpDevice(String modelName)
             throws MalformedURLException, ValidationException, URISyntaxException {

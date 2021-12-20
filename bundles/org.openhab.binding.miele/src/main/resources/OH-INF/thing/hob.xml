@@ -15,6 +15,7 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="plate1power" typeId="power"/>
 			<channel id="plate1heat" typeId="heat"/>
 			<channel id="plate1time" typeId="time"/>
@@ -35,13 +36,9 @@
 			<channel id="plate6time" typeId="time"/>
 		</channels>
 
-		<config-description>
-			<parameter name="uid" type="text" required="true">
-				<label>ID</label>
-				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
-			</parameter>
-		</config-description>
+		<representation-property>uid</representation-property>
 
+		<config-description-ref uri="thing-type:miele:appliance"/>
 	</thing-type>
 
 </thing:thing-descriptions>

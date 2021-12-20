@@ -40,12 +40,19 @@ public class SimpleCommand implements AvrCommand {
         INPUT_CHANGE_REVERSE("FD"),
         LISTENING_MODE_CHANGE_CYCLIC("0010SR"),
         LISTENING_MODE_QUERY("?S"),
-        INPUT_QUERY("?F", "?ZS", "?ZT", "?ZEA");
+        INPUT_QUERY("?F", "?ZS", "?ZT", "?ZEA"),
+        MCACC_MEMORY_CHANGE_CYCLIC("0MC"),
+        MCACC_MEMORY_QUERY("?MC");
 
         private String zoneCommands[];
 
         private SimpleCommandType(String... command) {
             this.zoneCommands = command;
+        }
+
+        @Override
+        public String getCommand() {
+            return zoneCommands[0];
         }
 
         @Override
@@ -62,8 +69,15 @@ public class SimpleCommand implements AvrCommand {
         this.zone = zone;
     }
 
+    public SimpleCommand(CommandType commandType) {
+        this(commandType, 0);
+    }
+
     @Override
     public String getCommand() {
+        if (zone == 0) {
+            return commandType.getCommand() + "\r";
+        }
         return commandType.getCommand(zone) + "\r";
     }
 

@@ -26,7 +26,7 @@ public class Components {
     public double nitrogenMonoxide;
     @SerializedName("no2")
     public double nitrogenDioxide;
-    @SerializedName("o2")
+    @SerializedName("o3")
     public double ozone;
     @SerializedName("so2")
     public double sulphurDioxide;

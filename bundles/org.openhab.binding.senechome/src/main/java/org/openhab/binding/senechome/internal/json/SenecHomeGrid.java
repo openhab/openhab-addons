@@ -17,7 +17,9 @@ import java.io.Serializable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Json model of senec home devices: This sub model provides the current power statistics by the inverter.
+ * Json model of senec home devices: This sub model contains grid related power values.
+ *
+ * Section "PM1OBJ1" (Enfluri Netz Werte)
  *
  * @author Steven Schwarznau - Initial Contribution
  */

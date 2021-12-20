@@ -1327,6 +1327,46 @@ public class KodiConnection implements KodiClientSocketEventListener {
         socket.callMethod("Input.ExecuteAction", params);
     }
 
+    public void inputButtonEvent(String buttonEvent) {
+        logger.debug("inputButtonEvent {}.", buttonEvent);
+
+        String button = buttonEvent;
+        String keymap = "KB";
+        Integer holdtime = null;
+
+        if (buttonEvent.contains(";")) {
+            String[] params = buttonEvent.split(";");
+            switch (params.length) {
+                case 2:
+                    button = params[0];
+                    keymap = params[1];
+                    break;
+                case 3:
+                    button = params[0];
+                    keymap = params[1];
+                    try {
+                        holdtime = Integer.parseInt(params[2]);
+                    } catch (NumberFormatException nfe) {
+                        holdtime = null;
+                    }
+                    break;
+            }
+        }
+
+        this.inputButtonEvent(button, keymap, holdtime);
+    }
+
+    private void inputButtonEvent(String button, String keymap, Integer holdtime) {
+        JsonObject params = new JsonObject();
+        params.addProperty("button", button);
+        params.addProperty("keymap", keymap);
+        if (holdtime != null) {
+            params.addProperty("holdtime", holdtime.intValue());
+        }
+        JsonElement result = socket.callMethod("Input.ButtonEvent", params);
+        logger.debug("inputButtonEvent result {}.", result);
+    }
+
     public void getSystemProperties() {
         KodiSystemProperties systemProperties = null;
         if (socket.isConnected()) {

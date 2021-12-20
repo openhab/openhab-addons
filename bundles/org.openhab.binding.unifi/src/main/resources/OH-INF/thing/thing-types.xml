@@ -24,6 +24,7 @@
 			<parameter name="unifios" type="boolean" required="true">
 				<label>UniFi OS</label>
 				<description>If the UniFi Controller is running on UniFi OS.</description>
+				<default>false</default>
 			</parameter>
 			<parameter name="username" type="text" required="true">
 				<label>Username</label>

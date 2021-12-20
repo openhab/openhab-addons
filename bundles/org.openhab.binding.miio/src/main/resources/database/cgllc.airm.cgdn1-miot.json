@@ -1,0 +1,450 @@
+{
+	"deviceMapping": {
+		"id": [
+			"cgllc.airm.cgdn1"
+		],
+		"propertyMethod": "get_properties",
+		"maxProperties": 1,
+		"channels": [
+			{
+				"property": "",
+				"friendlyName": "Actions",
+				"channel": "actions",
+				"type": "String",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "settings-set-start-time",
+							"label": "Set Start Time"
+						},
+						{
+							"value": "settings-set-end-time",
+							"label": "Set End Time"
+						},
+						{
+							"value": "settings-set-frequency",
+							"label": "Set Frequency"
+						},
+						{
+							"value": "settings-set-screen-off",
+							"label": "Set Screen Off"
+						},
+						{
+							"value": "settings-set-device-off",
+							"label": "Set Device Off"
+						},
+						{
+							"value": "settings-set-temp-unit",
+							"label": "Set Temp Unit"
+						}
+					]
+				},
+				"actions": [
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							2.0
+						],
+						"siid": 9,
+						"aiid": 2,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "settings-set-start-time"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							3.0
+						],
+						"siid": 9,
+						"aiid": 3,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "settings-set-end-time"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							4.0
+						],
+						"siid": 9,
+						"aiid": 4,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "settings-set-frequency"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							5.0
+						],
+						"siid": 9,
+						"aiid": 5,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "settings-set-screen-off"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							6.0
+						],
+						"siid": 9,
+						"aiid": 6,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "settings-set-device-off"
+								}
+							]
+						}
+					},
+					{
+						"command": "action",
+						"parameterType": "NUMBER",
+						"parameters": [
+							7.0
+						],
+						"siid": 9,
+						"aiid": 7,
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "settings-set-temp-unit"
+								}
+							]
+						}
+					}
+				],
+				"readmeComment": "Value mapping `[\"settings-set-start-time\"\u003d\"Set Start Time\",\"settings-set-end-time\"\u003d\"Set End Time\",\"settings-set-frequency\"\u003d\"Set Frequency\",\"settings-set-screen-off\"\u003d\"Set Screen Off\",\"settings-set-device-off\"\u003d\"Set Device Off\",\"settings-set-temp-unit\"\u003d\"Set Temp Unit\"]`"
+			},
+			{
+				"property": "relative-humidity",
+				"siid": 3,
+				"piid": 1,
+				"friendlyName": "Environment - Relative Humidity",
+				"channel": "relative_humidity",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "pm2.5-density",
+				"siid": 3,
+				"piid": 4,
+				"friendlyName": "Environment - PM2 5 Density",
+				"channel": "pm2_5_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "pm10-density",
+				"siid": 3,
+				"piid": 5,
+				"friendlyName": "Environment - PM10 Density",
+				"channel": "pm10_density",
+				"type": "Number:Density",
+				"unit": "μg/m3",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 1000,
+					"step": 1,
+					"pattern": "%.0f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "temperature",
+				"siid": 3,
+				"piid": 7,
+				"friendlyName": "Environment - Temperature",
+				"channel": "temperature",
+				"type": "Number:Temperature",
+				"unit": "celsius",
+				"stateDescription": {
+					"minimum": -30,
+					"maximum": 100,
+					"pattern": "%.1f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "co2-density",
+				"siid": 3,
+				"piid": 8,
+				"friendlyName": "Environment - CO2 Density",
+				"channel": "co2_density",
+				"type": "Number:Density",
+				"unit": "ppm",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 9999,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "battery-level",
+				"siid": 4,
+				"piid": 1,
+				"friendlyName": "Battery - Battery Level",
+				"channel": "battery_level",
+				"type": "Number:Dimensionless",
+				"unit": "percentage",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 100,
+					"step": 1,
+					"pattern": "%.0f %unit%",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "charging-state",
+				"siid": 4,
+				"piid": 2,
+				"friendlyName": "Battery - Charging State",
+				"channel": "charging_state",
+				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "1",
+							"label": "Charging"
+						},
+						{
+							"value": "2",
+							"label": "Not charging"
+						},
+						{
+							"value": "3",
+							"label": "Not chargeable"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Charging\",\"2\"\u003d\"Not charging\",\"3\"\u003d\"Not chargeable\"]`"
+			},
+			{
+				"property": "voltage",
+				"siid": 4,
+				"piid": 3,
+				"friendlyName": "Battery - Voltage",
+				"channel": "voltage",
+				"type": "Number:ElectricPotential",
+				"unit": "mV",
+				"stateDescription": {
+					"minimum": 0,
+					"maximum": 65535,
+					"step": 1,
+					"pattern": "%.2f",
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "mac",
+				"siid": 8,
+				"piid": 1,
+				"friendlyName": "Mac - Mac",
+				"channel": "mac",
+				"type": "String",
+				"stateDescription": {
+					"readOnly": true
+				},
+				"refresh": true,
+				"actions": []
+			},
+			{
+				"property": "monitoring-frequency",
+				"siid": 9,
+				"piid": 4,
+				"friendlyName": "Settings - Monitoring Frequency",
+				"channel": "monitoring_frequency",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Second"
+						},
+						{
+							"value": "60",
+							"label": "Second"
+						},
+						{
+							"value": "300",
+							"label": "Second"
+						},
+						{
+							"value": "600",
+							"label": "Second"
+						},
+						{
+							"value": "0",
+							"label": "Null"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"600\"\u003d\"Second\",\"0\"\u003d\"Null\"]`"
+			},
+			{
+				"property": "screen-off",
+				"siid": 9,
+				"piid": 5,
+				"friendlyName": "Settings - Screen Off",
+				"channel": "screen_off",
+				"type": "Number:Time",
+				"unit": "seconds",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "15",
+							"label": "Second"
+						},
+						{
+							"value": "30",
+							"label": "Second"
+						},
+						{
+							"value": "60",
+							"label": "Second"
+						},
+						{
+							"value": "300",
+							"label": "Second"
+						},
+						{
+							"value": "0",
+							"label": "Null"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"readmeComment": "Value mapping `[\"15\"\u003d\"Second\",\"30\"\u003d\"Second\",\"60\"\u003d\"Second\",\"300\"\u003d\"Second\",\"0\"\u003d\"Null\"]`"
+			},
+			{
+				"property": "device-off",
+				"siid": 9,
+				"piid": 6,
+				"friendlyName": "Settings - Device Off",
+				"channel": "device_off",
+				"type": "Number:Time",
+				"unit": "minutes",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "15",
+							"label": "Minute"
+						},
+						{
+							"value": "30",
+							"label": "Minute"
+						},
+						{
+							"value": "60",
+							"label": "Minute"
+						},
+						{
+							"value": "0",
+							"label": "Null"
+						}
+					]
+				},
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				],
+				"readmeComment": "Value mapping `[\"15\"\u003d\"Minute\",\"30\"\u003d\"Minute\",\"60\"\u003d\"Minute\",\"0\"\u003d\"Null\"]`"
+			},
+			{
+				"property": "tempature-unit",
+				"siid": 9,
+				"piid": 7,
+				"friendlyName": "Settings - Tempature Unit",
+				"channel": "tempature_unit",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_properties",
+						"parameterType": "STRING"
+					}
+				]
+			}
+		]
+	}
+}

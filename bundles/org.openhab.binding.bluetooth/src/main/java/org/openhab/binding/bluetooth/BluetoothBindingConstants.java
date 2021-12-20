@@ -43,6 +43,8 @@ public class BluetoothBindingConstants {
 
     public static final String CONFIGURATION_ADDRESS = "address";
     public static final String CONFIGURATION_DISCOVERY = "backgroundDiscovery";
+    public static final String CONFIGURATION_ALWAYS_CONNECTED = "alwaysConnected";
+    public static final String CONFIGURATION_IDLE_DISCONNECT_DELAY = "idleDisconnectDelay";
 
     public static final long BLUETOOTH_BASE_UUID = 0x800000805f9b34fbL;
 

@@ -76,10 +76,12 @@ public class DiscoveryResponseDTO {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         DiscoveryResponseDTO that = (DiscoveryResponseDTO) o;
         return serialNumber.equals(that.serialNumber) && regId.equals(that.regId) && sak.equals(that.sak)
                 && name.equals(that.name) && macAddress.equals(that.macAddress) && version.equals(that.version);

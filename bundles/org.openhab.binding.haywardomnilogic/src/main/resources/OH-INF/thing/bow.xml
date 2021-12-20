@@ -34,7 +34,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Water Temp</label>
 		<description>Water Temp</description>
-		<state pattern="%1f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

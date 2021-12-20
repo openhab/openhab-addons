@@ -23,7 +23,6 @@ Tested and developed with :
 ## Discovery
 
 No discovery supported, manual configuration is required.
-The things may be configured through the Paper UI.
 
 ## Thing Configuration
 
@@ -137,6 +136,6 @@ Here's a list of all the LG TV commands added to the binding, in channel type id
 
 [4] <https://github.com/suan/libLGTV_serial>
 
-[5] Manual LV series, LK series, PW series and PZ series <http://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ>
+[5] Manual LV series, LK series, PW series and PZ series <https://gscs-b2c.lge.com/downloadFile?fileId=ujpO8yH69djwNZzwuavqpQ>
 
-[6] Manual for LD series, LE series, LX series and PK series <http://gscs-b2c.lge.com/downloadFile?fileId=76If0tKDLOUizuoXikllgQ>
+[6] Manual for LD series, LE series, LX series and PK series <https://gscs-b2c.lge.com/downloadFile?fileId=76If0tKDLOUizuoXikllgQ>

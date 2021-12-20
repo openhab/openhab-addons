@@ -94,7 +94,7 @@ public class VelbusModule {
     protected String getChannelName(int channelIndex) {
         String channelName = "";
 
-        Integer key = channelIndex - 1;
+        Integer key = channelIndex;
         if (channelNames.containsKey(key)) {
             for (int i = 0; i < 3; i++) {
                 String channelNamePart = channelNames.get(key)[i];
@@ -147,7 +147,7 @@ public class VelbusModule {
         for (Integer key : keys) {
             String channelName = getChannelName(key);
             if (channelName.length() > 0) {
-                properties.put(CHANNEL + key, channelName);
+                properties.put(CHANNEL + (key + 1), channelName);
             }
         }
 

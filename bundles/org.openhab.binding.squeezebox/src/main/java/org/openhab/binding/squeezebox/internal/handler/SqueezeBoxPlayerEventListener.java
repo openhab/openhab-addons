@@ -82,4 +82,6 @@ public interface SqueezeBoxPlayerEventListener {
     void sourceChangeEvent(String mac, String source);
 
     void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand);
+
+    void connectedStateChangeEvent(String mac, boolean connected);
 }

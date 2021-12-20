@@ -88,10 +88,9 @@
 		<description>Represents a device</description>
 
 		<config-description>
-			<parameter name="patternMatch" type="text">
+			<parameter name="patternMatch" type="text" required="true">
 				<label>Patern Match</label>
 				<context>pattern-match</context>
-				<required>true</required>
 				<description>Regular expression used to identify device from received data (must match the whole line)</description>
 			</parameter>
 		</config-description>

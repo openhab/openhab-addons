@@ -20,7 +20,9 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -171,7 +173,7 @@ public class AccountServlet extends HttpServlet {
                     + uri.substring(PROXY_URI_PART.length());
 
             String postData = null;
-            if (verb == "POST" || verb == "PUT") {
+            if ("POST".equals(verb) || "PUT".equals(verb)) {
                 postData = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             }
 
@@ -609,7 +611,7 @@ public class AccountServlet extends HttpServlet {
             if ((stateDeviceSerialNumber == null && device.serialNumber == null)
                     || (stateDeviceSerialNumber != null && stateDeviceSerialNumber.equals(device.serialNumber))) {
                 List<PairedDevice> pairedDeviceList = state.getPairedDeviceList();
-                if (pairedDeviceList.size() > 0) {
+                if (!pairedDeviceList.isEmpty()) {
                     html.append("<table><tr><th align='left'>Name</th><th align='left'>Value</th></tr>");
                     for (PairedDevice pairedDevice : pairedDeviceList) {
                         html.append("<tr><td>");

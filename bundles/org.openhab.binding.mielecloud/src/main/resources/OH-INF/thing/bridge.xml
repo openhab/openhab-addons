@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mielecloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Miele Cloud Connector Bridge -->
+	<bridge-type id="account">
+		<label>@text/thing-type.mielecloud.account.label</label>
+		<description>@text/thing-type.mielecloud.account.description</description>
+		<category>WebService</category>
+
+		<properties>
+			<property name="vendor">Miele</property>
+			<property name="modelId">Cloud Connector</property>
+			<property name="connection">INTERNET</property>
+			<!-- accessToken property is set on creation. -->
+		</properties>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>@text/thing-type.config.mielecloud.account.email.label</label>
+				<description>@text/thing-type.config.mielecloud.account.email.description</description>
+			</parameter>
+			<parameter name="locale" type="text">
+				<label>@text/thing-type.config.mielecloud.account.locale.label</label>
+				<description>@text/thing-type.config.mielecloud.account.locale.description</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

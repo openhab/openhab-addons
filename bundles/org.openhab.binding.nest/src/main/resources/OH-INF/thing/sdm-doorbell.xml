@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sdm_doorbell" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="sdm_account"/>
+		</supported-bridge-type-refs>
+
+		<label>Nest Doorbell</label>
+		<description>A Nest Doorbell registered with your SDM account</description>
+
+		<channel-groups>
+			<channel-group id="chime_event" typeId="SDMChimeEvent"/>
+			<channel-group id="motion_event" typeId="SDMMotionEvent"/>
+			<channel-group id="person_event" typeId="SDMPersonEvent"/>
+			<channel-group id="sound_event" typeId="SDMSoundEvent"/>
+			<channel-group id="live_stream" typeId="SDMLiveStream"/>
+		</channel-groups>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:nest:sdm_device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

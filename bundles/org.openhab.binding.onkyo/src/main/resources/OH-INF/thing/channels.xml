@@ -107,6 +107,11 @@
 		<label>Play URI</label>
 		<description>Plays a given URI</description>
 	</channel-type>
+	<channel-type id="audioinfo" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Info</label>
+		<description>Detailed audio info</description>
+	</channel-type>
 	<channel-type id="netControl" advanced="true">
 		<item-type>String</item-type>
 		<label>Control</label>
@@ -181,6 +186,30 @@
 		<item-type>Number</item-type>
 		<label>Selected Item</label>
 		<description>Position of the currently selected menu item</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="audioIn" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Input Info</label>
+		<description>Audio Input Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="audioOut" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Output Info</label>
+		<description>Audio Output Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="videoIn" advanced="true">
+		<item-type>String</item-type>
+		<label>Video Input Info</label>
+		<description>Video Input Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="videoOut" advanced="true">
+		<item-type>String</item-type>
+		<label>Video Output Info</label>
+		<description>Video Output Stream Information</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 

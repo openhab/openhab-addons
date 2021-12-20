@@ -12,15 +12,17 @@
  */
 package org.openhab.binding.venstarthermostat.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VenstarThermostatConfiguration} is responsible for holding configuration information.
  *
  * @author William Welliver - Initial contribution
  */
-
+@NonNullByDefault
 public class VenstarThermostatConfiguration {
-    public String username;
-    public String password;
-    public String url;
-    public Integer refresh;
+    public String username = "";
+    public String password = "";
+    public String url = "";
+    public Integer refresh = 30;
 }

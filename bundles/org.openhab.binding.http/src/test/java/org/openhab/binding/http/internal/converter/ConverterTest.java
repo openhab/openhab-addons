@@ -66,7 +66,7 @@ public class ConverterTest {
         Assertions.assertEquals(new QuantityType<>(500, Units.WATT), converter.toState("500"));
 
         // no valid value
-        Assertions.assertEquals(UnDefType.UNDEF, converter.toState("100°C"));
+        Assertions.assertEquals(UnDefType.UNDEF, converter.toState("100foo"));
         Assertions.assertEquals(UnDefType.UNDEF, converter.toState("foo"));
         Assertions.assertEquals(UnDefType.UNDEF, converter.toState(""));
     }

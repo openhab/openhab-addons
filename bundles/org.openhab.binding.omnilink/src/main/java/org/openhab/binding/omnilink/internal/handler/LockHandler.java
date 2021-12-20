@@ -14,7 +14,6 @@ package org.openhab.binding.omnilink.internal.handler;
 
 import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -75,9 +74,7 @@ public class LockHandler extends AbstractOmnilinkStatusHandler<ExtendedAccessCon
                 .builder(bridgeHandler, ObjectPropertyRequests.LOCK, thingID, 0).selectNamed().build();
 
         for (AccessControlReaderProperties lockProperties : objectPropertyRequest) {
-            Map<String, String> properties = editProperties();
-            properties.put(THING_PROPERTIES_NAME, lockProperties.getName());
-            updateProperties(properties);
+            updateProperty(THING_PROPERTIES_NAME, lockProperties.getName());
         }
     }
 

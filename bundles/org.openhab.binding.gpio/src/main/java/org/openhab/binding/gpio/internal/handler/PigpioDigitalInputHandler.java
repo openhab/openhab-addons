@@ -18,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpio.internal.GPIOBindingConstants;
+import org.openhab.binding.gpio.internal.InvalidPullUpDownException;
 import org.openhab.binding.gpio.internal.NoGpioIdException;
 import org.openhab.binding.gpio.internal.configuration.GPIOInputConfiguration;
 import org.openhab.core.library.types.OnOffType;
@@ -36,6 +38,7 @@ import eu.xeli.jpigpio.PigpioException;
  *
  * @author Nils Bauer - Initial contribution
  * @author Jan N. Klug - Channel redesign
+ * @author Martin Dagarin - Pull Up/Down GPIO pin
  */
 @NonNullByDefault
 public class PigpioDigitalInputHandler implements ChannelHandler {
@@ -49,19 +52,30 @@ public class PigpioDigitalInputHandler implements ChannelHandler {
 
     public PigpioDigitalInputHandler(GPIOInputConfiguration configuration, JPigpio jPigpio,
             ScheduledExecutorService scheduler, Consumer<State> updateStatus)
-            throws PigpioException, NoGpioIdException {
+            throws PigpioException, InvalidPullUpDownException, NoGpioIdException {
         this.configuration = configuration;
         this.updateStatus = updateStatus;
         Integer gpioId = configuration.gpioId;
         if (gpioId == null) {
             throw new NoGpioIdException();
         }
-        gpio = new GPIO(jPigpio, gpioId, 1);
+        Integer pullupdown = JPigpio.PI_PUD_OFF;
+        String pullupdownStr = configuration.pullupdown.toUpperCase();
+        if (pullupdownStr.equals(GPIOBindingConstants.PUD_DOWN)) {
+            pullupdown = JPigpio.PI_PUD_DOWN;
+        } else if (pullupdownStr.equals(GPIOBindingConstants.PUD_UP)) {
+            pullupdown = JPigpio.PI_PUD_UP;
+        } else {
+            if (!pullupdownStr.equals(GPIOBindingConstants.PUD_OFF))
+                throw new InvalidPullUpDownException();
+        }
+        gpio = new GPIO(jPigpio, gpioId, JPigpio.PI_INPUT);
         jPigpio.gpioSetAlertFunc(gpio.getPin(), (gpio, level, tick) -> {
             lastChanged = new Date();
             Date thisChange = new Date();
             scheduler.schedule(() -> afterDebounce(thisChange), configuration.debouncingTime, TimeUnit.MILLISECONDS);
         });
+        jPigpio.gpioSetPullUpDown(gpio.getPin(), pullupdown);
     }
 
     private void afterDebounce(Date thisChange) {

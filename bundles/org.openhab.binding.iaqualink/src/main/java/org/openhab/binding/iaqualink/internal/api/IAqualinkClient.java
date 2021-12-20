@@ -31,12 +31,12 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.iaqualink.internal.api.model.AccountInfo;
-import org.openhab.binding.iaqualink.internal.api.model.Auxiliary;
-import org.openhab.binding.iaqualink.internal.api.model.Device;
-import org.openhab.binding.iaqualink.internal.api.model.Home;
-import org.openhab.binding.iaqualink.internal.api.model.OneTouch;
-import org.openhab.binding.iaqualink.internal.api.model.SignIn;
+import org.openhab.binding.iaqualink.internal.api.dto.AccountInfo;
+import org.openhab.binding.iaqualink.internal.api.dto.Auxiliary;
+import org.openhab.binding.iaqualink.internal.api.dto.Device;
+import org.openhab.binding.iaqualink.internal.api.dto.Home;
+import org.openhab.binding.iaqualink.internal.api.dto.OneTouch;
+import org.openhab.binding.iaqualink.internal.api.dto.SignIn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,8 @@ public class IAqualinkClient {
     private static final String HEADER_ACCEPT_LANGUAGE = "en-us";
     private static final String HEADER_ACCEPT_ENCODING = "br, gzip, deflate";
 
-    private static final String SUPPORT_URL = "https://support.iaqualink.com";
+    private static final String AUTH_URL = "https://prod.zodiac-io.com/users/v1/login";
+    private static final String DEVICES_URL = "https://r-api.iaqualink.net/devices.json";
     private static final String IAQUALINK_BASE_URL = "https://p-api.iaqualink.net/v1/mobile/session.json";
 
     private Gson gson = new GsonBuilder().registerTypeAdapter(Home.class, new HomeDeserializer())
@@ -113,8 +114,8 @@ public class IAqualinkClient {
             throws IOException, NotAuthorizedException {
         String signIn = gson.toJson(new SignIn(apiKey, username, password)).toString();
         try {
-            ContentResponse response = httpClient.newRequest(SUPPORT_URL + "/users/sign_in.json")
-                    .method(HttpMethod.POST).content(new StringContentProvider(signIn), "application/json").send();
+            ContentResponse response = httpClient.newRequest(AUTH_URL).method(HttpMethod.POST)
+                    .content(new StringContentProvider(signIn), "application/json").send();
             if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                 throw new NotAuthorizedException(response.getReason());
             }
@@ -139,7 +140,7 @@ public class IAqualinkClient {
      */
     public Device[] getDevices(@Nullable String apiKey, @Nullable String token, int id)
             throws IOException, NotAuthorizedException {
-        return getAqualinkObject(UriBuilder.fromUri(SUPPORT_URL + "/devices.json"). //
+        return getAqualinkObject(UriBuilder.fromUri(DEVICES_URL). //
                 queryParam("api_key", apiKey). //
                 queryParam("authentication_token", token). //
                 queryParam("user_id", id).build(), Device[].class);

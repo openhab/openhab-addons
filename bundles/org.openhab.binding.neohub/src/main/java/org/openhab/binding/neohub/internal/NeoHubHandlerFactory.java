@@ -116,7 +116,6 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
     /*
      * destroy the discovery service
      */
-    @SuppressWarnings("null")
     private synchronized void destroyDiscoveryService(NeoHubHandler handler) {
         // fetch the respective thing's service registration from our list
         ServiceRegistration<?> serviceReg = discoServices.remove(handler.getThing().getUID());

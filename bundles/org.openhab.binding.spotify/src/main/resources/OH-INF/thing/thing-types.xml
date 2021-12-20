@@ -48,6 +48,7 @@
 			<channel id="albumHref" typeId="currentlyPlayedAlbumHref"/>
 			<channel id="albumType" typeId="currentlyPlayedAlbumType"/>
 			<channel id="albumImage" typeId="currentlyPlayedAlbumImage"/>
+			<channel id="albumImageUrl" typeId="currentlyPlayedAlbumImage"/>
 			<channel id="albumName" typeId="currentlyPlayedAlbumName"/>
 
 			<channel id="artistId" typeId="currentlyPlayedArtistId"/>
@@ -64,27 +65,22 @@
 		<representation-property>clientId</representation-property>
 
 		<config-description>
-			<parameter name="clientId" type="text">
-				<required>true</required>
+			<parameter name="clientId" type="text" required="true">
 				<label>Application Client ID</label>
 				<description>This is the Client ID provided by Spotify when you add a new Application for openHAB to your Spotify
 					Account. Go to https://developer.spotify.com/</description>
 			</parameter>
-			<parameter name="clientSecret" type="text">
-				<required>true</required>
+			<parameter name="clientSecret" type="text" required="true">
 				<label>Application Client Secret</label>
 				<description>This is the Client Secret provided by Spotify when you add a new Application for openHAB to your
 					Spotify Account.</description>
 			</parameter>
-			<parameter name="refreshPeriod" type="integer" min="1" max="60">
-				<required>true</required>
+			<parameter name="refreshPeriod" type="integer" min="1" max="60" required="true">
 				<default>10</default>
 				<label>Connect Refresh Period (seconds)</label>
 				<description>This is the frequency of the polling requests to the Spotify Connect Web API. There are limits to the
-					number of requests
-					that can be sent to the Web API. The more often you poll, the better status updates - at the risk
-					of running out of
-					your request quota.</description>
+					number of requests that can be sent to the Web API. The more often you poll, the better status updates - at the
+					risk of running out of your request quota.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -116,8 +112,7 @@
 		<representation-property>deviceName</representation-property>
 
 		<config-description>
-			<parameter name="deviceName" type="text">
-				<required>true</required>
+			<parameter name="deviceName" type="text" required="true">
 				<label>Spotify Device Name</label>
 				<description>This is the device name provided by Spotify.</description>
 			</parameter>
@@ -163,6 +158,7 @@
 		<item-type>String</item-type>
 		<label>Playlists</label>
 		<description>List of the users playlists</description>
+		<config-description-ref uri="spotify:config:playlists"/>
 	</channel-type>
 
 	<channel-type id="playlistName">
@@ -297,6 +293,14 @@
 		<label>Album Image</label>
 		<description>The cover art for the album in widest size</description>
 		<state readOnly="true"/>
+		<config-description-ref uri="spotify:config:album-image"/>
+	</channel-type>
+	<channel-type id="currentlyPlayedAlbumImageUrl">
+		<item-type>String</item-type>
+		<label>Album Image URL</label>
+		<description>The URL to the cover art for the album in widest size</description>
+		<state readOnly="true"/>
+		<config-description-ref uri="spotify:config:album-image"/>
 	</channel-type>
 
 	<channel-type id="currentlyPlayedArtistId" advanced="true">

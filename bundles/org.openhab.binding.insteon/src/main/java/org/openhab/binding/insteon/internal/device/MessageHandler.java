@@ -1078,9 +1078,9 @@ public abstract class MessageHandler {
                 @Nullable
                 State state;
                 String scale = getStringParameter("scale", null);
-                if (scale != null && scale.equals("celsius")) {
+                if ("celsius".equals(scale)) {
                     state = new QuantityType<>(dvalue, SIUnits.CELSIUS);
-                } else if (scale != null && scale.equals("fahrenheit")) {
+                } else if ("fahrenheit".equals(scale)) {
                     state = new QuantityType<>(dvalue, ImperialUnits.FAHRENHEIT);
                 } else {
                     state = new DecimalType(dvalue);
@@ -1102,7 +1102,7 @@ public abstract class MessageHandler {
                 return 0;
             }
             int value = 0;
-            if (lowByte.equals("group")) {
+            if ("group".equals(lowByte)) {
                 value = group;
             } else {
                 value = msg.getByte(lowByte) & 0xFF;

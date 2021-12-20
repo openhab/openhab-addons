@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": 400,
+    "message": "Thermostat fan unavailable.",
+    "status": "FAILED_PRECONDITION"
+  }
+}

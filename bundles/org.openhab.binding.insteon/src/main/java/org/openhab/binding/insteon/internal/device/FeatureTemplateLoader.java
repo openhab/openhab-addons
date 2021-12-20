@@ -70,7 +70,7 @@ public class FeatureTemplateLoader {
                 Node node = nodes.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element e = (Element) node;
-                    if (e.getTagName().equals("feature")) {
+                    if ("feature".equals(e.getTagName())) {
                         features.add(parseFeature(e));
                     }
                 }
@@ -126,7 +126,7 @@ public class FeatureTemplateLoader {
 
     private static void parseMessageHandler(Element e, FeatureTemplate f) throws DOMException, ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
-        if (e.getAttribute("default").equals("true")) {
+        if ("true".equals(e.getAttribute("default"))) {
             f.setDefaultMessageHandler(he);
         } else {
             String attr = e.getAttribute("cmd");
@@ -137,7 +137,7 @@ public class FeatureTemplateLoader {
 
     private static void parseCommandHandler(Element e, FeatureTemplate f) throws ParsingException {
         HandlerEntry he = makeHandlerEntry(e);
-        if (e.getAttribute("default").equals("true")) {
+        if ("true".equals(e.getAttribute("default"))) {
             f.setDefaultCommandHandler(he);
         } else {
             Class<? extends Command> command = parseCommandClass(e.getAttribute("command"));
@@ -156,13 +156,13 @@ public class FeatureTemplateLoader {
     }
 
     private static Class<? extends Command> parseCommandClass(String c) throws ParsingException {
-        if (c.equals("OnOffType")) {
+        if ("OnOffType".equals(c)) {
             return OnOffType.class;
-        } else if (c.equals("PercentType")) {
+        } else if ("PercentType".equals(c)) {
             return PercentType.class;
-        } else if (c.equals("DecimalType")) {
+        } else if ("DecimalType".equals(c)) {
             return DecimalType.class;
-        } else if (c.equals("IncreaseDecreaseType")) {
+        } else if ("IncreaseDecreaseType".equals(c)) {
             return IncreaseDecreaseType.class;
         } else {
             throw new ParsingException("Unknown Command Type");

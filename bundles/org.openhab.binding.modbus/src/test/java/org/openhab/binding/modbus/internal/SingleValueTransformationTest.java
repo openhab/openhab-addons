@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.osgi.framework.BundleContext;
@@ -21,6 +22,7 @@ import org.osgi.framework.BundleContext;
 /**
  * @author Sami Salonen - Initial contribution
  */
+@NonNullByDefault
 public class SingleValueTransformationTest {
 
     @Test

@@ -4,6 +4,8 @@ This binding allows to monitor and control Zehnder ComfoAir serial controlled ve
 Though the binding is developed based on the protocol description for Zehnder ComfoAir devices it should also work for mostly identical systems from different manufacturers, like StorkAir WHR930, Wernig G90-380 and Paul Santos 370 DC.
 It was also successfully tested on a Wernig G90-160.
 
+**NOTE:** This binding does not work with the ComfoAir Q-series (e.g. Q350 or Q450). These ventilation units use a CAN bus for communication and a different protocol.
+
 ### Limitations
 
 * Either the ComfoAir binding or the CCEase Comfocontrol can be active, but not together.
@@ -25,11 +27,14 @@ sudo usermod -a -G dialout openhab
 
 ## Supported Things
 
-Only a single generic thing type is supported by the binding:
+The binding supports thing types for different device types.
+They only differ in the available channels, where the generic *comfoair* thing type supports all available channels.
+If there is no thing type that matches your specific device you can safely choose the *comfoair* type.
 
-|Thing Type ID |Description                                                          |
-|--------------|---------------------------------------------------------------------|
-|comfoair      |A ComfoAir ventilation system connected via RS232 serial connection. |
+|Thing Type ID |Description                                                                  |
+|--------------|-----------------------------------------------------------------------------|
+|comfoair      |A ComfoAir ventilation system connected via RS232 serial connection.         |
+|WHR930        |Thing type restricted to the data points available for the StorkAir WHR930.  |
 
 ## Discovery
 

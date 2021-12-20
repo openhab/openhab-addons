@@ -26,5 +26,6 @@ enum ThirdGenerationChannelDatatypes {
     WATT,
     AMPERE,
     AMPERE_HOUR,
-    VOLT
+    VOLT,
+    HERTZ
 }

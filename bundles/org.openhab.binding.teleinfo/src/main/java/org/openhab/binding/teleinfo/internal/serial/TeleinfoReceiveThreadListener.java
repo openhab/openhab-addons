@@ -15,7 +15,7 @@ package org.openhab.binding.teleinfo.internal.serial;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.teleinfo.internal.dto.Frame;
+import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 
 /**
@@ -26,7 +26,7 @@ import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameEx
 @NonNullByDefault
 public interface TeleinfoReceiveThreadListener {
 
-    void onFrameReceived(final TeleinfoReceiveThread receiveThread, final Frame frame);
+    void onFrameReceived(final Frame frame);
 
     void onInvalidFrameReceived(final TeleinfoReceiveThread receiveThread, final InvalidFrameException error);
 

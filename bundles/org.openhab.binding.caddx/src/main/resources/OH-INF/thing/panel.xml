@@ -200,6 +200,20 @@
 				<label>Zone Bypass Toggle</label>
 				<description>Zone Bypass Toggle</description>
 			</channel>
+
+			<channel id="panel_ac_fail" typeId="panel_flag">
+				<label>AC fail</label>
+				<description>AC fail</description>
+			</channel>
+			<channel id="panel_ac_power_on" typeId="panel_flag">
+				<label>AC Power On</label>
+				<description>AC Power On</description>
+			</channel>
+			<channel id="panel_low_battery_memory" typeId="panel_flag">
+				<label>Low Battery Memory</label>
+				<description>Low Battery Memory</description>
+			</channel>
+
 		</channels>
 	</thing-type>
 

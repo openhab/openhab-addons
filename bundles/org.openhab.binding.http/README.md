@@ -1,6 +1,6 @@
 # HTTP Binding
 
-This binding allows using HTTP to bring external data into openHAB or execute HTTP requests on commands.  
+This binding allows using HTTP to bring external data into openHAB or execute HTTP requests on commands.
 
 ## Supported Things
 
@@ -22,8 +22,8 @@ It can be extended with different channels.
 | `stateMethod`     | no       |   GET   | Method used for requesting the state: `GET`, `PUT`, `POST`. |
 | `commandMethod`   | no       |   GET   | Method used for sending commands: `GET`, `PUT`, `POST`. |
 | `contentType`     | yes      |    -    | MIME content-type of the command requests. Only used for  `PUT` and `POST`. |
-| `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |  
-| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`| 
+| `encoding`        | yes      |    -    | Encoding to be used if no encoding is found in responses (advanced parameter). |
+| `headers`         | yes      |    -    | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",`|
 | `ignoreSSLErrors` | no       |  false  | If set to true ignores invalid SSL certificate errors. This is potentially dangerous.|
 
 *Note:* Optional "no" means that you have to configure a value unless a default is provided and you are ok with that setting.
@@ -55,7 +55,7 @@ The `image` channel-type supports `stateExtension` only.
 | `stateContent`          | yes      |      -      | Content for state requests (if method is `PUT` or `POST`) |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
 
-Transformations need to be specified in the same format as 
+Transformations need to be specified in the same format as
 Some channels have additional parameters.
 When concatenating the `baseURL` and `stateExtension` or `commandExtension` the binding checks if a proper URL part separator (`/`, `&` or `?`) is present and adds a `/` if missing.
 
@@ -73,7 +73,7 @@ Here are a few examples to unwrap an incoming value via `stateTransformation` fr
 Transformations can be chained by separating them with the mathematical intersection character "∩".
 Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 
-The same mechanism works for commands (`commandTransformation`) for outgoing values. 
+The same mechanism works for commands (`commandTransformation`) for outgoing values.
 
 ### `color`
 
@@ -138,7 +138,7 @@ Please note that incompatible units (e.g. `°C` for a `Number:Density` item) wil
 | `moveValue`             | yes      |      -      | A special value that represents `MOVE` |
 
 All values that are not `upValue`, `downValue`, `stopValue`, `moveValue` are interpreted as position 0-100% and need to be numeric only.
-                    
+
 ### `switch`
 
 | parameter               | optional | default     | description |
@@ -150,7 +150,7 @@ All values that are not `upValue`, `downValue`, `stopValue`, `moveValue` are int
 
 ## URL Formatting
 
-After concatenation of the `baseURL` and the `commandExtension` or the `stateExtension` (if provided) the URL is formatted using the [java.util.Formatter](http://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html).
+After concatenation of the `baseURL` and the `commandExtension` or the `stateExtension` (if provided) the URL is formatted using the [java.util.Formatter](https://docs.oracle.com/javase/6/docs/api/java/util/Formatter.html).
 The URL is used as format string and two parameters are added:
 
 - the current date (referenced as `%1$`)
@@ -162,9 +162,9 @@ When sending an OFF command on 2020-07-06, the URL
 
 ```
 http://www.domain.org/home/lights/23871/?status=%2$s&date=%1$tY-%1$tm-%1$td
-``` 
+```
 
-is transformed to 
+is transformed to
 
 ```
 http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
@@ -175,8 +175,8 @@ http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 ### `demo.things`
 
 ```
-Thing http:url:foo "Foo" [ 
-	baseURL="https://example.com/api/v1/metadata-api/web/metadata", 
+Thing http:url:foo "Foo" [
+	baseURL="https://example.com/api/v1/metadata-api/web/metadata",
 	headers="key1=value1", "key2=value2", "key3=value3",
 	refresh=15] {
 		Channels:

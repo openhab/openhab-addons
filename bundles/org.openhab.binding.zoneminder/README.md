@@ -136,14 +136,14 @@ in the Monitor thing configuration.
 void triggerAlarm()
 ```
 
-### triggerAlarmOff
+### cancelAlarm
 
-The `triggerAlarmOff` action cancels a running alarm.
+The `cancelAlarm` action cancels a running alarm.
 
-##### triggerAlarmOff - cancel an alarm
+##### cancelAlarm - cancel an alarm
 
 ```java
-void triggerAlarmOff()
+void cancelAlarm()
 ```
 
 ### Requirements
@@ -231,7 +231,7 @@ when
     Item MotionSensorAlarm changed to ON
 then
     val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
-    zmActions.triggerAlarmOn(120)
+    zmActions.triggerAlarm(120)
 end
 ```
 
@@ -241,7 +241,7 @@ when
     Item MotionSensorAlarm changed to ON
 then
     val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
-    zmActions.triggerAlarmOn()
+    zmActions.triggerAlarm()
 end
 ```
 
@@ -251,7 +251,7 @@ when
     Item MotionSensorAlarm changed to OFF
 then
     val zmActions = getActions("zoneminder", "zoneminder:monitor:1")
-    zmActions.triggerAlarmOff()
+    zmActions.cancelAlarm()
 end
 ```
 

@@ -50,8 +50,8 @@ public class DataTypeMessage implements ComfoAirDataType {
             if (readReplyDataPos != null) {
                 int errorAlo = data[readReplyDataPos[0]];
                 int errorE = data[readReplyDataPos[1]];
-                int errorEA = data[readReplyDataPos[2]];
-                int errorAhi = data[readReplyDataPos[3]];
+                int errorEA = (data.length > 9) ? data[readReplyDataPos[2]] : -1;
+                int errorAhi = (data.length > 9) ? data[readReplyDataPos[3]] : -1;
 
                 StringBuilder errorCode = new StringBuilder();
 

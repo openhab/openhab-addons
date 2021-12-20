@@ -33,4 +33,6 @@ public class SnmpChannelConfiguration {
     public @Nullable String exceptionValue;
 
     public boolean doNotLogException = false;
+
+    public @Nullable String unit;
 }

@@ -5,8 +5,8 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.1.0-SNAPSHOT</version>
+    <version>3.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>org.openhab.binding.miio</artifactId>
-  <name>openHAB Add-ons :: Bundles :: Xiaomi Mi IO Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Xiaomi Wifi devices (Mi IO) Binding</name>
 </project>

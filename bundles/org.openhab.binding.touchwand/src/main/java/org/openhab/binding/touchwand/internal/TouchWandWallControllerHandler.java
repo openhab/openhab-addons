@@ -58,6 +58,8 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
                 triggerChannel(CHANNEL_WALLCONTROLLER_ACTION, action);
             }
             timeLastEventMs = status.getTs();
+        } else {
+            logger.debug("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
 }

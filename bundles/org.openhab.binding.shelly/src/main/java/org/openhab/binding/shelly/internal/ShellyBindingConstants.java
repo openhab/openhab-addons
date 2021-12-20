@@ -191,10 +191,7 @@ public class ShellyBindingConstants {
     public static final String PROPERTY_UPDATE_NEW_VERS = "updateNewVersion";
     public static final String PROPERTY_COAP_DESCR = "coapDeviceDescr";
     public static final String PROPERTY_COAP_VERSION = "coapVersion";
-    public static final String PROPERTY_STATS_TIMEOUTS = "statsTimeoutErrors";
-    public static final String PROPERTY_STATS_TRECOVERED = "statsTimeoutsRecovered";
     public static final String PROPERTY_COIOTAUTO = "coiotAutoEnable";
-    public static final String PROPERTY_COIOTREFRESH = "coiotAutoRefresh";
 
     // Relay
     public static final String CHANNEL_GROUP_RELAY_CONTROL = "relay";
@@ -304,6 +301,7 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_CHARGER = "charger";
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
+    public static final String CHANNEL_DEVST_VOLTAGE = "supplyVoltage";
 
     public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
     public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
@@ -327,6 +325,7 @@ public class ShellyBindingConstants {
     public static final String SHELLY_API_MIN_FWVERSION = "v1.5.7";// v1.5.7+
     public static final String SHELLY_API_MIN_FWCOIOT = "v1.6";// v1.6.0+
     public static final String SHELLY_API_FWCOIOT2 = "v1.8";// CoAP 2 with FW 1.8+
+    public static final String SHELLY_API_FW_110 = "v1.10"; // FW 1.10 or newer detected, activates some add feature
 
     // Alarm types/messages
     public static final String ALARM_TYPE_NONE = "NONE";
@@ -337,6 +336,7 @@ public class ShellyBindingConstants {
     public static final String ALARM_TYPE_LOADERR = "LOAD_ERROR";
     public static final String ALARM_TYPE_SENSOR_ERROR = "SENSOR_ERROR";
     public static final String ALARM_TYPE_LOW_BATTERY = "LOW_BATTERY";
+    public static final String EVENT_TYPE_VIBRATION = "VIBRATION";
 
     // Event types
     public static final String EVENT_TYPE_RELAY = "relay";
@@ -364,4 +364,5 @@ public class ShellyBindingConstants {
     public static final int UPDATE_MIN_DELAY = 15;// update every x triggers or when a key was pressed
     public static final int UPDATE_SETTINGS_INTERVAL_SECONDS = 60; // check for updates every x sec
     public static final int HEALTH_CHECK_INTERVAL_SEC = 300; // Health check interval, 5min
+    public static final int VIBRATION_FILTER_SEC = 5; // Absore duplicate vibration events for xx sec
 }

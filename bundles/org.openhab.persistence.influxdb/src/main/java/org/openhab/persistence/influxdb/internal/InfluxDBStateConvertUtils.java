@@ -93,7 +93,7 @@ public class InfluxDBStateConvertUtils {
      * @return the state of the item represented by the itemName parameter, else the string value of
      *         the Object parameter
      */
-    public static State objectToState(Object value, String itemName, @Nullable ItemRegistry itemRegistry) {
+    public static State objectToState(@Nullable Object value, String itemName, @Nullable ItemRegistry itemRegistry) {
         State state = null;
         if (itemRegistry != null) {
             try {
@@ -111,9 +111,10 @@ public class InfluxDBStateConvertUtils {
         return state;
     }
 
-    public static State objectToState(Object value, Item itemToSetState) {
+    public static State objectToState(@Nullable Object value, Item itemToSetState) {
         String valueStr = String.valueOf(value);
 
+        @Nullable
         Item item = itemToSetState;
         if (item instanceof GroupItem) {
             item = ((GroupItem) item).getBaseItem();

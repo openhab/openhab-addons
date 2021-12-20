@@ -20,23 +20,55 @@ import com.google.gson.annotations.SerializedName;
  * Json model of senec home devices: This sub model contains values of current workload, i. e. current consumption and
  * battery charge.
  *
+ * Section is "ENERGY"
+ *
  * @author Steven Schwarznau - Initial Contribution
  */
 public class SenecHomeEnergy implements Serializable {
 
-    private static final long serialVersionUID = -6171687327416551070L;
+    private static final long serialVersionUID = -5491226594672777034L;
 
-    public @SerializedName("GUI_HOUSE_POW") String homePowerConsumption;
+    /**
+     * House power consumption (W).
+     */
+    public @SerializedName("GUI_HOUSE_POW") String housePowerConsumption;
+
+    /**
+     * Total inverter power (W).
+     * Named "energyProduction" on channel/thing-type side.
+     */
     public @SerializedName("GUI_INVERTER_POWER") String inverterPowerGeneration;
+
+    /**
+     * Battery power in W (+values loading, -values unloading)
+     */
     public @SerializedName("GUI_BAT_DATA_POWER") String batteryPower;
-    public @SerializedName("GUI_BAT_DATA_FUEL_CHARGE") String batteryFuelCharge;
-    public @SerializedName("STAT_STATE") String batteryState;
+
+    /**
+     * Battery current (A).
+     */
+    public @SerializedName("GUI_BAT_DATA_CURRENT") String batteryCurrent;
+
+    /**
+     * Battery voltage (V).
+     */
     public @SerializedName("GUI_BAT_DATA_VOLTAGE") String batteryVoltage;
+
+    /**
+     * Battery charge rate (%).
+     */
+    public @SerializedName("GUI_BAT_DATA_FUEL_CHARGE") String batteryFuelCharge;
+
+    /**
+     * Encoded system state.
+     */
+    public @SerializedName("STAT_STATE") String systemState;
 
     @Override
     public String toString() {
-        return "SenecHomeEnergy [homePowerConsumption=" + homePowerConsumption + ", inverterPowerGeneration="
-                + inverterPowerGeneration + ", batteryPower=" + batteryPower + ", batteryFuelCharge="
-                + batteryFuelCharge + ", batteryState=" + batteryState + ", batteryVoltage" + batteryVoltage + "]";
+        return "SenecHomeEnergy [housePowerConsumption=" + housePowerConsumption + ", inverterPowerGeneration="
+                + inverterPowerGeneration + ", batteryPower=" + batteryPower + ", batteryVoltage=" + batteryVoltage
+                + ", batteryCurrent=" + batteryCurrent + ", batteryFuelCharge=" + batteryFuelCharge + ", systemState="
+                + systemState + "]";
     }
 }

@@ -217,7 +217,7 @@
 		<label>Target Temperature</label>
 		<description>Target temperature setting of the room</description>
 		<category>temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" step="1"/>
+		<state readOnly="false" pattern="%.1f %unit%" step="0.5"/>
 		<config-description>
 			<parameter name="holdOnlineState" type="boolean" required="false">
 				<label>Hold Online State</label>

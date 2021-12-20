@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lutron.internal.radiora.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -26,13 +28,14 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Jeff Lauterbach - Initial Contribution
  *
  */
+@NonNullByDefault
 public abstract class LutronHandler extends BaseThingHandler {
 
     public LutronHandler(Thing thing) {
         super(thing);
     }
 
-    public RS232Handler getRS232Handler() {
+    public @Nullable RS232Handler getRS232Handler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "Unable to get bridge");
@@ -45,6 +48,13 @@ public abstract class LutronHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not properly configured.");
             return null;
         }
+    }
+
+    /**
+     * Returns true if system numbers match, meaning that either both are 2 or both are 1 or 0 (n/a).
+     */
+    public static boolean systemsMatch(int a, int b) {
+        return ((a == 2 && b == 2) || ((a == 0 || a == 1) && (b == 0 || b == 1)));
     }
 
     public abstract void handleFeedback(RadioRAFeedback feedback);

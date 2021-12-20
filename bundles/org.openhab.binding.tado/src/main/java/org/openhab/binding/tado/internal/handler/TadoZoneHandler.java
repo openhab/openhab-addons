@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Dennis Frommknecht - Initial contribution
  * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
- * 
+ *
  */
 public class TadoZoneHandler extends BaseHomeThingHandler {
     private Logger logger = LoggerFactory.getLogger(TadoZoneHandler.class);
@@ -183,6 +183,11 @@ public class TadoZoneHandler extends BaseHomeThingHandler {
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
         }
+    }
+
+    @Override
+    public void dispose() {
+        cancelScheduledZoneStateUpdate();
     }
 
     @Override

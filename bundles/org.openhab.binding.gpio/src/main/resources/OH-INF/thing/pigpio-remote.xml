@@ -50,6 +50,17 @@
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="pullupdown" type="text">
+				<label>Pull Up/Down Resistor</label>
+				<description>Configure Pull Up/Down Resistor of GPIO pin</description>
+				<options>
+					<option value="OFF">Off</option>
+					<option value="DOWN">Pull Down</option>
+					<option value="UP">Pull Up</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>OFF</default>
+			</parameter>
 		</config-description>
 	</channel-type>
 

@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
  * @author Michael Wodniok - Added last_update-channel and additional needed handling of it
+ * @author Michael Wodniok - Changed calculation of Future for refresh of channels
  */
 @NonNullByDefault
 public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdateListener {
@@ -337,6 +338,7 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
             return;
         }
         final Instant now = Instant.now();
+        Instant nextRegularUpdate = null;
         if (currentCalendar.isEventPresent(now)) {
             final Event currentEvent = currentCalendar.getCurrentEvent(now);
             if (currentEvent == null) {
@@ -344,32 +346,33 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
                         "Could not schedule next update of states, due to unexpected behaviour of calendar implementation.");
                 return;
             }
+            nextRegularUpdate = currentEvent.end;
+        }
+
+        final Event nextEvent = currentCalendar.getNextEvent(now);
+        final ICalendarConfiguration currentConfig = this.configuration;
+        if (currentConfig == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Something is broken, the configuration is not available.");
+            return;
+        }
+        if (nextEvent != null) {
+            if (nextRegularUpdate == null || nextEvent.start.isBefore(nextRegularUpdate)) {
+                nextRegularUpdate = nextEvent.start;
+            }
+        }
+
+        if (nextRegularUpdate != null) {
             updateJobFuture = scheduler.schedule(() -> {
                 ICalendarHandler.this.updateStates();
                 ICalendarHandler.this.rescheduleCalendarStateUpdate();
-            }, currentEvent.end.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-            logger.debug("Scheduled update in {} seconds", currentEvent.end.getEpochSecond() - now.getEpochSecond());
+            }, nextRegularUpdate.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
+            logger.debug("Scheduled update in {} seconds", nextRegularUpdate.getEpochSecond() - now.getEpochSecond());
         } else {
-            final Event nextEvent = currentCalendar.getNextEvent(now);
-            final ICalendarConfiguration currentConfig = this.configuration;
-            if (currentConfig == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Something is broken, the configuration is not available.");
-                return;
-            }
-            if (nextEvent == null) {
-                updateJobFuture = scheduler.schedule(() -> {
-                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, 1L, TimeUnit.DAYS);
-                logger.debug("Scheduled reschedule in 1 day");
-            } else {
-                updateJobFuture = scheduler.schedule(() -> {
-                    ICalendarHandler.this.updateStates();
-                    ICalendarHandler.this.rescheduleCalendarStateUpdate();
-                }, nextEvent.start.getEpochSecond() - now.getEpochSecond(), TimeUnit.SECONDS);
-                logger.debug("Scheduled update in {} seconds", nextEvent.start.getEpochSecond() - now.getEpochSecond());
-
-            }
+            updateJobFuture = scheduler.schedule(() -> {
+                ICalendarHandler.this.rescheduleCalendarStateUpdate();
+            }, 1L, TimeUnit.DAYS);
+            logger.debug("Scheduled reschedule in 1 day");
         }
     }
 

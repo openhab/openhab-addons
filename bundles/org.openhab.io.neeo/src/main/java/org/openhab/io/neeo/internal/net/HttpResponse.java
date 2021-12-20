@@ -21,7 +21,6 @@ import java.util.Objects;
 
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -58,8 +57,7 @@ public class HttpResponse {
         httpReason = response.getStatusInfo().getReasonPhrase();
 
         if (response.hasEntity()) {
-            InputStream is = response.readEntity(InputStream.class);
-            contents = IOUtils.toByteArray(is);
+            contents = response.readEntity(InputStream.class).readAllBytes();
         } else {
             contents = null;
         }

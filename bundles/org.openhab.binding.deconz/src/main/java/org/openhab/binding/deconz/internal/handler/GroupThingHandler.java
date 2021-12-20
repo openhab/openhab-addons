@@ -19,21 +19,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.deconz.internal.CommandDescriptionProvider;
+import org.openhab.binding.deconz.internal.DeconzDynamicCommandDescriptionProvider;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.GroupAction;
 import org.openhab.binding.deconz.internal.dto.GroupMessage;
 import org.openhab.binding.deconz.internal.dto.GroupState;
+import org.openhab.binding.deconz.internal.dto.Scene;
 import org.openhab.binding.deconz.internal.types.ResourceType;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.CommandDescriptionBuilder;
-import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +55,24 @@ import com.google.gson.Gson;
 public class GroupThingHandler extends DeconzBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_LIGHTGROUP);
     private final Logger logger = LoggerFactory.getLogger(GroupThingHandler.class);
-    private final CommandDescriptionProvider commandDescriptionProvider;
+    private final DeconzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     private Map<String, String> scenes = Map.of();
     private GroupState groupStateCache = new GroupState();
+    private String colorMode = "";
 
-    public GroupThingHandler(Thing thing, Gson gson, CommandDescriptionProvider commandDescriptionProvider) {
+    public GroupThingHandler(Thing thing, Gson gson,
+            DeconzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(thing, gson, ResourceType.GROUPS);
         this.commandDescriptionProvider = commandDescriptionProvider;
+    }
+
+    @Override
+    public void initialize() {
+        ThingConfig thingConfig = getConfigAs(ThingConfig.class);
+        colorMode = thingConfig.colormode;
+
+        super.initialize();
     }
 
     @Override
@@ -85,11 +98,17 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
-                    Integer bri = Util.fromPercentType(hsbCommand.getBrightness());
-                    newGroupAction.bri = bri;
-                    if (bri > 0) {
+                    // XY color is the implicit default: Use XY color mode if i) no color mode is set or ii) if the bulb
+                    // is in CT mode or iii) already in XY mode. Only if the bulb is in HS mode, use this one.
+                    if ("hs".equals(colorMode)) {
                         newGroupAction.hue = (int) (hsbCommand.getHue().doubleValue() * HUE_FACTOR);
                         newGroupAction.sat = Util.fromPercentType(hsbCommand.getSaturation());
+                    } else {
+                        PercentType[] xy = hsbCommand.toXY();
+                        if (xy.length < 2) {
+                            logger.warn("Failed to convert {} to xy-values", command);
+                        }
+                        newGroupAction.xy = new double[] { xy[0].doubleValue() / 100.0, xy[1].doubleValue() / 100.0 };
                     }
                 } else if (command instanceof PercentType) {
                     newGroupAction.bri = Util.fromPercentType((PercentType) command);
@@ -125,8 +144,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
         }
 
         Integer bri = newGroupAction.bri;
-        if (bri != null && bri > 0) {
-            newGroupAction.on = true;
+        if (bri != null) {
+            newGroupAction.on = (bri > 0);
         }
 
         sendCommand(newGroupAction, command, channelUID, null);
@@ -138,10 +157,8 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
             GroupMessage groupMessage = (GroupMessage) stateResponse;
             scenes = groupMessage.scenes.stream().collect(Collectors.toMap(scene -> scene.name, scene -> scene.id));
             ChannelUID channelUID = new ChannelUID(thing.getUID(), CHANNEL_SCENE);
-            commandDescriptionProvider.setDescription(channelUID,
-                    CommandDescriptionBuilder.create().withCommandOptions(groupMessage.scenes.stream()
-                            .map(scene -> new CommandOption(scene.name, scene.name)).collect(Collectors.toList()))
-                            .build());
+            commandDescriptionProvider.setCommandOptions(channelUID,
+                    groupMessage.scenes.stream().map(Scene::toCommandOption).collect(Collectors.toList()));
 
         }
         messageReceived(config.id, stateResponse);
@@ -169,6 +186,16 @@ public class GroupThingHandler extends DeconzBaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, groupState));
                 groupStateCache = groupState;
+            }
+            GroupAction groupAction = groupMessage.action;
+            if (groupAction != null) {
+                if (colorMode.isEmpty()) {
+                    String cmode = groupAction.colormode;
+                    if (cmode != null && ("hs".equals(cmode) || "xy".equals(cmode))) {
+                        // only set the color mode if it is hs or xy, not ct
+                        colorMode = cmode;
+                    }
+                }
             }
         }
     }

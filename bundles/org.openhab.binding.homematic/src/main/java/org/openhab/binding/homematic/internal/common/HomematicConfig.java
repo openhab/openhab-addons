@@ -46,7 +46,6 @@ public class HomematicConfig {
     private int groupPort;
 
     private String callbackHost;
-    private String bindAddress;
     private int xmlCallbackPort;
     private int binCallbackPort;
 
@@ -59,6 +58,8 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
+    private int callbackRegistrationRetries;
+    private int callbackRegTimeout;
 
     /**
      * Returns the Homematic gateway address.
@@ -89,30 +90,6 @@ public class HomematicConfig {
     }
 
     /**
-     * Returns the bind address.
-     */
-    public String getBindAddress() {
-        return bindAddress;
-    }
-
-    /**
-     * Sets the bind address.
-     */
-    public void setBindAddress(String bindAddress) {
-        this.bindAddress = bindAddress;
-    }
-
-    /**
-     * Sets the callback host port.
-     *
-     * @deprecated use setBinCallbackPort
-     */
-    @Deprecated
-    public void setCallbackPort(int callbackPort) {
-        this.binCallbackPort = callbackPort;
-    }
-
-    /**
      * Returns the XML-RPC callback host port.
      */
     public int getXmlCallbackPort() {
@@ -138,6 +115,20 @@ public class HomematicConfig {
      */
     public void setBinCallbackPort(int binCallbackPort) {
         this.binCallbackPort = binCallbackPort;
+    }
+
+    /**
+     * Sets timeout for callback registration.
+     */
+    public void setCallbackRegTimeout(int timeout) {
+        this.callbackRegTimeout = timeout;
+    }
+
+    /**
+     * Returns timeout for callback registrations.
+     */
+    public int getCallbackRegTimeout() {
+        return callbackRegTimeout;
     }
 
     /**
@@ -404,11 +395,11 @@ public class HomematicConfig {
     @Override
     public String toString() {
         return String.format(
-                "%s[gatewayAddress=%s,callbackHost=%s,bindAddress=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
+                "%s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
                         + "gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,"
                         + "discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]",
-                getClass().getSimpleName(), gatewayAddress, callbackHost, bindAddress, xmlCallbackPort, binCallbackPort,
-                gatewayType, getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout,
-                discoveryTimeToLive, installModeDuration, socketMaxAlive);
+                getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort, gatewayType,
+                getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout, discoveryTimeToLive,
+                installModeDuration, socketMaxAlive);
     }
 }

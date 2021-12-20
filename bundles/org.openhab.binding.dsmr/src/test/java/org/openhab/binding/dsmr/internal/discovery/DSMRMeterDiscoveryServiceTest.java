@@ -66,7 +66,7 @@ public class DSMRMeterDiscoveryServiceTest {
         P1Telegram expected = TelegramReaderUtil.readTelegram(EXPECTED_CONFIGURED_TELEGRAM, TelegramState.OK);
         AtomicReference<List<DSMRMeterType>> invalidConfiguredRef = new AtomicReference<>();
         AtomicReference<List<DSMRMeterType>> unconfiguredRef = new AtomicReference<>();
-        DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService(bridge) {
+        DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService() {
             @Override
             protected void reportConfigurationValidationResults(List<DSMRMeterType> invalidConfigured,
                     List<DSMRMeterType> unconfiguredMeters) {
@@ -75,6 +75,7 @@ public class DSMRMeterDiscoveryServiceTest {
                 unconfiguredRef.set(unconfiguredMeters);
             }
         };
+        service.setThingHandler(bridge);
 
         // Mock the invalid configuration by reading a telegram that is valid for a meter that is a subset of the
         // expected meter.
@@ -110,13 +111,14 @@ public class DSMRMeterDiscoveryServiceTest {
     public void testUnregisteredMeters() {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(UNREGISTERED_METER_TELEGRAM, TelegramState.OK);
         AtomicBoolean unregisteredMeter = new AtomicBoolean(false);
-        DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService(bridge) {
+        DSMRMeterDiscoveryService service = new DSMRMeterDiscoveryService() {
             @Override
             protected void reportUnregisteredMeters() {
                 super.reportUnregisteredMeters();
                 unregisteredMeter.set(true);
             }
         };
+        service.setThingHandler(bridge);
         when(bridge.getThing().getUID()).thenReturn(new ThingUID("dsmr:dsmrBridge:22e5393c"));
         when(bridge.getThing().getThings()).thenReturn(Collections.emptyList());
 

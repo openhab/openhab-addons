@@ -88,6 +88,7 @@ org.openhab.homekit:thermostatTargetModeAuto=Auto
 org.openhab.homekit:thermostatTargetModeOff=Off
 org.openhab.homekit:networkInterface=192.168.0.6
 org.openhab.homekit:useOHmDNS=false
+org.openhab.homekit:blockUserDeletion=false
 org.openhab.homekit:name=openHAB
 ```
 
@@ -98,6 +99,7 @@ org.openhab.homekit:name=openHAB
 | networkInterface         | IP address or domain name under which the HomeKit bridge can be reached. If no value is configured, the add-on uses the first network adapter address configured for openHAB.                                                                                  | (none)        |
 | port                     | Port under which the HomeKit bridge can be reached.                                                                                                                                                                                     | 9123          |
 | useOHmDNS                | mDNS service is used to advertise openHAB as HomeKit bridge in the network so that HomeKit clients can find it. openHAB has already mDNS service running. This option defines whether the mDNS service of openHAB or a separate service should be used.   | false  |
+| blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices.                                              | false         |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
 | useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                 | false         |
@@ -585,7 +587,7 @@ or using UI
 |                      |                             | Hue                          | Dimmer, Color            | Hue                                                                                                                                                                                                                                                                                                       |
 |                      |                             | Saturation                   | Dimmer, Color            | Saturation in % (1-100)                                                                                                                                                                                                                                                                                   |
 |                      |                             | Brightness                   | Dimmer, Color            | Brightness in % (1-100). See "Usage of dimmer modes" for configuration details.                                                                                                                                                                                                                                                                                  |
-|                      |                             | ColorTemperature             | Number                   | NOT WORKING on iOS 14.x. Color temperature which is represented in reciprocal megaKelvin, values - 50 to 400. should not be used in combination with hue, saturation and brightness                                                                                                                                                |
+|                      |                             | ColorTemperature             | Number                   | Color temperature represented in reciprocal megaKelvin. The default value range is from 50 to 400. Color temperature should not be used in combination with hue, saturation and brightness. It supports following configuration parameters: minValue, maxValue                                                                                                                                                 |
 | Fan                  |                             |                              |                          | Fan                                                                                                                                                                                                                                                                                                       |
 |                      | ActiveStatus                |                              | Switch                   | accessory current working status. A value of "ON"/"OPEN" indicates that the accessory is active and is functioning without any errors.                                                                                                                                                                     |
 |                      |                             | CurrentFanState              | Number                   | current fan state.  values: 0=INACTIVE, 1=IDLE, 2=BLOWING AIR                                                                                                                                                                                                                                             |
@@ -718,6 +720,7 @@ String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           
 Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
 Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
+
 ## Additional Notes
 
 HomeKit allows only a single pairing to be established with the bridge.
@@ -744,6 +747,13 @@ openhab> log:set TRACE io.github.hapjava
 openhab> log:tail io.github.hapjava
 ```
 
+In order to enable detailed logs of openHAB HomeKit binding
+
+```
+openhab> log:set TRACE org.openhab.io.homekit.internal
+openhab> log:tail org.openhab.io.homekit.internal
+```
+
 ## Console commands
 
 `openhab:homekit list` - list all HomeKit accessories currently advertised to the HomeKit clients.
@@ -753,6 +763,7 @@ openhab> log:tail io.github.hapjava
 ## Troubleshooting 
 
 ### openHAB is not listed in home app
+
 if you don't see openHAB in the home app, probably multicast DNS (mDNS) traffic is not routed correctly from openHAB to home app device or openHAB is already in paired state. 
 You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/discovery-dns-sd-browser/id305441017) as follow: 
 
@@ -774,4 +785,4 @@ You can verify this with [Discovery DNS iOS app](https://apps.apple.com/us/app/d
 - verify the flag "sf". 
   - if sf is equal 1, openHAB is accepting pairing from new iOS device. 
   - if sf is equal 0 (as on screenshot), openHAB is already paired and does not accept any new pairing request. you can reset pairing using `openhab:homekit clearPairings` command in karaf console.
-- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device. 
+- if you see openHAB bridge and sf is equal 1 but you dont see openHAB in home app, probably you home app still think it is already paired with openHAB. remove your home from home app and restart iOS device.

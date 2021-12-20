@@ -31,6 +31,7 @@ class LxControlFactory {
         add(new LxControlAlarm.Factory());
         add(new LxControlColorPickerV2.Factory());
         add(new LxControlDimmer.Factory());
+        add(new LxControlEIBDimmer.Factory());
         add(new LxControlInfoOnlyAnalog.Factory());
         add(new LxControlInfoOnlyDigital.Factory());
         add(new LxControlIRoomControllerV2.Factory());
@@ -42,6 +43,7 @@ class LxControlFactory {
         add(new LxControlMeter.Factory());
         add(new LxControlPushbutton.Factory());
         add(new LxControlRadio.Factory());
+        add(new LxControlSauna.Factory());
         add(new LxControlSlider.Factory());
         add(new LxControlSwitch.Factory());
         add(new LxControlTextState.Factory());

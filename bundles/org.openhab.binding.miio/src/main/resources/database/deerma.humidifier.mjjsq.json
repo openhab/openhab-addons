@@ -54,7 +54,8 @@
 						"command": "Set_HumidifierGears",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Low\",\"2\"\u003d\"Medium\",\"3\"\u003d\"High\",\"4\"\u003d\"Humidity \"]`"
 			},
 			{
 				"property": "Humidity_Value",

@@ -19,7 +19,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
-import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -62,15 +61,15 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             + "facet=etat_grand_froid&facet=etat_avalanches&refine.nom_dept=%s";
     private static final int TIMEOUT_MS = 30000;
     private static final String UNKNOWN_COLOR = "b3b3b3";
-    private static final Map<AlertLevel, String> ALERT_COLORS = Map.ofEntries(
-            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.GREEN, "00ff00"),
-            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.YELLOW, "ffff00"),
-            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.ORANGE, "ff6600"),
-            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.RED, "ff0000"),
-            new AbstractMap.SimpleEntry<AlertLevel, String>(AlertLevel.UNKNOWN, UNKNOWN_COLOR));
+    private static final Map<AlertLevel, String> ALERT_COLORS = Map.ofEntries(Map.entry(AlertLevel.GREEN, "00ff00"),
+            Map.entry(AlertLevel.YELLOW, "ffff00"), Map.entry(AlertLevel.ORANGE, "ff6600"),
+            Map.entry(AlertLevel.RED, "ff0000"), Map.entry(AlertLevel.UNKNOWN, UNKNOWN_COLOR));
+
+    private static final Map<AlertLevel, State> ALERT_LEVELS = Map.ofEntries(
+            Map.entry(AlertLevel.GREEN, DecimalType.ZERO), Map.entry(AlertLevel.YELLOW, new DecimalType(1)),
+            Map.entry(AlertLevel.ORANGE, new DecimalType(2)), Map.entry(AlertLevel.RED, new DecimalType(3)));
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteHandler.class);
-    // Time zone provider representing time zone configured in openHAB configuration
     private final Gson gson;
     private @Nullable ScheduledFuture<?> refreshJob;
     private String queryUrl = "";
@@ -96,11 +95,11 @@ public class MeteoAlerteHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing the Météo Alerte handler.");
-        ScheduledFuture<?> refreshJob = this.refreshJob;
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> localJob = refreshJob;
+        if (localJob != null) {
+            localJob.cancel(true);
         }
-        this.refreshJob = null;
+        refreshJob = null;
     }
 
     @Override
@@ -117,8 +116,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             }
             String response = HttpUtil.executeUrl("GET", queryUrl, TIMEOUT_MS);
             if (response == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "empty response");
-                return;
+                throw new IOException("Empty response");
             }
             updateStatus(ThingStatus.ONLINE);
             ApiResponse apiResponse = gson.fromJson(response, ApiResponse.class);
@@ -153,7 +151,7 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         }));
     }
 
-    public byte @Nullable [] getResource(String iconPath) {
+    private byte @Nullable [] getResource(String iconPath) {
         ClassLoader classLoader = MeteoAlerteHandler.class.getClassLoader();
         if (classLoader != null) {
             try (InputStream stream = classLoader.getResourceAsStream(iconPath)) {
@@ -165,10 +163,10 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         return null;
     }
 
-    public void updateAlert(String channelId, AlertLevel value) {
+    private void updateAlert(String channelId, AlertLevel value) {
         String channelIcon = channelId + "-icon";
         if (isLinked(channelId)) {
-            updateState(channelId, getAlertLevel(value));
+            updateState(channelId, ALERT_LEVELS.getOrDefault(value, UnDefType.UNDEF));
         }
         if (isLinked(channelIcon)) {
             State result = UnDefType.UNDEF;
@@ -182,24 +180,9 @@ public class MeteoAlerteHandler extends BaseThingHandler {
         }
     }
 
-    public void updateDate(String channelId, ZonedDateTime zonedDateTime) {
+    private void updateDate(String channelId, ZonedDateTime zonedDateTime) {
         if (isLinked(channelId)) {
             updateState(channelId, new DateTimeType(zonedDateTime));
-        }
-    }
-
-    public State getAlertLevel(AlertLevel alert) {
-        switch (alert) {
-            case GREEN:
-                return DecimalType.ZERO;
-            case YELLOW:
-                return new DecimalType(1);
-            case ORANGE:
-                return new DecimalType(2);
-            case RED:
-                return new DecimalType(3);
-            default:
-                return UnDefType.UNDEF;
         }
     }
 }

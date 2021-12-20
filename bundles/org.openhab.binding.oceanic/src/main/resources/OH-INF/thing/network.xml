@@ -59,7 +59,6 @@
 			</parameter>
 			<parameter name="portNumber" type="integer" required="true">
 				<description>Port number of the network proxy</description>
-				<required>false</required>
 				<label>Port</label>
 			</parameter>
 			<parameter name="interval" type="decimal" required="true">

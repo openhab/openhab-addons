@@ -12,11 +12,14 @@
  */
 package org.openhab.persistence.influxdb.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * InfluxDB version
  *
  * @author Joan Pujol Espinar - Initial contribution
  */
+@NonNullByDefault
 public enum InfluxDBVersion {
     V1,
     V2,

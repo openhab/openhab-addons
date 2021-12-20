@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="plugwiseha"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="setpointTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Gets or sets the set point of this zone</description>
+		<category>heating</category>
+		<state min="0.0" max="35.0" step="0.5" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Zone Temperature</label>
+		<description>Gets the temperature of this zone</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="offsetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Thermostat Temperature Offset</label>
+		<description>Gets or sets the temperature offset for this thermostat</description>
+		<category>heating</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="preHeat">
+		<item-type>Switch</item-type>
+		<label>Preheat</label>
+		<description>Switch the preheating of a zone ON or OFF</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Switch the Plugwise Smart plug ON or OFF</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="lock">
+		<item-type>Switch</item-type>
+		<label>Lock</label>
+		<description>Locks the switch state of the Plugwise Smart plug</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="powerUsage">
+		<item-type>Number:Power</item-type>
+		<label>Power Usage</label>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="chState">
+		<item-type>Switch</item-type>
+		<label>Central Heating Active</label>
+		<description>Is the boiler active for central heating, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhwState">
+		<item-type>Switch</item-type>
+		<label>Domestic Hot Water Active</label>
+		<description>Is the boiler active for domestic hot water, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="coolingState">
+		<item-type>Switch</item-type>
+		<label>Cooling State</label>
+		<description>Is the boiler active for cooling, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="flameState">
+		<item-type>Switch</item-type>
+		<label>Flame State</label>
+		<description>Is the boiler's flame active, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="intendedHeatingState">
+		<item-type>Switch</item-type>
+		<label>Intended Heating State</label>
+		<description>Should the boiler be active for central heating, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dhwComfortMode">
+		<item-type>Switch</item-type>
+		<label>Domestic Hot Water Comfort Mode</label>
+		<description>Is the boiler's domestic hot water mode set to comfort, On or OFF</description>
+		<category>switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="intendedBoilerTemp">
+		<item-type>Number:Temperature</item-type>
+		<label>Intended Boiler Temperature</label>
+		<description>Gets the intended temperature of this boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="modulationLevel">
+		<item-type>Number</item-type>
+		<label>Modulelation Level</label>
+		<description>Gets the modulation level of this boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="otAppFaultCode">
+		<item-type>Number</item-type>
+		<label>Opentherm Application Faultcode</label>
+		<description>Gets the Opentherm application fault code of this boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="dhwTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Domestic Hot Water Temperature</label>
+		<description>Gets the temperature of the domestic hot water</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="otOEMFaultCode">
+		<item-type>Number</item-type>
+		<label>OEM Fault Code</label>
+		<description>Gets the OEM fault code of this boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="boilerTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler Temperature</label>
+		<description>Gets the temperature of this boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dhwSetpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Domestic Hot Water Setpoint Temperature</label>
+		<description>Gets the temperature of the domestic hot water setpoint</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="maxBoilerTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Max Boiler Temperature</label>
+		<description>Gets the maximum temperature ofthis boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="waterPressure">
+		<item-type>Number:Pressure</item-type>
+		<label>Water Pressure</label>
+		<description>Gets the water pressure of the boiler</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="presetScene">
+		<item-type>String</item-type>
+		<label>Preset Scene</label>
+		<description>Gets the preset scene of the zone</description>
+		<category>heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="valvePosition">
+		<item-type>Number</item-type>
+		<label>Valve Position</label>
+		<description>Gets the position of the valve (0% closed, 100% open)</description>
+		<category>heating</category>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+</thing:thing-descriptions>

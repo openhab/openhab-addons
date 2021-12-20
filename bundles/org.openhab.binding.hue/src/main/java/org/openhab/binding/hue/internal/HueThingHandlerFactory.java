@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
-import org.openhab.binding.hue.internal.handler.HueStateDescriptionOptionProvider;
+import org.openhab.binding.hue.internal.handler.HueStateDescriptionProvider;
 import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.GeofencePresenceHandler;
@@ -33,6 +33,8 @@ import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -67,11 +69,16 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                     ClipHandler.SUPPORTED_THING_TYPES.stream(), HueGroupHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toSet()));
 
-    private final HueStateDescriptionOptionProvider stateOptionProvider;
+    private final HueStateDescriptionProvider stateDescriptionProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
-    public HueThingHandlerFactory(final @Reference HueStateDescriptionOptionProvider stateOptionProvider) {
-        this.stateOptionProvider = stateOptionProvider;
+    public HueThingHandlerFactory(final @Reference HueStateDescriptionProvider stateDescriptionProvider,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -142,9 +149,9 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueBridgeHandler((Bridge) thing, stateOptionProvider);
+            return new HueBridgeHandler((Bridge) thing, stateDescriptionProvider, i18nProvider, localeProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueLightHandler(thing, stateOptionProvider);
+            return new HueLightHandler(thing, stateDescriptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new DimmerSwitchHandler(thing);
         } else if (TapSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
@@ -160,7 +167,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new ClipHandler(thing);
         } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueGroupHandler(thing, stateOptionProvider);
+            return new HueGroupHandler(thing, stateDescriptionProvider);
         } else {
             return null;
         }

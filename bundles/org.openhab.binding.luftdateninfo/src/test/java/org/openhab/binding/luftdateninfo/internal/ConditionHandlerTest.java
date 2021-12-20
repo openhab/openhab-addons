@@ -13,6 +13,7 @@
 package org.openhab.binding.luftdateninfo.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.openhab.core.library.unit.MetricPrefix.HECTO;
 
 import java.util.HashMap;
 
@@ -49,9 +50,9 @@ public class ConditionHandlerTest {
             UpdateStatus result = condHandler.updateChannels(pmJson);
             assertEquals(UpdateStatus.OK, result, "Valid update");
             assertEquals(QuantityType.valueOf(22.7, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
-            assertEquals(QuantityType.valueOf(61.0, Units.PERCENT), condHandler.getHumidity(), "Humidity");
-            assertEquals(QuantityType.valueOf(-1, SIUnits.PASCAL), condHandler.getPressure(), "Pressure");
-            assertEquals(QuantityType.valueOf(-1, SIUnits.PASCAL), condHandler.getPressureSea(), "Pressure Sea");
+            assertEquals(QuantityType.valueOf(61., Units.PERCENT), condHandler.getHumidity(), "Humidity");
+            assertEquals(QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL)), condHandler.getPressure(), "Pressure");
+            assertEquals(QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL)), condHandler.getPressureSea(), "Pressure Sea");
         } else {
             assertTrue(false);
         }
@@ -73,8 +74,9 @@ public class ConditionHandlerTest {
             assertEquals(UpdateStatus.OK, result, "Valid update");
             assertEquals(QuantityType.valueOf(21.5, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
             assertEquals(QuantityType.valueOf(58.5, Units.PERCENT), condHandler.getHumidity(), "Humidity");
-            assertEquals(QuantityType.valueOf(100200.0, SIUnits.PASCAL), condHandler.getPressure(), "Pressure");
-            assertEquals(QuantityType.valueOf(101968.7, SIUnits.PASCAL), condHandler.getPressureSea(), "Pressure Sea");
+            assertEquals(QuantityType.valueOf(1002.0, HECTO(SIUnits.PASCAL)), condHandler.getPressure(), "Pressure");
+            assertEquals(QuantityType.valueOf(1019.7, HECTO(SIUnits.PASCAL)), condHandler.getPressureSea(),
+                    "Pressure Sea");
         } else {
             assertTrue(false);
         }
@@ -125,5 +127,28 @@ public class ConditionHandlerTest {
         ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
         UpdateStatus result = condHandler.updateChannels(null);
         assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
+    }
+
+    @Test
+    public void testInternalUpdate() {
+        ThingMock t = new ThingMock();
+
+        HashMap<String, Object> properties = new HashMap<String, Object>();
+        // String sensorid taken from thing-types.xml
+        properties.put("ipAddress", "192.168.178.1");
+        t.setConfiguration(properties);
+
+        ConditionHandlerExtension condHandler = new ConditionHandlerExtension(t);
+        String pmJson = FileReader.readFileInString("src/test/resources/internal-data.json");
+        if (pmJson != null) {
+            UpdateStatus result = condHandler.updateChannels("[" + pmJson + "]");
+            assertEquals(UpdateStatus.OK, result, "Valid update");
+            assertEquals(QuantityType.valueOf(17.6, SIUnits.CELSIUS), condHandler.getTemperature(), "Temperature");
+            assertEquals(QuantityType.valueOf(57.8, Units.PERCENT), condHandler.getHumidity(), "Humidity");
+            assertEquals(QuantityType.valueOf(986.8, HECTO(SIUnits.PASCAL)), condHandler.getPressure(), "Pressure");
+            assertEquals(QuantityType.valueOf(-1, HECTO(SIUnits.PASCAL)), condHandler.getPressureSea(), "Pressure Sea");
+        } else {
+            assertTrue(false);
+        }
     }
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type:tacmi:schemaApiDefaults">
+		<parameter name="updatePolicy" type="integer" min="0" max="2">
+			<label>Update Policy</label>
+			<description>Update policy for this channel. Default means "On-Change" for channels that can be modified and
+				"On-Fetch" for read-only channels.</description>
+			<default>0</default>
+			<options>
+				<option value="0">Default</option>
+				<option value="1">On-Fetch</option>
+				<option value="2">On-Update</option>
+			</options>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
