@@ -60,7 +60,8 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
     private final Logger logger = LoggerFactory.getLogger(MycroftHandler.class);
 
-    protected final MycroftConnection connection;
+    private final WebSocketFactory webSocketFactory;
+    private @NonNullByDefault({}) MycroftConnection connection;
     private @Nullable ScheduledFuture<?> scheduledFuture;
     private MycroftConfiguration config = new MycroftConfiguration();
     private boolean thingDisposing = false;
@@ -72,14 +73,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
     public MycroftHandler(Thing thing, WebSocketFactory webSocketFactory) {
         super(thing);
-        String websocketID = thing.getUID().getAsString().replace(':', '-');
-        if (websocketID.length() < 4) {
-            websocketID = "mycroft-" + websocketID;
-        }
-        if (websocketID.length() > 20) {
-            websocketID = websocketID.substring(websocketID.length() - 20);
-        }
-        this.connection = new MycroftConnection(this, webSocketFactory.createWebSocketClient(websocketID));
+        this.webSocketFactory = webSocketFactory;
     }
 
     /**
@@ -134,6 +128,15 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
         logger.debug("Start initializing Mycroft {}", thing.getUID());
 
         config = getConfigAs(MycroftConfiguration.class);
+
+        String websocketID = thing.getUID().getAsString().replace(':', '-');
+        if (websocketID.length() < 4) {
+            websocketID = "mycroft-" + websocketID;
+        }
+        if (websocketID.length() > 20) {
+            websocketID = websocketID.substring(websocketID.length() - 20);
+        }
+        this.connection = new MycroftConnection(this, webSocketFactory.createWebSocketClient(websocketID));
 
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::startWebsocket, 0, POLL_FREQUENCY_SEC,
                 TimeUnit.SECONDS);
