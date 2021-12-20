@@ -101,6 +101,8 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `ohmpilotenergyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
 | `ohmpilotpowerrealsum` | Number:Power            | Real Power                                                                                                                                                                                                     |
 | `ohmpilottemperaturechannel1` | Number:Temperature            | Temperature                                                                                                                                                                                                     |
+| `ohmpiloterrorcode`  | Number    | Device error code                                                                                                 |
+| `ohmpilotstatecode` | Number    | Device state code<br />`0` up and running <br />`1` keep minimum temperature <br />`2` legionella protection <br />`3` critical fault<br />`4` fault<br />`5` boost mode |
 |                         |
 
 
