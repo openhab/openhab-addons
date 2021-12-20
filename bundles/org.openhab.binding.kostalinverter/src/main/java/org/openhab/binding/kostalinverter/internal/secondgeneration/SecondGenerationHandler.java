@@ -338,11 +338,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
         try {
             SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClientHandleCommand, url, username,
                     password, dxsEntriesConf, valueConfiguration);
-        } catch (InterruptedException e) {
-            logger.debug("Connection to inverter disturbed during configuration");
-        } catch (ExecutionException e) {
-            logger.debug("Connection to inverter disturbed during configuration");
-        } catch (TimeoutException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Connection to inverter disturbed during configuration");
         }
     }
