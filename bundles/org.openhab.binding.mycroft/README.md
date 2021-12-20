@@ -1,8 +1,8 @@
 # Mycroft Binding
 
-This binding will connect to Mycroft A.I. in order to control it or react to events by listening on the message bus.
+This binding connects to Mycroft A.I. in order to control it or react to events by listening on the message bus.
 
-Possibilies include :
+Possibilies include:
 
 - Press a button in openHAB to wake Mycroft without using a wake word.
 - Simulate a voice command to launch a skill, as if you just spoke it
@@ -10,7 +10,7 @@ Possibilies include :
 - Control the music player
 - Mute or duck the sound volume of Mycroft
 - React to all the aforementioned events ...
-- ... And send/receive all other kind of messages on the message bus
+- ... and send/receive any other kind of messages on the message bus
 
 
 ## Supported Things
@@ -26,7 +26,7 @@ There is no discovery service, as Mycroft doesn't announce itself on the network
 ## Thing Configuration
 
 The configuration is simple, as you just need to give the IP/hostname of the Mycroft instance accessible on the network.
-The default port is 8181, but you could change it if you want.
+The default port is 8181, which can be changed.
 
 ```
 Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.X"]
@@ -40,7 +40,7 @@ Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.
 
 ## Channels
 
-The Mycroft thing supports the following channels :
+A Mycroft thing has the following channels:
 
 
 | channel type id              | Item type | description                                                                                    |
@@ -54,7 +54,7 @@ The Mycroft thing supports the following channels :
 | full_message                 | String    | The last message (full json) seen on the Mycroft Bus. Filtered by the messageTypes properties  |
 
 
-The channel 'full_message' has the following configuration available :
+The channel 'full_message' has the following configuration available:
 
 | property      |  type                           | description                                                             | mandatory |
 |---------------|---------------------------------|-------------------------------------------------------------------------|-----------|
@@ -76,7 +76,7 @@ Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.
 
 ### Item Configuration
 
-The `mycroft.item` file :
+The `mycroft.item` file:
 
 ```java
 Switch myMycroft_mute                  "Mute"                      { channel="mycroft:mycroft:myMycroft:volume_mute" }
@@ -90,7 +90,7 @@ String myMycroft_fullmessage           "Full JSON message"         { channel="my
 
 ### Sitemap Configuration
 
-A `demo.sitemap` file :
+A `demo.sitemap` file:
 
 ```
 sitemap demo label="myMycroft"
@@ -107,7 +107,6 @@ sitemap demo label="myMycroft"
 }
 ```
 
-## Full Example
 
 ### Ask Mycroft to say something
 
