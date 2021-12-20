@@ -284,8 +284,8 @@ public class WledApiV084 implements WledApi {
             handler.update(CHANNEL_THIRD_WHITE, WLedHelper
                     .parseWhitePercent(state.stateResponse.seg[handler.config.segmentIndex].col[2].toString()));
         }
-
-        if (!state.stateResponse.seg[handler.config.segmentIndex].on) {
+        // Global OFF or Segment OFF needs to be treated as OFF
+        if (!state.stateResponse.seg[handler.config.segmentIndex].on || !state.stateResponse.on) {
             handler.update(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
             handler.update(CHANNEL_SEGMENT_BRIGHTNESS, OnOffType.OFF);
         } else {
