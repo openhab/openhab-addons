@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="kp125">
+		<label>KP125</label>
+		<description>TP-Link KP125 Kasa Smart WiFi Plug Slim with Energy Monitoring</description>
+		<category>PowerOutlet</category>
+
+		<channels>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="led" typeId="led"/>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="power" typeId="power"/>
+			<channel id="energyUsage" typeId="energy-usage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="voltage" typeId="voltage"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:tplinksmarthome:device-plug"/>
+	</thing-type>
+</thing:thing-descriptions>
