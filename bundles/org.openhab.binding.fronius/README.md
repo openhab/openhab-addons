@@ -12,7 +12,7 @@ It supports Fronius inverters and Fronius Smart Meter. Tested with a Fronius Sym
 | `powerinverter` | Fronius Galvo, Symo and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger. You can add multiple inverters that depend on the same datalogger with different device ids. (Default 1) |
 | `meter`         | Fronius Smart Meter. You can add multiple smart meters with different device ids. (The default id = 0)                                                                                                                                
 | `ohmpilot`      | Fronius Ohmpilot. (The default id = 0)     
-|
+
 
 ## Discovery
 
