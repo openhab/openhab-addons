@@ -237,7 +237,6 @@ public class HDPowerViewWebTargets {
      * @param query the http query parameter
      * @param jsonCommand the request command content (as a json string)
      * @return the response content (as a json string)
-     * @throws HubProcessingException
      * @throws HubMaintenanceException
      * @throws HubProcessingException
      */
