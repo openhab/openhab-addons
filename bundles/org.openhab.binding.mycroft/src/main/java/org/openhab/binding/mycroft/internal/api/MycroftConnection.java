@@ -209,7 +209,7 @@ public class MycroftConnection {
             handleWrongSession(session, "Connection error: " + cause.getMessage());
             return;
         }
-        logger.warn("{} connection error, closing: {}", socketName, cause.getMessage());
+        logger.debug("{} connection error, closing: {}", socketName, cause.getMessage());
 
         Session storedSession = this.session;
         if (storedSession != null && storedSession.isOpen()) {
