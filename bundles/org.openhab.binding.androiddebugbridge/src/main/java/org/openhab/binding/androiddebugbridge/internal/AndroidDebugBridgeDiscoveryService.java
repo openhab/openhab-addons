@@ -129,7 +129,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     private void discoverWithADB(String ip, int port) throws InterruptedException, AndroidDebugBridgeDeviceException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         var device = new AndroidDebugBridgeDevice(scheduler);
-        device.configure(ip, port, 10);
+        device.configure(ip, port, 10, 0);
         try {
             device.connect();
             logger.debug("connected adb at {}:{}", ip, port);
