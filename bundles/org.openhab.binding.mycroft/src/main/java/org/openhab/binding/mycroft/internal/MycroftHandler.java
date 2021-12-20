@@ -227,7 +227,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
             connection.sendMessage(message);
             return true;
         } catch (IOException e) {
-            logger.warn("Cannot send message of type {}, for reason {}", message.getClass().getName(), e.getMessage());
+            logger.debug("Cannot send message of type {}, for reason {}", message.getClass().getName(), e.getMessage());
             return false;
         }
     }
@@ -237,7 +237,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
             connection.sendMessage(message);
             return true;
         } catch (IOException e) {
-            logger.warn("Cannot send message of type {}, for reason {}", message.getClass().getName(), e.getMessage());
+            logger.debug("Cannot send message of type {}, for reason {}", message.getClass().getName(), e.getMessage());
             return false;
         }
     }
