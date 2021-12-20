@@ -181,7 +181,7 @@
 		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
 		<category>Time</category>
-		<state readOnly="false" pattern="%.0f min">
+		<state>
 			<options>
 				<option value="15s">15 Seconds</option>
 				<option value="1min">1 Minute</option>
