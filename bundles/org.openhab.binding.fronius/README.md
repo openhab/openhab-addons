@@ -161,8 +161,10 @@ Number Meter_PowerFactorPhase3 { channel="fronius:meter:mybridge:mymeter:powerfa
 Number:Energy Meter_EnergyConsumed { channel="fronius:meter:mybridge:mymeter:energyrealsumconsumed" }
 Number:Energy Meter_EnergyProduced { channel="fronius:meter:mybridge:mymeter:energyrealsumproduced" }
 
-Number:Energy Ohmpilot_EnergyConsumed { channel="fronius:meter:mybridge:myohmpilot:ohmpilotenergyrealsumconsumed" }
-Number:Power Ohmpilot_PowerSum { channel="fronius:meter:mybridge:myohmpilot:ohmpilotpowerrealsum" }
-Number:Temperature Ohmpilot_Temperature { channel="fronius:meter:mybridge:myohmpilot:ohmpilottemperaturechannel1" }
+Number:Energy Ohmpilot_EnergyConsumed { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilotenergyrealsumconsumed" }
+Number:Power Ohmpilot_PowerSum { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilotpowerrealsum" }
+Number:Temperature Ohmpilot_Temperature { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilottemperaturechannel1" }
+Number Ohmpilot_State { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilotstatecode" }
+Number Ohmpilot_Errorcode { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpiloterrorcode" }
 
 ```
