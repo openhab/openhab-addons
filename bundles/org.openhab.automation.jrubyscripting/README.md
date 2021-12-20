@@ -1,6 +1,6 @@
 # JRuby Scripting
 
-This add-on provides [JRuby](https://www.jruby.org/) 9.3.1 that can be used as a scripting language within automation rules.
+This add-on provides [JRuby](https://www.jruby.org/) 9.3.2 that can be used as a scripting language within automation rules.
 
 ## JRuby Scripting Configuration
 
