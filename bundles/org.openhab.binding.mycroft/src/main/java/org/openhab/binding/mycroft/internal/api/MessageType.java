@@ -44,7 +44,7 @@ import org.openhab.binding.mycroft.internal.api.dto.MessageVolumeUnmute;
 /**
  * All message type of interest, issued by Mycroft, are referenced here
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public enum MessageType {

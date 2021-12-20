@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * The {@link MycroftHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public class MycroftHandler extends BaseThingHandler implements MycroftConnectionListener {

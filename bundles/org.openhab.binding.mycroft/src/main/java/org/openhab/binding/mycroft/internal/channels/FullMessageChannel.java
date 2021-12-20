@@ -27,7 +27,7 @@ import org.openhab.core.types.Command;
 /**
  * The channel responsible for sending/receiving raw message
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public class FullMessageChannel extends MycroftChannel<StringType> {

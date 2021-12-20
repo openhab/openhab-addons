@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link MycroftBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public class MycroftBindingConstants {

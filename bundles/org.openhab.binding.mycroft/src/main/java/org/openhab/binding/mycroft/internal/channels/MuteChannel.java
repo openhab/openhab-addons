@@ -28,7 +28,7 @@ import org.openhab.core.types.Command;
 /**
  * The channel responsible for muting the Mycroft speaker
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public class MuteChannel extends MycroftChannel<OnOffType> {

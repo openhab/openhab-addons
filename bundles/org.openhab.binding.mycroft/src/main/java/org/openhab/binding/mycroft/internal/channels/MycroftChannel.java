@@ -26,7 +26,7 @@ import org.openhab.core.types.State;
 /**
  * A helper method for channel handling
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public abstract class MycroftChannel<T extends State>

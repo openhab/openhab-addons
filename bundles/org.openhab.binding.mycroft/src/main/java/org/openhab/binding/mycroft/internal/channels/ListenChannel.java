@@ -27,7 +27,7 @@ import org.openhab.core.types.Command;
 /**
  * The channel responsible for triggering STT recognition
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public class ListenChannel extends MycroftChannel<OnOffType> {

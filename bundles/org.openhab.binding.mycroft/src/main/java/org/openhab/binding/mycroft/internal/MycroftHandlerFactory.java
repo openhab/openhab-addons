@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 package org.openhab.binding.mycroft.internal;
 
@@ -32,7 +32,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link MycroftHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.mycroft", service = ThingHandlerFactory.class)

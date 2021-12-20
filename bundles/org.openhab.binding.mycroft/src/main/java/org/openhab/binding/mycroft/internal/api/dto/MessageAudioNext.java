@@ -16,7 +16,7 @@ import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
  *
- * @author Gwendal ROULLEAU - Initial Contribution
+ * @author Gwendal Roulleau - Initial Contribution
  *
  */
 public class MessageAudioNext extends BaseMessage {

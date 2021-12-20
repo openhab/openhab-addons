@@ -27,7 +27,7 @@ import org.openhab.core.types.Command;
 /**
  * This channel handle the full utterance send or received by Mycroft, before any intent recognition
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  *
  */
 @NonNullByDefault

@@ -43,7 +43,7 @@ import com.google.gson.GsonBuilder;
 /**
  * Establishes and keeps a websocket connection to the Mycroft bus
  *
- * @author Gwendal ROULLEAU - Initial contribution. Inspired by the deconz binding.
+ * @author Gwendal Roulleau - Initial contribution. Inspired by the deconz binding.
  */
 @WebSocket
 @NonNullByDefault

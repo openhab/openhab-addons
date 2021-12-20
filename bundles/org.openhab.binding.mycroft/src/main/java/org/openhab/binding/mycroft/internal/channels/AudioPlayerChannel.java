@@ -34,7 +34,7 @@ import org.openhab.core.types.State;
  * This channel handles the Mycroft capability to act as a music player
  * (depending on common play music skills installed)
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public class AudioPlayerChannel extends MycroftChannel<State> {

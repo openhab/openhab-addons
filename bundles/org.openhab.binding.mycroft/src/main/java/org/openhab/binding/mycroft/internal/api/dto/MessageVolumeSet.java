@@ -16,7 +16,7 @@ import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 public class MessageVolumeSet extends BaseMessage {
 

@@ -37,7 +37,7 @@ import org.openhab.core.types.State;
  * NOT FUNCTIONAL
  * (see https://community.mycroft.ai/t/openhab-plugin-development-audio-volume-message-types-missing/10576)
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public class VolumeChannel extends MycroftChannel<State> {

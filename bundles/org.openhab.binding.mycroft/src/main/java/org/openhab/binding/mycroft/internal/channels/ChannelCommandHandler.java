@@ -18,7 +18,7 @@ import org.openhab.core.types.Command;
 /**
  * Interface for channel which can handle command
  *
- * @author Gwendal ROULLEAU - Initial contribution
+ * @author Gwendal Roulleau - Initial contribution
  */
 @NonNullByDefault
 public interface ChannelCommandHandler {
