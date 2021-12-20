@@ -42,8 +42,6 @@ import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.datapoint.CommandDP;
 import tuwien.auto.calimero.datapoint.Datapoint;
 import tuwien.auto.calimero.device.ProcessCommunicationResponder;
-import tuwien.auto.calimero.internal.SecureApplicationLayer;
-import tuwien.auto.calimero.internal.Security;
 import tuwien.auto.calimero.link.KNXNetworkLink;
 import tuwien.auto.calimero.link.NetworkLinkListener;
 import tuwien.auto.calimero.mgmt.Destination;
