@@ -150,7 +150,7 @@ public class GardenaSmartWebSocket {
     public void onError(Throwable cause) {
         if (!closing) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Gardena Webservice error ({}), cause: {}", socketId, cause);
+                logger.debug("Gardena Webservice error ({})", socketId, cause);
             } else {
                 String message = cause.getMessage();
                 if (message == null) {

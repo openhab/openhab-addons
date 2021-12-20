@@ -327,9 +327,9 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
         } catch (Exception ex) {
             // restart binding
             if (logger.isDebugEnabled()) {
-                logger.debug("Restarting GardenaSmart Webservices failed: {}, restarting binding", ex);
+                logger.debug("Restarting GardenaSmart Webservices failed! Restarting binding", ex);
             } else {
-                logger.warn("Restarting GardenaSmart Webservices failed: {}, restarting binding", ex.getMessage());
+                logger.warn("Restarting GardenaSmart Webservices failed: {}! Restarting binding", ex.getMessage());
             }
             eventListener.onError();
         }
