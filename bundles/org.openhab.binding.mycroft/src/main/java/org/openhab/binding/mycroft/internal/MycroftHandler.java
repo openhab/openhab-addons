@@ -127,8 +127,6 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
         logger.debug("Start initializing Mycroft {}", thing.getUID());
 
-        config = getConfigAs(MycroftConfiguration.class);
-
         String websocketID = thing.getUID().getAsString().replace(':', '-');
         if (websocketID.length() < 4) {
             websocketID = "mycroft-" + websocketID;
@@ -138,6 +136,15 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
         }
         this.connection = new MycroftConnection(this, webSocketFactory.createWebSocketClient(websocketID));
 
+        config = getConfigAs(MycroftConfiguration.class);
+        if (config.host.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No host defined");
+            return;
+        } else if (config.port < 0 || config.port > 0xFFFF) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Port should be between 0 and 65536");
+            return;
+        }
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::checkOrstartWebsocket, 0, POLL_FREQUENCY_SEC,
                 TimeUnit.SECONDS);
 
