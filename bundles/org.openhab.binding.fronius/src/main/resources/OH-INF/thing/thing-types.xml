@@ -141,6 +141,12 @@
             <channel id="ohmpilottemperaturechannel1" typeId="ohmpilot_temperature">
                 <label>Temperature</label>
             </channel>
+            <channel id="ohmpilotstatecode" typeId="ohmpilot_state">
+                <label>State</label>
+            </channel>
+            <channel id="ohmpiloterrorcode" typeId="devicestatus_errorcode">
+                <label>Error Code</label>
+            </channel>
         </channels>
 
         <properties>
@@ -326,7 +332,13 @@
         <label>Temperature</label>
         <description></description>
         <state pattern="%.2f %unit%" readOnly="true"></state>
-    </channel-type>    
+    </channel-type>
+    <channel-type id="ohmpilot_state">
+        <item-type>Number</item-type>
+        <label>State</label>
+        <description></description>
+        <state pattern="%d" readOnly="true"></state>
+    </channel-type>     
         
 
 

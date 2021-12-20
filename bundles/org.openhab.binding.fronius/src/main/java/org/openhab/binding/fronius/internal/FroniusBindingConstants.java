@@ -75,8 +75,8 @@ public class FroniusBindingConstants {
     public static final String OHMPILOT_POWER_REAL_SUM = "ohmpilotpowerrealsum";
     public static final String OHMPILOT_ENERGY_REAL_SUM_CONSUMED = "ohmpilotenergyrealsumconsumed";
     public static final String OHMPILOT_ENERGY_SENSOR_TEMPERATURE_CHANNEL_1 = "ohmpilottemperaturechannel1";
-    public static final String OHMPILOT_DEVICE_STATUS_ERROR_CODE = "ohmpilotdevicestatuserrorcode";
-    public static final String OHMPILOT_DEVICE_STATUS_STATUS_CODE = "ohmpilotdevicestatusstatuscode";
+    public static final String OHMPILOT_ERROR_CODE = "ohmpiloterrorcode";
+    public static final String OHMPILOT_STATE_CODE = "ohmpilotstatecode";
 
     /*
      * part of POWERFLOW_REALTIME_DATA using Symo Gen24

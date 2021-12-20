@@ -82,6 +82,10 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
                 return new QuantityType<>(ohmpilotRealtimeBodyData.getEnergyRealWACSumConsumed(), Units.WATT_HOUR);
             case FroniusBindingConstants.OHMPILOT_ENERGY_SENSOR_TEMPERATURE_CHANNEL_1:
                 return new QuantityType<>(ohmpilotRealtimeBodyData.getTemperatureChannel1(), Units.KELVIN);
+            case FroniusBindingConstants.OHMPILOT_STATE_CODE:
+                return new QuantityType<>(ohmpilotRealtimeBodyData.getStateCode(), Units.ONE);
+            case FroniusBindingConstants.OHMPILOT_ERROR_CODE:
+                return new QuantityType<>(ohmpilotRealtimeBodyData.getErrorCode(), Units.ONE);
 
             default:
                 break;

@@ -16,7 +16,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OhmpilotRealtimeResponse} is responsible for storing
- * the response from the powerflowrealtime api
+ * the response from the GetOhmPilotRealtimeData api
  *
  * @author Hannes Spenger - Initial contribution
  */

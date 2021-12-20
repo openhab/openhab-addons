@@ -29,12 +29,20 @@ public class OhmpilotRealtimeBodyDataDTO {
     private double powerPACSum;
     @SerializedName("Temperature_Channel_1")
     private double temperatureChannel1;
+    @SerializedName("CodeOfError")
+    private int errorCode;
+    @SerializedName("CodeOfState")
+    private int stateCode;
 
     public OhmpilotRealtimeDetailsDTO getDetails() {
         if (details == null) {
             details = new OhmpilotRealtimeDetailsDTO();
         }
         return details;
+    }
+
+    public void setDetails(OhmpilotRealtimeDetailsDTO details) {
+        this.details = details;
     }
 
     public double getEnergyRealWACSumConsumed() {
@@ -59,6 +67,22 @@ public class OhmpilotRealtimeBodyDataDTO {
 
     public void setTemperatureChannel1(double temperatureChannel1) {
         this.temperatureChannel1 = temperatureChannel1;
+    }
+
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(int errorCode) {
+        this.errorCode = errorCode;
+    }
+
+    public int getStateCode() {
+        return stateCode;
+    }
+
+    public void setStateCode(int stateCode) {
+        this.stateCode = stateCode;
     }
 
 }
