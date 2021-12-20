@@ -10,7 +10,9 @@ It supports Fronius inverters and Fronius Smart Meter. Tested with a Fronius Sym
 | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bridge`        | The Bridge                                                                                                                                                                                                                            |
 | `powerinverter` | Fronius Galvo, Symo and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger. You can add multiple inverters that depend on the same datalogger with different device ids. (Default 1) |
-| `meter`         | Fronius Smart Meter. You can add multiple smart meters with different device ids. (The default id = 0)                                                                                                                                |
+| `meter`         | Fronius Smart Meter. You can add multiple smart meters with different device ids. (The default id = 0)                                                                                                                                
+| `ohmpilot`      | Fronius Ohmpilot. (The default id = 0)     
+|
 
 ## Discovery
 
@@ -18,7 +20,7 @@ There is no discovery implemented. You have to create your things manually and s
 
 ## Binding Configuration
 
-The binding has no configuration options, all configuration is done at `bridge`, `powerinverter` or `meter` level.
+The binding has no configuration options, all configuration is done at `bridge`, `powerinverter`, `meter` or `ohmpilot` level.
 
 ## Thing Configuration
 
@@ -40,6 +42,12 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | Parameter  | Description                                     |
 | ---------- | ----------------------------------------------- |
 | `deviceId` | The identifier of your smart meter (Default: 0) |
+
+### Ohmpilot Thing Configuration
+
+| Parameter  | Description                                     |
+| ---------- | ----------------------------------------------- |
+| `deviceId` | The identifier of your ohmpilot (Default: 0) |
 
 ## Channels
 
@@ -77,6 +85,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerrealphase1`       | Number:Power             | Real Power on Phase 1                                                                                                                                                                                                    |
 | `powerrealphase2`       | Number:Power             | Real Power on Phase 2                                                                                                                                                                                                    |
 | `powerrealphase3`       | Number:Power             | Real Power on Phase 3                                                                                                                                                                                                    |
+| `powerrealsum`          | Number:Power             | Real Power summed up                                                                                                                                                                                                    |
 | `powerfactorphase1`     | Number                   | Power Factor on Phase 1                                                                                                                                                                                                  |
 | `powerfactorphase2`     | Number                   | Power Factor on Phase 2                                                                                                                                                                                                  |
 | `powerfactorphase3`     | Number                   | Power Factor on Phase 3                                                                                                                                                                                                  |
@@ -85,6 +94,14 @@ The binding has no configuration options, all configuration is done at `bridge`,
 |                         |
 
 
+### Channels for `ohmpilot` Thing
+
+| Channel ID              | Item Type                | Description                                                                                                                                                                                                              |
+| ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ohmpilotenergyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
+| `ohmpilotpowerrealsum` | Number:Power            | Real Power                                                                                                                                                                                                     |
+| `ohmpilottemperaturechannel1` | Number:Temperature            | Temperature                                                                                                                                                                                                     |
+|                         |
 
 
 ## Properties
@@ -104,6 +121,7 @@ demo.things:
 Bridge fronius:bridge:mybridge [hostname="192.168.66.148", refreshInterval=5] {
     Thing powerinverter myinverter [deviceId=1]
     Thing meter mymeter [deviceId=0]
+    Thing ohmpilot myohmpilot [deviceId=0]    
 }
 ```
 
@@ -136,9 +154,15 @@ Number:Voltage Meter_VoltagePhase3 { channel="fronius:meter:mybridge:mymeter:vol
 Number:Power Meter_PowerPhase1 { channel="fronius:meter:mybridge:mymeter:powerrealphase1" }
 Number:Power Meter_PowerPhase2 { channel="fronius:meter:mybridge:mymeter:powerrealphase2" }
 Number:Power Meter_PowerPhase3 { channel="fronius:meter:mybridge:mymeter:powerrealphase3" }
+Number:Power Meter_PowerSum    { channel="fronius:meter:mybridge:mymeter:powerrealsum" }
 Number Meter_PowerFactorPhase1 { channel="fronius:meter:mybridge:mymeter:powerfactorphase1" }
 Number Meter_PowerFactorPhase2 { channel="fronius:meter:mybridge:mymeter:powerfactorphase2" }
 Number Meter_PowerFactorPhase3 { channel="fronius:meter:mybridge:mymeter:powerfactorphase3" }
 Number:Energy Meter_EnergyConsumed { channel="fronius:meter:mybridge:mymeter:energyrealsumconsumed" }
 Number:Energy Meter_EnergyProduced { channel="fronius:meter:mybridge:mymeter:energyrealsumproduced" }
+
+Number:Energy Ohmpilot_EnergyConsumed { channel="fronius:meter:mybridge:myohmpilot:ohmpilotenergyrealsumconsumed" }
+Number:Power Ohmpilot_PowerSum { channel="fronius:meter:mybridge:myohmpilot:ohmpilotpowerrealsum" }
+Number:Temperature Ohmpilot_Temperature { channel="fronius:meter:mybridge:myohmpilot:ohmpilottemperaturechannel1" }
+
 ```

@@ -29,6 +29,7 @@ import org.openhab.core.thing.Thing;
  *
  * @author Jimmy Tanagra - Initial contribution
  * @author Thomas Kordelle - Actually constants should be all upper case.
+ * @author Hannes Spenger - Added getValue for power sum
  */
 public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
@@ -98,6 +99,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
                 return new QuantityType<>(meterRealtimeBodyData.getPowerRealPPhase2(), Units.WATT);
             case FroniusBindingConstants.METER_POWER_PHASE_3:
                 return new QuantityType<>(meterRealtimeBodyData.getPowerRealPPhase3(), Units.WATT);
+            case FroniusBindingConstants.METER_POWER_SUM:
+                return new QuantityType<>(meterRealtimeBodyData.getPowerRealPSum(), Units.WATT);
             case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_1:
                 return meterRealtimeBodyData.getPowerFactorPhase1();
             case FroniusBindingConstants.METER_POWER_FACTOR_PHASE_2:
