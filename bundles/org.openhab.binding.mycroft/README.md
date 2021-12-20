@@ -15,7 +15,12 @@ Possibilies include:
 
 ## Supported Things
 
-The only thing managed by this binding is a Mycroft instance.
+The only thing managed by this binding is a Mycroft instance
+
+|   Thing Type ID    |            Description                                                     |
+|--------------------|----------------------------------------------------------------------------|
+|   mycroft          |    A Mark I/II, a Picroft, or any other variant exposing the message bus   |
+
 
 
 ## Discovery
