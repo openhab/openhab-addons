@@ -198,6 +198,7 @@ public abstract class NhcAction {
         NhcActionEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.actionRemoved();
+            unsetEventHandler();
         }
     }
 

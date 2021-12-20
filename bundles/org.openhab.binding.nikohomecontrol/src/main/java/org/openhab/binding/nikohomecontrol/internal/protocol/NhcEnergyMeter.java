@@ -71,6 +71,7 @@ public abstract class NhcEnergyMeter {
         NhcEnergyMeterEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.energyMeterRemoved();
+            unsetEventHandler();
         }
     }
 

@@ -119,6 +119,7 @@ public abstract class NhcThermostat {
         NhcThermostatEvent eventHandler = this.eventHandler;
         if (eventHandler != null) {
             eventHandler.thermostatRemoved();
+            unsetEventHandler();
         }
     }
 
