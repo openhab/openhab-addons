@@ -15,6 +15,8 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_COFFEE_SYSTEM;
 
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -37,8 +39,9 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
 
     private final Logger logger = LoggerFactory.getLogger(CoffeeMachineHandler.class);
 
-    public CoffeeMachineHandler(Thing thing) {
-        super(thing, CoffeeMachineChannelSelector.class, MIELE_DEVICE_CLASS_COFFEE_SYSTEM);
+    public CoffeeMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+        super(thing, i18nProvider, localeProvider, CoffeeMachineChannelSelector.class,
+                MIELE_DEVICE_CLASS_COFFEE_SYSTEM);
     }
 
     @Override

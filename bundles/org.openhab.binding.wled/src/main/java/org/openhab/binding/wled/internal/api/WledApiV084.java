@@ -17,6 +17,7 @@ import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -230,6 +231,9 @@ public class WledApiV084 implements WledApi {
         for (String value : state.jsonResponse.effects) {
             fxOptions.add(new StateOption(Integer.toString(counter++), value));
         }
+        if (handler.config.sortEffects) {
+            fxOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
+        }
         handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_FX),
                 fxOptions);
     }
@@ -239,6 +243,9 @@ public class WledApiV084 implements WledApi {
         int counter = 0;
         for (String value : state.jsonResponse.palettes) {
             palleteOptions.add(new StateOption(Integer.toString(counter++), value));
+        }
+        if (handler.config.sortPalettes) {
+            palleteOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
         }
         handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_PALETTES),
                 palleteOptions);
@@ -264,7 +271,6 @@ public class WledApiV084 implements WledApi {
         }
         HSBType tempHSB = WLedHelper
                 .parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[0].toString());
-        handler.update(CHANNEL_MASTER_CONTROLS, tempHSB);
         handler.update(CHANNEL_PRIMARY_COLOR, tempHSB);
         handler.update(CHANNEL_SECONDARY_COLOR,
                 WLedHelper.parseToHSBType(state.stateResponse.seg[handler.config.segmentIndex].col[1].toString()));
@@ -283,6 +289,7 @@ public class WledApiV084 implements WledApi {
             handler.update(CHANNEL_MASTER_CONTROLS, OnOffType.OFF);
             handler.update(CHANNEL_SEGMENT_BRIGHTNESS, OnOffType.OFF);
         } else {
+            handler.update(CHANNEL_MASTER_CONTROLS, tempHSB);
             handler.update(CHANNEL_SEGMENT_BRIGHTNESS,
                     new PercentType(new BigDecimal(state.stateResponse.seg[handler.config.segmentIndex].bri)
                             .divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
