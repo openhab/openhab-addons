@@ -90,9 +90,9 @@ public enum MessageType {
     }
 
     /**
-     * get the expected message type for this message
+     * Get the expected message type for this message
      *
-     * @return
+     * @return The message type class associated with this type
      */
     public @NotNull Class<? extends BaseMessage> getMessageTypeClass() {
         return messageTypeClass;

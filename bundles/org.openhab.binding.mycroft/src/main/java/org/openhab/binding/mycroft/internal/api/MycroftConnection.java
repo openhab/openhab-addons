@@ -116,10 +116,10 @@ public class MycroftConnection {
 
     /**
      * The listener registered in this method will be called when a corresponding message will be detected
-     * on the mycroft bus
+     * on the Mycroft bus.
      *
-     * @param messageType
-     * @param listener
+     * @param messageType The message type to listen to.
+     * @param listener The listener will receive a callback when the requested message type will be detected on the bus.
      */
     public void registerListener(MessageType messageType, MycroftMessageListener<? extends BaseMessage> listener) {
         Set<MycroftMessageListener<? extends BaseMessage>> messageTypeListeners = listeners.get(messageType);
