@@ -89,9 +89,9 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
     /**
      * Starts the websocket connection.
-     * sometimes send a get volume request to fully test the connection / refresh volume.
+     * It sometimes also sends a get volume request to check the connection and refresh the volume.
      */
-    private void startWebsocket() {
+    private void checkOrstartWebsocket() {
         if (thingDisposing) {
             return;
         }
@@ -138,7 +138,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
         }
         this.connection = new MycroftConnection(this, webSocketFactory.createWebSocketClient(websocketID));
 
-        scheduledFuture = scheduler.scheduleWithFixedDelay(this::startWebsocket, 0, POLL_FREQUENCY_SEC,
+        scheduledFuture = scheduler.scheduleWithFixedDelay(this::checkOrstartWebsocket, 0, POLL_FREQUENCY_SEC,
                 TimeUnit.SECONDS);
 
         registerChannel(new ListenChannel(this));
