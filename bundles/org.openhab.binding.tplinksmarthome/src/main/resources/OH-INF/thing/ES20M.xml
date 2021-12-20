@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="es20m">
+		<label>ES20M</label>
+		<description>TP-Link ES20M Smart Wi-Fi Light Switch, Motion-Activated</description>
+		<category>WallSwitch</category>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="led" typeId="led"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:tplinksmarthome:device-switch"/>
+	</thing-type>
+</thing:thing-descriptions>
