@@ -54,6 +54,9 @@ public class Info {
     @SerializedName(value = "FilterT")
     private int filterT;
 
+    @SerializedName(value = "ServiceT")
+    private int serviceT;
+
     @SerializedName(value = "UVCOnT")
     private int uvCOnT;
 
@@ -108,6 +111,10 @@ public class Info {
 
     public int getFilterT() {
         return filterT;
+    }
+
+    public int getServiceT() {
+        return serviceT;
     }
 
     public int getUvCOnT() {
