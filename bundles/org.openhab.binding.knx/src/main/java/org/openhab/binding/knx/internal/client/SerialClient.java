@@ -58,7 +58,7 @@ public class SerialClient extends AbstractKNXClient {
             logger.debug("Establishing connection to KNX bus through FT1.2 on serial port {}.", serialPort);
             KNXMediumSettings settings = new TPSettings();
             if (useCEMI) {
-                return KNXNetworkLinkFT12.newCemiLink(serialPort, settings); // , deviceType);
+                return KNXNetworkLinkFT12.newCemiLink(serialPort, settings);
             } else {
                 return new KNXNetworkLinkFT12(serialPort, settings);
             }
