@@ -49,6 +49,7 @@
 			<channel id="automatic" typeId="automatic"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
+			<channel id="pm25" typeId="pm25"/>
 			<channel id="waterLevel" typeId="waterLevel"/>
 			<channel id="fanRPM" typeId="fanRPM"/>
 			<channel id="cleanMode" typeId="cleanMode"/>
@@ -56,6 +57,7 @@
 			<channel id="operationTime" typeId="operationTime"/>
 			<channel id="discReplaceTime" typeId="discReplaceTime"/>
 			<channel id="cleaningTime" typeId="cleaningTime"/>
+			<channel id="serviceTime" typeId="serviceTime"/>
 		</channels>
 
 		<representation-property>macAddress</representation-property>
