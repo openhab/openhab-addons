@@ -89,9 +89,9 @@
 			<channel id="powerrealphase3" typeId="meter_powerreal">
 				<label>Real Power Phase 3</label>
 			</channel>
-            <channel id="powerrealsum" typeId="meter_powerreal">
-                <label>Real Power Sum</label>
-            </channel>			
+			<channel id="powerrealsum" typeId="meter_powerreal">
+				<label>Real Power Sum</label>
+			</channel>	
 			<channel id="powerfactorphase1" typeId="meter_powerfactor">
 				<label>Power Factor Phase 1</label>
 			</channel>
@@ -123,7 +123,7 @@
 		</config-description>
 	</thing-type>
 	
-    <!-- Ohmpilot Thing Type -->
+	<!-- Ohmpilot Thing Type -->
     <thing-type id="ohmpilot">
         <supported-bridge-type-refs>
             <bridge-type-ref id="bridge"/>
@@ -131,37 +131,37 @@
         <label>Fronius Ohmpilot</label>
         <description>Fronius Ohmpilot</description>
 
-        <channels>
-            <channel id="ohmpilotpowerrealsum" typeId="ohmpilot_powerreal">
-                <label>Real Power Sum</label>
-            </channel>
-            <channel id="ohmpilotenergyrealsumconsumed" typeId="ohmpilot_energy">
-                <label>Real Energy Consumed</label>
-            </channel>
-            <channel id="ohmpilottemperaturechannel1" typeId="ohmpilot_temperature">
-                <label>Temperature</label>
-            </channel>
-            <channel id="ohmpilotstatecode" typeId="ohmpilot_state">
-                <label>State</label>
-            </channel>
-            <channel id="ohmpiloterrorcode" typeId="devicestatus_errorcode">
-                <label>Error Code</label>
-            </channel>
-        </channels>
+		<channels>
+			<channel id="ohmpilotpowerrealsum" typeId="ohmpilot_powerreal">
+				<label>Real Power Sum</label>
+			</channel>
+			<channel id="ohmpilotenergyrealsumconsumed" typeId="ohmpilot_energy">
+				<label>Real Energy Consumed</label>
+			</channel>
+			<channel id="ohmpilottemperaturechannel1" typeId="ohmpilot_temperature">
+				<label>Temperature</label>
+			</channel>
+			<channel id="ohmpilotstatecode" typeId="ohmpilot_state">
+				<label>State</label>
+			</channel>
+			<channel id="ohmpiloterrorcode" typeId="devicestatus_errorcode">
+				<label>Error Code</label>
+			</channel>
+		</channels>
 
-        <properties>
-            <property name="model"/>
-            <property name="serial"/>
-        </properties>
+		<properties>
+			<property name="model"/>
+			<property name="serial"/>
+		</properties>
 
-        <config-description>
-            <parameter name="deviceId" type="integer">
-                <label>Device ID</label>
-                <description>Specific device identifier</description>
-                <default>0</default>
-            </parameter>
-        </config-description>
-    </thing-type>	
+		<config-description>
+			<parameter name="deviceId" type="integer">
+				<label>Device ID</label>
+				<description>Specific device identifier</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>	
 
 	<channel-type id="day_energy">
 		<item-type>Number</item-type>
