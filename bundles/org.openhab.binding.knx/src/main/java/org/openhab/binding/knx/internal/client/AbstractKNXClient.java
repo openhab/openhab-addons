@@ -193,7 +193,6 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             this.processCommunicator = processCommunicator;
 
             ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, null);
-
             this.responseCommunicator = responseCommunicator;
 
             link.addLinkListener(this);
