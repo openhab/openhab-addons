@@ -29,6 +29,12 @@ The types of appliances that are supported by this binding are:
 The binding is able to auto-discover the Miele XGW3000 gateway.
 When an XGW3000 gateway is discovered, all appliances can be subsequently discovered.
 
+## Binding Configuration
+
+The XGW3000 gateway is sometimes a few seconds late in re-announcing itself on the network.
+This means that it might repeatedly appear in, resp. and disappear from, the Inbox.
+To avoid this, the binding has a configuration parameter `removalGracePeriod` which delays such Inbox disappearances.
+The default value is 30 seconds.
 
 ## Thing Configuration
 

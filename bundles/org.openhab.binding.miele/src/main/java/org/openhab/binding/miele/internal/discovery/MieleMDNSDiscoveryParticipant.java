@@ -16,19 +16,26 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Collections;
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.MieleBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +54,14 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String PATH_TO_CHECK_FOR_XGW3000 = "/rest/";
     private static final String SERVICE_NAME = "mieleathome";
     private static final String PATH_PROPERTY_NAME = "path";
+
+    private final ConfigurationAdmin configAdmin;
+    private long removalGracePeriodSeconds = 30;
+
+    @Activate
+    public MieleMDNSDiscoveryParticipant(final @Reference ConfigurationAdmin configAdmin) {
+        this.configAdmin = configAdmin;
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -112,5 +127,28 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private boolean isMieleGateway(ServiceInfo service) {
         return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null
                 && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
+    }
+
+    /*
+     * Miele devices are sometimes a few seconds late in updating their mDNS announcements, which means that they are
+     * repeatedly removed from, and (re)added to, the Inbox. To prevent this, we override this method to specify an
+     * additional delay period (grace period) to wait before the device is removed from the Inbox.
+     */
+    @Override
+    public long getRemovalGracePeriodSeconds(ServiceInfo service) {
+        try {
+            Configuration conf = configAdmin.getConfiguration("binding.miele");
+            Dictionary<String, @Nullable Object> properties = conf.getProperties();
+            if (properties != null) {
+                Object property = properties.get(MieleBindingConstants.REMOVAL_GRACE_PERIOD);
+                if (property != null) {
+                    removalGracePeriodSeconds = Long.parseLong(property.toString());
+                }
+            }
+        } catch (IOException | IllegalStateException | NumberFormatException e) {
+            // fall through to pre-initialised (default) value
+        }
+        logger.trace("getRemovalGracePeriodSeconds={}", removalGracePeriodSeconds);
+        return removalGracePeriodSeconds;
     }
 }

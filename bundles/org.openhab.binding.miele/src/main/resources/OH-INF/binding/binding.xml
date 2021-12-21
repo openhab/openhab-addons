@@ -6,4 +6,13 @@
 	<name>Miele Binding</name>
 	<description>This is the binding for Miele@home appliances</description>
 
+    <config-description>
+        <parameter name="removalGracePeriod" type="integer" min="0" step="1" unit="s">
+            <label>Removal Grace Period</label>
+            <description>Extra grace period (seconds) that MDns discovery shall wait before removing a lost Bridge from the
+                Inbox. Default is 30 seconds.</description>
+            <default>30</default>
+        </parameter>
+    </config-description>
+
 </binding:binding>
