@@ -223,11 +223,12 @@ public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngi
 
     /**
      * Converts a root node path to a class resource path for loading local modules
+     * Ex: C:\node_modules\foo.js -> /node_modules/foo.js
      *
      * @param path
      * @return
      */
     private String nodeFileToResource(Path path) {
-        return "/" + NODE_DIR + "/" + path.getFileName();
+        return "/" + path.subpath(0, path.getNameCount()).toString().replace('\\', '/');
     }
 }
