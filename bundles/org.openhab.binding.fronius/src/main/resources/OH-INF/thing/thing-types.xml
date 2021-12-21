@@ -124,12 +124,12 @@
 	</thing-type>
 	
 	<!-- Ohmpilot Thing Type -->
-    <thing-type id="ohmpilot">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="bridge"/>
-        </supported-bridge-type-refs>
-        <label>Fronius Ohmpilot</label>
-        <description>Fronius Ohmpilot</description>
+	<thing-type id="ohmpilot">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Fronius Ohmpilot</label>
+		<description>Fronius Ohmpilot</description>
 
 		<channels>
 			<channel id="ohmpilotpowerrealsum" typeId="ohmpilot_powerreal">
@@ -161,7 +161,7 @@
 				<default>0</default>
 			</parameter>
 		</config-description>
-	</thing-type>	
+	</thing-type>
 
 	<channel-type id="day_energy">
 		<item-type>Number</item-type>
@@ -315,31 +315,31 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
-    <channel-type id="ohmpilot_powerreal">
-        <item-type>Number:Power</item-type>
-        <label>Power</label>
-        <description></description>
-        <state pattern="%.2f %unit%" readOnly="true"></state>
-    </channel-type>
+	<channel-type id="ohmpilot_powerreal">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description></description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
     <channel-type id="ohmpilot_energy">
-        <item-type>Number:Energy</item-type>
-        <label>Energy</label>
-        <description></description>
-        <state pattern="%.2f %unit%" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="ohmpilot_temperature">
-        <item-type>Number:Temperature</item-type>
-        <label>Temperature</label>
-        <description></description>
-        <state pattern="%.2f %unit%" readOnly="true"></state>
-    </channel-type>
-    <channel-type id="ohmpilot_state">
-        <item-type>Number</item-type>
-        <label>State</label>
-        <description></description>
-        <state pattern="%d" readOnly="true"></state>
-    </channel-type>     
-        
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<description></description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ohmpilot_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description></description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ohmpilot_state">
+		<item-type>Number</item-type>
+		<label>State</label>
+		<description></description>
+		<state pattern="%d" readOnly="true"></state>
+	</channel-type>
+
 
 
 </thing:thing-descriptions>
