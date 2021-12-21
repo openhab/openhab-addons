@@ -105,7 +105,7 @@ Note that the group 0 (or ALL group) is not autodiscovered as a thing and thus h
 | `dimmedCT` | Traditional globes grow warmer the more they are dimmed. Set this to 370, or leave blank to disable. | N | blank |
 | `oneTriggersNightMode` | Night mode is a much lower level of light and this feature allows it to be auto selected when your fader/slider moves to 1%. NOTE: Night mode by design locks out some controls of a physical remote, so this feature is disabled by default. | Y | false |
 | `powerFailsToMinimum` | If lights loose power from the power switch OR a power outage, they will default to using the lowest brightness if the light was turned off before the power failure occurred. | Y | true |
-| `whiteThreshold` | RGBW globes do not respond to saturation changes, so this feature allows you to specify a number that if the saturation drops below, it will trigger the white mode. -1 will disable this feature. | Y | 12 |
+| `whiteThreshold` | This feature allows you to use a color control to change to using the real white LEDs when the saturation is equal to, or below this threshold. -1 will disable this feature. | Y | 12 |
 
 ## Channels
 

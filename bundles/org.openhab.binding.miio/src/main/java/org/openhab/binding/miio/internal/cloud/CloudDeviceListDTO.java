@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -29,6 +30,9 @@ public class CloudDeviceListDTO {
     private List<CloudDeviceDTO> cloudDevices = null;
 
     public List<CloudDeviceDTO> getCloudDevices() {
+        if (cloudDevices == null) {
+            return Collections.emptyList();
+        }
         return cloudDevices;
     }
 }

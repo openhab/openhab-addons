@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Locale;
 
+import javax.ws.rs.HttpMethod;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
 import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
@@ -45,7 +47,9 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = ApiHandler.class)
 @NonNullByDefault
 public class ApiHandler {
+    private static final String HUBEAU_URL = "https://hubeau.eaufrance.fr/api/v1/hydrometrie/referentiel/stations?format=json&size=2000";
     private static final int TIMEOUT_MS = 30000;
+
     private final Gson gson;
 
     @Activate
@@ -58,13 +62,10 @@ public class ApiHandler {
     }
 
     private <T> T execute(String url, Class<T> responseType) throws VigiCruesException {
-        String jsonResponse = "";
         try {
-            jsonResponse = HttpUtil.executeUrl("GET", url, TIMEOUT_MS);
+            String jsonResponse = HttpUtil.executeUrl(HttpMethod.GET, url, TIMEOUT_MS);
             return gson.fromJson(jsonResponse, responseType);
-        } catch (IOException e) {
-            throw new VigiCruesException(e);
-        } catch (JsonSyntaxException e) {
+        } catch (IOException | JsonSyntaxException e) {
             throw new VigiCruesException(e);
         }
     }
@@ -95,16 +96,13 @@ public class ApiHandler {
     }
 
     public HubEauResponse discoverStations(PointType location, int range) throws VigiCruesException {
-        final String BASE_URL = "https://hubeau.eaufrance.fr/api/v1/hydrometrie/referentiel/stations?format=json&size=2000";
-
         return execute(
-                BASE_URL + String.format(Locale.US, "&latitude=%.2f&longitude=%.2f&distance=%d",
+                String.format(Locale.US, "%s&latitude=%.2f&longitude=%.2f&distance=%d", HUBEAU_URL,
                         location.getLatitude().floatValue(), location.getLongitude().floatValue(), range),
                 HubEauResponse.class);
     }
 
     public HubEauResponse discoverStations(String stationId) throws VigiCruesException {
-        final String BASE_URL = "https://hubeau.eaufrance.fr/api/v1/hydrometrie/referentiel/stations?format=json&size=2000";
-        return execute(BASE_URL + String.format("&code_station=%s", stationId), HubEauResponse.class);
+        return execute(String.format("%s&code_station=%s", HUBEAU_URL, stationId), HubEauResponse.class);
     }
 }

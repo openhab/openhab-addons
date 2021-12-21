@@ -19,9 +19,11 @@ package org.openhab.binding.enocean.internal.config;
 public class EnOceanChannelRockerSwitchListenerConfig extends EnOceanChannelRockerSwitchConfigBase {
 
     public String enoceanId;
+    public boolean handleSecondAction;
 
     public EnOceanChannelRockerSwitchListenerConfig() {
         super();
         enoceanId = null;
+        handleSecondAction = false;
     }
 }

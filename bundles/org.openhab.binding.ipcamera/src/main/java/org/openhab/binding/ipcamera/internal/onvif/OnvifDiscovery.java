@@ -112,7 +112,7 @@ public class OnvifDiscovery {
             ipAddress = temp.substring(beginIndex, endIndex);
         }
         String brand = checkForBrand(xml);
-        if (brand.equals("onvif")) {
+        if ("onvif".equals(brand)) {
             try {
                 brand = getBrandFromLoginPage(ipAddress);
             } catch (IOException e) {
@@ -127,7 +127,7 @@ public class OnvifDiscovery {
             String xml = packet.content().toString(CharsetUtil.UTF_8);
             logger.trace("Device replied to discovery with:{}", xml);
             String xAddr = Helper.fetchXML(xml, "", "d:XAddrs>");// Foscam <wsdd:XAddrs> and all other brands <d:XAddrs>
-            if (!xAddr.equals("")) {
+            if (!xAddr.isEmpty()) {
                 searchReply(xAddr, xml);
             } else if (xml.contains("onvif")) {
                 logger.info("Possible ONVIF camera found at:{}", packet.sender().getHostString());

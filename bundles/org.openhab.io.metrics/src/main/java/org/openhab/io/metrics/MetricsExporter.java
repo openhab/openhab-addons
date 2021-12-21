@@ -31,8 +31,8 @@ public abstract class MetricsExporter {
 
     private final Logger logger = LoggerFactory.getLogger(MetricsExporter.class);
     private boolean active = false;
-    protected @Nullable CompositeMeterRegistry meterRegistry = null;
-    protected @Nullable MetricsConfiguration config = null;
+    protected @Nullable CompositeMeterRegistry meterRegistry;
+    protected @Nullable MetricsConfiguration config;
 
     protected abstract void start(CompositeMeterRegistry meterRegistry, MetricsConfiguration metricsConfiguration);
 

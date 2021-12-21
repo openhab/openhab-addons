@@ -10,7 +10,7 @@
 		<description>Serial over IP connection to the Sony projector</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="input" typeId="input"/>
 			<channel id="calibrationpreset" typeId="calibrationpreset"/>

@@ -167,6 +167,10 @@ The Onkyo AVR supports the following channels (some channels are model specific)
 | netmenu#item7             | String    | The text of USB/Net Menu entry 7                                                                                |
 | netmenu#item8             | String    | The text of USB/Net Menu entry 8                                                                                |
 | netmenu#item9             | String    | The text of USB/Net Menu entry 9                                                                                |
+| information#audioIn       | String    | Details of the input audio format                                                                               |
+| information#audioOut      | String    | Details of the output audio format                                                                              |
+| information#videoIn       | String    | Details of the input video format                                                                               |
+| information#videoOut      | String    | Details of the output video format                                                                              |
 
 ## Rule Actions
 
@@ -255,6 +259,11 @@ String avrLrNet_Item6     "Item6 [%s]"     <text>   { channel="onkyo:onkyoAVR:av
 String avrLrNet_Item7     "Item7 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item7" }
 String avrLrNet_Item8     "Item8 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item8" }
 String avrLrNet_Item9     "Item9 [%s]"     <text>   { channel="onkyo:onkyoAVR:avr-livingroom:netmenu#item9" }
+
+String audioIn            "Audio In [%s]"   <settings>   ["Point"]   { channel="onkyo:onkyoAVR:avr-livingroom:information#audioIn" }
+String audioOut           "Audio Out [%s]"  <settings>   ["Point"]   { channel="onkyo:onkyoAVR:avr-livingroom:information#audioOut" }
+String videoIn            "Video In [%s]"   <settings>   ["Point"]   { channel="onkyo:onkyoAVR:avr-livingroom:information#videoIn" }
+String videoOut           "Video Out [%s]"  <settings>   ["Point"]   { channel="onkyo:onkyoAVR:avr-livingroom:information#videoOut" }
 ```
 
 ## Sitemap Configuration
@@ -300,6 +309,12 @@ sitemap demo label="Onkyo AVR"
         Text      item=avrLrNet_Item7
         Text      item=avrLrNet_Item8
         Text      item=avrLrNet_Item9
+    }
+    Frame label="Audio & Video Information" {
+        Text      item=audioIn
+        Text      item=audioOut
+        Text      item=videoIn
+        Text      item=videoOut
     }
 }
 ```

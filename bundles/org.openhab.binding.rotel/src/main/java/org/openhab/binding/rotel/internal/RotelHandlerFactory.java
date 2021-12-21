@@ -54,7 +54,6 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
             .collect(Collectors.toSet()));
 
     private final SerialPortManager serialPortManager;
-
     private final RotelStateDescriptionOptionProvider stateDescriptionProvider;
 
     @Activate

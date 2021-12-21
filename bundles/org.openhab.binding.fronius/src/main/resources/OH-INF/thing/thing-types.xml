@@ -24,9 +24,22 @@
 			<channel id="inverterdatachanneludc" typeId="udc"/>
 			<channel id="inverterdatadevicestatuserrorcode" typeId="devicestatus_errorcode"/>
 			<channel id="inverterdatadevicestatusstatuscode" typeId="devicestatus_statuscode"/>
-			<channel id="powerflowchannelpgrid" typeId="pGrid"/>
+			<channel id="powerflowchannelpgrid" typeId="pGrid">
+				<label>Grid Power</label>
+			</channel>
 			<channel id="powerflowchannelpload" typeId="pLoad"/>
-			<channel id="powerflowchannelpakku" typeId="pAkku"/>
+			<channel id="powerflowchannelpakku" typeId="pAkku">
+				<label>Charge / Discharge of Battery</label>
+			</channel>
+			<channel id="powerflowchannelppv" typeId="pPv">
+				<label>Current Solar Yield</label>
+			</channel>
+			<channel id="powerflowinverter1power" typeId="inverter1Power">
+				<label>Power Flow (Inverter 1)</label>
+			</channel>
+			<channel id="powerflowinverter1soc" typeId="inverter1Soc">
+				<label>State of Charge (Inverter 1)</label>
+			</channel>
 		</channels>
 
 		<config-description>
@@ -179,22 +192,40 @@
 	</channel-type>
 
 	<channel-type id="pGrid">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
 		<description>Grid Power ( + from grid, - to grid )</description>
-		<state pattern="%.2f W" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pLoad">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Load Power</label>
 		<description>Load Power ( + generator, - consumer )</description>
-		<state pattern="%.2f W" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="pAkku">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
-		<description>Battery Power ( + charge, - discharge )</description>
-		<state pattern="%.2f W" readOnly="true"></state>
+		<description>Battery Power ( + discharge, - charge )</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="pPv">
+		<item-type>Number:Power</item-type>
+		<label>Solar Plant Power</label>
+		<description>Current Solar Plant Power</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inverter1Power">
+		<item-type>Number:Power</item-type>
+		<label>Inverter 1 Power</label>
+		<description>Inverter 1 Power</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="inverter1Soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Inverter 1 State of Charge</label>
+		<description>Inverter 1 State of Charge</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 
 
@@ -207,7 +238,7 @@
 	<channel-type id="meter_location" advanced="true">
 		<item-type>Number</item-type>
 		<label>Location</label>
-		<description>Meter location code</description>
+		<description>Meter Location Code</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_ac_current">

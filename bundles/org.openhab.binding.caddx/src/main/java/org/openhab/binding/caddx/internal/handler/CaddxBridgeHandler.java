@@ -29,6 +29,7 @@ import org.openhab.binding.caddx.internal.CaddxBindingConstants;
 import org.openhab.binding.caddx.internal.CaddxCommunicator;
 import org.openhab.binding.caddx.internal.CaddxEvent;
 import org.openhab.binding.caddx.internal.CaddxMessage;
+import org.openhab.binding.caddx.internal.CaddxMessageContext;
 import org.openhab.binding.caddx.internal.CaddxMessageType;
 import org.openhab.binding.caddx.internal.CaddxPanelListener;
 import org.openhab.binding.caddx.internal.CaddxProtocol;
@@ -85,6 +86,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     private String serialPortName = "";
     private int baudRate;
     private int maxZoneNumber;
+    private boolean isIgnoreZoneStatusTransitions;
     private @Nullable CaddxCommunicator communicator = null;
 
     // Things served by the bridge
@@ -120,6 +122,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
         protocol = configuration.getProtocol();
         baudRate = configuration.getBaudrate();
         maxZoneNumber = configuration.getMaxZoneNumber();
+        isIgnoreZoneStatusTransitions = configuration.isIgnoreZoneStatusTransitions();
         updateStatus(ThingStatus.OFFLINE);
 
         // create & start panel interface
@@ -141,27 +144,28 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             comm.addListener(this);
 
             // Send discovery commands for the zones
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_00, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_10, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_20, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_30, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_40, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_50, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_60, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_70, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_80, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_90, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_A0, false));
-            comm.transmit(new CaddxMessage(DISCOVERY_ZONES_SNAPSHOT_REQUEST_B0, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_00, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_10, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_20, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_30, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_40, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_50, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_60, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_70, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_80, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_90, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_A0, false));
+            comm.transmit(new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_ZONES_SNAPSHOT_REQUEST_B0, false));
 
             // Send discovery commands for the partitions
-            comm.transmit(new CaddxMessage(DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST, false));
+            comm.transmit(
+                    new CaddxMessage(CaddxMessageContext.DISCOVERY, DISCOVERY_PARTITIONS_SNAPSHOT_REQUEST, false));
 
             // Send status commands to the zones and partitions
-            thingZonesMap.forEach((k, v) -> sendCommand(CaddxBindingConstants.ZONE_STATUS_REQUEST,
-                    k.subtract(BigDecimal.ONE).toString()));
-            thingPartitionsMap.forEach((k, v) -> sendCommand(CaddxBindingConstants.PARTITION_STATUS_REQUEST,
-                    k.subtract(BigDecimal.ONE).toString()));
+            thingZonesMap.forEach((k, v) -> sendCommand(CaddxMessageContext.COMMAND,
+                    CaddxBindingConstants.ZONE_STATUS_REQUEST, k.subtract(BigDecimal.ONE).toString()));
+            thingPartitionsMap.forEach((k, v) -> sendCommand(CaddxMessageContext.COMMAND,
+                    CaddxBindingConstants.PARTITION_STATUS_REQUEST, k.subtract(BigDecimal.ONE).toString()));
         }
 
         // list all channels
@@ -224,7 +228,7 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
                         data = tokens[1];
                     }
 
-                    sendCommand(cmd, data);
+                    sendCommand(CaddxMessageContext.COMMAND, cmd, data);
 
                     updateState(channelUID, new StringType(""));
                 }
@@ -241,44 +245,44 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
      * @param command The command to be send
      * @param data The associated command data
      */
-    public boolean sendCommand(String command, String data) {
+    public boolean sendCommand(CaddxMessageContext context, String command, String data) {
         logger.trace("sendCommand(): Attempting to send Command: command - {} - data: {}", command, data);
 
         CaddxMessage msg = null;
 
         switch (command) {
             case CaddxBindingConstants.ZONE_BYPASSED:
-                msg = new CaddxMessage(CaddxMessageType.ZONE_BYPASS_TOGGLE, data);
+                msg = new CaddxMessage(context, CaddxMessageType.ZONE_BYPASS_TOGGLE, data);
                 break;
             case CaddxBindingConstants.ZONE_STATUS_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.ZONE_STATUS_REQUEST, data);
+                msg = new CaddxMessage(context, CaddxMessageType.ZONE_STATUS_REQUEST, data);
                 break;
             case CaddxBindingConstants.ZONE_NAME_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.ZONE_NAME_REQUEST, data);
+                msg = new CaddxMessage(context, CaddxMessageType.ZONE_NAME_REQUEST, data);
                 break;
             case CaddxBindingConstants.PARTITION_STATUS_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.PARTITION_STATUS_REQUEST, data);
+                msg = new CaddxMessage(context, CaddxMessageType.PARTITION_STATUS_REQUEST, data);
                 break;
             case CaddxBindingConstants.PARTITION_PRIMARY_COMMAND_WITH_PIN:
-                msg = new CaddxMessage(CaddxMessageType.PRIMARY_KEYPAD_FUNCTION_WITH_PIN, data);
+                msg = new CaddxMessage(context, CaddxMessageType.PRIMARY_KEYPAD_FUNCTION_WITH_PIN, data);
                 break;
             case CaddxBindingConstants.PARTITION_SECONDARY_COMMAND:
-                msg = new CaddxMessage(CaddxMessageType.SECONDARY_KEYPAD_FUNCTION, data);
+                msg = new CaddxMessage(context, CaddxMessageType.SECONDARY_KEYPAD_FUNCTION, data);
                 break;
             case CaddxBindingConstants.PANEL_SYSTEM_STATUS_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.SYSTEM_STATUS_REQUEST, data);
+                msg = new CaddxMessage(context, CaddxMessageType.SYSTEM_STATUS_REQUEST, data);
                 break;
             case CaddxBindingConstants.PANEL_INTERFACE_CONFIGURATION_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.INTERFACE_CONFIGURATION_REQUEST, data);
+                msg = new CaddxMessage(context, CaddxMessageType.INTERFACE_CONFIGURATION_REQUEST, data);
                 break;
             case CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.LOG_EVENT_REQUEST, data);
+                msg = new CaddxMessage(context, CaddxMessageType.LOG_EVENT_REQUEST, data);
                 break;
             case CaddxBindingConstants.KEYPAD_TERMINAL_MODE_REQUEST:
-                msg = new CaddxMessage(CaddxMessageType.KEYPAD_TERMINAL_MODE_REQUEST, data);
+                msg = new CaddxMessage(context, CaddxMessageType.KEYPAD_TERMINAL_MODE_REQUEST, data);
                 break;
             case CaddxBindingConstants.KEYPAD_SEND_KEYPAD_TEXT_MESSAGE:
-                msg = new CaddxMessage(CaddxMessageType.SEND_KEYPAD_TEXT_MESSAGE, data);
+                msg = new CaddxMessage(context, CaddxMessageType.SEND_KEYPAD_TEXT_MESSAGE, data);
                 break;
             default:
                 logger.debug("Unknown command {}", command);
@@ -312,16 +316,13 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
     }
 
     @Override
-    public void caddxMessage(CaddxCommunicator communicator, CaddxMessage caddxMessage) {
+    public void caddxMessage(CaddxMessage caddxMessage) {
         CaddxSource source = caddxMessage.getSource();
 
         if (source != CaddxSource.NONE) {
             CaddxThingType caddxThingType = null;
-            @Nullable
             Integer partition = null;
-            @Nullable
             Integer zone = null;
-            @Nullable
             Integer keypad = null;
 
             switch (source) {
@@ -346,6 +347,14 @@ public class CaddxBridgeHandler extends BaseBridgeHandler implements CaddxPanelL
             }
 
             CaddxEvent event = new CaddxEvent(caddxMessage, partition, zone, keypad);
+
+            // Ignore Zone Status messages according to the configuration
+            if (isIgnoreZoneStatusTransitions
+                    && caddxMessage.getCaddxMessageType() == CaddxMessageType.ZONE_STATUS_MESSAGE
+                    && caddxMessage.getContext() == CaddxMessageContext.NONE) {
+                logger.debug("Zone {} Transition ignored.", zone);
+                return;
+            }
 
             // Find the thing
             Thing thing = findThing(caddxThingType, partition, zone, keypad);

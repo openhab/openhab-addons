@@ -15,6 +15,7 @@ package org.openhab.binding.ipcamera.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 
 /**
  * The {@link ChannelTracking} Can be used to find the handle for a HTTP channel if you know the URL. The reply can
@@ -41,6 +42,15 @@ public class ChannelTracking {
 
     public Channel getChannel() {
         return channel;
+    }
+
+    /**
+     * Closes the channel, but keeps the HTTP reply stored in the tracker.
+     *
+     * @return ChannelFuture
+     */
+    public ChannelFuture closeChannel() {
+        return channel.close();
     }
 
     public String getReply() {

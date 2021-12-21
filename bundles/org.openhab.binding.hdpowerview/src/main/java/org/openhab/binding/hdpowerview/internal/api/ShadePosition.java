@@ -236,7 +236,7 @@ public class ShadePosition {
                  * Uses a coordinate system that is NOT inverted in relation to OpenHAB
                  */
                 if (posKind2.intValue() != 3) {
-                    return new PercentType(100 - (int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
+                    return new PercentType((int) Math.round(position2.doubleValue() / MAX_SHADE * 100));
                 }
             default:
                 return UnDefType.UNDEF;

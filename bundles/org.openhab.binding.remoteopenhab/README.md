@@ -99,6 +99,8 @@ For example, if your remote thing provides a trigger channel with this UID `astr
 
 ### demo.things:
 
+Example of connection to a remote server in the local network:
+
 ```
 Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, useHttps=true, trustedCertificate=true ] {
     Thing thing tv "TV living room" [ thingUID="lgwebos:WebOSTV:tv" ]
@@ -108,6 +110,12 @@ Bridge remoteopenhab:server:oh2 "OH2 server" [ host="192.168.0.100", port=8443, 
     }
     Thing thing astroMoon "Astro moon" [ thingUID="astro:moon:local" ]
 }
+```
+
+Example of connection to a remote server outside the local network through a myopenhab cloud instance:
+
+```
+Bridge remoteopenhab:server:oh3 "OH3 server" [ host="myopenhab.org", useHttps=true, port=443, username="myUsername", password="myPassword" ]
 ```
 
 ### demo.items:

@@ -89,6 +89,6 @@ public class HomeConnectCooktopHandler extends AbstractHomeConnectThingHandler {
     @Override
     protected void resetProgramStateChannels(boolean offline) {
         super.resetProgramStateChannels(offline);
-        getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
     }
 }

@@ -95,10 +95,7 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                     PacketType packetType = RFXComMessageFactoryImpl
                             .convertPacketType(getThing().getThingTypeUID().getId().toUpperCase());
 
-                    RFXComMessage msg = messageFactory.createMessage(packetType);
-
-                    msg.setConfig(config);
-                    msg.convertFromState(channelUID.getId(), command);
+                    RFXComMessage msg = messageFactory.createMessage(packetType, config, channelUID, command);
 
                     bridgeHandler.sendMessage(msg);
                 } catch (RFXComMessageNotImplementedException e) {
@@ -180,9 +177,9 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
         try {
             if (config.matchesMessage(message)) {
                 String receivedId = PACKET_TYPE_THING_TYPE_UID_MAP.get(message.getPacketType()).getId();
-                logger.debug("Received message from bridge: {} message: {}", bridge, message);
-
                 if (receivedId.equals(getThing().getThingTypeUID().getId())) {
+                    logger.debug("Message from bridge [{}] matches thing [{}] message: {}", bridge,
+                            getThing().getUID().toString(), message);
                     updateStatus(ThingStatus.ONLINE);
 
                     for (Channel channel : getThing().getChannels()) {
@@ -194,19 +191,21 @@ public class RFXComHandler extends BaseThingHandler implements DeviceMessageList
                                 case CHANNEL_COMMAND:
                                 case CHANNEL_CHIME_SOUND:
                                 case CHANNEL_MOOD:
-                                    postNullableCommand(uid, message.convertToCommand(channelId, this));
+                                    postNullableCommand(uid, message.convertToCommand(channelId, config, this));
                                     break;
 
                                 case CHANNEL_LOW_BATTERY:
                                     updateNullableState(uid,
-                                            isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL, this)));
+                                            isLowBattery(message.convertToState(CHANNEL_BATTERY_LEVEL, config, this)));
                                     break;
 
                                 default:
-                                    updateNullableState(uid, message.convertToState(channelId, this));
+                                    updateNullableState(uid, message.convertToState(channelId, config, this));
                                     break;
                             }
-                        } catch (RFXComException e) {
+                        } catch (RFXComInvalidStateException e) {
+                            logger.trace("{} not configured for {}", channelId, message);
+                        } catch (RFXComUnsupportedChannelException e) {
                             logger.trace("{} does not handle {}", channelId, message);
                         }
                     }

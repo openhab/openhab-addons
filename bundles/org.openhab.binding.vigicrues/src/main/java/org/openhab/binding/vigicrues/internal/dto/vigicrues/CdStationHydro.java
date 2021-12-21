@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.vigicrues.internal.dto.vigicrues;
 
+import static org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import org.openhab.binding.vigicrues.internal.VigiCruesBindingConstants;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -36,21 +36,20 @@ public class CdStationHydro {
 
     public class CruesHistorique {
         @SerializedName("LbUsuel")
-        public String name;
+        private String name;
         @SerializedName("ValHauteur")
-        public double height;
+        private double height;
         @SerializedName("ValDebit")
-        public double flow;
+        private double flow;
 
         public Map<String, String> getDescription() {
             Map<String, String> result = new HashMap<>();
             if (height != 0) {
-                result.put(String.format("%s %s (%s)", VigiCruesBindingConstants.FLOOD,
-                        VigiCruesBindingConstants.HEIGHT, name), String.format(Locale.US, "%.2f m", height));
+                result.put(String.format("%s %s (%s)", FLOOD, HEIGHT, name),
+                        String.format(Locale.US, "%.2f m", height));
             }
             if (flow != 0) {
-                result.put(String.format("%s %s (%s)", VigiCruesBindingConstants.FLOOD, VigiCruesBindingConstants.FLOW,
-                        name), String.format(Locale.US, "%.2f m³/s", flow));
+                result.put(String.format("%s %s (%s)", FLOOD, FLOW, name), String.format(Locale.US, "%.2f m³/s", flow));
             }
             return result;
         }

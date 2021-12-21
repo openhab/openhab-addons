@@ -1,12 +1,9 @@
 # Verisure Binding
 
-This is an openHAB binding for Verisure Alarm System, by Securitas Direct.
+This is an openHAB binding for Verisure Smart Alarms by Verisure Securitas.
 
-This binding uses the rest API behind the Verisure My Pages:
+This binding uses a rest API used by the [Verisure My Pages webpage](https://mypages.verisure.com/login.html)
 
-https://mypages.verisure.com/login.html.
-
-Be aware that Verisure don't approve if you update to often, I have gotten no complaints running with a 10 minutes update interval, but officially you should use 30 minutes.
 
 
 ## Supported Things
@@ -19,7 +16,7 @@ This binding supports the following thing types:
 - Water Detector (climate)
 - Siren (climate)
 - Night Control
-- Yaleman SmartLock
+- Yaleman Doorman SmartLock
 - SmartPlug
 - Door/Window Status
 - User Presence Status
@@ -31,11 +28,14 @@ This binding supports the following thing types:
 
 ## Binding Configuration
 
-You will have to configure the bridge with username and password, these must be the same credentials as used when logging into https://mypages.verisure.com.
+You will have to configure the bridge with username and password of a pre-defined user on [Verisure page](https://mypages.verisure.com) that has not activated Multi Factor Authentication (MFA/2FA). 
 
-You must also configure your pin-code(s) to be able to lock/unlock the SmartLock(s) and arm/unarm the Alarm(s).
+Verisure allows you to have more than one user so the suggestion is to use a specific user for automation that has MFA/2FA deactivated.
+**NOTE:** To be able to have full control over all SmartLock/alarm functionality, the user also needs to have Administrator rights.
 
-**NOTE:** To be able to have full control over all SmartLock functionality, the user has to have Administrator rights.
+You must also configure pin-code(s) to be able to lock/unlock the SmartLock(s) and arm/unarm the Alarm(s).
+
+
 
 ## Discovery
 
@@ -325,7 +325,8 @@ The following channels are supported:
 #### Configuration Options
 
 *   `deviceId` - Device Id
-        *  Since Event Log lacks a Verisure ID, the following naming convention is used for Event Log on site id 123456789: 'el123456789'. Installation ID can be found using DEBUG log settings.   
+     *  Since Event Log lacks a Verisure ID, the following naming convention is used for Event Log on site id 123456789: 'el123456789'. Installation ID can be found using DEBUG log settings.
+             
 
 #### Channels
 

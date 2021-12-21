@@ -33,6 +33,9 @@ import org.slf4j.LoggerFactory;
 public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(ButtonVirtualDatapointHandler.class);
 
+    private static final String LONG_REPEATED_EVENT = "LONG_REPEATED";
+    private static final String LONG_RELEASED_EVENT = "LONG_RELEASED";
+
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_BUTTON;
@@ -45,7 +48,7 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                 HmDatapoint dp = addDatapoint(device, channel.getNumber(), getName(), HmValueType.STRING, null, false);
                 dp.setTrigger(true);
                 dp.setOptions(new String[] { CommonTriggerEvents.SHORT_PRESSED, CommonTriggerEvents.LONG_PRESSED,
-                        CommonTriggerEvents.DOUBLE_PRESSED });
+                        LONG_REPEATED_EVENT, LONG_RELEASED_EVENT });
             }
         }
     }
@@ -57,33 +60,59 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
 
     @Override
     public void handleEvent(VirtualGateway gateway, HmDatapoint dp) {
-        HmDatapoint vdp = getVirtualDatapoint(dp.getChannel());
+        HmChannel channel = dp.getChannel();
+        HmDatapoint vdp = getVirtualDatapoint(channel);
+        int usPos = dp.getName().indexOf("_");
+        String pressType = usPos == -1 ? dp.getName() : dp.getName().substring(usPos + 1);
+        boolean isLongPressActive = CommonTriggerEvents.LONG_PRESSED.equals(vdp.getValue())
+                || LONG_REPEATED_EVENT.equals(vdp.getValue());
         if (MiscUtils.isTrueValue(dp.getValue())) {
-            int usPos = dp.getName().indexOf("_");
-            String pressType = usPos == -1 ? dp.getName() : dp.getName().substring(usPos + 1);
             switch (pressType) {
-                case "SHORT":
-                    if (dp.getValue() == null || !dp.getValue().equals(dp.getPreviousValue())) {
-                        vdp.setValue(CommonTriggerEvents.SHORT_PRESSED);
+                case "SHORT": {
+                    vdp.setValue(null); // Force sending new event
+                    vdp.setValue(CommonTriggerEvents.SHORT_PRESSED);
+                    break;
+                }
+                case "LONG":
+                    if (LONG_REPEATED_EVENT.equals(vdp.getValue())) {
+                        // Suppress long press events during an ongoing long press
+                        vdp.setValue(LONG_REPEATED_EVENT);
                     } else {
-                        // two (or more) PRESS_SHORT events were received
-                        // within AbstractHomematicGateway#DEFAULT_DISABLE_DELAY seconds
-                        vdp.setValue(CommonTriggerEvents.DOUBLE_PRESSED);
+                        vdp.setValue(CommonTriggerEvents.LONG_PRESSED);
                     }
                     break;
-                case "LONG":
-                    vdp.setValue(CommonTriggerEvents.LONG_PRESSED);
-                    break;
                 case "LONG_RELEASE":
+                    // Only send release events if we sent a pressed event before
+                    vdp.setValue(isLongPressActive ? LONG_RELEASED_EVENT : null);
+                    break;
                 case "CONT":
+                    // Clear previous value to force re-triggering of repetition
                     vdp.setValue(null);
+                    // Only send repetitions if there was a pressed event before
+                    // (a CONT might arrive simultaneously with the initial LONG event)
+                    if (isLongPressActive) {
+                        vdp.setValue(LONG_REPEATED_EVENT);
+                    }
                     break;
                 default:
                     vdp.setValue(null);
                     logger.warn("Unexpected vaule '{}' for PRESS virtual datapoint", pressType);
             }
         } else {
-            vdp.setValue(null);
+            if ("LONG".equals(pressType) && LONG_REPEATED_EVENT.equals(vdp.getValue())) {
+                // If we're currently processing a repeated long-press event, don't let the initial LONG
+                // event time out the repetitions, the CONT delay handler will take care of it
+                vdp.setValue(LONG_REPEATED_EVENT);
+            } else if (isLongPressActive) {
+                // We seemingly missed an event (either a CONT or the final LONG_RELEASE),
+                // so end the long press cycle now
+                vdp.setValue(LONG_RELEASED_EVENT);
+            } else {
+                vdp.setValue(null);
+            }
         }
+        logger.debug("Handled virtual button event on {}:{}: press type {}, value {}, button state {} -> {}",
+                channel.getDevice().getAddress(), channel.getNumber(), pressType, dp.getValue(), vdp.getPreviousValue(),
+                vdp.getValue());
     }
 }

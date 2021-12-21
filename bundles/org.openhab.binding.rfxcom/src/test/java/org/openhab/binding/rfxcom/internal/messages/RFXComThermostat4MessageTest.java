@@ -29,6 +29,6 @@ public class RFXComThermostat4MessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(THERMOSTAT4));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(THERMOSTAT4, null, null, null));
     }
 }

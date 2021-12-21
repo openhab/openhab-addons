@@ -267,23 +267,4 @@ public class ForwardToLoginServletTest extends AbstractConfigFlowTest {
                 "Go to <a href=\"https://www.miele.com/f/com/en/register_api.aspx\">the Miele developer portal</a> to obtain your"));
         assertTrue(maybePairAccountSite.contains("Missing e-mail address."));
     }
-
-    @Test
-    public void whenAMalformedEmailIsPassedThenTheBrowserIsRedirectedToThePairSiteAndAWarningIsDisplayed()
-            throws Exception {
-        // when:
-        Website maybePairAccountSite = getCrawler()
-                .doGetRelative("/mielecloud/forwardToLogin?" + ForwardToLoginServlet.CLIENT_ID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.CLIENT_ID + "&"
-                        + ForwardToLoginServlet.CLIENT_SECRET_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.CLIENT_SECRET + "&"
-                        + ForwardToLoginServlet.BRIDGE_ID_PARAMETER_NAME + "="
-                        + MieleCloudBindingIntegrationTestConstants.BRIDGE_ID + "&"
-                        + ForwardToLoginServlet.EMAIL_PARAMETER_NAME + "=not_an_Email");
-
-        // then:
-        assertTrue(maybePairAccountSite.contains(
-                "Go to <a href=\"https://www.miele.com/f/com/en/register_api.aspx\">the Miele developer portal</a> to obtain your"));
-        assertTrue(maybePairAccountSite.contains("Malformed e-mail address"));
-    }
 }

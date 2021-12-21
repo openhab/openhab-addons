@@ -12,16 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.handler;
 
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_FREEZER_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_FREEZER_SUPER_MODE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.CHANNEL_REFRIGERATOR_SUPER_MODE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_DOOR_STATE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FREEZER_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FREEZER_SUPER_MODE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FRIDGE_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.EVENT_FRIDGE_SUPER_MODE;
+import static org.openhab.binding.homeconnect.internal.HomeConnectBindingConstants.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -130,11 +121,11 @@ public class HomeConnectFridgeFreezerHandler extends AbstractHomeConnectThingHan
 
         // register fridge/freezer specific event handlers
         handlers.put(EVENT_FREEZER_SETPOINT_TEMPERATURE,
-                event -> getThingChannel(CHANNEL_FREEZER_SETPOINT_TEMPERATURE)
+                event -> getLinkedChannel(CHANNEL_FREEZER_SETPOINT_TEMPERATURE)
                         .ifPresent(channel -> updateState(channel.getUID(),
                                 new QuantityType<>(event.getValueAsInt(), mapTemperature(event.getUnit())))));
         handlers.put(EVENT_FRIDGE_SETPOINT_TEMPERATURE,
-                event -> getThingChannel(CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE)
+                event -> getLinkedChannel(CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE)
                         .ifPresent(channel -> updateState(channel.getUID(),
                                 new QuantityType<>(event.getValueAsInt(), mapTemperature(event.getUnit())))));
     }

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UnauthorizedApiException} exception is thrown when result from the OpenSprinkler
  * API is "result" : 2.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class UnauthorizedApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.

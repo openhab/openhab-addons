@@ -42,8 +42,7 @@ public class OpenClosedTypeConverter extends AbstractTypeConverter<OpenClosedTyp
 
     @Override
     protected OpenClosedType fromBinding(HmDatapoint dp) throws ConverterException {
-        return (((Boolean) dp.getValue()) == Boolean.FALSE) != isInvert(dp) ? OpenClosedType.CLOSED
-                : OpenClosedType.OPEN;
+        return Boolean.FALSE.equals(dp.getValue()) != isInvert(dp) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
     }
 
     /**

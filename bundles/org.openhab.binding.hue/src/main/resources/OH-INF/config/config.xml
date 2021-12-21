@@ -4,15 +4,56 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:hue:presencesensor">
+	<config-description uri="thing-type:hue:lightlevelsensor">
 		<parameter name="sensorId" type="text" required="true">
-			<label>Sensor ID</label>
-			<description>The identifier that is used within the hue bridge.</description>
+			<label>@text/config.sensorId.label</label>
+			<description>@text/config.sensorId.description</description>
+		</parameter>
+		<parameter name="on" type="boolean">
+			<label>@text/config.on.label</label>
+			<description>@text/config.on.description</description>
 		</parameter>
 		<parameter name="ledindication" type="boolean">
-			<label>LED Indication</label>
-			<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation
-				(Reset, SW Update, Battery Low).</description>
+			<label>@text/config.ledindication.label</label>
+			<description>@text/config.ledindication.description</description>
+		</parameter>
+		<parameter name="tholddark" type="integer" min="0" step="1">
+			<label>Threshold Dark</label>
+			<description>Threshold the user configured to be used in rules to determine insufficient light level (ie below
+				threshold). Default value 16000.</description>
+			<default>16000</default>
+		</parameter>
+		<parameter name="tholdoffset" type="integer" min="1" step="1">
+			<label>Threshold Offset</label>
+			<description>Threshold the user configured to be used in rules to determine sufficient light level (ie above
+				threshold). Specified as relative offset to the "dark" threshold. Shall be >=1. Default value 7000.</description>
+			<default>7000</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:temperaturesensor">
+		<parameter name="sensorId" type="text" required="true">
+			<label>@text/config.sensorId.label</label>
+			<description>@text/config.sensorId.description</description>
+		</parameter>
+		<parameter name="on" type="boolean">
+			<label>@text/config.on.label</label>
+			<description>@text/config.on.description</description>
+		</parameter>
+		<parameter name="ledindication" type="boolean">
+			<label>@text/config.ledindication.label</label>
+			<description>@text/config.ledindication.description</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:presencesensor">
+		<parameter name="sensorId" type="text" required="true">
+			<label>@text/config.sensorId.label</label>
+			<description>@text/config.sensorId.description</description>
+		</parameter>
+		<parameter name="ledindication" type="boolean">
+			<label>@text/config.ledindication.label</label>
+			<description>@text/config.ledindication.description</description>
 		</parameter>
 		<parameter name="sensitivity" type="integer" min="0" step="1">
 			<label>Sensitivity</label>
@@ -24,14 +65,64 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:hue:geofencesensor">
+	<config-description uri="thing-type:hue:sensor">
 		<parameter name="sensorId" type="text" required="true">
-			<label>Sensor ID</label>
-			<description>The identifier that is used within the hue bridge.</description>
+			<label>@text/config.sensorId.label</label>
+			<description>@text/config.sensorId.description</description>
 		</parameter>
 		<parameter name="on" type="boolean">
-			<label>Sensor Status</label>
-			<description>Enables or disables the sensor.</description>
+			<label>@text/config.on.label</label>
+			<description>@text/config.on.description</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:light">
+		<parameter name="lightId" type="text" required="true">
+			<label>@text/config.lightId.label</label>
+			<description>@text/config.lightId.description</description>
+		</parameter>
+		<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
+			<label>@text/config.fadetime.label</label>
+			<description>@text/config.fadetime.description</description>
+			<default>400</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:lightwithoutfade">
+		<parameter name="lightId" type="text" required="true">
+			<label>@text/config.lightId.label</label>
+			<description>@text/config.lightId.description</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:plug">
+		<parameter name="lightId" type="text" required="true">
+			<label>@text/config.plugId.label</label>
+			<description>@text/config.plugId.description</description>
+		</parameter>
+		<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
+			<label>@text/config.fadetime.label</label>
+			<description>@text/config.fadetime.description</description>
+			<default>400</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:plugwithoutfade">
+		<parameter name="lightId" type="text" required="true">
+			<label>@text/config.plugId.label</label>
+			<description>@text/config.plugId.description</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:hue:group">
+		<parameter name="groupId" type="text" required="true">
+			<label>Group ID</label>
+			<description>The group identifier identifies one certain hue group or room.</description>
+		</parameter>
+		<parameter name="fadetime" type="integer" min="0" step="100" unit="ms">
+			<label>@text/config.fadetime.label</label>
+			<description>@text/config.fadetime.description</description>
+			<default>400</default>
 		</parameter>
 	</config-description>
 

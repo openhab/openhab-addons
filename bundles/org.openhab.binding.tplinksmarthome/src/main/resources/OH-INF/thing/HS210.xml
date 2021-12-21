@@ -17,6 +17,6 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:switch"/>
+		<config-description-ref uri="thing-type:tplinksmarthome:device-switch"/>
 	</thing-type>
 </thing:thing-descriptions>

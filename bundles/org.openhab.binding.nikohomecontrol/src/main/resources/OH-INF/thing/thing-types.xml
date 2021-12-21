@@ -5,70 +5,67 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>Niko Home Control I Bridge</label>
-		<description>This bridge represents a Niko Home Control I IP-interface</description>
+		<label>@text/bridgeLabel</label>
+		<description>@text/bridgeDescription</description>
 		<channels>
 			<channel id="alarm" typeId="alarm"/>
 			<channel id="notice" typeId="notice"/>
 		</channels>
 		<config-description>
 			<parameter name="addr" type="text" required="true">
-				<label>IP or Host Name</label>
-				<description>IP Address of Niko Home Control IP-interface</description>
+				<label>@text/bridgeConfigAddressLabel</label>
+				<description>@text/bridgeConfigAddressDescription</description>
 				<advanced>false</advanced>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer">
-				<label>Bridge Port</label>
-				<description>Port to communicate with Niko Home Control IP-interface, default 8000</description>
+				<label>@text/bridgeConfigPortLabel</label>
+				<description>@text/bridgeConfigPortDescription</description>
 				<default>8000</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="refresh" type="integer">
-				<label>Refresh Interval</label>
-				<description>Refresh interval for connection with Niko Home Control IP-interface (min), default 300. If set to 0 or
-					left empty, no refresh will be scheduled</description>
+				<label>@text/bridgeConfigRefreshLabel</label>
+				<description>@text/bridgeConfigRefreshDescription</description>
 				<default>300</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>
 	<bridge-type id="bridge2">
-		<label>Niko Home Control II Bridge</label>
-		<description>This bridge represents a Niko Home Control II Connected Controller</description>
+		<label>@text/bridge2Label</label>
+		<description>@text/bridge2Description</description>
 		<channels>
 			<channel id="alarm" typeId="alarm"/>
 			<channel id="notice" typeId="notice"/>
 		</channels>
 		<config-description>
 			<parameter name="addr" type="text" required="true">
-				<label>IP or Host Name</label>
-				<description>IP Address of Connected Controller</description>
+				<label>@text/bridgeConfigAddressLabel</label>
+				<description>@text/bridge2ConfigAddressDescription</description>
 				<advanced>false</advanced>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer">
-				<label>Bridge Port</label>
-				<description>Port for secure MQTT communication with Connected Controller, default 8884</description>
+				<label>@text/bridgeConfigPortLabel</label>
+				<description>@text/bridge2ConfigPortDescription</description>
 				<default>8884</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="profile" type="text">
-				<label>Profile</label>
-				<description>Profile used in Niko Home Control II for hobby API</description>
+				<label>@text/bridge2ConfigProfileLabel</label>
+				<description>@text/bridge2ConfigProfileDescription</description>
 				<default>hobby</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<label>API Token</label>
-				<description>Token for Niko Home Control II hobby API, should not be empty. This token will have to be renewed after
-					expiration (1 year after creation)</description>
+				<label>@text/bridge2ConfigPasswordLabel</label>
+				<description>@text/bridge2ConfigPasswordDescription</description>
 				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer">
-				<label>Refresh Interval</label>
-				<description>Refresh interval for connection with Connected Controller (min), default 300. If set to 0 or left
-					empty, no refresh will be scheduled</description>
+				<label>@text/bridgeConfigRefreshLabel</label>
+				<description>@text/bridge2ConfigRefreshDescription</description>
 				<default>300</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -80,15 +77,15 @@
 			<bridge-type-ref id="bridge"/>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>Pushbutton</label>
-		<description>Pushbutton type action in Niko Home Control</description>
+		<label>@text/pushButtonLabel</label>
+		<description>@text/pushButtonDescription</description>
 		<channels>
 			<channel id="button" typeId="button"/>
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
-				<label>Action ID</label>
-				<description>Niko Home Control action ID</description>
+				<label>@text/actionConfigActionIdLabel</label>
+				<description>@text/actionConfigActionIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 		</config-description>
@@ -98,15 +95,15 @@
 			<bridge-type-ref id="bridge"/>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>Switch</label>
-		<description>On/Off type action in Niko Home Control</description>
+		<label>@text/onOffLabel</label>
+		<description>@text/onOffDescription</description>
 		<channels>
 			<channel id="switch" typeId="system.power"/>
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
-				<label>Action ID</label>
-				<description>Niko Home Control action ID</description>
+				<label>@text/actionConfigActionIdLabel</label>
+				<description>@text/actionConfigActionIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 		</config-description>
@@ -116,20 +113,20 @@
 			<bridge-type-ref id="bridge"/>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>Dimmer</label>
-		<description>Dimmer type action in Niko Home Control</description>
+		<label>@text/dimmerLabel</label>
+		<description>@text/dimmerDescription</description>
 		<channels>
 			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
-				<label>Action ID</label>
-				<description>Niko Home Control action ID</description>
+				<label>@text/actionConfigActionIdLabel</label>
+				<description>@text/actionConfigActionIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="step" type="integer">
-				<label>Step Value</label>
-				<description>Step value used for increase/decrease of dimmer brightness, default 10%</description>
+				<label>@text/dimmerConfigStepLabel</label>
+				<description>@text/dimmerConfigStepValue</description>
 				<default>10</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -140,20 +137,20 @@
 			<bridge-type-ref id="bridge"/>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>Shutter</label>
-		<description>Rollershutter type action in Niko Home Control</description>
+		<label>@text/blindLabel</label>
+		<description>@text/blindDescription</description>
 		<channels>
 			<channel id="rollershutter" typeId="rollershutter"/>
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
-				<label>Action ID</label>
-				<description>Niko Home Control action ID</description>
+				<label>@text/actionConfigActionIdLabel</label>
+				<description>@text/actionConfigActionIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="invert" type="boolean">
-				<label>Invert Direction</label>
-				<description>Invert rollershutter direction</description>
+				<label>@text/blindConfigInvertLabel</label>
+				<description>@text/blindConfigInvertDescription</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -164,8 +161,8 @@
 			<bridge-type-ref id="bridge"/>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>Thermostat</label>
-		<description>Thermostat in the Niko Home Control system</description>
+		<label>@textThermostatLabel</label>
+		<description>@textThermostatDescription</description>
 		<channels>
 			<channel id="measured" typeId="measured"/>
 			<channel id="mode" typeId="mode"/>
@@ -174,14 +171,13 @@
 		</channels>
 		<config-description>
 			<parameter name="thermostatId" type="text" required="true">
-				<label>Thermostat ID</label>
-				<description>Niko Home Control Thermostat ID</description>
+				<label>@text/thermostatConfigThermostatIdLabel</label>
+				<description>@text/thermostatConfigThermostatIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 			<parameter name="overruleTime" type="integer">
-				<label>Overrule Time</label>
-				<description>Default overrule duration in minutes when an overrule temperature is set without providing overrule
-					time, 60 minutes by default</description>
+				<label>@text/thermostatConfigOverruleTimeLabel</label>
+				<description>@text/thermostatConfigOverruleTimeDescription</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -191,15 +187,15 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge2"/>
 		</supported-bridge-type-refs>
-		<label>Energy Meter</label>
-		<description>Energy meter in the Niko Home Control system</description>
+		<label>@text/energyMeterLabel</label>
+		<description>@text/energyMeterDescription</description>
 		<channels>
 			<channel id="power" typeId="power"/>
 		</channels>
 		<config-description>
 			<parameter name="energyMeterId" type="text" required="true">
-				<label>Energy Meter ID</label>
-				<description>Niko Home Control Energy Meter ID</description>
+				<label>@text/energyMeterConfigEnergyMeterIdLabel</label>
+				<description>@text/energyMeterConfigEnergyMeterIdDescription</description>
 				<advanced>false</advanced>
 			</parameter>
 		</config-description>
@@ -207,67 +203,69 @@
 
 	<channel-type id="button">
 		<item-type>Switch</item-type>
-		<label>Button</label>
-		<description>Pushbutton control for action in Niko Home Control</description>
+		<label>@text/channelButtonLabel</label>
+		<description>@text/channelButtonDescription</description>
 		<category>Switch</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>
-		<label>Rollershutter</label>
-		<description>Rollershutter control for rollershutter action in Niko Home Control</description>
+		<label>@text/channelRollershutterLabel</label>
+		<description>@text/channelRollershutterDescription</description>
 		<category>Blinds</category>
 	</channel-type>
 
 	<channel-type id="measured">
 		<item-type>Number:Temperature</item-type>
-		<label>Measured</label>
-		<description>Temperature measured by thermostat</description>
+		<label>@text/channelMeasuredLabel</label>
+		<description>@text/channelMeasuredDescription</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="setpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Setpoint</label>
-		<description>Setpoint temperature of thermostat</description>
+		<label>@text/channelSetpointLabel</label>
+		<description>@text/channelSetpointDescription</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>TargetTemperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state min="0" max="100" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="overruletime">
 		<item-type>Number</item-type>
-		<label>Overrule Time</label>
-		<description>Time duration for overruling thermostat target temperature in min.</description>
+		<label>@text/channelOverruletimeLabel</label>
+		<description>@text/channelOverruletimeDescription</description>
 		<category>Number</category>
 		<state min="0" max="1440" step="5"/>
 	</channel-type>
 	<channel-type id="mode">
 		<item-type>Number</item-type>
-		<label>Mode</label>
-		<description>Thermostat mode</description>
+		<label>@text/channelModeLabel</label>
+		<description>@text/channelModeDescription</description>
 		<category>Number</category>
 		<state>
 			<options>
-				<option value="0">day</option>
-				<option value="1">night</option>
-				<option value="2">eco</option>
-				<option value="3">off</option>
-				<option value="4">cool</option>
-				<option value="5">prog 1</option>
-				<option value="6">prog 2</option>
-				<option value="7">prog 3</option>
+				<option value="0">@text/channelModeOption0</option>
+				<option value="1">@text/channelModeOption1</option>
+				<option value="2">@text/channelModeOption2</option>
+				<option value="3">@text/channelModeOption3</option>
+				<option value="4">@text/channelModeOption4</option>
+				<option value="5">@text/channelModeOption5</option>
+				<option value="6">@text/channelModeOption6</option>
+				<option value="7">@text/channelModeOption7</option>
 			</options>
 		</state>
 	</channel-type>
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
-		<label>Power</label>
-		<description>Momentary power consumption/production (positive is consumption)</description>
+		<label>@text/channelPowerLabel</label>
+		<description>@text/channelPowerDescription</description>
 		<category>Number</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
@@ -275,13 +273,13 @@
 
 	<channel-type id="alarm">
 		<kind>trigger</kind>
-		<label>Alarm</label>
-		<description>Alarm from Niko Home Control</description>
+		<label>@text/channelAlarmLabel</label>
+		<description>@text/channelAlarmDescription</description>
 	</channel-type>
 	<channel-type id="notice">
 		<kind>trigger</kind>
-		<label>Notice</label>
-		<description>Notice from Niko Home Control</description>
+		<label>@text/channelNoticeLabel</label>
+		<description>@text/channelNoticeDescription</description>
 	</channel-type>
 
 </thing:thing-descriptions>

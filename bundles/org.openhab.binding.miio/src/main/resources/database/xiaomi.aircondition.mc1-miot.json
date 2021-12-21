@@ -94,7 +94,6 @@
 				"stateDescription": {
 					"minimum": 16,
 					"maximum": 31,
-					"step": 0.0,
 					"pattern": "%.1f %unit%"
 				},
 				"refresh": true,
@@ -351,13 +350,12 @@
 				"piid": 3,
 				"friendlyName": "Electricity - Count",
 				"channel": "elec-count",
-				"channelType": "miot_uint16",
 				"type": "Number",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 65535,
 					"step": 1,
-					"pattern": "%.1f",
+					"pattern": "%.0f",
 					"readOnly": true
 				},
 				"refresh": true,

@@ -16,7 +16,7 @@ This service is provided "AS IS", and the user takes full responsibility of any 
 ## Table of Contents
 
 {::options toc_levels="2..4"/}
-
+<!-- markdownlint-disable-next-line ul-style -->
 - TOC
 
 {:toc}
@@ -28,19 +28,86 @@ You must first set up an Amazon account as described below.
 Users are recommended to familiarize themselves with AWS pricing before using this service.
 Please note that there might be charges from Amazon when using this service to query/store data to DynamoDB.
 See [Amazon DynamoDB pricing pages](https://aws.amazon.com/dynamodb/pricing/) for more details.
-Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits. 
+Please also note possible [Free Tier](https://aws.amazon.com/free/) benefits.
 
 ### Setting Up an Amazon Account
 
+<!-- markdownlint-disable-next-line no-emphasis-as-heading -->
+**Login to AWS web console**
+
 * [Sign up](https://aws.amazon.com/) for Amazon AWS.
 * Select the AWS region in the [AWS console](https://console.aws.amazon.com/) using [these instructions](https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/getting-started.html#select-region). Note the region identifier in the URL (e.g. `https://eu-west-1.console.aws.amazon.com/console/home?region=eu-west-1` means that region id is `eu-west-1`).
-* **Create user for openHAB with IAM**
-  * Open Services -> IAM -> Users -> Create new Users. Enter `openhab` to _User names_, keep _Generate an access key for each user_ checked, and finally click _Create_.
-  * _Show User Security Credentials_ and record the keys displayed
-* **Configure user policy to have access for dynamodb**
-  * Open Services -> IAM -> Policies
-  * Check _AmazonDynamoDBFullAccess_ and click _Policy actions_ -> _Attach_
-  * Check the user created in step 2 and click _Attach policy_
+
+<!-- markdownlint-disable-next-line no-emphasis-as-heading -->
+**Create policy controlling permissions for AWS user**
+
+  1. Open Services -> IAM -> Policies
+  2. Click _Create policy_
+  3. Open _JSON_ tab and input the below policy code, describing the permissions needed
+
+**Note:** The below policy assumes that `eu-west-1` region is used, the new table schema is used, and the default table name of `openhab` is used.
+Modify the policy accordingly if needed.
+
+**Note 2:** As a more simple alternative, one can use pre-existing policy `AmazonDynamoDBFullAccess`, although the policy grants the openHAB user wider-than-necessary permissions.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:UpdateTimeToLive",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:DescribeTimeToLive",
+                "dynamodb:DeleteTable",
+                "dynamodb:CreateTable",
+                "dynamodb:DescribeTable",
+                "dynamodb:GetItem",
+                "dynamodb:UpdateTable"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:eu-west-1:084669220525:table/openhab",
+                "arn:aws:dynamodb:eu-west-1:084669220525:table/openhab/index/*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:ListTables",
+                "dynamodb:DescribeReservedCapacity",
+                "dynamodb:DescribeLimits"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+<!-- markdownlint-disable ol-prefix -->
+  4. Click _Next: Tags_
+  5. Click _Next: Review_
+  6. Enter `openhab-dynamodb-policy` as the _Name_ol-prefix -->
+  7. Click _Create policy_ to finish policy creation
+<!-- markdownlint-enable ol-prefix -->
+
+<!-- markdownlint-disable-next-line no-emphasis-as-heading -->
+**Create user for openHAB with IAM**
+
+  1. Open _Services_ -> _IAM_ -> _Users_ -> _Add users_. Enter `openhab` as _User name_, and tick _Programmatic access_
+  2. Click _Next: Permissions_
+  3. Select _Attach existing policies directly_, and search policies with `openhab-dynamodb-policy`. Tick the `openhab-dynamodb-policy` and proceed with _Next: Tags_
+  4. Click _Next: review_
+  5. Click _Create user_
+  6. Record the _Access key ID_ and _Secret access key_
 
 ## Configuration
 
@@ -65,7 +132,6 @@ Configure the addon to use new schema by setting `table` parameter (name of the 
 
 Only one table will be created for all data. The table will have the following fields
 
-
 | Attribute | Type   | Data type | Description                                   |
 | --------- | ------ | --------- | --------------------------------------------- |
 | `i`       | String | Yes       | Item name                                     |
@@ -76,19 +142,23 @@ Only one table will be created for all data. The table will have the following f
 
 Other notes
 
+<!-- markdownlint-disable ul-style -->
 - `i` and `t` forms the composite primary key (partition key, sort key) for the table
 - Only one of `s` or `n` attributes are specified, not both. Most items are converted to number type for most compact representation.
 - Compared to legacy format, data overhead is minimizing by using short attribute names, number timestamps and having only single table.
 - `exp` attribute is used with DynamoDB Time To Live (TTL) feature to automatically delete old data
+<!-- markdownlint-enable ul-style -->
 
 #### Legacy schema
 
 Configure the addon to use legacy schema by setting `tablePrefix` parameter.
 
+<!-- markdownlint-disable ul-style -->
 - When an item is persisted via this service, a table is created (if necessary).
 - The service will create at most two tables for different item types.
 - The tables will be named `<tablePrefix><item-type>`, where the `<item-type>` is either `bigdecimal` (numeric items) or `string` (string and complex items).
 - Each table will have three columns: `itemname` (item name), `timeutc` (in ISO 8601 format with millisecond accuracy), and `itemstate` (either a number or string representing item state).
+<!-- markdownlint-enable ul-style -->
 
 ### Credentials Configuration Using Access Key and Secret Key
 
@@ -135,6 +205,7 @@ In addition to the configuration properties above, the following are also availa
 | writeCapacityUnits | 1       |    No    | write capacity for the created tables                       |
 
 Refer to Amazon documentation on [provisioned throughput](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ProvisionedThroughput.html) for details on read/write capacity.
+In case you have not reserved enough capacity for write and/or read, you will notice error messages in openHAB logs.
 DynamoDB Time to Live (TTL) setting is configured using `expireDays`.
 
 All item- and event-related configuration is done in the file `persistence/dynamodb.persist`.
@@ -172,8 +243,8 @@ Eclipse instructions
 2. Configure the run configuration, and open Arguments sheet
 3. In VM arguments, provide the credentials for AWS
 
-````
+```bash
 -DDYNAMODBTEST_REGION=REGION-ID
 -DDYNAMODBTEST_ACCESS=ACCESS-KEY
 -DDYNAMODBTEST_SECRET=SECRET
-````
+```

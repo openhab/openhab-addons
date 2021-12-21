@@ -63,6 +63,19 @@ public class DateTimeUtilsTest {
         assertNextSeason(season.getAutumn(), DEC_10_2020, season);
     }
 
+    @Test
+    void testTruncate() {
+        Calendar cal = newCalendar(2021, 9, 30, 11, 54, TIME_ZONE);
+        Calendar target = newCalendar(2021, 9, 30, 0, 0, TIME_ZONE);
+        Calendar truncated = DateTimeUtils.truncateToMidnight(cal);
+        assertEquals(truncated, target);
+        Calendar endOfDay = DateTimeUtils.endOfDayDate(cal);
+        Calendar target2 = new GregorianCalendar(2021, 9, 30, 23, 59, 59);
+        target2.setTimeZone(TIME_ZONE);
+        target2.set(Calendar.MILLISECOND, 999);
+        assertEquals(endOfDay, target2);
+    }
+
     private void assertNextSeason(Calendar expectedSeason, Calendar date, Season season) {
         assertEquals(expectedSeason, DateTimeUtils.getNext(date, season.getSpring(), season.getSummer(),
                 season.getAutumn(), season.getWinter()));

@@ -14,6 +14,7 @@ package org.openhab.binding.rfxcom.internal.messages;
 
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -31,21 +32,27 @@ public interface RFXComDeviceMessage<T> extends RFXComMessage {
      * Procedure for converting RFXCOM value to openHAB command.
      *
      * @param channelId id of the channel
+     * @param config Configuration of the thing being handled
      * @param deviceState
      * @return openHAB command.
      * @throws RFXComUnsupportedChannelException if the channel is not supported
+     * @throws RFXComInvalidStateException if the channel is supported, but the device is not configured for the value
      */
-    Command convertToCommand(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException;
+    Command convertToCommand(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException;
 
     /**
      * Procedure for converting RFXCOM value to openHAB state.
      *
      * @param channelId id of the channel
+     * @param config configuration of the thing being handled
      * @param deviceState
      * @return openHAB state.
      * @throws RFXComUnsupportedChannelException if the channel is not supported
+     * @throws RFXComInvalidStateException if the channel is supported, but the device is not configured for the value
      */
-    State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException;
+    State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException;
 
     /**
      * Procedure to get device id.

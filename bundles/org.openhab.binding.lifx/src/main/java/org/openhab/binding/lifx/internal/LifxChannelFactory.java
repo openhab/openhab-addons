@@ -24,6 +24,8 @@ import org.openhab.core.thing.ThingUID;
 @NonNullByDefault
 public interface LifxChannelFactory {
 
+    Channel createAbsTemperatureZoneChannel(ThingUID thingUID, int index);
+
     Channel createColorZoneChannel(ThingUID thingUID, int index);
 
     Channel createTemperatureZoneChannel(ThingUID thingUID, int index);

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.opensprinkler.internal.api.exception;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UnknownApiException} exception is thrown when result from the OpenSprinkler
  * API returns an unknown result.
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class UnknownApiException extends GeneralApiException {
     /**
      * Serial ID of this error class.

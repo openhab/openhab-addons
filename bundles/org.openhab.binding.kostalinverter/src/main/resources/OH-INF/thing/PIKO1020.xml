@@ -74,6 +74,6 @@
 		<properties>
 			<property name="vendor">KOSTAL Solar Electric GmbH</property>
 		</properties>
-		<config-description-ref uri="thing-type:kostalpiko1020_config"/>
+		<config-description-ref uri="thing-type:kostalinverter:kostalpiko1020"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -50,7 +50,7 @@ import com.digitaldan.jomnilinkII.OmniUnknownMessageTypeException;
 @NonNullByDefault
 public class AudioSourceHandler extends AbstractOmnilinkHandler {
     private final Logger logger = LoggerFactory.getLogger(AudioSourceHandler.class);
-    private final int POLL_DELAY_SECONDS = 5;
+    private final int pollDelaySeconds = 5;
     private final int thingID = getThingNumber();
     private @Nullable ScheduledFuture<?> scheduledPolling = null;
     public @Nullable String number;
@@ -104,7 +104,7 @@ public class AudioSourceHandler extends AbstractOmnilinkHandler {
     private synchronized void schedulePolling() {
         cancelPolling();
         logger.debug("Scheduling polling for Audio Source: {}", thingID);
-        scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::pollAudioSource, 0, POLL_DELAY_SECONDS,
+        scheduledPolling = super.scheduler.scheduleWithFixedDelay(this::pollAudioSource, 0, pollDelaySeconds,
                 TimeUnit.SECONDS);
     }
 

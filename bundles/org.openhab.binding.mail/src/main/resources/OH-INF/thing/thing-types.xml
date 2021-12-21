@@ -13,28 +13,28 @@
 				<description>Default sender address for mail</description>
 			</parameter>
 			<parameter name="hostname" type="text" required="true">
-				<label>Server Hostname</label>
+				<label>@text/config.hostname.label</label>
 			</parameter>
 			<parameter name="port" type="text" required="false">
-				<label>Server Port</label>
+				<label>@text/config.port.label</label>
 				<description>Default values are 25 for plain/STARTTLS and 465 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="security" type="text" required="false">
-				<label>SMTP Server Security Protocol</label>
+				<label>@text/config.security.label</label>
 				<options>
-					<option value="PLAIN">plain</option>
-					<option value="STARTTLS">STARTTLS</option>
-					<option value="SSL">SSL/TLS</option>
+					<option value="PLAIN">@text/config.security.option.PLAIN</option>
+					<option value="STARTTLS">@text/config.security.option.STARTTLS</option>
+					<option value="SSL">@text/config.security.option.SSL</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
 			</parameter>
 			<parameter name="username" type="text" required="false">
-				<label>SMTP Server Username</label>
+				<label>@text/config.username.label</label>
 			</parameter>
 			<parameter name="password" type="text" required="false">
-				<label>SMTP Server Password</label>
+				<label>@text/config.password.label</label>
 				<context>password</context>
 			</parameter>
 		</config-description>
@@ -44,32 +44,33 @@
 		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
-				<label>Server Hostname</label>
+				<label>@text/config.hostname.label</label>
 			</parameter>
 			<parameter name="port" type="text" required="false">
-				<label>Server Port</label>
+				<label>@text/config.port.label</label>
 				<description>Default values are 143 for plain/STARTTLS and 993 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="security" type="text" required="false">
-				<label>SMTP Server Security Protocol</label>
+				<label>@text/config.security.label</label>
 				<options>
-					<option value="PLAIN">plain</option>
-					<option value="STARTTLS">STARTTLS</option>
-					<option value="SSL">SSL/TLS</option>
+					<option value="PLAIN">@text/config.security.option.PLAIN</option>
+					<option value="STARTTLS">@text/config.security.option.STARTTLS</option>
+					<option value="SSL">@text/config.security.option.SSL</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
 			</parameter>
 			<parameter name="username" type="text" required="true">
-				<label>SMTP Server Username</label>
+				<label>@text/config.username.label</label>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<label>SMTP Server Password</label>
+				<label>@text/config.password.label</label>
 				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh Time for This Account in S</label>
+				<label>@text/config.refresh.label</label>
+				<description>@text/config.refresh.description</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -79,32 +80,33 @@
 		<description>Used for receiving emails</description>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
-				<label>Server Hostname</label>
+				<label>@text/config.hostname.label</label>
 			</parameter>
 			<parameter name="port" type="text" required="false">
-				<label>Server Port</label>
+				<label>@text/config.port.label</label>
 				<description>Default values are 110 for plain/STARTTLS and 995 for SSL/TLS</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="security" type="text" required="false">
-				<label>SMTP Server Security Protocol</label>
+				<label>@text/config.security.label</label>
 				<options>
-					<option value="PLAIN">plain</option>
-					<option value="STARTTLS">STARTTLS</option>
-					<option value="SSL">SSL/TLS</option>
+					<option value="PLAIN">@text/config.security.option.PLAIN</option>
+					<option value="STARTTLS">@text/config.security.option.STARTTLS</option>
+					<option value="SSL">@text/config.security.option.SSL</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>PLAIN</default>
 			</parameter>
 			<parameter name="username" type="text" required="true">
-				<label>SMTP Server Username</label>
+				<label>@text/config.username.label</label>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<label>SMTP Server Password</label>
+				<label>@text/config.password.label</label>
 				<context>password</context>
 			</parameter>
 			<parameter name="refresh" type="integer" required="false">
-				<label>Refresh Time for This Account in S</label>
+				<label>@text/config.refresh.label</label>
+				<description>@text/config.refresh.description</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -120,6 +122,7 @@
 				<label>Folder Name</label>
 			</parameter>
 			<parameter name="type" type="text" required="false">
+				<label>Counter Type</label>
 				<options>
 					<option value="UNREAD">Unread</option>
 					<option value="TOTAL">Total</option>

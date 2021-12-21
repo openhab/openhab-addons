@@ -14,7 +14,7 @@
 	</bridge-type>
 
 	<!-- thing types for devices -->
-	<!-- their IDs refer to the Zigbee Lightlink device ids (see chapter 2.2 in https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf) -->
+	<!-- their IDs refer to the Zigbee Lightlink device ids (see chapter 2.2 in https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf) -->
 	<thing-type id="0010">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="gateway"/>

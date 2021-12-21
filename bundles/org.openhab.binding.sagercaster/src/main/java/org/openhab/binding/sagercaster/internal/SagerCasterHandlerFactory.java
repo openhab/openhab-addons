@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sagercaster.internal.caster.SagerWeatherCaster;
 import org.openhab.binding.sagercaster.internal.handler.SagerCasterHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -58,9 +59,8 @@ public class SagerCasterHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(THING_TYPE_SAGERCASTER)) {
-            return new SagerCasterHandler(thing, stateDescriptionProvider, sagerWeatherCaster);
-        }
-        return null;
+        return thingTypeUID.equals(THING_TYPE_SAGERCASTER)
+                ? new SagerCasterHandler(thing, stateDescriptionProvider, sagerWeatherCaster)
+                : null;
     }
 }

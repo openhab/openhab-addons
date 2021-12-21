@@ -37,7 +37,7 @@ public class OffDelayUpdateStateListener extends ChannelStateUpdateListenerProxy
     private final Value value;
     private final ScheduledExecutorService scheduler;
 
-    private AtomicReference<@Nullable ScheduledFuture<?>> delay = new AtomicReference<>();
+    private final AtomicReference<@Nullable ScheduledFuture<?>> delay = new AtomicReference<>();
 
     public OffDelayUpdateStateListener(ChannelStateUpdateListener original, int offDelay, Value value,
             ScheduledExecutorService scheduler) {

@@ -10,8 +10,27 @@
 				"property": "",
 				"friendlyName": "Vacuum Action",
 				"channel": "vacuumaction",
-				"channelType": "vacuumaction",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "1",
+							"label": "Start"
+						},
+						{
+							"value": "0",
+							"label": "Stop"
+						},
+						{
+							"value": "2",
+							"label": "Pause"
+						},
+						{
+							"value": "3",
+							"label": "Dock"
+						}
+					]
+				},
 				"refresh": false,
 				"actions": [
 					{
@@ -21,25 +40,110 @@
 							0,
 							"$value$",
 							0
-						]
+						],
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "0"
+								},
+								{
+									"matchValue": "1"
+								},
+								{
+									"matchValue": "2"
+								}
+							]
+						}
+					},
+					{
+						"command": "set_charge",
+						"parameterType": "NUMBER",
+						"condition": {
+							"name": "matchValue",
+							"parameters": [
+								{
+									"matchValue": "3",
+									"returnValue": 1
+								}
+							]
+						}
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"1\"\u003d\"Start\",\"0\"\u003d\"Stop\",\"2\"\u003d\"Pause\",\"3\"\u003d\"Dock\"]`"
 			},
 			{
 				"property": "run_state",
 				"friendlyName": "State",
 				"channel": "state",
-				"channelType": "state",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Idle Undocked"
+						},
+						{
+							"value": "1",
+							"label": "Idle"
+						},
+						{
+							"value": "2",
+							"label": "Paused"
+						},
+						{
+							"value": "3",
+							"label": "Sweeping"
+						},
+						{
+							"value": "4",
+							"label": "Go Charging"
+						},
+						{
+							"value": "5",
+							"label": "Charging"
+						},
+						{
+							"value": "6",
+							"label": "Sweeping and Mopping"
+						},
+						{
+							"value": "7",
+							"label": "Mopping"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Idle Undocked\",\"1\"\u003d\"Idle\",\"2\"\u003d\"Paused\",\"3\"\u003d\"Sweeping\",\"4\"\u003d\"Go Charging\",\"5\"\u003d\"Charging\",\"6\"\u003d\"Sweeping and Mopping\",\"7\"\u003d\"Mopping\"]`"
 			},
 			{
 				"property": "mode",
-				"friendlyName": "Mode",
+				"friendlyName": "Clean Mode",
 				"channel": "mode",
-				"channelType": "mode",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Everywhere"
+						},
+						{
+							"value": "1",
+							"label": "Edges"
+						},
+						{
+							"value": "2",
+							"label": "Surface"
+						},
+						{
+							"value": "3",
+							"label": "Fixed Location"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
@@ -49,15 +153,122 @@
 				],
 				"tags": [
 					"Control"
-				]
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Everywhere\",\"1\"\u003d\"Edges\",\"2\"\u003d\"Surface\",\"3\"\u003d\"Fixed Location\"]`"
 			},
 			{
 				"property": "err_state",
 				"friendlyName": "Error",
 				"channel": "err_state",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "Sleeping and not charging"
+						},
+						{
+							"value": "500",
+							"label": "Radar timed out"
+						},
+						{
+							"value": "501",
+							"label": "Wheels stuck"
+						},
+						{
+							"value": "502",
+							"label": "Low battery"
+						},
+						{
+							"value": "503",
+							"label": "Dust bin missing"
+						},
+						{
+							"value": "508",
+							"label": "Uneven ground"
+						},
+						{
+							"value": "509",
+							"label": "Cliff sensor erro"
+						},
+						{
+							"value": "510",
+							"label": "Collision sensor error"
+						},
+						{
+							"value": "511",
+							"label": "Could not return to dock"
+						},
+						{
+							"value": "512",
+							"label": "Could not return to dock"
+						},
+						{
+							"value": "513",
+							"label": "Could not navigate"
+						},
+						{
+							"value": "514",
+							"label": "Vacuum stuck"
+						},
+						{
+							"value": "515",
+							"label": "Charging erro"
+						},
+						{
+							"value": "516",
+							"label": "Mop temperature error"
+						},
+						{
+							"value": "521",
+							"label": "Water tank is not installed"
+						},
+						{
+							"value": "522",
+							"label": "Mop is not installed"
+						},
+						{
+							"value": "525",
+							"label": "Insufficient water in water tank"
+						},
+						{
+							"value": "527",
+							"label": "Remove mop"
+						},
+						{
+							"value": "528",
+							"label": "Dust bin missing"
+						},
+						{
+							"value": "529",
+							"label": "Mop and water tank missing"
+						},
+						{
+							"value": "530",
+							"label": "Mop and water tank missin"
+						},
+						{
+							"value": "531",
+							"label": "Water tank is not installed"
+						},
+						{
+							"value": "2101",
+							"label": "Unsufficient battery, continuing cleaning after recharge"
+						},
+						{
+							"value": "2103",
+							"label": "Charging"
+						},
+						{
+							"value": "2104",
+							"label": "Fully charged"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Sleeping and not charging\",\"500\"\u003d\"Radar timed out\",\"501\"\u003d\"Wheels stuck\",\"502\"\u003d\"Low battery\",\"503\"\u003d\"Dust bin missing\",\"508\"\u003d\"Uneven ground\",\"509\"\u003d\"Cliff sensor erro\",\"510\"\u003d\"Collision sensor error\",\"511\"\u003d\"Could not return to dock\",\"512\"\u003d\"Could not return to dock\",\"513\"\u003d\"Could not navigate\",\"514\"\u003d\"Vacuum stuck\",\"515\"\u003d\"Charging erro\",\"516\"\u003d\"Mop temperature error\",\"521\"\u003d\"Water tank is not installed\",\"522\"\u003d\"Mop is not installed\",\"525\"\u003d\"Insufficient water in water tank\",\"527\"\u003d\"Remove mop\",\"528\"\u003d\"Dust bin missing\",\"529\"\u003d\"Mop and water tank missing\",\"530\"\u003d\"Mop and water tank missin\",\"531\"\u003d\"Water tank is not installed\",\"2101\"\u003d\"Unsufficient battery, continuing cleaning after recharge\",\"2103\"\u003d\"Charging\",\"2104\"\u003d\"Fully charged\"]`"
 			},
 			{
 				"property": "battary_life",
@@ -72,25 +283,67 @@
 				"friendlyName": "Box type",
 				"channel": "box_type",
 				"type": "Number",
+				"stateDescription": {
+					"readOnly": true,
+					"options": [
+						{
+							"value": "0",
+							"label": "No Bin"
+						},
+						{
+							"value": "1",
+							"label": "Sweep"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						},
+						{
+							"value": "3",
+							"label": "Sweep and Mop"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"parameterType": "EMPTY"
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"No Bin\",\"1\"\u003d\"Sweep\",\"2\"\u003d\"Mop\",\"3\"\u003d\"Sweep and Mop\"]`"
 			},
 			{
 				"property": "mop_type",
 				"friendlyName": "mop_type",
 				"channel": "mop_type",
 				"type": "Number",
+				"actions": []
+			},
+			{
+				"property": "mop_route",
+				"friendlyName": "Mop Route",
+				"channel": "mop_route",
+				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "S-Pattern"
+						},
+						{
+							"value": "1",
+							"label": "Y-Pattern"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
-						"command": "set_mode",
+						"command": "set_moproute",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"S-Pattern\",\"1\"\u003d\"Y-Pattern\"]`"
 			},
 			{
 				"property": "s_time",
@@ -123,26 +376,64 @@
 				"friendlyName": "suction_grade",
 				"channel": "suction_grade",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Silent"
+						},
+						{
+							"value": "1",
+							"label": "Basic"
+						},
+						{
+							"value": "2",
+							"label": "Medium"
+						},
+						{
+							"value": "3",
+							"label": "Strong"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_suction",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Silent\",\"1\"\u003d\"Basic\",\"2\"\u003d\"Medium\",\"3\"\u003d\"Strong\"]`"
 			},
 			{
 				"property": "water_grade",
 				"friendlyName": "water_grade",
 				"channel": "water_grade",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "11",
+							"label": "Low"
+						},
+						{
+							"value": "12",
+							"label": "Medium"
+						},
+						{
+							"value": "13",
+							"label": "High"
+						}
+					]
+				},
 				"refresh": true,
 				"actions": [
 					{
 						"command": "set_suction",
 						"parameterType": "NUMBER"
 					}
-				]
+				],
+				"readmeComment": "Value mapping `[\"11\"\u003d\"Low\",\"12\"\u003d\"Medium\",\"13\"\u003d\"High\"]`"
 			},
 			{
 				"property": "remember_map",
@@ -165,8 +456,33 @@
 				"friendlyName": "is_mop",
 				"channel": "is_mop",
 				"type": "Number",
+				"stateDescription": {
+					"options": [
+						{
+							"value": "0",
+							"label": "Vacuum"
+						},
+						{
+							"value": "1",
+							"label": "Vacuum And Mop"
+						},
+						{
+							"value": "2",
+							"label": "Mop"
+						},
+						{
+							"value": "3",
+							"label": "CleanZone"
+						},
+						{
+							"value": "4",
+							"label": "CleanSpot"
+						}
+					]
+				},
 				"refresh": true,
-				"actions": []
+				"actions": [],
+				"readmeComment": "Value mapping `[\"0\"\u003d\"Vacuum\",\"1\"\u003d\"Vacuum And Mop\",\"2\"\u003d\"Mop\",\"3\"\u003d\"CleanZone\",\"4\"\u003d\"CleanSpot\"]`"
 			},
 			{
 				"property": "has_newmap",

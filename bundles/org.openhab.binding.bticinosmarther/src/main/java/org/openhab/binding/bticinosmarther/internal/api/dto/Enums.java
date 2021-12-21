@@ -171,11 +171,11 @@ public class Enums {
          * @return the enum value representing the given measure unit
          */
         public static MeasureUnit fromUnit(Unit<?> unit) {
-            if (unit == SIUnits.CELSIUS) {
+            if (SIUnits.CELSIUS.equals(unit)) {
                 return CELSIUS;
-            } else if (unit == ImperialUnits.FAHRENHEIT) {
+            } else if (ImperialUnits.FAHRENHEIT.equals(unit)) {
                 return FAHRENHEIT;
-            } else if (unit == Units.PERCENT) {
+            } else if (Units.PERCENT.equals(unit)) {
                 return PERCENTAGE;
             } else {
                 return DIMENSIONLESS;

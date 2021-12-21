@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="channel-type:job:config">
+	<config-description uri="channel-type:robonect:jobType">
 		<parameter name="remoteStart" type="text" pattern="^STANDARD|REMOTE_1|REMOTE_2$">
 			<label>Remote Start</label>
 			<description>The location to start the mowing job from.</description>
