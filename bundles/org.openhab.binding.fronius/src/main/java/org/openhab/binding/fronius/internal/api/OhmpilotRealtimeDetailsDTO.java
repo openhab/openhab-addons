@@ -71,5 +71,4 @@ public class OhmpilotRealtimeDetailsDTO {
     public void setSoftware(String software) {
         this.software = software;
     }
-
 }

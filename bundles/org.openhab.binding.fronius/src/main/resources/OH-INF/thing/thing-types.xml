@@ -91,7 +91,7 @@
 			</channel>
 			<channel id="powerrealsum" typeId="meter_powerreal">
 				<label>Real Power Sum</label>
-			</channel>	
+			</channel>
 			<channel id="powerfactorphase1" typeId="meter_powerfactor">
 				<label>Power Factor Phase 1</label>
 			</channel>
@@ -122,7 +122,7 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<!-- Ohmpilot Thing Type -->
 	<thing-type id="ohmpilot">
 		<supported-bridge-type-refs>
@@ -321,7 +321,7 @@
 		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
-    <channel-type id="ohmpilot_energy">
+	<channel-type id="ohmpilot_energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
 		<description></description>

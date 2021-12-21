@@ -84,5 +84,4 @@ public class OhmpilotRealtimeBodyDataDTO {
     public void setStateCode(int stateCode) {
         this.stateCode = stateCode;
     }
-
 }
