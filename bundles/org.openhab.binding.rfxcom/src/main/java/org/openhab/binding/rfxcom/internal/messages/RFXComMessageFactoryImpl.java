@@ -18,9 +18,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.Command;
 
 /**
  * Factory to create RFXCom messages from either bytes delivered by the RFXCom device
@@ -98,13 +101,17 @@ public enum RFXComMessageFactoryImpl implements RFXComMessageFactory {
      * Create message for transmission from the packet type associated with the thing.
      */
     @Override
-    public RFXComMessage createMessage(PacketType packetType) throws RFXComException {
+    public RFXComMessage createMessage(PacketType packetType, RFXComDeviceConfiguration config, ChannelUID channelUID,
+            Command command) throws RFXComException {
         try {
             Class<? extends RFXComMessage> cl = MESSAGE_CLASSES.get(packetType);
             if (cl == null) {
                 throw new RFXComMessageNotImplementedException("Message " + packetType + " not implemented");
             }
-            return cl.getDeclaredConstructor().newInstance();
+            RFXComMessage msg = cl.getDeclaredConstructor().newInstance();
+            msg.setConfig(config);
+            msg.convertFromState(channelUID.getId(), command);
+            return msg;
         } catch (ReflectiveOperationException e) {
             throw new RFXComException(e);
         }

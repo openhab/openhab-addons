@@ -12,110 +12,33 @@
  */
 package org.openhab.binding.squeezebox.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Represents a Squeeze Player
  *
  * @author Dan Cunningham - Initial contribution
  *
  */
+@NonNullByDefault
 public class SqueezeBoxPlayer {
-    public String macAddress;
-    public String name;
-    public String ipAddr;
-    public String model;
-    public String uuid;
+    public final String macAddress;
+    @Nullable
+    public final String name;
+    @Nullable
+    public final String ipAddr;
+    @Nullable
+    public final String model;
+    @Nullable
+    public final String uuid;
 
-    public SqueezeBoxPlayer() {
-        super();
-    }
-
-    /**
-     * UID of player
-     *
-     * @return
-     */
-    public String getUuid() {
-        return uuid;
-    }
-
-    /**
-     * UID of player
-     *
-     * @param uuid
-     */
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    /**
-     * Mac Address of player
-     *
-     * @param macAddress
-     */
-    public String getMacAddress() {
-        return macAddress;
-    }
-
-    /**
-     * Mac Address of player
-     *
-     * @param macAddress
-     */
-    public void setMacAddress(String macAddress) {
-        this.macAddress = macAddress;
-    }
-
-    /**
-     * The name (label) of a player
-     *
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * The name (label) of a player
-     *
-     * @param name
-     */
-    public void setName(String name) {
+    public SqueezeBoxPlayer(String mac, @Nullable String name, @Nullable String ip, @Nullable String model,
+            @Nullable String uuid) {
+        this.macAddress = mac;
         this.name = name;
-    }
-
-    /**
-     * The ip address of a player
-     *
-     * @return
-     */
-    public String getIpAddr() {
-        return ipAddr;
-    }
-
-    /**
-     * The ip address of a player
-     *
-     * @param ipAddr
-     */
-    public void setIpAddr(String ipAddr) {
-        this.ipAddr = ipAddr;
-    }
-
-    /**
-     * The type of player
-     *
-     * @return
-     */
-    public String getModel() {
-        return model;
-    }
-
-    /**
-     * The type of player
-     *
-     * @param model
-     */
-    public void setModel(String model) {
+        this.ipAddr = ip;
         this.model = model;
+        this.uuid = uuid;
     }
 }

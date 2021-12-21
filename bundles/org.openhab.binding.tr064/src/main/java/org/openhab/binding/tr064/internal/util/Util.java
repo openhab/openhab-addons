@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -178,6 +179,13 @@ public class Util {
                 .forEach(channelTypeDescription -> {
                     String channelId = channelTypeDescription.getName();
                     String serviceId = channelTypeDescription.getService().getServiceId();
+                    String typeId = channelTypeDescription.getTypeId();
+                    Map<String, String> channelProperties = new HashMap<String, String>();
+
+                    if (typeId != null) {
+                        channelProperties.put("typeId", typeId);
+                    }
+
                     Set<String> parameters = new HashSet<>();
                     try {
                         SCPDServiceType deviceService = scpdUtil.getDevice(deviceId)
@@ -232,7 +240,7 @@ public class Util {
                             ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
                             ChannelBuilder channelBuilder = ChannelBuilder
                                     .create(channelUID, channelTypeDescription.getItem().getType())
-                                    .withType(channelTypeUID);
+                                    .withType(channelTypeUID).withProperties(channelProperties);
                             thingBuilder.withChannel(channelBuilder.build());
                             channels.put(channelUID, channelConfig);
                         } else {
@@ -246,7 +254,7 @@ public class Util {
                                         channelId + "_" + normalizedParameter);
                                 ChannelBuilder channelBuilder = ChannelBuilder
                                         .create(channelUID, channelTypeDescription.getItem().getType())
-                                        .withType(channelTypeUID)
+                                        .withType(channelTypeUID).withProperties(channelProperties)
                                         .withLabel(channelTypeDescription.getLabel() + " " + parameter);
                                 thingBuilder.withChannel(channelBuilder.build());
                                 Tr064ChannelConfig channelConfig1 = new Tr064ChannelConfig(channelConfig);

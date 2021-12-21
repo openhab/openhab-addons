@@ -15,25 +15,30 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="freezerstate" typeId="freezerstate"/>
 			<channel id="fridgestate" typeId="fridgestate"/>
 			<channel id="supercool" typeId="supercool"/>
 			<channel id="superfreeze" typeId="superfreeze"/>
-			<channel id="freezercurrent" typeId="freezercurrent"/>
-			<channel id="freezertarget" typeId="freezertarget"/>
-			<channel id="fridgecurrent" typeId="fridgecurrent"/>
-			<channel id="fridgetarget" typeId="fridgetarget"/>
+			<channel id="freezercurrent" typeId="currentTemperature">
+				<description>Current temperature in the freezer compartment</description>
+			</channel>
+			<channel id="freezertarget" typeId="targetTemperature">
+				<description>Target temperature to be reached by the freezer compartment</description>
+			</channel>
+			<channel id="fridgecurrent" typeId="currentTemperature">
+				<description>Current temperature in the fridge compartment</description>
+			</channel>
+			<channel id="fridgetarget" typeId="targetTemperature">
+				<description>Target temperature to be reached by the fridge compartment</description>
+			</channel>
 			<channel id="door" typeId="door"/>
 			<channel id="start" typeId="switch"/>
 		</channels>
 
-		<config-description>
-			<parameter name="uid" type="text" required="true">
-				<label>ID</label>
-				<description>The identifier identifies one certain appliance on the ZigBee network.</description>
-			</parameter>
-		</config-description>
+		<representation-property>uid</representation-property>
 
+		<config-description-ref uri="thing-type:miele:appliance"/>
 	</thing-type>
 
 </thing:thing-descriptions>

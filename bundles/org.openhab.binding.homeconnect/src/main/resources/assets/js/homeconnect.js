@@ -1,4 +1,4 @@
-/* globals Chart:false, feather:false, Plotly:false, requests:false */
+/* globals Chart:false, feather:false, requests:false */
 
 (function () {
     'use strict'
@@ -112,6 +112,7 @@
         var modal = $(this);
         var requestBodyElement = modal.find('.modal-request-body');
         var title = modal.find('.modal-title');
+        var titleBadgeElement = modal.find('.modal-title-badge');
         var responseBodyElement = modal.find('.modal-response-body');
         var requestHeaderElement = modal.find('.modal-request-header');
         var responseHeaderElement = modal.find('.modal-response-header');
@@ -132,6 +133,23 @@
         } else {
             responseBodyElement.text('Empty response body');
             responseBodyElement.addClass('text-muted')
+        }
+
+        titleBadgeElement.empty();
+        if (request.homeConnectResponse) {
+            var statusCode = request.homeConnectResponse.code;
+            titleBadgeElement.text(statusCode);
+            titleBadgeElement.removeClass('badge-success');
+            titleBadgeElement.removeClass('badge-danger');
+            titleBadgeElement.removeClass('badge-warning');
+
+            if (statusCode >= 300 && statusCode != 404) {
+                titleBadgeElement.addClass('badge-danger');
+            } else if (statusCode >= 200 && statusCode < 300) {
+                titleBadgeElement.addClass('badge-success');
+            } else {
+                titleBadgeElement.addClass('badge-warning');
+            }
         }
 
         responseHeaderElement.empty();
@@ -158,61 +176,5 @@
 
     $('.reload-page').click(function () {
         location.reload();
-    });
-
-    $('.request-chart').each(function (index, element) {
-        var bridgeId = $(this).data('bridge-id');
-        var chartElement = element;
-
-        function makeplot (bridgeId, chartElement) {
-            Plotly.d3.csv('requests?bridgeId=' + bridgeId + '&action=request-csv', function (data) {
-                processData(data, chartElement)
-            });
-        }
-
-        function processData (allRows, chartElement) {
-            console.log(allRows);
-            var x = [], y = [], standardDeviation = [];
-
-            for (var i = 0; i < allRows.length; i++) {
-                var row = allRows[i];
-                x.push(row['time']);
-                y.push(row['requests']);
-            }
-            console.log('X', x, 'Y', y, 'SD', standardDeviation);
-            makePlotly(x, y, standardDeviation, chartElement);
-        }
-
-        function makePlotly (x, y, standard_deviation, chartElement){
-            var traces = [{
-                x: x,
-                y: y,
-                type: 'histogram',
-                histfunc: 'sum',
-                xbins: {
-                    size: 1000
-                }
-            }];
-
-            Plotly.newPlot(chartElement, traces,
-                           {
-                               xaxis: {
-                                   rangemode: 'nonnegative',
-                                   autorange: true,
-                                   title: '',
-                                   type: 'date'
-                               },
-                               yaxis: {
-                                   title: 'requests',
-                                   rangemode: 'nonnegative'
-                               }
-                           },
-                           {
-                               displayModeBar: false,
-                               responsive: true
-                           });
-        }
-
-        makeplot(bridgeId, chartElement);
     });
 }())

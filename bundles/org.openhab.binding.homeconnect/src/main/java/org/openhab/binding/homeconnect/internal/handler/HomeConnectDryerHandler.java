@@ -83,8 +83,9 @@ public class HomeConnectDryerHandler extends AbstractHomeConnectThingHandler {
 
         // register dryer specific event handlers
         handlers.put(EVENT_DRYER_DRYING_TARGET,
-                event -> getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(channel -> updateState(channel.getUID(),
-                        event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
+                event -> getLinkedChannel(CHANNEL_DRYER_DRYING_TARGET)
+                        .ifPresent(channel -> updateState(channel.getUID(),
+                                event.getValue() == null ? UnDefType.UNDEF : new StringType(event.getValue()))));
     }
 
     @Override
@@ -116,11 +117,11 @@ public class HomeConnectDryerHandler extends AbstractHomeConnectThingHandler {
     @Override
     protected void resetProgramStateChannels(boolean offline) {
         super.resetProgramStateChannels(offline);
-        getThingChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
-        getThingChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_REMAINING_PROGRAM_TIME_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_PROGRAM_PROGRESS_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+        getLinkedChannel(CHANNEL_ACTIVE_PROGRAM_STATE).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         if (offline) {
-            getThingChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
+            getLinkedChannel(CHANNEL_DRYER_DRYING_TARGET).ifPresent(c -> updateState(c.getUID(), UnDefType.UNDEF));
         }
     }
 }

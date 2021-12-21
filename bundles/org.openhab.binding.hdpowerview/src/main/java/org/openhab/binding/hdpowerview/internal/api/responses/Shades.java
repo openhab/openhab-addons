@@ -50,6 +50,7 @@ public class Shades {
         public boolean batteryIsLow;
         public @Nullable ShadePosition positions;
         public @Nullable Boolean timedOut;
+        public int signalStrength;
 
         public String getName() {
             return new String(Base64.getDecoder().decode(name));

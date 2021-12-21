@@ -13,12 +13,17 @@
 package org.openhab.binding.rfxcom.internal.messages;
 
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
-import static org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration.*;
-import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
+import static org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration.PULSE_LABEL;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.config.RFXComLighting4DeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -28,8 +33,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * RFXCOM data class for lighting4 message.
@@ -57,14 +60,10 @@ import org.slf4j.LoggerFactory;
  * @author Alessandro Ballini (ITA) - Initial contribution
  * @author Pauli Anttila - Migrated to OH2
  * @author Martin van Wingerden - Extended support for more complex PT2262 devices
+ * @author James Hewitt - Use the thing config to identify what incoming commandIds map to
+ * @author James Hewitt - Deprecate using previously discovered commandIds because they are unreliable
  */
 public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighting4Message.SubType> {
-    // this logger is used from a static context, so is static as well
-    private static final Logger LOGGER = LoggerFactory.getLogger(RFXComLighting4Message.class);
-
-    private static final byte DEFAULT_OFF_COMMAND_ID = Commands.OFF_4.toByte();
-    private static final byte DEFAULT_ON_COMMAND_ID = Commands.ON_1.toByte();
-
     public enum SubType implements ByteEnumWrapper {
         PT2262(0);
 
@@ -80,62 +79,21 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
         }
     }
 
-    public enum Commands implements ByteEnumWrapper {
-        OFF_0(0, false),
-        ON_1(1, true),
-        OFF_2(2, false),
-        ON_3(3, true),
-        OFF_4(4, false),
-        ON_5(5, true),
-        ON_6(6, true),
-        ON_7(7, true),
-        ON_8(8, true),
-        ON_9(9, true),
-        ON_10(10, true),
-        ON_11(11, true),
-        ON_12(12, true),
-        OFF_14(14, false),
-        ON_15(15, true),
-        UNKNOWN(-1, false);
-
-        private final int command;
-        private final boolean on;
-
-        Commands(int command, boolean on) {
-            this.command = command;
-            this.on = on;
-        }
-
-        @Override
-        public byte toByte() {
-            return (byte) command;
-        }
-
-        public boolean isOn() {
-            return on;
-        }
-
-        public static Commands fromByte(int input) {
-            for (Commands c : Commands.values()) {
-                if (c.command == input) {
-                    return c;
-                }
-            }
-            LOGGER.info(
-                    "A not completely supported command with value {} was received, we can send it but please report "
-                            + "it as an issue including what the command means, this helps to extend the binding with better support.",
-                    input);
-            return UNKNOWN;
-        }
-    }
+    // These are historical behaviour, are deprecated, and will be removed in a future openHAB release.
+    @Deprecated
+    private static final byte DEFAULT_OFF_COMMAND_ID = 4;
+    @Deprecated
+    private static final byte DEFAULT_ON_COMMAND_ID = 1;
+    @Deprecated
+    private Set<Integer> ON_COMMAND_IDS = Stream.of(1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15)
+            .collect(Collectors.toCollection(HashSet::new));
 
     private SubType subType;
     private int sensorId;
     private int pulse;
-    private Commands command;
     private int commandId;
-    private int offCommandId;
-    private int onCommandId;
+
+    private RFXComLighting4DeviceConfiguration config;
 
     public RFXComLighting4Message() {
         super(PacketType.LIGHTING4);
@@ -152,7 +110,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
         str += super.toString();
         str += ", Sub type = " + subType;
         str += ", Device Id = " + getDeviceId();
-        str += ", Command = " + command + "(" + commandId + ")";
+        str += ", Command Id = " + commandId;
         str += ", Pulse = " + pulse;
 
         return str;
@@ -162,13 +120,10 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
     public void encodeMessage(byte[] data) throws RFXComException {
         super.encodeMessage(data);
 
-        subType = fromByte(SubType.class, super.subType);
+        subType = ByteEnumUtil.fromByte(SubType.class, super.subType);
         sensorId = (data[4] & 0xFF) << 12 | (data[5] & 0xFF) << 4 | (data[6] & 0xF0) >> 4;
 
         commandId = (data[6] & 0x0F);
-        command = Commands.fromByte(commandId);
-        onCommandId = command.isOn() ? commandId : DEFAULT_ON_COMMAND_ID;
-        offCommandId = command.isOn() ? DEFAULT_OFF_COMMAND_ID : commandId;
 
         pulse = (data[7] & 0xFF) << 8 | (data[8] & 0xFF);
 
@@ -205,20 +160,45 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration configuration, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
+        RFXComLighting4DeviceConfiguration config = (RFXComLighting4DeviceConfiguration) configuration;
+
         switch (channelId) {
             case CHANNEL_COMMAND:
             case CHANNEL_MOTION:
-                return command.isOn() ? OnOffType.ON : OnOffType.OFF;
+                if (config.onCommandId != null && commandId == config.onCommandId) {
+                    return OnOffType.ON;
+                }
+                if (config.offCommandId != null && commandId == config.offCommandId) {
+                    return OnOffType.OFF;
+                }
+                // Deprecated if statement - to be removed in a future release
+                if (config.onCommandId == null && config.offCommandId == null) {
+                    return ON_COMMAND_IDS.contains(commandId) ? OnOffType.ON : OnOffType.OFF;
+                }
+                throw new RFXComInvalidStateException(channelId, Integer.toString(commandId),
+                        "Device not configured for received commandId");
 
             case CHANNEL_CONTACT:
-                return command.isOn() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                if (config.openCommandId != null && commandId == config.openCommandId) {
+                    return OpenClosedType.OPEN;
+                }
+                if (config.closedCommandId != null && commandId == config.closedCommandId) {
+                    return OpenClosedType.CLOSED;
+                }
+                // Deprecated if statement - to be removed in a future release
+                if (config.onCommandId == null && config.offCommandId == null) {
+                    return ON_COMMAND_IDS.contains(commandId) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                }
+                throw new RFXComInvalidStateException(channelId, Integer.toString(commandId),
+                        "Device not configured for received commandId");
 
             case CHANNEL_COMMAND_ID:
                 return new DecimalType(commandId);
 
             default:
-                return super.convertToState(channelId, deviceState);
+                return super.convertToState(channelId, config, deviceState);
         }
     }
 
@@ -233,30 +213,70 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
     }
 
     @Override
-    public void convertFromState(String channelId, Type type) throws RFXComUnsupportedChannelException {
+    public void convertFromState(String channelId, Type type)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         switch (channelId) {
             case CHANNEL_COMMAND:
                 if (type instanceof OnOffType) {
-                    command = Commands.fromByte(type == OnOffType.ON ? onCommandId : offCommandId);
-                    commandId = command.toByte();
-
+                    if (type == OnOffType.ON) {
+                        if (config.onCommandId != null) {
+                            commandId = config.onCommandId;
+                        } else {
+                            // Deprecated - to throw RFXComInvalidStateException in a future release, see contact
+                            // channel
+                            commandId = DEFAULT_ON_COMMAND_ID;
+                        }
+                    }
+                    if (type == OnOffType.OFF) {
+                        if (config.offCommandId != null) {
+                            commandId = config.offCommandId;
+                        } else {
+                            // Deprecated - to throw RFXComInvalidStateException in a future release, see contact
+                            // channel
+                            commandId = DEFAULT_OFF_COMMAND_ID;
+                        }
+                    }
                 } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComInvalidStateException(channelId, type.toString(),
+                            "Channel only supports OnOffType");
+                }
+                break;
+
+            case CHANNEL_CONTACT:
+                if (type instanceof OpenClosedType) {
+                    if (type == OpenClosedType.OPEN) {
+                        if (config.openCommandId != null) {
+                            commandId = config.openCommandId;
+                        } else {
+                            throw new RFXComInvalidStateException(channelId, type.toString(),
+                                    "openCommandId not configured for this device");
+                        }
+                    }
+                    if (type == OpenClosedType.CLOSED) {
+                        if (config.closedCommandId != null) {
+                            commandId = config.closedCommandId;
+                        } else {
+                            throw new RFXComInvalidStateException(channelId, type.toString(),
+                                    "closedCommandId not configured for this device");
+                        }
+                    }
+                } else {
+                    throw new RFXComInvalidStateException(channelId, type.toString(),
+                            "Channel only supports OpenClosedType");
                 }
                 break;
 
             case CHANNEL_COMMAND_ID:
                 if (type instanceof DecimalType) {
-                    commandId = ((DecimalType) type).toBigDecimal().byteValue();
-                    command = Commands.fromByte(commandId);
-
+                    commandId = (byte) ((DecimalType) type).intValue();
                 } else {
-                    throw new RFXComUnsupportedChannelException("Channel " + channelId + " does not accept " + type);
+                    throw new RFXComInvalidStateException(channelId, type.toString(),
+                            "Channel only supports DecimalType");
                 }
                 break;
 
             default:
-                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not relevant here");
+                throw new RFXComUnsupportedChannelException("Channel " + channelId + " is not supported by Lighting4");
         }
     }
 
@@ -269,23 +289,12 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
     public void addDevicePropertiesTo(DiscoveryResultBuilder discoveryResultBuilder) throws RFXComException {
         super.addDevicePropertiesTo(discoveryResultBuilder);
         discoveryResultBuilder.withProperty(PULSE_LABEL, pulse);
-        discoveryResultBuilder.withProperty(ON_COMMAND_ID_LABEL, onCommandId);
-        discoveryResultBuilder.withProperty(OFF_COMMAND_ID_LABEL, offCommandId);
     }
 
     @Override
     public void setConfig(RFXComDeviceConfiguration config) throws RFXComException {
-        RFXComLighting4DeviceConfiguration lighting4Config = (RFXComLighting4DeviceConfiguration) config;
-        super.setConfig(lighting4Config);
-        this.pulse = lighting4Config.pulse != null ? lighting4Config.pulse : 350;
-        this.onCommandId = valueOrDefault(lighting4Config.onCommandId, DEFAULT_ON_COMMAND_ID);
-        this.offCommandId = valueOrDefault(lighting4Config.offCommandId, DEFAULT_OFF_COMMAND_ID);
-    }
-
-    private int valueOrDefault(Integer commandId, byte defaultValue) {
-        if (commandId != null) {
-            return commandId;
-        }
-        return defaultValue;
+        super.setConfig(config);
+        this.config = (RFXComLighting4DeviceConfiguration) config;
+        this.pulse = this.config.pulse != null ? this.config.pulse : 350;
     }
 }

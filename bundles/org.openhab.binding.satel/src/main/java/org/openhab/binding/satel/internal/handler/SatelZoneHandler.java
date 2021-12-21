@@ -75,6 +75,7 @@ public class SatelZoneHandler extends WirelessChannelsHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected StateType getStateType(String channelId) {
         StateType result = super.getStateType(channelId);
         if (result == StateType.NONE) {

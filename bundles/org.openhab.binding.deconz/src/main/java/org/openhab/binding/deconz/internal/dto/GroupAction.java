@@ -33,14 +33,16 @@ public class GroupAction {
     public @Nullable Integer ct;
     public double @Nullable [] xy;
     public @Nullable String alert;
+    public @Nullable String colormode;
     public @Nullable String effect;
     public @Nullable Integer colorloopspeed;
     public @Nullable Integer transitiontime;
 
     @Override
     public String toString() {
-        return "GroupAction{" + "on=" + on + ", toggle=" + toggle + ", bri=" + bri + ", hue=" + hue + ", sat=" + sat
-                + ", ct=" + ct + ", xy=" + Arrays.toString(xy) + ", alert='" + alert + '\'' + ", effect='" + effect
-                + '\'' + ", colorloopspeed=" + colorloopspeed + ", transitiontime=" + transitiontime + '}';
+        return "GroupAction{on=" + on + ", toggle=" + toggle + ", bri=" + bri + ", hue=" + hue + ", sat=" + sat
+                + ", ct=" + ct + ", xy=" + Arrays.toString(xy) + ", alert='" + alert + "', colormode='" + colormode
+                + "', effect='" + effect + "', colorloopspeed=" + colorloopspeed + ", transitiontime=" + transitiontime
+                + "}";
     }
 }

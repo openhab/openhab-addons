@@ -12,15 +12,10 @@
  */
 package org.openhab.binding.opensprinkler.internal.discovery;
 
-import static org.openhab.binding.opensprinkler.internal.OpenSprinklerBindingConstants.DISCOVERY_DEFAULT_IP_TIMEOUT_RATE;
-import static org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApiConstants.*;
-
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-
-import org.openhab.binding.opensprinkler.internal.api.OpenSprinklerApi;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
+import org.openhab.binding.opensprinkler.internal.api.exception.UnauthorizedApiException;
 import org.openhab.binding.opensprinkler.internal.config.OpenSprinklerHttpInterfaceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +27,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class OpenSprinklerDiscoveryJob implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(OpenSprinklerDiscoveryJob.class);
-
     private OpenSprinklerDiscoveryService discoveryClass;
-
     private String ipAddress;
 
     public OpenSprinklerDiscoveryJob(OpenSprinklerDiscoveryService service, String ip) {
@@ -59,46 +53,15 @@ public class OpenSprinklerDiscoveryJob implements Runnable {
      */
     private boolean hasOpenSprinklerDevice(String ip) {
         try {
-            InetAddress address = InetAddress.getByName(ip);
-
-            if (canEstablishConnection(address, DEFAULT_API_PORT)) {
-                OpenSprinklerHttpInterfaceConfig config = new OpenSprinklerHttpInterfaceConfig();
-                config.hostname = ip;
-                config.port = DEFAULT_API_PORT;
-                config.password = DEFAULT_ADMIN_PASSWORD;
-                OpenSprinklerApi openSprinkler = discoveryClass.getApiFactory().getHttpApi(config);
-
-                return (openSprinkler != null);
-            } else {
-                logger.trace("No OpenSprinkler device found at IP address ({})", ip);
-
-                return false;
-            }
-        } catch (Exception exp) {
+            OpenSprinklerHttpInterfaceConfig config = new OpenSprinklerHttpInterfaceConfig();
+            config.hostname = ip;
+            discoveryClass.getApiFactory().getHttpApi(config);
+        } catch (UnauthorizedApiException e) {
+            return true;
+        } catch (CommunicationApiException | GeneralApiException exp) {
             logger.debug("No OpenSprinkler device found at IP address ({}) because of error: {}", ip, exp.getMessage());
-
             return false;
         }
-    }
-
-    /**
-     * Tries to establish a connection to a hostname and port.
-     *
-     * @param host Hostname or IP address to connect to.
-     * @param port Port to attempt to connect to.
-     * @return True if a connection can be established, false if not.
-     */
-    private boolean canEstablishConnection(InetAddress host, int port) {
-        boolean reachable = false;
-
-        try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(host, port), DISCOVERY_DEFAULT_IP_TIMEOUT_RATE);
-
-            reachable = true;
-        } catch (IOException e) {
-            // do nothing
-        }
-
-        return reachable;
+        return true;
     }
 }

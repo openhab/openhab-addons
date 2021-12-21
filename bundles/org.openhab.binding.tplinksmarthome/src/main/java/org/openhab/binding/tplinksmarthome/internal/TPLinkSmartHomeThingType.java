@@ -18,9 +18,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.ColorScales;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -34,36 +34,44 @@ public enum TPLinkSmartHomeThingType {
 
     // Bulb Thing Type UIDs
     KB100("kb100", DeviceType.BULB),
-    KB130("kb130", DeviceType.BULB),
+    KB130("kb130", DeviceType.BULB, ColorScales.K_2500_9000),
     LB100("lb100", DeviceType.BULB),
     LB110("lb110", DeviceType.BULB),
-    LB120("lb120", DeviceType.BULB),
-    LB130("lb130", DeviceType.BULB),
+    LB120("lb120", DeviceType.BULB, ColorScales.K_2700_6500),
+    LB130("lb130", DeviceType.BULB, ColorScales.K_2500_9000),
     LB200("lb200", DeviceType.BULB),
-    LB230("lb230", DeviceType.BULB),
+    LB230("lb230", DeviceType.BULB, ColorScales.K_2500_9000),
     KL50("kl50", DeviceType.BULB),
     KL60("kl60", DeviceType.BULB),
     KL110("kl110", DeviceType.BULB),
-    KL120("kl120", DeviceType.BULB),
-    KL130("kl130", DeviceType.BULB),
+    KL120("kl120", DeviceType.BULB, ColorScales.K_2700_6500),
+    KL125("kl125", DeviceType.BULB, ColorScales.K_2500_6500),
+    KL130("kl130", DeviceType.BULB, ColorScales.K_2500_9000),
+    KL135("kl135", DeviceType.BULB, ColorScales.K_2500_6500),
 
     // Plug Thing Type UIDs
+    EP10("ep10", DeviceType.PLUG),
     HS100("hs100", DeviceType.PLUG),
     HS103("hs103", DeviceType.PLUG),
     HS105("hs105", DeviceType.PLUG),
-    HS110("hs110", DeviceType.PLUG),
+    HS110("hs110", DeviceType.PLUG_WITH_ENERGY),
     KP100("kp100", DeviceType.PLUG),
     KP105("kp105", DeviceType.PLUG),
-    KP115("kp115", DeviceType.PLUG),
+    KP115("kp115", DeviceType.PLUG_WITH_ENERGY),
+    KP125("kp125", DeviceType.PLUG_WITH_ENERGY),
+    KP405("kp405", DeviceType.DIMMER),
 
     // Switch Thing Type UIDs
     HS200("hs200", DeviceType.SWITCH),
     HS210("hs210", DeviceType.SWITCH),
 
     // Dimmer Thing Type UIDs
+    ES20M("es20m", DeviceType.DIMMER),
     HS220("hs220", DeviceType.DIMMER),
+    KS230("ks230", DeviceType.DIMMER),
 
     // Power Strip Thing Type UIDs.
+    EP40("ep40", DeviceType.STRIP, 2),
     HS107("hs107", DeviceType.STRIP, 2),
     HS300("hs300", DeviceType.STRIP, 6),
     KP200("kp200", DeviceType.STRIP, 2),
@@ -91,22 +99,29 @@ public enum TPLinkSmartHomeThingType {
      */
     public static final Map<ThingTypeUID, TPLinkSmartHomeThingType> THING_TYPE_MAP = SUPPORTED_THING_TYPES_LIST.stream()
             .collect(Collectors.toMap(TPLinkSmartHomeThingType::thingTypeUID, Function.identity()));
-    private static final List<TPLinkSmartHomeThingType> BULB_WITH_TEMPERATURE_COLOR_1 = Stream.of(LB120, KL120)
-            .collect(Collectors.toList());
-    private static final List<TPLinkSmartHomeThingType> BULB_WITH_TEMPERATURE_COLOR_2 = Stream
-            .of(KB130, KL130, LB130, LB230).collect(Collectors.toList());
 
     private final ThingTypeUID thingTypeUID;
     private final DeviceType type;
+    private final ColorScales colorScales;
     private final int sockets;
 
     TPLinkSmartHomeThingType(final String name, final DeviceType type) {
         this(name, type, 0);
     }
 
-    TPLinkSmartHomeThingType(final String name, final DeviceType type, int sockets) {
+    TPLinkSmartHomeThingType(final String name, final DeviceType type, final ColorScales colorScales) {
+        this(name, type, colorScales, 0);
+    }
+
+    TPLinkSmartHomeThingType(final String name, final DeviceType type, final int sockets) {
+        this(name, type, ColorScales.NOT_SUPPORTED, sockets);
+    }
+
+    TPLinkSmartHomeThingType(final String name, final DeviceType type, final ColorScales colorScales,
+            final int sockets) {
         thingTypeUID = new ThingTypeUID(TPLinkSmartHomeBindingConstants.BINDING_ID, name);
         this.type = type;
+        this.colorScales = colorScales;
         this.sockets = sockets;
     }
 
@@ -132,29 +147,10 @@ public enum TPLinkSmartHomeThingType {
     }
 
     /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb with color temperature ranges 1
-     * (2700 to 6500k).
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a bulb device with color temperature range 1
+     * @return Returns the color temperature color scales if supported or else returns null
      */
-    public static boolean isBulbDeviceWithTemperatureColor1(ThingTypeUID thingTypeUID) {
-        return isDevice(thingTypeUID, BULB_WITH_TEMPERATURE_COLOR_1);
-    }
-
-    /**
-     * Returns true if the given {@link ThingTypeUID} matches a device that is a bulb with color temperature ranges 2
-     * (2500 to 9000k).
-     *
-     * @param thingTypeUID if the check
-     * @return true if it's a bulb device with color temperature range 2
-     */
-    public static boolean isBulbDeviceWithTemperatureColor2(ThingTypeUID thingTypeUID) {
-        return isDevice(thingTypeUID, BULB_WITH_TEMPERATURE_COLOR_2);
-    }
-
-    private static boolean isDevice(ThingTypeUID thingTypeUID, List<TPLinkSmartHomeThingType> thingTypes) {
-        return thingTypes.stream().anyMatch(t -> t.is(thingTypeUID));
+    public ColorScales getColorScales() {
+        return colorScales;
     }
 
     /**
@@ -163,7 +159,7 @@ public enum TPLinkSmartHomeThingType {
      * @param otherThingTypeUID to check
      * @return true if matches
      */
-    public boolean is(ThingTypeUID otherThingTypeUID) {
+    public boolean is(final ThingTypeUID otherThingTypeUID) {
         return thingTypeUID.equals(otherThingTypeUID);
     }
 
@@ -183,6 +179,10 @@ public enum TPLinkSmartHomeThingType {
          * Plug device.
          */
         PLUG,
+        /**
+         * Plug device with energy measurement support.
+         */
+        PLUG_WITH_ENERGY,
         /**
          * Wi-Fi range extender device with plug.
          */

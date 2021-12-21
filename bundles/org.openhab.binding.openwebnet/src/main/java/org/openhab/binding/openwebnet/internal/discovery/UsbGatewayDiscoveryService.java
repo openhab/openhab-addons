@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openwebnet.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;

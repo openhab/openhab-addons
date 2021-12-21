@@ -10,23 +10,23 @@
 			<context>network-address</context>
 			<description>IP address or host name of deCONZ interface.</description>
 		</parameter>
-		<parameter name="httpPort" type="integer" required="false" min="1" max="65535">
+		<parameter name="httpPort" type="integer" min="1" max="65535">
 			<label>HTTP Port</label>
 			<description>Port of the deCONZ HTTP interface.</description>
 			<default>80</default>
 		</parameter>
-		<parameter name="port" type="integer" required="false" min="1" max="65535">
+		<parameter name="port" type="integer" min="1" max="65535">
 			<label>Websocket Port</label>
 			<description>Port of the deCONZ Websocket.</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="apikey" type="text" required="false">
+		<parameter name="apikey" type="text">
 			<label>API Key</label>
 			<context>password</context>
 			<description>If no API Key is provided, a new one will be requested. You need to authorize the access on the deCONZ
 				web interface.</description>
 		</parameter>
-		<parameter name="timeout" type="integer" required="false" unit="ms" min="0">
+		<parameter name="timeout" type="integer" unit="ms" min="0">
 			<label>Timeout</label>
 			<description>Timeout for asynchronous HTTP requests (in milliseconds).</description>
 			<advanced>true</advanced>
@@ -52,7 +52,7 @@
 			<label>Device ID</label>
 			<description>The deCONZ bridge assigns an integer number ID to each device.</description>
 		</parameter>
-		<parameter name="transitiontime" type="decimal" required="false" min="0" unit="s">
+		<parameter name="transitiontime" type="decimal" min="0" unit="s">
 			<label>Transition Time</label>
 			<description>Time to move between two states. If empty, the default of the device is used. Resolution is 1/10 second.</description>
 		</parameter>
@@ -63,11 +63,11 @@
 			<label>Device ID</label>
 			<description>The deCONZ bridge assigns an integer number ID to each device.</description>
 		</parameter>
-		<parameter name="transitiontime" type="decimal" required="false" min="0" unit="s">
+		<parameter name="transitiontime" type="decimal" min="0" unit="s">
 			<label>Transition Time</label>
 			<description>Time to move between two states. If empty, the default of the device is used. Resolution is 1/10 second.</description>
 		</parameter>
-		<parameter name="colormode" type="text" required="false">
+		<parameter name="colormode" type="text">
 			<label>Color Mode</label>
 			<description>Override the default color mode (auto-detect)</description>
 			<options>
@@ -78,4 +78,19 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:deconz:lightgroup">
+		<parameter name="id" type="text" required="true">
+			<label>Device ID</label>
+			<description>The deCONZ bridge assigns an integer number ID to each group.</description>
+		</parameter>
+		<parameter name="colormode" type="text">
+			<label>Color Mode</label>
+			<description>Override the default color mode (auto-detect)</description>
+			<options>
+				<option value="hs">HSB</option>
+				<option value="xy">XY</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
 </config-description:config-descriptions>

@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.powermax.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PowermaxZoneConfiguration} is responsible for holding
  * configuration informations associated to a Powermax IP thing type
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxZoneConfiguration {
 
     public static final String ZONE_NUMBER = "zoneNumber";
 
-    public Integer zoneNumber;
+    public int zoneNumber = -1;
 }

@@ -31,6 +31,6 @@ public class RFXComLighting3MessageTest {
     public void checkNotImplemented() {
         // TODO Note that this message is supported in the 1.9 binding
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.LIGHTING3));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(PacketType.LIGHTING3, null, null, null));
     }
 }

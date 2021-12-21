@@ -78,7 +78,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
     void changeChannel(String channel, State state) {
         updateState(new ChannelUID(channelPrefix + channel), state);
         // Remote code of 0 means that all channels need to follow this change.
-        if (remotesGroupID.equals("0")) {
+        if ("0".equals(remotesGroupID)) {
             switch (globeType) {
                 // These two are 8 channel remotes
                 case "fut091":
@@ -110,20 +110,20 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
         String bulbState = Helper.resolveJSON(messageJSON, "\"state\":\"", 3);
         String bulbLevel = Helper.resolveJSON(messageJSON, "\"level\":", 3);
         if (!bulbLevel.isEmpty()) {
-            if (bulbLevel.equals("0") || bulbState.equals("OFF")) {
+            if ("0".equals(bulbLevel) || "OFF".equals(bulbState)) {
                 changeChannel(CHANNEL_LEVEL, OnOffType.OFF);
                 tempBulbLevel = BigDecimal.ZERO;
             } else {
                 tempBulbLevel = new BigDecimal(bulbLevel);
                 changeChannel(CHANNEL_LEVEL, new PercentType(tempBulbLevel));
             }
-        } else if (bulbState.equals("ON") || bulbState.equals("OFF")) { // NOTE: Level is missing when this runs
+        } else if ("ON".equals(bulbState) || "OFF".equals(bulbState)) { // NOTE: Level is missing when this runs
             changeChannel(CHANNEL_LEVEL, OnOffType.valueOf(bulbState));
         }
         bulbMode = Helper.resolveJSON(messageJSON, "\"bulb_mode\":\"", 5);
         switch (bulbMode) {
             case "white":
-                if (!globeType.equals("cct") && !globeType.equals("fut091")) {
+                if (!"cct".equals(globeType) && !"fut091".equals(globeType)) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("white"));
                     changeChannel(CHANNEL_COLOUR, new HSBType("0,0," + tempBulbLevel));
                     changeChannel(CHANNEL_DISCO_MODE, new StringType("None"));
@@ -149,7 +149,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 }
                 break;
             case "scene":
-                if (!globeType.equals("cct") && !globeType.equals("fut091")) {
+                if (!"cct".equals(globeType) && !"fut091".equals(globeType)) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("scene"));
                 }
                 String bulbDiscoMode = Helper.resolveJSON(messageJSON, "\"mode\":", 1);
@@ -158,7 +158,7 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
                 }
                 break;
             case "night":
-                if (!globeType.equals("cct") && !globeType.equals("fut091")) {
+                if (!"cct".equals(globeType) && !"fut091".equals(globeType)) {
                     changeChannel(CHANNEL_BULB_MODE, new StringType("night"));
                     if (config.oneTriggersNightMode) {
                         changeChannel(CHANNEL_LEVEL, new PercentType("1"));
@@ -219,13 +219,13 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             } else if (PercentType.ZERO.equals(hsb.getBrightness())) {
                 turnOff();
                 return;
-            } else if (config.whiteThreshold != -1 && hsb.getSaturation().intValue() <= config.whiteThreshold
-                    && "rgbw".equals(globeType)) {
-                sendMQTT("{\"command\":\"set_white\"}");
-                return;
+            } else if (config.whiteThreshold != -1 && hsb.getSaturation().intValue() <= config.whiteThreshold) {
+                sendMQTT("{\"command\":\"set_white\"}");// Can't send the command and level in the same message.
+                sendMQTT("{\"level\":" + hsb.getBrightness().intValue() + "}");
+            } else {
+                sendMQTT("{\"state\":\"ON\",\"level\":" + hsb.getBrightness().intValue() + ",\"hue\":"
+                        + hsb.getHue().intValue() + ",\"saturation\":" + hsb.getSaturation().intValue() + "}");
             }
-            sendMQTT("{\"state\":\"ON\",\"level\":" + hsb.getBrightness().intValue() + ",\"hue\":"
-                    + hsb.getHue().intValue() + ",\"saturation\":" + hsb.getSaturation().intValue() + "}");
             savedLevel = hsb.getBrightness().toBigDecimal();
             return;
         } else if (command instanceof PercentType) {
@@ -239,8 +239,8 @@ public class EspMilightHubHandler extends BaseThingHandler implements MqttConnec
             }
             sendMQTT("{\"state\":\"ON\",\"level\":" + command + "}");
             savedLevel = percentType.toBigDecimal();
-            if (globeType.equals("rgb_cct") || globeType.equals("fut089")) {
-                if (config.dimmedCT > 0 && bulbMode.equals("white")) {
+            if ("rgb_cct".equals(globeType) || "fut089".equals(globeType)) {
+                if (config.dimmedCT > 0 && "white".equals(bulbMode)) {
                     sendMQTT("{\"state\":\"ON\",\"color_temp\":" + autoColourTemp(savedLevel.intValue()) + "}");
                 }
             }

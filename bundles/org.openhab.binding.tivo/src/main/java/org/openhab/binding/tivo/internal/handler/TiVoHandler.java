@@ -115,6 +115,7 @@ public class TiVoHandler extends BaseThingHandler {
     }
 
     public void setStatusOffline() {
+        lastConnectionStatus = ConnectionStatus.UNKNOWN;
         this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 "Power on device or check network configuration/connection.");
     }

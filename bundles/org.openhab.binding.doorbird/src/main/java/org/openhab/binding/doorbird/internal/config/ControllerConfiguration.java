@@ -37,4 +37,9 @@ public class ControllerConfiguration {
      * Password of the Doorbird doorbell to which the controller is assigned
      */
     public @Nullable String userPassword;
+
+    /**
+     * Id of the Doorbird device
+     */
+    public @Nullable String controllerId;
 }

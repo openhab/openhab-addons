@@ -15,17 +15,15 @@
 
 		<channels>
 			<channel id="state" typeId="state"/>
+			<channel id="rawState" typeId="rawState"/>
 			<channel id="light" typeId="switch"/>
 			<channel id="ventilation" typeId="ventilation"/>
 			<channel id="stop" typeId="stop"/>
 		</channels>
 
-		<config-description>
-			<parameter name="uid" type="text" required="true">
-				<label>ID</label>
-				<description>The identifier identifies the appliance on the ZigBee network.</description>
-			</parameter>
-		</config-description>
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:miele:appliance"/>
 	</thing-type>
 
 </thing:thing-descriptions>

@@ -57,6 +57,7 @@
 			<channel id="currenttransporturi" typeId="currenttransporturi"/>
 			<channel id="currenttrackuri" typeId="currenttrackuri"/>
 			<!-- Extended SONOS channels -->
+			<channel id="codec" typeId="codec"/>
 			<channel id="linein" typeId="linein"/>
 			<channel id="nightmode" typeId="nightmode"/>
 			<channel id="speechenhancement" typeId="speechenhancement"/>

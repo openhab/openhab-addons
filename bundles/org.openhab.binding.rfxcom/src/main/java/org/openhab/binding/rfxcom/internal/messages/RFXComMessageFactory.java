@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.Command;
 
 /**
  * Factory to create RFXCom messages from either bytes delivered by the RFXCom device
@@ -21,9 +24,11 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
  *
  * @author Pauli Anttila - Initial contribution
  * @author James Hewitt-Thomas - Convert to interface to allow dependency injection
+ * @author James Hewitt-Thomas - Switch to making messages for a specific command
  */
 public interface RFXComMessageFactory {
-    public RFXComMessage createMessage(PacketType packetType) throws RFXComException;
+    public RFXComMessage createMessage(PacketType packetType, RFXComDeviceConfiguration config, ChannelUID channelUID,
+            Command command) throws RFXComException;
 
     public RFXComMessage createMessage(byte[] packet) throws RFXComException;
 }

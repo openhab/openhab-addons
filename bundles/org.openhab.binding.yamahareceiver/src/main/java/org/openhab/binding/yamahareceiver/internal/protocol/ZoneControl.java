@@ -65,6 +65,26 @@ public interface ZoneControl extends IStateUpdatable {
     void setDialogueLevel(int level) throws IOException, ReceivedMessageParseException;
 
     /**
+     * Switches the HDMI1 output on or off.
+     *
+     * @param on The new state
+     *
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    void setHDMI1Out(boolean on) throws IOException, ReceivedMessageParseException;
+
+    /**
+     * Switches the HDMI2 output on or off.
+     *
+     * @param on The new state
+     *
+     * @throws IOException
+     * @throws ReceivedMessageParseException
+     */
+    void setHDMI2Out(boolean on) throws IOException, ReceivedMessageParseException;
+
+    /**
      * Sets the active scene for the zone.
      *
      * @param scene

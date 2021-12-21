@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mielecloud.internal.config.ThingsTemplateGenerator;
-import org.openhab.binding.mielecloud.internal.util.EmailValidator;
 import org.openhab.binding.mielecloud.internal.webservice.language.LanguageProvider;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -95,12 +94,6 @@ public class SuccessServlet extends AbstractShowPageServlet {
             logger.warn("Success page received malformed bridge UID '{}'.", bridgeUidString);
             return getResourceLoader().loadResourceAsString("failure.html").replace(ERROR_MESSAGE_TEXT_PLACEHOLDER,
                     "Malformed bridge UID.");
-        }
-
-        if (!EmailValidator.isValid(email)) {
-            logger.warn("Success page received malformed e-mail address '{}'.", email);
-            return getResourceLoader().loadResourceAsString("failure.html").replace(ERROR_MESSAGE_TEXT_PLACEHOLDER,
-                    "Malformed e-mail address.");
         }
 
         String skeleton = getResourceLoader().loadResourceAsString("success.html");

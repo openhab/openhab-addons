@@ -10,7 +10,7 @@
 		<description>Ethernet connection to the Sony projector using PJ Talk</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="input" typeId="input"/>
 			<channel id="calibrationpreset" typeId="calibrationpreset"/>

@@ -26,6 +26,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Pauli Anttila - Initial contribution
  * @author Kai Kreuzer - Added Airthings Wave Mini support
+ * @author Davy Wong - Added Airthings Wave Gen 1 support
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.airthings")
@@ -44,6 +45,9 @@ public class AirthingsHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_MINI)) {
             return new AirthingsWaveMiniHandler(thing);
+        }
+        if (thingTypeUID.equals(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_GEN1)) {
+            return new AirthingsWaveGen1Handler(thing);
         }
         return null;
     }

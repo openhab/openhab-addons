@@ -119,8 +119,7 @@ public class EcoTouchHandler extends BaseThingHandler {
                             QuantityType<?> value = (QuantityType<?>) command;
                             QuantityType<?> rawUnit = value.toUnit(ecoTouchTag.getUnit());
                             if (rawUnit != null) {
-                                int raw = rawUnit.intValue();
-                                raw *= ecoTouchTag.getDivisor();
+                                int raw = (int) (rawUnit.doubleValue() * ecoTouchTag.getDivisor());
                                 localConnector.setValue(ecoTouchTag.getTagName(), raw);
                             }
                         } else {

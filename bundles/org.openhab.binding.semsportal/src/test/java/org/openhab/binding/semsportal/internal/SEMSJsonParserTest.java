@@ -21,6 +21,8 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openhab.binding.semsportal.internal.dto.BaseResponse;
 import org.openhab.binding.semsportal.internal.dto.LoginResponse;
 import org.openhab.binding.semsportal.internal.dto.StationListResponse;
@@ -34,9 +36,11 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class SEMSJsonParserTest {
-    @Test
-    public void testParseSuccessStatusResult() throws Exception {
-        String json = Files.readString(Paths.get("src/test/resources/success_status.json"));
+
+    @ParameterizedTest
+    @ValueSource(strings = { "success_status.json", "success_status_br.json" })
+    public void testParseSuccessStatusResult(String resourceName) throws Exception {
+        String json = Files.readString(Paths.get("src/test/resources/" + resourceName));
         StatusResponse response = getGson().fromJson(json, StatusResponse.class);
         assertNotNull(response, "Expected deserialized StatusResponse");
         if (response != null) {// response cannot be null, was asserted before, but code check produces a warning
@@ -99,6 +103,6 @@ public class SEMSJsonParserTest {
     }
 
     private Gson getGson() {
-        return new GsonBuilder().setDateFormat(SEMSPortalBindingConstants.DATE_FORMAT).create();
+        return new GsonBuilder().create();
     }
 }

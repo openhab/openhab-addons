@@ -1,7 +1,5 @@
 # Oppo Blu-ray player Binding
 
-![Oppo logo](doc/oppo.png)
-
 This binding can be used to control the Oppo UDP-203/205 or BDP-83/93/95/103/105 Blu-ray player.
 Almost all features of the various models of this player line are supported by the binding.
 This binding was tested on a BDP-103 only, so there might be issues with other models that will need to be fixed.
@@ -14,10 +12,10 @@ The binding supports three different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without a serial connector on the server side, you can use a serial to USB adapter.
+For users without a serial port on the server side, you can use a USB to serial adapter.
 
 You don't need to have your player device directly connected to your openHAB server.
-You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
+You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on the LAN (serial over IP).
 
 ## Supported Things
 
@@ -63,6 +61,7 @@ Some notes:
 * Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
 * Available HDMI modes for BDP-10x: AUTO, SRC, 4K2K, 1080P, 1080I, 720P, SDP, SDI
 * Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 567P, 567I, 480P, 480I
+
 * On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.
@@ -77,40 +76,40 @@ Some notes:
 
 The following channels are available:
 
-| Channel ID        | Item Type   | Description                                                                                                    |
-|-------------------|-------------|----------------------------------------------------------------------------------------------------------------|
-| power             | Switch      | Turn the power for the player on or off                                                                        |
-| volume            | Dimmer      | Control the volume for the player (0-100%)                                                                     |
-| mute              | Switch      | Mute or unmute the volume on the player                                                                        |
-| source            | Number      | Select the source input for the player (0-6; number of available options varies by model)                      |
-| play_mode         | String      | Indicates the current playback mode of the player (ReadOnly)                                                   |
-| control           | Player      | Simulate pressing the transport control buttons on the remote control (play/pause/next/previous/rew/ffwd)      |
-| time_mode         | String      | Sets the time information display mode on the player (T, X, C, K)                                              |
-| time_display      | Number:Time | The playback time elapsed/remaining in seconds (ReadOnly)                                                      |
-| current_title     | Number      | The current title or track number playing (ReadOnly)                                                           |
-| total_title       | Number      | The total number of titles or tracks on the disc (ReadOnly)                                                    |
-| current_chapter   | Number      | The current chapter number player (ReadOnly)                                                                   |
-| total_chapter     | Number      | The total number of chapters in the current title (ReadOnly)                                                   |
-| repeat_mode       | String      | Sets the current repeat mode (00-06)                                                                           |
-| zoom_mode         | String      | Sets the current zoom mode (00-12)                                                                             |
-| disc_type         | String      | The current type of disc in the player (ReadOnly)                                                              |
-| audio_type        | String      | The current audio track type (ReadOnly)                                                                        |
-| subtitle_type     | String      | The current subtitle selected (ReadOnly)                                                                       |
-| aspect_ratio      | String      | The aspect ratio of the current video output [UDP-203/205 only] (ReadOnly)                                     |
-| source_resolution | String      | The video resolution of the content being played (ReadOnly)                                                    |
-| output_resolution | String      | The video resolution of the player output (ReadOnly)                                                           |
-| 3d_indicator      | String      | Indicates if the content playing is 2D or 3D (ReadOnly)                                                        |
-| osd_position      | Number      | Sets the OSD position (0 to 5) [10x models and up]                                                             |
-| sub_shift         | Number      | Sets the subtitle shift (-10 to 10) [10x models and up] (note more than 5 from 0 throws an error on the BDP103)|
-| hdmi_mode         | String      | Sets the current HDMI output mode (options vary by model; see notes above for allowed values)                  |
-| hdr_mode          | String      | Sets current HDR output mode (Auto, On, Off) [UDP-203/205 only]                                                |
-| remote_button     | String      | Simulate pressing a button on the remote control (3 letter code; codes can be found in the API documentation)  |
+| Channel ID        | Item Type   | Description                                                                                                                           |
+|-------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| power             | Switch      | Turn the power for the player on or off                                                                                               |
+| volume            | Dimmer      | Control the volume for the player (0-100%)                                                                                            |
+| mute              | Switch      | Mute or unmute the volume on the player                                                                                               |
+| source            | Number      | Select the source input for the player (0-6; number of available options varies by model)                                             |
+| play_mode         | String      | Indicates the current playback mode of the player (ReadOnly)                                                                          |
+| control           | Player      | Simulate pressing the transport control buttons on the remote control (play/pause/next/previous/rew/ffwd)                             |
+| time_mode         | String      | Sets the time information display mode on the player (T= Title Elapsed, X= Title Remaining, C= Chapter Elapsed, K= Chapter Remaining) |
+| time_display      | Number:Time | The playback time elapsed/remaining in seconds (ReadOnly)                                                                             |
+| current_title     | Number      | The current title or track number playing (ReadOnly)                                                                                  |
+| total_title       | Number      | The total number of titles or tracks on the disc (ReadOnly)                                                                           |
+| current_chapter   | Number      | The current chapter number player (ReadOnly)                                                                                          |
+| total_chapter     | Number      | The total number of chapters in the current title (ReadOnly)                                                                          |
+| repeat_mode       | String      | Sets the current repeat mode (00-06)                                                                                                  |
+| zoom_mode         | String      | Sets the current zoom mode (00-12)                                                                                                    |
+| disc_type         | String      | The current type of disc in the player (ReadOnly)                                                                                     |
+| audio_type        | String      | The current audio track type (ReadOnly)                                                                                               |
+| subtitle_type     | String      | The current subtitle selected (ReadOnly)                                                                                              |
+| aspect_ratio      | String      | The aspect ratio of the current video output [UDP-203/205 only] (ReadOnly)                                                            |
+| source_resolution | String      | The video resolution of the content being played (ReadOnly)                                                                           |
+| output_resolution | String      | The video resolution of the player output (ReadOnly)                                                                                  |
+| 3d_indicator      | String      | Indicates if the content playing is 2D or 3D (ReadOnly)                                                                               |
+| osd_position      | Number      | Sets the OSD position (0 to 5) [10x models and up]                                                                                    |
+| sub_shift         | Number      | Sets the subtitle shift (-10 to 10) [10x models and up] (note more than 5 from 0 throws an error on the BDP103)                       |
+| hdmi_mode         | String      | Sets the current HDMI output mode (options vary by model; see notes above for allowed values)                                         |
+| hdr_mode          | String      | Sets current HDR output mode (Auto, On, Off) [UDP-203/205 only]                                                                       |
+| remote_button     | String      | Simulate pressing a button on the remote control (3 letter code; codes can be found in Appendix A below)                              |
 
 ## Full Example
 
 oppo.things:
 
-```java
+```
 // direct IP connection
 oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.10", model=103, verboseMode=false]
 
@@ -119,11 +118,12 @@ oppo:player:myoppo "Oppo Blu-ray" [ serialPort="COM5", model=103, verboseMode=tr
 
 // serial over IP connection
 oppo:player:myoppo "Oppo Blu-ray" [ host="192.168.0.9", port=4444, model=103, verboseMode=true]
+
 ```
 
 oppo.items:
 
-```java
+```
 Switch oppo_power "Power" { channel="oppo:player:myoppo:power" }
 Dimmer oppo_volume "Volume [%d %%]" { channel="oppo:player:myoppo:volume" }
 Switch oppo_mute "Mute" { channel="oppo:player:myoppo:mute" }
@@ -154,7 +154,7 @@ String oppo_remote_button "Remote Button [%s]" { channel="oppo:player:myoppo:rem
 
 secondsformat.js:
 
-```java
+```
 (function(totalSeconds) {
     if (isNaN(totalSeconds)) {
         return '-';
@@ -179,11 +179,11 @@ secondsformat.js:
 
 oppo.sitemap:
 
-```perl
+```
 sitemap oppo label="Oppo Blu-ray" {
     Frame label="Player"    {
         Switch item=oppo_power
-        //Volume can be a Setpoint also
+        // Volume can be a Setpoint also
         Slider item=oppo_volume minValue=0 maxValue=100 step=1 visibility=[oppo_power==ON] icon="soundvolume"
         Switch item=oppo_mute visibility=[oppo_power==ON] icon="soundvolume_mute"
         Selection item=oppo_source visibility=[oppo_power==ON] icon="player"
@@ -212,3 +212,76 @@ sitemap oppo label="Oppo Blu-ray" {
     }
 }
 ```
+
+### Appendix A - 'remote_button' codes:
+
+POW Toggle power ON and OFF  
+SRC Select input source  
+EJT Open/close the disc tray  
+PON Discrete on  
+POF Discrete off  
+SYS Switch output TV system (PAL/NTSC/MULTI)  
+DIM Dim front panel display  
+PUR Pure audio mode (no video)  
+VUP Increase volume  
+VDN Decrease volume  
+MUT Mute/Unmute audio  
+NU1 Numeric key 1  
+NU2 Numeric key 2  
+NU3 Numeric key 3  
+NU4 Numeric key 4  
+NU5 Numeric key 5  
+NU6 Numeric key 6  
+NU7 Numeric key 7  
+NU8 Numeric key 8  
+NU9 Numeric key 9  
+NU0 Numeric key 0  
+CLR Clear numeric input  
+GOT Play from a specified location  
+HOM Go to Home Menu to select media source  
+PUP Show previous page  
+PDN Show next page  
+OSD Show/hide on-screen display  
+TTL Show BD top menu or DVD title menu  
+MNU Show BD pop-up menu or DVD menu  
+NUP Up Arrow Navigation  
+NLT Left Arrow Navigation  
+NRT Right Arrow Navigation  
+NDN Down Arrow Navigation  
+SEL ENTER Navigation  
+SET Enter the player setup menu  
+RET Return to the previous menu or mode  
+RED RED Function varies by content  
+GRN GREEN Function varies by content  
+BLU BLUE Function varies by content  
+YLW YELLOW Function varies by content  
+STP Stop playback  
+PLA Start playback  
+PAU Pause playback  
+PRE Skip to previous  
+REV Fast reverse play  
+FWD Fast forward play  
+NXT Skip to next  
+AUD Change audio language or channel  
+SUB Change subtitle language  
+ANG Change camera angle  
+ZOM Zoom in/out and adjust aspect ratio  
+SAP Turn on/off Secondary Audio Program  
+ATB AB Repeat play the selected section  
+RPT Repeat play  
+PIP Show/hide Picture-in-Picture  
+HDM Switch output resolution  
+SUH Press and hold the SUBTITLE key. This activates the subtitle shift feature  
+NFX Stop current playback and start the Netflix application  
+VDU Stop current playback and start the VUDU application  
+OPT Show/hide the Option menu  
+M3D 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu  
+SEH Display the Picture Adjustment menu  
+DRB Display the Darbee Adjustment menu  
+
+#### Extra buttons on UDP models:  
+HDR Display the HDR selection menu  
+INH Show on-screen detailed information  
+RLH Set resolution to Auto  
+AVS Display the A/V Sync adjustment menu  
+GPA Gapless Play. This functions the same as selecting Gapless Play in the Option Menu.  

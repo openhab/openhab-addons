@@ -57,7 +57,6 @@ public class ValueCache {
         return writeToCache;
     }
 
-    @NonNullByDefault
     private static class StateWithTimestamp {
         State state;
         long timestamp;

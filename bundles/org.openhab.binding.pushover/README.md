@@ -46,7 +46,7 @@ One has to pass a `null` value if it should be skipped or the default value for 
 
 - `sendMonospaceMessage(String message, @Nullable String title)` - This method is used to send a monospace message.
 
-- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a (local) path to the attachment (parameter `attachment` **mandatory**) and an optional `contentType` to define the content-type of the attachment (default: `image/jpeg`).
+- `sendAttachmentMessage(String message, @Nullable String title, String attachment, @Nullable String contentType)` - This method is used to send a message with an attachment. It takes a local path or URL to the attachment (parameter `attachment` **mandatory**). Additionally you can pass a data URI scheme to this parameter. Optionally pass a `contentType` to define the content-type of the attachment (default: `image/jpeg` or guessed from image data).
 
 - `sendURLMessage(String message, @Nullable String title, String url, @Nullable String urlTitle)` - This method is used to send a message with an URL. A supplementary `url` to show with the message and a `urlTitle` for the URL, otherwise just the URL is shown.
 
@@ -74,6 +74,16 @@ demo.rules:
 val actions = getActions("pushover", "pushover:pushover-account:account")
 // send HTML message
 actions.sendHtmlMessage("Hello <font color='green'>World</font>!", "openHAB")
+```
+
+```java
+val actions = getActions("pushover", "pushover:pushover-account:account")
+// send message with attachment
+actions.sendAttachmentMessage("Hello World!", "openHAB", "/path/to/my-local-image.png", "image/png")
+actions.sendAttachmentMessage("Hello World!", "openHAB", "https://www.openhab.org/openhab-logo-square.png", null)
+actions.sendAttachmentMessage("Hello World!", "openHAB", "data:[<media type>][;base64],<data>", null)
+// in case you want to send the content of an Image Item (RawType)
+actions.sendAttachmentMessage("Hello World!", "openHAB", myImageItem.state.toFullString, null)
 ```
 
 ```java

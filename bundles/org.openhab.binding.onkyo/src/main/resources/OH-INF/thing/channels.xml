@@ -188,5 +188,29 @@
 		<description>Position of the currently selected menu item</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
+	<channel-type id="audioIn" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Input Info</label>
+		<description>Audio Input Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="audioOut" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Output Info</label>
+		<description>Audio Output Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="videoIn" advanced="true">
+		<item-type>String</item-type>
+		<label>Video Input Info</label>
+		<description>Video Input Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="videoOut" advanced="true">
+		<item-type>String</item-type>
+		<label>Video Output Info</label>
+		<description>Video Output Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
 
 </thing:thing-descriptions>

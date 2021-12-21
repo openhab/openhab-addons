@@ -4,5 +4,5 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>DSMR Binding</name>
-	<description>This binding integrates Dutch and Luxembourg Smart Meters</description>
+	<description>This binding integrates Dutch, Belgium, Luxembourg and Austrian Smart Meters</description>
 </binding:binding>

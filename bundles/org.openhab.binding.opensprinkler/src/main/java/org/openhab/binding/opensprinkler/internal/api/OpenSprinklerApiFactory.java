@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.opensprinkler.internal.api;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.opensprinkler.internal.api.exception.CommunicationApiException;
 import org.openhab.binding.opensprinkler.internal.api.exception.GeneralApiException;
@@ -21,6 +21,8 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenSprinklerApiFactory} class is used for creating instances of
@@ -31,9 +33,10 @@ import org.osgi.service.component.annotations.Reference;
  * @author Florian Schmidt - Refactoring
  */
 @Component(service = OpenSprinklerApiFactory.class)
+@NonNullByDefault
 public class OpenSprinklerApiFactory {
-
-    private @NonNull HttpClient httpClient;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private HttpClient httpClient;
 
     @Activate
     public OpenSprinklerApiFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -61,13 +64,17 @@ public class OpenSprinklerApiFactory {
             version = lowestSupportedApi.getFirmwareVersion();
         } catch (CommunicationApiException exp) {
             throw new CommunicationApiException(
-                    "There was a problem in the HTTP communication with the OpenSprinkler API: " + exp.getMessage());
+                    "Problem fetching the firmware version from the OpenSprinkler: " + exp.getMessage());
         }
-
+        logger.debug("Firmware was reported as {}", version);
         if (version >= 210 && version < 213) {
             return new OpenSprinklerHttpApiV210(this.httpClient, config);
-        } else if (version >= 213) {
+        } else if (version >= 213 && version < 217) {
             return new OpenSprinklerHttpApiV213(this.httpClient, config);
+        } else if (version >= 217 && version < 219) {
+            return new OpenSprinklerHttpApiV217(this.httpClient, config);
+        } else if (version >= 219) {
+            return new OpenSprinklerHttpApiV219(this.httpClient, config);
         } else {
             /* Need to make sure we have an older OpenSprinkler device by checking the first station. */
             try {
@@ -77,7 +84,6 @@ public class OpenSprinklerApiFactory {
                         "There was a problem in the HTTP communication with the OpenSprinkler API: "
                                 + exp.getMessage());
             }
-
             return lowestSupportedApi;
         }
     }

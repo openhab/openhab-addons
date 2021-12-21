@@ -107,7 +107,7 @@ class BoschHttpClientTest {
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET);
         // Null pointer exception is expected, because localhost will not answer request
         assertThrows(NullPointerException.class, () -> {
-            httpClient.sendRequest(request, SubscribeResult.class);
+            httpClient.sendRequest(request, SubscribeResult.class, SubscribeResult::isValid, null);
         });
     }
 }

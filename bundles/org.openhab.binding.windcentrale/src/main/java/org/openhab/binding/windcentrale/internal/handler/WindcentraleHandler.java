@@ -109,9 +109,10 @@ public class WindcentraleHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing Windcentrale handler '{}'", getThing().getUID());
+        final ScheduledFuture<?> pollingJob = this.pollingJob;
         if (pollingJob != null) {
             pollingJob.cancel(true);
-            pollingJob = null;
+            this.pollingJob = null;
         }
     }
 
@@ -159,7 +160,7 @@ public class WindcentraleHandler extends BaseThingHandler {
         } catch (final RuntimeException e) {
             logger.debug("Failed to process windmill data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Failed to process mill data");
+                    "@text/offline.mill-data-error");
         }
     }
 }

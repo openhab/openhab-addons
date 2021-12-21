@@ -857,7 +857,7 @@ Avoid duplicate keys by finding the highest fake product key in the `device_type
 
 ### Adding New Device Features
 
-If you can't can't build a new device out of the existing device features (for a complete list see `device_features.xml`) you can add new features by specifying a file (let's call it `my_own_features.xml`) with the "additionalDevices" option in the network config parameters:
+If you can't build a new device out of the existing device features (for a complete list see `device_features.xml`) you can add new features by specifying a file (let's call it `my_own_features.xml`) with the "additionalDevices" option in the network config parameters:
 
     additionalFeatures="/usr/local/openhab/rt/my_own_features.xml"
 

@@ -136,15 +136,10 @@ Bridge rfxcom:tcpbridge:sunflower [ host="sunflower", port=10001 ] {
 
 ## Thing Configuration
 
-Available configuration parameters are:
-
-| Applies to | Parameter Label | Parameter ID | Description                                                          | Required | Default |
-|------------|-----------------|--------------|----------------------------------------------------------------------|----------|---------|
-| All things | Device ID       | deviceId     | (Unique) id of the device, for example "100001.1", "B.8" or "286169" | true     |         |
-| All things | Sub type        | subType      | Sub type, note that every thing-type has its own sub types           | true     |         |
-| Lighting4  | Pulse           | pulse        | Pulse length used by the device, only used when sending              | false    | 350     |
-| Lighting4  | On command ID   | onCommandId  | Id of the command which should be send to turn the device ON         | false    | 1       |
-| Lighting4  | Off command ID  | offCommandId | Id of the command which should be send to turn the device OFF        | false    | 4       |
+Configuration parameters are listed alongside each thing type. Most devices only require a deviceId and
+a subType, but some things require additional configuration. The deviceId is used both when receiving and
+transmitting messages, the subType is mainly used when sending messages, but it can vary between device
+types.
 
 ## Channels
 
@@ -690,7 +685,27 @@ A Lighting2 device
 
 ### lighting4 - RFXCOM Lighting4 Actuator
 
-A Lighting4 device
+A Lighting4 device. The specification for the PT2262 protocol includes 3 bytes for data. By
+convention, the first 20 bits of this is used for deviceId, and the last 4 bits is used for
+command, which gives us a total of 16 commands per device.
+
+Depending on your device, you may have only one command, one pair of commands (on/off), or
+any other multiple, for example, a set of 4 sockets with an on/off pair for each and an
+additional pair for "all".
+
+Different device manufactures using this protocol will use different schemes for their
+commands, so to configure a thing using the lighting4 protocol, you must specify at least
+one commandId in the thing configuration. If a device has multiple sets of commands, you
+can configure multiple things with the same device id, but different commandIds.
+
+Some devices will expect a specific pulse length. If required, that can also be specified
+as a thing configuration parameter.
+
+Previously, openHAB would attempt to guess at the meaning of a commandId if it was not
+specified in the thing configuration based on devices seen in the wild. Due to the varying
+nature of devices, this behaviour is deprecated and will be removed in a future openHAB
+version. Until then, commands 1, 3, 5-13 and 15 are considered ON and 0, 2, 4 and 14 are
+considered OFF when the `onCommandId` or `offCommandId` for a device is not specified.
 
 #### Channels
 
@@ -709,64 +724,46 @@ A Lighting4 device
 *   subType - Sub Type
     *   Specifies device sub type.
 
-    *   PT2262 - PT2262
+        *   PT2262 - PT2262
 
 *   pulse - Pulse length
     *   Pulse length of the device
 
 *   onCommandId - On command
-    *   Specifies command to be send when ON must be transmitted
-
-        *   0 - OFF (value 0)
-        *   1 - ON (value 1)
-        *   2 - OFF (value 2)
-        *   3 - ON (value 3)
-        *   4 - OFF (value 4)
-        *   5 - ON (value 5)
-        *   6 - value 6
-        *   7 - ON (value 7)
-        *   8 - value 8
-        *   9 - ON (value 9)
-        *   10 - ON (value 10)
-        *   11 - ON (value 11)
-        *   12 - ON (value 12)
-        *   13 - value 13
-        *   14 - OFF (value 14)
-        *   15 - value 15
+    *   Specifies command that represents ON for this device.
 
 *   offCommandId - Off command
-    *   Specifies command to be send when OFF must be transmitted
+    *   Specifies command that represents OFF for this device.
 
-        *   0 - OFF (value 0)
-        *   1 - ON (value 1)
-        *   2 - OFF (value 2)
-        *   3 - ON (value 3)
-        *   4 - OFF (value 4)
-        *   5 - ON (value 5)
-        *   6 - value 6
-        *   7 - ON (value 7)
-        *   8 - value 8
-        *   9 - ON (value 9)
-        *   10 - ON (value 10)
-        *   11 - ON (value 11)
-        *   12 - ON (value 12)
-        *   13 - value 13
-        *   14 - OFF (value 14)
-        *   15 - value 15
+*   openCommandId - Open command
+    *   Specifies command that represents OPEN for this device.
+    
+*   closedCommandId - Closed command
+    *   Specifies command that represents CLOSED for this device.
+
+#### Discovering commandId values
+
+There are a number of ways to detect the commandId values for your device.
+
+- You can turn on DEBUG messages for the rfxcom binding by adding the line
+  `<Logger level="DEBUG" name="org.openhab.binding.rfxcom"/>`
+  to your `log4j2.xml`. You will then be able to see the commandId in the log
+  file when you trigger the device.
+  
+- You can link a Number Item to the commandId channel. The item will be updated with the
+  detected commandId when you trigger the device.
+  
+- You can use RFXmngr to look at the data from the device. Use the last letter/number
+  of the hexadecimal "Code", and convert it from hexadecimal to decimal.
 
 #### Examples
 
-The support for lighting 4 in RFXCOM is less complete because a lot of different devices use the same chips and can not easily be distinguished.
-
-So some extra configuration can be used for fine tuning the behavior of your Lighting4 devices.
-When configuring, three extra fields are available, being the the pulse length, and a separate command id for both on and off.
-If your item is auto-discovered normally the on or off command should be recognized properly.
-
-For a USB attached RFXCOM on Windows the configuration could look like this (note that the `onCommandId`, `offCommandId` and `pulse` are all optional):
+For a USB attached RFXCOM on Windows the configuration could look like this (note the `pulse` is optional):
 
 ```
 Bridge rfxcom:bridge:238adf67 [ serialPort="COM4" ] {
-    Thing lighting4 17745  [deviceId="17745",  subType="PT2262", onCommandId=7, offCommandId=4, pulse=800]
+    Thing lighting4 17745a  [deviceId="17745",  subType="PT2262", onCommandId=7, offCommandId=4]
+    Thing lighting4 17745b  [deviceId="17745",  subType="PT2262", onCommandId=10, offCommandId=2]
     Thing lighting4 motion [deviceId="286169", subType="PT2262", onCommandId=9, pulse=392]
 }
 ```
@@ -774,30 +771,31 @@ Bridge rfxcom:bridge:238adf67 [ serialPort="COM4" ] {
 Your items file could look like this:
 
 ```
-Switch Switch                               {channel="rfxcom:lighting4:238adf67:17745:command"}
-Number SwitchCommandId "Command ID [%d]"    {channel="rfxcom:lighting4:238adf67:17745:commandId"}
+Number SocketCommandId            {channel="rfxcom:lighting4:238adf67:17745a:commandId"}
+Switch SocketA                    {channel="rfxcom:lighting4:238adf67:17745a:command"}
+Switch SocketB                    {channel="rfxcom:lighting4:238adf67:17745b:command"}
 ```
 
-And if you want random actions on your relay you could for example do like this:
+#### Known commandIds
 
-```
-rule "Set random relay variations"
-    when
-        System started or
-        Time cron "/20 * * * * ?"
-    then
-        SwitchCommandId.sendCommand((Math::random * 15.9).intValue)
-end
-```
+These are some commandIds from the field that may match your devices.
 
-#### Devices:
-
-| Brand | What          | Action      | Command ID | Supported | Source | 
-|-------|---------------|-------------|------------|-----------|--------|
-| Kerui | Motion Sensor | Motion      | 10         | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
-| Kerui | Door Contact  | door open   | 14         | as OFF    | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
-| Kerui | Door Contact  | door closed | 7          | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
-| Kerui | Door Contact  | tamper      | 7          | as ON     | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Brand | What          | Action      | Command ID | Source | 
+|-------|---------------|-------------|------------|--------|
+| Kerui | Motion Sensor | Motion      | 10         | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | door open   | 14         | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | door closed | 7          | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Kerui | Door Contact  | tamper      | 11         | [#3103](https://github.com/openhab/openhab-addons/issues/3103) |
+| Energenie | 4 Socket Power Bar | Socket 1 on  | 15 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 1 off | 14 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 2 on  | 7  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 2 off | 6  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 3 on  | 11 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 3 off | 10 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 4 on  | 3  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | Socket 4 off | 2  | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | All on       | 13 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
+| Energenie | 4 Socket Power Bar | All off      | 12 | [Community](https://community.openhab.org/t/rfxcom-looking-to-improve-lighting4-call-for-users/123674) |
 
 ### lighting5 - RFXCOM Lighting5 Actuator
 

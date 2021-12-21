@@ -421,7 +421,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                 case TARGET_TEMPERATURE_PROPERTY:
                     Unit<Temperature> temperatureUnit = sensiboSky.getTemperatureUnit();
                     TemperatureDTO validTemperatures = currentModeCapabilities.temperatures
-                            .get(temperatureUnit == SIUnits.CELSIUS ? "C" : "F");
+                            .get(SIUnits.CELSIUS.equals(temperatureUnit) ? "C" : "F");
                     DecimalType rawValue = (DecimalType) newPropertyValue;
                     stateChange.updateValue(rawValue.intValue());
                     if (!validTemperatures.validValues.contains(rawValue.intValue())) {

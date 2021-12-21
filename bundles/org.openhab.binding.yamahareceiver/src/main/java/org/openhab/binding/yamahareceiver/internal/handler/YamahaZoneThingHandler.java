@@ -305,6 +305,14 @@ public class YamahaZoneThingHandler extends BaseThingHandler
                     zoneControl.setDialogueLevel(((DecimalType) command).intValue());
                     break;
 
+                case CHANNEL_HDMI1OUT:
+                    zoneControl.setHDMI1Out(((OnOffType) command) == OnOffType.ON);
+                    break;
+
+                case CHANNEL_HDMI2OUT:
+                    zoneControl.setHDMI2Out(((OnOffType) command) == OnOffType.ON);
+                    break;
+
                 case CHANNEL_NAVIGATION_MENU:
                     if (inputWithNavigationControl == null) {
                         logger.warn("Channel {} not working with {} input!", id, zoneState.inputID);
@@ -491,6 +499,10 @@ public class YamahaZoneThingHandler extends BaseThingHandler
             // no state updates available
         } else if (id.equals(grpZone(CHANNEL_DIALOGUE_LEVEL))) {
             updateState(channelUID, new DecimalType(zoneState.dialogueLevel));
+        } else if (id.equals(grpZone(CHANNEL_HDMI1OUT))) {
+            updateState(channelUID, zoneState.hdmi1Out ? OnOffType.ON : OnOffType.OFF);
+        } else if (id.equals(grpZone(CHANNEL_HDMI2OUT))) {
+            updateState(channelUID, zoneState.hdmi2Out ? OnOffType.ON : OnOffType.OFF);
 
         } else if (id.equals(grpPlayback(CHANNEL_PLAYBACK))) {
             updateState(channelUID, new StringType(playInfoState.playbackMode));
@@ -536,6 +548,8 @@ public class YamahaZoneThingHandler extends BaseThingHandler
         updateState(grpZone(CHANNEL_VOLUME), new PercentType((int) zoneConfig.getVolumePercentage(zoneState.volumeDB)));
         updateState(grpZone(CHANNEL_MUTE), zoneState.mute ? OnOffType.ON : OnOffType.OFF);
         updateState(grpZone(CHANNEL_DIALOGUE_LEVEL), new DecimalType(zoneState.dialogueLevel));
+        updateState(grpZone(CHANNEL_HDMI1OUT), zoneState.hdmi1Out ? OnOffType.ON : OnOffType.OFF);
+        updateState(grpZone(CHANNEL_HDMI2OUT), zoneState.hdmi2Out ? OnOffType.ON : OnOffType.OFF);
 
         // If the input changed
         if (inputChanged) {

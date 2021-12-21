@@ -130,6 +130,8 @@
 			<channel id="volume" typeId="volume"/>
 			<channel id="volumeDB" typeId="volumeDB"/>
 			<channel id="dialogueLevel" typeId="dialogueLevel"/>
+			<channel id="hdmi1Out" typeId="hdmi1Out"/>
+			<channel id="hdmi2Out" typeId="hdmi2Out"/>
 			<channel id="mute" typeId="mute"/>
 			<channel id="scene" typeId="scene"/>
 		</channels>
@@ -229,6 +231,20 @@
 		<description>Set the dialogue level</description>
 		<category>SoundVolume</category>
 		<state min="0" max="2" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="hdmi1Out">
+		<item-type>Switch</item-type>
+		<label>HDMI1 Output</label>
+		<description>Switch the HDMI1 Output ON/OFF</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="hdmi2Out">
+		<item-type>Switch</item-type>
+		<label>HDMI2 Output</label>
+		<description>Switch the HDMI2 Output ON/OFF</description>
+		<category>switch</category>
 	</channel-type>
 
 	<channel-type id="scene">

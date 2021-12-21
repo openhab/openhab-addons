@@ -76,7 +76,7 @@ public class ActionConditions {
      * @param value
      * @return RGB value + brightness as first byte
      */
-    private static @Nullable JsonElement HsvToBRGB(@Nullable Command command, @Nullable JsonElement value) {
+    private static @Nullable JsonElement hsvToBRGB(@Nullable Command command, @Nullable JsonElement value) {
         if (command != null && command instanceof HSBType) {
             HSBType hsb = (HSBType) command;
             Color color = Color.getHSBColor(hsb.getHue().floatValue() / 360, hsb.getSaturation().floatValue() / 100,
@@ -171,7 +171,7 @@ public class ActionConditions {
             case "BRIGHTNESSEXISTING":
                 return brightnessExists(value);
             case "HSVTOBRGB":
-                return HsvToBRGB(command, value);
+                return hsvToBRGB(command, value);
             case "BRIGHTNESSONOFF":
                 return brightness(value);
             case "HSBONLY":

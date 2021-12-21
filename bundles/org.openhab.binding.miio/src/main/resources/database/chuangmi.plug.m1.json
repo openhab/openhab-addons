@@ -10,7 +10,6 @@
 				"property": "power",
 				"friendlyName": "Power",
 				"channel": "power",
-				"channelType": "power",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [
@@ -46,7 +45,6 @@
 				"property": "wifi_led",
 				"friendlyName": "Indicator light",
 				"channel": "led",
-				"channelType": "led",
 				"type": "Switch",
 				"refresh": true,
 				"actions": [

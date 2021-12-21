@@ -9,14 +9,14 @@
 		<description>An Epson projector which supports the ESC/VP21 protocol via a serial port connection</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="source" typeId="source"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
 			<channel id="colormode" typeId="colormode"/>
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="mute" typeId="mute"/>
-			<channel id="volume" typeId="volume"/>
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="luminance" typeId="luminance"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
@@ -50,6 +50,16 @@
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="maxVolume" type="integer">
+				<label>Volume Range</label>
+				<description>Set to Match the Volume Range Seen in the Projector's OSD</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="20">Volume range is 0-20</option>
+					<option value="40">Volume range is 0-40</option>
+				</options>
+				<default>20</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -60,14 +70,14 @@
 			IP connection</description>
 
 		<channels>
-			<channel id="power" typeId="power"/>
+			<channel id="power" typeId="system.power"/>
 			<channel id="powerstate" typeId="powerstate"/>
 			<channel id="source" typeId="source"/>
 			<channel id="aspectratio" typeId="aspectratio"/>
 			<channel id="colormode" typeId="colormode"/>
 			<channel id="freeze" typeId="freeze"/>
 			<channel id="mute" typeId="mute"/>
-			<channel id="volume" typeId="volume"/>
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="luminance" typeId="luminance"/>
 			<channel id="brightness" typeId="brightness"/>
 			<channel id="contrast" typeId="contrast"/>
@@ -108,15 +118,20 @@
 				<description>Configures How Often to Poll the Projector for Updates (5-60; Default 10)</description>
 				<default>10</default>
 			</parameter>
+			<parameter name="maxVolume" type="integer">
+				<label>Volume Range</label>
+				<description>Set to Match the Volume Range Seen in the Projector's OSD</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="20">Volume range is 0-20</option>
+					<option value="40">Volume range is 0-40</option>
+				</options>
+				<default>20</default>
+			</parameter>
 		</config-description>
 
 	</thing-type>
 
-	<channel-type id="power">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Powers the Projector On or Off</description>
-	</channel-type>
 	<channel-type id="powerstate">
 		<item-type>String</item-type>
 		<label>Power State</label>
@@ -301,12 +316,6 @@
 				<option value="CUSTOM">CUSTOM</option>
 			</options>
 		</state>
-	</channel-type>
-	<channel-type id="volume">
-		<item-type>Number</item-type>
-		<label>Volume</label>
-		<description>Retrieve or Set the Volume</description>
-		<state min="0" max="20" step="1" pattern="%d"/>
 	</channel-type>
 	<channel-type id="mute">
 		<item-type>Switch</item-type>

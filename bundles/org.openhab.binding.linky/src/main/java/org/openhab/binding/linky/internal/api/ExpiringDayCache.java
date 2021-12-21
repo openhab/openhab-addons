@@ -78,24 +78,6 @@ public class ExpiringDayCache<V> {
     }
 
     /**
-     * Puts a new value into the cache.
-     *
-     * @param value the new value
-     */
-    public final synchronized void putValue(@Nullable V value) {
-        this.value = value;
-        expiresAt = calcNextExpiresAt();
-    }
-
-    /**
-     * Invalidates the value in the cache.
-     */
-    public final synchronized void invalidateValue() {
-        value = null;
-        expiresAt = calcAlreadyExpired();
-    }
-
-    /**
      * Refreshes and returns the value in the cache.
      *
      * @return the new value

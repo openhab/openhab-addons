@@ -30,4 +30,6 @@ public class ZoneControlState {
     public float volumeDB = 0.0f; // volume in dB
     public boolean mute = false;
     public int dialogueLevel = 0;
+    public boolean hdmi1Out = false;
+    public boolean hdmi2Out = false;
 }

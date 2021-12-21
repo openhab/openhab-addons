@@ -19,6 +19,7 @@ import com.google.gson.annotations.SerializedName;
  * the "inverter" node of the JSON response
  *
  * @author Thomas Rokohl - Initial contribution
+ * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  */
 public class PowerFlowRealtimeInverter {
 
@@ -32,6 +33,10 @@ public class PowerFlowRealtimeInverter {
     private double eYear;
     @SerializedName("E_Total")
     private double eTotal;
+    @SerializedName("Battery_Mode")
+    private String batteryMode;
+    @SerializedName("SOC")
+    private double soc;
 
     public double getDt() {
         return dt;
@@ -71,5 +76,21 @@ public class PowerFlowRealtimeInverter {
 
     public void seteTotal(double eTotal) {
         this.eTotal = eTotal;
+    }
+
+    public String getBatteryMode() {
+        return batteryMode;
+    }
+
+    public void setBatteryMode(final String batteryMode) {
+        this.batteryMode = batteryMode;
+    }
+
+    public double getSoc() {
+        return soc;
+    }
+
+    public void setSoc(double soc) {
+        this.soc = soc;
     }
 }

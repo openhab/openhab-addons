@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Christoph Weitkamp - Initial contribution
  */
 @NonNullByDefault
-public class PushoverConfigurationException extends RuntimeException {
+public class PushoverConfigurationException extends IllegalArgumentException {
 
     private static final long serialVersionUID = 1L;
 

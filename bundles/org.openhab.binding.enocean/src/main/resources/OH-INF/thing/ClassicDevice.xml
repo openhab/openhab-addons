@@ -57,7 +57,7 @@
 		<item-type>Switch</item-type>
 		<label>Rocker Switch</label>
 		<description>The virtual rocker switch channel allows to send rocker msg.</description>
-		<config-description-ref uri="enocean:virtualRockerChannel:config"/>
+		<config-description-ref uri="channel-type:enocean:virtualRockerChannel"/>
 	</channel-type>
 
 	<!-- virtual rocker switch channel -->
@@ -65,7 +65,7 @@
 		<item-type>Rollershutter</item-type>
 		<label>Rollershutter</label>
 		<description>This channels allows to control a rollershutter through rocker msg.</description>
-		<config-description-ref uri="enocean:virtualRockerChannel:config"/>
+		<config-description-ref uri="channel-type:enocean:virtualRockerChannel"/>
 	</channel-type>
 
 	<!-- virtual rocker switch channel -->
@@ -90,14 +90,14 @@
 	<channel-type id="rockerswitchListenerSwitch">
 		<item-type>Switch</item-type>
 		<label>Rocker Switch Listener (Switch)</label>
-		<config-description-ref uri="enocean:listeningRockerChannel:config"/>
+		<config-description-ref uri="channel-type:enocean:listeningRockerChannel"/>
 	</channel-type>
 
 	<!-- rocker switch listener channel -->
 	<channel-type id="rockerswitchListenerRollershutter">
 		<item-type>Rollershutter</item-type>
 		<label>Rocker Switch Listener (Rollershutter)</label>
-		<config-description-ref uri="enocean:listeningRockerChannel:config"/>
+		<config-description-ref uri="channel-type:enocean:listeningRockerChannel"/>
 	</channel-type>
 
 </thing:thing-descriptions>

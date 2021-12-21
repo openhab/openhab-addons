@@ -41,7 +41,7 @@ Example:
 ```
 Thing ipcamera:generic:Esp32Cam
 [
-    ipAddress="192.168.1.181", serverPort=54322,
+    ipAddress="192.168.1.181",
     gifPreroll=1,
     snapshotUrl="http://192.168.1.181/capture",
     mjpegUrl="http://192.168.1.181:81/stream",
@@ -114,7 +114,6 @@ Thing ipcamera:hikvision:West "West Camera"
     onvifPort=8000, //normally 80 check what it needs
     port=80,
     nvrChannel=4,
-    serverPort=54324,
     ffmpegOutput="/var/lib/openhab/ipcamera/West/",
     ffmpegInput="rtsp://192.168.0.XX:554/ISAPI/Streaming/channels/401"
 ]
@@ -154,7 +153,7 @@ Example: The thing type for a camera with no ONVIF support is "generic".
 
 ## Thing Configuration
 
-After a camera is added, the first step is to provide login details and a valid serverPort for your camera before it will come online.
+After a camera is added, the first step is to provide login details for your camera before it will come online.
 If your camera is not ONVIF/API based, you will also need to provide the binding with the cameras URLs to the relevant config field/s.
 For ONVIF cameras that auto detect the wrong URL, these same fields can be used to force a URL of your choosing but leaving them blank will allow the binding to find the URL for you.
 
@@ -169,7 +168,6 @@ If you do not specify any of these, the binding will use the default which shoul
 | `ipAddress`| The IP address or host name of your camera. |
 | `port`| This port will be used for HTTP calls for fetching the snapshot and any API calls. |
 | `onvifPort`| The port your camera uses for ONVIF connections. This is needed for PTZ movement, events, and the auto discovery of RTSP and snapshot URLs. |
-| `serverPort`| The port that will serve the video streams and snapshots back to openHAB without authentication. You can choose any number, but it must be unique and unused for each camera that you setup. Setting the port to -1 (default), will turn all file serving off and some features will fail to work. |
 | `username`| Leave blank if your camera does not use login details. |
 | `password`| Leave blank if your camera does not use login details. |
 | `onvifMediaProfile`| 0 (default) is your cameras Mainstream and the numbers above 0 are the substreams. Any auto discovered URLs will use the streams that this indicates. You can always override the URLs should you wish to use something different for one of them. |
@@ -240,6 +238,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `itemLeft` | Switch (read only) | Will turn ON if an API camera detects an item has been left behind. |
 | `itemTaken` | Switch (read only) | Will turn ON if an API camera detects an item has been stolen. |
 | `lastMotionType` | String | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
+| `lastEventData` | String | Detailed information about the last smart alarm that can contain information like which Line number was crossed and in which direction. The channel `lastMotionType` will hold the name of the alarm that this data belongs to. |
 | `lineCrossingAlarm` | Switch (read only) | Will turn on if the API camera detects motion has crossed a line. |
 | `mjpegUrl` | String | The URL for the ipcamera.mjpeg stream. |
 | `motionAlarm` | Switch (read only) | The status of the 'video motion' events in ONVIF and API cameras. Also see `cellMotionAlarm` as these can give different results. |
@@ -364,16 +363,17 @@ There are a number of ways to use snapshots with this binding.
 
 + Use the cameras URL so it passes from the camera directly to your end device. ie a tablet.
 This is always the best option if it works.
-+ Request a snapshot with the URL `http://192.168.xxx.xxx:54321/ipcamera.jpg`.
-The IP is for your openHAB server not the camera, and 54321 is the `serverPort` number that you specified in the bindings setup. If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
++ Request a snapshot with the URL `http://openhabIP:8080/ipcamera/{cameraUID}/ipcamera.jpg`.
+The IP is for your openHAB server not the camera. 
+If you find the snapshot is old, you can set the `gifPreroll` to a number above 0 and this forces the camera to keep updating the stored JPG in RAM.
 The ipcamera.jpg can also be cast, as most cameras can not directly cast their snapshots.
-+ Use the `http://192.168.xxx.xxx:54321/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
++ Use the `http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
 + Use the record GIF action and use a `gifPreroll` value > 0. 
 This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each `pollTime`. 
 This allows you to get a snapshot from an exact amount of time before, on, or after starting the record to GIF action. 
 Handy for cameras which lag due to slow processors, or if you do not want a hand blocking the image when the door bell was pushed.
 These snapshots can be fetched either directly as they exist on disk, or via this URL format. 
-`http://192.168.xxx.xxx:54321/snapshot0.jpg`
+`http://openHAB:8080/ipcamera/{cameraUID}/snapshot0.jpg`
 + Also worth a mention is that you can off load cameras to a software package running on a separate server such as, Motion, Shinobi and Zoneminder.
 
 See this forum thread for examples of how to use snapshots and streams in a sitemap.
@@ -396,9 +396,9 @@ sudo apt update && sudo apt install ffmpeg
 **IMPORTANT:**
 The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `ipWhitelist`. 
 Requests from external IPs or internal requests that are not on the `ipWhitelist` will fail to get any answer. 
-If you prefer to use your own firewall instead, you can also choose to make the `ipWhitelist` equal "DISABLE" (the default since the feature also needs a valid serverPort set) to turn this feature off and then all internal IPs will have access.
+If you prefer to use your own firewall instead, you can also choose to make the `ipWhitelist` equal "DISABLE" and then all internal IPs will have access.
 
-There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://192.168.xxx.xxx:serverPort/name.format` replacing the name.format with one of the options that are listed below:
+There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://openHAB:8080/ipcamera/{cameraUID}/name.format` replacing the name.format with one of the options that are listed below:
 
 + **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
 This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
@@ -430,9 +430,9 @@ The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, Hi
 To set this up, see [Special Notes for Different Brands](#special-notes-for-different-brands).
 The binding can then distribute this stream to many devices around your home whilst the camera only sees a single open stream.
 
-To request the MJPEG stream from the binding, all you need to do is use this link changing the IP to that of your openHAB server and the serverPort to match the settings in the bindings setup for that camera.
+To request the MJPEG stream from the binding, all you need to do is use this link changing the IP to that of your openHAB server and the uniqueID of the camera.
 
-<http://openHABIP:serverPort/ipcamera.mjpeg>
+<http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.mjpeg>
 
 **Creating MJPEG with FFmpeg**
 
@@ -456,16 +456,16 @@ The autofps.mjpeg feature will display a snapshot that updates every 8 seconds t
 This means lower traffic unless the picture is actually changing. 
 
 Request the stream to be sent to an item with this URL. 
-NOTE: The IP is openHAB's not your cameras IP and the 54321 is what you have set as the serverPort.
+NOTE: The IP is openHAB's not your cameras IP.
 
-`http://192.168.xxx.xxx:54321/snapshots.mjpeg`
+`http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg`
 
 Use the following to display it in your sitemap.
 
 ```
-Video url="http://192.168.0.32:54321/autofps.mjpeg" encoding="mjpeg"
+Video url="http://openHAB:8080/ipcamera/{cameraUID}/autofps.mjpeg" encoding="mjpeg"
 
-Video url="http://192.168.0.32:54321/snapshots.mjpeg" encoding="mjpeg"
+Video url="http://openHAB:8080/ipcamera/{cameraUID}/snapshots.mjpeg" encoding="mjpeg"
 ```
 
 ## HLS (HTTP Live Streaming)
@@ -478,14 +478,13 @@ The startup delay and the lag are two different things, with the startup delay e
 If the channel is OFF, the stream will start and stop automatically as required and the channel will reflect its current status.
 With a fast openHAB server it should only need to be requested once, but on slower ARM systems it takes a while for FFmpeg to get up and running at full speed.
 
-It can be helpful sometimes to use this line in a rule to start the stream before it is needed further on in the rule `sendHttpGetRequest("http://192.168.0.2:54321/ipcamera.m3u8")` as the stream will stay running for 64 seconds.
+It can be helpful sometimes to use this line in a rule to start the stream before it is needed further on in the rule `sendHttpGetRequest("http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8")` as the stream will stay running for 64 seconds.
 This 64 second delay before the stream is stopped helps when you are moving back and forth in a UI, as the stream does not keep stopping and needing to start each time you move around in a UI.
 
 To use the HLS feature, you need to:
 
 + Ensure FFmpeg is installed.
 + For `generic` cameras, you will need to use the config `ffmpegInput` to provide a HTTP or RTSP URL.
-+ Set a valid `serverPort` as the value of -1 will turn this feature off.
 + Consider using a SSD/HDD, zram location, or a tmpfs (ram drive) can be used if you only have micro SD/flash based storage.
 
 ### Ram Drive Setup
@@ -544,9 +543,9 @@ The webview version allows you to zoom in on the video when using the iOS app, t
 
 ```
 
-Text label="HLS Video Stream" icon="camera"{Video url="http://192.168.1.9:54321/ipcamera.m3u8" encoding="hls"}
+Text label="HLS Video Stream" icon="camera"{Video url="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" encoding="hls"}
 
-Text label="HLS Webview Stream" icon="camera"{Webview url="http://192.168.1.9:54321/ipcamera.m3u8" height=15}
+Text label="HLS Webview Stream" icon="camera"{Webview url="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" height=15}
 
 ```
 
@@ -565,16 +564,16 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
 <html>
     <body>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50001/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width:100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50002/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width: 100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50003/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width:100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
         <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50004/ipcamera.m3u8" />
+            <video playsinline autoplay muted controls style="width: 100%; " src="http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8" />
         </div>
     </body>
 </html> 
@@ -616,7 +615,7 @@ String KitchenHomeHubPlayURI { channel="chromecast:chromecast:KitchenHomeHub:pla
 In a rule...
 
 ```
-KitchenHomeHubPlayURI.sendCommand("http://192.168.1.2:54321/ipcamera.m3u8")
+KitchenHomeHubPlayURI.sendCommand("http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.m3u8")
 
 ```
 
@@ -648,7 +647,7 @@ The snapshots are saved to disk and can be used as a feature that is described i
 
 You can request the GIF and MP4 by using this URL format, or by the direct path to where the file is stored:
 
-<http://openHAB.IP:serverPort/ipcamera.gif>
+<http://openHAB:8080/ipcamera/{cameraUID}/ipcamera.gif>
 
 .items
 
@@ -699,6 +698,7 @@ Some additional checks to get it working are:
 If you have 3 seconds worth of video segments in each cameras HLS stream, this is the max you can set the poll time of the group to.
 + All cameras in a group should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
 + Mixing cameras with different aspect ratios may cause issues when cast.
++ The HLS files need to remain on disk for the number of cameras X pollTime, use the `-hls_delete_threshold` ffmpeg option to control this.
 
 ## Sitemap Example
 
@@ -722,9 +722,9 @@ If you use the `Create Equipment from Thing` feature to auto create your items, 
             Slider item=BabyCam_Zoom icon=zoom
         }
         Default item=BabyCam_StartHLSStream
-        Text label="Mjpeg Stream" icon="camera"{Video url="http://192.168.0.2:54321/ipcamera.mjpeg" encoding="mjpeg"}
-        Text label="HLS Stream" icon="camera"{Webview url="http://192.168.0.2:54321/ipcamera.m3u8" height=15}
-        Video url="http://192.168.0.2:54321/autofps.mjpeg" encoding="mjpeg"            
+        Text label="Mjpeg Stream" icon="camera"{Video url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.mjpeg" encoding="mjpeg"}
+        Text label="HLS Stream" icon="camera"{Webview url="http://openHAB:8080/ipcamera/BabyCam/ipcamera.m3u8" height=15}
+        Video url="http://openHAB:8080/ipcamera/BabyCam/autofps.mjpeg" encoding="mjpeg"            
     }  
 
 ```

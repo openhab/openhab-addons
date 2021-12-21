@@ -137,6 +137,7 @@ public class PacketCapturingService {
      * @param packet The packet to be checked
      * @return Returns true, if the packet should be captured, otherwise false
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private boolean shouldCapture(final Packet packet) {
         if (packet.contains(ArpPacket.class)) {
             ArpPacket arpPacket = packet.get(ArpPacket.class);

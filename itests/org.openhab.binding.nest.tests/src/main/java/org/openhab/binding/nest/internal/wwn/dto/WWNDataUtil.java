@@ -80,9 +80,9 @@ public final class WWNDataUtil {
 
     public static String fromFile(String fileName, Unit<Temperature> temperatureUnit) throws IOException {
         String json = fromFile(fileName);
-        if (temperatureUnit == SIUnits.CELSIUS) {
+        if (SIUnits.CELSIUS.equals(temperatureUnit)) {
             json = json.replace("\"temperature_scale\": \"F\"", "\"temperature_scale\": \"C\"");
-        } else if (temperatureUnit == ImperialUnits.FAHRENHEIT) {
+        } else if (ImperialUnits.FAHRENHEIT.equals(temperatureUnit)) {
             json = json.replace("\"temperature_scale\": \"C\"", "\"temperature_scale\": \"F\"");
         }
         return json;

@@ -25,6 +25,8 @@ import org.openhab.binding.wemo.internal.handler.WemoHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -122,7 +124,7 @@ public class WemoHandlerTest {
     @Test
     public void assertThatChannelAVERAGEPOWERIsUpdatedOnReceivedValue() {
         insightParams.avgPower = POWER_PARAM;
-        State expectedStateType = new DecimalType(POWER_PARAM);
+        State expectedStateType = new QuantityType<>(POWER_PARAM, Units.WATT);
         String expectedChannel = CHANNEL_AVERAGEPOWER;
 
         testOnValueReceived(expectedChannel, expectedStateType, insightParams.toString());

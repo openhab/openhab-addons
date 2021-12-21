@@ -29,6 +29,6 @@ public class RFXComRadiator1MessageTest {
     @Test
     public void checkNotImplemented() {
         assertThrows(RFXComMessageNotImplementedException.class,
-                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(RADIATOR1));
+                () -> RFXComMessageFactoryImpl.INSTANCE.createMessage(RADIATOR1, null, null, null));
     }
 }
