@@ -42,16 +42,13 @@ public class SerialClient extends AbstractKNXClient {
 
     private final boolean useCEMI;
 
-    private final String deviceType;
-
     public SerialClient(int autoReconnectPeriod, ThingUID thingUID, int responseTimeout, int readingPause,
             int readRetriesLimit, ScheduledExecutorService knxScheduler, String serialPort, boolean useCEMI,
-            String deviceType, StatusUpdateCallback statusUpdateCallback) {
+            StatusUpdateCallback statusUpdateCallback) {
         super(autoReconnectPeriod, thingUID, responseTimeout, readingPause, readRetriesLimit, knxScheduler,
                 statusUpdateCallback);
         this.serialPort = serialPort;
         this.useCEMI = useCEMI;
-        this.deviceType = deviceType;
     }
 
     @Override
