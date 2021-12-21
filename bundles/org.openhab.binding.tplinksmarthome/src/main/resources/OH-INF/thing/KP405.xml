@@ -10,7 +10,7 @@
 		<category>PowerOutlet</category>
 
 		<channels>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="brightness" typeId="system.brightness"/>
 			<channel id="led" typeId="led"/>
 			<channel id="rssi" typeId="rssi"/>
 		</channels>
