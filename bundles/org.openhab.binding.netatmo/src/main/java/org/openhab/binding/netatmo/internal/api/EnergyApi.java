@@ -24,6 +24,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHomeStatus.NAHomeStatusResponse;
 
 /**
+ * The {@link EnergyApi} handles API endpoints related to Energy feature area
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -73,8 +74,7 @@ public class EnergyApi extends RestManager {
      * @param homeId The id of home (required)
      * @param mode The mode. (required)
      * @return boolean success
-     * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
-     *             response body
+     * @throws NetatmoCommunicationException when call failed, e.g. server error or cannot deserialize
      */
     public boolean setThermMode(String homeId, String mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SPATH_SETTHERMMODE, PARM_HOMEID, homeId, PARM_MODE, mode);
@@ -89,13 +89,10 @@ public class EnergyApi extends RestManager {
      * @param homeId The id of home (required)
      * @param roomId The id of the room (required)
      * @param mode The mode. (required)
-     * @param endtime When using the manual or max setpoint_mode, this parameter defines when the setpoint
-     *            expires. (optional)
-     * @param temp When using the manual setpoint_mode, this parameter defines the temperature setpoint (in
-     *            Celcius) to use. (optional)
+     * @param endtime For manual or max setpoint_mode, defines when the setpoint expires.
+     * @param temp For manual setpoint_mode, defines the temperature setpoint (in °C)
      * @return ApiResponse.Ok
-     * @throws NetatmoCommunicationException If fail to call the API, e.g. server error or cannot deserialize the
-     *             response body
+     * @throws NetatmoCommunicationException when call failed, e.g. server error or cannot deserialize
      */
     public boolean setRoomThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
             throws NetatmoException {

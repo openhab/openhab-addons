@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link ConnectionStatus} describes the status of the connection to the API
  *
  * @author Gaël L'hopital - Initial contribution
  *

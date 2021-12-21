@@ -14,7 +14,6 @@ package org.openhab.binding.netatmo.internal.api;
 
 import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 
-import java.net.URI;
 import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
@@ -32,10 +31,9 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.Scope;
  */
 @NonNullByDefault
 public abstract class RestManager {
-    private static final UriBuilder API_BASE_BUILDER = UriBuilder.fromUri(URL_API);
+    protected static final UriBuilder API_BASE_BUILDER = UriBuilder.fromUri(URL_API);
     private static final UriBuilder API_URI_BUILDER = API_BASE_BUILDER.clone().path(PATH_API);
     private static final UriBuilder APP_URI_BUILDER = UriBuilder.fromUri(URL_APP).path(PATH_API);
-    protected static final URI OAUTH_URI = API_BASE_BUILDER.clone().path(PATH_OAUTH).build();
 
     private final Set<Scope> requiredScopes;
     protected final ApiBridge apiBridge;
@@ -58,12 +56,9 @@ public abstract class RestManager {
             @Nullable String payload) throws NetatmoException {
         if (ConnectionStatus.SUCCESS.equals(apiBridge.getConnectionStatus()) || requiredScopes.isEmpty()) {
             T response = apiBridge.executeUri(uriBuilder.build(), method, classOfT, payload);
-            if (response instanceof ApiResponse.Ok) {
-                ApiResponse.Ok okResponse = (ApiResponse.Ok) response;
-                if (!okResponse.isSuccess()) {
-                    throw new NetatmoException(String.format("Unsuccessful command : %s for uri : %s",
-                            response.getStatus(), uriBuilder.build().toString()));
-                }
+            if (response instanceof ApiResponse.Ok && ((ApiResponse.Ok) response).failed()) {
+                throw new NetatmoException(String.format("Command failed : %s for uri : %s", response.getStatus(),
+                        uriBuilder.build().toString()));
             }
             return response;
         }

@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ApiError {
-    private @NonNullByDefault({}) String message;
+    private String message = "";
     private int code;
 
     public String getMessage() {

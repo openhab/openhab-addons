@@ -26,6 +26,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHome;
 import org.openhab.binding.netatmo.internal.api.dto.NAHome.NAHomesDataResponse;
 
 /**
+ * The {@link HomeApi} handles general API endpoints not requiring specific scope area
  *
  * @author Gaël L'hopital - Initial contribution
  *

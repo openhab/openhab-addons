@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * An exception that occurred while communicating with an automower or an automower bridge
+ * An exception that occurred while communicating with Netatmo server or related processes.
  *
  * @author Gaël L'hopital - Initial contribution
  */

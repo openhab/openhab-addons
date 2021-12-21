@@ -26,12 +26,14 @@ public class ApiResponse<T> {
      * toward the request sent to the API
      */
     static class Ok extends ApiResponse<String> {
-        public boolean isSuccess() {
-            return "ok".equals(getStatus());
+        private static final String SUCCESS = "ok";
+
+        public boolean failed() {
+            return !SUCCESS.equals(getStatus());
         }
     }
 
-    private @NonNullByDefault({}) String status;
+    private String status = "";
     private @NonNullByDefault({}) T body;
 
     public String getStatus() {

@@ -22,6 +22,8 @@ import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The {@link ListBodyResponse} models a response returned by API call containing
+ * a list of elements.
  *
  * @author Gaël L'hopital - Initial contribution
  *

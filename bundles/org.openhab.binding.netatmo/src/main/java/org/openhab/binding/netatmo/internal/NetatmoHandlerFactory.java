@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.netatmo.internal;
 
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.SERVICE_PID;
-
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +31,6 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -48,8 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo", property = Constants.SERVICE_PID
-        + "=" + SERVICE_PID)
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
 
@@ -96,7 +92,7 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             return (BaseThingHandler) handlerConstructor.newInstance(bridge, helpers, apiBridge,
                     stateDescriptionProvider);
         } catch (ReflectiveOperationException | IllegalArgumentException e) {
-            logger.warn("Error creating or intializing constructor : {}", e.getMessage());
+            logger.warn("Error creating or initializing constructor : {}", e.getMessage());
         }
         return null;
     }

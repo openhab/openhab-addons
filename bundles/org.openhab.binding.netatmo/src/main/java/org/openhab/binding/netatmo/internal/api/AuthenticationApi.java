@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.netatmo.internal.api;
 
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.PATH_OAUTH;
 import static org.openhab.core.auth.oauth2client.internal.Keyword.*;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,7 +26,6 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAAccessTokenResponse;
 import org.openhab.binding.netatmo.internal.config.NetatmoBindingConfiguration;
@@ -31,12 +33,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Allows access to the AutomowerConnectApi
+ * The {@link AuthenticationApi} is handling oAuth2 authentication as well as token refreshing
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 class AuthenticationApi extends RestManager {
+    protected static final URI OAUTH_URI = API_BASE_BUILDER.clone().path(PATH_OAUTH).build();
+
     private final Logger logger = LoggerFactory.getLogger(AuthenticationApi.class);
     private final NetatmoBindingConfiguration configuration;
     private final ScheduledExecutorService scheduler;
@@ -57,8 +61,7 @@ class AuthenticationApi extends RestManager {
     }
 
     private void requestToken(String tokenRequest) throws NetatmoException {
-        NAAccessTokenResponse answer = apiBridge.executeUri(OAUTH_URI, HttpMethod.POST, NAAccessTokenResponse.class,
-                tokenRequest);
+        NAAccessTokenResponse answer = apiBridge.executeUri(OAUTH_URI, POST, NAAccessTokenResponse.class, tokenRequest);
         apiBridge.onAccessTokenResponse(answer.getAccessToken(), answer.getScope());
         freeTokenJob();
         refreshTokenJob = scheduler.schedule(() -> {

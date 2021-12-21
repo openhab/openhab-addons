@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * The {@link ConnectionListener} is the interface for objects listener to API connection status
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -36,7 +36,7 @@ public class AircareApi extends RestManager {
 
     /**
      *
-     * Returns data from Healthy Home Coach Station (measures and device specific data.
+     * Returns data from Healthy Home Coach Station (measures and device specific data).
      *
      * @param deviceId Id of the device you want to retrieve information of (optional)
      * @return NAStationDataResponse
