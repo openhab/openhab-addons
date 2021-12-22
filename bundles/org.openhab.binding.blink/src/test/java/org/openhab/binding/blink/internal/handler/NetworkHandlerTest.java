@@ -127,6 +127,16 @@ class NetworkHandlerTest {
     }
 
     @Test
+    void testDevicesUpdatedHandler() {
+        networkHandler.initialize();
+        ArgumentCaptor<Runnable> handlerCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(accountHandler).addDevicesUpdateHandler(same(networkHandler), handlerCaptor.capture());
+        doNothing().when(networkHandler).updateNetworkState();
+        handlerCaptor.getValue().run();
+        verify(networkHandler).updateNetworkState();
+    }
+
+    @Test
     void testSetOfflineOnMissingBridge() {
         networkHandler = new NetworkHandler(thing, httpClientFactory, gson) {
             @Override
@@ -171,7 +181,6 @@ class NetworkHandlerTest {
         doNothing().when(networkHandler).updateNetworkState(); // tested separately
         handlerCaptor.getValue().accept(true);
         verify(accountHandler).getDevices(true);
-        verify(networkHandler).updateNetworkState();
     }
 
     @Test
@@ -189,7 +198,9 @@ class NetworkHandlerTest {
 
     @Test
     void testDispose() {
+        networkHandler.accountHandler = accountHandler;
         networkHandler.dispose();
+        verify(accountHandler).removeDevicesUpdateHandler(same(networkHandler));
         verify(networkService).dispose();
     }
 

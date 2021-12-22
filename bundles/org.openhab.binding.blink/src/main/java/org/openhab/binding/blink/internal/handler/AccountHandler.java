@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -80,6 +81,9 @@ public class AccountHandler extends BaseBridgeHandler {
     ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
     @Nullable
     ScheduledFuture<?> refreshTokenJob;
+    @Nullable
+    ScheduledFuture<?> pollStateJob;
+    private final Map<Object, Runnable> devicesUpdatedHandlers = new ConcurrentHashMap<>();
 
     public AccountHandler(Bridge bridge, HttpService httpService, BundleContext bundleContext,
             NetworkAddressService networkAddressService, HttpClientFactory httpClientFactory, Gson gson) {
@@ -88,6 +92,14 @@ public class AccountHandler extends BaseBridgeHandler {
         this.bundleContext = bundleContext;
         this.networkAddressService = networkAddressService;
         this.blinkService = new AccountService(httpClientFactory.getCommonHttpClient(), gson);
+    }
+
+    public void addDevicesUpdateHandler(Object owner, Runnable handler) {
+        devicesUpdatedHandlers.put(owner, handler);
+    }
+
+    public void removeDevicesUpdateHandler(Object owner) {
+        devicesUpdatedHandlers.remove(owner);
     }
 
     @Override
@@ -173,6 +185,11 @@ public class AccountHandler extends BaseBridgeHandler {
     void cleanup() {
         if (refreshTokenJob != null) {
             refreshTokenJob.cancel(true);
+            refreshTokenJob = null;
+        }
+        if (pollStateJob != null) {
+            pollStateJob.cancel(true);
+            pollStateJob = null;
         }
         logger.debug("cleanup {}", getThing().getUID().getAsString());
     }
@@ -180,7 +197,12 @@ public class AccountHandler extends BaseBridgeHandler {
     public void setOnline() {
         if (config != null)
             this.homescreenCache = new ExpiringCache<>(Duration.ofSeconds(config.refreshInterval), this::loadDevices);
-        refreshTokenJob = scheduler.scheduleWithFixedDelay(this::refreshToken, 12, 12, TimeUnit.HOURS);
+        if (refreshTokenJob == null) {
+            refreshTokenJob = scheduler.scheduleWithFixedDelay(this::refreshToken, 12, 12, TimeUnit.HOURS);
+        }
+        if (pollStateJob == null) {
+            pollStateJob = scheduler.scheduleWithFixedDelay(() -> getDevices(false), 20, 5, TimeUnit.SECONDS);
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -198,8 +220,11 @@ public class AccountHandler extends BaseBridgeHandler {
     public @Nullable BlinkHomescreen getDevices(boolean refresh) {
         if (homescreenCache == null)
             return null;
-        if (refresh) {
-            return homescreenCache.refreshValue();
+        if (homescreenCache.isExpired() || refresh) {
+            @Nullable
+            BlinkHomescreen homescreen = homescreenCache.refreshValue();
+            devicesUpdatedHandlers.values().forEach(Runnable::run);
+            return homescreen;
         } else {
             return homescreenCache.getValue();
         }

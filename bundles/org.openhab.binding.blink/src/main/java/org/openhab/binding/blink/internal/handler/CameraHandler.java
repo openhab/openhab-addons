@@ -16,8 +16,6 @@ import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,9 +63,6 @@ public class CameraHandler extends BaseThingHandler {
 
     @Nullable
     ThumbnailServlet thumbnailServlet;
-
-    @Nullable
-    ScheduledFuture<?> pollStateJob;
 
     String lastThumbnailPath = "";
 
@@ -139,6 +134,7 @@ public class CameraHandler extends BaseThingHandler {
             return;
         }
         accountHandler = (AccountHandler) bridge.getHandler();
+        accountHandler.addDevicesUpdateHandler(this, this::updateCameraState);
 
         if (thumbnailServlet == null) {
             try {
@@ -155,13 +151,11 @@ public class CameraHandler extends BaseThingHandler {
             }
         }
 
-        if (pollStateJob == null || pollStateJob.isCancelled()) {
-            pollStateJob = scheduler.scheduleWithFixedDelay(this::updateCameraState, 20, 5, TimeUnit.SECONDS);
-        }
         updateStatus(ThingStatus.ONLINE);
     }
 
     public void updateCameraState() {
+        logger.debug("Updating camera state for camera {}", config.cameraId);
         try {
             updateState(CHANNEL_CAMERA_TEMPERATURE,
                     new QuantityType<>(accountHandler.getTemperature(config), ImperialUnits.FAHRENHEIT));
@@ -181,8 +175,7 @@ public class CameraHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollStateJob != null)
-            pollStateJob.cancel(true);
+        accountHandler.removeDevicesUpdateHandler(this);
         cameraService.dispose();
         super.dispose();
     }
@@ -195,7 +188,6 @@ public class CameraHandler extends BaseThingHandler {
     private void asyncCommandFinished(boolean success) {
         if (success) {
             accountHandler.getDevices(true); // trigger refresh of homescreen
-            updateCameraState();
         }
     }
 }

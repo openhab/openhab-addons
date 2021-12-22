@@ -209,6 +209,9 @@ class AccountHandlerTest extends JavaTest {
         Field expiry = ExpiringCache.class.getDeclaredField("expiry");
         expiry.setAccessible(true);
         assertThat(expiry.get(accountHandler.homescreenCache), is((long) config.refreshInterval * 1000 * 1000 * 1000));
+        // jobs created
+        assertThat(accountHandler.pollStateJob, is(notNullValue()));
+        assertThat(accountHandler.refreshTokenJob, is(notNullValue()));
         // thing online
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(any(), statusCaptor.capture());
@@ -224,11 +227,14 @@ class AccountHandlerTest extends JavaTest {
 
     @Test
     void testGetDevicesRefreshRefreshesCache() {
+        Runnable handler = mock(Runnable.class);
+        accountHandler.addDevicesUpdateHandler(this, handler);
         accountHandler.homescreenCache = cache;
         when(cache.refreshValue()).thenReturn(testBlinkHomescreen());
         when(cache.getValue()).thenReturn(testBlinkHomescreen());
         accountHandler.getDevices(true);
         verify(cache).refreshValue();
+        verify(handler).run();
         accountHandler.getDevices(false);
         verify(cache).getValue();
     }

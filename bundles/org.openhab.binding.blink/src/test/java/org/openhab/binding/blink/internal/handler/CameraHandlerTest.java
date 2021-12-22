@@ -140,6 +140,15 @@ public class CameraHandlerTest {
     }
 
     @Test
+    void testDevicesUpdatedHandler() {
+        ArgumentCaptor<Runnable> handlerCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(accountHandler).addDevicesUpdateHandler(same(cameraHandler), handlerCaptor.capture());
+        doNothing().when(cameraHandler).updateCameraState();
+        handlerCaptor.getValue().run();
+        verify(cameraHandler).updateCameraState();
+    }
+
+    @Test
     void testSetOfflineOnHandleCommandException() throws IOException {
         cameraHandler.accountHandler = accountHandler;
         doThrow(IOException.class).when(accountHandler).getTemperature(any());
@@ -205,12 +214,10 @@ public class CameraHandlerTest {
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Consumer<Boolean>> handlerCaptor = ArgumentCaptor.forClass(Consumer.class);
         verify(cameraService).watchCommandStatus(any(), same(blinkAccount), any(), any(), handlerCaptor.capture());
-        doNothing().when(cameraHandler).updateCameraState(); // tested separately
         handlerCaptor.getValue().accept(true);
         // check if correct handler is called (bug in commit 767f08f7)
         verify(callback, times(0)).stateUpdated(eq(CHANNEL_CAMERA_SETTHUMBNAIL), any());
         verify(accountHandler).getDevices(true);
-        verify(cameraHandler).updateCameraState();
     }
 
     @Test
@@ -229,11 +236,9 @@ public class CameraHandlerTest {
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Consumer<Boolean>> handlerCaptor = ArgumentCaptor.forClass(Consumer.class);
         verify(cameraService).watchCommandStatus(any(), same(blinkAccount), any(), any(), handlerCaptor.capture());
-        doNothing().when(cameraHandler).updateCameraState(); // tested separately
         handlerCaptor.getValue().accept(true);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_SETTHUMBNAIL), eq(OnOffType.OFF));
         verify(accountHandler).getDevices(true);
-        verify(cameraHandler).updateCameraState();
     }
 
     @Test
@@ -263,6 +268,7 @@ public class CameraHandlerTest {
     void testDispose() {
         cameraHandler.cameraService = cameraService;
         cameraHandler.dispose();
+        verify(accountHandler).removeDevicesUpdateHandler(same(cameraHandler));
         verify(cameraService).dispose();
     }
 
