@@ -32,6 +32,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,20 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     @Activate
     public void activate(@Nullable Map<String, Object> configProperties) {
+        updateRemovalGracePeriod(configProperties);
+    }
+
+    @Modified
+    public void modified(@Nullable Map<String, Object> configProperties) {
+        updateRemovalGracePeriod(configProperties);
+    }
+
+    /**
+     * Update the removalGracePeriodSeconds when the component is activates or modified.
+     *
+     * @param configProperties the passed configuration parameters.
+     */
+    private void updateRemovalGracePeriod(Map<String, Object> configProperties) {
         if (configProperties != null) {
             Object value = configProperties.get(MieleBindingConstants.REMOVAL_GRACE_PERIOD);
             if (value != null) {
