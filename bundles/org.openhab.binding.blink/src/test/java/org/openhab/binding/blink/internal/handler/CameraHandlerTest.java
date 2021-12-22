@@ -19,6 +19,7 @@ import static org.mockito.Mockito.any;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -116,13 +117,14 @@ public class CameraHandlerTest {
         config.put("networkId", NETWORK_ID);
         when(thing.getConfiguration()).thenReturn(config);
         doReturn(accountHandler).when(account).getHandler();
-        cameraHandler = new CameraHandler(thing, httpService, networkAddressService, httpClientFactory, new Gson()) {
-            @SuppressWarnings("ConstantConditions")
-            @Override
-            protected @Nullable Bridge getBridge() {
-                return account;
-            }
-        };
+        cameraHandler = spy(
+                new CameraHandler(thing, httpService, networkAddressService, httpClientFactory, new Gson()) {
+                    @SuppressWarnings("ConstantConditions")
+                    @Override
+                    protected @Nullable Bridge getBridge() {
+                        return account;
+                    }
+                });
         cameraHandler.setCallback(callback);
         cameraHandler.initialize();
     }
@@ -200,9 +202,13 @@ public class CameraHandlerTest {
         CameraConfiguration handlerConfig = cameraHandler.config;
         CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
         verify(cameraService).motionDetection(blinkAccount, config, true);
-        ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
-        verify(callback).stateUpdated(eq(CHANNEL_CAMERA_MOTIONDETECTION), stateCaptor.capture());
-        assertThat(stateCaptor.getValue(), is(OnOffType.ON));
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Consumer<Boolean>> handlerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(cameraService).watchCommandStatus(any(), same(blinkAccount), any(), any(), handlerCaptor.capture());
+        doNothing().when(cameraHandler).updateCameraState(); // tested separately
+        handlerCaptor.getValue().accept(true);
+        verify(accountHandler).getDevices(true);
+        verify(cameraHandler).updateCameraState();
     }
 
     @Test

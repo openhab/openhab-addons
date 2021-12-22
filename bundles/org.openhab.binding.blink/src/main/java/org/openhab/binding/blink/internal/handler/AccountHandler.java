@@ -243,7 +243,6 @@ public class AccountHandler extends BaseBridgeHandler {
         } else if (cameras.isEmpty()) {
             logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("Unknown camera");
-
         }
         return cameras.get(0);
     }
