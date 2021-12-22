@@ -207,6 +207,7 @@ public class AccountHandler extends BaseBridgeHandler {
 
     @Nullable
     BlinkHomescreen loadDevices() {
+        logger.debug("Loading devices from Blink API");
         try {
             return blinkService.getDevices(blinkAccount);
         } catch (IOException e) {

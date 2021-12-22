@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
-import org.openhab.binding.blink.internal.dto.BlinkCommandResponse;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.binding.blink.internal.servlet.ThumbnailServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -125,42 +124,10 @@ public class CameraHandler extends BaseThingHandler {
                 if (command instanceof RefreshType)
                     updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
                 if (command == OnOffType.ON) {
-                    scheduler.execute(() -> {
-                        try {
-                            Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(), nonNullConfig);
-                            var ref = new Object() {
-                                boolean finished = false;
-                            };
-                            ScheduledFuture<?> checkThumbnailStatusJob = scheduler.scheduleWithFixedDelay(() -> {
-                                try {
-                                    while (!ref.finished) {
-                                        BlinkCommandResponse cmdResponse = cameraService.getCommandStatus(
-                                                accountHandler.getBlinkAccount(), nonNullConfig.networkId, cmdId);
-                                        if (cmdResponse.complete) {
-                                            postCommand(CHANNEL_CAMERA_GETTHUMBNAIL, RefreshType.REFRESH);
-                                            String imagePath = accountHandler.getCameraState(nonNullConfig,
-                                                    true).thumbnail;
-                                            updateState(CHANNEL_CAMERA_GETTHUMBNAIL,
-                                                    new RawType(cameraService
-                                                            .getThumbnail(accountHandler.getBlinkAccount(), imagePath),
-                                                            "image/jpeg"));
-                                            updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
-                                            ref.finished = true;
-                                        }
-                                    }
-                                } catch (IOException e) {
-                                    throw new RuntimeException("Error checking thumbnail generation");
-                                }
-                            }, 1, 2, TimeUnit.SECONDS);
-                            // cancel status job after 15 seconds
-                            scheduler.schedule(() -> checkThumbnailStatusJob.cancel(false), 15, TimeUnit.SECONDS);
-                            if (!ref.finished)
-                                logger.warn("Timeout waiting for thumbnail generation");
-                        } catch (IOException e) {
-                            logger.error("Error taking new thumbnail");
-                        }
-                        updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
-                    });
+                    Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(), nonNullConfig);
+                    cameraService.watchCommandStatus(scheduler, accountHandler.getBlinkAccount(),
+                            nonNullConfig.networkId, cmdId,
+                            success -> createThumbnailFinished(accountHandler, success));
                 }
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -257,5 +224,13 @@ public class CameraHandler extends BaseThingHandler {
             pollStateJob.cancel(true);
         cameraService.dispose();
         super.dispose();
+    }
+
+    private void createThumbnailFinished(AccountHandler accountHandler, boolean success) {
+        updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
+        if (success) {
+            accountHandler.getDevices(true); // trigger refresh of homescreen
+            updateCameraState(); // update all channels from homescreen
+        }
     }
 }
