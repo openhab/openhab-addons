@@ -19,8 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.AccountConfiguration;
@@ -47,7 +48,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 
 /**
@@ -76,6 +76,8 @@ public class AccountHandler extends BaseBridgeHandler {
     BlinkAccount blinkAccount;
     @Nullable
     ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
+    @Nullable
+    ScheduledFuture<?> refreshTokenJob;
 
     public AccountHandler(Bridge bridge, HttpService httpService, BundleContext bundleContext,
             NetworkAddressService networkAddressService, HttpClientFactory httpClientFactory, Gson gson) {
@@ -166,13 +168,28 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     void cleanup() {
+        if (refreshTokenJob != null) {
+            refreshTokenJob.cancel(true);
+        }
         logger.debug("cleanup {}", getThing().getUID().getAsString());
     }
 
     public void setOnline() {
         if (config != null)
             this.homescreenCache = new ExpiringCache<>(Duration.ofSeconds(config.refreshInterval), this::loadDevices);
+        refreshTokenJob = scheduler.scheduleWithFixedDelay(this::refreshToken, 12, 12, TimeUnit.HOURS);
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    void refreshToken() {
+        Map<String, String> properties = editProperties();
+        try {
+            blinkAccount = blinkService.login(config, blinkAccount.generatedClientId, false);
+            properties.putAll(blinkAccount.toAccountProperties());
+            updateProperties(properties);
+        } catch (IOException e) {
+            logger.error("Could not update blink security token.", e);
+        }
     }
 
     public @Nullable BlinkHomescreen getDevices(boolean refresh) {
