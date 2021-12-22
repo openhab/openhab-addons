@@ -381,46 +381,6 @@ public class MyBMWProxy {
         return Constants.EMPTY;
     }
 
-    public synchronized boolean updateLegacyToken() {
-        logger.debug("updateLegacyToken");
-        try {
-            /**
-             * The authorization with Jetty HttpClient doens't work anymore
-             * When calling Jetty with same headers and content a ConcurrentExcpetion is thrown
-             * So fallback legacy authorization will stay on java.net handling
-             */
-            String authUri = "https://" + BimmerConstants.AUTH_SERVER_MAP.get(configuration.region)
-                    + BimmerConstants.OAUTH_ENDPOINT;
-            URL url = new URL(authUri);
-            HttpURLConnection.setFollowRedirects(false);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-            con.setRequestProperty(HttpHeader.CONTENT_TYPE.toString(), CONTENT_TYPE_URL_ENCODED);
-            con.setRequestProperty(HttpHeader.CONNECTION.toString(), KEEP_ALIVE);
-            con.setRequestProperty(HttpHeader.HOST.toString(),
-                    BimmerConstants.API_SERVER_MAP.get(configuration.region));
-            con.setRequestProperty(HttpHeader.AUTHORIZATION.toString(),
-                    BimmerConstants.LEGACY_AUTHORIZATION_VALUE_MAP.get(configuration.region));
-            con.setRequestProperty(CREDENTIALS, BimmerConstants.LEGACY_CREDENTIAL_VALUES);
-            con.setDoOutput(true);
-
-            OutputStream os = con.getOutputStream();
-            byte[] input = getAuthEncodedData().getBytes("utf-8");
-            os.write(input, 0, input.length);
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"));
-            StringBuilder response = new StringBuilder();
-            String responseLine = null;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-            token.setMyBmwApiUsage(false);
-            return tokenFromUrl(con.getHeaderField(HttpHeader.LOCATION.toString()));
-        } catch (IOException e) {
-            logger.warn("{}", e.getMessage());
-        }
-        return false;
-    }
 
     public boolean tokenFromUrl(String encodedUrl) {
         final MultiMap<String> tokenMap = new MultiMap<String>();
@@ -465,5 +425,7 @@ public class MyBMWProxy {
         dataMap.add(USERNAME, configuration.userName);
         dataMap.add(PASSWORD, configuration.password);
         return UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
+    }
+
     }
 }

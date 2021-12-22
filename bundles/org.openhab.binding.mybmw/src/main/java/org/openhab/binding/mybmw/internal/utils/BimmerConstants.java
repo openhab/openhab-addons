@@ -28,34 +28,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BimmerConstants {
 
-    // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/country_selector.py
     public static final String REGION_NORTH_AMERICA = "NORTH_AMERICA";
     public static final String REGION_CHINA = "CHINA";
     public static final String REGION_ROW = "ROW";
 
-    // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/country_selector.py
-    public static final String LEGACY_AUTH_SERVER_NORTH_AMERICA = "login.bmwusa.com/gcdm";
-    public static final String LEGACY_AUTH_SERVER_CHINA = "customer.bmwgroup.cn/gcdm";
-    public static final String LEGACY_AUTH_SERVER_ROW = "customer.bmwgroup.com/gcdm";
-    public static final Map<String, String> LEGACY_AUTH_SERVER_MAP = Map.of(REGION_NORTH_AMERICA,
-            LEGACY_AUTH_SERVER_NORTH_AMERICA, REGION_CHINA, LEGACY_AUTH_SERVER_CHINA, REGION_ROW,
-            LEGACY_AUTH_SERVER_ROW);
-
-    public static final String OAUTH_ENDPOINT = "/oauth/authenticate";
-    public static final String TOKEN_ENDPOINT = "/oauth/token";
-
-    public static final String API_SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
-    public static final String API_SERVER_CHINA = "b2vapi.bmwgroup.cn:8592";
-    public static final String API_SERVER_ROW = "b2vapi.bmwgroup.com";
+    public static final String OAUTH_ENDPOINT = "/gcdm/oauth/authenticate";
 
     public static final String EADRAX_SERVER_NORTH_AMERICA = "cocoapi.bmwgroup.us";
     public static final String EADRAX_SERVER_ROW = "cocoapi.bmwgroup.com";
-    public static final String EADRAX_SERVER_CHINA = Constants.EMPTY;
+    public static final String EADRAX_SERVER_CHINA = "myprofile.bmw.com.cn";
     public static final Map<String, String> EADRAX_SERVER_MAP = Map.of(REGION_NORTH_AMERICA,
             EADRAX_SERVER_NORTH_AMERICA, REGION_CHINA, EADRAX_SERVER_CHINA, REGION_ROW, EADRAX_SERVER_ROW);
 
-    public static final Map<String, String> API_SERVER_MAP = Map.of(REGION_NORTH_AMERICA, API_SERVER_NORTH_AMERICA,
-            REGION_CHINA, API_SERVER_CHINA, REGION_ROW, API_SERVER_ROW);
+    public static final String OCP_APIM_KEY_NORTH_AMERICA = "31e102f5-6f7e-7ef3-9044-ddce63891362";
+    public static final String OCP_APIM_KEY_ROW = "4f1c85a3-758f-a37d-bbb6-f8704494acfa";
+    public static final String OCP_APIM_KEY_CHINA = Constants.EMPTY;
+    public static final Map<String, String> OCP_APIM_KEYS = Map.of(REGION_NORTH_AMERICA, OCP_APIM_KEY_NORTH_AMERICA,
+            REGION_ROW, OCP_APIM_KEY_ROW, REGION_CHINA, OCP_APIM_KEY_CHINA);
 
     // see https://github.com/bimmerconnected/bimmer_connected/pull/252/files
     public static final Map<String, String> LEGACY_AUTHORIZATION_VALUE_MAP = Map.of(REGION_NORTH_AMERICA,
