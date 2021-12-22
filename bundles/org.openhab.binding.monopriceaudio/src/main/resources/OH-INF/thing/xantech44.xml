@@ -131,7 +131,7 @@
 		<item-type>Number</item-type>
 		<label>Source Input</label>
 		<description>Select the Source Input</description>
-		<state min="1" max="8"/>
+		<state min="1" max="4"/>
 	</channel-type>
 
 	<channel-type id="treble">
