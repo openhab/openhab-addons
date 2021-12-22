@@ -104,6 +104,9 @@ public class CameraHandlerTest {
     @Mock
     @NonNullByDefault({})
     AccountHandler accountHandler;
+    @Mock
+    @NonNullByDefault({})
+    CameraService cameraService;
 
     @BeforeEach
     void setup() {
@@ -234,5 +237,12 @@ public class CameraHandlerTest {
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_GETTHUMBNAIL), stateCaptor.capture());
         assertThat(stateCaptor.getValue(), is(expected));
+    }
+
+    @Test
+    void testDispose() {
+        cameraHandler.cameraService = cameraService;
+        cameraHandler.dispose();
+        verify(cameraService).dispose();
     }
 }

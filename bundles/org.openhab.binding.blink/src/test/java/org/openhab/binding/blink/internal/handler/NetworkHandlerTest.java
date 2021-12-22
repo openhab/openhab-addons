@@ -183,4 +183,10 @@ class NetworkHandlerTest {
         verify(callback, atLeast(1)).statusUpdated(eq(thing), statusCaptor.capture());
         assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
     }
+
+    @Test
+    void testDispose() {
+        networkHandler.dispose();
+        verify(networkService).dispose();
+    }
 }

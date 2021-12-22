@@ -14,8 +14,13 @@ package org.openhab.binding.blink.internal.service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,6 +55,8 @@ public class BaseBlinkApiService {
     @SuppressWarnings("FieldCanBeLocal")
     private final String BASE_URL = "https://rest-{tier}.immedia-semi.com";
     static final String CONTENT_TYPE_JSON = "application/json; charset=UTF-8";
+
+    final Map<String, Future<?>> cmdStatusJobs = new ConcurrentHashMap<>();
 
     HttpClient httpClient;
     Gson gson;
@@ -119,5 +126,45 @@ public class BaseBlinkApiService {
         BlinkCommandResponse cmd = apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token, null,
                 BlinkCommandResponse.class);
         return cmd;
+    }
+
+    public void watchCommandStatus(ScheduledExecutorService scheduler, @Nullable BlinkAccount account, Long networkId,
+            Long cmdId, Consumer<Boolean> handler) {
+        if (account == null || account.account == null)
+            throw new IllegalArgumentException("Cannot call command status api without account");
+        watchCommandStatus(scheduler, account, networkId, cmdId, handler, 0);
+    }
+
+    void watchCommandStatus(ScheduledExecutorService scheduler, BlinkAccount account, Long networkId, Long cmdId,
+            Consumer<Boolean> handler, int numTries) {
+        String uri = "/network/" + networkId + "/command/" + cmdId;
+        // schedule only once and recurse to avoid having to cancel both a job with fixed delay and a cancellation job
+        cmdStatusJobs.put(uri, scheduler.schedule(() -> {
+            cmdStatusJobs.remove(uri);
+            try {
+                logger.debug("Checking for status of async command {} (try {})", cmdId, numTries);
+                BlinkCommandResponse status = apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token,
+                        null, BlinkCommandResponse.class);
+                if (status.complete) {
+                    logger.debug("Command {} completed with message {}", cmdId, status.status_msg);
+                    handler.accept(true);
+                } else if (numTries == 15) { // TODO
+                    logger.error("Timeout waiting for completion of async command {}", cmdId);
+                    handler.accept(false);
+                } else {
+                    watchCommandStatus(scheduler, account, networkId, cmdId, handler, numTries + 1);
+                }
+            } catch (IOException e) {
+                logger.error("Error waiting for completion of async command {}", cmdId, e);
+                handler.accept(false);
+            }
+        }, 1, TimeUnit.SECONDS));
+    }
+
+    public void dispose() {
+        for (Future<?> cmdStatusJob : cmdStatusJobs.values()) {
+            cmdStatusJob.cancel(true);
+        }
+        cmdStatusJobs.clear();
     }
 }

@@ -255,6 +255,7 @@ public class CameraHandler extends BaseThingHandler {
     public void dispose() {
         if (pollStateJob != null)
             pollStateJob.cancel(true);
+        cameraService.dispose();
         super.dispose();
     }
 }

@@ -186,9 +186,11 @@ class AccountHandlerTest extends JavaTest {
     void testDispose() {
         AccountVerificationServlet servlet = mock(AccountVerificationServlet.class);
         accountHandler.accountServlet = servlet;
+        accountHandler.blinkService = accountService;
         accountHandler.dispose();
         verify(accountHandler).cleanup();
         verify(servlet).dispose();
+        verify(accountService).dispose();
         // noinspection ConstantConditions
         assertThat(accountHandler.accountServlet, is(nullValue()));
     }

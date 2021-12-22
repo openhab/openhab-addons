@@ -83,4 +83,10 @@ public class NetworkHandler extends BaseThingHandler {
         config = getConfigAs(NetworkConfiguration.class);
         updateStatus(ThingStatus.ONLINE);
     }
+
+    @Override
+    public void dispose() {
+        networkService.dispose();
+        super.dispose();
+    }
 }

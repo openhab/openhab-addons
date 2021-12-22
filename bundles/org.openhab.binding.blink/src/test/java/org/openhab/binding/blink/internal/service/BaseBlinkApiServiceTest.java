@@ -21,7 +21,12 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -34,13 +39,15 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.blink.internal.dto.BlinkAccount;
+import org.openhab.binding.blink.internal.dto.BlinkCommandResponse;
 
 import com.google.gson.Gson;
 
@@ -66,12 +73,12 @@ class BaseBlinkApiServiceTest {
     @NonNullByDefault({})
     ContentResponse response;
 
-    @InjectMocks
     @NonNullByDefault({})
     BaseBlinkApiService apiService;
 
     @BeforeEach
     void setup() {
+        apiService = spy(new BaseBlinkApiService(httpClient, gson));
         doReturn(request).when(httpClient).newRequest(anyString());
         doReturn(request).when(request).method(anyString());
         doReturn(request).when(request).header(ArgumentMatchers.any(HttpHeader.class), anyString());
@@ -162,5 +169,92 @@ class BaseBlinkApiServiceTest {
         assertThat(result.iam, is(notNullValue()));
         assertThat(result.iam, is("old"));
         assertThat(result.age, is(90));
+    }
+
+    @Test
+    void testWatchCommandStatusSuccess() throws IOException {
+        BlinkAccount account = new BlinkAccount();
+        account.account = new BlinkAccount.Account();
+        account.auth = new BlinkAccount.Auth();
+        long networkId = 1L;
+        long commandId = 2L;
+        String expectedUri = "/network/" + networkId + "/command/" + commandId;
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        Future<?> future = mock(ScheduledFuture.class);
+        doReturn(future).when(scheduler).schedule(ArgumentMatchers.any(Runnable.class), anyLong(), any());
+        BlinkCommandResponse cmdResponse = new BlinkCommandResponse();
+        cmdResponse.complete = true;
+        doReturn(cmdResponse).when(apiService).apiRequest(same(account.account.tier), eq(expectedUri),
+                eq(HttpMethod.GET), same(account.auth.token), isNull(), eq(BlinkCommandResponse.class));
+        @SuppressWarnings("unchecked")
+        Consumer<Boolean> handler = mock(Consumer.class);
+        apiService.watchCommandStatus(scheduler, account, networkId, commandId, handler);
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).schedule(runnableCaptor.capture(), eq(1L), eq(TimeUnit.SECONDS));
+        assertThat(apiService.cmdStatusJobs, is(equalTo(Map.of(expectedUri, future))));
+        runnableCaptor.getValue().run();
+        verify(handler).accept(true);
+        assertThat(apiService.cmdStatusJobs, is(anEmptyMap()));
+    }
+
+    @Test
+    void testWatchCommandStatusOnException() throws IOException {
+        BlinkAccount account = new BlinkAccount();
+        account.account = new BlinkAccount.Account();
+        account.auth = new BlinkAccount.Auth();
+        long networkId = 1L;
+        long commandId = 2L;
+        String expectedUri = "/network/" + networkId + "/command/" + commandId;
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        Future<?> future = mock(ScheduledFuture.class);
+        doReturn(future).when(scheduler).schedule(ArgumentMatchers.any(Runnable.class), anyLong(), any());
+        doThrow(new IOException()).when(apiService).apiRequest(same(account.account.tier), eq(expectedUri),
+                eq(HttpMethod.GET), same(account.auth.token), isNull(), eq(BlinkCommandResponse.class));
+        @SuppressWarnings("unchecked")
+        Consumer<Boolean> handler = mock(Consumer.class);
+        apiService.watchCommandStatus(scheduler, account, networkId, commandId, handler);
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).schedule(runnableCaptor.capture(), eq(1L), eq(TimeUnit.SECONDS));
+        assertThat(apiService.cmdStatusJobs, is(equalTo(Map.of(expectedUri, future))));
+        runnableCaptor.getValue().run();
+        verify(handler).accept(false);
+        assertThat(apiService.cmdStatusJobs, is(anEmptyMap()));
+    }
+
+    @Test
+    void testWatchCommandStatusOnRetry() throws IOException {
+        BlinkAccount account = new BlinkAccount();
+        account.account = new BlinkAccount.Account();
+        account.auth = new BlinkAccount.Auth();
+        long networkId = 1L;
+        long commandId = 2L;
+        String expectedUri = "/network/" + networkId + "/command/" + commandId;
+        ScheduledExecutorService scheduler = mock(ScheduledExecutorService.class);
+        Future<?> future = mock(ScheduledFuture.class);
+        doReturn(future).when(scheduler).schedule(ArgumentMatchers.any(Runnable.class), anyLong(), any());
+        BlinkCommandResponse cmdResponse = new BlinkCommandResponse();
+        cmdResponse.complete = false;
+        doReturn(cmdResponse).when(apiService).apiRequest(same(account.account.tier), eq(expectedUri),
+                eq(HttpMethod.GET), same(account.auth.token), isNull(), eq(BlinkCommandResponse.class));
+        @SuppressWarnings("unchecked")
+        Consumer<Boolean> handler = mock(Consumer.class);
+        apiService.watchCommandStatus(scheduler, account, networkId, commandId, handler);
+        ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(scheduler).schedule(runnableCaptor.capture(), eq(1L), eq(TimeUnit.SECONDS));
+        assertThat(apiService.cmdStatusJobs, is(equalTo(Map.of(expectedUri, future))));
+        runnableCaptor.getValue().run();
+        verify(handler, times(0)).accept(anyBoolean());
+        verify(apiService).watchCommandStatus(same(scheduler), same(account), eq(networkId), eq(commandId),
+                same(handler));
+        assertThat(apiService.cmdStatusJobs, is(equalTo(Map.of(expectedUri, future))));
+    }
+
+    @Test
+    void testDispose() {
+        Future<?> future = mock(Future.class);
+        apiService.cmdStatusJobs.put("uri", future);
+        apiService.dispose();
+        verify(future).cancel(true);
+        assertThat(apiService.cmdStatusJobs, is(anEmptyMap()));
     }
 }

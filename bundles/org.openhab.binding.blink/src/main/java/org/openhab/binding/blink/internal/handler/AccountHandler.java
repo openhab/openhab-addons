@@ -157,6 +157,7 @@ public class AccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         disposeServlet();
+        blinkService.dispose();
         cleanup();
         super.dispose();
     }
