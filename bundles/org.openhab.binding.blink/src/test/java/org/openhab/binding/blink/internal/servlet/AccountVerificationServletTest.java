@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -101,53 +101,48 @@ class AccountVerificationServletTest {
 
     @Test
     void testGenerateVerificationPageThrowsIllegalArgumentExceptionIfNotExist() throws IOException {
-        StringWriter s = new StringWriter();
-        PrintWriter writer = new PrintWriter(s);
+        OutputStream outputStream = new ByteArrayOutputStream();
         URL html = this.getClass().getResource("idonotexist.html");
         doReturn(html).when(bundle).getEntry(anyString());
         doReturn(bundle).when(bundleContext).getBundle();
-        assertThrows(IllegalArgumentException.class, () -> servlet.generateVerificationPage(writer, true));
+        assertThrows(IllegalArgumentException.class, () -> servlet.generateVerificationPage(outputStream, true));
     }
 
     @Test
-    void testGenerateVerificationPageThrowsIllegalArgumentExceptionOnNullStream() throws IOException {
-        StringWriter s = new StringWriter();
-        PrintWriter writer = new PrintWriter(s);
+    void testGenerateVerificationPageThrowsNullPointerExceptionOnNullStream() throws IOException {
+        OutputStream outputStream = new ByteArrayOutputStream();
         URL html = spy(this.getClass().getResource("validation.txt"));
-        doReturn(null).when(html).openStream();
+        doReturn(null).when(html).openStream(); // openStream never returns null
         doReturn(html).when(bundle).getEntry(anyString());
         doReturn(bundle).when(bundleContext).getBundle();
-        assertThrows(IllegalArgumentException.class, () -> servlet.generateVerificationPage(writer, true));
+        assertThrows(NullPointerException.class, () -> servlet.generateVerificationPage(outputStream, true));
     }
 
     @Test
     void testGenerateVerificationPageWithoutError() throws IOException {
-        StringWriter s = new StringWriter();
-        PrintWriter writer = new PrintWriter(s);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         URL html = spy(this.getClass().getResource("validation.txt"));
         doReturn(html).when(bundle).getEntry(anyString());
         doReturn(bundle).when(bundleContext).getBundle();
-        servlet.generateVerificationPage(writer, false);
-        writer.close();
-        String expected = "<body>\n<div>\n\n</div>\n</body>\n";
-        MatcherAssert.assertThat(s.toString(), is(expected));
+        servlet.generateVerificationPage(outputStream, false);
+        outputStream.close();
+        String expected = "<body>\n<div>\n  \n</div>\n</body>";
+        MatcherAssert.assertThat(outputStream.toString(StandardCharsets.UTF_8), is(expected));
     }
 
     @Test
     void testGenerateVerificationPageWithError() throws IOException {
-        StringWriter s = new StringWriter();
-        PrintWriter writer = new PrintWriter(s);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         URL html = spy(this.getClass().getResource("validation.txt"));
         doReturn(html).when(bundle).getEntry(anyString());
         doReturn(bundle).when(bundleContext).getBundle();
-        servlet.generateVerificationPage(writer, true);
-        writer.close();
-        String erroMessage = "<div class=\"error\">" + "    <b>Invalid 2 factor verification PIN code.</b><br/>\n"
+        servlet.generateVerificationPage(outputStream, true);
+        outputStream.close();
+        String errorMessage = "  <div class=\"error\"><b>Invalid 2 factor verification PIN code.</b><br/>\n"
                 + "    The code is only valid for a 40 minute period. Please try disabling and enabling the blink Account Thing\n"
-                + "    to generate a new PIN code if you think that might be the problem." + "</div>";
-
-        String expected = "<body>\n<div>\n" + erroMessage + "\n</div>\n</body>\n";
-        MatcherAssert.assertThat(s.toString(), is(expected));
+                + "    to generate a new PIN code if you think that might be the problem.</div>";
+        String expected = "<body>\n<div>\n" + errorMessage + "\n</div>\n</body>";
+        MatcherAssert.assertThat(outputStream.toString(StandardCharsets.UTF_8), is(expected));
     }
 
     @Test

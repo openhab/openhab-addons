@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.blink.internal.servlet;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -100,7 +98,7 @@ public class AccountVerificationServlet extends HttpServlet {
         }
         response.addHeader("content-type", "text/html;charset=UTF-8");
         try {
-            generateVerificationPage(response.getWriter(), false);
+            generateVerificationPage(response.getOutputStream(), false);
         } catch (IOException e) {
             logger.warn("return html failed with uri syntax error", e);
         }
@@ -119,8 +117,6 @@ public class AccountVerificationServlet extends HttpServlet {
         }
         String pin = IntStream.rangeClosed(1, 6).mapToObj(i -> request.getParameter("digit" + i))
                 .filter(Objects::nonNull).collect(Collectors.joining());
-        if (pin == null)
-            pin = "";
         boolean valid = false;
         try {
             valid = blinkService.verifyPin(accountHandler.getBlinkAccount(), pin);
@@ -131,30 +127,21 @@ public class AccountVerificationServlet extends HttpServlet {
             accountHandler.setOnline();
             response.sendRedirect(SETTINGS_THINGS);
         } else {
-            generateVerificationPage(response.getWriter(), true);
+            generateVerificationPage(response.getOutputStream(), true);
         }
     }
 
-    void generateVerificationPage(PrintWriter writer, boolean validationError) throws IOException {
+    void generateVerificationPage(OutputStream outputStream, boolean validationError) throws IOException {
         URL url = this.bundleContext.getBundle().getEntry("org/openhab/binding/blink/internal/servlet/validation.html");
         if (url == null)
             throw new IllegalArgumentException("validation.html not found");
-        InputStream ioStream = url.openStream();
-        if (ioStream == null) {
-            throw new IllegalArgumentException("validation.html not found");
-        }
-
-        new BufferedReader(new InputStreamReader(ioStream)).lines().map(l -> {
-            if ("{{error}}".equals(l.trim())) {
-                if (validationError) {
-                    return "<div class=\"error\">" + "    <b>Invalid 2 factor verification PIN code.</b><br/>\n"
+        try (InputStream inputStream = url.openStream()) {
+            String verificationPage = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8).replace(
+                    "{{error}}",
+                    validationError ? "<div class=\"error\"><b>Invalid 2 factor verification PIN code.</b><br/>\n"
                             + "    The code is only valid for a 40 minute period. Please try disabling and enabling the blink Account Thing\n"
-                            + "    to generate a new PIN code if you think that might be the problem." + "</div>";
-                } else {
-                    return "";
-                }
-            }
-            return l;
-        }).map(l -> l += "\n").forEach(writer::write);
+                            + "    to generate a new PIN code if you think that might be the problem.</div>" : "");
+            outputStream.write(verificationPage.getBytes(StandardCharsets.UTF_8));
+        }
     }
 }
