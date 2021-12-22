@@ -115,6 +115,7 @@ public class CameraHandlerTest {
         config.put("cameraId", CAMERA_ID);
         config.put("networkId", NETWORK_ID);
         when(thing.getConfiguration()).thenReturn(config);
+        doReturn(accountHandler).when(account).getHandler();
         cameraHandler = new CameraHandler(thing, httpService, networkAddressService, httpClientFactory, new Gson()) {
             @SuppressWarnings("ConstantConditions")
             @Override
@@ -137,16 +138,8 @@ public class CameraHandlerTest {
     }
 
     @Test
-    void testSetOfflineWhenBridgeIsNull() {
-        cameraHandler.handleCommand(new ChannelUID("1:2:3:4"), RefreshType.REFRESH);
-        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback, atLeastOnce()).statusUpdated(eq(thing), statusCaptor.capture());
-        assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
-    }
-
-    @Test
     void testSetOfflineOnHandleCommandException() throws IOException {
-        doReturn(accountHandler).when(account).getHandler();
+        cameraHandler.accountHandler = accountHandler;
         doThrow(IOException.class).when(accountHandler).getTemperature(any());
         cameraHandler.handleCommand(CHANNEL_CAMERA_TEMPERATURE, RefreshType.REFRESH);
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
@@ -156,7 +149,7 @@ public class CameraHandlerTest {
 
     @Test
     void testRefreshTemperatureChannel() throws IOException {
-        doReturn(accountHandler).when(account).getHandler();
+        cameraHandler.accountHandler = accountHandler;
         double toBeReturned = 25.0;
         doReturn(toBeReturned).when(accountHandler).getTemperature(any());
         cameraHandler.handleCommand(CHANNEL_CAMERA_TEMPERATURE, RefreshType.REFRESH);
@@ -170,7 +163,7 @@ public class CameraHandlerTest {
 
     @Test
     void testRefreshBatteryChannel() throws IOException {
-        doReturn(accountHandler).when(account).getHandler();
+        cameraHandler.accountHandler = accountHandler;
         doReturn(OnOffType.ON).when(accountHandler).getBattery(any());
         cameraHandler.handleCommand(CHANNEL_CAMERA_BATTERY, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
@@ -183,7 +176,7 @@ public class CameraHandlerTest {
 
     @Test
     void testRefreshMotionDetectionChannel() throws IOException {
-        doReturn(accountHandler).when(account).getHandler();
+        cameraHandler.accountHandler = accountHandler;
         doReturn(OnOffType.ON).when(accountHandler).getMotionDetection(any(), eq(false));
         cameraHandler.handleCommand(CHANNEL_CAMERA_MOTIONDETECTION, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
@@ -196,7 +189,7 @@ public class CameraHandlerTest {
 
     @Test
     void testOnOffMotionDetectionChannel() throws IOException {
-        doReturn(accountHandler).when(account).getHandler();
+        cameraHandler.accountHandler = accountHandler;
         BlinkAccount blinkAccount = BlinkTestUtil.testBlinkAccount();
         doReturn(blinkAccount).when(accountHandler).getBlinkAccount();
         CameraService cameraService = mock(CameraService.class);
@@ -218,7 +211,7 @@ public class CameraHandlerTest {
 
     @Test
     void testGetThumbnailChannel() throws IOException {
-        doReturn(accountHandler).when(account).getHandler();
+        cameraHandler.accountHandler = accountHandler;
         BlinkAccount blinkAccount = BlinkTestUtil.testBlinkAccount();
         doReturn(blinkAccount).when(accountHandler).getBlinkAccount();
         CameraService cameraService = mock(CameraService.class);
