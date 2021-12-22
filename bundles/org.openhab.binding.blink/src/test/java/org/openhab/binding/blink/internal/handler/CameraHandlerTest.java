@@ -265,4 +265,39 @@ public class CameraHandlerTest {
         cameraHandler.dispose();
         verify(cameraService).dispose();
     }
+
+    @Test
+    void testUpdateCameraState() throws IOException {
+        cameraHandler.accountHandler = accountHandler;
+        cameraHandler.cameraService = cameraService;
+        doReturn(BlinkTestUtil.testBlinkAccount()).when(accountHandler).getBlinkAccount();
+        double temperature = 22.0;
+        OnOffType battery = OnOffType.ON;
+        OnOffType motionDetection = OnOffType.OFF;
+        BlinkCamera camera = new BlinkCamera(123L, 234L);
+        camera.thumbnail = "thumbnail";
+        byte[] thumbnail = new byte[0];
+        doReturn(temperature).when(accountHandler).getTemperature(any());
+        doReturn(battery).when(accountHandler).getBattery(any());
+        doReturn(motionDetection).when(accountHandler).getMotionDetection(any(), anyBoolean());
+        doReturn(camera).when(accountHandler).getCameraState(any(), anyBoolean());
+        doReturn(thumbnail).when(cameraService).getThumbnail(any(), any());
+        cameraHandler.updateCameraState();
+        verify(callback).stateUpdated(CHANNEL_CAMERA_TEMPERATURE,
+                new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT));
+        verify(callback).stateUpdated(CHANNEL_CAMERA_BATTERY, battery);
+        verify(callback).stateUpdated(CHANNEL_CAMERA_MOTIONDETECTION, motionDetection);
+        verify(accountHandler).getCameraState(any(), eq(false));
+        verify(callback).stateUpdated(CHANNEL_CAMERA_GETTHUMBNAIL, new RawType(thumbnail, "image/jpeg"));
+    }
+
+    @Test
+    void testUpdateCameraStateOnException() throws IOException {
+        cameraHandler.cameraService = cameraService;
+        doThrow(new IOException()).when(accountHandler).getTemperature(any());
+        cameraHandler.updateCameraState();
+        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback, atLeastOnce()).statusUpdated(same(thing), statusCaptor.capture());
+        assertThat(statusCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+    }
 }
