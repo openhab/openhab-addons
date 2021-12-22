@@ -25,13 +25,11 @@ import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +40,6 @@ import org.slf4j.LoggerFactory;
  * @author Matthias Oesterheld - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, configurationPid = "discovery.blink")
 public class BlinkDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
 
     static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CAMERA, THING_TYPE_NETWORK);
