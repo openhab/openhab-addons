@@ -46,6 +46,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.blink.internal.BlinkTestUtil;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCommandResponse;
 
@@ -173,9 +174,7 @@ class BaseBlinkApiServiceTest {
 
     @Test
     void testWatchCommandStatusSuccess() throws IOException {
-        BlinkAccount account = new BlinkAccount();
-        account.account = new BlinkAccount.Account();
-        account.auth = new BlinkAccount.Auth();
+        BlinkAccount account = BlinkTestUtil.testBlinkAccount();
         long networkId = 1L;
         long commandId = 2L;
         String expectedUri = "/network/" + networkId + "/command/" + commandId;
@@ -199,9 +198,7 @@ class BaseBlinkApiServiceTest {
 
     @Test
     void testWatchCommandStatusOnException() throws IOException {
-        BlinkAccount account = new BlinkAccount();
-        account.account = new BlinkAccount.Account();
-        account.auth = new BlinkAccount.Auth();
+        BlinkAccount account = BlinkTestUtil.testBlinkAccount();
         long networkId = 1L;
         long commandId = 2L;
         String expectedUri = "/network/" + networkId + "/command/" + commandId;
@@ -223,9 +220,7 @@ class BaseBlinkApiServiceTest {
 
     @Test
     void testWatchCommandStatusOnRetry() throws IOException {
-        BlinkAccount account = new BlinkAccount();
-        account.account = new BlinkAccount.Account();
-        account.auth = new BlinkAccount.Auth();
+        BlinkAccount account = BlinkTestUtil.testBlinkAccount();
         long networkId = 1L;
         long commandId = 2L;
         String expectedUri = "/network/" + networkId + "/command/" + commandId;
