@@ -77,8 +77,8 @@ configuration parameters are:
 | motiondetection  | Switch | Enables/disables motion detection for this camera.  |
 | battery | LowBattery | Read-only channel, triggering ON when battery status is low |
 | temperature | Number | Read-only channel, outputting camera temperature |
-| setThumbnail | Switch | Write-only channel, triggering taking a new snapshot as thumbnail |
-| getThumbnail | Image | Read-only channel, return the current thumbnail. Use REFRESH to update thumbnail from server |
+| setThumbnail | Switch | Write-only channel, triggering taking a new snapshot as thumbnail. Also triggers a new getThumbnail state on completion. |
+| getThumbnail | Image | Read-only channel, returns the current thumbnail. Triggers a state change on new thumbnail.  |
 
 ### blink Network
 
