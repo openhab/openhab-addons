@@ -51,7 +51,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String SERVICE_NAME = "mieleathome";
     private static final String PATH_PROPERTY_NAME = "path";
 
-    private long removalGracePeriodSeconds = 30;
+    private long removalGracePeriodSeconds = 15;
 
     @Activate
     public void activate(@Nullable Map<String, Object> configProperties) {
