@@ -164,7 +164,8 @@ public class CameraHandler extends BaseThingHandler {
 
     public void updateCameraState() {
         try {
-            updateState(CHANNEL_CAMERA_TEMPERATURE, new DecimalType(accountHandler.getTemperature(config)));
+            updateState(CHANNEL_CAMERA_TEMPERATURE, new QuantityType<>(accountHandler.getTemperature(config), 
+                    ImperialUnits.FAHRENHEIT));
             updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(config));
             updateState(CHANNEL_CAMERA_MOTIONDETECTION, accountHandler.getMotionDetection(config, false));
             String imagePath = accountHandler.getCameraState(config, false).thumbnail;
