@@ -28,7 +28,9 @@ import org.openhab.binding.blink.internal.servlet.ThumbnailServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -102,7 +104,7 @@ public class CameraHandler extends BaseThingHandler {
             if (CHANNEL_CAMERA_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     double temp = accountHandler.getTemperature(nonNullConfig);
-                    updateState(CHANNEL_CAMERA_TEMPERATURE, new DecimalType(temp));
+                    updateState(CHANNEL_CAMERA_TEMPERATURE, new QuantityType<>(temp, ImperialUnits.FAHRENHEIT));
                 }
             } else if (CHANNEL_CAMERA_BATTERY.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {

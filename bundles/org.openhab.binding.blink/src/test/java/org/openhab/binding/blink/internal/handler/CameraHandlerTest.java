@@ -40,7 +40,9 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -161,7 +163,7 @@ public class CameraHandlerTest {
         CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
         verify(accountHandler).getTemperature(config);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_TEMPERATURE), stateCaptor.capture());
-        assertThat(stateCaptor.getValue(), is(new DecimalType(toBeReturned)));
+        assertThat(stateCaptor.getValue(), is(new QuantityType<>(toBeReturned, ImperialUnits.FAHRENHEIT)));
     }
 
     @Test
