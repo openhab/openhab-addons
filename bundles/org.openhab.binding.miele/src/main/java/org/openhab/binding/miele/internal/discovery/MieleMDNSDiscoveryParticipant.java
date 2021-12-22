@@ -129,13 +129,13 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
     }
 
-    /*
+    /**
      * Miele devices are sometimes a few seconds late in updating their mDNS announcements, which means that they are
      * repeatedly removed from, and (re)added to, the Inbox. To prevent this, we override this method to specify an
      * additional delay period (grace period) to wait before the device is removed from the Inbox.
      */
     @Override
-    public long getRemovalGracePeriodSeconds(ServiceInfo service) {
+    public long getRemovalGracePeriodSeconds(ServiceInfo serviceInfo) {
         try {
             Configuration conf = configAdmin.getConfiguration("binding.miele");
             Dictionary<String, @Nullable Object> properties = conf.getProperties();
