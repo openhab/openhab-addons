@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DimmerDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
+import org.openhab.binding.tplinksmarthome.internal.device.LightStripDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.PowerStripDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.RangeExtenderDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.SmartHomeDevice;
@@ -66,6 +67,9 @@ public class TPLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
                 break;
             case DIMMER:
                 device = new DimmerDevice();
+                break;
+            case LIGHT_STRIP:
+                device = new LightStripDevice(type);
                 break;
             case PLUG:
                 device = new SwitchDevice();
