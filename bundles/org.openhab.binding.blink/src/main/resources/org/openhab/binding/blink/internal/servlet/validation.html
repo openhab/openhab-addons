@@ -141,22 +141,6 @@
 
   });
 
-  function processForm(e) {
-    if (e.preventDefault) e.preventDefault();
-    const pin = document.getElementById('pin');
-    const elements = document.getElementById("blink2fa").elements;
-
-    for (let i = 0; i < elements.length; i++) {
-      const element = elements[i++];
-      if (element.type === "text" && element.value !== "")
-        pin.value += element.value;
-    }
-    console.log(pin.value);
-    return true;
-  }
-
-  const form = document.getElementById('blink2fa');
-  form.addEventListener("submit", processForm);
 </script>
 
 

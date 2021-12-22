@@ -20,6 +20,9 @@ import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -114,10 +117,17 @@ public class AccountVerificationServlet extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        String pin = request.getParameter("pin");
+        String pin = IntStream.rangeClosed(1, 6).mapToObj(i -> request.getParameter("digit" + i))
+                .filter(Objects::nonNull).collect(Collectors.joining());
         if (pin == null)
             pin = "";
-        if (blinkService.verifyPin(accountHandler.getBlinkAccount(), pin)) {
+        boolean valid = false;
+        try {
+            valid = blinkService.verifyPin(accountHandler.getBlinkAccount(), pin);
+        } catch (IOException e) {
+            logger.warn("Error validating blink PIN: {}", e.getMessage());
+        }
+        if (valid) {
             accountHandler.setOnline();
             response.sendRedirect(SETTINGS_THINGS);
         } else {
@@ -125,7 +135,7 @@ public class AccountVerificationServlet extends HttpServlet {
         }
     }
 
-    private void generateVerificationPage(PrintWriter writer, boolean validationError) throws IOException {
+    void generateVerificationPage(PrintWriter writer, boolean validationError) throws IOException {
         URL url = this.bundleContext.getBundle().getEntry("org/openhab/binding/blink/internal/servlet/validation.html");
         if (url == null)
             throw new IllegalArgumentException("validation.html not found");
@@ -145,6 +155,6 @@ public class AccountVerificationServlet extends HttpServlet {
                 }
             }
             return l;
-        }).forEach(writer::write);
+        }).map(l -> l += "\n").forEach(writer::write);
     }
 }
