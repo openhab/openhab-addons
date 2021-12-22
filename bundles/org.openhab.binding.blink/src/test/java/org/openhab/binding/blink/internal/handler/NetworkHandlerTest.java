@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,6 +26,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -63,6 +66,8 @@ class NetworkHandlerTest {
 
     private static final long NETWORK_ID = 123L;
     private static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID("blink", "network");
+    private static final ChannelUID CHANNEL_NETWORK_ARMED = new ChannelUID(
+            new ThingUID(THING_TYPE_UID, String.valueOf(NETWORK_ID)), "armed");
     @NonNullByDefault({})
     NetworkHandler networkHandler;
 
@@ -99,12 +104,12 @@ class NetworkHandlerTest {
         when(accountHandler.getNetworkArmed(anyString(), eq(false))).thenReturn(OnOffType.ON);
         doReturn(BlinkTestUtil.testBlinkAccount()).when(accountHandler).getBlinkAccount();
         // noinspection ConstantConditions
-        networkHandler = new NetworkHandler(thing, httpClientFactory, gson) {
+        networkHandler = spy(new NetworkHandler(thing, httpClientFactory, gson) {
             @Override
             public @Nullable Bridge getBridge() {
                 return account;
             }
-        };
+        });
         verify(httpClientFactory).getCommonHttpClient();
         networkHandler.setCallback(callback);
         when(networkService.arm(any(), anyString(), anyBoolean())).thenReturn(456L);
@@ -149,26 +154,24 @@ class NetworkHandlerTest {
         assertThat(stateCaptor.getValue(), is(OnOffType.ON));
     }
 
-    @Test
-    void testHandleArmCommandOn() throws IOException {
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void testHandleArmCommand(boolean state) throws IOException {
+        OnOffType command = OnOffType.from(state);
+        BlinkAccount blinkAccount = BlinkTestUtil.testBlinkAccount();
+        doReturn(blinkAccount).when(accountHandler).getBlinkAccount();
+        doReturn(command).when(accountHandler).getNetworkArmed(any(), anyBoolean());
         networkHandler.initialize();
         ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
-        networkHandler.handleCommand(testedChannel, OnOffType.ON);
-        ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
-        verify(networkService).arm(accountHandler.getBlinkAccount(), Long.toString(NETWORK_ID), true);
-        verify(callback).stateUpdated(eq(testedChannel), stateCaptor.capture());
-        assertThat(stateCaptor.getValue(), is(OnOffType.ON));
-    }
-
-    @Test
-    void testHandleArmCommandOff() throws IOException {
-        networkHandler.initialize();
-        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
-        networkHandler.handleCommand(testedChannel, OnOffType.OFF);
-        ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
-        verify(networkService).arm(accountHandler.getBlinkAccount(), Long.toString(NETWORK_ID), false);
-        verify(callback).stateUpdated(eq(testedChannel), stateCaptor.capture());
-        assertThat(stateCaptor.getValue(), is(OnOffType.OFF));
+        networkHandler.handleCommand(testedChannel, command);
+        verify(networkService).arm(accountHandler.getBlinkAccount(), Long.toString(NETWORK_ID), state);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Consumer<Boolean>> handlerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(networkService).watchCommandStatus(any(), same(blinkAccount), any(), any(), handlerCaptor.capture());
+        doNothing().when(networkHandler).updateNetworkState(); // tested separately
+        handlerCaptor.getValue().accept(true);
+        verify(accountHandler).getDevices(true);
+        verify(networkHandler).updateNetworkState();
     }
 
     @Test
@@ -188,5 +191,25 @@ class NetworkHandlerTest {
     void testDispose() {
         networkHandler.dispose();
         verify(networkService).dispose();
+    }
+
+    @Test
+    void testUpdateNetworkState() throws IOException {
+        networkHandler.initialize();
+        OnOffType networkState = OnOffType.ON;
+        doReturn(networkState).when(accountHandler).getNetworkArmed(any(), anyBoolean());
+        networkHandler.updateNetworkState();
+        verify(callback).stateUpdated(CHANNEL_NETWORK_ARMED, networkState);
+    }
+
+    @Test
+    void testUpdateNetworkStateOnException() throws IOException {
+        networkHandler.initialize();
+        OnOffType networkState = OnOffType.ON;
+        doThrow(new IOException()).when(accountHandler).getNetworkArmed(any(), anyBoolean());
+        networkHandler.updateNetworkState();
+        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback, atLeastOnce()).statusUpdated(same(thing), statusCaptor.capture());
+        assertThat(statusCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
     }
 }

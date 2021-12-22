@@ -72,9 +72,10 @@ public class NetworkHandler extends BaseThingHandler {
                 } else if (command instanceof OnOffType) {
                     OnOffType cmd = (OnOffType) command;
                     boolean enable = (cmd == OnOffType.ON);
-                    networkService.arm(accountHandler.getBlinkAccount(), Long.toString(config.networkId), enable);
-                    // enable/disable is an async command in the api, changes might not be reflected in updateState
-                    updateState(CHANNEL_NETWORK_ARMED, cmd);
+                    Long cmdId = networkService.arm(accountHandler.getBlinkAccount(), Long.toString(config.networkId),
+                            enable);
+                    networkService.watchCommandStatus(scheduler, accountHandler.getBlinkAccount(), config.networkId,
+                            cmdId, this::asyncCommandFinished);
                 }
             }
         } catch (IOException e) {
@@ -98,9 +99,24 @@ public class NetworkHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
+    public void updateNetworkState() {
+        try {
+            updateState(CHANNEL_NETWORK_ARMED, accountHandler.getNetworkArmed(String.valueOf(config.networkId), false));
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
     @Override
     public void dispose() {
         networkService.dispose();
         super.dispose();
+    }
+
+    private void asyncCommandFinished(boolean success) {
+        if (success) {
+            accountHandler.getDevices(true); // trigger refresh of homescreen
+            updateNetworkState();
+        }
     }
 }
