@@ -15,6 +15,8 @@ package org.openhab.binding.blink.internal.handler;
 import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,6 +53,9 @@ public class NetworkHandler extends BaseThingHandler {
     @NonNullByDefault({})
     AccountHandler accountHandler;
     NetworkService networkService;
+
+    @Nullable
+    ScheduledFuture<?> pollStateJob;
 
     public NetworkHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) {
         super(thing);
@@ -96,6 +101,9 @@ public class NetworkHandler extends BaseThingHandler {
         }
         accountHandler = (AccountHandler) bridge.getHandler();
 
+        if (pollStateJob == null || pollStateJob.isCancelled()) {
+            pollStateJob = scheduler.scheduleWithFixedDelay(this::updateNetworkState, 20, 5, TimeUnit.SECONDS);
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -109,6 +117,8 @@ public class NetworkHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        if (pollStateJob != null)
+            pollStateJob.cancel(true);
         networkService.dispose();
         super.dispose();
     }
