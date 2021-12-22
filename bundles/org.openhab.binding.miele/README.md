@@ -128,15 +128,15 @@ Channels available for each appliance type are listed below.
 
 | Program | Description                         |
 |---------|-------------------------------------|
-| 26      | Pots & Pans                         |
-| 27      | Clean Machine                       |
-| 28      | Economy                             |
+| 26      | Intensive                           |
+| 27      | Maintenance programme               |
+| 28      | ECO                                 |
 | 30      | Normal                              |
-| 32      | Sensor Wash                         |
-| 34      | Energy Saver                        |
-| 35      | China & Crystal                     |
+| 32      | Automatic                           |
+| 34      | SolarSave                           |
+| 35      | Gentle                              |
 | 36      | Extra Quiet                         |
-| 37      | SaniWash                            |
+| 37      | Hygiene                             |
 | 38      | QuickPowerWash                      |
 | 42      | Tall items                          |
 
@@ -282,6 +282,7 @@ See oven.
 | Program | Description                         |
 |---------|-------------------------------------|
 | 10      | Automatic Plus                      |
+| 20      | Cottons                             |
 | 23      | Cottons hygiene                     |
 | 30      | Minimum iron                        |
 | 31      | Gentle minimum iron                 |
@@ -314,11 +315,11 @@ See oven.
 | 513   | 1      | Programme running            |
 | 514   | 2      | Drying                       |
 | 515   | 3      | Drying Machine iron          |
-| 516   | 4      | Drying Hand iron (1)         |
+| 516   | 4      | Drying Hand iron (2)         |
 | 517   | 5      | Drying Normal                |
 | 518   | 6      | Drying Normal+               |
 | 519   | 7      | Cooling down                 |
-| 520   | 8      | Drying Hand iron (2)         |
+| 520   | 8      | Drying Hand iron (1)         |
 | 522   | 10     | Finished                     |
 
 #### Washing Machine
@@ -338,7 +339,7 @@ See oven.
 | finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
-| target              | Number:Temperature   | Read       | Temperature of the selected program                                 |
+| target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                  |
 | spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance              |
 | powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
 | waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |

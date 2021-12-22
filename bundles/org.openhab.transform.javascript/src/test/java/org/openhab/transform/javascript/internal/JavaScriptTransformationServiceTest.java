@@ -79,6 +79,24 @@ public class JavaScriptTransformationServiceTest {
     }
 
     @Test
+    public void testInlineScript() throws Exception {
+        final String DATA = "100";
+        final String SCRIPT = "| input / 10";
+
+        String transformedResponse = processor.transform(SCRIPT, DATA);
+        assertEquals("10.0", transformedResponse);
+    }
+
+    @Test
+    public void testInlineScriptIncludingPipe() throws Exception {
+        final String DATA = "1";
+        final String SCRIPT = "| false || (input == '1')";
+
+        String transformedResponse = processor.transform(SCRIPT, DATA);
+        assertEquals("true", transformedResponse);
+    }
+
+    @Test
     public void testReadmeExampleWithoutSubFolder() throws Exception {
         final String DATA = "foo bar baz";
         final String SCRIPT = "readme.js";

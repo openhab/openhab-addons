@@ -445,7 +445,6 @@
 					}
 				]
 			}
-		],
-		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"settings-set-start-time\",\"siid\":9,\"aiid\":2,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"settings-set-end-time\",\"siid\":9,\"aiid\":3,\"in\":[3.0]}`\u003cbr /\u003e`action{\"did\":\"settings-set-frequency\",\"siid\":9,\"aiid\":4,\"in\":[4.0]}`\u003cbr /\u003e`action{\"did\":\"settings-set-screen-off\",\"siid\":9,\"aiid\":5,\"in\":[5.0]}`\u003cbr /\u003e`action{\"did\":\"settings-set-device-off\",\"siid\":9,\"aiid\":6,\"in\":[6.0]}`\u003cbr /\u003e`action{\"did\":\"settings-set-temp-unit\",\"siid\":9,\"aiid\":7,\"in\":[7.0]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel."
+		]
 	}
 }
