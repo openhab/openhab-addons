@@ -13,7 +13,7 @@
 package org.openhab.binding.mybmw.internal.handler;
 
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
-import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.*;
+import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.CONTENT_TYPE_JSON_ENCODED;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -65,7 +65,6 @@ public class RemoteServiceHandler implements StringResponseCallback {
     private Optional<ScheduledFuture<?>> stateJob = Optional.empty();
     private Optional<String> serviceExecuting = Optional.empty();
     private Optional<String> executingEventId = Optional.empty();
-    private boolean myBmwApiUsage = false;
 
     public enum ExecutionState {
         READY,
@@ -128,23 +127,13 @@ public class RemoteServiceHandler implements StringResponseCallback {
             }
             serviceExecuting = Optional.of(service.name());
         }
-        if (myBmwApiUsage) {
-            final MultiMap<String> dataMap = new MultiMap<String>();
-            if (data.length > 0) {
-                dataMap.add(DATA, data[0]);
-                proxy.post(serviceExecutionAPI + service.getRemoteCommand(), CONTENT_TYPE_JSON_ENCODED,
-                        "{CHARGING_PROFILE:" + data[0] + "}", this);
-            } else {
-                proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null, this);
-            }
+        final MultiMap<String> dataMap = new MultiMap<String>();
+        if (data.length > 0) {
+            dataMap.add(DATA, data[0]);
+            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), CONTENT_TYPE_JSON_ENCODED,
+                    "{CHARGING_PROFILE:" + data[0] + "}", this);
         } else {
-            final MultiMap<String> dataMap = new MultiMap<String>();
-            dataMap.add(SERVICE_TYPE, service.name());
-            if (data.length > 0) {
-                dataMap.add(DATA, data[0]);
-            }
-            proxy.post(legacyServiceExecutionAPI, CONTENT_TYPE_URL_ENCODED,
-                    UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false), this);
+            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null, this);
         }
         return true;
     }
@@ -159,19 +148,12 @@ public class RemoteServiceHandler implements StringResponseCallback {
                     handler.getData();
                 }
                 counter++;
-                if (myBmwApiUsage) {
-                    final MultiMap<String> dataMap = new MultiMap<String>();
-                    dataMap.add(EVENT_ID, executingEventId.get());
-                    final String encoded = dataMap == null || dataMap.isEmpty() ? null
-                            : UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
+                final MultiMap<String> dataMap = new MultiMap<String>();
+                dataMap.add(EVENT_ID, executingEventId.get());
+                final String encoded = dataMap == null || dataMap.isEmpty() ? null
+                        : UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
 
-                    proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null, this);
-                } else {
-                    final MultiMap<String> dataMap = new MultiMap<String>();
-                    dataMap.add(SERVICE_TYPE, service);
-                    proxy.get(legacyServiceExecutionStateAPI, CONTENT_TYPE_URL_ENCODED,
-                            UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false), this);
-                }
+                proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null, this);
             }, () -> {
                 logger.warn("No Service executed to get state");
             });
@@ -258,7 +240,4 @@ public class RemoteServiceHandler implements StringResponseCallback {
         }
     }
 
-    public void setMyBmwApiUsage(boolean b) {
-        myBmwApiUsage = b;
-    }
 }

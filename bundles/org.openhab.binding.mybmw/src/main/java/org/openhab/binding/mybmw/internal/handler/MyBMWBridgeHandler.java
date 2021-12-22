@@ -74,7 +74,6 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
         MyBMWConfiguration config = getConfigAs(MyBMWConfiguration.class);
-        logger.debug("Prefer MyBMW API {}", config.preferMyBmw);
         if (!checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {

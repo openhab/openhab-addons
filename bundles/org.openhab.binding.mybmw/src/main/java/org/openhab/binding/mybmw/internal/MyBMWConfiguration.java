@@ -38,8 +38,4 @@ public class MyBMWConfiguration {
      */
     public String password = Constants.EMPTY;
 
-    /**
-     * Prefer MyBMW API instead of BMW Connected Drive
-     */
-    public boolean preferMyBmw = false;
 }

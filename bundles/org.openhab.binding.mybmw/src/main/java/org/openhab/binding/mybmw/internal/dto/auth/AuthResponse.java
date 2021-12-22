@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.dto.auth;
 
+import org.openhab.binding.mybmw.internal.utils.Constants;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -21,11 +23,11 @@ import com.google.gson.annotations.SerializedName;
  */
 public class AuthResponse {
     @SerializedName("access_token")
-    public String accessToken;
+    public String accessToken = Constants.EMPTY;
     @SerializedName("token_type")
-    public String tokenType;
+    public String tokenType = Constants.EMPTY;
     @SerializedName("expires_in")
-    public int expiresIn;
+    public int expiresIn = Constants.EMPTY;
 
     @Override
     public String toString() {
