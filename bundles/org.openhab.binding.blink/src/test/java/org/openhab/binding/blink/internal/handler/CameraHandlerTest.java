@@ -38,7 +38,6 @@ import org.openhab.binding.blink.internal.dto.BlinkCamera;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
