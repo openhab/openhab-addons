@@ -82,6 +82,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     private volatile @Nullable NhcSystemInfo2 nhcSystemInfo;
     private volatile @Nullable NhcTimeInfo2 nhcTimeInfo;
 
+    private volatile boolean initStarted = false;
     private volatile @Nullable CompletableFuture<Boolean> communicationStarted;
 
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
@@ -102,6 +103,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     @Override
     public synchronized void startCommunication() {
+        initStarted = false;
         communicationStarted = new CompletableFuture<>();
 
         InetAddress addr = handler.getAddr();
@@ -125,10 +127,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
         try {
             mqttConnection.startConnection(addrString, port, profile, token);
-            initialize();
         } catch (MqttException e) {
             logger.debug("error in mqtt communication");
-            stopCommunication();
+            handler.controllerOffline("@text/offline.communication-error");
+            scheduleRestartCommunication();
         }
     }
 
@@ -139,6 +141,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             started.complete(false);
         }
         communicationStarted = null;
+        initStarted = false;
         mqttConnection.stopConnection();
     }
 
@@ -162,20 +165,28 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      * messages.
      *
      */
-    private void initialize() throws MqttException {
+    private synchronized void initialize() {
+        initStarted = true;
+
         NhcMessage2 message = new NhcMessage2();
 
-        message.method = "systeminfo.publish";
-        mqttConnection.connectionPublish(profile + "/system/cmd", gson.toJson(message));
+        try {
+            message.method = "systeminfo.publish";
+            mqttConnection.connectionPublish(profile + "/system/cmd", gson.toJson(message));
 
-        message.method = "services.list";
-        mqttConnection.connectionPublish(profile + "/authentication/cmd", gson.toJson(message));
+            message.method = "services.list";
+            mqttConnection.connectionPublish(profile + "/authentication/cmd", gson.toJson(message));
 
-        message.method = "devices.list";
-        mqttConnection.connectionPublish(profile + "/control/devices/cmd", gson.toJson(message));
+            message.method = "devices.list";
+            mqttConnection.connectionPublish(profile + "/control/devices/cmd", gson.toJson(message));
 
-        message.method = "notifications.list";
-        mqttConnection.connectionPublish(profile + "/notification/cmd", gson.toJson(message));
+            message.method = "notifications.list";
+            mqttConnection.connectionPublish(profile + "/notification/cmd", gson.toJson(message));
+        } catch (MqttException e) {
+            initStarted = false;
+            logger.debug("error in mqtt communication during initialization");
+            stopCommunication();
+        }
     }
 
     private void connectionLost(String message) {
@@ -898,10 +909,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             String message = error.getLocalizedMessage();
             message = (message != null) ? message : "@text/offline.communication-error";
             connectionLost(message);
-            if (!MqttConnectionState.CONNECTING.equals(state)) {
+            if (state != MqttConnectionState.CONNECTING) {
                 // This is a connection loss, try to restart
                 scheduleRestartCommunication();
             }
+        } else if ((state == MqttConnectionState.CONNECTED) && !initStarted) {
+            // do in separate thread as this method needs to return early
+            scheduler.submit(this::initialize);
         } else {
             logger.trace("Connection state: {}", state);
         }

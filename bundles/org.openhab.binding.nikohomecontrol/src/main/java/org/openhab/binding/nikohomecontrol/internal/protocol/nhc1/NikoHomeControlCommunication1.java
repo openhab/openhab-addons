@@ -118,9 +118,11 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
             // IP-interface.
             (new Thread(this::runNhcEvents, eventThreadName)).start();
 
-        } catch (IOException | InterruptedException e) {
-            stopCommunication();
+        } catch (InterruptedException e) {
             handler.controllerOffline("@text/offline.communication-error");
+        } catch (IOException e) {
+            handler.controllerOffline("@text/offline.communication-error");
+            scheduleRestartCommunication();
         }
     }
 

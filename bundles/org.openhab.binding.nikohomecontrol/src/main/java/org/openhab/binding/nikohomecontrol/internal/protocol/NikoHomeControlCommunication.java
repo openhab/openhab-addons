@@ -80,7 +80,9 @@ public abstract class NikoHomeControlCommunication {
     }
 
     private void checkAndRestartCommunication() {
-        restartCommunication();
+        if (!communicationActive()) {
+            restartCommunication();
+        }
         if (!communicationActive()) {
             attempt++;
             delay = (attempt == 1) ? 0 : ((attempt == 2) ? 30 : ((attempt <= 5) ? 60 : 300));
@@ -101,7 +103,8 @@ public abstract class NikoHomeControlCommunication {
     }
 
     /**
-     * Method to check if communication with Niko Home Control is active.
+     * Method to check if communication with Niko Home Control is active. This method can be blocking for max 5s to wait
+     * for completion of startup.
      *
      * @return True if active
      */
