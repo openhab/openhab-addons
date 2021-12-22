@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,11 +30,8 @@ import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.cm.Configuration;
-import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
-@Component
+@Component(configurationPid = "discovery.miele")
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
@@ -55,12 +51,21 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private static final String SERVICE_NAME = "mieleathome";
     private static final String PATH_PROPERTY_NAME = "path";
 
-    private final ConfigurationAdmin configAdmin;
     private long removalGracePeriodSeconds = 30;
 
     @Activate
-    public MieleMDNSDiscoveryParticipant(final @Reference ConfigurationAdmin configAdmin) {
-        this.configAdmin = configAdmin;
+    public void activate(@Nullable Map<String, Object> configProperties) {
+        if (configProperties != null) {
+            Object value = configProperties.get(MieleBindingConstants.REMOVAL_GRACE_PERIOD);
+            if (value != null) {
+                try {
+                    removalGracePeriodSeconds = Integer.parseInt((String) value);
+                } catch (NumberFormatException e) {
+                    logger.warn("Configuration property '{}' has invalid value: {}",
+                            MieleBindingConstants.REMOVAL_GRACE_PERIOD, value);
+                }
+            }
+        }
     }
 
     @Override
@@ -136,19 +141,6 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
      */
     @Override
     public long getRemovalGracePeriodSeconds(ServiceInfo serviceInfo) {
-        try {
-            Configuration conf = configAdmin.getConfiguration("binding.miele");
-            Dictionary<String, @Nullable Object> properties = conf.getProperties();
-            if (properties != null) {
-                Object property = properties.get(MieleBindingConstants.REMOVAL_GRACE_PERIOD);
-                if (property != null) {
-                    removalGracePeriodSeconds = Long.parseLong(property.toString());
-                }
-            }
-        } catch (IOException | IllegalStateException | NumberFormatException e) {
-            // fall through to pre-initialised (default) value
-        }
-        logger.trace("getRemovalGracePeriodSeconds={}", removalGracePeriodSeconds);
         return removalGracePeriodSeconds;
     }
 }
