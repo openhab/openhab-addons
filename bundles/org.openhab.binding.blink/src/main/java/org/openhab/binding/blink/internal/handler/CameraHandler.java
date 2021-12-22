@@ -25,7 +25,6 @@ import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.binding.blink.internal.servlet.ThumbnailServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
@@ -164,8 +163,8 @@ public class CameraHandler extends BaseThingHandler {
 
     public void updateCameraState() {
         try {
-            updateState(CHANNEL_CAMERA_TEMPERATURE, new QuantityType<>(accountHandler.getTemperature(config),
-                    ImperialUnits.FAHRENHEIT));
+            updateState(CHANNEL_CAMERA_TEMPERATURE,
+                    new QuantityType<>(accountHandler.getTemperature(config), ImperialUnits.FAHRENHEIT));
             updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(config));
             updateState(CHANNEL_CAMERA_MOTIONDETECTION, accountHandler.getMotionDetection(config, false));
             String imagePath = accountHandler.getCameraState(config, false).thumbnail;
