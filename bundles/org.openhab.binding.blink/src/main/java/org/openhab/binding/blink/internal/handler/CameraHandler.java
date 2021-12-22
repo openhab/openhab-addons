@@ -131,12 +131,6 @@ public class CameraHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(CameraConfiguration.class);
-        if (config == null) {
-            logger.warn("Cannot handle commands of blink things without a thing configuration: {}",
-                    thing.getUID().getAsString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing configuration");
-            return;
-        }
 
         @Nullable
         Bridge bridge = getBridge();

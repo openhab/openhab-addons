@@ -17,10 +17,12 @@ import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.NetworkConfiguration;
 import org.openhab.binding.blink.internal.service.NetworkService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -44,8 +46,11 @@ public class NetworkHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
 
+    @NonNullByDefault({})
+    NetworkConfiguration config;
+    @NonNullByDefault({})
+    AccountHandler accountHandler;
     NetworkService networkService;
-    NetworkConfiguration config = new NetworkConfiguration();
 
     public NetworkHandler(Thing thing, HttpClientFactory httpClientFactory, Gson gson) {
         super(thing);
@@ -59,7 +64,6 @@ public class NetworkHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge");
             return;
         }
-        AccountHandler accountHandler = (AccountHandler) getBridge().getHandler();
         try {
             if (CHANNEL_NETWORK_ARMED.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -81,6 +85,16 @@ public class NetworkHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(NetworkConfiguration.class);
+
+        @Nullable
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null) {
+            logger.warn("Cannot handle commands of blink things without a bridge: {}", thing.getUID().getAsString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge");
+            return;
+        }
+        accountHandler = (AccountHandler) bridge.getHandler();
+
         updateStatus(ThingStatus.ONLINE);
     }
 
