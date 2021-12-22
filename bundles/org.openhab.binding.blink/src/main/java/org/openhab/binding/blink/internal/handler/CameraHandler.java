@@ -99,7 +99,7 @@ public class CameraHandler extends BaseThingHandler {
                     boolean enable = (cmd == OnOffType.ON);
                     Long cmdId = cameraService.motionDetection(accountHandler.getBlinkAccount(), config, enable);
                     cameraService.watchCommandStatus(scheduler, accountHandler.getBlinkAccount(), config.networkId,
-                            cmdId, this::setThumbnailFinished);
+                            cmdId, this::asyncCommandFinished);
                 }
             } else if (CHANNEL_CAMERA_SETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType)
@@ -107,7 +107,7 @@ public class CameraHandler extends BaseThingHandler {
                 if (command == OnOffType.ON) {
                     Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(), config);
                     cameraService.watchCommandStatus(scheduler, accountHandler.getBlinkAccount(), config.networkId,
-                            cmdId, this::asyncCommandFinished);
+                            cmdId, this::setThumbnailFinished);
                 }
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {

@@ -207,12 +207,33 @@ public class CameraHandlerTest {
         verify(cameraService).watchCommandStatus(any(), same(blinkAccount), any(), any(), handlerCaptor.capture());
         doNothing().when(cameraHandler).updateCameraState(); // tested separately
         handlerCaptor.getValue().accept(true);
+        // check if correct handler is called (bug in commit 767f08f7)
+        verify(callback, times(0)).stateUpdated(eq(CHANNEL_CAMERA_SETTHUMBNAIL), any());
         verify(accountHandler).getDevices(true);
         verify(cameraHandler).updateCameraState();
     }
 
     @Test
     void testSetThumbnailChannel() throws IOException {
+        cameraHandler.accountHandler = accountHandler;
+        BlinkAccount blinkAccount = BlinkTestUtil.testBlinkAccount();
+        doReturn(blinkAccount).when(accountHandler).getBlinkAccount();
+        CameraService cameraService = mock(CameraService.class);
+        cameraHandler.cameraService = cameraService;
+        doReturn(123L).when(cameraService).createThumbnail(ArgumentMatchers.any(BlinkAccount.class),
+                ArgumentMatchers.any(CameraConfiguration.class));
+        cameraHandler.handleCommand(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.ON);
+        CameraConfiguration handlerConfig = cameraHandler.config;
+        CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
+        verify(cameraService).createThumbnail(blinkAccount, config);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Consumer<Boolean>> handlerCaptor = ArgumentCaptor.forClass(Consumer.class);
+        verify(cameraService).watchCommandStatus(any(), same(blinkAccount), any(), any(), handlerCaptor.capture());
+        doNothing().when(cameraHandler).updateCameraState(); // tested separately
+        handlerCaptor.getValue().accept(true);
+        verify(callback).stateUpdated(eq(CHANNEL_CAMERA_SETTHUMBNAIL), eq(OnOffType.OFF));
+        verify(accountHandler).getDevices(true);
+        verify(cameraHandler).updateCameraState();
     }
 
     @Test
