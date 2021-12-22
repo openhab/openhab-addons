@@ -41,7 +41,9 @@
 			<channel id="motiondetection" typeId="motiondetection"/>
 			<channel id="battery" typeId="system.low-battery"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="setThumbnail" typeId="setThumbnail"/>
+			<channel id="setThumbnail" typeId="setThumbnail">
+				<autoUpdatePolicy>veto</autoUpdatePolicy>
+			</channel>
 			<channel id="getThumbnail" typeId="thumbnail"/>
 		</channels>
 

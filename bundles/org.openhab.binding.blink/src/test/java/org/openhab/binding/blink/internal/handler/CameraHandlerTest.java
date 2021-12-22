@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.any;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -54,8 +48,12 @@ import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.osgi.service.http.HttpService;
-
 import com.google.gson.Gson;
+
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Test class.
@@ -210,15 +208,6 @@ public class CameraHandlerTest {
 
     @Test
     void testSetThumbnailChannel() throws IOException {
-        doReturn(accountHandler).when(account).getHandler();
-        BlinkAccount blinkAccount = BlinkTestUtil.testBlinkAccount();
-        doReturn(blinkAccount).when(accountHandler).getBlinkAccount();
-        CameraService cameraService = mock(CameraService.class);
-        cameraHandler.cameraService = cameraService;
-        doReturn(123L).when(cameraService).createThumbnail(ArgumentMatchers.any(BlinkAccount.class),
-                ArgumentMatchers.any(CameraConfiguration.class));
-        cameraHandler.handleCommand(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.ON);
-        verify(cameraService).createThumbnail(blinkAccount, cameraHandler.config);
     }
 
     @Test

@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
-
 import java.io.IOException;
 import java.util.Map;
-
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
+import org.openhab.binding.blink.internal.dto.BlinkCommandResponse;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.binding.blink.internal.servlet.ThumbnailServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -38,8 +38,9 @@ import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
+
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 /**
  * The {@link CameraHandler} is responsible for initializing camera thing and handling commands, which are
@@ -60,6 +61,10 @@ public class CameraHandler extends BaseThingHandler {
 
     @Nullable
     ThumbnailServlet thumbnailServlet;
+
+    @Nullable ScheduledFuture<?> pollStateJob;
+
+    String lastThumbnailPath = "";
 
     public CameraHandler(Thing thing, HttpService httpService, NetworkAddressService networkAddressService,
             HttpClientFactory httpClientFactory, Gson gson) {
@@ -115,12 +120,47 @@ public class CameraHandler extends BaseThingHandler {
                 if (command instanceof RefreshType)
                     updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
                 if (command == OnOffType.ON) {
-                    cameraService.createThumbnail(accountHandler.getBlinkAccount(), nonNullConfig);
-                    updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
+                    scheduler.execute(() -> {
+                        try {
+                            Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(),
+                                    nonNullConfig);
+                            var ref = new Object() {
+                                boolean finished = false;
+                            };
+                            ScheduledFuture<?> checkThumbnailStatusJob = scheduler.scheduleWithFixedDelay(() -> {
+                                try {
+                                    while (!ref.finished) {
+                                        BlinkCommandResponse cmdResponse = cameraService.getCommandStatus(
+                                                accountHandler.getBlinkAccount(), nonNullConfig.networkId, cmdId);
+                                        if (cmdResponse.complete) {
+                                            postCommand(CHANNEL_CAMERA_GETTHUMBNAIL, RefreshType.REFRESH);
+                                            String imagePath = accountHandler.getCameraState(nonNullConfig,
+                                                    true).thumbnail;
+                                            updateState(CHANNEL_CAMERA_GETTHUMBNAIL, new RawType(
+                                                    cameraService.getThumbnail(accountHandler.getBlinkAccount(),
+                                                            imagePath), "image/jpeg"));
+                                            updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
+                                            ref.finished = true;
+                                        }
+                                    }
+                                } catch (IOException e) {
+                                    throw new RuntimeException("Error checking thumbnail generation");
+                                }
+                            }, 1, 2, TimeUnit.SECONDS);
+                            // cancel status job after 15 seconds
+                            scheduler.schedule(() -> checkThumbnailStatusJob.cancel(false), 15, TimeUnit.SECONDS);
+                            if (!ref.finished)
+                                logger.warn("Timeout waiting for thumbnail generation");
+                        } catch (IOException e) {
+                            logger.error("Error taking new thumbnail");
+                        }
+                        updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
+                    });
                 }
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
                     String imagePath = accountHandler.getCameraState(nonNullConfig, true).thumbnail;
+                    lastThumbnailPath = imagePath;
                     updateState(CHANNEL_CAMERA_GETTHUMBNAIL, new RawType(
                             cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath), "image/jpeg"));
                 }
@@ -165,6 +205,52 @@ public class CameraHandler extends BaseThingHandler {
             }
         }
 
+        if (pollStateJob == null || pollStateJob.isCancelled()) {
+            pollStateJob = scheduler.scheduleWithFixedDelay(this::updateCameraState, 20, 5, TimeUnit.SECONDS);
+        }
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    public void updateCameraState() {
+        try {
+            @Nullable
+            CameraConfiguration nonNullConfig = config;
+            @Nullable
+            Bridge bridge = getBridge();
+            if (bridge == null || bridge.getHandler() == null) {
+                logger.warn("Cannot handle commands of blink things without a bridge: {}",
+                        thing.getUID().getAsString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge");
+                return;
+            }
+            if (nonNullConfig == null) {
+                logger.warn("Cannot handle commands of blink things without a thing configuration: {}",
+                        thing.getUID().getAsString());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing configuration");
+                return;
+            }
+            AccountHandler accountHandler = (AccountHandler) bridge.getHandler();
+            if (accountHandler == null)
+                return; // never happens, but reduces compiler noise... makes me unhappy, though.
+            updateState(CHANNEL_CAMERA_TEMPERATURE, new DecimalType(accountHandler.getTemperature(nonNullConfig)));
+            updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(nonNullConfig));
+            updateState(CHANNEL_CAMERA_MOTIONDETECTION,
+                    accountHandler.getMotionDetection(nonNullConfig, false));
+            String imagePath = accountHandler.getCameraState(nonNullConfig, false).thumbnail;
+            if (!lastThumbnailPath.equals(imagePath)) {
+                lastThumbnailPath = imagePath;
+                updateState(CHANNEL_CAMERA_GETTHUMBNAIL, new RawType(
+                        cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath), "image/jpeg"));
+            }
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    @Override
+    public void dispose() {
+        if (pollStateJob != null)
+            pollStateJob.cancel(true);
+        super.dispose();
     }
 }

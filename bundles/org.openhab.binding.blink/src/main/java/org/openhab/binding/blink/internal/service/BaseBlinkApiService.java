@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -24,9 +23,10 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.openhab.binding.blink.internal.dto.BlinkAccount;
+import org.openhab.binding.blink.internal.dto.BlinkCommandResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 
 /**
@@ -107,5 +107,15 @@ public class BaseBlinkApiService {
             throw new IOException("Blink API Call unsuccessful <Status " + contentResponse.getStatus() + ">");
         }
         return contentResponse;
+    }
+
+    public BlinkCommandResponse getCommandStatus(@Nullable BlinkAccount account, Long networkId, Long commandId)
+            throws IOException {
+        if (account == null || account.account == null || networkId == null)
+            throw new IllegalArgumentException("Cannot call command status api without account or network");
+        String uri = "/network/" + networkId + "/command/" + commandId;
+        BlinkCommandResponse cmd = apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token, null,
+                BlinkCommandResponse.class);
+        return cmd;
     }
 }
