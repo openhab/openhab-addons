@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 public class SmartHomeHandler extends BaseThingHandler {
 
     private static final Duration ONE_SECOND = Duration.ofSeconds(1);
+    private static final int CONNECTION_IO_RETRIES = 5;
 
     private final Logger logger = LoggerFactory.getLogger(SmartHomeHandler.class);
 
@@ -158,22 +159,34 @@ public class SmartHomeHandler extends BaseThingHandler {
     }
 
     private @Nullable DeviceState refreshCache() {
-        try {
-            updateIpAddress();
-            final DeviceState deviceState = new DeviceState(connection.sendCommand(smartHomeDevice.getUpdateCommand()));
-            updateDeviceId(deviceState.getSysinfo().getDeviceId());
-            smartHomeDevice.refreshedDeviceState(deviceState);
-            if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
+        int retry = 1;
+
+        while (true) {
+            try {
+                updateIpAddress();
+                final DeviceState deviceState = new DeviceState(
+                        connection.sendCommand(smartHomeDevice.getUpdateCommand()));
+                updateDeviceId(deviceState.getSysinfo().getDeviceId());
+                smartHomeDevice.refreshedDeviceState(deviceState);
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
+                return deviceState;
+            } catch (IOException e) {
+                // If there is a connection problem retry before throwing an exception
+                if (retry < CONNECTION_IO_RETRIES) {
+                    logger.trace("Communication error, retry {}", retry, e);
+                    retry++;
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    return null;
+                }
+            } catch (RuntimeException e) {
+                logger.debug("Obtaining new device data unexpectedly crashed. If this keeps happening please report: ",
+                        e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
+                return null;
             }
-            return deviceState;
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            return null;
-        } catch (RuntimeException e) {
-            logger.debug("Obtaining new device data unexpectedly crashed. If this keeps happening please report: ", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.DISABLED, e.getMessage());
-            return null;
         }
     }
 
@@ -231,7 +244,10 @@ public class SmartHomeHandler extends BaseThingHandler {
 
     void refreshChannels() {
         logger.trace("Update Channels for:{}", thing.getUID());
-        getThing().getChannels().forEach(channel -> updateChannelState(channel.getUID(), cache.getValue()));
+        getThing().getChannels().forEach(channel -> {
+            final DeviceState deviceState = cache.getValue();
+            updateChannelState(channel.getUID(), deviceState);
+        });
     }
 
     /**
