@@ -100,7 +100,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
         if (Constants.EMPTY.equals(config.userName) || Constants.EMPTY.equals(config.password)) {
             return false;
         } else {
-            return BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region);
+            return BimmerConstants.EADRAX_SERVER_MAP.containsKey(config.region);
         }
     }
 

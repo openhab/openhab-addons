@@ -27,7 +27,7 @@ public class AuthResponse {
     @SerializedName("token_type")
     public String tokenType = Constants.EMPTY;
     @SerializedName("expires_in")
-    public int expiresIn = Constants.EMPTY;
+    public int expiresIn = -1;
 
     @Override
     public String toString() {

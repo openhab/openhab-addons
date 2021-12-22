@@ -30,5 +30,4 @@ public class AuthQueryResponse {
     // "authenticate_user"
     // ],
     public List<String> promptValues; // ": ["login"]
-
 }

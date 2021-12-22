@@ -93,9 +93,9 @@ public class MyBMWProxy {
         // only executed in "simulation mode"
         // SimulationTest.testSimulationOff() assures Injector is off when releasing
         if (Injector.isActive()) {
-            if (url.equals(baseUrl)) {
+            if (url.equals(vehicleUrl)) {
                 ((StringResponseCallback) callback).onResponse(Injector.getDiscovery());
-            } else if (url.endsWith(vehicleStatusAPI)) {
+            } else if (url.endsWith(vehicleUrl)) {
                 ((StringResponseCallback) callback).onResponse(Injector.getStatus());
             } else {
                 logger.debug("Simulation of {} not supported", url);
@@ -109,10 +109,10 @@ public class MyBMWProxy {
             completeUrl = url;
             req = httpClient.POST(url);
             if (encoding != null) {
+                req.header(HttpHeader.CONTENT_TYPE, encoding);
                 if (CONTENT_TYPE_URL_ENCODED.equals(encoding)) {
                     req.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, params, StandardCharsets.UTF_8));
                 } else if (CONTENT_TYPE_JSON_ENCODED.equals(encoding)) {
-                    req.header(HttpHeader.CONTENT_TYPE, encoding);
                     req.content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, params, StandardCharsets.UTF_8));
                 }
             }
@@ -121,7 +121,14 @@ public class MyBMWProxy {
             req = httpClient.newRequest(completeUrl);
         }
         req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
-        req.header(HttpHeader.REFERER, BimmerConstants.LEGACY_REFERER_URL);
+        /**
+         * [todo]
+         * decide
+         * a) which user agent to choose
+         * b) which language to take
+         */
+        req.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
+        req.header("accept-language", "en");
 
         req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
@@ -164,44 +171,14 @@ public class MyBMWProxy {
         get(vehicleUrl, null, null, callback);
     }
 
-    public void requestVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
-        get(baseUrl + config.vin + vehicleStatusAPI, null, null, callback);
-    }
-
-    public void requestLegacyVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
-        // see https://github.com/jupe76/bmwcdapi/search?q=dynamic%2Fv1
-        get(legacyUrl + config.vin + "?offset=-60", null, null, callback);
-    }
-
-    public void requestLNavigation(VehicleConfiguration config, StringResponseCallback callback) {
-        // see https://github.com/jupe76/bmwcdapi/search?q=dynamic%2Fv1
-        get(navigationAPIUrl + config.vin, null, null, callback);
-    }
-
-    public void requestLastTrip(VehicleConfiguration config, StringResponseCallback callback) {
-        get(baseUrl + config.vin + lastTripAPI, null, null, callback);
-    }
-
-    public void requestAllTrips(VehicleConfiguration config, StringResponseCallback callback) {
-        get(baseUrl + config.vin + allTripsAPI, null, null, callback);
-    }
-
     public void requestChargingProfile(VehicleConfiguration config, StringResponseCallback callback) {
-        get(baseUrl + config.vin + chargeAPI, null, null, callback);
-    }
-
-    public void requestDestinations(VehicleConfiguration config, StringResponseCallback callback) {
-        get(baseUrl + config.vin + destinationAPI, null, null, callback);
-    }
-
-    public void requestRangeMap(VehicleConfiguration config, @Nullable MultiMap<String> params,
-            StringResponseCallback callback) {
-        get(baseUrl + config.vin + rangeMapAPI, CONTENT_TYPE_URL_ENCODED,
-                UrlEncoded.encode(params, StandardCharsets.UTF_8, false), callback);
+        // [todo] implement
+        // get(baseUrl + config.vin + chargeAPI, null, null, callback);
     }
 
     public void requestImage(VehicleConfiguration config, ImageProperties props, ByteResponseCallback callback) {
-        final String localImageUrl = baseUrl + config.vin + imageAPI;
+        final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+                + "/eadrax-ics/v3/presentation/vehicles/" + config.vin + "/images?carView=" + props.viewport;
         final MultiMap<String> dataMap = new MultiMap<String>();
         dataMap.add("width", Integer.toString(props.size));
         dataMap.add("height", Integer.toString(props.size));
@@ -234,6 +211,11 @@ public class MyBMWProxy {
         return token;
     }
 
+    /**
+     * [todo] China Token
+     *
+     * @return
+     */
     public synchronized boolean updateToken() {
         try {
             /*

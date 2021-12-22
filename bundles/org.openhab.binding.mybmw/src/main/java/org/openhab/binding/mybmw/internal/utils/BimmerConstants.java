@@ -56,6 +56,5 @@ public class BimmerConstants {
     public static final String API_OAUTH_CONFIG = "/eadrax-ucs/v1/presentation/oauth/config";
     public static final String API_VEHICLES = "/eadrax-vcs/v1/vehicles";
     public static final String API_REMOTE_SERVICE_BASE_URL = "/eadrax-vrccs/v2/presentation/remote-commands/"; // '/{vin}/{service_type}'
-    public static final String vehicleEADRXPoiUrl = "/eadrax-dcs/v1/send-to-car/send-to-car";
-
+    public static final String API_POI = "/eadrax-dcs/v1/send-to-car/send-to-car";
 }

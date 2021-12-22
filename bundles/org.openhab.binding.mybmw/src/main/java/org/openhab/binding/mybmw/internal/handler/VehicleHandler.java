@@ -29,8 +29,6 @@ import org.openhab.binding.mybmw.internal.VehicleConfiguration;
 import org.openhab.binding.mybmw.internal.action.MyBMWActions;
 import org.openhab.binding.mybmw.internal.dto.DestinationContainer;
 import org.openhab.binding.mybmw.internal.dto.NetworkError;
-import org.openhab.binding.mybmw.internal.dto.compat.VehicleAttributesContainer;
-import org.openhab.binding.mybmw.internal.dto.navigation.NavigationContainer;
 import org.openhab.binding.mybmw.internal.dto.statistics.AllTrips;
 import org.openhab.binding.mybmw.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.mybmw.internal.dto.statistics.LastTrip;
@@ -51,10 +49,8 @@ import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -76,8 +72,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class VehicleHandler extends VehicleChannelHandler {
-    private int legacyMode = Constants.INT_UNDEF; // switch to legacy API in case of 404 Errors
-
     private Optional<MyBMWProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
     private Optional<VehicleConfiguration> configuration = Optional.empty();
@@ -88,13 +82,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     private ImageProperties imageProperties = new ImageProperties();
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
-    StringResponseCallback oldVehicleStatusCallback = new LegacyVehicleStatusCallback();
-    StringResponseCallback navigationCallback = new NavigationStatusCallback();
-    StringResponseCallback lastTripCallback = new LastTripCallback();
-    StringResponseCallback allTripsCallback = new AllTripsCallback();
     StringResponseCallback chargeProfileCallback = new ChargeProfilesCallback();
-    StringResponseCallback rangeMapCallback = new RangeMapCallback();
-    DestinationsCallback destinationCallback = new DestinationsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
     private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
@@ -110,13 +98,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
         // Refresh of Channels with cached values
         if (command instanceof RefreshType) {
-            if (CHANNEL_GROUP_LAST_TRIP.equals(group)) {
-                lastTripCache.ifPresent(lastTrip -> lastTripCallback.onResponse(lastTrip));
-            } else if (CHANNEL_GROUP_LIFETIME.equals(group)) {
-                allTripsCache.ifPresent(allTrips -> allTripsCallback.onResponse(allTrips));
-            } else if (CHANNEL_GROUP_DESTINATION.equals(group)) {
-                destinationCache.ifPresent(destination -> destinationCallback.onResponse(destination));
-            } else if (CHANNEL_GROUP_STATUS.equals(group)) {
+            if (CHANNEL_GROUP_STATUS.equals(group)) {
                 vehicleStatusCache.ifPresent(vehicleStatus -> vehicleStatusCallback.onResponse(vehicleStatus));
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
                 chargeProfileEdit.ifPresentOrElse(this::updateChargeProfile,
@@ -273,24 +255,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     public void getData() {
         proxy.ifPresentOrElse(prox -> {
             configuration.ifPresentOrElse(config -> {
-                if (legacyMode == 1) {
-                    prox.requestLegacyVehcileStatus(config, oldVehicleStatusCallback);
-                } else {
-                    prox.requestVehcileStatus(config, vehicleStatusCallback);
-                }
+                prox.requestVehicles(chargeProfileCallback);
                 addCallback(vehicleStatusCallback);
-                prox.requestLNavigation(config, navigationCallback);
-                addCallback(navigationCallback);
-                if (isSupported(Constants.STATISTICS)) {
-                    prox.requestLastTrip(config, lastTripCallback);
-                    prox.requestAllTrips(config, allTripsCallback);
-                    addCallback(lastTripCallback);
-                    addCallback(allTripsCallback);
-                }
-                if (isSupported(Constants.LAST_DESTINATIONS)) {
-                    prox.requestDestinations(config, destinationCallback);
-                    addCallback(destinationCallback);
-                }
                 if (isElectric) {
                     prox.requestChargingProfile(config, chargeProfileCallback);
                     addCallback(chargeProfileCallback);
@@ -617,8 +583,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onResponse(@Nullable String content) {
             if (content != null) {
-                // switch to non legacy mode
-                legacyMode = 0;
                 updateStatus(ThingStatus.ONLINE);
                 vehicleStatusCache = Optional.of(content);
                 try {
@@ -643,67 +607,8 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            // only if legacyMode isn't set yet try legacy API
-            if (error.status != 200 && legacyMode == Constants.INT_UNDEF) {
-                logger.debug("VehicleStatus not found - try legacy API");
-                proxy.get().requestLegacyVehcileStatus(configuration.get(), oldVehicleStatusCallback);
-            }
             vehicleStatusCache = Optional.of(Converter.getGson().toJson(error));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
-            removeCallback(this);
-        }
-    }
-
-    /**
-     * Fallback API if origin isn't supported.
-     * This comes from the Community Discussion where a Vehicle from 2015 answered with "404"
-     * https://community.openhab.org/t/bmw-connecteddrive-binding/105124
-     *
-     * Selection of API was discussed here
-     * https://community.openhab.org/t/bmw-connecteddrive-bmw-i3/103876
-     *
-     * I figured out that only one API was working for this Vehicle. So this backward compatible Callback is introduced.
-     * The delivered data is converted into the origin dto object so no changes in previous functional code needed
-     */
-    public class LegacyVehicleStatusCallback implements StringResponseCallback {
-        @Override
-        public void onResponse(@Nullable String content) {
-            if (content != null) {
-                try {
-                    VehicleAttributesContainer vac = Converter.getGson().fromJson(content,
-                            VehicleAttributesContainer.class);
-                    vehicleStatusCallback.onResponse(Converter.transformLegacyStatus(vac));
-                    legacyMode = 1;
-                    logger.debug("VehicleStatus switched to legacy mode");
-                } catch (JsonSyntaxException jse) {
-                    logger.debug("{}", jse.getMessage());
-                }
-            }
-        }
-
-        @Override
-        public void onError(NetworkError error) {
-            vehicleStatusCallback.onError(error);
-        }
-    }
-
-    public class NavigationStatusCallback implements StringResponseCallback {
-        @Override
-        public void onResponse(@Nullable String content) {
-            if (content != null) {
-                try {
-                    NavigationContainer nav = Converter.getGson().fromJson(content, NavigationContainer.class);
-                    updateChannel(CHANNEL_GROUP_RANGE, SOC_MAX, QuantityType.valueOf(nav.socmax, Units.KILOWATT_HOUR));
-                } catch (JsonSyntaxException jse) {
-                    logger.debug("{}", jse.getMessage());
-                }
-            }
-            removeCallback(this);
-        }
-
-        @Override
-        public void onError(NetworkError error) {
-            logger.debug("{}", error.toString());
             removeCallback(this);
         }
     }

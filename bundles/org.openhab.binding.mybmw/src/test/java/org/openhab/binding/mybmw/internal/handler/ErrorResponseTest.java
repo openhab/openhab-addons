@@ -72,7 +72,5 @@ public class ErrorResponseTest {
         String error = "{\"error\":true,\"reason\":\"offline\"}";
         setup("BEV", false);
         cch.vehicleStatusCallback.onResponse(error);
-        cch.allTripsCallback.onResponse(error);
-        cch.lastTripCallback.onResponse(error);
     }
 }

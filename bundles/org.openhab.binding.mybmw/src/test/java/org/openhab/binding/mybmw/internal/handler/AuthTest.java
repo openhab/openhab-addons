@@ -25,7 +25,6 @@ import org.openhab.binding.mybmw.internal.utils.Converter;
 
 class AuthTest {
 
-    @Test
     void testAuth() {
         String user = "usr";
         String pwd = "pwd";

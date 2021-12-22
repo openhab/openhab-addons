@@ -37,5 +37,4 @@ public class MyBMWConfiguration {
      * BMW Connected Drive Password
      */
     public String password = Constants.EMPTY;
-
 }

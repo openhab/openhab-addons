@@ -15,7 +15,7 @@ package org.openhab.binding.mybmw.internal.handler.simulation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Injector} Simulates feedback of the ConnectedDrive Portal
+ * The {@link Injector} Simulates feedback of the BMW API
  *
  * @author Bernd Weymann - Initial contribution
  */

@@ -56,8 +56,6 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     private final MyBMWProxy proxy;
     private final VehicleHandler handler;
-    private final String legacyServiceExecutionAPI;
-    private final String legacyServiceExecutionStateAPI;
     private final String serviceExecutionAPI;
     private final String serviceExecutionStateAPI;
 
@@ -112,8 +110,6 @@ public class RemoteServiceHandler implements StringResponseCallback {
         handler = vehicleHandler;
         proxy = connectedDriveProxy;
         final VehicleConfiguration config = handler.getConfiguration().get();
-        legacyServiceExecutionAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionAPI;
-        legacyServiceExecutionStateAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionStateAPI;
         serviceExecutionAPI = proxy.remoteCommandUrl + config.vin + "/";
         serviceExecutionStateAPI = proxy.remoteStatusUrl;
     }
@@ -239,5 +235,4 @@ public class RemoteServiceHandler implements StringResponseCallback {
             });
         }
     }
-
 }
