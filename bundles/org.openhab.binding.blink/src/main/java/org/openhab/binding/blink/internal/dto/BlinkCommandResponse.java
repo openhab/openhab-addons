@@ -13,7 +13,8 @@
 package org.openhab.binding.blink.internal.dto;
 
 /**
- * The {@link BlinkCommandResponse} class is the DTO for all async api calls responses (thumbnail, arm/disarm, motiondection on/off).
+ * The {@link BlinkCommandResponse} class is the DTO for all async api calls responses (thumbnail, arm/disarm,
+ * motiondection on/off).
  *
  * @author Matthias Oesterheld - Initial contribution
  */
@@ -23,5 +24,4 @@ public class BlinkCommandResponse {
     public int status;
     public String status_msg;
     public int status_code;
-
 }

@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
@@ -38,9 +41,8 @@ import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.gson.Gson;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+import com.google.gson.Gson;
 
 /**
  * The {@link CameraHandler} is responsible for initializing camera thing and handling commands, which are
@@ -62,7 +64,8 @@ public class CameraHandler extends BaseThingHandler {
     @Nullable
     ThumbnailServlet thumbnailServlet;
 
-    @Nullable ScheduledFuture<?> pollStateJob;
+    @Nullable
+    ScheduledFuture<?> pollStateJob;
 
     String lastThumbnailPath = "";
 
@@ -122,8 +125,7 @@ public class CameraHandler extends BaseThingHandler {
                 if (command == OnOffType.ON) {
                     scheduler.execute(() -> {
                         try {
-                            Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(),
-                                    nonNullConfig);
+                            Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(), nonNullConfig);
                             var ref = new Object() {
                                 boolean finished = false;
                             };
@@ -136,9 +138,10 @@ public class CameraHandler extends BaseThingHandler {
                                             postCommand(CHANNEL_CAMERA_GETTHUMBNAIL, RefreshType.REFRESH);
                                             String imagePath = accountHandler.getCameraState(nonNullConfig,
                                                     true).thumbnail;
-                                            updateState(CHANNEL_CAMERA_GETTHUMBNAIL, new RawType(
-                                                    cameraService.getThumbnail(accountHandler.getBlinkAccount(),
-                                                            imagePath), "image/jpeg"));
+                                            updateState(CHANNEL_CAMERA_GETTHUMBNAIL,
+                                                    new RawType(cameraService
+                                                            .getThumbnail(accountHandler.getBlinkAccount(), imagePath),
+                                                            "image/jpeg"));
                                             updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
                                             ref.finished = true;
                                         }
@@ -234,8 +237,7 @@ public class CameraHandler extends BaseThingHandler {
                 return; // never happens, but reduces compiler noise... makes me unhappy, though.
             updateState(CHANNEL_CAMERA_TEMPERATURE, new DecimalType(accountHandler.getTemperature(nonNullConfig)));
             updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(nonNullConfig));
-            updateState(CHANNEL_CAMERA_MOTIONDETECTION,
-                    accountHandler.getMotionDetection(nonNullConfig, false));
+            updateState(CHANNEL_CAMERA_MOTIONDETECTION, accountHandler.getMotionDetection(nonNullConfig, false));
             String imagePath = accountHandler.getCameraState(nonNullConfig, false).thumbnail;
             if (!lastThumbnailPath.equals(imagePath)) {
                 lastThumbnailPath = imagePath;
