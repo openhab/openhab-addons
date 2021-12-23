@@ -33,6 +33,7 @@ import org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants;
 import org.openhab.binding.mielecloud.internal.auth.OAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.auth.OpenHabOAuthTokenRefresher;
 import org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants;
+import org.openhab.binding.mielecloud.internal.util.ReflectionUtil;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebservice;
 import org.openhab.binding.mielecloud.internal.webservice.MieleWebserviceFactory;
 import org.openhab.binding.mielecloud.internal.webservice.api.DeviceState;
@@ -231,7 +232,18 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
 
         ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
-        return (AbstractMieleThingHandler) Objects.requireNonNull(handler);
+        AbstractMieleThingHandler mieleThingHandler = (AbstractMieleThingHandler) Objects.requireNonNull(handler);
+
+        waitForAssert(() -> {
+            try {
+                assertNotNull(ReflectionUtil.invokePrivate(mieleThingHandler, "getBridge"));
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            }
+            assertNotNull(getBridge().getThing(thingUid));
+        });
+
+        return mieleThingHandler;
     }
 
     private List<Channel> createChannelsForThingHandler(ThingTypeUID thingTypeUid, ThingUID thingUid) {
