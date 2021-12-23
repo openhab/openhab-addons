@@ -191,7 +191,7 @@ public class ChannelState implements MqttMessageSubscriber {
         try {
             cachedValue.update(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
-            logger.warn("Command '{}' not supported by type '{}': {}", strValue, cachedValue.getClass().getSimpleName(),
+            logger.warn("Command '{}' from channel '{}' not supported by type '{}': {}", strValue, channelUID, cachedValue.getClass().getSimpleName(),
                     e.getMessage());
             receivedOrTimeout();
             return;
