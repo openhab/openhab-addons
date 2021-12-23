@@ -74,7 +74,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
             Object value = configProperties.get(MieleBindingConstants.REMOVAL_GRACE_PERIOD);
             if (value != null) {
                 try {
-                    removalGracePeriodSeconds = Integer.parseInt((String) value);
+                    removalGracePeriodSeconds = Integer.parseInt(value.toString());
                 } catch (NumberFormatException e) {
                     logger.warn("Configuration property '{}' has invalid value: {}",
                             MieleBindingConstants.REMOVAL_GRACE_PERIOD, value);
