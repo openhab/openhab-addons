@@ -12,18 +12,31 @@ For example, here is a station board in HABPanel. (Download [here](https://githu
 
 Upcoming departures for a single station. This is what you would usually see displayed at the train station.
 
-#### Configuration 
+#### Channels
 
-`Station` is the station name for which to display departures.  
+| channel        | type   | description                                                                                  |
+|----------------|--------|----------------------------------------------------------------------------------------------|
+| departures#n   | String | A dynamic channel for each upcoming departure                                                |
+| tsv (advanced) | String | A tsv which contains the fields:<br />`identifier, departureTime, destination, track, delay` |
+
+#### UI based Configuration
+
+`station` is the station name for which to display departures.  
 The name has to be one that is used by the swiss federal railways.  
 Please consult their [website](https://sbb.ch/en).
 
-#### Channels 
+#### Textual configuration
 
-| channel | type   | description |
-|---------|--------|-------------|
-| departures#n   | String | A dynamic channel for each upcoming departure |
-| stationboard#tsv (advanced) | String | A tsv which contains the fields:<br />`identifier, departureTime, destination, track, delay` |
+##### Thing
+```
+Thing publictransportswitzerland:stationboard:zurich [ station="Zürich HB" ]
+```
+
+##### Items
+```
+String Next_Departure             "Next Departure"             { channel="publictransportswitzerland:stationboard:zurich:departures#1" }
+String Upcoming_Departures_TSV    "Upcoming_Departures_TSV"    { channel="publictransportswitzerland:stationboard:zurich:tsv" }
+```
 
 ## Discovery
 
