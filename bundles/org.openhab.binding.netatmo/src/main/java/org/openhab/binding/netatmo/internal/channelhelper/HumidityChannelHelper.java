@@ -24,8 +24,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HumidityChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link HumidityChannelHelper} specific channels of modules returning humidity measures.
  *
  * @author Gaël L'hopital - Initial contribution
  *

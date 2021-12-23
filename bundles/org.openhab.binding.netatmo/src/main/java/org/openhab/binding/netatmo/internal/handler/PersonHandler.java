@@ -39,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link PersonHandler} is the class used to handle the Welcome Home Data
+ * {@link PersonHandler} is the class handling Person things
  *
  * @author Ing. Peter Weiss - Initial contribution
  *

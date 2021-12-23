@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.api.dto;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
 
 /**
+ * The {@link NAHomeStatus} holds data for a given home.
  *
  * @author Gaël L'hopital - Initial contribution
  *

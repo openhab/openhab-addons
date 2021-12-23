@@ -36,8 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link RoomHandler} is the class used to handle the valve
- * module of a thermostat set
+ * {@link RoomHandler} is the class handling room things
  *
  * @author Gaël L'hopital - Initial contribution
  *

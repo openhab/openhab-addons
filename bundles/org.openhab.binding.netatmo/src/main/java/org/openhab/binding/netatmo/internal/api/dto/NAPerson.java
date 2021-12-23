@@ -17,8 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * NAHomePerson
- * This class merges answers provided in event and in webhook to provide the
+ * The {@link NAPerson} merges answers provided in event and in webhook to provide the
  * same interface to the binding
  *
  * @author Gaël L'hopital - Initial contribution

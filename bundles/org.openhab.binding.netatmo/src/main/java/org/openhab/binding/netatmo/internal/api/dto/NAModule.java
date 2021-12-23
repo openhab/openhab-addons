@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.BatteryState;
 
 /**
+ * The {@link NAModule} holds status informations of a Netatmo module.
  *
  * @author Gaël L'hopital - Initial contribution
  *

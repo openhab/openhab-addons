@@ -20,6 +20,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
+ * The {@link MeasuresChannelHelper} extensible channels based on getMeasure endpoint.
  *
  * @author Gaël L'hopital - Initial contribution
  *

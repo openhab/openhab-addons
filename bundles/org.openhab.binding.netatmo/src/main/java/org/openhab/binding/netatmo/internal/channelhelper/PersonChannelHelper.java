@@ -24,8 +24,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link PersonChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link PersonChannelHelper} handle channels of person things.
  *
  * @author Gaël L'hopital - Initial contribution
  *

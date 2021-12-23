@@ -22,6 +22,7 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The {@link NAThing} is the base class for devices and modules.
  *
  * @author Gaël L'hopital - Initial contribution
  *

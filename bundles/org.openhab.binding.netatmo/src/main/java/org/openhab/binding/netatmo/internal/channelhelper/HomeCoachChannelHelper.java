@@ -21,8 +21,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HomeCoachChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link HomeCoachChannelHelper} handle specific channels of NHC thing.
  *
  * @author Gaël L'hopital - Initial contribution
  *

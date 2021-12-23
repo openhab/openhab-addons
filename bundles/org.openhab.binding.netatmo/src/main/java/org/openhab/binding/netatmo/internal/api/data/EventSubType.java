@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public enum EventSubType {
     SD_CARD_MISSING(EventType.SD, 1),
     SD_CARD_INSERTED(EventType.SD, 2),
-    SD_CARD_FORMATED(EventType.SD, 3),
+    SD_CARD_FORMATTED(EventType.SD, 3),
     SD_CARD_WORKING(EventType.SD, 4),
     SD_CARD_DEFECTIVE(EventType.SD, 5),
     SD_CARD_INCOMPATIBLE_SPEED(EventType.SD, 6),

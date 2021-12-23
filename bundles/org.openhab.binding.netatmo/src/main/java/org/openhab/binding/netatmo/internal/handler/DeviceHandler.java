@@ -59,10 +59,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link DeviceHandler} is the abstract class that handles
- * common behaviors of all netatmo bridges (devices)
+ * common behaviors of all netatmo devices
  *
  * @author Gaël L'hopital - Initial contribution
- * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
 @NonNullByDefault

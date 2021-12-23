@@ -25,6 +25,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.EventCateg
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.VideoStatus;
 
 /**
+ * The {@link NAHomeEvent} holds informations transfered by the webhook about a home event.
  *
  * @author Gaël L'hopital - Initial contribution
  *

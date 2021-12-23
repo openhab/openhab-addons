@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
+ * The {@link NAMeasureBodyElem} holds a list of values returned by getMeasure endpoint.
  *
  * @author Gaël L'hopital - Initial contribution
  *

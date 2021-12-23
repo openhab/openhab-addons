@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The {@link NASnapshot} holds data related to a snapshot.
  *
  * @author Gaël L'hopital - Initial contribution
  *

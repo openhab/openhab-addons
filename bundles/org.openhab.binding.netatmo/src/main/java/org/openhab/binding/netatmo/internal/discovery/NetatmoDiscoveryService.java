@@ -47,8 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NetatmoDiscoveryService} searches for available Netatmo
- * devices and modules connected to the API console
+ * The {@link NetatmoDiscoveryService} searches for available Netatmo devices and modules
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -21,6 +21,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.TrendDescr
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * The {@link NADashboard} holds data returned by API call supporting the dashboard functionality.
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.deserialization.NAObjectMap;
 
 /**
+ * The {@link NAThermProgram} holds setpoint scheduling informations.
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -24,8 +24,7 @@ import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider
 import org.openhab.core.thing.Bridge;
 
 /**
- * {@link MainHandler} is the base class for all current Netatmo
- * weather station equipments (both modules and devices)
+ * {@link MainHandler} is the base class for Netatmo weather station devices
  *
  * @author Gaël L'hopital - Initial contribution
  *

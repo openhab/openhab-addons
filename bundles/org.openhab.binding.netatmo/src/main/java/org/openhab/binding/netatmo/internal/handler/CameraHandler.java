@@ -43,8 +43,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link CameraHandler} is the class used to handle Camera Data
  *
- * @author Sven Strohschein - Initial contribution (partly moved code from NAWelcomeCameraHandler to introduce
- *         inheritance, see NAWelcomeCameraHandler)
+ * @author Sven Strohschein - Initial contribution
  *
  */
 @NonNullByDefault

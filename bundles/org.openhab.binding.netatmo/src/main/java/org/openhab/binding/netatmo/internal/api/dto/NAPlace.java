@@ -18,6 +18,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 
 /**
+ * The {@link NAPlace} reports location information of a Netatmo system.
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -27,8 +27,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link HomeSecurityChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link HomeSecurityChannelHelper} handle specific informations for security purpose.
  *
  * @author Gaël L'hopital - Initial contribution
  *

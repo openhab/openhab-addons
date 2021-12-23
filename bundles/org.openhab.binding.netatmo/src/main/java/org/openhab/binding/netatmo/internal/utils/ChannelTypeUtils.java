@@ -37,7 +37,6 @@ import org.openhab.core.types.UnDefType;
  * This class holds various channel values conversion methods
  *
  * @author Gaël L'hopital - Initial contribution
- * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
 @NonNullByDefault

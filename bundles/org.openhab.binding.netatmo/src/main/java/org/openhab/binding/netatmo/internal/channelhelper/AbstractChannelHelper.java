@@ -26,8 +26,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
 /**
- * The {@link AbstractChannelHelper} handle specific common behaviour
- * of all channel helpers
+ * The {@link AbstractChannelHelper} is the base class for all channel helpers.
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -31,6 +31,7 @@ import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.service.component.annotations.Component;
 
 /**
+ * Extends the ChannelTypeProvider generating Channel Types based on {@link MeasureClass} enum.
  *
  * @author Gaël L'hopital - Initial contribution
  *

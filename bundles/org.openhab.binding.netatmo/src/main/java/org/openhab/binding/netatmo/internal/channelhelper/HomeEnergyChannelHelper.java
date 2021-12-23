@@ -30,8 +30,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link HomeEnergyChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link HomeEnergyChannelHelper} handle specific channels of thermostat settings.
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ThermostatZoneType;
 
 /**
+ * The {@link NATimeTableItem} holds the temp scheduling for a given zone.
  *
  * @author Gaël L'hopital - Initial contribution
  *

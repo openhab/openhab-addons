@@ -19,6 +19,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
+ * The {@link NAThermostat} holds informations regarding the behavior of the thermostat.
  *
  * @author Gaël L'hopital - Initial contribution
  *

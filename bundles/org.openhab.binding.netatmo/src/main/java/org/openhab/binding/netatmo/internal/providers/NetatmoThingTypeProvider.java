@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Extends the ThingTypeProvider to generated Thing types based on {@link ModuleType} enum.
  *
  * @author Gaël L'hopital - Initial contribution
  *

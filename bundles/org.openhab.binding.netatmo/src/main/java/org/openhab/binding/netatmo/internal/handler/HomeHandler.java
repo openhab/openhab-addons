@@ -54,8 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link HomeHandler} is the class used to handle the plug
- * device of a thermostat set
+ * {@link HomeHandler} is the class handling home things
  *
  * @author Gaël L'hopital - Initial contribution
  *

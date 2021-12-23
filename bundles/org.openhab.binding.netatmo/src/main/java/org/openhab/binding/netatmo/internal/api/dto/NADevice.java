@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.deserialization.NAThingMap;
 
 /**
+ * The {@link NADevice} holds common data for all Netatmo devices.
  *
  * @author Gaël L'hopital - Initial contribution
  *

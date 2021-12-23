@@ -17,6 +17,7 @@ import org.openhab.binding.netatmo.internal.api.ApiResponse;
 import org.openhab.binding.netatmo.internal.api.ListBodyResponse;
 
 /**
+ * The {@link NAMain} defines a weather or nhc device.
  *
  * @author Gaël L'hopital - Initial contribution
  *

@@ -22,6 +22,7 @@ import org.openhab.binding.netatmo.internal.api.data.EventSubType;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 
 /**
+ * The {@link NAEvent} holds informations transfered by the webhook.
  *
  * @author Gaël L'hopital - Initial contribution
  *

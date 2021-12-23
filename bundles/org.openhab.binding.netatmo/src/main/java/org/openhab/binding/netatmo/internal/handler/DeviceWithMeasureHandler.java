@@ -42,8 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link DeviceWithMeasureHandler} is the base class for all current Netatmo
- * weather station equipments (both modules and devices)
+ * {@link DeviceWithMeasureHandler} is the base class for all modules handling getMeasure endpoint
  *
  * @author Gaël L'hopital - Initial contribution
  *

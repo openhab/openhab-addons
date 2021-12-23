@@ -27,6 +27,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 
 /**
+ * The {@link NAHome} holds home information.
  *
  * @author Gaël L'hopital - Initial contribution
  *
