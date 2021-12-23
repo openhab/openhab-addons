@@ -69,12 +69,12 @@ public abstract class RestManager {
         if (params.length % 2 != 0) {
             throw new IllegalArgumentException("appendParams : params count must be even");
         }
-        for (int i = 0; i < params.length && params.length > 0; i += 2) {
+        for (int i = 0; i < params.length; i += 2) {
             Object query = params[i];
             if (query instanceof String) {
                 Object param = params[i + 1];
                 if (param != null) {
-                    builder.queryParam((String) params[i], param);
+                    builder.queryParam((String) query, param);
                 }
             } else {
                 throw new IllegalArgumentException("appendParams : even parameters must be Strings");

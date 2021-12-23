@@ -140,19 +140,19 @@ public class NetatmoConstants {
     public static final String SPATH_GETLASTEVENT = "getlasteventof";
     public static final String SPATH_PING = "ping";
 
-    public static final String PARM_DEVICEID = "device_id";
-    public static final String PARM_MODULEID = "module_id";
-    public static final String PARM_HOMEID = "home_id";
-    public static final String PARM_ROOMID = "room_id";
-    public static final String PARM_PERSONID = "person_id";
-    public static final String PARM_SCHEDULEID = "schedule_id";
-    public static final String PARM_DEVICETYPE = "device_types";
-    public static final String PARM_GATEWAYTYPE = "gateway_types";
-    public static final String PARM_MODE = "mode";
-    public static final String PARM_URL = "url";
-    public static final String PARM_CHANGESTATUS = "changestatus";
-    public static final String PARM_FLOODLIGHTSET = "floodlight_set_config";
-    public static final String PARM_FAVORITES = "get_favorites";
+    public static final String PARAM_DEVICEID = "device_id";
+    public static final String PARAM_MODULEID = "module_id";
+    public static final String PARAM_HOMEID = "home_id";
+    public static final String PARAM_ROOMID = "room_id";
+    public static final String PARAM_PERSONID = "person_id";
+    public static final String PARAM_SCHEDULEID = "schedule_id";
+    public static final String PARAM_DEVICETYPE = "device_types";
+    public static final String PARAM_GATEWAYTYPE = "gateway_types";
+    public static final String PARAM_MODE = "mode";
+    public static final String PARAM_URL = "url";
+    public static final String PARAM_CHANGESTATUS = "changestatus";
+    public static final String PARAM_FLOODLIGHTSET = "floodlight_set_config";
+    public static final String PARAM_FAVORITES = "get_favorites";
 
     // Token scopes
     public static enum Scope {

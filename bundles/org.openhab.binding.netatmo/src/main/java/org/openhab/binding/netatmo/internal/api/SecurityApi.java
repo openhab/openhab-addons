@@ -27,14 +27,13 @@ import org.openhab.binding.netatmo.internal.api.dto.NAHomeEvent.NALastEventsData
 import org.openhab.binding.netatmo.internal.api.dto.NAPing;
 
 /**
+ * Base class for all Security related endpoints
  *
  * @author Gaël L'hopital - Initial contribution
- *
  */
-
 @NonNullByDefault
 public class SecurityApi extends RestManager {
-    public SecurityApi(ApiBridge apiClient) { // NO_UCD (unused code)
+    public SecurityApi(ApiBridge apiClient) {
         super(apiClient, FeatureArea.SECURITY);
     }
 
@@ -43,8 +42,7 @@ public class SecurityApi extends RestManager {
      * Dissociates a webhook from a user.
      *
      * @return boolean Success
-     * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
-     *             response body
+     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public boolean dropWebhook() throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SPATH_DROPWEBHOOK);
@@ -58,18 +56,17 @@ public class SecurityApi extends RestManager {
      *
      * @param uri Your webhook callback url (required)
      * @return boolean Success
-     * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
-     *             response body
+     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SPATH_ADDWEBHOOK);
-        uriBuilder.queryParam(PARM_URL, uri.toString());
+        uriBuilder.queryParam(PARAM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
     public Collection<NAHomeEvent> getLastEventsOf(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETLASTEVENT, PARM_HOMEID, homeId, PARM_PERSONID, personId);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETLASTEVENT, PARAM_HOMEID, homeId, PARAM_PERSONID, personId);
         NALastEventsDataResponse response = get(uriBuilder, NALastEventsDataResponse.class);
         return response.getBody().getElements();
     }
@@ -81,14 +78,14 @@ public class SecurityApi extends RestManager {
     }
 
     public boolean changeStatus(String localCameraURL, boolean setOn) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARM_CHANGESTATUS);
+        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARAM_CHANGESTATUS);
         uriBuilder.queryParam("status", setOn ? "on" : "off");
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
     public boolean changeFloodLightMode(String localCameraURL, PresenceLightMode mode) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARM_FLOODLIGHTSET);
+        UriBuilder uriBuilder = UriBuilder.fromUri(localCameraURL).path(PATH_COMMAND).path(PARAM_FLOODLIGHTSET);
         uriBuilder.queryParam("config", "%7B%22mode%22:%22" + mode.toString() + "%22%7D");
         get(uriBuilder, ApiResponse.Ok.class);
         return true;

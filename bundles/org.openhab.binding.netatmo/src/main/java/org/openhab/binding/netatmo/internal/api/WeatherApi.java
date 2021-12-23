@@ -21,39 +21,37 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
 import org.openhab.binding.netatmo.internal.api.dto.NAMeasureBodyElem;
 
 /**
+ * Base class for all Weather related endpoints
  *
  * @author Gaël L'hopital - Initial contribution
- *
  */
-
 @NonNullByDefault
 public class WeatherApi extends RestManager {
     public WeatherApi(ApiBridge apiClient) {
-        super(apiClient, org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea.WEATHER);
+        super(apiClient, FeatureArea.WEATHER);
     }
 
     /**
      *
-     * The method getStationsData Returns data from a user&#x27;s Weather Stations (measures and device specific
-     * data).
+     * Returns data from a user's Weather Stations (measures and device specific data);
      *
      * @param deviceId Id of the device you want to retrieve information of (optional)
-     * @param getFavorites Whether to include the user&#x27;s favorite Weather Stations in addition to the user&#x27;s
+     * @param getFavorites Whether to include the user's favorite Weather Stations in addition to the user's
      *            own Weather Stations (optional, default to false)
      * @return NAStationDataResponse
-     * @throws NetatmoException If fail to call the API, e.g. server error or cannot deserialize the
-     *             response body
+     * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public NAStationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
             throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETSTATION, PARM_DEVICEID, deviceId, PARM_FAVORITES,
-                getFavorites);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETSTATION, PARAM_DEVICEID, deviceId, //
+                PARAM_FAVORITES, getFavorites);
         NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
         return response;
     }
@@ -64,12 +62,12 @@ public class WeatherApi extends RestManager {
         if (station != null) {
             return station;
         }
-        throw new NetatmoException(String.format("Unexpected answer cherching device '%s' : not found.", deviceId));
+        throw new NetatmoException(String.format("Unexpected answer searching device '%s' : not found.", deviceId));
     }
 
     public @Nullable Object getMeasurements(String deviceId, @Nullable String moduleId, @Nullable String scale,
             MeasureClass measureClass) throws NetatmoException {
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, measureClass.apiDescriptor);
+        NAMeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, measureClass.apiDescriptor);
         return result.getSingleValue();
     }
 
@@ -80,15 +78,15 @@ public class WeatherApi extends RestManager {
             queryLimit += "_" + measureClass.apiDescriptor;
         }
 
-        NAMeasureBodyElem<?> result = getmeasure(deviceId, moduleId, scale, queryLimit.toLowerCase());
+        NAMeasureBodyElem<?> result = getMeasure(deviceId, moduleId, scale, queryLimit.toLowerCase());
         return result.getSingleValue();
     }
 
-    private NAMeasureBodyElem<?> getmeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
+    private NAMeasureBodyElem<?> getMeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String measureType) throws NetatmoException {
         // NAMeasuresResponse is not designed for optimize=false
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETMEASURE, PARM_DEVICEID, deviceId, "real_time", true,
-                "date_end", "last", "optimize", true, "type", measureType.toLowerCase(), PARM_MODULEID, moduleId);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETMEASURE, PARAM_DEVICEID, deviceId, "real_time", true,
+                "date_end", "last", "optimize", true, "type", measureType.toLowerCase(), PARAM_MODULEID, moduleId);
 
         if (scale != null) {
             uriBuilder.queryParam("scale", scale.toLowerCase());

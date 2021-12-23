@@ -16,33 +16,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This enum describes sub events in relation to a given event
- * according to API documentation
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public enum EventSubType {
-    MISSING_SD(EventType.SD, 1), // Missing SD Card
-    SD_INSERTED(EventType.SD, 2), // SD Card inserted
-    SD_FORMATED(EventType.SD, 3), // SD Card formated
-    WORKING_SD(EventType.SD, 4), // Working SD Card
-    DEFECTIVE_SD(EventType.SD, 5), // Defective SD Card
-    INCOMPATIBLE_SD_SPEED(EventType.SD, 6), // Incompatible SD Card speed
-    INSUFFICIENT_SD_SPACE(EventType.SD, 7), // Insufficient SD Card space
-    INCORRECT_POWER(EventType.ALIM, 1), // incorrect power adapter
-    CORRECT_POWER(EventType.ALIM, 2), // correct power adapter
+    SD_CARD_MISSING(EventType.SD, 1),
+    SD_CARD_INSERTED(EventType.SD, 2),
+    SD_CARD_FORMATED(EventType.SD, 3),
+    SD_CARD_WORKING(EventType.SD, 4),
+    SD_CARD_DEFECTIVE(EventType.SD, 5),
+    SD_CARD_INCOMPATIBLE_SPEED(EventType.SD, 6),
+    SD_CARD_INSUFFICIENT_SPACE(EventType.SD, 7),
+    ALIM_INCORRECT_POWER(EventType.ALIM, 1),
+    ALIM_CORRECT_POWER(EventType.ALIM, 2),
 
     // Artificially implemented by the binding subtypes
-    ARRIVAL(EventType.PERSON, 1), // Person arrived
-    HUMAN(EventType.MOVEMENT, 1), // Human seen
-    VEHICLE(EventType.MOVEMENT, 2), // Car seen
-    ANIMAL(EventType.MOVEMENT, 3); // Animal seen
+    PERSON_ARRIVAL(EventType.PERSON, 1),
+    MOVEMENT_HUMAN(EventType.MOVEMENT, 1),
+    MOVEMENT_VEHICLE(EventType.MOVEMENT, 2),
+    MOVEMENT_ANIMAL(EventType.MOVEMENT, 3);
 
     public final EventType type;
     public final int subType;
 
-    EventSubType(EventType sd, int i) {
-        this.type = sd;
+    EventSubType(EventType type, int i) {
+        this.type = type;
         this.subType = i;
     }
 }

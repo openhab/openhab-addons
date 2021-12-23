@@ -23,7 +23,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAMain;
 import org.openhab.binding.netatmo.internal.api.dto.NAMain.NAStationDataResponse;
 
 /**
- * Base class for all Air Care related rest manager
+ * Base class for all Air Care related endpoints
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -43,7 +43,7 @@ public class AircareApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public NAStationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_HOMECOACH, PARM_DEVICEID, deviceId);
+        UriBuilder uriBuilder = getApiUriBuilder(SPATH_HOMECOACH, PARAM_DEVICEID, deviceId);
         return get(uriBuilder, NAStationDataResponse.class);
     }
 
