@@ -204,16 +204,16 @@ A snippet to show the current state of the heatpump (you need to have the corres
 
 ```
     Text label="State" icon="settings" {
-        Text item=HeatPump_state_sourcepump   label="Status Quellenpumpe [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_heatingpump  label="Status Heizungsumwälzpumpe [%s]"                   valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_evd          label="Status Freigabe Regelung EDV / Magnetventil [%s]"  valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_compressor1  label="Status Verdichter 1 [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_extheater    label="Status externer Wärmeerzeuger [%s]"                valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_alarm        label="Status Alarmausgang [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_cooling      label="Status Motorventil Kühlbetrieb [%s]"               valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_water        label="Status Motorventil Warmwasser [%s]"                valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_pool         label="Status Motorventil Pool [%s]"                      valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_solar        label="Status Solarbetrieb [%s]"                          valuecolor=[==ON="green", ==OFF="red"]
-        Text item=HeatPump_state_cooling4way  label="Status 4-Wege_ventil [%s]"                         valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_sourcepump   label="State Source Pump [%s]"      valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_heatingpump  label="State Heating Pump [%s]"     valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_evd          label="State EVD [%s]"              valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_compressor1  label="State Compressor 1 [%s]"     valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_extheater    label="State External Heater [%s]"  valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_alarm        label="State Alarm [%s]"            valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_cooling      label="State Cooling [%s]"          valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_water        label="State Water [%s]"            valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_pool         label="State Pool [%s]"             valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_solar        label="State Solar [%s]"            valuecolor=[==ON="green", ==OFF="red"]
+        Text item=HeatPump_state_cooling4way  label="State Cooling4Way [%s]"      valuecolor=[==ON="green", ==OFF="red"]
     }
 ```

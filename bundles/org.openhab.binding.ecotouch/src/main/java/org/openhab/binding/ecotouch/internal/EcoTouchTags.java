@@ -1266,7 +1266,7 @@ public enum EcoTouchTags {
      * @return matching EcoTouchTags instance, if available
      */
     public static @Nullable EcoTouchTags fromString(String heatpumpCommand) {
-        if ("".equals(heatpumpCommand)) {
+        if (heatpumpCommand.isEmpty()) {
             return null;
         }
         for (EcoTouchTags c : EcoTouchTags.values()) {
