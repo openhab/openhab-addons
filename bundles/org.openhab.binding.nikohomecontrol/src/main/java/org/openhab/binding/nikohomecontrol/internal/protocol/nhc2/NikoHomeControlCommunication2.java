@@ -620,10 +620,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         switch (action.getType()) {
             case GENERIC:
             case TRIGGER:
-                if (!NHCON.equals(value)) {
-                    // Only trigger for ON
-                    return;
-                }
                 property.basicState = NHCTRIGGERED;
                 break;
             case RELAY:
