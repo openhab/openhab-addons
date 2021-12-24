@@ -57,6 +57,18 @@
 				</description>
 				<default>0</default>
 			</parameter>
+			<parameter name="sortEffects" type="boolean">
+				<label>Sort Effects</label>
+				<description>If set, will sort the state options of the effects channel alphabetically while keeping the first
+					option (Solid) at the top.</description>
+				<default>false</default>
+			</parameter>
+			<parameter name="sortPalettes" type="boolean">
+				<label>Sort Palettes</label>
+				<description>If set, will sort the state options of the palettes channel alphabetically while keeping the first
+					option (Default) at the top.</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 
