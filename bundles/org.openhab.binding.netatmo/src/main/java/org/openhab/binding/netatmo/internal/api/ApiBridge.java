@@ -141,7 +141,7 @@ public class ApiBridge {
                 }
                 managers.put(typeOfRest, tentative);
             } catch (SecurityException | ReflectiveOperationException | NetatmoException e) {
-                logger.error("Error invoking RestManager constructor for class {} : {}", typeOfRest, e.getMessage());
+                logger.warn("Error invoking RestManager constructor for class {} : {}", typeOfRest, e.getMessage());
             }
         }
         return (T) managers.get(typeOfRest);
@@ -193,6 +193,7 @@ public class ApiBridge {
 
     public <T> T deserialize(Class<T> classOfT, String serviceAnswer) throws NetatmoException {
         try {
+            @Nullable
             T result = gson.fromJson(serviceAnswer, classOfT);
             if (result != null) {
                 return result;

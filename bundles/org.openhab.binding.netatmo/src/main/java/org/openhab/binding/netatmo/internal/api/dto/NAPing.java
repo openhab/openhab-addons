@@ -16,16 +16,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.ApiResponse;
 
 /**
- * The {@link NAPing} handle specific behavior
- * of modules using batteries
+ * The {@link NAPing} hold url data for a camera module
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
 public class NAPing extends ApiResponse<String> {
-    private @NonNullByDefault({}) String localUrl;
-    private @NonNullByDefault({}) String productName;
+    private String localUrl = "";
+    private String productName = "";
 
     @Override
     public String getStatus() {

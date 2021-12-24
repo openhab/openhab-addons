@@ -44,11 +44,11 @@ import com.google.gson.annotations.SerializedName;
 public class NetatmoConstants {
     public static class Measure {
         public final double minValue;
-        public final int maxValue;
+        public final double maxValue;
         public final int scale;
         public final Unit<?> unit;
 
-        private Measure(double minValue, int maxValue, double precision, Unit<?> unit) {
+        private Measure(double minValue, double maxValue, double precision, Unit<?> unit) {
             this.minValue = minValue;
             this.maxValue = maxValue;
             this.unit = unit;
@@ -122,23 +122,23 @@ public class NetatmoConstants {
     public static final String PATH_OAUTH = "oauth2/token";
     public static final String PATH_API = "api";
     public static final String PATH_COMMAND = "command";
-    public static final String SPATH_PERSON_AWAY = "setpersonsaway";
-    public static final String SPATH_PERSON_HOME = "setpersonshome";
-    public static final String SPATH_HOMES = "homesdata";
-    public static final String SPATH_GETHOME = "gethomedata";
-    public static final String SPATH_GETCAMERAPICTURE = "getcamerapicture";
-    public static final String SPATH_ADDWEBHOOK = "addwebhook";
-    public static final String SPATH_DROPWEBHOOK = "dropwebhook";
-    public static final String SPATH_SETROOMTHERMPOINT = "setroomthermpoint";
-    public static final String SPATH_SETTHERMMODE = "setthermmode";
-    public static final String SPATH_SWITCHSCHEDULE = "switchschedule";
-    public static final String SPATH_GETTHERMOSTAT = "getthermostatsdata";
-    public static final String SPATH_GETSTATION = "getstationsdata";
-    public static final String SPATH_GETMEASURE = "getmeasure";
-    public static final String SPATH_HOMESTATUS = "homestatus";
-    public static final String SPATH_HOMECOACH = "gethomecoachsdata";
-    public static final String SPATH_GETLASTEVENT = "getlasteventof";
-    public static final String SPATH_PING = "ping";
+    public static final String SUB_PATH_PERSON_AWAY = "setpersonsaway";
+    public static final String SUB_PATH_PERSON_HOME = "setpersonshome";
+    public static final String SUB_PATH_HOMES = "homesdata";
+    public static final String SUB_PATH_GETHOME = "gethomedata";
+    public static final String SUB_PATH_GETCAMERAPICTURE = "getcamerapicture";
+    public static final String SUB_PATH_ADDWEBHOOK = "addwebhook";
+    public static final String SUB_PATH_DROPWEBHOOK = "dropwebhook";
+    public static final String SUB_PATH_SETROOMTHERMPOINT = "setroomthermpoint";
+    public static final String SUB_PATH_SETTHERMMODE = "setthermmode";
+    public static final String SUB_PATH_SWITCHSCHEDULE = "switchschedule";
+    public static final String SUB_PATH_GETTHERMOSTAT = "getthermostatsdata";
+    public static final String SUB_PATH_GETSTATION = "getstationsdata";
+    public static final String SUB_PATH_GETMEASURE = "getmeasure";
+    public static final String SUB_PATH_HOMESTATUS = "homestatus";
+    public static final String SUB_PATH_HOMECOACH = "gethomecoachsdata";
+    public static final String SUB_PATH_GETLASTEVENT = "getlasteventof";
+    public static final String SUB_PATH_PING = "ping";
 
     public static final String PARAM_DEVICEID = "device_id";
     public static final String PARAM_MODULEID = "module_id";

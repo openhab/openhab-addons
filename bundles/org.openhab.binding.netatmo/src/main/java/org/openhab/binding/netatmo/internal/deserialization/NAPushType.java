@@ -17,7 +17,7 @@ import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 
 /**
- * This class holds informations of push_type field
+ * This class holds data of push_type field
  *
  * @author Gaël L'hopital - Initial contribution
  */

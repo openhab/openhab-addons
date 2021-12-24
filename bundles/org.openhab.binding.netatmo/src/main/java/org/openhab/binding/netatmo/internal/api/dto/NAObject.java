@@ -27,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class NAObject {
     @SerializedName(value = "id", alternate = { "program_id", "_id", "event_id" })
-    protected @NonNullByDefault({}) String id;
+    protected String id = "";
 
     @SerializedName(value = "name", alternate = { "module_name", "station_name", "pseudo" })
     private @Nullable String name;

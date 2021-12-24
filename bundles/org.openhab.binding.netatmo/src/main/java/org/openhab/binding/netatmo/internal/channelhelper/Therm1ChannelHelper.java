@@ -21,8 +21,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.types.State;
 
 /**
- * The {@link Therm1ChannelHelper} handle specific behavior
- * of the thermostat module
+ * The {@link Therm1ChannelHelper} handles specific behavior of the thermostat module
  *
  * @author Gaël L'hopital - Initial contribution
  *

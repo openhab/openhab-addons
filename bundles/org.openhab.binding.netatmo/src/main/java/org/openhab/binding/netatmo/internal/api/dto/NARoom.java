@@ -20,7 +20,7 @@ import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SetpointMode;
 
 /**
- * The {@link NARoom} holds data temperature data for a given room.
+ * The {@link NARoom} holds temperature data for a given room.
  *
  * @author Bernhard Kreuz - Initial contribution
  *

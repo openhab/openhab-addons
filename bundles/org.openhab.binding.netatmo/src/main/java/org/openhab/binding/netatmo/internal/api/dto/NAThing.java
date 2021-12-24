@@ -37,7 +37,7 @@ public class NAThing extends NAObject {
     private @Nullable ZonedDateTime lastSeen;
     @SerializedName(value = "firmware", alternate = { "firmware_revision" })
     private int firmware = -1;
-    private @NonNullByDefault({}) ModuleType type;
+    private ModuleType type = ModuleType.UNKNOWN;
     private @Nullable String roomId;
     private @Nullable Boolean reachable;
     private @Nullable NADashboard dashboardData;

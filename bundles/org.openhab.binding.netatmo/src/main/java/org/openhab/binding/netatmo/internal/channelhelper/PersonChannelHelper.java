@@ -24,7 +24,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link PersonChannelHelper} handle channels of person things.
+ * The {@link PersonChannelHelper} handles channels of person things.
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -38,14 +38,17 @@ public class PersonChannelHelper extends AbstractChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
-        NAPerson naPerson = (NAPerson) naThing;
-        if (CHANNEL_PERSON_AT_HOME.equals(channelId)) {
-            return OnOffType.from(!naPerson.isOutOfSight());
-        } else if (CHANNEL_LAST_SEEN.equals(channelId)) {
-            return toDateTimeType(naPerson.getLastSeen());
+        if (naThing instanceof NAPerson) {
+            NAPerson naPerson = (NAPerson) naThing;
+            if (CHANNEL_PERSON_AT_HOME.equals(channelId)) {
+                return OnOffType.from(!naPerson.isOutOfSight());
+            } else if (CHANNEL_LAST_SEEN.equals(channelId)) {
+                return toDateTimeType(naPerson.getLastSeen());
+            }
+            NASnapshot avatar = naPerson.getFace();
+            return avatar != null ? internalGetAvatar(avatar.getUrl(), channelId) : null;
         }
-        NASnapshot avatar = naPerson.getFace();
-        return avatar != null ? internalGetAvatar(avatar.getUrl(), channelId) : null;
+        return null;
     }
 
     private State internalGetAvatar(@Nullable String url, String channelId) {

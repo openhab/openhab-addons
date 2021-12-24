@@ -25,8 +25,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link RoomSetpointChannelHelper} handle specific behavior
- * of a room
+ * The {@link RoomSetpointChannelHelper} handles channels for a room capable of managing a thermostat
  *
  * @author Gaël L'hopital - Initial contribution
  *

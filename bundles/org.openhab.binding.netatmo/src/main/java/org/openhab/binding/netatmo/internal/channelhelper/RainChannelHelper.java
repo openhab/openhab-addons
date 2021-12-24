@@ -22,8 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link RainChannelHelper} handle specific behavior
- * of modules measuring rain
+ * The {@link RainChannelHelper} handles specific channels of modules measuring rain
  *
  * @author Gaël L'hopital - Initial contribution
  *

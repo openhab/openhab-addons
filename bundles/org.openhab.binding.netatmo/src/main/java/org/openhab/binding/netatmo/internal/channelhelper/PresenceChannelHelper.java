@@ -24,8 +24,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link PresenceChannelHelper} handle specific behavior
- * of Presence external cameras
+ * The {@link PresenceChannelHelper} handles specific channels of Presence external cameras
  *
  * @author Gaël L'hopital - Initial contribution
  *

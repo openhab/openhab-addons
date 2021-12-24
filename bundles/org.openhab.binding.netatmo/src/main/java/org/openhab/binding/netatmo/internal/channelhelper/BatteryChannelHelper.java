@@ -24,8 +24,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link BatteryChannelHelper} handle specific behavior
- * of modules using batteries
+ * The {@link BatteryChannelHelper} handles specific channels of modules using batteries
  *
  * @author Gaël L'hopital - Initial contribution
  *

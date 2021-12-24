@@ -43,7 +43,7 @@ public class AircareApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public NAStationDataResponse getHomeCoachData(@Nullable String deviceId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_HOMECOACH, PARAM_DEVICEID, deviceId);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_HOMECOACH, PARAM_DEVICEID, deviceId);
         return get(uriBuilder, NAStationDataResponse.class);
     }
 

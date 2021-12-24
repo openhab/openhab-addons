@@ -21,7 +21,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link TimestampExtendedChannelHelper} handle specific behavior
+ * The {@link TimestampExtendedChannelHelper} handles specific behavior
  * of modules reporting measurement timestamp in dashboard
  *
  * @author Gaël L'hopital - Initial contribution

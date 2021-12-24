@@ -17,7 +17,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link MeasuresChannelHelper} extensible channels based on getMeasure endpoint.
@@ -41,7 +40,9 @@ public class MeasuresChannelHelper extends AbstractChannelHelper {
     @Override
     protected @Nullable State internalGetOther(String channelId) {
         Map<String, State> localMeasures = measures;
-        return localMeasures == null ? UnDefType.UNDEF
-                : localMeasures.containsKey(channelId) ? localMeasures.get(channelId) : null;
+        if (localMeasures == null) {
+            throw new IllegalArgumentException("localMeasures should not be null, file a bug.");
+        }
+        return localMeasures.containsKey(channelId) ? localMeasures.get(channelId) : null;
     }
 }

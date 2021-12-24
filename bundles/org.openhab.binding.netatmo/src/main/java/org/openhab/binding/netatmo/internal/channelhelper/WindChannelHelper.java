@@ -22,8 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link WindChannelHelper} handle specific behavior
- * of modules measuring wind
+ * The {@link WindChannelHelper} handle specifics channels of modules measuring wind
  *
  * @author Gaël L'hopital - Initial contribution
  *

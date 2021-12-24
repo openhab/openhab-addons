@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link NetatmoThingConfiguration} is responsible for holding
- * configuration informations for any Netatmo thing module or device
+ * configuration information for any Netatmo thing module or device
  *
  * @author Gaël L'hopital - Initial contribution
  */

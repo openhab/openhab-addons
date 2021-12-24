@@ -26,9 +26,8 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 /**
- * This enforces a fallback to UNKNOWN when deserializing enum types, marked as @NonNull whereas
- * they were valued to null if the appropriate value is absent.
- * It will give more resilience to the binding when Netatmo API evolves.
+ * Enforces a fallback to UNKNOWN when deserializing enum types, marked as @NonNull whereas they were valued
+ * to null if the appropriate value is absent. It will give more resilience to the binding when Netatmo API evolves.
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -54,6 +53,7 @@ public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
             @Override
             public @Nullable T read(JsonReader in) throws IOException {
                 JsonReader delegateReader = new JsonReader(new StringReader('"' + in.nextString() + '"'));
+                @Nullable
                 T value = delegateAdapter.read(delegateReader);
                 delegateReader.close();
                 if (value == null) {

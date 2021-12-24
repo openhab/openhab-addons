@@ -22,8 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link NoiseChannelHelper} handle specific behavior
- * of modules measuring sound level
+ * The {@link NoiseChannelHelper} handles specific channels of modules measuring sound level
  *
  * @author Gaël L'hopital - Initial contribution
  *

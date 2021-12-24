@@ -22,8 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link TemperatureChannelHelper} handle specific behavior
- * of modules measuring temperature
+ * The {@link TemperatureChannelHelper} handles specific behavior of modules measuring temperature
  *
  * @author Gaël L'hopital - Initial contribution
  *

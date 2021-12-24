@@ -31,7 +31,7 @@ import org.openhab.binding.netatmo.internal.deserialization.NAPushType;
 @NonNullByDefault
 public class NAWebhookEvent extends NAEvent {
     private @NonNullByDefault({}) NAPushType pushType;
-    private @NonNullByDefault({}) String homeId;
+    private String homeId = "";
     private @Nullable String snapshotId;
     private @Nullable String snapshotKey;
     private NAObjectMap<NAPerson> persons = new NAObjectMap<>();

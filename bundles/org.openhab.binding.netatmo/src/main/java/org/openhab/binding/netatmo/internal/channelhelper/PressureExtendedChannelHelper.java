@@ -21,8 +21,8 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link PressureExtendedChannelHelper} handle specific behavior
- * of modules measuring pressure
+ * The {@link PressureExtendedChannelHelper} handles specific behavior of modules measuring pressure
+ * with pressure trend capability
  *
  * @author Gaël L'hopital - Initial contribution
  *

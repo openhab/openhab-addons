@@ -50,7 +50,7 @@ public class WeatherApi extends RestManager {
      */
     public NAStationDataResponse getStationsData(@Nullable String deviceId, boolean getFavorites)
             throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETSTATION, PARAM_DEVICEID, deviceId, //
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETSTATION, PARAM_DEVICEID, deviceId, //
                 PARAM_FAVORITES, getFavorites);
         NAStationDataResponse response = get(uriBuilder, NAStationDataResponse.class);
         return response;
@@ -85,7 +85,7 @@ public class WeatherApi extends RestManager {
     private NAMeasureBodyElem<?> getMeasure(String deviceId, @Nullable String moduleId, @Nullable String scale,
             String measureType) throws NetatmoException {
         // NAMeasuresResponse is not designed for optimize=false
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETMEASURE, PARAM_DEVICEID, deviceId, "real_time", true,
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETMEASURE, PARAM_DEVICEID, deviceId, "real_time", true,
                 "date_end", "last", "optimize", true, "type", measureType.toLowerCase(), PARAM_MODULEID, moduleId);
 
         if (scale != null) {

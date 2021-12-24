@@ -98,7 +98,7 @@ public class HomeHandler extends DeviceWithEventHandler {
             ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
             updateThing(builder.build());
         } catch (NetatmoException e) {
-            logger.warn("Error retreiving home detailed informations : {}", e.getMessage());
+            logger.warn("Error retreiving home detailed data : {}", e.getMessage());
         }
     }
 

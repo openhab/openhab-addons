@@ -25,8 +25,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
- * The {@link RoomChannelHelper} handle specific behavior
- * of the room
+ * The {@link RoomChannelHelper} handles specific behavior of the room
  *
  * @author Markus Dillmann - Initial contribution
  *

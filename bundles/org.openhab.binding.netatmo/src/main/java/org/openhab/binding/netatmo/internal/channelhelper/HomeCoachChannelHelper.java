@@ -21,7 +21,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HomeCoachChannelHelper} handle specific channels of NHC thing.
+ * The {@link HomeCoachChannelHelper} handles specific channels of NHC thing.
  *
  * @author Gaël L'hopital - Initial contribution
  *

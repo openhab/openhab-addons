@@ -26,9 +26,9 @@ import org.openhab.core.library.types.PointType;
 
 @NonNullByDefault
 public class NAPlace {
-    private @NonNullByDefault({}) String city;
-    private @NonNullByDefault({}) String country;
-    private @NonNullByDefault({}) String timezone;
+    private String city = "";
+    private String country = "";
+    private String timezone = "";
     private double altitude;
     private double[] location = {};
 

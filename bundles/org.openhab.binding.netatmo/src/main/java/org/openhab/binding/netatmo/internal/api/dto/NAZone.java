@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.ThermostatZoneType;
 
 /**
- * The {@link NAZone} holds data temperature data for a given zone.
+ * The {@link NAZone} holds temperature data for a given zone.
  *
  * @author Gaël L'hopital - Initial contribution
  *

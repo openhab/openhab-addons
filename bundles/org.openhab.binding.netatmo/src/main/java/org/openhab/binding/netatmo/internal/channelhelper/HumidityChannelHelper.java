@@ -24,7 +24,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HumidityChannelHelper} specific channels of modules returning humidity measures.
+ * The {@link HumidityChannelHelper} handles specific channels of modules returning humidity measures.
  *
  * @author Gaël L'hopital - Initial contribution
  *

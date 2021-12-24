@@ -20,7 +20,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link NAWelcome} holds status informations of a camera.
+ * The {@link NAWelcome} holds status information of a camera.
  *
  * @author Gaël L'hopital - Initial contribution
  *

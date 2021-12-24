@@ -211,33 +211,33 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     }
 
     private void updateProperties(NAThing naThing) {
+        Map<String, String> properties = editProperties();
         int firmware = naThing.getFirmware();
         if (firmware != -1) {
-            Map<String, String> properties = editProperties();
-            ModuleType modelId = naThing.getType();
             properties.put(Thing.PROPERTY_VENDOR, VENDOR);
+            ModuleType modelId = naThing.getType();
             properties.put(Thing.PROPERTY_MODEL_ID, modelId.name());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(firmware));
-            PointType point = null;
-            if (naThing instanceof NAHome) {
-                point = ((NAHome) naThing).getLocation();
-                NAPlace place = ((NAHome) naThing).getPlace();
-                if (place != null) {
-                    properties.put(PROPERTY_CITY, place.getCity());
-                    properties.put(PROPERTY_COUNTRY, place.getCountry());
-                    properties.put(PROPERTY_TIMEZONE, place.getTimezone());
-                }
-            } else if (naThing instanceof NADevice) {
-                NAPlace place = ((NADevice) naThing).getPlace();
-                if (place != null) {
-                    point = place.getLocation();
-                }
-            }
-            if (point != null) {
-                properties.put(PROPERTY_LOCATION, point.toString());
-            }
-            updateProperties(properties);
         }
+        PointType point = null;
+        if (naThing instanceof NAHome) {
+            point = ((NAHome) naThing).getLocation();
+            NAPlace place = ((NAHome) naThing).getPlace();
+            if (place != null) {
+                properties.put(PROPERTY_CITY, place.getCity());
+                properties.put(PROPERTY_COUNTRY, place.getCountry());
+                properties.put(PROPERTY_TIMEZONE, place.getTimezone());
+            }
+        } else if (naThing instanceof NADevice) {
+            NAPlace place = ((NADevice) naThing).getPlace();
+            if (place != null) {
+                point = place.getLocation();
+            }
+        }
+        if (point != null) {
+            properties.put(PROPERTY_LOCATION, point.toString());
+        }
+        updateProperties(properties);
     }
 
     private void expireData() {

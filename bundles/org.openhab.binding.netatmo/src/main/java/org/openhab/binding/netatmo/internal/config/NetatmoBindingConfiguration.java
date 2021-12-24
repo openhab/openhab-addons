@@ -18,7 +18,7 @@ import org.openhab.binding.netatmo.internal.api.NetatmoException;
 
 /**
  * The {@link NetatmoBindingConfiguration} is responsible for holding configuration
- * informations needed to access Netatmo API and general binding behavior setup
+ * information needed to access Netatmo API and general binding behavior setup
  *
  * @author Gaël L'hopital - Initial contribution
  */

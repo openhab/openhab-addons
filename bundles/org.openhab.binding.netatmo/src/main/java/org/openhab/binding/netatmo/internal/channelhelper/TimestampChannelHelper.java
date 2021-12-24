@@ -21,7 +21,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.types.State;
 
 /**
- * The {@link TimestampChannelHelper} handle specific behavior
+ * The {@link TimestampChannelHelper} handles specific behavior
  * of modules reporting last seen
  *
  * @author Gaël L'hopital - Initial contribution

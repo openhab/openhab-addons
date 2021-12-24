@@ -22,7 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.core.types.State;
 
 /**
- * The {@link CameraChannelHelper} handle specific channels of cameras
+ * The {@link CameraChannelHelper} handles specific channels of cameras
  *
  * @author Gaël L'hopital - Initial contribution
  *

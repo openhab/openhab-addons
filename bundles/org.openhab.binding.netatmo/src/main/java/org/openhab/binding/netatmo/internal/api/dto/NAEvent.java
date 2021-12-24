@@ -22,7 +22,7 @@ import org.openhab.binding.netatmo.internal.api.data.EventSubType;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 
 /**
- * The {@link NAEvent} holds informations transfered by the webhook.
+ * The {@link NAEvent} holds information transferred by the webhook.
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -31,7 +31,7 @@ import org.openhab.binding.netatmo.internal.api.data.EventType;
 @NonNullByDefault
 public abstract class NAEvent extends NAObject {
     protected EventType type = EventType.UNKNOWN;
-    private @NonNullByDefault({}) String cameraId;
+    private String cameraId = "";
     private @Nullable String message;
     protected int subType = -1;
 

@@ -23,8 +23,7 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
 
 /**
- * The {@link SignalChannelHelper} handle specific behavior
- * of WIFI or RF devices and modules
+ * The {@link SignalChannelHelper} handles specific behavior of WIFI or RF devices and modules
  *
  * @author Gaël L'hopital - Initial contribution
  *

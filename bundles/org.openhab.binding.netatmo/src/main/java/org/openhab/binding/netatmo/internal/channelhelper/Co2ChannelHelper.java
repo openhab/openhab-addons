@@ -22,7 +22,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link Co2ChannelHelper} handle specific channels of things handling ppm measurement
+ * The {@link Co2ChannelHelper} handles specific channels of things handling ppm measurement
  *
  * @author Gaël L'hopital - Initial contribution
  *

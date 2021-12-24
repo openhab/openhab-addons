@@ -45,7 +45,7 @@ public class SecurityApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public boolean dropWebhook() throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_DROPWEBHOOK);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_DROPWEBHOOK);
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
@@ -59,20 +59,20 @@ public class SecurityApi extends RestManager {
      * @throws NetatmoException If fail to call the API, e.g. server error or deserializing
      */
     public boolean addwebhook(URI uri) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_ADDWEBHOOK);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_ADDWEBHOOK);
         uriBuilder.queryParam(PARAM_URL, uri.toString());
         post(uriBuilder, ApiResponse.Ok.class, null);
         return true;
     }
 
     public Collection<NAHomeEvent> getLastEventsOf(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getApiUriBuilder(SPATH_GETLASTEVENT, PARAM_HOMEID, homeId, PARAM_PERSONID, personId);
+        UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_GETLASTEVENT, PARAM_HOMEID, homeId, PARAM_PERSONID, personId);
         NALastEventsDataResponse response = get(uriBuilder, NALastEventsDataResponse.class);
         return response.getBody().getElements();
     }
 
     public String ping(String vpnUrl) throws NetatmoException {
-        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path(SPATH_PING);
+        UriBuilder uriBuilder = UriBuilder.fromUri(vpnUrl).path(PATH_COMMAND).path(SUB_PATH_PING);
         NAPing response = get(uriBuilder, NAPing.class);
         return response.getStatus();
     }
@@ -92,14 +92,14 @@ public class SecurityApi extends RestManager {
     }
 
     public boolean setPersonAway(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder(SPATH_PERSON_AWAY);
+        UriBuilder uriBuilder = getAppUriBuilder(SUB_PATH_PERSON_AWAY);
         String payload = String.format("{\"home_id\":\"%s\",\"person_id\":\"%s\"}", homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);
         return true;
     }
 
     public boolean setPersonHome(String homeId, String personId) throws NetatmoException {
-        UriBuilder uriBuilder = getAppUriBuilder(SPATH_PERSON_HOME);
+        UriBuilder uriBuilder = getAppUriBuilder(SUB_PATH_PERSON_HOME);
         String payload = String.format("{\"home_id\":\"%s\",\"person_ids\":[\"%s\"]}", homeId, personId);
         post(uriBuilder, ApiResponse.Ok.class, payload);
         return true;

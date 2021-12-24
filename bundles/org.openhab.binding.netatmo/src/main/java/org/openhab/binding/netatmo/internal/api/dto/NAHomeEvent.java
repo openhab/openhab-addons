@@ -25,7 +25,7 @@ import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.EventCateg
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.VideoStatus;
 
 /**
- * The {@link NAHomeEvent} holds informations transfered by the webhook about a home event.
+ * The {@link NAHomeEvent} holds information transferred by the webhook about a home event.
  *
  * @author Gaël L'hopital - Initial contribution
  *
@@ -64,7 +64,7 @@ public class NAHomeEvent extends NAEvent {
 
     @Override
     public Optional<EventSubType> getSubTypeDescription() {
-        // Blend extra informations provided by this kind of event in subcategories...
+        // Blend extra information provided by this kind of event in subcategories...
         if (isArrival && type == EventType.PERSON) {
             this.subType = EventSubType.PERSON_ARRIVAL.subType;
         } else {
