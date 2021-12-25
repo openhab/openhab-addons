@@ -67,7 +67,7 @@
 					Serial over IP)</description>
 				<default>8080</default>
 			</parameter>
-			<parameter name="numZones" type="integer" min="1" max="18" required="true">
+			<parameter name="numZones" type="integer" min="1" max="8" required="true">
 				<label>Number of Zones</label>
 				<description>Number of Zones on the Amplifier to Utilize in the Binding</description>
 				<default>8</default>
