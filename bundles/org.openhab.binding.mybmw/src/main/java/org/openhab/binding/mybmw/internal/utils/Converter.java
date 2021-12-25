@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -218,11 +219,22 @@ public class Converter {
         return index;
     }
 
+    /**
+     * Returns list of found vehicles
+     * In case of errors return empty list
+     *
+     * @param json
+     * @return
+     */
     public static List<Vehicle> getVehicleList(String json) {
-        List<Vehicle> l = GSON.fromJson(json, VEHICLE_LIST_TYPE);
-        if (l != null) {
-            return l;
-        } else {
+        try {
+            List<Vehicle> l = GSON.fromJson(json, VEHICLE_LIST_TYPE);
+            if (l != null) {
+                return l;
+            } else {
+                return new ArrayList<Vehicle>();
+            }
+        } catch (JsonSyntaxException e) {
             return new ArrayList<Vehicle>();
         }
     }

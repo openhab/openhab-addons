@@ -43,6 +43,6 @@ public class VehicleTest {
         assertEquals("BMW", v.brand, "Car brand");
         assertEquals(true, v.properties.areDoorsClosed, "Doors Closed");
         assertEquals(76, v.properties.electricRange.distance.value, "Electric Range");
-        assertEquals(8.49, v.properties.vehicleLocation.coordinates.longitude, 0.1, "Location lon");
+        assertEquals(6.789, v.properties.vehicleLocation.coordinates.longitude, 0.1, "Location lon");
     }
 }
