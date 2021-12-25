@@ -20,16 +20,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.util.FileReader;
+import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link ConnectedDriveTest} Test json responses from ConnectedDrive Portal
+ * The {@link VehiclePropertiesTest} Test json responses from ConnectedDrive Portal
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ConnectedDriveTest {
+public class VehiclePropertiesTest {
 
     @Test
     public void testUserInfo() {
@@ -38,10 +39,10 @@ public class ConnectedDriveTest {
 
         assertEquals(1, vl.size(), "Number of Vehicles");
         Vehicle v = vl.get(0);
-        assertEquals("MY_REAL_VIN", v.vin, "VIN");
+        assertEquals(Constants.ANONYMOUS, v.vin, "VIN");
         assertEquals("i3 94 (+ REX)", v.model, "Model");
-        assertEquals("BEV_REX", v.driveTrain, "DriveTrain");
-        assertEquals("BMW_I", v.brand, "Brand");
+        assertEquals(Constants.BEV, v.driveTrain, "DriveTrain");
+        assertEquals("BMW", v.brand, "Brand");
         assertEquals(2017, v.year, "Year of Construction");
     }
 
