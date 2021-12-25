@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +33,10 @@ public class BimmerConstants {
     public static final String REGION_CHINA = "CHINA";
     public static final String REGION_ROW = "ROW";
 
+    public static final String BRAND_BMW = "bmw";
+    public static final String BRAND_MINI = "mini";
+    public static final List<String> allBrands = List.of(BRAND_BMW, BRAND_MINI);
+
     public static final String OAUTH_ENDPOINT = "/gcdm/oauth/authenticate";
 
     public static final String EADRAX_SERVER_NORTH_AMERICA = "cocoapi.bmwgroup.us";
@@ -49,6 +54,9 @@ public class BimmerConstants {
     // Http variables
     public static final String USER_AGENT_BMW = "android(v1.07_20200330);bmw;1.7.0(11152)";
     public static final String USER_AGENT_MINI = "android(v1.07_20200330);mini;1.7.0(11152)";
+    public static final Map<String, String> BRAND_USER_AGENTS_MAP = Map.of(BRAND_BMW, USER_AGENT_BMW, BRAND_MINI,
+            USER_AGENT_MINI);
+
     public static final String LOGIN_NONCE = "login_nonce";
     public static final String AUTHORIZATION_CODE = "authorization_code";
 

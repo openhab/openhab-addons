@@ -29,12 +29,17 @@ public class MyBMWConfiguration {
     public String region = Constants.EMPTY;
 
     /**
-     * BMW Connected Drive Username
+     * MyBMW App Username
      */
     public String userName = Constants.EMPTY;
 
     /**
-     * BMW Connected Drive Password
+     * MyBMW App Password
      */
     public String password = Constants.EMPTY;
+
+    /**
+     * Preferred Locale language
+     */
+    public String language = Constants.EMPTY;
 }

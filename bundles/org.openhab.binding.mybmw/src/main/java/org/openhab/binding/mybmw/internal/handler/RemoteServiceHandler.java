@@ -25,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.mybmw.internal.VehicleConfiguration;
-import org.openhab.binding.mybmw.internal.dto.NetworkError;
+import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
 import org.openhab.binding.mybmw.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
@@ -127,9 +127,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
         if (data.length > 0) {
             dataMap.add(DATA, data[0]);
             proxy.post(serviceExecutionAPI + service.getRemoteCommand(), CONTENT_TYPE_JSON_ENCODED,
-                    "{CHARGING_PROFILE:" + data[0] + "}", this);
+                    "{CHARGING_PROFILE:" + data[0] + "}", Constants.EMPTY, this);
         } else {
-            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null, this);
+            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null, Constants.EMPTY, this);
         }
         return true;
     }
@@ -149,7 +149,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 final String encoded = dataMap == null || dataMap.isEmpty() ? null
                         : UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
 
-                proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null, this);
+                proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null, Constants.EMPTY, this);
             }, () -> {
                 logger.warn("No Service executed to get state");
             });

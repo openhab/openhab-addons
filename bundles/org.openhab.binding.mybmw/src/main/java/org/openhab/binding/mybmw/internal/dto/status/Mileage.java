@@ -13,15 +13,12 @@
 package org.openhab.binding.mybmw.internal.dto.status;
 
 /**
- * The {@link CBSMessage} Data Transfer Object
+ * The {@link Mileage} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class CBSMessage {
-    public String id;// ": "BrakeFluid",
-    public String title;// ": "Brake fluid",
-    public int iconId;// ": 60223,
-    public String longDescription;// ": "Next service due by the specified date.",
-    public String subtitle;// ": "Due in November 2023",
-    public String criticalness;// ": "nonCritical"
+public class Mileage {
+    public int mileage;// ": 31537,
+    public String units;// ": "km",
+    public String formattedMileage;// ": "31537"
 }

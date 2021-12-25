@@ -1,6 +1,6 @@
 [
 	{
-		"vin": "WBY1Z81040V905639",
+		"vin": "anonymous",
 		"model": "i3 94 (+ REX)",
 		"year": 2017,
 		"brand": "BMW",
@@ -173,11 +173,11 @@
 			],
 			"vehicleLocation": {
 				"coordinates": {
-					"latitude": 50.556049,
-					"longitude": 8.495669
+					"latitude": 1.2345,
+					"longitude": 6.789
 				},
 				"address": {
-					"formatted": "Uferstraße 4, 35576 Wetzlar"
+					"formatted": "anonymous"
 				},
 				"heading": 222
 			},

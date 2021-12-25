@@ -27,10 +27,8 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.StatusWrapper;
-import org.openhab.binding.mybmw.internal.dto.compat.VehicleAttributesContainer;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.Constants;
-import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -87,7 +85,7 @@ public class VehicleTests {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         MyBMWOptionProvider op = mock(MyBMWOptionProvider.class);
-        cch = new VehicleHandler(thing, op, type, imperial);
+        cch = new VehicleHandler(thing, op, type, "de");
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
@@ -103,7 +101,7 @@ public class VehicleTests {
         allStates = stateCaptor.getAllValues();
 
         assertNotNull(driveTrain);
-        StatusWrapper checker = new StatusWrapper(driveTrain, imperial, statusContent);
+        StatusWrapper checker = new StatusWrapper(driveTrain, statusContent);
         trace();
         if (concreteChecks.isPresent()) {
             return checker.append(concreteChecks.get()).checkResults(allChannels, allStates);
@@ -372,47 +370,5 @@ public class VehicleTests {
         m.put(MyBMWConstants.WINDOWS, StringType.valueOf(Constants.INTERMEDIATE));
         assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
                 Optional.empty()));
-    }
-
-    @Test
-    public void testI01RexCompat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC_REX.toString(), false);
-        String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
-                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION,
-                Optional.empty()));
-    }
-
-    @Test
-    public void testI01RexMilesCompat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC_REX.toString(), true);
-        String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
-                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION,
-                Optional.empty()));
-    }
-
-    @Test
-    public void testF11Compat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), false);
-        String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
-                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
-    }
-
-    @Test
-    public void testF11MilesCompat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), true);
-        String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(Converter.transformLegacyStatus(vac),
-                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
     }
 }

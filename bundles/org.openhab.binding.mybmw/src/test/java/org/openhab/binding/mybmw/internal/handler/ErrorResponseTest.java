@@ -60,7 +60,7 @@ public class ErrorResponseTest {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         MyBMWOptionProvider op = mock(MyBMWOptionProvider.class);
-        cch = new VehicleHandler(thing, op, type, imperial);
+        cch = new VehicleHandler(thing, op, type, "de");
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);

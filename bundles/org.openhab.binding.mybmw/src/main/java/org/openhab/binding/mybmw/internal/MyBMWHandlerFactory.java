@@ -45,14 +45,14 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
     private final MyBMWOptionProvider optionProvider;
-    private boolean imperial = false;
+    private String localeLanguage;
 
     @Activate
     public MyBMWHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference MyBMWOptionProvider op,
             final @Reference LocaleProvider lp, final @Reference TimeZoneProvider timeZoneProvider) {
         httpClientFactory = hcf;
         optionProvider = op;
-        imperial = IMPERIAL_COUNTRIES.contains(lp.getLocale().getCountry());
+        localeLanguage = lp.getLocale().getLanguage().toUpperCase();
         Converter.setTimeZoneProvider(timeZoneProvider);
     }
 
@@ -65,9 +65,9 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
-            return new MyBMWBridgeHandler((Bridge) thing, httpClientFactory);
+            return new MyBMWBridgeHandler((Bridge) thing, httpClientFactory, localeLanguage);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            VehicleHandler vh = new VehicleHandler(thing, optionProvider, thingTypeUID.getId(), imperial);
+            VehicleHandler vh = new VehicleHandler(thing, optionProvider, thingTypeUID.getId(), localeLanguage);
             return vh;
         }
         return null;

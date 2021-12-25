@@ -21,15 +21,18 @@ import java.util.List;
  * @author Norbert Truchsess - edit & send of charge profile
  */
 public class Timer {
-    public String departureTime;// ": "05:00",
-    public Boolean timerEnabled;// ": false,
-    public List<String> weekdays;
+    public int id;// ": 1,
+    public String action;// ": "deactivate",
+    public Time timeStamp;
+    public List<String> timerWeekDays;
     /**
-     * "MONDAY",
-     * "TUESDAY",
-     * "WEDNESDAY",
-     * "THURSDAY",
-     * "FRIDAY"
-     * ] '
+     * "monday",
+     * "tuesday",
+     * "wednesday",
+     * "thursday",
+     * "friday",
+     * "saturday",
+     * "sunday"
+     * ]
      */
 }

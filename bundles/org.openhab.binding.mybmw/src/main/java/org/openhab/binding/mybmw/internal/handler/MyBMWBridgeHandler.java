@@ -23,9 +23,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConfiguration;
 import org.openhab.binding.mybmw.internal.discovery.VehicleDiscovery;
-import org.openhab.binding.mybmw.internal.dto.NetworkError;
-import org.openhab.binding.mybmw.internal.dto.discovery.Dealer;
-import org.openhab.binding.mybmw.internal.dto.discovery.VehiclesContainer;
+import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
+import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
@@ -42,8 +41,6 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonParseException;
-
 /**
  * The {@link MyBMWBridgeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -58,10 +55,12 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
     private Optional<MyBMWProxy> proxy = Optional.empty();
     private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
+    private String localeLanguage;
 
-    public MyBMWBridgeHandler(Bridge bridge, HttpClientFactory hcf) {
+    public MyBMWBridgeHandler(Bridge bridge, HttpClientFactory hcf, String language) {
         super(bridge);
         httpClientFactory = hcf;
+        localeLanguage = language;
     }
 
     @Override
@@ -74,6 +73,9 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
         MyBMWConfiguration config = getConfigAs(MyBMWConfiguration.class);
+        if (config.language.equals(Constants.EMPTY)) {
+            config.language = localeLanguage;
+        }
         if (!checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
@@ -113,48 +115,10 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
         proxy.ifPresent(prox -> prox.requestVehicles(this));
     }
 
-    // https://www.bmw-connecteddrive.de/api/me/vehicles/v2?all=true&brand=BM
-    public String getDiscoveryFingerprint() {
-        return troubleshootFingerprint.map(fingerprint -> {
-            VehiclesContainer container = null;
-            try {
-                container = Converter.getGson().fromJson(fingerprint, VehiclesContainer.class);
-                if (container != null) {
-                    if (container.vehicles != null) {
-                        if (container.vehicles.isEmpty()) {
-                            return Constants.EMPTY_JSON;
-                        } else {
-                            container.vehicles.forEach(entry -> {
-                                entry.vin = Constants.ANONYMOUS;
-                                entry.breakdownNumber = Constants.ANONYMOUS;
-                                if (entry.dealer != null) {
-                                    Dealer d = entry.dealer;
-                                    d.city = Constants.ANONYMOUS;
-                                    d.country = Constants.ANONYMOUS;
-                                    d.name = Constants.ANONYMOUS;
-                                    d.phone = Constants.ANONYMOUS;
-                                    d.postalCode = Constants.ANONYMOUS;
-                                    d.street = Constants.ANONYMOUS;
-                                }
-                            });
-                            return Converter.getGson().toJson(container);
-                        }
-                    } else {
-                        logger.debug("container.vehicles is null");
-                    }
-                }
-            } catch (JsonParseException jpe) {
-                logger.debug("Cannot parse fingerprint {}", jpe.getMessage());
-            }
-            // Not a VehiclesContainer or Vehicles is empty so deliver fingerprint as it is
-            return fingerprint;
-        }).orElse(Constants.INVALID);
-    }
-
     private void logFingerPrint() {
         logger.debug("###### Discovery Troubleshoot Fingerprint Data - BEGIN ######");
         logger.debug("### Discovery Result ###");
-        logger.debug("{}", getDiscoveryFingerprint());
+        logger.debug("{}", troubleshootFingerprint.get());
         logger.debug("###### Discovery Troubleshoot Fingerprint Data - END ######");
     }
 
@@ -166,36 +130,9 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
         boolean firstResponse = troubleshootFingerprint.isEmpty();
         if (response != null) {
             updateStatus(ThingStatus.ONLINE);
-            troubleshootFingerprint = discoveryService.map(discovery -> {
-                try {
-                    VehiclesContainer container = Converter.getGson().fromJson(response, VehiclesContainer.class);
-                    if (container != null) {
-                        if (container.vehicles != null) {
-                            discovery.onResponse(container);
-                            container.vehicles.forEach(entry -> {
-                                entry.vin = Constants.ANONYMOUS;
-                                entry.breakdownNumber = Constants.ANONYMOUS;
-                                if (entry.dealer != null) {
-                                    Dealer d = entry.dealer;
-                                    d.city = Constants.ANONYMOUS;
-                                    d.country = Constants.ANONYMOUS;
-                                    d.name = Constants.ANONYMOUS;
-                                    d.phone = Constants.ANONYMOUS;
-                                    d.postalCode = Constants.ANONYMOUS;
-                                    d.street = Constants.ANONYMOUS;
-                                }
-                            });
-                        }
-                    } else {
-                        troubleshootFingerprint = Optional.of(Constants.EMPTY_JSON);
-                    }
-                } catch (JsonParseException jpe) {
-                    logger.debug("Fingerprint parse exception {}", jpe.getMessage());
-                }
-                // Unparseable or not a VehiclesContainer:
-                return response;
-            });
-        } else {
+            List<Vehicle> vehicleList = Converter.getVehicleList(response);
+            discoveryService.get().onResponse(vehicleList);
+            // [todo calculate]
             troubleshootFingerprint = Optional.of(Constants.EMPTY_JSON);
         }
         if (firstResponse) {

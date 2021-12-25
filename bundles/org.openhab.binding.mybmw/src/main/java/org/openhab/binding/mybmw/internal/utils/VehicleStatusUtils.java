@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
-import static org.openhab.binding.mybmw.internal.utils.Constants.*;
-
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mybmw.internal.dto.status.CBSMessage;
-import org.openhab.binding.mybmw.internal.dto.status.VehicleStatus;
+import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 
 /**
  * The {@link VehicleStatusUtils} Data Transfer Object
@@ -29,22 +26,16 @@ import org.openhab.binding.mybmw.internal.dto.status.VehicleStatus;
 @NonNullByDefault
 public class VehicleStatusUtils {
 
-    public static String getNextServiceDate(VehicleStatus vStatus) {
-        if (vStatus.cbsData == null) {
-            return Constants.NULL_DATE;
-        }
-        if (vStatus.cbsData.isEmpty()) {
+    public static String getNextServiceDate(List<CBS> cbsMessageList) {
+        if (cbsMessageList.isEmpty()) {
             return Constants.NULL_DATE;
         } else {
-            LocalDateTime farFuture = LocalDateTime.now().plusYears(100);
-            LocalDateTime serviceDate = farFuture;
-            for (int i = 0; i < vStatus.cbsData.size(); i++) {
-                CBSMessage entry = vStatus.cbsData.get(i);
-                if (entry.cbsDueDate != null) {
-                    LocalDateTime d = LocalDateTime.parse(entry.cbsDueDate + Constants.UTC_APPENDIX);
-                    if (d.isBefore(serviceDate)) {
-                        serviceDate = d;
-                    }
+            ZonedDateTime farFuture = ZonedDateTime.now().plusYears(100);
+            ZonedDateTime serviceDate = farFuture;
+            for (CBS service : cbsMessageList) {
+                ZonedDateTime d = ZonedDateTime.parse(service.dateTime);
+                if (d.isBefore(serviceDate)) {
+                    serviceDate = d;
                 }
             }
             if (serviceDate.equals(farFuture)) {
@@ -55,87 +46,42 @@ public class VehicleStatusUtils {
         }
     }
 
-    public static int getNextServiceMileage(VehicleStatus vStatus) {
-        if (vStatus.cbsData == null) {
-            return -1;
-        }
-        if (vStatus.cbsData.isEmpty()) {
-            return -1;
-        } else {
-            int serviceMileage = Integer.MAX_VALUE;
-            for (int i = 0; i < vStatus.cbsData.size(); i++) {
-                CBSMessage entry = vStatus.cbsData.get(i);
-                if (entry.cbsRemainingMileage != -1) {
-                    if (entry.cbsRemainingMileage < serviceMileage) {
-                        serviceMileage = entry.cbsRemainingMileage;
-                    }
-                }
-            }
-            if (serviceMileage != Integer.MAX_VALUE) {
-                return serviceMileage;
-            } else {
-                return -1;
-            }
-        }
-    }
-
-    public static String checkControlActive(VehicleStatus vStatus) {
-        if (vStatus.checkControlMessages == null) {
-            return UNDEF;
-        }
-        if (vStatus.checkControlMessages.isEmpty()) {
-            return NOT_ACTIVE;
-        } else {
-            return ACTIVE;
-        }
-    }
-
-    public static String getUpdateTime(VehicleStatus vStatus) {
-        if (vStatus.internalDataTimeUTC != null) {
-            return vStatus.internalDataTimeUTC;
-        } else if (vStatus.updateTime != null) {
-            return vStatus.updateTime;
-        } else {
-            return Constants.NULL_DATE;
-        }
-    }
+    /**
+     * public static int getNextServiceMileage(VehicleStatus vStatus) {
+     * if (vStatus.cbsData == null) {
+     * return -1;
+     * }
+     * if (vStatus.cbsData.isEmpty()) {
+     * return -1;
+     * } else {
+     * int serviceMileage = Integer.MAX_VALUE;
+     * for (int i = 0; i < vStatus.cbsData.size(); i++) {
+     * CBSMessage entry = vStatus.cbsData.get(i);
+     * if (entry.cbsRemainingMileage != -1) {
+     * if (entry.cbsRemainingMileage < serviceMileage) {
+     * serviceMileage = entry.cbsRemainingMileage;
+     * }
+     * }
+     * }
+     * if (serviceMileage != Integer.MAX_VALUE) {
+     * return serviceMileage;
+     * } else {
+     * return -1;
+     * }
+     * }
+     * }
+     */
 
     /**
-     * Check for certain Windows or Doors DTO object the "Closed" Status
-     * INVALID values will be ignored
-     *
-     * @param dto
-     * @return Closed if all "Closed", "Open" otherwise
+     * public static String checkControlActive(VehicleStatus vStatus) {
+     * if (vStatus.checkControlMessages == null) {
+     * return UNDEF;
+     * }
+     * if (vStatus.checkControlMessages.isEmpty()) {
+     * return NOT_ACTIVE;
+     * } else {
+     * return ACTIVE;
+     * }
+     * }
      */
-    public static String checkClosed(Object dto) {
-        String overallState = Constants.UNDEF;
-        for (Field field : dto.getClass().getDeclaredFields()) {
-            try {
-                Object d = field.get(dto);
-                if (d != null) {
-                    String state = d.toString();
-                    // skip invalid entries - they don't apply to this Vehicle
-                    if (!state.equalsIgnoreCase(INVALID)) {
-                        if (state.equalsIgnoreCase(OPEN)) {
-                            overallState = OPEN;
-                            // stop searching for more open items - overall Doors / Windows are OPEN
-                            break;
-                        } else if (state.equalsIgnoreCase(INTERMEDIATE)) {
-                            if (!overallState.equalsIgnoreCase(OPEN)) {
-                                overallState = INTERMEDIATE;
-                                // continue searching - maybe another Door / Window is OPEN
-                            }
-                        } else if (state.equalsIgnoreCase(CLOSED)) {
-                            // at least one valid object needs to be found in order to reply "CLOSED"
-                            if (overallState.equalsIgnoreCase(UNDEF)) {
-                                overallState = CLOSED;
-                            }
-                        }
-                    }
-                }
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-            }
-        }
-        return Converter.toTitleCase(overallState);
-    }
 }

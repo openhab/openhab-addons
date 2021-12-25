@@ -34,13 +34,14 @@ import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.mybmw.internal.MyBMWConfiguration;
 import org.openhab.binding.mybmw.internal.VehicleConfiguration;
-import org.openhab.binding.mybmw.internal.dto.NetworkError;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthQueryResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthResponse;
+import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
 import org.openhab.binding.mybmw.internal.handler.simulation.Injector;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.binding.mybmw.internal.utils.HTTPConstants;
 import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class MyBMWProxy {
     }
 
     public synchronized void call(final String url, final boolean post, final @Nullable String encoding,
-            final @Nullable String params, final ResponseCallback callback) {
+            final @Nullable String params, final String userAgent, final ResponseCallback callback) {
         // only executed in "simulation mode"
         // SimulationTest.testSimulationOff() assures Injector is off when releasing
         if (Injector.isActive()) {
@@ -121,14 +122,8 @@ public class MyBMWProxy {
             req = httpClient.newRequest(completeUrl);
         }
         req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
-        /**
-         * [todo]
-         * decide
-         * a) which user agent to choose
-         * b) which language to take
-         */
-        req.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
-        req.header("accept-language", "en");
+        req.header(HTTPConstants.X_USER_AGENT, userAgent);
+        req.header(HttpHeader.ACCEPT_LANGUAGE, configuration.language);
 
         req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
@@ -159,21 +154,38 @@ public class MyBMWProxy {
         });
     }
 
-    public void get(String url, @Nullable String coding, @Nullable String params, ResponseCallback callback) {
-        call(url, false, coding, params, callback);
+    public void get(String url, @Nullable String coding, @Nullable String params, final String userAgent,
+            ResponseCallback callback) {
+        call(url, false, coding, params, userAgent, callback);
     }
 
-    public void post(String url, @Nullable String coding, @Nullable String params, ResponseCallback callback) {
-        call(url, true, coding, params, callback);
+    public void post(String url, @Nullable String coding, @Nullable String params, final String userAgent,
+            ResponseCallback callback) {
+        call(url, true, coding, params, userAgent, callback);
     }
 
+    /**
+     * request all vehicles for one specific brand
+     *
+     * @param brand
+     * @param callback
+     */
+    public void requestVehicles(String brand, StringResponseCallback callback) {
+        String userAgent = BimmerConstants.BRAND_USER_AGENTS_MAP.get(brand);
+        if (userAgent != null) {
+            get(vehicleUrl, null, null, userAgent, callback);
+        }
+    }
+
+    /**
+     * request vehicles for all possible brands
+     *
+     * @param callback
+     */
     public void requestVehicles(StringResponseCallback callback) {
-        get(vehicleUrl, null, null, callback);
-    }
-
-    public void requestChargingProfile(VehicleConfiguration config, StringResponseCallback callback) {
-        // [todo] implement
-        // get(baseUrl + config.vin + chargeAPI, null, null, callback);
+        BimmerConstants.allBrands.forEach(brand -> {
+            get(vehicleUrl, null, null, brand, callback);
+        });
     }
 
     public void requestImage(VehicleConfiguration config, ImageProperties props, ByteResponseCallback callback) {
@@ -185,7 +197,7 @@ public class MyBMWProxy {
         dataMap.add("view", props.viewport);
 
         get(localImageUrl, CONTENT_TYPE_URL_ENCODED, UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false),
-                callback);
+                config.brand, callback);
     }
 
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {

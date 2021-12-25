@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.dto.charge;
 
+import java.util.List;
+
 /**
  * The {@link ChargeProfile} Data Transfer Object
  *
@@ -19,6 +21,11 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * @author Norbert Truchsess - edit & send of charge profile
  */
 public class ChargeProfile {
-    public WeeklyPlanner weeklyPlanner;
-    public WeeklyPlanner twoTimesTimer;
+    public ChargingWindow reductionOfChargeCurrent;
+    public String chargingMode;// ": "immediateCharging",
+    public String chargingPreference;// ": "chargingWindow",
+    public String chargingControlType;// ": "weeklyPlanner",
+    public List<Timer> departureTimes;
+    public boolean climatisationOn;// ": false,
+    public ChargingSettings chargingSettings;
 }

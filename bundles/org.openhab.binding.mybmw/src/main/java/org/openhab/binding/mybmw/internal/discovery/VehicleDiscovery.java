@@ -16,13 +16,14 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUPPORTED_THING_
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
-import org.openhab.binding.mybmw.internal.dto.discovery.VehiclesContainer;
+import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
@@ -52,56 +53,55 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
         super(SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
     }
 
-    public void onResponse(VehiclesContainer container) {
+    public void onResponse(List<Vehicle> vehicleList) {
         bridgeHandler.ifPresent(bridge -> {
             final ThingUID bridgeUID = bridge.getThing().getUID();
-            container.vehicles.forEach(vehicle -> {
+            vehicleList.forEach(vehicle -> {
                 // the DriveTrain field in the delivered json is defining the Vehicle Type
                 String vehicleType = vehicle.driveTrain.toLowerCase();
                 SUPPORTED_THING_SET.forEach(entry -> {
                     if (entry.getId().equals(vehicleType)) {
                         ThingUID uid = new ThingUID(entry, vehicle.vin, bridgeUID.getId());
                         Map<String, String> properties = new HashMap<>();
-                        // Dealer
-                        if (vehicle.dealer != null) {
-                            properties.put("dealer", vehicle.dealer.name);
-                            properties.put("dealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
-                                    + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
-                            properties.put("dealerPhone", vehicle.dealer.phone);
-                        }
-
-                        // Services & Support
-                        properties.put("servicesActivated", getObject(vehicle, Constants.ACTIVATED));
-                        String servicesSupported = getObject(vehicle, Constants.SUPPORTED);
-                        String servicesNotSupported = getObject(vehicle, Constants.NOT_SUPPORTED);
-                        if (vehicle.statisticsAvailable) {
-                            servicesSupported += Constants.STATISTICS;
-                        } else {
-                            servicesNotSupported += Constants.STATISTICS;
-                        }
-                        properties.put(Constants.SERVICES_SUPPORTED, servicesSupported);
-                        properties.put("servicesNotSupported", servicesNotSupported);
-                        properties.put("supportBreakdownNumber", vehicle.breakdownNumber);
-
-                        // Vehicle Properties
-                        if (vehicle.supportedChargingModes != null) {
-                            properties.put("vehicleChargeModes",
-                                    String.join(Constants.SPACE, vehicle.supportedChargingModes));
-                        }
-                        if (vehicle.hasAlarmSystem) {
-                            properties.put("vehicleAlarmSystem", "Available");
-                        } else {
-                            properties.put("vehicleAlarmSystem", "Not Available");
-                        }
+                        /**
+                         * [todo] evaluate right properties
+                         * // Dealer
+                         * if (vehicle.dealer != null) {
+                         * properties.put("dealer", vehicle.dealer.name);
+                         * properties.put("dealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
+                         * + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
+                         * properties.put("dealerPhone", vehicle.dealer.phone);
+                         * }
+                         *
+                         * // Services & Support
+                         * properties.put("servicesActivated", getObject(vehicle, Constants.ACTIVATED));
+                         * String servicesSupported = getObject(vehicle, Constants.SUPPORTED);
+                         * String servicesNotSupported = getObject(vehicle, Constants.NOT_SUPPORTED);
+                         * if (vehicle.statisticsAvailable) {
+                         * servicesSupported += Constants.STATISTICS;
+                         * } else {
+                         * servicesNotSupported += Constants.STATISTICS;
+                         * }
+                         * properties.put(Constants.SERVICES_SUPPORTED, servicesSupported);
+                         * properties.put("servicesNotSupported", servicesNotSupported);
+                         * properties.put("supportBreakdownNumber", vehicle.breakdownNumber);
+                         *
+                         * // Vehicle Properties
+                         * if (vehicle.supportedChargingModes != null) {
+                         * properties.put("vehicleChargeModes",
+                         * String.join(Constants.SPACE, vehicle.supportedChargingModes));
+                         * }
+                         * if (vehicle.hasAlarmSystem) {
+                         * properties.put("vehicleAlarmSystem", "Available");
+                         * } else {
+                         * properties.put("vehicleAlarmSystem", "Not Available");
+                         * }
+                         */
                         properties.put("vehicleBrand", vehicle.brand);
-                        properties.put("vehicleBodytype", vehicle.bodytype);
-                        properties.put("vehicleColor", vehicle.color);
-                        properties.put("vehicleConstructionYear", Short.toString(vehicle.yearOfConstruction));
+                        properties.put("vehicleBodytype", vehicle.bodyType);
+                        properties.put("vehicleConstructionYear", Integer.toString(vehicle.year));
                         properties.put("vehicleDriveTrain", vehicle.driveTrain);
                         properties.put("vehicleModel", vehicle.model);
-                        if (vehicle.chargingControl != null) {
-                            properties.put("vehicleChargeControl", Converter.toTitleCase(vehicle.model));
-                        }
 
                         // Update Properties for already created Things
                         bridge.getThing().getThings().forEach(vehicleThing -> {
@@ -114,11 +114,11 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                             }
                         });
 
-                        // Properties needed for functional THing
+                        // Properties needed for functional Thing
                         properties.put(MyBMWConstants.VIN, vehicle.vin);
+                        properties.put("brand", vehicle.brand);
                         properties.put("refreshInterval",
                                 Integer.toString(MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
-                        properties.put("units", MyBMWConstants.UNITS_AUTODETECT);
                         properties.put("imageSize", Integer.toString(MyBMWConstants.DEFAULT_IMAGE_SIZE_PX));
                         properties.put("imageViewport", MyBMWConstants.DEFAULT_IMAGE_VIEWPORT);
 

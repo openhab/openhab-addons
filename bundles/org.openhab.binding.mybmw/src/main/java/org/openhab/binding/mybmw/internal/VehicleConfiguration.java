@@ -28,17 +28,16 @@ public class VehicleConfiguration {
     public String vin = Constants.EMPTY;
 
     /**
+     * Vehicle brand
+     * - bmw
+     * - mini
+     */
+    public String brand = Constants.EMPTY;
+
+    /**
      * Data refresh rate in minutes
      */
     public int refreshInterval = MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES;
-
-    /**
-     * Either Auto Detect Miles units (UK & US) or select Format directly
-     * <option value="AUTODETECT">Auto Detect</option>
-     * <option value="METRIC">Metric</option>
-     * <option value="IMPERIAL">Imperial</option>
-     */
-    public String units = MyBMWConstants.UNITS_AUTODETECT;
 
     /**
      * image size - width & length (square)

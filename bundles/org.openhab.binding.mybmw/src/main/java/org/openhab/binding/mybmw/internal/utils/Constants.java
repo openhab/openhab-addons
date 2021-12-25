@@ -45,10 +45,10 @@ public class Constants {
     public static final String CLOSED = "Closed";
     public static final String INTERMEDIATE = "Intermediate";
     public static final String UNDEF = UnDefType.UNDEF.toFullString();
-    public static final String UTC_APPENDIX = "-01T12:00:00";
     public static final String NULL_DATE = "1900-01-01T00:00:00";
     public static final String NULL_TIME = "00:00";
     public static final int INT_UNDEF = -1;
+    public static final String KILOMETERS_JSON = "KILOMETERS";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
 
     // Services to query
@@ -72,7 +72,7 @@ public class Constants {
     public static final String QUESTION = "?";
     public static final String COLON = ":";
 
-    public static final String ANONYMOUS = "Anonymous";
+    public static final String ANONYMOUS = "anonymous";
     public static final int MILES_TO_FEET_FACTOR = 5280;
     public static final String EMPTY_JSON = "{}";
 

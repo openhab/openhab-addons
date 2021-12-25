@@ -26,14 +26,12 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
-import org.openhab.binding.mybmw.internal.dto.status.Doors;
-import org.openhab.binding.mybmw.internal.dto.status.VehicleStatus;
-import org.openhab.binding.mybmw.internal.dto.status.VehicleStatusContainer;
-import org.openhab.binding.mybmw.internal.dto.status.Windows;
+import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -58,25 +56,22 @@ public class StatusWrapper {
     private static final double ALLOWED_MILE_CONVERSION_DEVIATION = 1.5;
     private static final double ALLOWED_KM_ROUND_DEVIATION = 0.1;
 
-    private VehicleStatus vStatus;
-    private boolean imperial;
+    private Vehicle vehicle;
     private boolean isElectric;
     private boolean hasFuel;
     private boolean isHybrid;
 
     private Map<String, State> specialHandlingMap = new HashMap<String, State>();
 
-    public StatusWrapper(String type, boolean imperial, String statusJson) {
-        this.imperial = imperial;
+    public StatusWrapper(String type, String statusJson) {
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString());
         isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
-        VehicleStatusContainer container = GSON.fromJson(statusJson, VehicleStatusContainer.class);
-        assertNotNull(container);
-        assertNotNull(container.vehicleStatus);
-        vStatus = container.vehicleStatus;
+        List<Vehicle> vl = Converter.getVehicleList(statusJson);
+        assertEquals(1, vl.size(), "Vehciles found");
+        vehicle = vl.get(0);
     }
 
     /**
@@ -117,32 +112,35 @@ public class StatusWrapper {
         StringType wanted;
         DateTimeType dtt;
         PointType pt;
+        OnOffType oot;
         switch (cUid) {
             case MILEAGE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                if (imperial) {
-                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                } else {
+                if ("km".equals(vehicle.status.currentMileage.units)) {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                } else {
+                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
                 }
                 switch (gUid) {
                     case CHANNEL_GROUP_RANGE:
-                        assertEquals(qt.intValue(), vStatus.mileage, "Mileage");
+                        assertEquals(qt.intValue(), vehicle.status.currentMileage.mileage, "Mileage");
                         break;
                     case CHANNEL_GROUP_SERVICE:
-                        if (vStatus.cbsData.isEmpty()) {
+                        if (vehicle.properties.serviceRequired.isEmpty()) {
                             assertEquals(qt.intValue(), -1, "Service Mileage");
                         } else {
-                            assertEquals(qt.intValue(), vStatus.cbsData.get(0).cbsRemainingMileage, "Service Mileage");
+                            assertEquals(qt.intValue(), vehicle.properties.serviceRequired.get(0).dateTime,
+                                    "Service Mileage");
                         }
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
-                        if (vStatus.checkControlMessages.isEmpty()) {
+                        if (vehicle.properties.checkControlMessages.isEmpty()) {
                             assertEquals(qt.intValue(), -1, "CheckControl Mileage");
                         } else {
-                            assertEquals(qt.intValue(), vStatus.checkControlMessages.get(0).ccmMileage,
-                                    "CheckControl Mileage");
+                            // [todo] tbd
+                            // assertEquals(qt.intValue(), vehicle.properties.checkControlMessages.get(0).,
+                            // "CheckControl Mileage");
                         }
                         break;
                     default:
@@ -154,27 +152,15 @@ public class StatusWrapper {
                 assertTrue(isElectric, "Is Eelctric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                if (imperial) {
+                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.electricRange.distance.units)) {
                     assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeElectricMls),
+                    assertEquals(Converter.round(qt.floatValue()),
+                            Converter.round(vehicle.properties.electricRange.distance.value),
                             ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeElectric),
-                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
-                }
-                break;
-            case RANGE_ELECTRIC_MAX:
-                assertTrue(isElectric, "Is Eelctric");
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                if (imperial) {
-                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.maxRangeElectricMls),
-                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
-                } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.maxRangeElectric),
+                    assertEquals(Converter.round(qt.floatValue()),
+                            Converter.round(vehicle.properties.electricRange.distance.value),
                             ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
@@ -183,13 +169,15 @@ public class StatusWrapper {
                 if (!(state instanceof UnDefType)) {
                     assertTrue(state instanceof QuantityType);
                     qt = ((QuantityType) state);
-                    if (imperial) {
+                    if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combustionRange.distance.units)) {
                         assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                        assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuelMls),
+                        assertEquals(Converter.round(qt.floatValue()),
+                                Converter.round(vehicle.properties.combustionRange.distance.value),
                                 ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
                     } else {
                         assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                        assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.remainingRangeFuel),
+                        assertEquals(Converter.round(qt.floatValue()),
+                                Converter.round(vehicle.properties.combustionRange.distance.value),
                                 ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                     }
                 }
@@ -198,31 +186,15 @@ public class StatusWrapper {
                 assertTrue(isHybrid, "Is Hybrid");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                if (imperial) {
+                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combinedRange.distance.units)) {
                     assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
                     assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls),
+                            Converter.round(vehicle.properties.combinedRange.distance.value),
                             ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
                     assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel),
-                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
-                }
-                break;
-            case RANGE_HYBRID_MAX:
-                assertTrue(isHybrid, "Is Hybrid");
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                if (imperial) {
-                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                    assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vStatus.maxRangeElectricMls + vStatus.remainingRangeFuelMls),
-                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
-                } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vStatus.maxRangeElectric + vStatus.remainingRangeFuel),
+                            Converter.round(vehicle.properties.combinedRange.distance.value),
                             ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
@@ -231,53 +203,34 @@ public class StatusWrapper {
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals(Units.LITRE, qt.getUnit(), "Liter Unit");
-                assertEquals(Converter.round(vStatus.remainingFuel), Converter.round(qt.floatValue()), 0.01,
-                        "Fuel Level");
+                assertEquals(Converter.round(vehicle.properties.fuelLevel.value), Converter.round(qt.floatValue()),
+                        0.01, "Fuel Level");
                 break;
             case SOC:
                 assertTrue(isElectric, "Is Eelctric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals(Units.PERCENT, qt.getUnit(), "Percent");
-                assertEquals(Converter.round(vStatus.chargingLevelHv), Converter.round(qt.floatValue()), 0.01,
-                        "Charge Level");
-                break;
-            case SOC_MAX:
-                assertTrue(isElectric, "Is Eelctric");
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
-                assertEquals(Converter.round(vStatus.chargingLevelHv), Converter.round(qt.floatValue()), 0.01,
-                        "SOC Max");
+                assertEquals(Converter.round(vehicle.properties.chargingState.chargePercentage),
+                        Converter.round(qt.floatValue()), 0.01, "Charge Level");
                 break;
             case LOCK:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                assertEquals(Converter.toTitleCase(vStatus.doorLockState), st.toString(), "Vehicle locked");
+                assertTrue(state instanceof OnOffType);
+                oot = (OnOffType) state;
+                assertEquals(Boolean.toString(vehicle.properties.areDoorsLocked), oot.toString(), "Vehicle locked");
                 break;
             case DOORS:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
-                if (doorState != null) {
-                    assertEquals(VehicleStatusUtils.checkClosed(doorState), st.toString(), "Doors Closed");
-                } else {
-                    assertTrue(false);
-                }
-
+                assertTrue(state instanceof OnOffType);
+                oot = (OnOffType) state;
+                assertEquals(Boolean.toString(vehicle.properties.areDoorsClosed), oot.toString(), "Doors Closed");
                 break;
             case WINDOWS:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                Windows windowState = GSON.fromJson(GSON.toJson(vStatus), Windows.class);
-                if (windowState != null) {
-                    if (specialHandlingMap.containsKey(WINDOWS)) {
-                        assertEquals(specialHandlingMap.get(WINDOWS).toString(), st.toString(), "Windows");
-                    } else {
-                        assertEquals(VehicleStatusUtils.checkClosed(windowState), st.toString(), "Windows");
-                    }
+                assertTrue(state instanceof OnOffType);
+                oot = (OnOffType) state;
+                if (specialHandlingMap.containsKey(WINDOWS)) {
+                    assertEquals(specialHandlingMap.get(WINDOWS).toString(), oot.toString(), "Windows");
                 } else {
-                    assertTrue(false);
+                    assertEquals(Boolean.toString(vehicle.properties.areWindowsClosed), oot.toString(), "Windows");
                 }
 
                 break;
@@ -287,197 +240,167 @@ public class StatusWrapper {
                 if (specialHandlingMap.containsKey(CHECK_CONTROL)) {
                     assertEquals(specialHandlingMap.get(CHECK_CONTROL).toString(), st.toString(), "Check Control");
                 } else {
-                    assertEquals(Converter.toTitleCase(VehicleStatusUtils.checkControlActive(vStatus)), st.toString(),
-                            "Check Control");
+                    // [todo]
+                    // assertEquals(Converter.toTitleCase(VehicleStatusUtils.checkControlActive(vStatus)),
+                    // st.toString(),
+                    // "Check Control");
                 }
                 break;
             case CHARGE_STATUS:
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                if (vStatus.chargingStatus.contentEquals(Constants.INVALID)) {
-                    assertEquals(Converter.toTitleCase(vStatus.lastChargingEndReason), st.toString(), "Charge Status");
-                } else {
-                    assertEquals(Converter.toTitleCase(vStatus.chargingStatus), st.toString(), "Charge Status");
-                }
+                assertEquals(Converter.toTitleCase(vehicle.properties.chargingState.state), st.toString(),
+                        "Charge Status");
                 break;
             case CHARGE_REMAINING:
-                assertTrue(isElectric, "Is Electric");
-                if (vStatus.chargingTimeRemaining == null) {
-                    assertTrue(state instanceof UnDefType, "expected UndefType");
-                } else {
-                    assertTrue(state instanceof QuantityType);
-                    qtt = ((QuantityType) state);
-                    assertEquals(qtt.doubleValue(), vStatus.chargingTimeRemaining);
-                    assertEquals(Units.MINUTE, qtt.getUnit(), "Minutes");
-                }
+                // [todo]
+                // assertTrue(isElectric, "Is Electric");
+                // if (vStatus.chargingTimeRemaining == null) {
+                // assertTrue(state instanceof UnDefType, "expected UndefType");
+                // } else {
+                // assertTrue(state instanceof QuantityType);
+                // qtt = ((QuantityType) state);
+                // assertEquals(qtt.doubleValue(), vStatus.chargingTimeRemaining);
+                // assertEquals(Units.MINUTE, qtt.getUnit(), "Minutes");
+                // }
                 break;
             case PLUG_CONNECTION:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.connectionStatus));
-                assertEquals(wanted.toString(), st.toString(), "Plug Connection State");
+                assertTrue(state instanceof OnOffType);
+                oot = (OnOffType) state;
+                assertEquals(Boolean.toString(vehicle.properties.chargingState.isChargerConnected), oot.toString(),
+                        "Plug Connection State");
                 break;
             case LAST_UPDATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
                 DateTimeType expected = DateTimeType
-                        .valueOf(Converter.getLocalDateTime(VehicleStatusUtils.getUpdateTime(vStatus)));
+                        .valueOf(Converter.getZonedDateTime(vehicle.properties.lastUpdatedAt));
                 assertEquals(expected.toString(), dtt.toString(), "Last Update");
-                break;
-            case LAST_UPDATE_REASON:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.updateReason));
-                assertEquals(wanted.toString(), st.toString(), "Last Update");
                 break;
             case GPS:
                 assertTrue(state instanceof PointType);
                 pt = (PointType) state;
-                assertNotNull(vStatus.position);
-                assertEquals(vStatus.position.getCoordinates(), pt.toString(), "Coordinates");
+                assertNotNull(vehicle.properties.vehicleLocation);
+                assertEquals(
+                        PointType.valueOf(Double.toString(vehicle.properties.vehicleLocation.coordinates.latitude) + ","
+                                + Double.toString(vehicle.properties.vehicleLocation.coordinates.longitude)),
+                        pt.toString(), "Coordinates");
                 break;
             case HEADING:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals(Units.DEGREE_ANGLE, qt.getUnit(), "Angle Unit");
-                assertNotNull(vStatus.position);
-                assertEquals(vStatus.position.heading, qt.intValue(), 0.01, "Heading");
+                assertNotNull(vehicle.properties.vehicleLocation);
+                assertEquals(vehicle.properties.vehicleLocation.heading, qt.intValue(), 0.01, "Heading");
                 break;
             case RANGE_RADIUS_ELECTRIC:
                 assertTrue(state instanceof QuantityType);
                 assertTrue(isElectric);
                 qt = (QuantityType) state;
-                if (imperial) {
-                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeElectricMls), qt.floatValue(), 1,
-                            "Range Radius Electric mi");
+                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.electricRange.distance.units)) {
+                    assertEquals(Converter.guessRangeRadius(vehicle.properties.electricRange.distance.value),
+                            qt.floatValue(), 1, "Range Radius Electric mi");
                 } else {
-                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeElectric), qt.floatValue(), 0.1,
-                            "Range Radius Electric km");
-                }
-                break;
-            case RANGE_RADIUS_ELECTRIC_MAX:
-                assertTrue(state instanceof QuantityType);
-                assertTrue(isElectric);
-                qt = (QuantityType) state;
-                if (imperial) {
-                    assertEquals(Converter.guessRangeRadius(vStatus.maxRangeElectricMls), qt.floatValue(), 1,
-                            "Range Radius Electric mi");
-                } else {
-                    assertEquals(Converter.guessRangeRadius(vStatus.maxRangeElectric), qt.floatValue(), 0.1,
-                            "Range Radius Electric km");
+                    assertEquals(Converter.guessRangeRadius(vehicle.properties.electricRange.distance.value),
+                            qt.floatValue(), 0.1, "Range Radius Electric km");
                 }
                 break;
             case RANGE_RADIUS_FUEL:
                 assertTrue(state instanceof QuantityType);
                 assertTrue(hasFuel);
                 qt = (QuantityType) state;
-                if (imperial) {
-                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeFuelMls), qt.floatValue(), 1,
-                            "Range Radius Fuel mi");
+                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combustionRange.distance.units)) {
+                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combustionRange.distance.value),
+                            qt.floatValue(), 1, "Range Radius Fuel mi");
                 } else {
-                    assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeFuel), qt.floatValue(), 0.1,
-                            "Range Radius Fuel km");
+                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combustionRange.distance.value),
+                            qt.floatValue(), 0.1, "Range Radius Fuel km");
                 }
                 break;
             case RANGE_RADIUS_HYBRID:
                 assertTrue(state instanceof QuantityType);
                 assertTrue(isHybrid);
                 qt = (QuantityType) state;
-                if (imperial) {
-                    assertEquals(
-                            Converter.guessRangeRadius(
-                                    vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls),
+                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combinedRange.distance.units)) {
+                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combinedRange.distance.value),
                             qt.floatValue(), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Hybrid mi");
                 } else {
-                    assertEquals(
-                            Converter.guessRangeRadius(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel),
+                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combinedRange.distance.value),
                             qt.floatValue(), ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid km");
-                }
-                break;
-            case RANGE_RADIUS_HYBRID_MAX:
-                assertTrue(state instanceof QuantityType);
-                assertTrue(isHybrid);
-                qt = (QuantityType) state;
-                if (imperial) {
-                    assertEquals(
-                            Converter.guessRangeRadius(vStatus.maxRangeElectricMls + vStatus.remainingRangeFuelMls),
-                            qt.floatValue(), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Hybrid Max mi");
-                } else {
-                    assertEquals(Converter.guessRangeRadius(vStatus.maxRangeElectric + vStatus.remainingRangeFuel),
-                            qt.floatValue(), ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid Max km");
                 }
                 break;
             case DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorDriverFront));
+                wanted = StringType
+                        .valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.doors.driverFront));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case DOOR_DRIVER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorDriverRear));
+                wanted = StringType.valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.doors.driverRear));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case DOOR_PASSENGER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorPassengerFront));
+                wanted = StringType
+                        .valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.doors.passengerFront));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case DOOR_PASSENGER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.doorPassengerRear));
+                wanted = StringType
+                        .valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.doors.passengerRear));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case TRUNK:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.trunk));
+                wanted = StringType.valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.trunk));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case HOOD:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.hood));
+                wanted = StringType.valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.hood));
                 assertEquals(wanted.toString(), st.toString(), "Door");
                 break;
             case WINDOW_DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowDriverFront));
+                wanted = StringType
+                        .valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.windows.driverFront));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case WINDOW_DOOR_DRIVER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowDriverRear));
+                wanted = StringType
+                        .valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.windows.driverRear));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case WINDOW_DOOR_PASSENGER_FRONT:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowPassengerFront));
+                wanted = StringType
+                        .valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.windows.passengerFront));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case WINDOW_DOOR_PASSENGER_REAR:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.windowPassengerRear));
-                assertEquals(wanted.toString(), st.toString(), "Window");
-                break;
-            case WINDOW_REAR:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.rearWindow));
+                wanted = StringType
+                        .valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.windows.passengerRear));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case SUNROOF:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.sunroof));
+                wanted = StringType.valueOf(Converter.toTitleCase(vehicle.properties.doorsAndWindows.moonroof));
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case SERVICE_DATE:
@@ -487,38 +410,40 @@ public class StatusWrapper {
                     if (specialHandlingMap.containsKey(SERVICE_DATE)) {
                         assertEquals(specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString(), "Next Service");
                     } else {
-                        String dueDateString = VehicleStatusUtils.getNextServiceDate(vStatus);
-                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
+                        String dueDateString = VehicleStatusUtils
+                                .getNextServiceDate(vehicle.properties.serviceRequired);
+                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
                         assertEquals(expectedDTT.toString(), dtt.toString(), "Next Service");
                     }
                 } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
-                    String dueDateString = vStatus.cbsData.get(0).getDueDate();
-                    DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
+                    String dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
+                    DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
                     assertEquals(expectedDTT.toString(), dtt.toString(), "First Service Date");
                 }
                 break;
             case SERVICE_MILEAGE:
                 assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
-                    if (imperial) {
-                        assertEquals(ImperialUnits.MILE, qt.getUnit(), "Next Service Miles");
-                        assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
-                    } else {
-                        assertEquals(KILOMETRE, qt.getUnit(), "Next Service KM");
-                        assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
-                    }
-                } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
-                    if (imperial) {
-                        assertEquals(ImperialUnits.MILE, qt.getUnit(), "First Service Miles");
-                        assertEquals(vStatus.cbsData.get(0).cbsRemainingMileage, qt.intValue(),
-                                "First Service Mileage");
-                    } else {
-                        assertEquals(KILOMETRE, qt.getUnit(), "First Service KM");
-                        assertEquals(vStatus.cbsData.get(0).cbsRemainingMileage, qt.intValue(),
-                                "First Service Mileage");
-                    }
-                }
+                // [todo]
+                // qt = ((QuantityType) state);
+                // if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
+                // if (imperial) {
+                // assertEquals(ImperialUnits.MILE, qt.getUnit(), "Next Service Miles");
+                // assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
+                // } else {
+                // assertEquals(KILOMETRE, qt.getUnit(), "Next Service KM");
+                // assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
+                // }
+                // } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
+                // if (imperial) {
+                // assertEquals(ImperialUnits.MILE, qt.getUnit(), "First Service Miles");
+                // assertEquals(vStatus.cbsData.get(0).cbsRemainingMileage, qt.intValue(),
+                // "First Service Mileage");
+                // } else {
+                // assertEquals(KILOMETRE, qt.getUnit(), "First Service KM");
+                // assertEquals(vStatus.cbsData.get(0).cbsRemainingMileage, qt.intValue(),
+                // "First Service Mileage");
+                // }
+                // }
                 break;
             case NAME:
                 assertTrue(state instanceof StringType);
@@ -526,15 +451,17 @@ public class StatusWrapper {
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
                         wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_ENTRIES));
-                        if (!vStatus.cbsData.isEmpty()) {
-                            wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
+                        if (!vehicle.properties.serviceRequired.isEmpty()) {
+                            wanted = StringType
+                                    .valueOf(Converter.toTitleCase(vehicle.properties.serviceRequired.get(0).type));
                         }
                         assertEquals(wanted.toString(), st.toString(), "Service Name");
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
                         wanted = StringType.valueOf(Constants.NO_ENTRIES);
-                        if (!vStatus.checkControlMessages.isEmpty()) {
-                            wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
+                        if (!vehicle.properties.checkControlMessages.isEmpty()) {
+                            // [todo]
+                            // wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
                         }
                         assertEquals(wanted.toString(), st.toString(), "CheckControl Name");
                         break;
@@ -549,15 +476,18 @@ public class StatusWrapper {
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
                         wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_ENTRIES));
-                        if (!vStatus.cbsData.isEmpty()) {
-                            wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getDescription()));
+                        if (!vehicle.properties.serviceRequired.isEmpty()) {
+                            wanted = StringType
+                                    .valueOf(Converter.toTitleCase(vehicle.properties.serviceRequired.get(0).type));
                         }
                         assertEquals(wanted.toString(), st.toString(), "Service Details");
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
                         wanted = StringType.valueOf(Constants.NO_ENTRIES);
-                        if (!vStatus.checkControlMessages.isEmpty()) {
-                            wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionLong);
+                        if (!vehicle.properties.checkControlMessages.isEmpty()) {
+                            // [todo]
+                            // wanted =
+                            // StringType.valueOf(vehicle.properties.checkControlMessages.get(0).ccmDescriptionLong);
                         }
                         assertEquals(wanted.toString(), st.toString(), "CheckControl Details");
                         break;
@@ -572,10 +502,10 @@ public class StatusWrapper {
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
                         String dueDateString = Constants.NULL_DATE;
-                        if (!vStatus.cbsData.isEmpty()) {
-                            dueDateString = vStatus.cbsData.get(0).getDueDate();
+                        if (!vehicle.properties.serviceRequired.isEmpty()) {
+                            dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
                         }
-                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
+                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
                         assertEquals(expectedDTT.toString(), dtt.toString(), "ServiceSate");
                         break;
                     default:

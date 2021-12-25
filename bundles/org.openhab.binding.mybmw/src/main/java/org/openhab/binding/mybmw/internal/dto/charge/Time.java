@@ -10,18 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.mybmw.internal.dto.status;
+package org.openhab.binding.mybmw.internal.dto.charge;
 
 /**
- * The {@link CBSMessage} Data Transfer Object
+ * The {@link Time} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Norbert Truchsess - edit & send of charge profile
  */
-public class CBSMessage {
-    public String id;// ": "BrakeFluid",
-    public String title;// ": "Brake fluid",
-    public int iconId;// ": 60223,
-    public String longDescription;// ": "Next service due by the specified date.",
-    public String subtitle;// ": "Due in November 2023",
-    public String criticalness;// ": "nonCritical"
+public class Time {
+    public int hour;// ": 11,
+    public int minute;// ": 0
 }

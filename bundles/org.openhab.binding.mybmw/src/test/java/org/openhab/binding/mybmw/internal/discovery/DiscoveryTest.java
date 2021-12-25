@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.discovery;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -20,9 +20,10 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.mybmw.internal.dto.discovery.VehiclesContainer;
+import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.util.FileReader;
+import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -46,7 +47,7 @@ public class DiscoveryTest {
 
     @Test
     public void testDiscovery() {
-        String content = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
+        String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
         MyBMWBridgeHandler bh = mock(MyBMWBridgeHandler.class);
         Bridge b = mock(Bridge.class);
         when(bh.getThing()).thenReturn(b);
@@ -55,22 +56,18 @@ public class DiscoveryTest {
         discovery.setThingHandler(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
-        VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
+        List<Vehicle> vl = Converter.getVehicleList(content);
+        assertEquals(1, vl.size(), "Vehicles found");
         ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
         ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
-        if (container != null) {
-            discovery.onResponse(container);
-            verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
-            List<DiscoveryResult> results = discoveries.getAllValues();
-            assertEquals(1, results.size(), "Found Vehicles");
-            DiscoveryResult result = results.get(0);
-            assertEquals("mybmw:bev_rex:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
-        } else {
-            assertTrue(false);
-        }
+        discovery.onResponse(vl);
+        verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
+        List<DiscoveryResult> results = discoveries.getAllValues();
+        assertEquals(1, results.size(), "Found Vehicles");
+        DiscoveryResult result = results.get(0);
+        assertEquals("mybmw:bev_rex:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
     }
 
-    @Test
     public void testBimmerDiscovery() {
         String content = FileReader.readFileInString("src/test/resources/responses/vehicles.json");
         MyBMWBridgeHandler bh = mock(MyBMWBridgeHandler.class);
@@ -81,19 +78,15 @@ public class DiscoveryTest {
         discovery.setThingHandler(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
-        VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
+        List<Vehicle> vl = Converter.getVehicleList(content);
         ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
         ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
 
-        if (container != null) {
-            discovery.onResponse(container);
-            verify(listener, times(DISCOVERY_VEHICLES)).thingDiscovered(services.capture(), discoveries.capture());
-            List<DiscoveryResult> results = discoveries.getAllValues();
-            results.forEach(entry -> {
-                logger.info("{}", entry.toString());
-            });
-        } else {
-            assertTrue(false);
-        }
+        discovery.onResponse(vl);
+        verify(listener, times(DISCOVERY_VEHICLES)).thingDiscovered(services.capture(), discoveries.capture());
+        List<DiscoveryResult> results = discoveries.getAllValues();
+        results.forEach(entry -> {
+            logger.info("{}", entry.toString());
+        });
     }
 }

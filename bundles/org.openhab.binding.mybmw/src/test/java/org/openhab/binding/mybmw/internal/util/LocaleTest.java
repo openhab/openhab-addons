@@ -12,17 +12,11 @@
  */
 package org.openhab.binding.mybmw.internal.util;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.Locale;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.mybmw.internal.MyBMWConstants;
-import org.openhab.binding.mybmw.internal.dto.status.VehicleStatus;
-import org.openhab.binding.mybmw.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.mybmw.internal.utils.Converter;
-import org.openhab.core.library.types.DateTimeType;
 
 import com.google.gson.Gson;
 
@@ -36,39 +30,33 @@ import com.google.gson.Gson;
 public class LocaleTest {
     private static final Gson GSON = new Gson();
 
-    @Test
-    public void languageTest() {
-        assertTrue(MyBMWConstants.IMPERIAL_COUNTRIES.contains(Locale.UK.getCountry()), "United Kingdom");
-        assertTrue(MyBMWConstants.IMPERIAL_COUNTRIES.contains(Locale.US.getCountry()), "United States");
-        assertFalse(MyBMWConstants.IMPERIAL_COUNTRIES.contains(Locale.FRANCE.getCountry()), "France");
-        assertFalse(MyBMWConstants.IMPERIAL_COUNTRIES.contains(Locale.GERMAN.getCountry()), "Germany");
-    }
-
     public void testTimeUTCToLocaleTime() {
-        String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
-        VehicleStatus vStatus = status.vehicleStatus;
-
-        String inputTime = vStatus.internalDataTimeUTC;
-        String localeTime = Converter.getLocalDateTime(inputTime);
-        String dateTimeType = DateTimeType.valueOf(localeTime).toString();
-        assertEquals("2020-08-24T15:55:32", inputTime, "Input DateTime");
-        assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
-        assertEquals("2020-08-24T17:55:32.000+0200", dateTimeType, "DateTimeType Value");
-
-        inputTime = vStatus.updateTime;
-        localeTime = Converter.getLocalDateTime(inputTime);
-        dateTimeType = DateTimeType.valueOf(localeTime).toString();
-        assertEquals("2020-08-24T15:55:32+0000", inputTime, "Input DateTime");
-        assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
-        assertEquals("2020-08-24T17:55:32.000+0200", dateTimeType, "DateTimeType Value");
-
-        inputTime = vStatus.updateTime;
-        localeTime = Converter.getLocalDateTimeWithoutOffest(inputTime);
-        dateTimeType = DateTimeType.valueOf(localeTime).toString();
-        assertEquals("2020-08-24T15:55:32+0000", inputTime, "Input DateTime");
-        assertEquals("2020-08-24T15:55:32", localeTime, "Output DateTime");
-        assertEquals("2020-08-24T15:55:32.000+0200", dateTimeType, "DateTimeType Value");
+        /*
+         * String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
+         * VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
+         * VehicleStatus vStatus = status.vehicleStatus;
+         *
+         * String inputTime = vStatus.internalDataTimeUTC;
+         * String localeTime = Converter.getLocalDateTime(inputTime);
+         * String dateTimeType = DateTimeType.valueOf(localeTime).toString();
+         * assertEquals("2020-08-24T15:55:32", inputTime, "Input DateTime");
+         * assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
+         * assertEquals("2020-08-24T17:55:32.000+0200", dateTimeType, "DateTimeType Value");
+         *
+         * inputTime = vStatus.updateTime;
+         * localeTime = Converter.getLocalDateTime(inputTime);
+         * dateTimeType = DateTimeType.valueOf(localeTime).toString();
+         * assertEquals("2020-08-24T15:55:32+0000", inputTime, "Input DateTime");
+         * assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
+         * assertEquals("2020-08-24T17:55:32.000+0200", dateTimeType, "DateTimeType Value");
+         *
+         * inputTime = vStatus.updateTime;
+         * localeTime = Converter.getLocalDateTimeWithoutOffest(inputTime);
+         * dateTimeType = DateTimeType.valueOf(localeTime).toString();
+         * assertEquals("2020-08-24T15:55:32+0000", inputTime, "Input DateTime");
+         * assertEquals("2020-08-24T15:55:32", localeTime, "Output DateTime");
+         * assertEquals("2020-08-24T15:55:32.000+0200", dateTimeType, "DateTimeType Value");
+         */
     }
 
     @Test

@@ -29,11 +29,6 @@ public class MyBMWConstants {
 
     private static final String BINDING_ID = "mybmw";
 
-    // Units
-    public static final String UNITS_AUTODETECT = "AUTODETECT";
-    public static final String UNITS_IMPERIAL = "IMPERIAL";
-    public static final String UNITS_METRIC = "METRIC";
-
     public static final String VIN = "vin";
 
     public static final int DEFAULT_IMAGE_SIZE_PX = 1024;
@@ -75,9 +70,6 @@ public class MyBMWConstants {
     public static final Set<String> ELECTRIC_VEHICLES = Set.of(VehicleType.ELECTRIC.toString(),
             VehicleType.PLUGIN_HYBRID.toString(), VehicleType.ELECTRIC_REX.toString());
 
-    // Countries with Mileage display
-    public static final Set<String> IMPERIAL_COUNTRIES = Set.of("US", "GB");
-
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONNECTED_DRIVE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_CONV = new ThingTypeUID(BINDING_ID,
@@ -97,12 +89,9 @@ public class MyBMWConstants {
     public static final String CHANNEL_GROUP_DOORS = "doors";
     public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_LOCATION = "location";
-    public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
-    public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
     public static final String CHANNEL_GROUP_CHARGE = "charge";
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
-    public static final String CHANNEL_GROUP_DESTINATION = "destination";
 
     // Generic Constants for several groups
     public static final String NAME = "name";
@@ -121,7 +110,7 @@ public class MyBMWConstants {
     public static final String CHECK_CONTROL = "check-control";
     public static final String PLUG_CONNECTION = "plug-connection";
     public static final String CHARGE_STATUS = "charge";
-    public static final String CHARGE_END_REASON = "reason";
+    public static final String CHARGE_TYPE = "type";
     public static final String CHARGE_REMAINING = "remaining";
     public static final String LAST_UPDATE = "last-update";
     public static final String LAST_UPDATE_REASON = "last-update-reason";
@@ -163,30 +152,13 @@ public class MyBMWConstants {
 
     // Range
     public static final String RANGE_HYBRID = "hybrid";
-    public static final String RANGE_HYBRID_MAX = "hybrid-max";
     public static final String RANGE_ELECTRIC = "electric";
-    public static final String RANGE_ELECTRIC_MAX = "electric-max";
     public static final String SOC = "soc";
-    public static final String SOC_MAX = "soc-max";
     public static final String RANGE_FUEL = "fuel";
     public static final String REMAINING_FUEL = "remaining-fuel";
     public static final String RANGE_RADIUS_ELECTRIC = "radius-electric";
-    public static final String RANGE_RADIUS_ELECTRIC_MAX = "radius-electric-max";
     public static final String RANGE_RADIUS_FUEL = "radius-fuel";
     public static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
-    public static final String RANGE_RADIUS_HYBRID_MAX = "radius-hybrid-max";
-
-    // Last Trip
-    public static final String DURATION = "duration";
-    public static final String DISTANCE = "distance";
-    public static final String DISTANCE_SINCE_CHARGING = "distance-since-charging";
-    public static final String AVG_CONSUMPTION = "avg-consumption";
-    public static final String AVG_COMBINED_CONSUMPTION = "avg-combined-consumption";
-    public static final String AVG_RECUPERATION = "avg-recuperation";
-
-    // Lifetime + Average Consumptions
-    public static final String TOTAL_DRIVEN_DISTANCE = "total-driven-distance";
-    public static final String SINGLE_LONGEST_DISTANCE = "single-longest-distance";
 
     // Image
     public static final String IMAGE_FORMAT = "png";

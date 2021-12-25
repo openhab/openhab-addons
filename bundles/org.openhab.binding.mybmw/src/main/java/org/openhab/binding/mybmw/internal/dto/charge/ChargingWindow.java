@@ -18,6 +18,6 @@ package org.openhab.binding.mybmw.internal.dto.charge;
  * @author Bernd Weymann - Initial contribution
  */
 public class ChargingWindow {
-    public String startTime;// ":"11:00",
-    public String endTime;// ":"17:00"}}
+    public Time start;
+    public Time end;
 }

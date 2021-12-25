@@ -14,30 +14,35 @@ package org.openhab.binding.mybmw.internal.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.util.FileReader;
-import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
-import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
+
+import com.google.gson.Gson;
 
 /**
- * The {@link VehicleStatusTest} Test json responses from ConnectedDrive Portal
+ * The {@link VehicleTest} Test json responses from ConnectedDrive Portal
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 @SuppressWarnings("null")
-public class VehicleStatusTest {
+public class VehicleTest {
+    private static final Gson GSON = new Gson();
 
     @Test
-    public void testServiceDate() {
-        String json = FileReader.readFileInString("src/test/resources/vehicle-status-services.json");
-        Vehicle v = Converter.getVehicle(Constants.ANONYMOUS, json);
-        assertEquals(Constants.ANONYMOUS, v.vin, "VIN check");
-        assertEquals("2023-11-01T00:00:00", VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired),
-                "Service Date");
-        assertEquals("2021-12-21T16:46:02", Converter.getZonedDateTime(v.properties.lastUpdatedAt), "Last update time");
+    public void testBevRexValues() {
+        String vehiclesJSON = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
+        List<Vehicle> vehicleList = Converter.getVehicleList(vehiclesJSON);
+        assertEquals(1, vehicleList.size(), "Vehicles found");
+        Vehicle v = vehicleList.get(0);
+        assertEquals("BMW", v.brand, "Car brand");
+        assertEquals(true, v.properties.areDoorsClosed, "Doors Closed");
+        assertEquals(76, v.properties.electricRange.distance.value, "Electric Range");
+        assertEquals(8.49, v.properties.vehicleLocation.coordinates.longitude, 0.1, "Location lon");
     }
 }

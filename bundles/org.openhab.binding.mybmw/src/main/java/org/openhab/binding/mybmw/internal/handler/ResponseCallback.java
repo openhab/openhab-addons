@@ -13,7 +13,7 @@
 package org.openhab.binding.mybmw.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.mybmw.internal.dto.NetworkError;
+import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
 
 /**
  * The {@link ResponseCallback} Marker Interface for all ASYNC REST API callbacks

@@ -18,7 +18,6 @@ import static org.openhab.binding.mybmw.internal.utils.Constants.*;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,42 +88,42 @@ public class ChargeProfileWrapper {
     private ChargeProfileWrapper(final ChargeProfile profile) {
         final WeeklyPlanner planner;
 
-        if (profile.weeklyPlanner != null) {
-            type = ProfileType.WEEKLY;
-            planner = profile.weeklyPlanner;
-        } else if (profile.twoTimesTimer != null) {
-            type = ProfileType.TWO_TIMES;
-            planner = profile.twoTimesTimer;
-            // timer days not supported
-        } else {
-            type = ProfileType.EMPTY;
-            return;
-        }
+        // if (profile.weeklyPlanner != null) {
+        type = ProfileType.WEEKLY;
+        // planner = profile.weeklyPlanner;
+        // } else if (profile.twoTimesTimer != null) {
+        // type = ProfileType.TWO_TIMES;
+        // planner = profile.twoTimesTimer;
+        // // timer days not supported
+        // } else {
+        // type = ProfileType.EMPTY;
+        // return;
+        // }
 
-        setPreference(planner.chargingPreferences);
-        setMode(planner.chargingMode);
+        // setPreference(planner.chargingPreferences);
+        // setMode(planner.chargingMode);
+        //
+        // setEnabled(CLIMATE, planner.climatizationEnabled);
+        //
+        // addTimer(TIMER1, planner.timer1);
+        // addTimer(TIMER2, planner.timer2);
+        //
+        // if (planner.preferredChargingWindow != null) {
+        // // addTime(WINDOWSTART, planner.preferredChargingWindow.startTime);
+        // // addTime(WINDOWEND, planner.preferredChargingWindow.endTime);
+        // } else {
+        // preference.ifPresent(pref -> {
+        // if (ChargingPreference.CHARGING_WINDOW.equals(pref)) {
+        // addTime(WINDOWSTART, null);
+        // addTime(WINDOWEND, null);
+        // }
+        // });
+        // }
 
-        setEnabled(CLIMATE, planner.climatizationEnabled);
-
-        addTimer(TIMER1, planner.timer1);
-        addTimer(TIMER2, planner.timer2);
-
-        if (planner.preferredChargingWindow != null) {
-            addTime(WINDOWSTART, planner.preferredChargingWindow.startTime);
-            addTime(WINDOWEND, planner.preferredChargingWindow.endTime);
-        } else {
-            preference.ifPresent(pref -> {
-                if (ChargingPreference.CHARGING_WINDOW.equals(pref)) {
-                    addTime(WINDOWSTART, null);
-                    addTime(WINDOWEND, null);
-                }
-            });
-        }
-
-        if (isWeekly()) {
-            addTimer(TIMER3, planner.timer3);
-            addTimer(OVERRIDE, planner.overrideTimer);
-        }
+        // if (isWeekly()) {
+        // addTimer(TIMER3, planner.timer3);
+        // addTimer(OVERRIDE, planner.overrideTimer);
+        // }
     }
 
     public @Nullable Boolean isEnabled(final ProfileKey key) {
@@ -221,8 +220,8 @@ public class ChargeProfileWrapper {
                 final LocalTime end = getTime(WINDOWEND);
                 if (start != null || end != null) {
                     planner.preferredChargingWindow = new ChargingWindow();
-                    planner.preferredChargingWindow.startTime = start == null ? null : start.format(TIME_FORMATER);
-                    planner.preferredChargingWindow.endTime = end == null ? null : end.format(TIME_FORMATER);
+                    // planner.preferredChargingWindow.startTime = start == null ? null : start.format(TIME_FORMATER);
+                    // planner.preferredChargingWindow.endTime = end == null ? null : end.format(TIME_FORMATER);
                 }
             }
         });
@@ -231,9 +230,9 @@ public class ChargeProfileWrapper {
         if (isWeekly()) {
             planner.timer3 = getTimer(TIMER3);
             planner.overrideTimer = getTimer(OVERRIDE);
-            profile.weeklyPlanner = planner;
+            // profile.weeklyPlanner = planner;
         } else if (isTwoTimes()) {
-            profile.twoTimesTimer = planner;
+            // profile.twoTimesTimer = planner;
         }
         return Converter.getGson().toJson(profile);
     }
@@ -254,39 +253,40 @@ public class ChargeProfileWrapper {
                 daysOfWeek.put(key, EnumSet.noneOf(DayOfWeek.class));
             }
         } else {
-            enabled.put(key, timer.timerEnabled);
-            addTime(key, timer.departureTime);
-            if (isWeekly()) {
-                final EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
-                if (timer.weekdays != null) {
-                    for (String day : timer.weekdays) {
-                        try {
-                            daySet.add(DayOfWeek.valueOf(day));
-                        } catch (IllegalArgumentException iae) {
-                            LOGGER.warn("unexpected value for {} day: {}", key.name(), day);
-                        }
-                    }
-                }
-                daysOfWeek.put(key, daySet);
-            }
+            // enabled.put(key, timer.timerEnabled);
+            // addTime(key, timer.departureTime);
+            // if (isWeekly()) {
+            final EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
+            // if (timer.weekdays != null) {
+            // for (String day : timer.weekdays) {
+            // try {
+            // daySet.add(DayOfWeek.valueOf(day));
+            // } catch (IllegalArgumentException iae) {
+            // LOGGER.warn("unexpected value for {} day: {}", key.name(), day);
+            // }
+            // }
+            // }
+            daysOfWeek.put(key, daySet);
         }
+        // }
     }
 
     private @Nullable Timer getTimer(final ProfileKey key) {
         final Timer timer = new Timer();
-        timer.timerEnabled = enabled.get(key);
+        // timer.timerEnabled = enabled.get(key);
         final LocalTime time = times.get(key);
-        timer.departureTime = time == null ? null : time.format(TIME_FORMATER);
+        // timer.departureTime = time == null ? null : time.format(TIME_FORMATER);
         if (isWeekly()) {
             final Set<DayOfWeek> days = daysOfWeek.get(key);
             if (days != null) {
-                timer.weekdays = new ArrayList<>();
-                for (DayOfWeek day : days) {
-                    timer.weekdays.add(day.name());
-                }
+                // timer.weekdays = new ArrayList<>();
+                // for (DayOfWeek day : days) {
+                // timer.weekdays.add(day.name());
+                // }
             }
         }
-        return timer.timerEnabled == null && timer.departureTime == null && timer.weekdays == null ? null : timer;
+        // return timer.timerEnabled == null && timer.departureTime == null && timer.weekdays == null ? null : timer;
+        return null;
     }
 
     private boolean isWeekly() {

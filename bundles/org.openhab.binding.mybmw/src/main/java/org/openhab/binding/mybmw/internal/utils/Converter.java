@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -25,14 +24,7 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mybmw.internal.dto.compat.VehicleAttributes;
-import org.openhab.binding.mybmw.internal.dto.compat.VehicleAttributesContainer;
-import org.openhab.binding.mybmw.internal.dto.compat.VehicleMessages;
-import org.openhab.binding.mybmw.internal.dto.status.CBSMessage;
-import org.openhab.binding.mybmw.internal.dto.status.CCMMessage;
-import org.openhab.binding.mybmw.internal.dto.status.Position;
-import org.openhab.binding.mybmw.internal.dto.status.VehicleStatus;
-import org.openhab.binding.mybmw.internal.dto.status.VehicleStatusContainer;
+import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -42,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link Converter} Conversion Helpers
@@ -67,14 +60,18 @@ public class Converter {
             .ofPattern(DATE_INPUT_ZONE_PATTERN_STRING);
 
     public static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    public static final double MILES_TO_KM_RATIO = 1.60934;
 
     private static final Gson GSON = new Gson();
+    private static final Vehicle INVALID_VEHICLE = new Vehicle();
     private static final double SCALE = 10;
-    public static final double MILES_TO_KM_RATIO = 1.60934;
     private static final String SPLIT_HYPHEN = "-";
     private static final String SPLIT_BRACKET = "\\(";
 
     public static Optional<TimeZoneProvider> timeZoneProvider = Optional.empty();
+    // https://www.baeldung.com/gson-list
+    public final static Type VEHICLE_LIST_TYPE = new TypeToken<ArrayList<Vehicle>>() {
+    }.getType();
 
     public static double round(double value) {
         return Math.round(value * SCALE) / SCALE;
@@ -93,30 +90,33 @@ public class Converter {
         return ldt.format(Converter.DATE_INPUT_PATTERN);
     }
 
-    public static String getLocalDateTime(@Nullable String input) {
-        if (input == null) {
-            return Constants.NULL_DATE;
-        }
+    public static String getZonedDateTime(String input) {
+        ZonedDateTime d = ZonedDateTime.parse(input);
+        return d.format(Converter.DATE_INPUT_PATTERN);
 
-        LocalDateTime ldt;
-        if (input.contains(Constants.PLUS)) {
-            ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_ZONE_PATTERN);
-        } else {
-            try {
-                ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
-            } catch (DateTimeParseException dtpe) {
-                ldt = LocalDateTime.parse(input, Converter.LOCAL_DATE_INPUT_PATTERN);
-            }
-        }
-        ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
-        ZonedDateTime zdtLZ;
-        zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
-        if (timeZoneProvider.isPresent()) {
-            zdtLZ = zdtUTC.withZoneSameInstant(timeZoneProvider.get().getTimeZone());
-        } else {
-            zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
-        }
-        return zdtLZ.format(Converter.DATE_INPUT_PATTERN);
+        // if (input == null) {
+        // return Constants.NULL_DATE;
+        // }
+        //
+        // LocalDateTime ldt;
+        // if (input.contains(Constants.PLUS)) {
+        // ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_ZONE_PATTERN);
+        // } else {
+        // try {
+        // ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
+        // } catch (DateTimeParseException dtpe) {
+        // ldt = LocalDateTime.parse(input, Converter.LOCAL_DATE_INPUT_PATTERN);
+        // }
+        // }
+        // ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
+        // ZonedDateTime zdtLZ;
+        // zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
+        // if (timeZoneProvider.isPresent()) {
+        // zdtLZ = zdtUTC.withZoneSameInstant(timeZoneProvider.get().getTimeZone());
+        // } else {
+        // zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
+        // }
+        // return zdtLZ.format(Converter.DATE_INPUT_PATTERN);
     }
 
     public static void setTimeZoneProvider(TimeZoneProvider tzp) {
@@ -218,85 +218,22 @@ public class Converter {
         return index;
     }
 
-    public static String transformLegacyStatus(@Nullable VehicleAttributesContainer vac) {
-        if (vac != null) {
-            if (vac.attributesMap != null && vac.vehicleMessages != null) {
-                VehicleAttributes attributesMap = vac.attributesMap;
-                VehicleMessages vehicleMessages = vac.vehicleMessages;
-                // create target objects
-                VehicleStatusContainer vsc = new VehicleStatusContainer();
-                VehicleStatus vs = new VehicleStatus();
-                vsc.vehicleStatus = vs;
+    public static List<Vehicle> getVehicleList(String json) {
+        List<Vehicle> l = GSON.fromJson(json, VEHICLE_LIST_TYPE);
+        if (l != null) {
+            return l;
+        } else {
+            return new ArrayList<Vehicle>();
+        }
+    }
 
-                vs.mileage = attributesMap.mileage;
-                vs.doorLockState = attributesMap.doorLockState;
-
-                vs.doorDriverFront = attributesMap.doorDriverFront;
-                vs.doorDriverRear = attributesMap.doorDriverRear;
-                vs.doorPassengerFront = attributesMap.doorPassengerFront;
-                vs.doorPassengerRear = attributesMap.doorPassengerRear;
-                vs.hood = attributesMap.hoodState;
-                vs.trunk = attributesMap.trunkState;
-
-                vs.windowDriverFront = attributesMap.winDriverFront;
-                vs.windowDriverRear = attributesMap.winDriverRear;
-                vs.windowPassengerFront = attributesMap.winPassengerFront;
-                vs.windowPassengerRear = attributesMap.winPassengerRear;
-                vs.sunroof = attributesMap.sunroofState;
-
-                vs.remainingFuel = attributesMap.remainingFuel;
-                vs.remainingRangeElectric = attributesMap.beRemainingRangeElectricKm;
-                vs.remainingRangeElectricMls = attributesMap.beRemainingRangeElectricMile;
-                vs.remainingRangeFuel = attributesMap.beRemainingRangeFuelKm;
-                vs.remainingRangeFuelMls = attributesMap.beRemainingRangeFuelMile;
-                vs.remainingFuel = attributesMap.remainingFuel;
-                vs.chargingLevelHv = attributesMap.chargingLevelHv;
-                vs.maxRangeElectric = attributesMap.beMaxRangeElectric;
-                vs.maxRangeElectricMls = attributesMap.beMaxRangeElectricMile;
-                vs.chargingStatus = attributesMap.chargingHVStatus;
-                vs.connectionStatus = attributesMap.connectorStatus;
-                vs.lastChargingEndReason = attributesMap.lastChargingEndReason;
-
-                vs.updateTime = attributesMap.updateTimeConverted;
-                vs.updateReason = attributesMap.lastUpdateReason;
-
-                Position p = new Position();
-                p.lat = attributesMap.gpsLat;
-                p.lon = attributesMap.gpsLon;
-                p.heading = attributesMap.heading;
-                vs.position = p;
-
-                final List<CCMMessage> ccml = new ArrayList<CCMMessage>();
-                if (vehicleMessages != null) {
-                    if (vehicleMessages.ccmMessages != null) {
-                        vehicleMessages.ccmMessages.forEach(entry -> {
-                            CCMMessage ccmM = new CCMMessage();
-                            ccmM.ccmDescriptionShort = entry.text;
-                            ccmM.ccmDescriptionLong = Constants.HYPHEN;
-                            ccmM.ccmMileage = entry.unitOfLengthRemaining;
-                            ccml.add(ccmM);
-                        });
-                    }
-                }
-                vs.checkControlMessages = ccml;
-
-                final List<CBSMessage> cbsl = new ArrayList<CBSMessage>();
-                if (vehicleMessages != null) {
-                    if (vehicleMessages.cbsMessages != null) {
-                        vehicleMessages.cbsMessages.forEach(entry -> {
-                            CBSMessage cbsm = new CBSMessage();
-                            cbsm.cbsType = entry.text;
-                            cbsm.cbsDescription = entry.description;
-                            cbsm.cbsDueDate = entry.date;
-                            cbsm.cbsRemainingMileage = entry.unitOfLengthRemaining;
-                            cbsl.add(cbsm);
-                        });
-                    }
-                }
-                vs.cbsData = cbsl;
-                return Converter.getGson().toJson(vsc);
+    public static Vehicle getVehicle(String vin, String json) {
+        List<Vehicle> l = getVehicleList(json);
+        for (Vehicle vehicle : l) {
+            if (vin.equals(vehicle.vin)) {
+                return vehicle;
             }
         }
-        return Constants.EMPTY_JSON;
+        return INVALID_VEHICLE;
     }
 }
