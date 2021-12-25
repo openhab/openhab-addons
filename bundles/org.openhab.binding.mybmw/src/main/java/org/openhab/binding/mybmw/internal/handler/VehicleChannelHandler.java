@@ -118,7 +118,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateVehicleStatus(Vehicle v) {
         // Vehicle Status
-        updateChannel(CHANNEL_GROUP_STATUS, LOCK, OnOffType.from(v.properties.areDoorsLocked));
+        updateChannel(CHANNEL_GROUP_STATUS, LOCK, Converter.getLockState(v.properties.areDoorsLocked));
 
         // Service Updates
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE,
@@ -131,13 +131,13 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
                 DateTimeType.valueOf(Converter.getZonedDateTime(v.properties.lastUpdatedAt)));
 
-        updateChannel(CHANNEL_GROUP_STATUS, DOORS, OnOffType.from(v.properties.areDoorsClosed));
-        updateChannel(CHANNEL_GROUP_STATUS, WINDOWS, OnOffType.from(v.properties.areWindowsClosed));
+        updateChannel(CHANNEL_GROUP_STATUS, DOORS, Converter.getClosedState(v.properties.areDoorsClosed));
+        updateChannel(CHANNEL_GROUP_STATUS, WINDOWS, Converter.getClosedState(v.properties.areWindowsClosed));
 
         // Charge Values
         if (isElectric) {
             updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION,
-                    OnOffType.from(v.properties.chargingState.isChargerConnected));
+                    Converter.getConnectionState(v.properties.chargingState.isChargerConnected));
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
                     StringType.valueOf(Converter.toTitleCase(v.properties.chargingState.state)));
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_TYPE,

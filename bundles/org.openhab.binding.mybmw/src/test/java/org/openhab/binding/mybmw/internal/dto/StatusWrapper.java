@@ -212,22 +212,22 @@ public class StatusWrapper {
                         Converter.round(qt.floatValue()), 0.01, "Charge Level");
                 break;
             case LOCK:
-                assertTrue(state instanceof OnOffType);
-                oot = (OnOffType) state;
-                assertEquals(OnOffType.from(vehicle.properties.areDoorsLocked), oot, "Vehicle locked");
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                assertEquals(Converter.getLockState(vehicle.properties.areDoorsLocked), st, "Vehicle locked");
                 break;
             case DOORS:
-                assertTrue(state instanceof OnOffType);
-                oot = (OnOffType) state;
-                assertEquals(OnOffType.from(vehicle.properties.areDoorsClosed), oot, "Doors Closed");
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                assertEquals(Converter.getClosedState(vehicle.properties.areDoorsClosed), st, "Doors Closed");
                 break;
             case WINDOWS:
-                assertTrue(state instanceof OnOffType);
-                oot = (OnOffType) state;
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
                 if (specialHandlingMap.containsKey(WINDOWS)) {
-                    assertEquals(specialHandlingMap.get(WINDOWS).toString(), oot.toString(), "Windows");
+                    assertEquals(specialHandlingMap.get(WINDOWS).toString(), st.toString(), "Windows");
                 } else {
-                    assertEquals(OnOffType.from(vehicle.properties.areWindowsClosed), oot, "Windows");
+                    assertEquals(Converter.getClosedState(vehicle.properties.areWindowsClosed), st, "Windows");
                 }
 
                 break;
@@ -270,9 +270,9 @@ public class StatusWrapper {
                 // }
                 break;
             case PLUG_CONNECTION:
-                assertTrue(state instanceof OnOffType);
-                oot = (OnOffType) state;
-                assertEquals(OnOffType.from(vehicle.properties.chargingState.isChargerConnected), oot,
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                assertEquals(Converter.getConnectionState(vehicle.properties.chargingState.isChargerConnected), st,
                         "Plug Connection State");
                 break;
             case LAST_UPDATE:

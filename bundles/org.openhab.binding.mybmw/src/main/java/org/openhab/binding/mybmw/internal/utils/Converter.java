@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -261,5 +262,29 @@ public class Converter {
                 .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 
         return generatedString;
+    }
+
+    public static State getLockState(boolean lock) {
+        if (lock) {
+            return StringType.valueOf(Constants.LOCKED);
+        } else {
+            return StringType.valueOf(Constants.UNLOCKED);
+        }
+    }
+
+    public static State getClosedState(boolean close) {
+        if (close) {
+            return StringType.valueOf(Constants.CLOSED);
+        } else {
+            return StringType.valueOf(Constants.OPEN);
+        }
+    }
+
+    public static State getConnectionState(boolean connected) {
+        if (connected) {
+            return StringType.valueOf(Constants.CONNECTED);
+        } else {
+            return StringType.valueOf(Constants.UNCONNECTED);
+        }
     }
 }

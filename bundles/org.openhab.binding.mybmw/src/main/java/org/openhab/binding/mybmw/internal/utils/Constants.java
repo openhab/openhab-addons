@@ -43,6 +43,10 @@ public class Constants {
     public static final String OPEN = "Open";
     public static final String INVALID = "Invalid";
     public static final String CLOSED = "Closed";
+    public static final String LOCKED = "Locked";
+    public static final String UNLOCKED = "Unlocked";
+    public static final String CONNECTED = "Connected";
+    public static final String UNCONNECTED = "Not connected";
     public static final String INTERMEDIATE = "Intermediate";
     public static final String UNDEF = UnDefType.UNDEF.toFullString();
     public static final String NULL_DATE = "1900-01-01T00:00:00";
