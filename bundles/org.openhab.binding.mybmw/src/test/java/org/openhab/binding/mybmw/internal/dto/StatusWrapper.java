@@ -289,7 +289,7 @@ public class StatusWrapper {
                 assertEquals(
                         PointType.valueOf(Double.toString(vehicle.properties.vehicleLocation.coordinates.latitude) + ","
                                 + Double.toString(vehicle.properties.vehicleLocation.coordinates.longitude)),
-                        pt.toString(), "Coordinates");
+                        pt, "Coordinates");
                 break;
             case HEADING:
                 assertTrue(state instanceof QuantityType);

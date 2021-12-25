@@ -50,16 +50,16 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int STATUS_ELECTRIC = 12;
+    private static final int STATUS_ELECTRIC = 8;
     private static final int STATUS_CONV = 8;
-    private static final int RANGE_HYBRID = 12;
+    private static final int RANGE_HYBRID = 9;
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 5;
-    private static final int DOORS = 12;
-    private static final int CHECK_EMPTY = 3;
-    private static final int CHECK_AVAILABLE = 3;
-    private static final int SERVICE_AVAILABLE = 4;
-    private static final int SERVICE_EMPTY = 4;
+    private static final int DOORS = 11;
+    private static final int CHECK_EMPTY = 0;
+    private static final int CHECK_AVAILABLE = 2;
+    private static final int SERVICE_AVAILABLE = 2;
+    private static final int SERVICE_EMPTY = 2;
     private static final int POSITION = 2;
 
     @Nullable
@@ -191,7 +191,8 @@ public class VehicleTests {
         // [todo] exact count needs to be evaluated
         // assertTrue(testVehicle(content,
         // STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
-        assertTrue(testVehicle(content, 28, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + RANGE_HYBRID + DOORS + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY, Optional.empty()));
     }
 
     public void testi3Rex() {

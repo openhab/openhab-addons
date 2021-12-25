@@ -28,10 +28,10 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
+import org.openhab.binding.mybmw.internal.dto.properties.CBS;
+import org.openhab.binding.mybmw.internal.dto.properties.CCM;
 import org.openhab.binding.mybmw.internal.dto.properties.DoorsWindows;
 import org.openhab.binding.mybmw.internal.dto.properties.Location;
-import org.openhab.binding.mybmw.internal.dto.status.CBSMessage;
-import org.openhab.binding.mybmw.internal.dto.status.CCMMessage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils.TimedChannel;
@@ -73,9 +73,9 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected String localeLanguage;
 
     // List Interfaces
-    protected List<CBSMessage> serviceList = new ArrayList<CBSMessage>();
+    protected List<CBS> serviceList = new ArrayList<CBS>();
     protected String selectedService = Constants.UNDEF;
-    protected List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
+    protected List<CCM> checkControlList = new ArrayList<CCM>();
     protected String selectedCC = Constants.UNDEF;
 
     protected MyBMWOptionProvider optionProvider;
@@ -108,6 +108,12 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateVehicle(Vehicle v) {
         updateVehicleStatus(v);
+        updateRange(v);
+        updateDoors(v.properties.doorsAndWindows);
+        updateWindows(v.properties.doorsAndWindows);
+        updatePosition(v.properties.vehicleLocation);
+        updateServices(v.properties.serviceRequired);
+        updateCheckControls(v.properties.checkControlMessages);
     }
 
     protected void updateVehicleStatus(Vehicle v) {
@@ -126,10 +132,20 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                 DateTimeType.valueOf(Converter.getZonedDateTime(v.properties.lastUpdatedAt)));
 
         updateChannel(CHANNEL_GROUP_STATUS, DOORS, OnOffType.from(v.properties.areDoorsClosed));
-        updateDoors(v.properties.doorsAndWindows);
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS, OnOffType.from(v.properties.areWindowsClosed));
-        updateWindows(v.properties.doorsAndWindows);
 
+        // Charge Values
+        if (isElectric) {
+            updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION,
+                    OnOffType.from(v.properties.chargingState.isChargerConnected));
+            updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
+                    StringType.valueOf(Converter.toTitleCase(v.properties.chargingState.state)));
+            updateChannel(CHANNEL_GROUP_STATUS, CHARGE_TYPE,
+                    StringType.valueOf(Converter.toTitleCase(v.properties.chargingState.type)));
+        }
+    }
+
+    protected void updateRange(Vehicle v) {
         boolean imperial = false;
         if (isElectric) {
             String unit = v.properties.electricRange.distance.units;
@@ -180,22 +196,12 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_RANGE, REMAINING_FUEL,
                     QuantityType.valueOf(v.properties.fuelLevel.value, Units.LITRE));
         }
-
-        // Charge Values
-        if (isElectric) {
-            updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION,
-                    OnOffType.from(v.properties.chargingState.isChargerConnected));
-            updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
-                    StringType.valueOf(Converter.toTitleCase(v.properties.chargingState.state)));
-            updateChannel(CHANNEL_GROUP_STATUS, CHARGE_TYPE,
-                    StringType.valueOf(Converter.toTitleCase(v.properties.chargingState.type)));
-        }
     }
 
-    protected void updateCheckControls(List<CCMMessage> ccl) {
+    protected void updateCheckControls(List<CCM> ccl) {
         if (ccl.isEmpty()) {
             // No Check Control available - show not active
-            CCMMessage ccm = new CCMMessage();
+            CCM ccm = new CCM();
             // [todo]
             // ccm.ccmDescriptionLong = Constants.NO_ENTRIES;
             // ccm.ccmDescriptionShort = Constants.NO_ENTRIES;
@@ -211,7 +217,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         List<StateOption> ccmMileageOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
-        for (CCMMessage ccEntry : checkControlList) {
+        for (CCM ccEntry : checkControlList) {
             // [todo]
             // ccmDescriptionOptions.add(new StateOption(Integer.toString(index), ccEntry.ccmDescriptionShort));
             // ccmDetailsOptions.add(new StateOption(Integer.toString(index), ccEntry.ccmDescriptionLong));
@@ -233,7 +239,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void selectCheckControl(int index) {
         if (index >= 0 && index < checkControlList.size()) {
-            CCMMessage ccEntry = checkControlList.get(index);
+            CCM ccEntry = checkControlList.get(index);
             // [todo]
             // selectedCC = ccEntry.ccmDescriptionShort;
             // updateChannel(CHANNEL_GROUP_CHECK_CONTROL, NAME, StringType.valueOf(ccEntry.ccmDescriptionShort));
@@ -243,34 +249,30 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         }
     }
 
-    protected void updateServices(List<CBSMessage> sl) {
+    protected void updateServices(List<CBS> sl) {
         // if list is empty add "undefined" element
         if (sl.isEmpty()) {
-            CBSMessage cbsm = new CBSMessage();
-            cbsm.title = Constants.NO_ENTRIES;
-            cbsm.longDescription = Constants.NO_ENTRIES;
+            CBS cbsm = new CBS();
+            cbsm.type = Constants.NO_ENTRIES;
             sl.add(cbsm);
         }
 
         // add all elements to options
         serviceList = sl;
         List<StateOption> serviceNameOptions = new ArrayList<>();
-        List<StateOption> serviceDetailsOptions = new ArrayList<>();
         List<StateOption> serviceDateOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
-        for (CBSMessage serviceEntry : serviceList) {
+        for (CBS serviceEntry : serviceList) {
             // create StateOption with "value = list index" and "label = human readable string"
-            serviceNameOptions.add(new StateOption(Integer.toString(index), serviceEntry.title));
-            serviceDetailsOptions.add(new StateOption(Integer.toString(index), serviceEntry.longDescription));
-            serviceDateOptions.add(new StateOption(Integer.toString(index), serviceEntry.subtitle));
-            if (selectedService.equals(serviceEntry.title)) {
+            serviceNameOptions.add(new StateOption(Integer.toString(index), serviceEntry.type));
+            serviceDateOptions.add(new StateOption(Integer.toString(index), serviceEntry.dateTime));
+            if (selectedService.equals(serviceEntry.type)) {
                 isSelectedElementIn = true;
             }
             index++;
         }
         setOptions(CHANNEL_GROUP_SERVICE, NAME, serviceNameOptions);
-        setOptions(CHANNEL_GROUP_SERVICE, DETAILS, serviceDetailsOptions);
         setOptions(CHANNEL_GROUP_SERVICE, DATE, serviceDateOptions);
 
         // if current selected item isn't anymore in the list select first entry
@@ -281,13 +283,11 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void selectService(int index) {
         if (index >= 0 && index < serviceList.size()) {
-            CBSMessage serviceEntry = serviceList.get(index);
-            selectedService = serviceEntry.title;
-            updateChannel(CHANNEL_GROUP_SERVICE, NAME, StringType.valueOf(Converter.toTitleCase(serviceEntry.title)));
-            updateChannel(CHANNEL_GROUP_SERVICE, DETAILS,
-                    StringType.valueOf(Converter.toTitleCase(serviceEntry.longDescription)));
+            CBS serviceEntry = serviceList.get(index);
+            selectedService = serviceEntry.type;
+            updateChannel(CHANNEL_GROUP_SERVICE, NAME, StringType.valueOf(Converter.toTitleCase(serviceEntry.type)));
             updateChannel(CHANNEL_GROUP_SERVICE, DATE,
-                    DateTimeType.valueOf(Converter.getZonedDateTime(serviceEntry.subtitle)));
+                    DateTimeType.valueOf(Converter.getZonedDateTime(serviceEntry.dateTime)));
         }
     }
 
@@ -356,8 +356,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                 StringType.valueOf(Converter.toTitleCase(dw.windows.passengerFront)));
         updateChannel(CHANNEL_GROUP_DOORS, WINDOW_DOOR_PASSENGER_REAR,
                 StringType.valueOf(Converter.toTitleCase(dw.windows.passengerRear)));
-        // updateChannel(CHANNEL_GROUP_DOORS, WINDOW_REAR,
-        // StringType.valueOf(Converter.toTitleCase(windowState.rearWindow)));
         updateChannel(CHANNEL_GROUP_DOORS, SUNROOF, StringType.valueOf(Converter.toTitleCase(dw.moonroof)));
     }
 
