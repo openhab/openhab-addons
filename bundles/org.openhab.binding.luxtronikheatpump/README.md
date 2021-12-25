@@ -251,7 +251,7 @@ The following channels are holding read only values:
 | channel233 | Number | x | Channel 233 |
 | channel234 | Number | x | Channel 234 |
 | channel235 | Number | x | Channel 235 |
-| frequencyCompressorTarget | Number:Frequency | x |  Compressor Target Frequency |
+| frequencyCompressorTarget | Number:Frequency | x | Compressor Target Frequency |
 | channel237 | Number | x | Channel 237 |
 | channel238 | Number | x | Channel 238 |
 | channel239 | Number | x | Channel 239 |
@@ -269,15 +269,15 @@ The following channels are holding read only values:
 | channel251 | Number | x | Channel 251 |
 | channel252 | Number | x | Channel 252 |
 | channel253 | Number | x | Channel 253 |
-| flowRateHeatSource2 | Number:VolumetricFlowRate | x |  Flow Rate Heat Source |
+| flowRateHeatSource2 | Number:VolumetricFlowRate | x | Flow Rate Heat Source |
 | channel255 | Number | x | Channel 255 |
 | channel256 | Number | x | Channel 256 |
-| powerActualValue2 | Number:Power | x |  Power Actual Value 2 |
+| heatingPowerActualValue | Number:Power | x | Heating Power Actual Value |
 | channel258 | Number | x | Channel 258 |
 | channel259 | Number | x | Channel 259 |
 | channel260 | Number | x | Channel 260 |
 
-The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name.
+The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.
 
 
 The following channels are also writable:
