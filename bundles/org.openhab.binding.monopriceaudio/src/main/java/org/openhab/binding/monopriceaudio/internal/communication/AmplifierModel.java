@@ -26,7 +26,7 @@ import org.openhab.binding.monopriceaudio.internal.dto.MonopriceAudioZoneDTO;
 import org.openhab.core.types.StateOption;
 
 /**
- * The {@link AmplifierModel} is responsible for mapping low level communications from each supported amplifier model.
+ * The {@link AmplifierModel} is responsible for mapping low level communications for each supported amplifier model.
  *
  * @author Michael Lobstein - Initial contribution
  */
@@ -39,24 +39,7 @@ public enum AmplifierModel {
                     "33", "34", "35", "36")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
-            MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
-            Matcher matcher = MONOPRICE_PATTERN.matcher(newZoneData);
-
-            if (matcher.find()) {
-                zoneData.setZone(matcher.group(1));
-                zoneData.setPage(matcher.group(2));
-                zoneData.setPower(matcher.group(3));
-                zoneData.setMute(matcher.group(4));
-                zoneData.setDnd(matcher.group(5));
-                zoneData.setVolume(Integer.parseInt(matcher.group(6)));
-                zoneData.setTreble(Integer.parseInt(matcher.group(7)));
-                zoneData.setBass(Integer.parseInt(matcher.group(8)));
-                zoneData.setBalance(Integer.parseInt(matcher.group(9)));
-                zoneData.setSource(matcher.group(10));
-                zoneData.setKeypad(matcher.group(11));
-            }
-
-            return zoneData;
+            return getMonopriceZoneData(newZoneData);
         }
 
         @Override
@@ -68,6 +51,28 @@ public enum AmplifierModel {
             sourceLabels.add(new StateOption("4", config.inputLabel4));
             sourceLabels.add(new StateOption("5", config.inputLabel5));
             sourceLabels.add(new StateOption("6", config.inputLabel6));
+            return sourceLabels;
+        }
+    },
+    // Dayton Audio DAX88
+    DAX88("<", "\r", "?", "", ">", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -12, 12, 12, -10, 10, 10, 8, 8,
+            true, Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08")) {
+        @Override
+        public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
+            return getMonopriceZoneData(newZoneData);
+        }
+
+        @Override
+        public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
+            List<StateOption> sourceLabels = new ArrayList<>();
+            sourceLabels.add(new StateOption("1", config.inputLabel1));
+            sourceLabels.add(new StateOption("2", config.inputLabel2));
+            sourceLabels.add(new StateOption("3", config.inputLabel3));
+            sourceLabels.add(new StateOption("4", config.inputLabel4));
+            sourceLabels.add(new StateOption("5", config.inputLabel5));
+            sourceLabels.add(new StateOption("6", config.inputLabel6));
+            sourceLabels.add(new StateOption("7", config.inputLabel7));
+            sourceLabels.add(new StateOption("8", config.inputLabel8));
             return sourceLabels;
         }
     },
@@ -119,68 +124,27 @@ public enum AmplifierModel {
             return sourceLabels;
         }
     },
-    // Dayton Audio DAX88
-    DAX88("<", "\r", "?", "", ">", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -12, 12, 12, -10, 10, 10, 8, 8,
-            true, Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08")) {
+    XANTECH("!", "+\r", "?", "ZD", "#", "PR", "SS", "VO", "MU", "TR", "BS", "BL", "", 38, -7, 7, 7, -32, 31, 32, 16, 8,
+            false,
+            Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
-            Matcher matcher = MONOPRICE_PATTERN.matcher(newZoneData);
+            Matcher matcher = XANTECH_PATTERN.matcher(newZoneData);
 
             if (matcher.find()) {
                 zoneData.setZone(matcher.group(1));
-                zoneData.setPage(matcher.group(2));
-                zoneData.setPower(matcher.group(3));
-                zoneData.setMute(matcher.group(4));
-                zoneData.setDnd(matcher.group(5));
-                zoneData.setVolume(Integer.parseInt(matcher.group(6)));
-                zoneData.setTreble(Integer.parseInt(matcher.group(7)));
-                zoneData.setBass(Integer.parseInt(matcher.group(8)));
-                zoneData.setBalance(Integer.parseInt(matcher.group(9)));
-                zoneData.setSource(matcher.group(10));
-                zoneData.setKeypad(matcher.group(11));
+                zoneData.setPower(matcher.group(2));
+                zoneData.setSource(matcher.group(3));
+                zoneData.setVolume(Integer.parseInt(matcher.group(4)));
+                zoneData.setMute(matcher.group(5));
+                zoneData.setTreble(Integer.parseInt(matcher.group(6)));
+                zoneData.setBass(Integer.parseInt(matcher.group(7)));
+                zoneData.setBalance(Integer.parseInt(matcher.group(8)));
+                zoneData.setKeypad(matcher.group(9));
+                zoneData.setPage(matcher.group(10));
             }
-
             return zoneData;
-        }
-
-        @Override
-        public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            List<StateOption> sourceLabels = new ArrayList<>();
-            sourceLabels.add(new StateOption("1", config.inputLabel1));
-            sourceLabels.add(new StateOption("2", config.inputLabel2));
-            sourceLabels.add(new StateOption("3", config.inputLabel3));
-            sourceLabels.add(new StateOption("4", config.inputLabel4));
-            sourceLabels.add(new StateOption("5", config.inputLabel5));
-            sourceLabels.add(new StateOption("6", config.inputLabel6));
-            sourceLabels.add(new StateOption("7", config.inputLabel7));
-            sourceLabels.add(new StateOption("8", config.inputLabel8));
-            return sourceLabels;
-        }
-    },
-    XANTECH44("!", "+\r", "?", "ZD", "#", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -4, 4, 4, -10, 10, 10, 4,
-            4, false, Arrays.asList("1", "2", "3", "4")) {
-        @Override
-        public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
-            return getXantechZoneData(newZoneData);
-        }
-
-        @Override
-        public List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config) {
-            List<StateOption> sourceLabels = new ArrayList<>();
-            sourceLabels.add(new StateOption("1", config.inputLabel1));
-            sourceLabels.add(new StateOption("2", config.inputLabel2));
-            sourceLabels.add(new StateOption("3", config.inputLabel3));
-            sourceLabels.add(new StateOption("4", config.inputLabel4));
-            return sourceLabels;
-        }
-    },
-    XANTECH88("!", "+\r", "?", "ZD", "#", "PR", "CH", "VO", "MU", "TR", "BS", "BL", "DT", 38, -4, 4, 4, -10, 10, 10, 24,
-            8, false, Arrays.asList("11", "12", "13", "14", "15", "16", "17", "18", "21", "22", "23", "24", "25", "26",
-                    "27", "28", "31", "32", "33", "34", "35", "36", "37", "38")) {
-        @Override
-        public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
-            return getXantechZoneData(newZoneData);
         }
 
         @Override
@@ -198,9 +162,10 @@ public enum AmplifierModel {
         }
     };
 
-    private static MonopriceAudioZoneDTO getXantechZoneData(String newZoneData) {
+    // Used by 10761/DAX66 and DAX88
+    private static MonopriceAudioZoneDTO getMonopriceZoneData(String newZoneData) {
         MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
-        Matcher matcher = XANTECH_PATTERN.matcher(newZoneData);
+        Matcher matcher = MONOPRICE_PATTERN.matcher(newZoneData);
 
         if (matcher.find()) {
             zoneData.setZone(matcher.group(1));

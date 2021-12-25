@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Xantech 4x4 Amplifier Thing -->
-	<thing-type id="xantech44">
-		<label>Xantech 4x4 Amplifier</label>
+	<!-- Xantech MRC88 Amplifier Thing -->
+	<thing-type id="xantech">
+		<label>Xantech MRC88 Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System
 		</description>
@@ -32,6 +32,54 @@
 				<label>Zone 4</label>
 				<description>The Controls for Zone 4</description>
 			</channel-group>
+			<channel-group id="zone5" typeId="zone">
+				<label>Zone 5</label>
+				<description>The Controls for Zone 5</description>
+			</channel-group>
+			<channel-group id="zone6" typeId="zone">
+				<label>Zone 6</label>
+				<description>The Controls for Zone 6</description>
+			</channel-group>
+			<channel-group id="zone7" typeId="zone">
+				<label>Zone 7</label>
+				<description>The Controls for Zone 7</description>
+			</channel-group>
+			<channel-group id="zone8" typeId="zone">
+				<label>Zone 8</label>
+				<description>The Controls for Zone 8</description>
+			</channel-group>
+			<channel-group id="zone9" typeId="zone">
+				<label>Zone 9</label>
+				<description>The Controls for Zone 9</description>
+			</channel-group>
+			<channel-group id="zone10" typeId="zone">
+				<label>Zone 10</label>
+				<description>The Controls for Zone 10</description>
+			</channel-group>
+			<channel-group id="zone11" typeId="zone">
+				<label>Zone 11</label>
+				<description>The Controls for Zone 11</description>
+			</channel-group>
+			<channel-group id="zone12" typeId="zone">
+				<label>Zone 12</label>
+				<description>The Controls for Zone 12</description>
+			</channel-group>
+			<channel-group id="zone13" typeId="zone">
+				<label>Zone 13</label>
+				<description>The Controls for Zone 13</description>
+			</channel-group>
+			<channel-group id="zone14" typeId="zone">
+				<label>Zone 14</label>
+				<description>The Controls for Zone 14</description>
+			</channel-group>
+			<channel-group id="zone15" typeId="zone">
+				<label>Zone 15</label>
+				<description>The Controls for Zone 15</description>
+			</channel-group>
+			<channel-group id="zone16" typeId="zone">
+				<label>Zone 16</label>
+				<description>The Controls for Zone 16</description>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -50,10 +98,11 @@
 				<description>Communication Port (IP or Serial over IP). For IP connection to the Xantech Amplifier</description>
 				<default>4444</default>
 			</parameter>
-			<parameter name="numZones" type="integer" min="1" max="4" required="true">
+			<parameter name="numZones" type="integer" min="1" max="16" required="true">
 				<label>Number of Zones</label>
-				<description>Number of Zones on the Amplifier to Utilize in the Binding</description>
-				<default>4</default>
+				<description>Number of Zones on the Amplifier to Utilize in the Binding (Up to 16 Zones With 2 Amplifiers Connected
+					Together)</description>
+				<default>8</default>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
 				<label>Polling Interval</label>
@@ -63,7 +112,7 @@
 			<parameter name="ignoreZones" type="text" required="false">
 				<label>Ignore Zones</label>
 				<description>(Optional) A Comma Seperated List of Zone Numbers That Will Ignore the 'All Zone' (Except All Off)
-					Commands (ie: 1,3,4)</description>
+					Commands (ie: 1,6,10)</description>
 			</parameter>
 			<parameter name="initialAllVolume" type="integer" min="1" max="30" required="false">
 				<label>Initial All Volume</label>
@@ -90,6 +139,26 @@
 				<label>Source 4 Input Label</label>
 				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
 				<default>Source 4</default>
+			</parameter>
+			<parameter name="inputLabel5" type="text" required="false">
+				<label>Source 5 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 5</default>
+			</parameter>
+			<parameter name="inputLabel6" type="text" required="false">
+				<label>Source 6 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 6</default>
+			</parameter>
+			<parameter name="inputLabel7" type="text" required="false">
+				<label>Source 7 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 7</default>
+			</parameter>
+			<parameter name="inputLabel8" type="text" required="false">
+				<label>Source 8 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 8</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -131,28 +200,28 @@
 		<item-type>Number</item-type>
 		<label>Source Input</label>
 		<description>Select the Source Input</description>
-		<state min="1" max="4"/>
+		<state min="1" max="8"/>
 	</channel-type>
 
 	<channel-type id="treble">
 		<item-type>Number</item-type>
 		<label>Treble Adjustment</label>
 		<description>Adjust the Treble</description>
-		<state min="-4" max="4" step="1" pattern="%d"/>
+		<state min="-7" max="7" step="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="bass">
 		<item-type>Number</item-type>
 		<label>Bass Adjustment</label>
 		<description>Adjust the Bass</description>
-		<state min="-4" max="4" step="1" pattern="%d"/>
+		<state min="-7" max="7" step="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="balance">
 		<item-type>Number</item-type>
 		<label>Balance Adjustment</label>
 		<description>Adjust the Balance</description>
-		<state min="-10" max="10" step="1" pattern="%d"/>
+		<state min="-32" max="31" step="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="page">

@@ -148,7 +148,7 @@
 		<item-type>Number</item-type>
 		<label>Balance Adjustment</label>
 		<description>Adjust the Balance</description>
-		<state min="-32" max="32" step="1" pattern="%d"/>
+		<state min="-32" max="31" step="1" pattern="%d"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -30,8 +30,7 @@ public class MonopriceAudioBindingConstants {
     public static final ThingTypeUID THING_TYPE_MP = new ThingTypeUID(BINDING_ID, "amplifier");
     public static final ThingTypeUID THING_TYPE_MP70V = new ThingTypeUID(BINDING_ID, "monoprice70v");
     public static final ThingTypeUID THING_TYPE_DAX88 = new ThingTypeUID(BINDING_ID, "dax88");
-    public static final ThingTypeUID THING_TYPE_XT44 = new ThingTypeUID(BINDING_ID, "xantech44");
-    public static final ThingTypeUID THING_TYPE_XT88 = new ThingTypeUID(BINDING_ID, "xantech88");
+    public static final ThingTypeUID THING_TYPE_XT = new ThingTypeUID(BINDING_ID, "xantech");
 
     // List of all Channel types
     public static final String CHANNEL_TYPE_POWER = "power";
