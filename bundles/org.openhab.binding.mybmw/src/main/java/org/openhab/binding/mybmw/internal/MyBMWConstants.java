@@ -41,7 +41,8 @@ public class MyBMWConstants {
         CONVENTIONAL("conv"),
         PLUGIN_HYBRID("phev"),
         ELECTRIC_REX("bev_rex"),
-        ELECTRIC("bev");
+        ELECTRIC("bev"),
+        UNKNOWN("unknown");
 
         private final String type;
 

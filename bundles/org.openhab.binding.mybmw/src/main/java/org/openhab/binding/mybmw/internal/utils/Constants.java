@@ -93,4 +93,8 @@ public class Constants {
             put(DayOfWeek.SUNDAY, "Sun");
         }
     };
+
+    // Drive Train definitions from json
+    public static final String BEV = "ELECTRIC";
+    public static final String REX_EXTENSION = "(+ REX)";
 }

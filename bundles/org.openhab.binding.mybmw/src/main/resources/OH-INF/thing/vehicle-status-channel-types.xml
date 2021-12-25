@@ -4,19 +4,18 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="doors-channel">
-		<item-type>String</item-type>
+		<item-type>Contact</item-type>
 		<label>Overall Door Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="windows-channel">
-		<item-type>String</item-type>
+		<item-type>Contact</item-type>
 		<label>Overall Window Status</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="lock-channel">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>Doors Locked</label>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="next-service-date-channel">
 		<item-type>DateTime</item-type>

@@ -32,8 +32,6 @@ import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link DiscoveryTest} Test Discovery Results
  *
@@ -42,8 +40,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class DiscoveryTest {
     private final Logger logger = LoggerFactory.getLogger(DiscoveryTest.class);
-    private static final Gson GSON = new Gson();
-    private static final int DISCOVERY_VEHICLES = 9;
 
     @Test
     public void testDiscovery() {
@@ -65,28 +61,6 @@ public class DiscoveryTest {
         List<DiscoveryResult> results = discoveries.getAllValues();
         assertEquals(1, results.size(), "Found Vehicles");
         DiscoveryResult result = results.get(0);
-        assertEquals("mybmw:bev_rex:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
-    }
-
-    public void testBimmerDiscovery() {
-        String content = FileReader.readFileInString("src/test/resources/responses/vehicles.json");
-        MyBMWBridgeHandler bh = mock(MyBMWBridgeHandler.class);
-        Bridge b = mock(Bridge.class);
-        when(bh.getThing()).thenReturn(b);
-        when(b.getUID()).thenReturn(new ThingUID("mybmw", "account", "abc"));
-        VehicleDiscovery discovery = new VehicleDiscovery();
-        discovery.setThingHandler(bh);
-        DiscoveryListener listener = mock(DiscoveryListener.class);
-        discovery.addDiscoveryListener(listener);
-        List<Vehicle> vl = Converter.getVehicleList(content);
-        ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
-        ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
-
-        discovery.onResponse(vl);
-        verify(listener, times(DISCOVERY_VEHICLES)).thingDiscovered(services.capture(), discoveries.capture());
-        List<DiscoveryResult> results = discoveries.getAllValues();
-        results.forEach(entry -> {
-            logger.info("{}", entry.toString());
-        });
+        assertEquals("mybmw:bev_rex:abc:anonymous", result.getThingUID().getAsString(), "Thing UID");
     }
 }

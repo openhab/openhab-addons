@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 
 /**
@@ -46,6 +47,24 @@ public class VehicleStatusUtils {
         }
     }
 
+    /**
+     * calculates the mapping of thing type
+     *
+     * @param driveTrain
+     * @param model
+     * @return
+     */
+    public static VehicleType vehicleType(String driveTrain, String model) {
+        if (Constants.BEV.equals(driveTrain)) {
+            if (model.endsWith(Constants.REX_EXTENSION)) {
+                return VehicleType.ELECTRIC_REX;
+            } else {
+                return VehicleType.ELECTRIC;
+            }
+        }
+        // [todo] definitions for PHEV and CONV missing
+        return VehicleType.UNKNOWN;
+    }
     /**
      * public static int getNextServiceMileage(VehicleStatus vStatus) {
      * if (vStatus.cbsData == null) {

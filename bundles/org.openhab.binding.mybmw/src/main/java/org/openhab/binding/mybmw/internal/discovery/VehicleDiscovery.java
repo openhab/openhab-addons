@@ -27,6 +27,7 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -58,7 +59,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
             final ThingUID bridgeUID = bridge.getThing().getUID();
             vehicleList.forEach(vehicle -> {
                 // the DriveTrain field in the delivered json is defining the Vehicle Type
-                String vehicleType = vehicle.driveTrain.toLowerCase();
+                String vehicleType = VehicleStatusUtils.vehicleType(vehicle.driveTrain, vehicle.model).toString();
                 SUPPORTED_THING_SET.forEach(entry -> {
                     if (entry.getId().equals(vehicleType)) {
                         ThingUID uid = new ThingUID(entry, vehicle.vin, bridgeUID.getId());
@@ -131,7 +132,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                 });
             });
         });
-    };
+    }
 
     /**
      * Get all field names from a DTO with a specific value
