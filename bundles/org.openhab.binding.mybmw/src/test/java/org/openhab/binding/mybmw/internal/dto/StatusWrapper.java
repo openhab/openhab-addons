@@ -41,8 +41,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link StatusWrapper} Test json responses from ConnectedDrive Portal
  *
@@ -51,7 +49,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 @SuppressWarnings("null")
 public class StatusWrapper {
-    private static final Gson GSON = new Gson();
     private static final Unit<Length> KILOMETRE = Constants.KILOMETRE_UNIT;
     private static final double ALLOWED_MILE_CONVERSION_DEVIATION = 1.5;
     private static final double ALLOWED_KM_ROUND_DEVIATION = 0.1;
@@ -217,12 +214,12 @@ public class StatusWrapper {
             case LOCK:
                 assertTrue(state instanceof OnOffType);
                 oot = (OnOffType) state;
-                assertEquals(Boolean.toString(vehicle.properties.areDoorsLocked), oot.toString(), "Vehicle locked");
+                assertEquals(OnOffType.from(vehicle.properties.areDoorsLocked), oot, "Vehicle locked");
                 break;
             case DOORS:
                 assertTrue(state instanceof OnOffType);
                 oot = (OnOffType) state;
-                assertEquals(Boolean.toString(vehicle.properties.areDoorsClosed), oot.toString(), "Doors Closed");
+                assertEquals(OnOffType.from(vehicle.properties.areDoorsClosed), oot, "Doors Closed");
                 break;
             case WINDOWS:
                 assertTrue(state instanceof OnOffType);
@@ -230,7 +227,7 @@ public class StatusWrapper {
                 if (specialHandlingMap.containsKey(WINDOWS)) {
                     assertEquals(specialHandlingMap.get(WINDOWS).toString(), oot.toString(), "Windows");
                 } else {
-                    assertEquals(Boolean.toString(vehicle.properties.areWindowsClosed), oot.toString(), "Windows");
+                    assertEquals(OnOffType.from(vehicle.properties.areWindowsClosed), oot, "Windows");
                 }
 
                 break;
@@ -245,6 +242,13 @@ public class StatusWrapper {
                     // st.toString(),
                     // "Check Control");
                 }
+                break;
+            case CHARGE_TYPE:
+                assertTrue(isElectric, "Is Electric");
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                assertEquals(Converter.toTitleCase(vehicle.properties.chargingState.type), st.toString(),
+                        "Charge Type");
                 break;
             case CHARGE_STATUS:
                 assertTrue(isElectric, "Is Electric");
@@ -268,7 +272,7 @@ public class StatusWrapper {
             case PLUG_CONNECTION:
                 assertTrue(state instanceof OnOffType);
                 oot = (OnOffType) state;
-                assertEquals(Boolean.toString(vehicle.properties.chargingState.isChargerConnected), oot.toString(),
+                assertEquals(OnOffType.from(vehicle.properties.chargingState.isChargerConnected), oot,
                         "Plug Connection State");
                 break;
             case LAST_UPDATE:
@@ -412,7 +416,7 @@ public class StatusWrapper {
                     } else {
                         String dueDateString = VehicleStatusUtils
                                 .getNextServiceDate(vehicle.properties.serviceRequired);
-                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
+                        DateTimeType expectedDTT = DateTimeType.valueOf(dueDateString);
                         assertEquals(expectedDTT.toString(), dtt.toString(), "Next Service");
                     }
                 } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {

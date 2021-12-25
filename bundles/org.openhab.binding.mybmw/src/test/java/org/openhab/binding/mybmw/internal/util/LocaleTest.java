@@ -18,8 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link LocaleTest} is testing locale settings
  *
@@ -28,8 +26,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 @SuppressWarnings("null")
 public class LocaleTest {
-    private static final Gson GSON = new Gson();
-
     public void testTimeUTCToLocaleTime() {
         /*
          * String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");

@@ -202,9 +202,7 @@ class AuthTest {
             digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(verfier_code.getBytes(StandardCharsets.UTF_8));
             String code_challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
-            System.out.println(code_challenge);
             String pCodeChallenge = "9ct8DdFwC_EJ-f9SN-ePCirAnqZMA06Qudq6zWzLSIs";
-            System.out.println(pCodeChallenge);
         } catch (NoSuchAlgorithmException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

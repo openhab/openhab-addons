@@ -243,6 +243,8 @@ public class Converter {
         List<Vehicle> l = getVehicleList(json);
         for (Vehicle vehicle : l) {
             if (vin.equals(vehicle.vin)) {
+                // declare vehicle as valid
+                vehicle.valid = true;
                 return vehicle;
             }
         }

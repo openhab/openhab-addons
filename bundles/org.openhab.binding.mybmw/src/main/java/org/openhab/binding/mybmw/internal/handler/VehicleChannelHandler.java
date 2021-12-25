@@ -115,8 +115,8 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, LOCK, OnOffType.from(v.properties.areDoorsLocked));
 
         // Service Updates
-        updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE, DateTimeType.valueOf(
-                Converter.getZonedDateTime(VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired))));
+        updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE,
+                DateTimeType.valueOf(VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired)));
 
         // [todo] CheckControl Active?
         // updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,

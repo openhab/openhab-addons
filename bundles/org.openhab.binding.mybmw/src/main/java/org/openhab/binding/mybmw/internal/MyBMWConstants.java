@@ -110,11 +110,11 @@ public class MyBMWConstants {
     public static final String SERVICE_MILEAGE = "service-mileage";
     public static final String CHECK_CONTROL = "check-control";
     public static final String PLUG_CONNECTION = "plug-connection";
-    public static final String CHARGE_STATUS = "charge";
-    public static final String CHARGE_TYPE = "type";
-    public static final String CHARGE_REMAINING = "remaining";
     public static final String LAST_UPDATE = "last-update";
     public static final String LAST_UPDATE_REASON = "last-update-reason";
+    public static final String CHARGE_STATUS = "charge";
+    public static final String CHARGE_TYPE = "charge-type";
+    public static final String CHARGE_REMAINING = "charge-remaining";
 
     // Door Details
     public static final String DOOR_DRIVER_FRONT = "driver-front";

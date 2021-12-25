@@ -66,7 +66,7 @@ import org.openhab.core.types.RefreshType;
 public class VehicleHandler extends VehicleChannelHandler {
     private Optional<MyBMWProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
-    private Optional<VehicleConfiguration> configuration = Optional.empty();
+    public Optional<VehicleConfiguration> configuration = Optional.empty();
     private Optional<MyBMWBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<ScheduledFuture<?>> editTimeout = Optional.empty();
@@ -313,17 +313,20 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onResponse(@Nullable String content) {
             if (content != null) {
-                updateStatus(ThingStatus.ONLINE);
-                List<Vehicle> vehicleList = Converter.getVehicleList(content);
-                vehicleList.forEach(vehicle -> {
-                    configuration.ifPresentOrElse(config -> {
-                        if (config.vin.equals(vehicle.vin)) {
-                            updateVehicle(vehicle);
-                        }
-                    }, () -> {
-                        logger.debug("Configuration missing");
-                    });
-                });
+                if (getConfiguration().isPresent()) {
+                    Vehicle v = Converter.getVehicle(configuration.get().vin, content);
+                    if (v.valid) {
+                        logger.info("Send update");
+                        updateStatus(ThingStatus.ONLINE);
+                        updateVehicle(v);
+                    } else {
+                        logger.info("Vehicle not valid");
+                    }
+                } else {
+                    logger.info("configuration not present");
+                }
+            } else {
+                logger.info("Content not valid");
             }
         }
 
