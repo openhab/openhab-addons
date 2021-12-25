@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 import javax.measure.quantity.Length;
 
@@ -71,7 +72,7 @@ public class Converter {
 
     public static Optional<TimeZoneProvider> timeZoneProvider = Optional.empty();
     // https://www.baeldung.com/gson-list
-    public final static Type VEHICLE_LIST_TYPE = new TypeToken<ArrayList<Vehicle>>() {
+    public static final Type VEHICLE_LIST_TYPE = new TypeToken<ArrayList<Vehicle>>() {
     }.getType();
 
     public static double round(double value) {
@@ -249,5 +250,16 @@ public class Converter {
             }
         }
         return INVALID_VEHICLE;
+    }
+
+    public static String getRandomString(int size) {
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1).limit(size)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+
+        return generatedString;
     }
 }

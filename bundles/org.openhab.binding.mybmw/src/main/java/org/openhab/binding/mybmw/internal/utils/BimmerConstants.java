@@ -35,7 +35,7 @@ public class BimmerConstants {
 
     public static final String BRAND_BMW = "bmw";
     public static final String BRAND_MINI = "mini";
-    public static final List<String> allBrands = List.of(BRAND_BMW, BRAND_MINI);
+    public static final List<String> ALL_BRANDS = List.of(BRAND_BMW, BRAND_MINI);
 
     public static final String OAUTH_ENDPOINT = "/gcdm/oauth/authenticate";
 

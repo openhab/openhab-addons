@@ -20,7 +20,6 @@ import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -183,7 +182,7 @@ public class MyBMWProxy {
      * @param callback
      */
     public void requestVehicles(StringResponseCallback callback) {
-        BimmerConstants.allBrands.forEach(brand -> {
+        BimmerConstants.ALL_BRANDS.forEach(brand -> {
             get(vehicleUrl, null, null, brand, callback);
         });
     }
@@ -244,14 +243,14 @@ public class MyBMWProxy {
             AuthQueryResponse aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(),
                     AuthQueryResponse.class);
 
-            String verifier_bytes = RandomStringUtils.randomAlphanumeric(64);
+            String verifier_bytes = Converter.getRandomString(64);
             String code_verifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verifier_bytes.getBytes());
 
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(code_verifier.getBytes(StandardCharsets.UTF_8));
             String code_challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 
-            String state_bytes = RandomStringUtils.randomAlphanumeric(16);
+            String state_bytes = Converter.getRandomString(16);
             String state = Base64.getUrlEncoder().withoutPadding().encodeToString(state_bytes.getBytes());
 
             MultiMap<String> baseParams = new MultiMap<String>();
@@ -315,11 +314,8 @@ public class MyBMWProxy {
             t.setToken(ar.accessToken);
             t.setExpiration(ar.expiresIn);
             return true;
-        } catch (
-
-        Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.warn("Authorization Exception: {}", e.getMessage());
         }
         return false;
     }

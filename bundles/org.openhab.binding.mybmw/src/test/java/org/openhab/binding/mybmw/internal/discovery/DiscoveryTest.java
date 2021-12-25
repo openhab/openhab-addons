@@ -29,8 +29,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DiscoveryTest} Test Discovery Results
@@ -39,7 +37,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DiscoveryTest {
-    private final Logger logger = LoggerFactory.getLogger(DiscoveryTest.class);
 
     @Test
     public void testDiscovery() {

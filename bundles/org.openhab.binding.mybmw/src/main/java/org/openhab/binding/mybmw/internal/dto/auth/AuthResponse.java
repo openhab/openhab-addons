@@ -17,7 +17,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Timer} Data Transfer Object
+ * The {@link AuthResponse} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */

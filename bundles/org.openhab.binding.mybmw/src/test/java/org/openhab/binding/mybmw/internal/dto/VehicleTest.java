@@ -22,17 +22,13 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link VehicleTest} Test json responses from ConnectedDrive Portal
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("null")
 public class VehicleTest {
-    private static final Gson GSON = new Gson();
 
     @Test
     public void testBevRexValues() {

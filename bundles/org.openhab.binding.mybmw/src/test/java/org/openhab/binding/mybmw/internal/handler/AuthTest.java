@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.mybmw.internal.handler;
 
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.*;
@@ -22,8 +34,16 @@ import org.openhab.binding.mybmw.internal.dto.auth.AuthResponse;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link AuthTest} test authorization flow
+ *
+ * @author Bernd Weymann - Initial contribution
+ */
 class AuthTest {
+    private final Logger logger = LoggerFactory.getLogger(AuthTest.class);
 
     void testAuth() {
         String user = "usr";
@@ -41,7 +61,7 @@ class AuthTest {
             firstRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
 
             ContentResponse firstResponse = firstRequest.send();
-            System.out.println(firstResponse.getContentAsString());
+            logger.info(firstResponse.getContentAsString());
             AuthQueryResponse aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(),
                     AuthQueryResponse.class);
 
@@ -56,7 +76,7 @@ class AuthTest {
             String state = Base64.getUrlEncoder().withoutPadding().encodeToString(state_bytes.getBytes());
 
             String authUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
-            System.out.println(authUrl);
+            logger.info(authUrl);
             Request loginRequest = authHttpClient.POST(authUrl);
             loginRequest.header("Content-Type", "application/x-www-form-urlencoded");
 
@@ -77,9 +97,9 @@ class AuthTest {
             loginRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
                     UrlEncoded.encode(loginParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse secondResonse = loginRequest.send();
-            System.out.println(secondResonse.getContentAsString());
+            logger.info(secondResonse.getContentAsString());
             String authCode = getAuthCode(secondResonse.getContentAsString());
-            System.out.println(authCode);
+            logger.info(authCode);
 
             MultiMap<String> authParams = new MultiMap<String>(baseParams);
             authParams.put("authorization", authCode);
@@ -88,13 +108,13 @@ class AuthTest {
             authRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
                     UrlEncoded.encode(authParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse authResponse = authRequest.send();
-            System.out.println(authResponse.getHeaders());
-            System.out.println("Response " + authResponse.getHeaders().get(HttpHeader.LOCATION));
+            logger.info("{}", authResponse.getHeaders());
+            logger.info("Response " + authResponse.getHeaders().get(HttpHeader.LOCATION));
             String code = AuthTest.codeFromUrl(authResponse.getHeaders().get(HttpHeader.LOCATION));
-            System.out.println("Code " + code);
-            System.out.println("Auth");
+            logger.info("Code " + code);
+            logger.info("Auth");
 
-            System.out.println(aqr.tokenEndpoint);
+            logger.info(aqr.tokenEndpoint);
             // AuthenticationStore authenticationStore = authHttpClient.getAuthenticationStore();
             // BasicAuthentication ba = new BasicAuthentication(new URI(aqr.tokenEndpoint), Authentication.ANY_REALM,
             // aqr.clientId, aqr.clientSecret);
@@ -102,7 +122,7 @@ class AuthTest {
             Request codeRequest = authHttpClient.POST(aqr.tokenEndpoint);
             String basicAuth = "Basic "
                     + Base64.getUrlEncoder().encodeToString((aqr.clientId + ":" + aqr.clientSecret).getBytes());
-            System.out.println(basicAuth);
+            logger.info(basicAuth);
             codeRequest.header("Content-Type", "application/x-www-form-urlencoded");
             codeRequest.header(AUTHORIZATION, basicAuth);
 
@@ -111,19 +131,16 @@ class AuthTest {
             codeParams.put("code_verifier", code_verifier);
             codeParams.put("redirect_uri", aqr.returnUrl);
             codeParams.put("grant_type", "authorization_code");
-            System.out.println(codeParams);
-            // codeParams.put(RESPONSE_TYPE, TOKEN);
-            // codeParams.put(AUTHORIZATION, basicAuth);
             codeRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
                     UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse codeResponse = codeRequest.send();
-            System.out.println(codeResponse.getContentAsString());
+            logger.info(codeResponse.getContentAsString());
             AuthResponse ar = Converter.getGson().fromJson(codeResponse.getContentAsString(), AuthResponse.class);
             Token t = new Token();
             t.setType(ar.tokenType);
             t.setToken(ar.accessToken);
             t.setExpiration(ar.expiresIn);
-            System.out.println(t.getBearerToken());
+            logger.info(t.getBearerToken());
 
             HttpClient apiHttpClient = new HttpClient(sslContextFactory);
             apiHttpClient.start();
@@ -136,15 +153,15 @@ class AuthTest {
             // vehicleRequest.param("appDateTime", Long.toString(System.currentTimeMillis()));
             // vehicleRequest.param("apptimezone", "60.0");
             // vehicleRequest.
-            // // System.out.println(vehicleParams);
+            // // logger.info(vehicleParams);
             // vehicleRequest.content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, vehicleParams.toString(),
             // StandardCharsets.UTF_8));
-            // System.out.println(vehicleRequest.getHeaders());
+            // logger.info(vehicleRequest.getHeaders());
             String params = UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false);
 
             String vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                     + "/eadrax-vcs/v1/vehicles";
-            System.out.println(vehicleUrl);
+            logger.info(vehicleUrl);
             Request vehicleRequest = apiHttpClient.newRequest(vehicleUrl).param("tireGuardMode", "ENABLED")
                     .param("appDateTime", Long.toString(System.currentTimeMillis())).param("apptimezone", "60.0");
             // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
@@ -153,17 +170,11 @@ class AuthTest {
             vehicleRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
             vehicleRequest.header("accept-language", "en");
 
-            System.out.println(vehicleRequest.getParams());
             ContentResponse vehicleResponse = vehicleRequest.send();
-            System.out.println(vehicleResponse.getStatus());
-            System.out.println(vehicleResponse.getContentAsString());
-            System.out.println(vehicleResponse.getHeaders());
+            logger.info(vehicleResponse.getContentAsString());
 
-        } catch (
-
-        Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("{}", e.getMessage());
         }
     }
 
@@ -204,8 +215,7 @@ class AuthTest {
             String code_challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
             String pCodeChallenge = "9ct8DdFwC_EJ-f9SN-ePCirAnqZMA06Qudq6zWzLSIs";
         } catch (NoSuchAlgorithmException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("{}", e.getMessage());
         }
 
         // DEBUG:bimmer_connected.account:Authenticating againstwith MyBMW flow.
