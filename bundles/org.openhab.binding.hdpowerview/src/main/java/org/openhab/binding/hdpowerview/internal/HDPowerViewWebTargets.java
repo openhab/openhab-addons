@@ -109,8 +109,11 @@ public class HDPowerViewWebTargets {
         shades = base + "shades/";
         sceneActivate = base + "scenes";
         scenes = base + "scenes/";
-        sceneCollectionActivate = base + "sceneCollections";
-        sceneCollections = base + "sceneCollections/";
+
+        // Hub v1 only supports "scenecollections". Hub v2 will redirect to "sceneCollections".
+        sceneCollectionActivate = base + "scenecollections";
+        sceneCollections = base + "scenecollections/";
+
         scheduledEvents = base + "scheduledevents";
         this.httpClient = httpClient;
     }
