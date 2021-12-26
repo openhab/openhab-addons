@@ -42,7 +42,7 @@ import com.google.gson.Gson;
  * @author Matthias Oesterheld - Initial contribution
  */
 @NonNullByDefault
-public class NetworkHandler extends BaseThingHandler {
+public class NetworkHandler extends BaseThingHandler implements EventListener {
 
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
 
@@ -95,12 +95,12 @@ public class NetworkHandler extends BaseThingHandler {
             return;
         }
         accountHandler = (AccountHandler) bridge.getHandler();
-        accountHandler.addDevicesUpdateHandler(this, this::updateNetworkState);
 
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void updateNetworkState() {
+    @Override
+    public void handleHomescreenUpdate() {
         try {
             updateState(CHANNEL_NETWORK_ARMED, accountHandler.getNetworkArmed(String.valueOf(config.networkId), false));
         } catch (IOException e) {
@@ -110,7 +110,6 @@ public class NetworkHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        accountHandler.removeDevicesUpdateHandler(this);
         networkService.dispose();
         super.dispose();
     }

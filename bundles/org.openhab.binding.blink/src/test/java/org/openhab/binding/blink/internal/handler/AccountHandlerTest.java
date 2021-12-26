@@ -56,12 +56,14 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.internal.BridgeImpl;
+import org.openhab.core.thing.internal.ThingImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 
@@ -227,16 +229,19 @@ class AccountHandlerTest extends JavaTest {
 
     @Test
     void testGetDevicesRefreshRefreshesCache() {
-        Runnable handler = mock(Runnable.class);
-        accountHandler.addDevicesUpdateHandler(this, handler);
+        CameraHandler cameraHandler = mock(CameraHandler.class);
+        Thing camera = new ThingImpl(CameraHandlerTest.THING_TYPE_UID, "camera");
+        camera.setHandler(cameraHandler);
+        doReturn(List.of(camera)).when(bridge).getThings();
         accountHandler.homescreenCache = cache;
         when(cache.refreshValue()).thenReturn(testBlinkHomescreen());
         when(cache.getValue()).thenReturn(testBlinkHomescreen());
         accountHandler.getDevices(true);
         verify(cache).refreshValue();
-        verify(handler).run();
+        verify(cameraHandler, times(1)).handleHomescreenUpdate();
         accountHandler.getDevices(false);
         verify(cache).getValue();
+        verify(cameraHandler, times(1)).handleHomescreenUpdate();
     }
 
     @Test

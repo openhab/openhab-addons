@@ -71,7 +71,7 @@ public class CameraHandlerTest {
 
     private static final String CAMERA_ID = "123";
     private static final String NETWORK_ID = "567";
-    private static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID("blink", "camera");
+    static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID("blink", "camera");
     private static final ChannelUID CHANNEL_CAMERA_TEMPERATURE = new ChannelUID(new ThingUID(THING_TYPE_UID, CAMERA_ID),
             "temperature");
     private static final ChannelUID CHANNEL_CAMERA_BATTERY = new ChannelUID(new ThingUID(THING_TYPE_UID, CAMERA_ID),
@@ -137,15 +137,6 @@ public class CameraHandlerTest {
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusCaptor.capture());
         assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));
-    }
-
-    @Test
-    void testDevicesUpdatedHandler() {
-        ArgumentCaptor<Runnable> handlerCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(accountHandler).addDevicesUpdateHandler(same(cameraHandler), handlerCaptor.capture());
-        doNothing().when(cameraHandler).updateCameraState();
-        handlerCaptor.getValue().run();
-        verify(cameraHandler).updateCameraState();
     }
 
     @Test
@@ -268,12 +259,11 @@ public class CameraHandlerTest {
     void testDispose() {
         cameraHandler.cameraService = cameraService;
         cameraHandler.dispose();
-        verify(accountHandler).removeDevicesUpdateHandler(same(cameraHandler));
         verify(cameraService).dispose();
     }
 
     @Test
-    void testUpdateCameraState() throws IOException {
+    void testHandleHomescreenUpdate() throws IOException {
         cameraHandler.accountHandler = accountHandler;
         cameraHandler.cameraService = cameraService;
         doReturn(BlinkTestUtil.testBlinkAccount()).when(accountHandler).getBlinkAccount();
@@ -288,7 +278,7 @@ public class CameraHandlerTest {
         doReturn(motionDetection).when(accountHandler).getMotionDetection(any(), anyBoolean());
         doReturn(camera).when(accountHandler).getCameraState(any(), anyBoolean());
         doReturn(thumbnail).when(cameraService).getThumbnail(any(), any());
-        cameraHandler.updateCameraState();
+        cameraHandler.handleHomescreenUpdate();
         verify(callback).stateUpdated(CHANNEL_CAMERA_TEMPERATURE,
                 new QuantityType<>(temperature, ImperialUnits.FAHRENHEIT));
         verify(callback).stateUpdated(CHANNEL_CAMERA_BATTERY, battery);
@@ -298,10 +288,10 @@ public class CameraHandlerTest {
     }
 
     @Test
-    void testUpdateCameraStateOnException() throws IOException {
+    void testHandleHomescreenUpdateOnException() throws IOException {
         cameraHandler.cameraService = cameraService;
         doThrow(new IOException()).when(accountHandler).getTemperature(any());
-        cameraHandler.updateCameraState();
+        cameraHandler.handleHomescreenUpdate();
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeastOnce()).statusUpdated(same(thing), statusCaptor.capture());
         assertThat(statusCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));

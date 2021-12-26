@@ -49,7 +49,7 @@ import com.google.gson.Gson;
  * @author Matthias Oesterheld - Initial contribution
  */
 @NonNullByDefault
-public class CameraHandler extends BaseThingHandler {
+public class CameraHandler extends BaseThingHandler implements EventListener {
 
     private final Logger logger = LoggerFactory.getLogger(CameraHandler.class);
 
@@ -134,7 +134,6 @@ public class CameraHandler extends BaseThingHandler {
             return;
         }
         accountHandler = (AccountHandler) bridge.getHandler();
-        accountHandler.addDevicesUpdateHandler(this, this::updateCameraState);
 
         if (thumbnailServlet == null) {
             try {
@@ -154,7 +153,8 @@ public class CameraHandler extends BaseThingHandler {
         updateStatus(ThingStatus.ONLINE);
     }
 
-    public void updateCameraState() {
+    @Override
+    public void handleHomescreenUpdate() {
         logger.debug("Updating camera state for camera {}", config.cameraId);
         try {
             updateState(CHANNEL_CAMERA_TEMPERATURE,
@@ -175,7 +175,6 @@ public class CameraHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        accountHandler.removeDevicesUpdateHandler(this);
         cameraService.dispose();
         super.dispose();
     }

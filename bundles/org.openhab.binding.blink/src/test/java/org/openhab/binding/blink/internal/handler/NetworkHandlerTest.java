@@ -127,16 +127,6 @@ class NetworkHandlerTest {
     }
 
     @Test
-    void testDevicesUpdatedHandler() {
-        networkHandler.initialize();
-        ArgumentCaptor<Runnable> handlerCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(accountHandler).addDevicesUpdateHandler(same(networkHandler), handlerCaptor.capture());
-        doNothing().when(networkHandler).updateNetworkState();
-        handlerCaptor.getValue().run();
-        verify(networkHandler).updateNetworkState();
-    }
-
-    @Test
     void testSetOfflineOnMissingBridge() {
         networkHandler = new NetworkHandler(thing, httpClientFactory, gson) {
             @Override
@@ -178,7 +168,7 @@ class NetworkHandlerTest {
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Consumer<Boolean>> handlerCaptor = ArgumentCaptor.forClass(Consumer.class);
         verify(networkService).watchCommandStatus(any(), same(blinkAccount), any(), any(), handlerCaptor.capture());
-        doNothing().when(networkHandler).updateNetworkState(); // tested separately
+        doNothing().when(networkHandler).handleHomescreenUpdate(); // tested separately
         handlerCaptor.getValue().accept(true);
         verify(accountHandler).getDevices(true);
     }
@@ -200,25 +190,24 @@ class NetworkHandlerTest {
     void testDispose() {
         networkHandler.accountHandler = accountHandler;
         networkHandler.dispose();
-        verify(accountHandler).removeDevicesUpdateHandler(same(networkHandler));
         verify(networkService).dispose();
     }
 
     @Test
-    void testUpdateNetworkState() throws IOException {
+    void testHandleHomescreenUpdate() throws IOException {
         networkHandler.initialize();
         OnOffType networkState = OnOffType.ON;
         doReturn(networkState).when(accountHandler).getNetworkArmed(any(), anyBoolean());
-        networkHandler.updateNetworkState();
+        networkHandler.handleHomescreenUpdate();
         verify(callback).stateUpdated(CHANNEL_NETWORK_ARMED, networkState);
     }
 
     @Test
-    void testUpdateNetworkStateOnException() throws IOException {
+    void testHandleHomescreenUpdateOnException() throws IOException {
         networkHandler.initialize();
         OnOffType networkState = OnOffType.ON;
         doThrow(new IOException()).when(accountHandler).getNetworkArmed(any(), anyBoolean());
-        networkHandler.updateNetworkState();
+        networkHandler.handleHomescreenUpdate();
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeastOnce()).statusUpdated(same(thing), statusCaptor.capture());
         assertThat(statusCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
