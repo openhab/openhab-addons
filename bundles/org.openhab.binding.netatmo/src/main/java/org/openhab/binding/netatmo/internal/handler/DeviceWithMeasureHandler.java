@@ -73,37 +73,40 @@ public class DeviceWithMeasureHandler extends DeviceHandler {
     private void callGetMeasurements(@Nullable String moduleId, Set<Channel> measureChannels,
             Map<String, State> localMeasures) {
         localMeasures.clear();
-        WeatherApi api = apiBridge.getRestManager(WeatherApi.class);
-        measureChannels.forEach(channel -> {
-            Configuration measureDef = channel.getConfiguration();
-            String period = (String) measureDef.get("period");
-            String limit = (String) measureDef.get("limit");
-            ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
-            if (channelTypeUID != null) {
-                String channelId = channelTypeUID.getId();
-                String[] elements = channelId.split("-");
-                MeasureClass.asSet.stream().filter(mt -> mt.apiDescriptor.equals(elements[0])).findFirst()
-                        .ifPresent(mt -> {
-                            try {
-                                Object result;
-                                if (limit != null) {
-                                    result = api.getMeasurements(config.id, moduleId, period, mt, limit);
-                                } else {
-                                    result = api.getMeasurements(config.id, moduleId, period, mt);
+        WeatherApi weatherApi = apiBridge.getRestManager(WeatherApi.class);
+        if (weatherApi != null) {
+            measureChannels.forEach(channel -> {
+                Configuration measureDef = channel.getConfiguration();
+                String period = (String) measureDef.get("period");
+                String limit = (String) measureDef.get("limit");
+                ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
+                if (channelTypeUID != null) {
+                    String channelId = channelTypeUID.getId();
+                    String[] elements = channelId.split("-");
+                    MeasureClass.asSet.stream().filter(mt -> mt.apiDescriptor.equals(elements[0])).findFirst()
+                            .ifPresent(mt -> {
+                                try {
+                                    Object result;
+                                    if (limit != null) {
+                                        result = weatherApi.getMeasurements(config.id, moduleId, period, mt, limit);
+                                    } else {
+                                        result = weatherApi.getMeasurements(config.id, moduleId, period, mt);
+                                    }
+
+                                    State data = result instanceof ZonedDateTime
+                                            ? toDateTimeType((ZonedDateTime) result)
+                                            : result instanceof Double ? toQuantityType((Double) result, mt)
+                                                    : UnDefType.UNDEF;
+
+                                    localMeasures.put(channel.getUID().getIdWithoutGroup(), data);
+                                } catch (NetatmoException e) {
+                                    logger.warn("Error getting measurement {} for channel {}",
+                                            measureDef.values().toString(), channel.getLabel());
                                 }
-
-                                State data = result instanceof ZonedDateTime ? toDateTimeType((ZonedDateTime) result)
-                                        : result instanceof Double ? toQuantityType((Double) result, mt)
-                                                : UnDefType.UNDEF;
-
-                                localMeasures.put(channel.getUID().getIdWithoutGroup(), data);
-                            } catch (NetatmoException e) {
-                                logger.warn("Error getting measurement {} for channel {}",
-                                        measureDef.values().toString(), channel.getLabel());
-                            }
-                        });
-            }
-        });
+                            });
+                }
+            });
+        }
     }
 
     private void collectMeasures() {

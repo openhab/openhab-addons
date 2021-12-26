@@ -31,7 +31,7 @@ public class WeatherUtils {
      * @param humidity relative level (%)
      * @return heatIndex in (°C)
      */
-    public static double getHeatIndex(double temperature, double humidity) {
+    public static double heatIndex(double temperature, double humidity) {
         double tempF = (temperature * 9.0 / 5.0) + 32.0; // calculations are done in Fahrenheit
         double heatIndex;
         if (tempF >= 80.0) {
@@ -51,7 +51,7 @@ public class WeatherUtils {
         return (heatIndex - 32) * 5.0 / 9.0; // convert back to Celsius
     }
 
-    public static double getDewPointDep(double temperature, double dewpoint) {
+    public static double dewPointDep(double temperature, double dewpoint) {
         return temperature - dewpoint;
     }
 
@@ -64,7 +64,7 @@ public class WeatherUtils {
      * @param humidity relative level (%)
      * @return dewpoint temperature
      */
-    public static double getDewPoint(double temperature, double humidity) {
+    public static double dewPoint(double temperature, double humidity) {
         double a = 17.271, b = 237.2;
         double gamma = ((a * temperature) / (b + temperature)) + Math.log(humidity / 100.0);
         return b * gamma / (a - gamma);
@@ -77,7 +77,7 @@ public class WeatherUtils {
      * @param hygro relative level (%)
      * @return Humidex index value
      */
-    public static double getHumidex(double temperature, double hygro) {
+    public static double humidex(double temperature, double hygro) {
         double result = 6.112 * Math.pow(10, 7.5 * temperature / (237.7 + temperature)) * hygro / 100;
         result = temperature + 0.555555556 * (result - 10);
         return result;

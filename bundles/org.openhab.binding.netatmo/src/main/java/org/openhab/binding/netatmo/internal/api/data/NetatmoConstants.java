@@ -77,6 +77,7 @@ public class NetatmoConstants {
     public enum MeasureClass {
         INTERIOR_TEMPERATURE(new Measure(0, 50, 0.3, SIUnits.CELSIUS), "temp", true),
         EXTERIOR_TEMPERATURE(new Measure(-40, 65, 0.3, SIUnits.CELSIUS), "temp", true),
+        HEAT_INDEX(new Measure(-40, 65, 1, SIUnits.CELSIUS)),
         PRESSURE(new Measure(260, 1260, 1, HECTO(SIUnits.PASCAL)), "pressure", true),
         CO2(new Measure(0, 5000, 50, Units.PARTS_PER_MILLION), "co2", true),
         NOISE(new Measure(35, 120, 1, Units.DECIBEL), "noise", true),

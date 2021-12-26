@@ -95,13 +95,14 @@ public class NetatmoServlet extends HttpServlet {
     @Modified
     protected void modified(Map<String, Object> config) {
         NetatmoBindingConfiguration configuration = new Configuration(config).as(NetatmoBindingConfiguration.class);
+        SecurityApi securityApi = apiBridge.getRestManager(SecurityApi.class);
         String url = configuration.webHookUrl;
-        if (url != null && !url.isEmpty()) {
+        if (url != null && !url.isEmpty() && securityApi != null) {
             String tentative = url + NETATMO_CALLBACK_URI;
             try {
                 URI webhookURI = new URI(tentative);
                 logger.info("Setting Netatmo Welcome WebHook to {}", webhookURI.toString());
-                hookSet = apiBridge.getRestManager(SecurityApi.class).addwebhook(webhookURI);
+                hookSet = securityApi.addwebhook(webhookURI);
             } catch (URISyntaxException e) {
                 logger.warn("webhookUrl is not a valid URI '{}' : {}", tentative, e.getMessage());
             } catch (NetatmoException e) {
@@ -111,10 +112,11 @@ public class NetatmoServlet extends HttpServlet {
     }
 
     private void releaseWebHook() {
-        if (hookSet) {
+        SecurityApi securityApi = apiBridge.getRestManager(SecurityApi.class);
+        if (hookSet && securityApi != null) {
             logger.info("Releasing Netatmo Welcome WebHook");
             try {
-                apiBridge.getRestManager(SecurityApi.class).dropWebhook();
+                securityApi.dropWebhook();
             } catch (NetatmoException e) {
                 logger.warn("Error releasing webhook : {}", e.getMessage());
             }

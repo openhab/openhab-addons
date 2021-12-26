@@ -171,6 +171,18 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="timestamp-advanced" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp when data was measured.</description>
+		<category>time</category>
+		<tags>
+			<tag>Status</tag>
+			<tag>Timestamp</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="co2">
 		<item-type>Number:Dimensionless</item-type>
 		<label>CO2</label>
@@ -210,14 +222,14 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="humidex">
+	<channel-type id="humidex" advanced="true">
 		<item-type>Number</item-type>
 		<label>Humidex</label>
 		<description>Computed Humidex : felt temperature.</description>
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 
-	<channel-type id="humidex-scale">
+	<channel-type id="humidex-scale" advanced="true">
 		<item-type>Number</item-type>
 		<label>Humidex Appreciation</label>
 		<description>Appreciation of the Humidex.</description>
@@ -264,19 +276,19 @@
 		<description>Details of the event.</description>
 		<state readOnly="true">
 			<options>
-				<option value="MISSING_SD">Missing SD Card</option>
-				<option value="SD_INSERTED">SD Card inserted</option>
-				<option value="SD_FORMATED">SD Card formated</option>
-				<option value="WORKING_SD">Working SD Card</option>
-				<option value="DEFECTIVE_SD">Defective SD Card</option>
-				<option value="INCOMPATIBLE_SD_SPEED">Incompatible SD Card speed</option>
-				<option value="INSUFFICIENT_SD_SPACE">Insufficient SD Card space</option>
-				<option value="INCORRECT_POWER">Incorrect power adapter</option>
-				<option value="CORRECT_POWER">Correct power adapter</option>
-				<option value="ARRIVAL">Person arrived</option>
-				<option value="HUMAN">Human seen</option>
-				<option value="VEHICLE">Car seen</option>
-				<option value="ANIMAL">Animal seen</option>
+				<option value="SD_CARD_MISSING">Missing SD Card</option>
+				<option value="SD_CARD_INSERTED">SD Card inserted</option>
+				<option value="SD_CARD_FORMATTED">SD Card formated</option>
+				<option value="SD_CARD_WORKING">Working SD Card</option>
+				<option value="SD_CARD_DEFECTIVE">Defective SD Card</option>
+				<option value="SD_CARD_INCOMPATIBLE_SPEED">Incompatible SD Card speed</option>
+				<option value="SD_CARD_INSUFFICIENT_SPACE">Insufficient SD Card space</option>
+				<option value="ALIM_INCORRECT_POWER">Incorrect power adapter</option>
+				<option value="ALIM_CORRECT_POWER">Correct power adapter</option>
+				<option value="PERSON_ARRIVAL">Person arrived</option>
+				<option value="MOVEMENT_HUMAN">Human seen</option>
+				<option value="MOVEMENT_VEHICLE">Car seen</option>
+				<option value="MOVEMENT_ANIMAL">Animal seen</option>
 			</options>
 		</state>
 	</channel-type>

@@ -63,11 +63,11 @@ import org.slf4j.LoggerFactory;
 public class HomeHandler extends DeviceWithEventHandler {
     private final Logger logger = LoggerFactory.getLogger(HomeHandler.class);
 
-    private @NonNullByDefault({}) HomeApi homeApi;
-    private @NonNullByDefault({}) NAHome home;
     private Optional<EnergyApi> energyApi = Optional.empty();
     private Optional<SecurityApi> securityApi = Optional.empty();
     private int setPointDefaultDuration = -1;
+    private List<NAPerson> knownPersons = List.of();
+    private List<NAThing> cameras = List.of();
 
     public HomeHandler(Bridge bridge, List<AbstractChannelHelper> channelHelpers, ApiBridge apiBridge,
             NetatmoDescriptionProvider descriptionProvider) {
@@ -77,28 +77,30 @@ public class HomeHandler extends DeviceWithEventHandler {
     @Override
     public void initialize() {
         super.initialize();
-        homeApi = apiBridge.getRestManager(HomeApi.class);
-        try {
-            home = homeApi.getHomeList(config.id, null).iterator().next();
-            Set<FeatureArea> capabilities = home.getModules().values().stream().map(m -> m.getType().features)
-                    .collect(Collectors.toSet());
-            logger.debug("Home {} will use : {}", config.id, capabilities);
-            List<Channel> toBeRemovedChannels = new ArrayList<>();
-            if (!capabilities.contains(FeatureArea.SECURITY)) {
-                toBeRemovedChannels.addAll(channelsOfGroup(GROUP_HOME_SECURITY));
-            } else {
-                securityApi = Optional.of(apiBridge.getRestManager(SecurityApi.class));
-            }
-            if (!capabilities.contains(FeatureArea.ENERGY)) {
-                toBeRemovedChannels.addAll(channelsOfGroup(GROUP_HOME_ENERGY));
-            } else {
-                energyApi = Optional.of(apiBridge.getRestManager(EnergyApi.class));
-            }
+        HomeApi homeApi = apiBridge.getRestManager(HomeApi.class);
+        if (homeApi != null) {
+            try {
+                NAHome home = homeApi.getHomeList(config.id, null).iterator().next();
+                Set<FeatureArea> capabilities = home.getModules().values().stream().map(m -> m.getType().features)
+                        .collect(Collectors.toSet());
+                logger.debug("Home {} will use : {}", config.id, capabilities);
+                List<Channel> toBeRemovedChannels = new ArrayList<>();
+                if (!capabilities.contains(FeatureArea.SECURITY)) {
+                    toBeRemovedChannels.addAll(channelsOfGroup(GROUP_HOME_SECURITY));
+                } else {
+                    securityApi = Optional.ofNullable(apiBridge.getRestManager(SecurityApi.class));
+                }
+                if (!capabilities.contains(FeatureArea.ENERGY)) {
+                    toBeRemovedChannels.addAll(channelsOfGroup(GROUP_HOME_ENERGY));
+                } else {
+                    energyApi = Optional.ofNullable(apiBridge.getRestManager(EnergyApi.class));
+                }
 
-            ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
-            updateThing(builder.build());
-        } catch (NetatmoException e) {
-            logger.warn("Error retreiving home detailed data : {}", e.getMessage());
+                ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
+                updateThing(builder.build());
+            } catch (NetatmoException e) {
+                logger.warn("Error retreiving home detailed data : {}", e.getMessage());
+            }
         }
     }
 
@@ -114,31 +116,39 @@ public class HomeHandler extends DeviceWithEventHandler {
     }
 
     @Override
-    protected NAHome updateReadings() throws NetatmoException {
-        home = homeApi.getHomeList(config.id, null).iterator().next();
-        NAHome homeData = homeApi.getHomeData(config.id).iterator().next();
-        home.setPlace(homeData.getPlace());
-        energyApi.ifPresent(api -> {
-            try {
-                NAHome status = api.getHomeStatus(config.id);
-                status.getRooms().keySet().forEach(id -> home.getModules().remove(id));
-                home.getRooms().putAll(status.getRooms()); // Rooms are better handled with status data
-                status.getModules().keySet().forEach(id -> home.getModules().remove(id));
-                home.getModules().putAll(status.getModules()); // Energy modules are better handled with status data
-                ChannelUID channelUID = new ChannelUID(getThing().getUID(), GROUP_HOME_ENERGY, CHANNEL_PLANNING);
-                descriptionProvider.setStateOptions(channelUID, home.getThermSchedules().stream()
-                        .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
-            } catch (NetatmoException e) {
-                logger.warn("Error getting homestatus : {}", e.getMessage());
-            }
-        });
-        securityApi.ifPresent(api -> {
-            homeData.getPersons().keySet().forEach(id -> home.getModules().remove(id));
-            homeData.getCameras().keySet().forEach(id -> home.getModules().remove(id));
-            home.getPersons().putAll(homeData.getPersons());
-            home.getCameras().putAll(homeData.getCameras());
-        });
-        return home;
+    protected @Nullable NAHome updateReadings() throws NetatmoException {
+        HomeApi homeApi = apiBridge.getRestManager(HomeApi.class);
+        if (homeApi != null) {
+            NAHome home = homeApi.getHomeList(config.id, null).iterator().next();
+            NAHome homeData = homeApi.getHomeData(config.id).iterator().next();
+            home.setPlace(homeData.getPlace());
+            energyApi.ifPresent(api -> {
+                try {
+                    NAHome status = api.getHomeStatus(config.id);
+                    status.getRooms().keySet().forEach(id -> home.getModules().remove(id));
+                    home.getRooms().putAll(status.getRooms()); // Rooms are better handled with status data
+                    status.getModules().keySet().forEach(id -> home.getModules().remove(id));
+                    home.getModules().putAll(status.getModules()); // Energy modules are better handled with status data
+                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), GROUP_HOME_ENERGY, CHANNEL_PLANNING);
+                    descriptionProvider.setStateOptions(channelUID, home.getThermSchedules().stream()
+                            .map(p -> new StateOption(p.getId(), p.getName())).collect(Collectors.toList()));
+                } catch (NetatmoException e) {
+                    logger.warn("Error getting homestatus : {}", e.getMessage());
+                }
+            });
+            securityApi.ifPresent(api -> {
+                homeData.getPersons().keySet().forEach(id -> home.getModules().remove(id));
+                homeData.getCameras().keySet().forEach(id -> home.getModules().remove(id));
+                home.getPersons().putAll(homeData.getPersons());
+                home.getCameras().putAll(homeData.getCameras());
+                knownPersons = home.getKnownPersons();
+                cameras = home.getModules().values().stream()
+                        .filter(module -> module.getType() == ModuleType.NACamera || module.getType() == ModuleType.NOC)
+                        .collect(Collectors.toList());
+            });
+            return home;
+        }
+        return null;
     }
 
     @Override
@@ -252,13 +262,11 @@ public class HomeHandler extends DeviceWithEventHandler {
     }
 
     public List<NAPerson> getKnownPersons() {
-        return home.getKnownPersons();
+        return knownPersons;
     }
 
     public List<NAThing> getCameras() {
-        return home.getModules().values().stream()
-                .filter(module -> module.getType() == ModuleType.NACamera || module.getType() == ModuleType.NOC)
-                .collect(Collectors.toList());
+        return cameras;
     }
 
     public @Nullable NAHomeEvent getLastEventOf(String personId) {

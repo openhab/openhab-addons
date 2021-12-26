@@ -25,14 +25,29 @@
 				<label>Today max</label>
 				<description>Maximum temperature measured today.</description>
 			</channel>
-			<channel id="min-time" typeId="timestamp">
+			<channel id="min-time" typeId="timestamp-advanced">
 				<label>Today Min Timestamp</label>
 				<description>Moment when temperature was measured at his minimum today.</description>
 			</channel>
-			<channel id="max-time" typeId="timestamp">
+			<channel id="max-time" typeId="timestamp-advanced">
 				<label>Today Max Timestamp</label>
 				<description>Moment when temperature was measured at his maximum today.</description>
 			</channel>
+			<channel id="humidex" typeId="humidex"/>
+			<channel id="humidex-scale" typeId="humidex-scale"/>
+			<channel id="heat-index" typeId="system.outdoor-temperature">
+				<label>Heat Index</label>
+				<description>Apparent temperature.</description>
+			</channel>
+			<channel id="dewpoint" typeId="system.outdoor-temperature">
+				<label>Dewpoint</label>
+				<description>Temperature to which air must be cooled to become saturated with water vapor.</description>
+			</channel>
+			<channel id="dewpoint-depression" typeId="system.outdoor-temperature">
+				<label>Dewpoint Depression</label>
+				<description>Difference between the temperature and the dewpoint.</description>
+			</channel>
+
 		</channels>
 	</channel-group-type>
 

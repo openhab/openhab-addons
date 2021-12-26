@@ -66,11 +66,11 @@ public class CameraHandler extends DeviceWithEventHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if ((command instanceof OnOffType) && (CHANNEL_CAMERA_IS_MONITORING.equals(channelUID.getIdWithoutGroup()))) {
             CameraAddress camAddress = cameraAddress;
-            if (camAddress != null) {
+            SecurityApi securityApi = apiBridge.getRestManager(SecurityApi.class);
+            if (camAddress != null && securityApi != null) {
                 String localURL = camAddress.getLocalURL();
                 if (localURL != null) {
-                    tryApiCall(() -> apiBridge.getRestManager(SecurityApi.class).changeStatus(localURL,
-                            command == OnOffType.ON));
+                    tryApiCall(() -> securityApi.changeStatus(localURL, command == OnOffType.ON));
                 }
             }
         } else {
@@ -122,11 +122,14 @@ public class CameraHandler extends DeviceWithEventHandler {
     }
 
     private @Nullable String pingVpnUrl(String vpnUrl) {
-        try {
-            return apiBridge.getRestManager(SecurityApi.class).ping(vpnUrl);
-        } catch (NetatmoException e) {
-            logger.warn("Error pinging camera : {}", e.getMessage());
-            return null;
+        SecurityApi securityApi = apiBridge.getRestManager(SecurityApi.class);
+        if (securityApi != null) {
+            try {
+                return securityApi.ping(vpnUrl);
+            } catch (NetatmoException e) {
+                logger.warn("Error pinging camera : {}", e.getMessage());
+            }
         }
+        return null;
     }
 }

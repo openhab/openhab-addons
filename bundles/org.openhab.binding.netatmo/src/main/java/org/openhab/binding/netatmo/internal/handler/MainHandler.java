@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
 import org.openhab.binding.netatmo.internal.api.WeatherApi;
@@ -38,7 +39,8 @@ public class MainHandler extends DeviceWithMeasureHandler {
     }
 
     @Override
-    protected NAMain updateReadings() throws NetatmoException {
-        return apiBridge.getRestManager(WeatherApi.class).getStationData(config.id);
+    protected @Nullable NAMain updateReadings() throws NetatmoException {
+        WeatherApi weatherApi = apiBridge.getRestManager(WeatherApi.class);
+        return weatherApi != null ? weatherApi.getStationData(config.id) : null;
     }
 }

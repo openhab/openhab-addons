@@ -89,10 +89,11 @@ public class PresenceHandler extends CameraHandler {
 
     private void changeFloodlightMode(PresenceLightMode mode) {
         CameraAddress camAddress = cameraAddress;
-        if (camAddress != null) {
+        SecurityApi securityApi = apiBridge.getRestManager(SecurityApi.class);
+        if (camAddress != null && securityApi != null) {
             String localUrl = camAddress.getLocalURL();
             if (localUrl != null) {
-                tryApiCall(() -> apiBridge.getRestManager(SecurityApi.class).changeFloodLightMode(localUrl, mode));
+                tryApiCall(() -> securityApi.changeFloodLightMode(localUrl, mode));
             }
         }
     }

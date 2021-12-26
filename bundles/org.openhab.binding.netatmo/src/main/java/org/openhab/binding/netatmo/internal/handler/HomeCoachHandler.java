@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.AircareApi;
 import org.openhab.binding.netatmo.internal.api.ApiBridge;
 import org.openhab.binding.netatmo.internal.api.NetatmoException;
@@ -38,7 +39,8 @@ public class HomeCoachHandler extends DeviceWithMeasureHandler {
     }
 
     @Override
-    protected NAMain updateReadings() throws NetatmoException {
-        return apiBridge.getRestManager(AircareApi.class).getHomeCoach(config.id);
+    protected @Nullable NAMain updateReadings() throws NetatmoException {
+        AircareApi api = apiBridge.getRestManager(AircareApi.class);
+        return api != null ? api.getHomeCoach(config.id) : null;
     }
 }

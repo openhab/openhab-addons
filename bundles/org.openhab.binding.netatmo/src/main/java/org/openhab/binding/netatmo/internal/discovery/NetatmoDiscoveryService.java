@@ -82,39 +82,46 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     public void startScan() {
-        try {
-            Set<@Nullable String> roomsWithEnergyModules = new HashSet<>();
-            HomeApi homeApi = apiBridge.getRestManager(HomeApi.class);
-            homeApi.getHomeList(null, null).stream().filter(home -> !home.getModules().isEmpty()).forEach(home -> {
-                ThingUID homeUID = createHomeThing(home);
-                home.getModules().values().stream().filter(NAThing::isDevice).forEach(foundDevice -> {
-                    ModuleType deviceType = foundDevice.getType();
-                    ThingUID bridgeUID = createDiscoveredThing(
-                            deviceType.getBridge() == ModuleType.NAHome ? homeUID : null, foundDevice);
-                    home.getModules().values().stream()
-                            .filter(module -> foundDevice.getId().equalsIgnoreCase(module.getBridge()))
-                            .forEach(foundChild -> {
-                                ModuleType childType = foundChild.getType();
-                                createDiscoveredThing(childType.getBridge() == ModuleType.NAHome ? homeUID : bridgeUID,
-                                        foundChild);
-                                if ((foundChild.getType().features == FeatureArea.ENERGY)
-                                        && (foundChild.getRoomId() != null)) {
-                                    roomsWithEnergyModules.add(foundChild.getRoomId());
-                                }
-                            });
+        Set<@Nullable String> roomsWithEnergyModules = new HashSet<>();
+        HomeApi homeApi = apiBridge.getRestManager(HomeApi.class);
+        if (homeApi != null) {
+            try {
+                homeApi.getHomeList(null, null).stream().filter(home -> !home.getModules().isEmpty()).forEach(home -> {
+                    ThingUID homeUID = createHomeThing(home);
+                    home.getModules().values().stream().filter(NAThing::isDevice).forEach(foundDevice -> {
+                        ModuleType deviceType = foundDevice.getType();
+                        ThingUID bridgeUID = createDiscoveredThing(
+                                deviceType.getBridge() == ModuleType.NAHome ? homeUID : null, foundDevice);
+                        home.getModules().values().stream()
+                                .filter(module -> foundDevice.getId().equalsIgnoreCase(module.getBridge()))
+                                .forEach(foundChild -> {
+                                    ModuleType childType = foundChild.getType();
+                                    createDiscoveredThing(
+                                            childType.getBridge() == ModuleType.NAHome ? homeUID : bridgeUID,
+                                            foundChild);
+                                    if ((foundChild.getType().features == FeatureArea.ENERGY)
+                                            && (foundChild.getRoomId() != null)) {
+                                        roomsWithEnergyModules.add(foundChild.getRoomId());
+                                    }
+                                });
+                    });
+
+                    home.getRooms().values().stream().filter(r -> roomsWithEnergyModules.contains(r.getId()))
+                            .forEach(room -> createDiscoveredThing(homeUID, room));
+                    home.getKnownPersons().forEach(person -> createDiscoveredThing(homeUID, person));
                 });
-
-                home.getRooms().values().stream().filter(r -> roomsWithEnergyModules.contains(r.getId()))
-                        .forEach(room -> createDiscoveredThing(homeUID, room));
-                home.getKnownPersons().forEach(person -> createDiscoveredThing(homeUID, person));
-            });
-
-        } catch (NetatmoException e) {
-            logger.warn("Error getting Home List", e);
+            } catch (NetatmoException e) {
+                logger.warn("Error getting Home List", e);
+            }
         }
-
-        searchHomeCoach(apiBridge.getRestManager(AircareApi.class));
-        searchFavoriteWeather(apiBridge.getRestManager(WeatherApi.class));
+        AircareApi airCareApi = apiBridge.getRestManager(AircareApi.class);
+        if (airCareApi != null) {
+            searchHomeCoach(airCareApi);
+        }
+        WeatherApi weatherApi = apiBridge.getRestManager(WeatherApi.class);
+        if (weatherApi != null) {
+            searchFavoriteWeather(weatherApi);
+        }
     }
 
     private ThingUID findThingUID(ModuleType thingType, String thingId, @Nullable ThingUID brigdeUID)

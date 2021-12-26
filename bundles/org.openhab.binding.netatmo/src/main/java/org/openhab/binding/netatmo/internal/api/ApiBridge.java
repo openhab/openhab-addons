@@ -131,7 +131,7 @@ public class ApiBridge {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends RestManager> T getRestManager(Class<T> typeOfRest) {
+    public <T extends RestManager> @Nullable T getRestManager(Class<T> typeOfRest) {
         if (!managers.containsKey(typeOfRest)) {
             try {
                 Constructor<T> constructor = typeOfRest.getConstructor(ApiBridge.class);

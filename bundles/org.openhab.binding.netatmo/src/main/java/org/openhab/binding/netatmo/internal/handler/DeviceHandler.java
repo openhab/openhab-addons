@@ -145,7 +145,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
         }
     }
 
-    protected NAThing updateReadings() throws NetatmoException {
+    protected @Nullable NAThing updateReadings() throws NetatmoException {
         throw new NetatmoException("Should not be called");
     }
 
@@ -158,11 +158,13 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
                 logger.debug("Trying to update channels on device {}", config.id);
                 try {
                     NAThing newData = updateReadings();
-                    logger.debug("Successfully updated device {} readings! Now updating channels", config.id);
-                    updateProperties(newData);
-                    setNewData(newData);
-                    newData.getLastSeen().ifPresent(ts -> strategy.setDataTimeStamp(ts));
-                    updateChildModules(newData);
+                    if (newData != null) {
+                        logger.debug("Successfully updated device {} readings! Now updating channels", config.id);
+                        updateProperties(newData);
+                        setNewData(newData);
+                        newData.getLastSeen().ifPresent(ts -> strategy.setDataTimeStamp(ts));
+                        updateChildModules(newData);
+                    }
                 } catch (NetatmoException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Unable to connect Netatmo API : " + e.getLocalizedMessage());
