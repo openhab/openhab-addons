@@ -7,9 +7,7 @@
 	<channel-group-type id="temperature-extended">
 		<label>Temperature</label>
 		<channels>
-			<channel id="value" typeId="system.outdoor-temperature">
-				<label>Temperature</label>
-			</channel>
+			<channel id="value" typeId="temperature"/>
 			<channel id="min-today" typeId="min-temp"/>
 			<channel id="max-today" typeId="max-temp"/>
 			<channel id="min-time" typeId="timestamp-advanced">
@@ -23,8 +21,6 @@
 			<channel id="trend" typeId="trend">
 				<label>Temperature Trend</label>
 			</channel>
-			<channel id="humidex" typeId="humidex"/>
-			<channel id="humidex-scale" typeId="humidex-scale"/>
 			<channel id="heat-index" typeId="heat-index"/>
 			<channel id="dewpoint" typeId="dewpoint"/>
 			<channel id="dewpoint-depression" typeId="dewpoint-depression"/>
@@ -35,6 +31,8 @@
 		<label>Humidity</label>
 		<channels>
 			<channel id="value" typeId="system.atmospheric-humidity"/>
+			<channel id="humidex" typeId="humidex"/>
+			<channel id="humidex-scale" typeId="humidex-scale"/>
 		</channels>
 	</channel-group-type>
 
@@ -86,6 +84,7 @@
 			<channel id="max-strength" typeId="max-wind-strength"/>
 			<channel id="max-strength-date" typeId="timestamp-advanced">
 				<label>Date Max Wind Strength</label>
+				<description>Timestamp when max wind strength was recorded.</description>
 			</channel>
 			<channel id="gust-angle" typeId="gust-angle"/>
 			<channel id="gust-strength" typeId="gust-strength"/>

@@ -14,9 +14,7 @@
 	<channel-group-type id="th-temperature">
 		<label>Temperature</label>
 		<channels>
-			<channel id="value" typeId="system.outdoor-temperature">
-				<label>Temperature</label>
-			</channel>
+			<channel id="value" typeId="temperature"/>
 			<channel id="timestamp" typeId="timestamp">
 				<label>Measurement Time</label>
 			</channel>
@@ -26,9 +24,7 @@
 	<channel-group-type id="room-temperature">
 		<label>Room temperature</label>
 		<channels>
-			<channel id="value" typeId="system.outdoor-temperature">
-				<label>Measured Temperature</label>
-			</channel>
+			<channel id="value" typeId="temperature"/>
 		</channels>
 	</channel-group-type>
 

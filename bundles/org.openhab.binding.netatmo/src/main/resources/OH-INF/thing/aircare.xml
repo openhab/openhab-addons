@@ -25,8 +25,6 @@
 				<label>Today Max Timestamp</label>
 				<description>Moment when temperature was measured at his maximum today.</description>
 			</channel>
-			<channel id="humidex" typeId="humidex"/>
-			<channel id="humidex-scale" typeId="humidex-scale"/>
 			<channel id="heat-index" typeId="heat-index"/>
 			<channel id="dewpoint" typeId="dewpoint"/>
 			<channel id="dewpoint-depression" typeId="dewpoint-depression"/>

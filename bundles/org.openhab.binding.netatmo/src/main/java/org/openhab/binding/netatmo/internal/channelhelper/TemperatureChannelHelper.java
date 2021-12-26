@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
@@ -59,10 +58,6 @@ public class TemperatureChannelHelper extends AbstractChannelHelper {
 
     private @Nullable State getDerived(double temperature, double humidity, String channelId) {
         switch (channelId) {
-            case CHANNEL_HUMIDEX:
-                return new DecimalType(humidex(temperature, humidity));
-            case CHANNEL_HUMIDEX_SCALE:
-                return new DecimalType(humidexScale(humidex(temperature, humidity)));
             case CHANNEL_HEAT_INDEX:
                 return toQuantityType(heatIndex(temperature, humidity), MeasureClass.HEAT_INDEX);
             case CHANNEL_DEWPOINT:
