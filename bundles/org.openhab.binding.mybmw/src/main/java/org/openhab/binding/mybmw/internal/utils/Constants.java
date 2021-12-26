@@ -54,6 +54,7 @@ public class Constants {
     public static final int INT_UNDEF = -1;
     public static final String KILOMETERS_JSON = "KILOMETERS";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
+    // public static final Unit<Energy> KILO_WATT_UNIT = MetricPrefix.KILO(QuantityType.);
 
     // Services to query
     public static final String SERVICES_SUPPORTED = "servicesSupported";

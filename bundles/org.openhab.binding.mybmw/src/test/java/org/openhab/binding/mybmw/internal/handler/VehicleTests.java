@@ -104,11 +104,8 @@ public class VehicleTests {
     private boolean testVehicle(String statusContent, int callbacksExpected,
             Optional<Map<String, State>> concreteChecks) {
         assertNotNull(statusContent);
-        logger.info("send response");
         cch.vehicleStatusCallback.onResponse(statusContent);
-        logger.info("send response done - verify first result");
         verify(tc, times(callbacksExpected)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
-        logger.info("check values");
         allChannels = channelCaptor.getAllValues();
         allStates = stateCaptor.getAllValues();
 

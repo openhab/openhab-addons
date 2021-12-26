@@ -28,6 +28,7 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.properties.CCM;
 import org.openhab.binding.mybmw.internal.dto.properties.DoorsWindows;
@@ -42,6 +43,7 @@ import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.RemoteServiceUtils;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
@@ -104,6 +106,14 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateChannel(final String group, final String id, final State state) {
         updateState(new ChannelUID(thing.getUID(), group, id), state);
+    }
+
+    protected void updateChargeStatistics(ChargeStatisticsContainer csc) {
+        updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, NAME, StringType.valueOf(csc.description));
+        updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, ENERGY,
+                QuantityType.valueOf(csc.statistics.totalEnergyCharged, Units.KILOWATT_HOUR));
+        updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, SESSIONS,
+                DecimalType.valueOf(Integer.toString(csc.statistics.numberOfChargingSessions)));
     }
 
     protected void updateVehicle(Vehicle v) {

@@ -13,13 +13,16 @@
 package org.openhab.binding.mybmw.internal.utils;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.TimeZone;
 
 import javax.measure.quantity.Length;
 
@@ -63,6 +66,9 @@ public class Converter {
             .ofPattern(DATE_INPUT_ZONE_PATTERN_STRING);
 
     public static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+    public static final SimpleDateFormat isoSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+
     public static final double MILES_TO_KM_RATIO = 1.60934;
 
     private static final Gson GSON = new Gson();
@@ -286,5 +292,11 @@ public class Converter {
         } else {
             return StringType.valueOf(Constants.UNCONNECTED);
         }
+    }
+
+    public static String getCurrentISOTime() {
+        Date date = new Date(System.currentTimeMillis());
+        isoSdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return isoSdf.format(date);
     }
 }

@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.VehicleConfiguration;
 import org.openhab.binding.mybmw.internal.action.MyBMWActions;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.handler.RemoteServiceHandler.ExecutionState;
@@ -55,6 +56,8 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link VehicleHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -74,6 +77,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     private ImageProperties imageProperties = new ImageProperties();
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
+    ChargeStatisticsCallback vchargeStatisticsallback = new ChargeStatisticsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
     private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
@@ -230,10 +234,11 @@ public class VehicleHandler extends VehicleChannelHandler {
         proxy.ifPresentOrElse(prox -> {
             configuration.ifPresentOrElse(config -> {
                 prox.requestVehicles(config.brand, vehicleStatusCallback);
-                synchronized (imageProperties) {
-                    if (!imageCache.isPresent() && !imageProperties.failLimitReached()) {
-                        prox.requestImage(config, imageProperties, imageCallback);
-                    }
+                if (isElectric) {
+                    prox.requestChargeStatistics(config.brand, vehicleStatusCallback);
+                }
+                if (!imageCache.isPresent() && !imageProperties.failLimitReached()) {
+                    prox.requestImage(config, imageProperties, imageCallback);
                 }
             }, () -> {
                 logger.warn("MyBMW Vehicle Configuration isn't present");
@@ -335,6 +340,33 @@ public class VehicleHandler extends VehicleChannelHandler {
             logger.debug("{}", error.toString());
             vehicleStatusCache = Optional.of(Converter.getGson().toJson(error));
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
+        }
+    }
+
+    /**
+     * The VehicleStatus is supported by all Vehicle Types so it's used to reflect the Thing Status
+     */
+    public class ChargeStatisticsCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(@Nullable String content) {
+            if (content != null) {
+                try {
+                    ChargeStatisticsContainer csc = Converter.getGson().fromJson(content,
+                            ChargeStatisticsContainer.class);
+                    if (csc != null) {
+                        updateChargeStatistics(csc);
+                    }
+                } catch (JsonSyntaxException jse) {
+                    logger.warn("{}", jse.getLocalizedMessage());
+                }
+            } else {
+                logger.info("Content not valid");
+            }
+        }
+
+        @Override
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
         }
     }
 

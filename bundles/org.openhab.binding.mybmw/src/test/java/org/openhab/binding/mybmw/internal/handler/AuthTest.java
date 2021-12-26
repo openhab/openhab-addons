@@ -16,10 +16,9 @@ import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.*;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -28,7 +27,6 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.jupiter.api.Test;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthQueryResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthResponse;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
@@ -42,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 class AuthTest {
     private final Logger logger = LoggerFactory.getLogger(AuthTest.class);
 
@@ -65,14 +64,16 @@ class AuthTest {
             AuthQueryResponse aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(),
                     AuthQueryResponse.class);
 
-            String verifier_bytes = RandomStringUtils.randomAlphanumeric(64);
+            // String verifier_bytes = RandomStringUtils.randomAlphanumeric(64);
+            String verifier_bytes = Converter.getRandomString(64);
             String code_verifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verifier_bytes.getBytes());
 
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(code_verifier.getBytes(StandardCharsets.UTF_8));
             String code_challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 
-            String state_bytes = RandomStringUtils.randomAlphanumeric(16);
+            // String state_bytes = RandomStringUtils.randomAlphanumeric(16);
+            String state_bytes = Converter.getRandomString(16);
             String state = Base64.getUrlEncoder().withoutPadding().encodeToString(state_bytes.getBytes());
 
             String authUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
@@ -168,10 +169,40 @@ class AuthTest {
             vehicleRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
             vehicleRequest.header("accept", "application/json");
             vehicleRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
-            vehicleRequest.header("accept-language", "en");
+            vehicleRequest.header("accept-language", "de");
 
             ContentResponse vehicleResponse = vehicleRequest.send();
             logger.info(vehicleResponse.getContentAsString());
+
+            MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
+            chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
+            chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
+            params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
+
+            String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+                    + "/eadrax-chs/v1/charging-statistics";
+            Request chargeStatisticsRequest = apiHttpClient.newRequest(chargeStatisticsUrl)
+                    .param("vin", "WBY1Z81040V905639").param("currentDate", Converter.getCurrentISOTime());
+            logger.info("{}", chargeStatisticsUrl);
+            // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
+            chargeStatisticsRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
+            chargeStatisticsRequest.header("accept", "application/json");
+            chargeStatisticsRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
+            chargeStatisticsRequest.header("accept-language", "de");
+
+            // MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
+            // chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
+            // chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
+            //
+            // params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
+            logger.info("{}", params);
+            chargeStatisticsRequest
+                    .content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, params, StandardCharsets.UTF_8));
+
+            ContentResponse chargeStatisticsResponse = chargeStatisticsRequest.send();
+            logger.info("{}", chargeStatisticsResponse.getStatus());
+            logger.info("{}", chargeStatisticsResponse.getReason());
+            logger.info("{}", chargeStatisticsResponse.getContentAsString());
 
         } catch (Exception e) {
             logger.error("{}", e.getMessage());
@@ -203,29 +234,5 @@ class AuthTest {
             }
         });
         return codeFound.toString();
-    }
-
-    @Test
-    public void testRandom() {
-        String verfier_code = "oaczELGSZgFjYrRgtOiJpyoOOUzaJ8FNixGZXazR_plJXRKoI1VqqNecllr5iZYn58ey7GE3XvNLyu2dP0WCQA";
-        MessageDigest digest;
-        try {
-            digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(verfier_code.getBytes(StandardCharsets.UTF_8));
-            String code_challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
-            String pCodeChallenge = "9ct8DdFwC_EJ-f9SN-ePCirAnqZMA06Qudq6zWzLSIs";
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("{}", e.getMessage());
-        }
-
-        // DEBUG:bimmer_connected.account:Authenticating againstwith MyBMW flow.
-        // DEBUG:bimmer_connected.account:Verfier Bytes
-        // oaczELGSZgFjYrRgtOiJpyoOOUzaJ8FNixGZXazR/plJXRKoI1VqqNecllr5iZYn58ey7GE3XvNLyu2dP0WCQA==
-        // DEBUG:bimmer_connected.account:Verfier Code b'
-        // DEBUG:bimmer_connected.account:Challenge Bytes
-        // b'\xf5\xcb|\r\xd1p\x0b\xf1\t\xf9\xffR7\xe7\x8f\n*\xc0\x9e\xa6L\x03N\x90\xb9\xda\xba\xcdl\xcbH\x8b'
-        // DEBUG:bimmer_connected.account:Challenge Code b'9ct8DdFwC_EJ-f9SN-ePCirAnqZMA06Qudq6zWzLSIs'
-        // DEBUG:bimmer_connected.account:State Bytes b'T\xa0n3\xb9\xee\xc79\xf07\x1f\xf9\xd2j5\xf6'
-        // DEBUG:bimmer_connected.account:State b'VKBuM7nuxznwNx_50mo19g'
     }
 }

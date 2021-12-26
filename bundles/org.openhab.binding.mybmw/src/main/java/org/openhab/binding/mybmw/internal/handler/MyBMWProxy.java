@@ -188,6 +188,7 @@ public class MyBMWProxy {
     }
 
     public void requestImage(VehicleConfiguration config, ImageProperties props, ByteResponseCallback callback) {
+        // "/eadrax-ics/v3/presentation/vehicles/{vin}/images?carView={view}"
         final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                 + "/eadrax-ics/v3/presentation/vehicles/" + config.vin + "/images?carView=" + props.viewport;
         final MultiMap<String> dataMap = new MultiMap<String>();
@@ -197,6 +198,21 @@ public class MyBMWProxy {
 
         get(localImageUrl, CONTENT_TYPE_URL_ENCODED, UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false),
                 config.brand, callback);
+    }
+
+    /**
+     * request vehicles for all possible brands
+     *
+     * @param callback
+     */
+    public void requestChargeStatistics(String brand, StringResponseCallback callback) {
+        MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
+        chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
+        chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
+        String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
+        String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+                + "/eadrax-chs/v1/charging-statistics?" + params;
+        get(chargeStatisticsUrl, null, null, brand, callback);
     }
 
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {

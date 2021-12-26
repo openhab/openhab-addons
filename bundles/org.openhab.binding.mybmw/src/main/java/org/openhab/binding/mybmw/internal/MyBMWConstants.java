@@ -56,6 +56,24 @@ public class MyBMWConstants {
         }
     }
 
+    public enum Viewport {
+        FRONTSIDE("VehicleStatus"),
+        FRONT("VehicleInfo"),
+        SIDE("ChargingHistory"),
+        UNKNOWN("unknown");
+
+        private final String type;
+
+        Viewport(String s) {
+            type = s;
+        }
+
+        @Override
+        public String toString() {
+            return type;
+        }
+    }
+
     public enum ChargingMode {
         IMMEDIATE_CHARGING,
         DELAYED_CHARGING
@@ -92,7 +110,12 @@ public class MyBMWConstants {
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
     public static final String CHANNEL_GROUP_CHARGE = "charge";
+    public static final String CHANNEL_GROUP_CHARGE_STATISTICS = "stats";
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
+
+    // Charge Statistics
+    public static final String SESSIONS = "sessions";
+    public static final String ENERGY = "energy";
 
     // Generic Constants for several groups
     public static final String NAME = "name";
