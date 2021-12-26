@@ -15,6 +15,7 @@ package org.openhab.binding.groheondus.internal.handler;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -77,13 +78,13 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     public void setRefreshToken(String refreshToken) {
         this.storage.put(STORAGE_KEY_REFRESH_TOKEN, refreshToken);
-        this.initialize();
+        this.login();
     }
 
     private void scheduleTokenRefresh() {
         if (ondusService != null) {
             Instant expiresAt = ondusService.authorizationExpiresAt();
-            Duration between = Duration.between(Instant.now(), expiresAt);
+            Duration between = Duration.between(Instant.now(), expiresAt.minus(2, ChronoUnit.MINUTES));
             refreshTokenFuture = scheduler.schedule(() -> {
                 OndusService ondusService = this.ondusService;
                 if (ondusService == null) {
@@ -110,7 +111,6 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
         if (ondusService != null) {
             ondusService = null;
         }
@@ -120,12 +120,11 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
         if (refreshTokenFuture != null) {
             refreshTokenFuture.cancel(true);
         }
+        super.dispose();
     }
 
-    @Override
-    public void initialize() {
+    private boolean login() {
         GroheOndusAccountConfiguration config = getConfigAs(GroheOndusAccountConfiguration.class);
-
         if (this.accountServlet == null) {
             this.accountServlet = new AccountServlet(httpService, this.getThing().getUID().getId(), this);
         }
@@ -133,33 +132,35 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
         if ((config.username == null || config.password == null) && !this.hasRefreshToken()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     "Need username/password or refreshToken");
-            return;
+            return false;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
         try {
             if (storage.containsKey(STORAGE_KEY_REFRESH_TOKEN)) {
                 ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
-                scheduleTokenRefresh();
             } else {
                 // TODO: That's probably really inefficient, internally the loginWebform method acquires a refresh
                 // token, maybe there should be a way to obtain this token here, somehow.
                 ondusService = OndusService.loginWebform(config.username, config.password);
             }
+            scheduleTokenRefresh();
             updateStatus(ThingStatus.ONLINE);
-
-            scheduler.submit(() -> getThing().getThings().forEach(thing -> {
-                GroheOndusBaseHandler thingHandler = (GroheOndusBaseHandler) thing.getHandler();
-                if (thingHandler != null) {
-                    thingHandler.updateChannels();
-                }
-            }));
+            return true;
         } catch (LoginException e) {
             logger.debug("Grohe api login failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Login failed");
         } catch (IOException e) {
             logger.debug("Communication error while logging into the grohe api", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+
+        return false;
+    }
+
+    @Override
+    public void initialize() {
+        if (!login()) {
+            logger.debug("Could not log in, messages has been provided");
         }
     }
 }

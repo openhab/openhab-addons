@@ -16,7 +16,10 @@ import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,6 +41,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +56,8 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
 
     private final Logger logger = LoggerFactory.getLogger(GroheOndusSenseHandler.class);
 
-    public GroheOndusSenseHandler(Thing thing) {
-        super(thing, Appliance.TYPE);
+    public GroheOndusSenseHandler(Thing thing, int thingCounter) {
+        super(thing, Appliance.TYPE, thingCounter);
     }
 
     @Override
@@ -103,7 +107,7 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
             return new Measurement();
         }
         List<Measurement> measurementList = applianceData.getData().getMeasurement();
-
+        Collections.sort(measurementList, Comparator.comparing(e -> ZonedDateTime.parse(e.timestamp)));
         return measurementList.isEmpty() ? new Measurement() : measurementList.get(measurementList.size() - 1);
     }
 
@@ -132,20 +136,27 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     }
 
     private @Nullable ApplianceData getApplianceData(Appliance appliance) {
+        // Dates are stripped of time part inside library
         Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
-        Instant today = Instant.now();
+        Instant today = Instant.now().plus(1, ChronoUnit.DAYS);
         OndusService service = getOndusService();
         if (service == null) {
             return null;
         }
         try {
             BaseApplianceData applianceData = service.applianceData(appliance, yesterday, today).orElse(null);
-            if (applianceData.getType() != Appliance.TYPE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Thing is not a GROHE SENSE device.");
-                return null;
+            if (applianceData != null) {
+                if (applianceData.getType() != Appliance.TYPE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Thing is not a GROHE SENSE device.");
+                    return null;
+                }
+                return (ApplianceData) applianceData;
+            } else {
+                logger.debug("Could not load appliance data");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to find applicance data");
             }
-            return (ApplianceData) applianceData;
         } catch (IOException e) {
             logger.debug("Could not load appliance data", e);
         }
@@ -154,5 +165,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            updateChannels();
+            return;
+        }
     }
 }

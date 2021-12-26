@@ -53,6 +53,7 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
     private HttpService httpService;
     private StorageService storageService;
     private AccountsServlet accountsServlet;
+    private int thingCounter = 0;
 
     @Activate
     public GroheOndusHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService,
@@ -81,9 +82,9 @@ public class GroheOndusHandlerFactory extends BaseThingHandlerFactory {
             onAccountCreated(thing, handler);
             return handler;
         } else if (THING_TYPE_SENSEGUARD.equals(thingTypeUID)) {
-            return new GroheOndusSenseGuardHandler(thing);
+            return new GroheOndusSenseGuardHandler(thing, thingCounter++);
         } else if (THING_TYPE_SENSE.equals(thingTypeUID)) {
-            return new GroheOndusSenseHandler(thing);
+            return new GroheOndusSenseHandler(thing, thingCounter++);
         }
 
         return null;

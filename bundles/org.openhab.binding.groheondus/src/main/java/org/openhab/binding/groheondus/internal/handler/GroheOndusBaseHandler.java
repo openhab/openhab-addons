@@ -13,6 +13,7 @@
 package org.openhab.binding.groheondus.internal.handler;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +30,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,17 +43,20 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
 
     protected @Nullable GroheOndusApplianceConfiguration config;
 
+    private @Nullable ScheduledFuture poller;
+
     private final int applianceType;
 
-    public GroheOndusBaseHandler(Thing thing, int applianceType) {
+    // Used to space scheduled updates apart by 1 second to avoid rate limiting from service
+    private int thingCounter = 0;
+
+    public GroheOndusBaseHandler(Thing thing, int applianceType, int thingCounter) {
         super(thing);
         this.applianceType = applianceType;
+        this.thingCounter = thingCounter;
     }
 
-    @Override
-    public void initialize() {
-        config = getConfigAs(GroheOndusApplianceConfiguration.class);
-
+    protected void schedulePolling() {
         OndusService ondusService = getOndusService();
         if (ondusService == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -66,41 +71,45 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
             return;
         }
         int pollingInterval = getPollingInterval(appliance);
-        scheduler.scheduleWithFixedDelay(this::updateChannels, 0, pollingInterval, TimeUnit.SECONDS);
-
-        updateStatus(ThingStatus.UNKNOWN);
+        if (poller != null) {
+            // Cancel any previous polling
+            poller.cancel(true);
+        }
+        poller = scheduler.scheduleWithFixedDelay(this::updateChannels, thingCounter, pollingInterval,
+                TimeUnit.SECONDS);
+        logger.debug("Scheduled polling every {}s for appliance {}", pollingInterval, thing.getUID());
     }
 
     @Override
-    public void channelLinked(ChannelUID channelUID) {
-        super.channelLinked(channelUID);
-
-        OndusService ondusService = getOndusService();
-        if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
-            return;
+    public void dispose() {
+        logger.debug("Disposing scheduled updater for thing {}", thing.getUID());
+        if (poller != null) {
+            poller.cancel(true);
         }
+        super.dispose();
+    }
 
-        @Nullable
-        T appliance = getAppliance(ondusService);
-        if (appliance == null) {
-            return;
-        }
-        updateChannel(channelUID, appliance, getLastDataPoint(appliance));
+    @Override
+    public void initialize() {
+        config = getConfigAs(GroheOndusApplianceConfiguration.class);
+        schedulePolling();
     }
 
     public void updateChannels() {
+        logger.debug("Updating channels for appliance {}", thing.getUID());
         OndusService ondusService = getOndusService();
         if (ondusService == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "No initialized OndusService available from bridge.");
+            // Update channels to UNDEF
+
             return;
         }
 
         @Nullable
         T appliance = getAppliance(ondusService);
         if (appliance == null) {
+            logger.debug("Updating channels failed since appliance is null, thing {}", thing.getUID());
             return;
         }
 
@@ -142,14 +151,23 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
     protected @Nullable T getAppliance(OndusService ondusService) {
         try {
             BaseAppliance appliance = ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
-            if (appliance.getType() != getType()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Thing is not a GROHE SENSE Guard device.");
-                return null;
+            if (appliance != null) {
+                if (appliance.getType() != getType()) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Thing is not a GROHE SENSE Guard device.");
+                    return null;
+                }
+                return (T) appliance;
+            } else {
+                logger.debug("getAppliance for thing {} returned null", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Error retrieving appliance data from service");
+                getThing().getChannels().forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
             }
-            return (T) appliance;
+
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            getThing().getChannels().forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
             logger.debug("Could not load appliance", e);
         }
         return null;
