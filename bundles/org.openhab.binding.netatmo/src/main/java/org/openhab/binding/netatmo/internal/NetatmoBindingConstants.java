@@ -82,7 +82,7 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_HEAT_INDEX = "heat-index";
     public static final String CHANNEL_ABSOLUTE_PRESSURE = "absolute";
     public static final String CHANNEL_LAST_SEEN = "last-seen";
-    public static final String CHANNEL_MEASURE_TIMESTAMP = "measures";
+    public static final String CHANNEL_MEASURES_TIMESTAMP = "measures";
     public static final String CHANNEL_LOW_BATTERY = "low-battery";
     public static final String CHANNEL_BATTERY_STATUS = "status";
     public static final String CHANNEL_SIGNAL_STRENGTH = "strength";

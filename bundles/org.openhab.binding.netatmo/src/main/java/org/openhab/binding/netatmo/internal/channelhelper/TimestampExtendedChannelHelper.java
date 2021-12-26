@@ -36,6 +36,6 @@ public class TimestampExtendedChannelHelper extends TimestampChannelHelper {
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return CHANNEL_MEASURE_TIMESTAMP.equals(channelId) ? toDateTimeType(dashboard.getTimeUtc()) : null;
+        return CHANNEL_MEASURES_TIMESTAMP.equals(channelId) ? toDateTimeType(dashboard.getTimeUtc()) : null;
     }
 }

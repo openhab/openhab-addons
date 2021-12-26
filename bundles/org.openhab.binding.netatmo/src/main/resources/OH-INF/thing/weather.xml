@@ -10,14 +10,8 @@
 			<channel id="value" typeId="system.outdoor-temperature">
 				<label>Temperature</label>
 			</channel>
-			<channel id="min-today" typeId="system.outdoor-temperature">
-				<label>Today min</label>
-				<description>Minimum temperature measured today.</description>
-			</channel>
-			<channel id="max-today" typeId="system.outdoor-temperature">
-				<label>Today max</label>
-				<description>Maximum temperature measured today.</description>
-			</channel>
+			<channel id="min-today" typeId="min-temp"/>
+			<channel id="max-today" typeId="max-temp"/>
 			<channel id="min-time" typeId="timestamp-advanced">
 				<label>Today Min Timestamp</label>
 				<description>Moment when temperature was measured at his minimum today.</description>
@@ -27,22 +21,13 @@
 				<description>Moment when temperature was measured at his maximum today.</description>
 			</channel>
 			<channel id="trend" typeId="trend">
-				<label>Temp Trend</label>
+				<label>Temperature Trend</label>
 			</channel>
 			<channel id="humidex" typeId="humidex"/>
 			<channel id="humidex-scale" typeId="humidex-scale"/>
-			<channel id="heat-index" typeId="system.outdoor-temperature">
-				<label>Heat Index</label>
-				<description>Apparent temperature.</description>
-			</channel>
-			<channel id="dewpoint" typeId="system.outdoor-temperature">
-				<label>Dewpoint</label>
-				<description>Temperature to which air must be cooled to become saturated with water vapor.</description>
-			</channel>
-			<channel id="dewpoint-depression" typeId="system.outdoor-temperature">
-				<label>Dewpoint Depression</label>
-				<description>Difference between the temperature and the dewpoint.</description>
-			</channel>
+			<channel id="heat-index" typeId="heat-index"/>
+			<channel id="dewpoint" typeId="dewpoint"/>
+			<channel id="dewpoint-depression" typeId="dewpoint-depression"/>
 		</channels>
 	</channel-group-type>
 
@@ -71,10 +56,7 @@
 		<label>Pressure</label>
 		<channels>
 			<channel id="value" typeId="system.barometric-pressure"/>
-			<channel id="absolute" typeId="system.barometric-pressure">
-				<label>Absolute Pressure</label>
-				<description>Pressure measured relative to a full vacuum.</description>
-			</channel>
+			<channel id="absolute" typeId="absolute-pressure"/>
 			<channel id="trend" typeId="trend">
 				<label>Pressure Trend</label>
 			</channel>
@@ -101,18 +83,12 @@
 		<channels>
 			<channel id="angle" typeId="system.wind-direction"/>
 			<channel id="strength" typeId="system.wind-speed"/>
-			<channel id="max-strength" typeId="system.wind-speed">
-				<label>Max Wind Strength</label>
-			</channel>
-			<channel id="max-strength-date" typeId="timestamp">
+			<channel id="max-strength" typeId="max-wind-strength"/>
+			<channel id="max-strength-date" typeId="timestamp-advanced">
 				<label>Date Max Wind Strength</label>
 			</channel>
-			<channel id="gust-angle" typeId="system.wind-direction">
-				<label>Gust Angle</label>
-			</channel>
-			<channel id="gust-strength" typeId="system.wind-speed">
-				<label>Gust Strength</label>
-			</channel>
+			<channel id="gust-angle" typeId="gust-angle"/>
+			<channel id="gust-strength" typeId="gust-strength"/>
 		</channels>
 	</channel-group-type>
 
