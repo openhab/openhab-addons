@@ -23,9 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class CameraAddress {
 
-    private final String vpnURL; // https://prodvpn-eu-2.netatmo.net/restricted/10.255.39.58/f48daf5f0e366bc8f9c397fbc73220e7/MTYyNDQ1NjgwMDrf1ChChrvaKZolVvWtHuuxT8_EiA,,
+    private final String vpnURL;
     private final boolean local;
-    private @Nullable String localURL; // http://192.168.0.65/f48daf5f0e366bc8f9c397fbc73220e7
+    private @Nullable String localURL;
 
     CameraAddress(String vpnURL, boolean isLocal, @Nullable String localURL) {
         this.vpnURL = vpnURL;
@@ -45,7 +45,7 @@ public class CameraAddress {
         return local;
     }
 
-    public String getStreamUrl(@Nullable String videoId) {
+    public String getStreamUrl(String videoId) {
         return String.format("%s/vod/%s/%s.m3u8", vpnURL, videoId, local ? "index_local" : "index");
     }
 

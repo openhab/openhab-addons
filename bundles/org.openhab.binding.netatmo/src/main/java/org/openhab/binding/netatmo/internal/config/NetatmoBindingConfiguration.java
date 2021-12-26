@@ -47,7 +47,7 @@ public class NetatmoBindingConfiguration {
     }
 
     private void checkMandatory(@Nullable String confElement, String error) throws NetatmoException {
-        if (confElement == null || confElement.isEmpty()) {
+        if (confElement == null || confElement.isBlank()) {
             throw new NetatmoException(error);
         }
     }

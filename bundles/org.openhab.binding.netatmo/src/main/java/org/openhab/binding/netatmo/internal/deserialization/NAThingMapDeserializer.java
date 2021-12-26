@@ -43,16 +43,21 @@ public class NAThingMapDeserializer implements JsonDeserializer<NAThingMap> {
         if (json instanceof JsonArray) {
             NAThingMap result = new NAThingMap();
             ((JsonArray) json).forEach(item -> {
-                String module = item.getAsJsonObject().get(TYPE_KEY).getAsString();
-                try {
-                    Class<?> dto = ModuleType.valueOf(module).dto;
-                    if (dto != null) {
-                        result.put(context.deserialize(item, dto));
-                    } else {
-                        logger.warn("No dto declared for thing of type : {}", module);
+                JsonElement moduleType = item.getAsJsonObject().get(TYPE_KEY);
+                if (moduleType != null) {
+                    String module = moduleType.getAsString();
+                    try {
+                        Class<?> dto = ModuleType.valueOf(module).dto;
+                        if (dto != null) {
+                            result.put(context.deserialize(item, dto));
+                        } else {
+                            logger.warn("No dto declared for thing of type : {}", module);
+                        }
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Unsupported moduletype {} found during discovery", module);
                     }
-                } catch (IllegalArgumentException e) {
-                    logger.warn("Unsupported moduletype {} found during discovery", module);
+                } else {
+                    logger.warn("Unable to identify module type in object : {}", item.getAsString());
                 }
             });
             return result;

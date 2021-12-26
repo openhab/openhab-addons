@@ -34,7 +34,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,24 +53,24 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final NetatmoServlet webhookServlet;
 
     @Activate
-    public NetatmoHandlerFactory(@Reference HttpService httpService, @Reference ApiBridge apiBridge,
-            @Reference NetatmoDescriptionProvider stateDescriptionProvider, @Reference NetatmoServlet webhookServlet) {
+    public NetatmoHandlerFactory(@Reference ApiBridge apiBridge, @Reference NetatmoServlet webhookServlet,
+            @Reference NetatmoDescriptionProvider stateDescriptionProvider) {
+        this.apiBridge = apiBridge;
         this.webhookServlet = webhookServlet;
         this.stateDescriptionProvider = stateDescriptionProvider;
-        this.apiBridge = apiBridge;
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return ModuleType.asSet.stream().anyMatch(mt -> mt.matches(thingTypeUID));
+        return ModuleType.asSet.stream().anyMatch(mt -> mt.thingTypeUID.equals(thingTypeUID));
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         Bridge bridge = (Bridge) thing;
-        BaseThingHandler handler = ModuleType.asSet.stream().filter(mt -> mt.matches(thingTypeUID)).findFirst()
-                .map(mt -> buildThing(bridge, mt)).orElse(null);
+        BaseThingHandler handler = ModuleType.asSet.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID))
+                .findFirst().map(mt -> buildThing(bridge, mt)).orElse(null);
         if (handler instanceof DeviceWithEventHandler) {
             ((DeviceWithEventHandler) handler).setWebHookServlet(webhookServlet);
         }

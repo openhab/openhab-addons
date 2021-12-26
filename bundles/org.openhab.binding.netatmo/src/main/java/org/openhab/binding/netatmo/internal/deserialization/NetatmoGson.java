@@ -29,7 +29,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
 
 /**
- * The {@link NetatmoGson} is responsible to instanciate appropriate Gson (de)serializer
+ * The {@link NetatmoGson} is responsible to instantiate appropriate Gson (de)serializer
  *
  * @author Gaël L'hopital - Initial contribution
  */

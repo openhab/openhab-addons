@@ -163,10 +163,6 @@ public enum ModuleType {
         }
     }
 
-    public boolean matches(ThingTypeUID otherThingTypeUID) {
-        return thingTypeUID.equals(otherThingTypeUID);
-    }
-
     public boolean isLogical() {
         return !channelHelpers.contains(SignalChannelHelper.class);
     }

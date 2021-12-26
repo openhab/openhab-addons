@@ -22,6 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class NetatmoThingConfiguration {
-    public @NonNullByDefault({}) String id;
+    public String id = "";
     public int refreshInterval = -1;
 }
