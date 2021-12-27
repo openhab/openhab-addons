@@ -15,6 +15,7 @@ package org.openhab.binding.mybmw.internal.discovery;
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.SUPPORTED_THING_SET;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
+import org.openhab.binding.mybmw.internal.handler.RemoteServiceHandler;
 import org.openhab.binding.mybmw.internal.utils.Constants;
-import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -45,8 +46,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class VehicleDiscovery extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
-
-    private final Logger logger = LoggerFactory.getLogger(VehicleDiscovery.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VehicleDiscovery.class);
+    public static final String SUPPORTED_SUFFIX = "Supported";
+    public static final String ENABLE_SUFFIX = "Enable";
+    public static final String ENABLED_SUFFIX = "Enabled";
     private static final int DISCOVERY_TIMEOUT = 10;
     private Optional<MyBMWBridgeHandler> bridgeHandler = Optional.empty();
 
@@ -64,45 +67,77 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                     if (entry.getId().equals(vehicleType)) {
                         ThingUID uid = new ThingUID(entry, vehicle.vin, bridgeUID.getId());
                         Map<String, String> properties = new HashMap<>();
-                        /**
-                         * [todo] evaluate right properties
-                         * // Dealer
-                         * if (vehicle.dealer != null) {
-                         * properties.put("dealer", vehicle.dealer.name);
-                         * properties.put("dealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
-                         * + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
-                         * properties.put("dealerPhone", vehicle.dealer.phone);
-                         * }
-                         *
-                         * // Services & Support
-                         * properties.put("servicesActivated", getObject(vehicle, Constants.ACTIVATED));
-                         * String servicesSupported = getObject(vehicle, Constants.SUPPORTED);
-                         * String servicesNotSupported = getObject(vehicle, Constants.NOT_SUPPORTED);
-                         * if (vehicle.statisticsAvailable) {
-                         * servicesSupported += Constants.STATISTICS;
-                         * } else {
-                         * servicesNotSupported += Constants.STATISTICS;
-                         * }
-                         * properties.put(Constants.SERVICES_SUPPORTED, servicesSupported);
-                         * properties.put("servicesNotSupported", servicesNotSupported);
-                         * properties.put("supportBreakdownNumber", vehicle.breakdownNumber);
-                         *
-                         * // Vehicle Properties
-                         * if (vehicle.supportedChargingModes != null) {
-                         * properties.put("vehicleChargeModes",
-                         * String.join(Constants.SPACE, vehicle.supportedChargingModes));
-                         * }
-                         * if (vehicle.hasAlarmSystem) {
-                         * properties.put("vehicleAlarmSystem", "Available");
-                         * } else {
-                         * properties.put("vehicleAlarmSystem", "Not Available");
-                         * }
-                         */
+                        // Vehicle Properties
                         properties.put("vehicleBrand", vehicle.brand);
-                        properties.put("vehicleBodytype", vehicle.bodyType);
-                        properties.put("vehicleConstructionYear", Integer.toString(vehicle.year));
-                        properties.put("vehicleDriveTrain", vehicle.driveTrain);
                         properties.put("vehicleModel", vehicle.model);
+                        properties.put("vehicleDriveTrain", vehicle.driveTrain);
+                        properties.put("vehicleConstructionYear", Integer.toString(vehicle.year));
+                        properties.put("vehicleBodytype", vehicle.bodyType);
+
+                        properties.put("servicesSupported", getServices(vehicle, SUPPORTED_SUFFIX, true));
+                        properties.put("servicesUnupported", getServices(vehicle, SUPPORTED_SUFFIX, false));
+                        String servicesEnabled = getServices(vehicle, ENABLED_SUFFIX, true) + Constants.SPACE
+                                + getServices(vehicle, ENABLE_SUFFIX, true);
+                        properties.put("servicesEnabled", servicesEnabled.trim());
+                        String servicesDisabled = getServices(vehicle, ENABLED_SUFFIX, false) + Constants.SPACE
+                                + getServices(vehicle, ENABLE_SUFFIX, false);
+                        properties.put("servicesDisabled", servicesDisabled.trim());
+
+                        // For RemoteServices we need to do it step-by-step
+                        StringBuffer remoteServicesEnabled = new StringBuffer();
+                        StringBuffer remoteServicesDisabled = new StringBuffer();
+                        if (vehicle.capabilities.lock.isEnabled) {
+                            remoteServicesEnabled
+                                    .append(RemoteServiceHandler.RemoteService.DOOR_LOCK.getLabel() + Constants.SPACE);
+                        } else {
+                            remoteServicesDisabled
+                                    .append(RemoteServiceHandler.RemoteService.DOOR_LOCK.getLabel() + Constants.SPACE);
+                        }
+                        if (vehicle.capabilities.unlock.isEnabled) {
+                            remoteServicesEnabled.append(
+                                    RemoteServiceHandler.RemoteService.DOOR_UNLOCK.getLabel() + Constants.SPACE);
+                        } else {
+                            remoteServicesDisabled.append(
+                                    RemoteServiceHandler.RemoteService.DOOR_UNLOCK.getLabel() + Constants.SPACE);
+                        }
+                        if (vehicle.capabilities.lights.isEnabled) {
+                            remoteServicesEnabled.append(
+                                    RemoteServiceHandler.RemoteService.LIGHT_FLASH.getLabel() + Constants.SPACE);
+                        } else {
+                            remoteServicesDisabled.append(
+                                    RemoteServiceHandler.RemoteService.LIGHT_FLASH.getLabel() + Constants.SPACE);
+                        }
+                        if (vehicle.capabilities.horn.isEnabled) {
+                            remoteServicesEnabled
+                                    .append(RemoteServiceHandler.RemoteService.HORN_BLOW.getLabel() + Constants.SPACE);
+                        } else {
+                            remoteServicesDisabled
+                                    .append(RemoteServiceHandler.RemoteService.HORN_BLOW.getLabel() + Constants.SPACE);
+                        }
+                        if (vehicle.capabilities.vehicleFinder.isEnabled) {
+                            remoteServicesEnabled.append(
+                                    RemoteServiceHandler.RemoteService.VEHICLE_FINDER.getLabel() + Constants.SPACE);
+                        } else {
+                            remoteServicesDisabled.append(
+                                    RemoteServiceHandler.RemoteService.VEHICLE_FINDER.getLabel() + Constants.SPACE);
+                        }
+                        if (vehicle.capabilities.sendPoi.isEnabled) {
+                            remoteServicesEnabled
+                                    .append(RemoteServiceHandler.RemoteService.SEND_POI.getLabel() + Constants.SPACE);
+                        } else {
+                            remoteServicesDisabled
+                                    .append(RemoteServiceHandler.RemoteService.SEND_POI.getLabel() + Constants.SPACE);
+                        }
+                        if (vehicle.capabilities.climateNow.isEnabled) {
+                            remoteServicesEnabled.append(
+                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW.getLabel() + Constants.SPACE);
+                        } else {
+                            remoteServicesDisabled.append(
+                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW.getLabel() + Constants.SPACE);
+                        }
+
+                        // Porperties needed for config
+                        properties.put("brand", vehicle.brand);
 
                         // Update Properties for already created Things
                         bridge.getThing().getThings().forEach(vehicleThing -> {
@@ -134,29 +169,6 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
         });
     }
 
-    /**
-     * Get all field names from a DTO with a specific value
-     * Used to get e.g. all services which are "ACTIVATED"
-     *
-     * @param DTO Object
-     * @param compare String which needs to map with the value
-     * @return String with all field names matching this value separated with Spaces
-     */
-    public String getObject(Object dto, String compare) {
-        StringBuilder buf = new StringBuilder();
-        for (Field field : dto.getClass().getDeclaredFields()) {
-            try {
-                Object value = field.get(dto);
-                if (compare.equals(value)) {
-                    buf.append(Converter.capitalizeFirst(field.getName()) + Constants.SPACE);
-                }
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                logger.debug("Field {} not found {}", compare, e.getMessage());
-            }
-        }
-        return buf.toString();
-    }
-
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof MyBMWBridgeHandler) {
@@ -179,4 +191,45 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
     public void deactivate() {
         super.deactivate();
     }
+
+    public static String getServices(Vehicle vehicle, String suffix, boolean enabled) {
+        StringBuffer sb = new StringBuffer();
+        List<String> l = getObject(vehicle.capabilities, enabled);
+        for (String capEntry : l) {
+            // remove "is" prefix
+            String cut = capEntry.substring(2);
+            if (cut.endsWith(suffix)) {
+                if (sb.length() > 0) {
+                    sb.append(Constants.SPACE);
+                }
+                sb.append(cut.substring(0, cut.length() - suffix.length()));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Get all field names from a DTO with a specific value
+     * Used to get e.g. all services which are "ACTIVATED"
+     *
+     * @param DTO Object
+     * @param compare String which needs to map with the value
+     * @return String with all field names matching this value separated with Spaces
+     */
+    public static List<String> getObject(Object dto, Object compare) {
+        List<String> l = new ArrayList<String>();
+        for (Field field : dto.getClass().getDeclaredFields()) {
+            try {
+                Object value = field.get(dto);
+                if (compare.equals(value)) {
+                    // buf.append(Converter.capitalizeFirst(field.getName()) + Constants.SPACE);
+                    l.add(field.getName());
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                LOGGER.debug("Field {} not found {}", compare, e.getMessage());
+            }
+        }
+        return l;
+    }
+
 }

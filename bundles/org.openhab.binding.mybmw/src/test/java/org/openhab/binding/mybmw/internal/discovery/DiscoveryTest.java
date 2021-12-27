@@ -23,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.util.FileReader;
+import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -59,5 +60,27 @@ public class DiscoveryTest {
         assertEquals(1, results.size(), "Found Vehicles");
         DiscoveryResult result = results.get(0);
         assertEquals("mybmw:bev_rex:abc:anonymous", result.getThingUID().getAsString(), "Thing UID");
+    }
+
+    @Test
+    public void testProperties() {
+        String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
+        Vehicle vehicle = Converter.getVehicle(Constants.ANONYMOUS, content);
+        String servicesSuppoertedReference = "RemoteHistory ChargingHistory ScanAndCharge DCSContractManagement BmwCharging ChargeNowForBusiness ChargingPlan";
+        String servicesUnsuppoertedReference = "MiniCharging EvGoCharging CustomerEsim CarSharing EasyCharge";
+        String servicesEnabledReference = "FindCharging ";
+        String servicesDisabledReference = "DataPrivacy ChargingSettings ChargingHospitality ChargingPowerLimit ChargingTargetSoc ChargingLoudness";
+        assertEquals(servicesSuppoertedReference,
+                VehicleDiscovery.getServices(vehicle, VehicleDiscovery.SUPPORTED_SUFFIX, true), "Services supported");
+        assertEquals(servicesUnsuppoertedReference,
+                VehicleDiscovery.getServices(vehicle, VehicleDiscovery.SUPPORTED_SUFFIX, false),
+                "Services unsupported");
+
+        String servicesEnabled = VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLED_SUFFIX, true)
+                + Constants.SPACE + VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLE_SUFFIX, true);
+        assertEquals(servicesEnabledReference, servicesEnabled, "Services enabled");
+        String servicesDisabled = VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLED_SUFFIX, false)
+                + Constants.SPACE + VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLE_SUFFIX, false);
+        assertEquals(servicesDisabledReference, servicesDisabled, "Services disabled");
     }
 }

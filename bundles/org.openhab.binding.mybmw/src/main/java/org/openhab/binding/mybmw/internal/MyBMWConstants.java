@@ -74,11 +74,13 @@ public class MyBMWConstants {
         }
     }
 
+    // [todo] more modes needed from test data
     public enum ChargingMode {
         immediateCharging,
         DELAYED_CHARGING
     }
 
+    // [todo] more opreferences needed from test data
     public enum ChargingPreference {
         NO_PRESELECTION,
         chargingWindow
