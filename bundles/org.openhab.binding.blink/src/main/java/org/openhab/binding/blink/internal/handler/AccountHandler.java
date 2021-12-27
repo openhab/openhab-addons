@@ -13,7 +13,6 @@
 package org.openhab.binding.blink.internal.handler;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +33,6 @@ import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkNetwork;
 import org.openhab.binding.blink.internal.service.AccountService;
 import org.openhab.binding.blink.internal.servlet.AccountVerificationServlet;
-import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.net.NetworkAddressService;
@@ -68,7 +66,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     BundleContext bundleContext;
 
-    @Nullable
+    @NonNullByDefault({})
     AccountConfiguration config;
     AccountService blinkService;
     private final HttpService httpService;
@@ -78,11 +76,12 @@ public class AccountHandler extends BaseBridgeHandler {
     @Nullable
     BlinkAccount blinkAccount;
     @Nullable
-    ExpiringCache<@Nullable BlinkHomescreen> homescreenCache;
-    @Nullable
     ScheduledFuture<?> refreshTokenJob;
     @Nullable
-    ScheduledFuture<?> pollStateJob;
+    BlinkHomescreen cachedHomescreen;
+    @Nullable
+    ScheduledFuture<?> refreshStateJob;
+    private final Object refreshStateMonitor = new Object();
 
     public AccountHandler(Bridge bridge, HttpService httpService, BundleContext bundleContext,
             NetworkAddressService networkAddressService, HttpClientFactory httpClientFactory, Gson gson) {
@@ -178,22 +177,20 @@ public class AccountHandler extends BaseBridgeHandler {
             refreshTokenJob.cancel(true);
             refreshTokenJob = null;
         }
-        if (pollStateJob != null) {
-            pollStateJob.cancel(true);
-            pollStateJob = null;
+        synchronized (refreshStateMonitor) {
+            if (refreshStateJob != null) {
+                refreshStateJob.cancel(true);
+                refreshStateJob = null;
+            }
         }
         logger.debug("cleanup {}", getThing().getUID().getAsString());
     }
 
     public void setOnline() {
-        if (config != null)
-            this.homescreenCache = new ExpiringCache<>(Duration.ofSeconds(config.refreshInterval), this::loadDevices);
         if (refreshTokenJob == null) {
             refreshTokenJob = scheduler.scheduleWithFixedDelay(this::refreshToken, 12, 12, TimeUnit.HOURS);
         }
-        if (pollStateJob == null) {
-            pollStateJob = scheduler.scheduleWithFixedDelay(() -> getDevices(false), 20, 5, TimeUnit.SECONDS);
-        }
+        refreshState(false);
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -208,17 +205,28 @@ public class AccountHandler extends BaseBridgeHandler {
         }
     }
 
-    public @Nullable BlinkHomescreen getDevices(boolean refresh) {
-        if (homescreenCache == null)
-            return null;
-        if (homescreenCache.isExpired() || refresh) {
-            @Nullable
-            BlinkHomescreen homescreen = homescreenCache.refreshValue();
+    /**
+     * Perform a homescreen update, either because refreshInterval has elapsed or due to an event.
+     *
+     * @param scheduled true if refreshInterval has elapsed, otherwise false
+     */
+    void refreshState(boolean scheduled) {
+        synchronized (refreshStateMonitor) {
+            if (!scheduled && refreshStateJob != null) {
+                refreshStateJob.cancel(true);
+            }
+            cachedHomescreen = loadDevices();
             fireHomescreenUpdate();
-            return homescreen;
-        } else {
-            return homescreenCache.getValue();
+            refreshStateJob = scheduler.schedule(() -> refreshState(true), config.refreshInterval,
+                    TimeUnit.SECONDS);
         }
+    }
+
+    public @Nullable BlinkHomescreen getDevices(boolean refresh) {
+        if (refresh) {
+            refreshState(false);
+        }
+        return cachedHomescreen;
     }
 
     @Nullable
@@ -236,7 +244,7 @@ public class AccountHandler extends BaseBridgeHandler {
         return this.blinkAccount;
     }
 
-    public final @Nullable AccountConfiguration getConfiguration() {
+    public final AccountConfiguration getConfiguration() {
         return this.config;
     }
 

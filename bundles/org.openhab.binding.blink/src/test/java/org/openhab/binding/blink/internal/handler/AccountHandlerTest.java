@@ -20,10 +20,10 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -49,7 +49,6 @@ import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkNetwork;
 import org.openhab.binding.blink.internal.service.AccountService;
 import org.openhab.binding.blink.internal.servlet.AccountVerificationServlet;
-import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
@@ -93,9 +92,6 @@ class AccountHandlerTest extends JavaTest {
     @Mock
     @NonNullByDefault({})
     ThingHandlerCallback callback;
-    @Mock
-    @NonNullByDefault({})
-    ExpiringCache<BlinkHomescreen> cache;
     @Mock
     @NonNullByDefault({})
     BundleContext bundleContext;
@@ -198,22 +194,24 @@ class AccountHandlerTest extends JavaTest {
     }
 
     @Test
-    void testSetOnlineCacheCreatedAndStatusOnline() throws NoSuchFieldException, IllegalAccessException {
+    void testSetOnlineCacheCreatedAndStatusOnline() throws NoSuchFieldException, IllegalAccessException, IOException {
         accountHandler.setCallback(callback);
         AccountConfiguration config = new AccountConfiguration();
         config.refreshInterval = 30;
         accountHandler.config = config;
+        BlinkHomescreen homescreen = testBlinkHomescreen();
+        doReturn(homescreen).when(accountHandler).loadDevices();
         accountHandler.setOnline();
         // cache set
         // noinspection ConstantConditions
-        assertThat(accountHandler.homescreenCache, is(notNullValue()));
-        // cache expiry
-        Field expiry = ExpiringCache.class.getDeclaredField("expiry");
-        expiry.setAccessible(true);
-        assertThat(expiry.get(accountHandler.homescreenCache), is((long) config.refreshInterval * 1000 * 1000 * 1000));
+        assertThat(accountHandler.cachedHomescreen, is(sameInstance(homescreen)));
         // jobs created
-        assertThat(accountHandler.pollStateJob, is(notNullValue()));
+        assertThat(accountHandler.refreshStateJob, is(notNullValue()));
         assertThat(accountHandler.refreshTokenJob, is(notNullValue()));
+        // cache expiry
+        long diffInterval = accountHandler.refreshStateJob.getDelay(TimeUnit.SECONDS) - config.refreshInterval;
+        assertThat("Delay is not within five seconds of refreshInterval", diffInterval,
+                is(both(greaterThan(-5L)).and(lessThan(5L))));
         // thing online
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(any(), statusCaptor.capture());
@@ -229,18 +227,19 @@ class AccountHandlerTest extends JavaTest {
 
     @Test
     void testGetDevicesRefreshRefreshesCache() {
+        AccountConfiguration config = new AccountConfiguration();
+        config.refreshInterval = 30;
+        accountHandler.config = config;
         CameraHandler cameraHandler = mock(CameraHandler.class);
         Thing camera = new ThingImpl(CameraHandlerTest.THING_TYPE_UID, "camera");
         camera.setHandler(cameraHandler);
         doReturn(List.of(camera)).when(bridge).getThings();
-        accountHandler.homescreenCache = cache;
-        when(cache.refreshValue()).thenReturn(testBlinkHomescreen());
-        when(cache.getValue()).thenReturn(testBlinkHomescreen());
+        doReturn(testBlinkHomescreen()).when(accountHandler).loadDevices();
         accountHandler.getDevices(true);
-        verify(cache).refreshValue();
+        verify(accountHandler, times(1)).refreshState(false);
         verify(cameraHandler, times(1)).handleHomescreenUpdate();
         accountHandler.getDevices(false);
-        verify(cache).getValue();
+        verify(accountHandler, times(1)).refreshState(false);
         verify(cameraHandler, times(1)).handleHomescreenUpdate();
     }
 
