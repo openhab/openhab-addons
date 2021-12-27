@@ -174,7 +174,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                     imperial ? Converter.getMiles(qtElectricRange) : qtElectricRange);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC,
                     imperial ? Converter.getMiles(qtElectricRadius) : qtElectricRadius);
-
         }
         if (hasFuel) {
             String unit = v.properties.combustionRange.distance.units;

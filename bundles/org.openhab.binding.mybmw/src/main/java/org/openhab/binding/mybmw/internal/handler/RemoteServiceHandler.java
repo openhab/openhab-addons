@@ -47,11 +47,9 @@ import com.google.gson.JsonSyntaxException;
 public class RemoteServiceHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(RemoteServiceHandler.class);
 
-    private static final String SERVICE_TYPE = "serviceType";
     private static final String EVENT_ID = "eventId";
     private static final String DATA = "data";
-    // after 6 retries the state update will give up
-    private static final int GIVEUP_COUNTER = 6;
+    private static final int GIVEUP_COUNTER = 6; // after 6 retries the state update will give up
     private static final int STATE_UPDATE_SEC = HTTPConstants.HTTP_TIMEOUT_SEC + 1; // regular timeout + 1sec
 
     private final MyBMWProxy proxy;

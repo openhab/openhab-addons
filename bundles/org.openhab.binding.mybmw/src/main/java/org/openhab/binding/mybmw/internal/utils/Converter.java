@@ -68,7 +68,7 @@ public class Converter {
 
     public static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    public static final SimpleDateFormat isoSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
+    public static final SimpleDateFormat ISO_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
 
     public static final double MILES_TO_KM_RATIO = 1.60934;
 
@@ -297,8 +297,10 @@ public class Converter {
 
     public static String getCurrentISOTime() {
         Date date = new Date(System.currentTimeMillis());
-        isoSdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        return isoSdf.format(date);
+        synchronized (ISO_FORMATTER) {
+            ISO_FORMATTER.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return ISO_FORMATTER.format(date);
+        }
     }
 
     public static String getTime(Time t) {

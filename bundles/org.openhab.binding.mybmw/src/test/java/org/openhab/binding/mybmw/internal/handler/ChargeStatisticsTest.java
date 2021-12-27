@@ -47,18 +47,6 @@ import org.slf4j.LoggerFactory;
 public class ChargeStatisticsTest {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int STATUS_ELECTRIC = 8;
-    private static final int STATUS_CONV = 8;
-    private static final int RANGE_HYBRID = 9;
-    private static final int RANGE_CONV = 4;
-    private static final int RANGE_ELECTRIC = 5;
-    private static final int DOORS = 11;
-    private static final int CHECK_EMPTY = 0;
-    private static final int CHECK_AVAILABLE = 2;
-    private static final int SERVICE_AVAILABLE = 2;
-    private static final int SERVICE_EMPTY = 2;
-    private static final int POSITION = 2;
-
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
     @Nullable
@@ -117,61 +105,6 @@ public class ChargeStatisticsTest {
             logger.info("Channel {} {}", allChannels.get(i), allStates.get(i));
         }
     }
-
-    /**
-     * Test various Vehicles from users which delivered their fingerprint.
-     * The tests are checking the chain from "JSON to Channel update".
-     * Checks are done in an automated way cross checking the data from JSON and data delivered via Channel.
-     * Also important the updates are counted in order to check if code changes are affecting Channel Updates.
-     *
-     * With the given output the updated Channels are visible.
-     * Example:
-     *
-     * testi3Rex
-     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @1731ms
-     * Channel testbinding::test:status#lock Secured
-     * Channel testbinding::test:status#service-date 2021-11-01T13:00:00.000+0100
-     * Channel testbinding::test:status#service-mileage -1.0 km
-     * Channel testbinding::test:status#check-control Not Active
-     * Channel testbinding::test:status#last-update 2020-08-24T17:55:32.000+0200
-     * Channel testbinding::test:status#doors CLOSED
-     * Channel testbinding::test:status#windows CLOSED
-     * Channel testbinding::test:doors#driver-front CLOSED
-     * Channel testbinding::test:doors#driver-rear CLOSED
-     * Channel testbinding::test:doors#passenger-front CLOSED
-     * Channel testbinding::test:doors#passenger-rear CLOSED
-     * Channel testbinding::test:doors#trunk CLOSED
-     * Channel testbinding::test:doors#hood CLOSED
-     * Channel testbinding::test:doors#window-driver-front CLOSED
-     * Channel testbinding::test:doors#window-driver-rear CLOSED
-     * Channel testbinding::test:doors#window-passenger-front CLOSED
-     * Channel testbinding::test:doors#window-passenger-rear CLOSED
-     * Channel testbinding::test:doors#window-rear INVALID
-     * Channel testbinding::test:doors#sunroof CLOSED
-     * Channel testbinding::test:range#mileage 17273.0 km
-     * Channel testbinding::test:range#electric 148.0 km
-     * Channel testbinding::test:range#radius-electric 118.4 km
-     * Channel testbinding::test:range#fuel 70.0 km
-     * Channel testbinding::test:range#radius-fuel 56.0 km
-     * Channel testbinding::test:range#hybrid 218.0 km
-     * Channel testbinding::test:range#radius-hybrid 174.4 km
-     * Channel testbinding::test:range#soc 71.0 %
-     * Channel testbinding::test:range#remaining-fuel 4.0 l
-     * Channel testbinding::test:status#charge Charging Goal Reached
-     * Channel testbinding::test:check#size 0
-     * Channel testbinding::test:check#name INVALID
-     * Channel testbinding::test:check#mileage -1.0 km
-     * Channel testbinding::test:check#index -1
-     * Channel testbinding::test:service#size 4
-     * Channel testbinding::test:service#name Brake Fluid
-     * Channel testbinding::test:service#date 2021-11-01T13:00:00.000+0100
-     * Channel testbinding::test:service#mileage 15345.0 km
-     * Channel testbinding::test:service#index 0
-     * Channel testbinding::test:location#latitude 50.55604934692383
-     * Channel testbinding::test:location#longitude 8.4956693649292
-     * Channel testbinding::test:location#heading 219.0 °
-     *
-     */
 
     @Test
     public void testI01Rex() {

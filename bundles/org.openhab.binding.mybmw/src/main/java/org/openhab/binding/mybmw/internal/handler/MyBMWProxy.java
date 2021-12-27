@@ -276,15 +276,15 @@ public class MyBMWProxy {
             AuthQueryResponse aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(),
                     AuthQueryResponse.class);
 
-            String verifier_bytes = Converter.getRandomString(64);
-            String code_verifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verifier_bytes.getBytes());
+            String verfifierBytes = Converter.getRandomString(64);
+            String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verfifierBytes.getBytes());
 
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(code_verifier.getBytes(StandardCharsets.UTF_8));
-            String code_challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+            byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+            String codeChallange = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 
-            String state_bytes = Converter.getRandomString(16);
-            String state = Base64.getUrlEncoder().withoutPadding().encodeToString(state_bytes.getBytes());
+            String stateBytes = Converter.getRandomString(16);
+            String state = Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes.getBytes());
 
             MultiMap<String> baseParams = new MultiMap<String>();
             baseParams.put(CLIENT_ID, aqr.clientId);
@@ -293,7 +293,7 @@ public class MyBMWProxy {
             baseParams.put(STATE, state);
             baseParams.put(NONCE, BimmerConstants.LOGIN_NONCE);
             baseParams.put(SCOPE, String.join(Constants.SPACE, aqr.scopes));
-            baseParams.put(CODE_CHALLENGE, code_challenge);
+            baseParams.put(CODE_CHALLENGE, codeChallange);
             baseParams.put(CODE_CHALLENGE_METHOD, "S256");
 
             /**
@@ -335,7 +335,7 @@ public class MyBMWProxy {
 
             MultiMap<String> codeParams = new MultiMap<String>();
             codeParams.put(CODE, code);
-            codeParams.put(CODE_VERIFIER, code_verifier);
+            codeParams.put(CODE_VERIFIER, codeVerifier);
             codeParams.put(REDIRECT_URI, aqr.returnUrl);
             codeParams.put(GRANT_TYPE, BimmerConstants.AUTHORIZATION_CODE);
             codeRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
