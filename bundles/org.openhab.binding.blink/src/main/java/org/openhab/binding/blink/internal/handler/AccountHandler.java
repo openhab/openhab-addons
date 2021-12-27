@@ -215,10 +215,8 @@ public class AccountHandler extends BaseBridgeHandler {
             if (!scheduled && refreshStateJob != null) {
                 refreshStateJob.cancel(true);
             }
-            cachedHomescreen = loadDevices();
-            fireHomescreenUpdate();
-            refreshStateJob = scheduler.schedule(() -> refreshState(true), config.refreshInterval,
-                    TimeUnit.SECONDS);
+            loadDevices();
+            refreshStateJob = scheduler.schedule(() -> refreshState(true), config.refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -229,14 +227,14 @@ public class AccountHandler extends BaseBridgeHandler {
         return cachedHomescreen;
     }
 
-    @Nullable
-    BlinkHomescreen loadDevices() {
+    void loadDevices() {
         logger.debug("Loading devices from Blink API");
         try {
-            return blinkService.getDevices(blinkAccount);
+            cachedHomescreen = blinkService.getDevices(blinkAccount);
+            fireHomescreenUpdate();
         } catch (IOException e) {
-            logger.error("Error retrieving devices from Blink API: {}", e.getMessage());
-            return null;
+            logger.error("Error retrieving devices from Blink API", e);
+            cachedHomescreen = null;
         }
     }
 

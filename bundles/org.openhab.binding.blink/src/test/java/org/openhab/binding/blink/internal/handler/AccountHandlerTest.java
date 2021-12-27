@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -197,10 +196,11 @@ class AccountHandlerTest extends JavaTest {
     void testSetOnlineCacheCreatedAndStatusOnline() throws NoSuchFieldException, IllegalAccessException, IOException {
         accountHandler.setCallback(callback);
         AccountConfiguration config = new AccountConfiguration();
-        config.refreshInterval = 30;
         accountHandler.config = config;
+        accountHandler.config.refreshInterval = 30;
+        accountHandler.blinkService = accountService;
         BlinkHomescreen homescreen = testBlinkHomescreen();
-        doReturn(homescreen).when(accountHandler).loadDevices();
+        doReturn(homescreen).when(accountService).getDevices(any());
         accountHandler.setOnline();
         // cache set
         // noinspection ConstantConditions
@@ -209,9 +209,9 @@ class AccountHandlerTest extends JavaTest {
         assertThat(accountHandler.refreshStateJob, is(notNullValue()));
         assertThat(accountHandler.refreshTokenJob, is(notNullValue()));
         // cache expiry
-        long diffInterval = accountHandler.refreshStateJob.getDelay(TimeUnit.SECONDS) - config.refreshInterval;
-        assertThat("Delay is not within five seconds of refreshInterval", diffInterval,
-                is(both(greaterThan(-5L)).and(lessThan(5L))));
+        long diffInterval = accountHandler.config.refreshInterval
+                - accountHandler.refreshStateJob.getDelay(TimeUnit.SECONDS);
+        assertThat("Delay is not within five seconds of refreshInterval", diffInterval, is(lessThan(5L)));
         // thing online
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(any(), statusCaptor.capture());
@@ -226,42 +226,50 @@ class AccountHandlerTest extends JavaTest {
     }
 
     @Test
+    void testRefreshStateLoadsDevices() {
+        accountHandler.config = new AccountConfiguration();
+        accountHandler.config.refreshInterval = 120;
+        assertThat(accountHandler.refreshStateJob, is(nullValue()));
+        doNothing().when(accountHandler).loadDevices();
+        accountHandler.refreshState(false);
+        verify(accountHandler).loadDevices();
+        assertThat(accountHandler.refreshStateJob, is(notNullValue()));
+    }
+
+    @Test
     void testGetDevicesRefreshRefreshesCache() {
-        AccountConfiguration config = new AccountConfiguration();
-        config.refreshInterval = 30;
-        accountHandler.config = config;
+        doNothing().when(accountHandler).refreshState(anyBoolean());
+        accountHandler.getDevices(true);
+        verify(accountHandler, times(1)).refreshState(false);
+        accountHandler.getDevices(false);
+        verify(accountHandler, times(1)).refreshState(false);
+    }
+
+    @Test
+    void testLoadDevicesCachesNullOnException() throws IOException {
+        accountHandler.blinkService = accountService;
+        accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
+        doThrow(IOException.class).when(accountService).getDevices(ArgumentMatchers.any(BlinkAccount.class));
+        accountHandler.loadDevices();
+        // noinspection ConstantConditions
+        assertThat(accountHandler.cachedHomescreen, is(nullValue()));
+    }
+
+    @Test
+    void testLoadDevicesCallsServiceAndThings() throws IOException {
         CameraHandler cameraHandler = mock(CameraHandler.class);
         Thing camera = new ThingImpl(CameraHandlerTest.THING_TYPE_UID, "camera");
         camera.setHandler(cameraHandler);
         doReturn(List.of(camera)).when(bridge).getThings();
-        doReturn(testBlinkHomescreen()).when(accountHandler).loadDevices();
-        accountHandler.getDevices(true);
-        verify(accountHandler, times(1)).refreshState(false);
-        verify(cameraHandler, times(1)).handleHomescreenUpdate();
-        accountHandler.getDevices(false);
-        verify(accountHandler, times(1)).refreshState(false);
-        verify(cameraHandler, times(1)).handleHomescreenUpdate();
-    }
-
-    @Test
-    void testLoadDevicesReturnsNullOnException() throws IOException {
-        accountHandler.blinkService = accountService;
-        accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
-        doThrow(IOException.class).when(accountService).getDevices(ArgumentMatchers.any(BlinkAccount.class));
-        // noinspection ConstantConditions
-        assertThat(accountHandler.loadDevices(), is(nullValue()));
-    }
-
-    @Test
-    void testLoadDevicesCallsService() throws IOException {
         accountHandler.blinkService = accountService;
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         BlinkHomescreen expected = testBlinkHomescreen();
         doReturn(expected).when(accountService).getDevices(ArgumentMatchers.any(BlinkAccount.class));
-        @Nullable
-        BlinkHomescreen actual = accountHandler.loadDevices();
+        accountHandler.loadDevices();
         verify(accountService).getDevices(accountHandler.blinkAccount);
-        assertThat(actual, is(expected));
+        verify(cameraHandler).handleHomescreenUpdate();
+        // noinspection ConstantConditions
+        assertThat(accountHandler.cachedHomescreen, is(expected));
     }
 
     @Test

@@ -91,7 +91,7 @@ public class AccountService extends BaseBlinkApiService {
     }
 
     public BlinkHomescreen getDevices(@Nullable BlinkAccount account) throws IOException {
-        if (account == null)
+        if (account == null || account.account == null)
             throw new IllegalArgumentException("Cannot call Blink API without account");
         String uri = "/api/v3/accounts/" + account.account.account_id + "/homescreen";
         return apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token, null, BlinkHomescreen.class);
