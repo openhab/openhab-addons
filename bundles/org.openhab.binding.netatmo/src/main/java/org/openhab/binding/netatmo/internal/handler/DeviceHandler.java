@@ -97,8 +97,10 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
                 : supportedThingType.refreshPeriod == RefreshPolicy.CONFIG ? new RefreshStrategy(config.refreshInterval)
                         : null;
 
-        getBridgeHandler().ifPresentOrElse(handler -> handler.registerDataListener(config.id, this),
-                () -> apiBridge.addConnectionListener(this));
+        getBridgeHandler().ifPresentOrElse(handler -> {
+            updateStatus(ThingStatus.ONLINE);
+            handler.registerDataListener(config.id, this);
+        }, () -> apiBridge.addConnectionListener(this));
     }
 
     @Override
@@ -166,7 +168,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
                     }
                 } catch (NetatmoException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to connect Netatmo API : " + e.getLocalizedMessage());
+                            "Unable to connect Netatmo API : " + e.getMessage());
                 }
             } else {
                 logger.debug("Data still valid for device {}", config.id);
@@ -218,9 +220,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
         if (firmware != -1) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(firmware));
         }
-        // PointType point = null;
         if (naThing instanceof NAHome) {
-            // point = ((NAHome) naThing).getLocation();
             NAPlace place = ((NAHome) naThing).getPlace();
             if (place != null) {
                 properties.put(PROPERTY_CITY, place.getCity());
@@ -228,16 +228,6 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
                 properties.put(PROPERTY_TIMEZONE, place.getTimezone());
             }
         }
-
-        // else if (naThing instanceof NADevice) {
-        // NAPlace place = ((NADevice) naThing).getPlace();
-        // if (place != null) {
-        // point = place.getLocation();
-        // }
-        // }
-        // if (point != null) {
-        // properties.put(PROPERTY_LOCATION, point.toString());
-        // }
         updateProperties(properties);
     }
 
@@ -252,12 +242,14 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
     }
 
     protected void tryApiCall(Callable<Boolean> function) {
-        try {
-            function.call();
-            expireData();
-        } catch (Exception e) {
-            logger.warn("Error calling api : {}", e.getMessage());
-        }
+        getBridgeHandler().ifPresentOrElse(h -> tryApiCall(function), () -> {
+            try {
+                function.call();
+                expireData();
+            } catch (Exception e) {
+                logger.warn("Error calling api : {}", e.getMessage());
+            }
+        });
     }
 
     private void registerDataListener(String id, DeviceHandler dataListener) {

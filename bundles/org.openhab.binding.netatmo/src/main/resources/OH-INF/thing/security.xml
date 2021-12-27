@@ -10,6 +10,7 @@
 			<channel id="person-count" typeId="person-count"/>
 			<channel id="unknown-count" typeId="person-count">
 				<label>Unknown Persons</label>
+				<description>Total number of unknown persons that are at home.</description>
 			</channel>
 			<channel id="home-event" typeId="home-event"/>
 		</channels>
@@ -20,21 +21,27 @@
 		<channels>
 			<channel id="is-monitoring" typeId="switch-rw">
 				<label>Monitoring</label>
+				<description>Monitoring state of the camera</description>
 			</channel>
 			<channel id="sd-status" typeId="switch-ro">
-				<label>SD State</label>
+				<label>SD Card State</label>
+				<description>State of the SD card</description>
 			</channel>
 			<channel id="alim-status" typeId="switch-ro">
 				<label>Alim State</label>
+				<description>State of the power connector</description>
 			</channel>
 			<channel id="live-picture" typeId="snapshot">
 				<label>Live Snapshot</label>
+				<description>Camera Live Snapshot</description>
 			</channel>
-			<channel id="live-picture-url" typeId="string-ro">
+			<channel id="live-picture-url" typeId="string-ro-advanced">
 				<label>Live Snapshot URL</label>
+				<description>Url of the live snapshot for this camera (need scope access_camera)</description>
 			</channel>
 			<channel id="live-stream-url" typeId="string-ro">
 				<label>Live Stream URL</label>
+				<description>Url of the live stream for this camera</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -108,9 +115,11 @@
 		<channels>
 			<channel id="auto-mode" typeId="switch-rw">
 				<label>Floodlight Auto-Mode</label>
+				<description>State of the floodlight auto-mode</description>
 			</channel>
 			<channel id="floodlight" typeId="switch-rw">
 				<label>Floodlight</label>
+				<description>State of the floodlight</description>
 			</channel>
 		</channels>
 	</channel-group-type>

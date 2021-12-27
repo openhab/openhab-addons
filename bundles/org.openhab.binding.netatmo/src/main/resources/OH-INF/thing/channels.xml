@@ -47,6 +47,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="string-ro-advanced" advanced="true">
+		<item-type>String</item-type>
+		<label>Read-Only String</label>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="string-rw">
 		<item-type>String</item-type>
 		<label>Read-Write String</label>

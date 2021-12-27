@@ -83,11 +83,11 @@ public enum ModuleType {
     NAPerson(PersonHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, null,
             List.of(PersonChannelHelper.class)),
     NACamera(CameraHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, NAWelcome.class,
-            List.of(CameraChannelHelper.class)),
+            List.of(CameraChannelHelper.class, SignalChannelHelper.class)),
     NOC(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, NAWelcome.class,
-            List.of(CameraChannelHelper.class, PresenceChannelHelper.class)),
+            List.of(CameraChannelHelper.class, PresenceChannelHelper.class, SignalChannelHelper.class)),
     NDB(PresenceHandler.class, RefreshPolicy.PARENT, FeatureArea.SECURITY, NAHome, NAWelcome.class,
-            List.of(CameraChannelHelper.class)),
+            List.of(CameraChannelHelper.class, SignalChannelHelper.class)),
 
     // Weather Features
     NAMain(MainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null, NAThing.class,
