@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="publictransportswitzerland"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="stationboard">
+		<label>Stationboard</label>
+		<description>Upcoming departures for a single station.</description>
+		<channels>
+			<channel typeId="tsv" id="tsv"/>
+		</channels>
+		<config-description>
+			<parameter name="station" type="text" required="true">
+				<label>Station</label>
+				<description>The name of the station</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="tsv" advanced="true">
+		<item-type>String</item-type>
+		<label>Tab Separated Time Table</label>
+	</channel-type>
+
+	<channel-type id="departure">
+		<item-type>String</item-type>
+		<label>Departure</label>
+		<description>A single departure</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+</thing:thing-descriptions>
