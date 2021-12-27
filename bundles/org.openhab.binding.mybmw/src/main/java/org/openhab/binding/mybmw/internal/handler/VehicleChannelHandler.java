@@ -138,9 +138,10 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE,
                 DateTimeType.valueOf(VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired)));
 
-        // [todo] CheckControl Active?
-        // updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
-        // StringType.valueOf(Converter.toTitleCase(VehicleStatusUtils.checkControlActive(vStatus))));
+        // CheckControl Active?
+        updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
+                StringType.valueOf(v.status.checkControlMessagesGeneralState));
+
         // last update Time
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
                 DateTimeType.valueOf(Converter.getZonedDateTime(v.properties.lastUpdatedAt)));

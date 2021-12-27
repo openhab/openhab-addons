@@ -90,17 +90,4 @@ public class VehicleStatusUtils {
      * }
      * }
      */
-
-    /**
-     * public static String checkControlActive(VehicleStatus vStatus) {
-     * if (vStatus.checkControlMessages == null) {
-     * return UNDEF;
-     * }
-     * if (vStatus.checkControlMessages.isEmpty()) {
-     * return NOT_ACTIVE;
-     * } else {
-     * return ACTIVE;
-     * }
-     * }
-     */
 }

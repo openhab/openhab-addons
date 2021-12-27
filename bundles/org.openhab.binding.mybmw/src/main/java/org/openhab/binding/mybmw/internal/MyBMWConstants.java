@@ -207,6 +207,7 @@ public class MyBMWConstants {
     public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
     public static final String REMOTE_SERVICE_CHARGE_NOW = "charge-now";
     public static final String REMOTE_SERVICE_CHARGING_CONTROL = "charge-control";
+    public static final String REMOTE_SERVICE_SEND_POI = "send-poi";
     public static final String REMOTE_SERVICE_COMMAND = "command";
     public static final String REMOTE_STATE = "state";
 }

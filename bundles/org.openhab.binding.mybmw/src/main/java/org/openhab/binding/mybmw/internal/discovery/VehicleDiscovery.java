@@ -231,5 +231,4 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
         }
         return l;
     }
-
 }

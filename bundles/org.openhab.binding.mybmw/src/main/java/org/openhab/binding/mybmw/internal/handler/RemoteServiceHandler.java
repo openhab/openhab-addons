@@ -82,7 +82,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
         CLIMATE_NOW(REMOTE_SERVICE_AIR_CONDITIONING, "Climate Control", "air-conditioning"),
         CHARGE_NOW(REMOTE_SERVICE_CHARGE_NOW, "Start Charging", "charge-now"),
         CHARGING_CONTROL(REMOTE_SERVICE_CHARGING_CONTROL, "Send Charging Profile", "charging-control"),
-        SEND_POI(SEND_POI, "Send Point of Interest", "send-poi"); // [variables needs to be checked]
+        SEND_POI(REMOTE_SERVICE_SEND_POI, "Send Point of Interest", "send-poi"); // [variables needs to be checked]
 
         private final String command;
         private final String label;
