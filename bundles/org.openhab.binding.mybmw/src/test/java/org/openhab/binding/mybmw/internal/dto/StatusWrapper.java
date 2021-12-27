@@ -518,8 +518,10 @@ public class StatusWrapper {
                 }
                 break;
             default:
-                // fail in case of unknown update
-                assertFalse(true, "Channel " + channelUID + " " + state + " not found");
+                if (!gUid.equals(CHANNEL_GROUP_CHARGE_PROFILE)) {
+                    // fail in case of unknown update
+                    assertFalse(true, "Channel " + channelUID + " " + state + " not found");
+                }
                 break;
         }
     }

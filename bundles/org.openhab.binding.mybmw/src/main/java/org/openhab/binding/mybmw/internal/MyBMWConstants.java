@@ -75,13 +75,13 @@ public class MyBMWConstants {
     }
 
     public enum ChargingMode {
-        IMMEDIATE_CHARGING,
+        immediateCharging,
         DELAYED_CHARGING
     }
 
     public enum ChargingPreference {
         NO_PRESELECTION,
-        CHARGING_WINDOW
+        chargingWindow
     }
 
     public static final Set<String> FUEL_VEHICLES = Set.of(VehicleType.CONVENTIONAL.toString(),
@@ -109,7 +109,7 @@ public class MyBMWConstants {
     public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
-    public static final String CHANNEL_GROUP_CHARGE = "charge";
+    public static final String CHANNEL_GROUP_CHARGE_PROFILE = "profile";
     public static final String CHANNEL_GROUP_CHARGE_STATISTICS = "stats";
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
 
@@ -154,18 +154,20 @@ public class MyBMWConstants {
     public static final String SUNROOF = "sunroof";
 
     // Charge Profile
-    public static final String CHARGE_PROFILE_CLIMATE = "profile-climate";
-    public static final String CHARGE_PROFILE_MODE = "profile-mode";
-    public static final String CHARGE_PROFILE_PREFERENCE = "profile-prefs";
+    public static final String CHARGE_PROFILE_CLIMATE = "climate";
+    public static final String CHARGE_PROFILE_MODE = "mode";
+    public static final String CHARGE_PROFILE_PREFERENCE = "prefs";
+    public static final String CHARGE_PROFILE_CONTROL = "control";
+    public static final String CHARGE_PROFILE_TARGET = "target";
+    public static final String CHARGE_PROFILE_LIMIT = "limit";
     public static final String CHARGE_WINDOW_START = "window-start";
     public static final String CHARGE_WINDOW_END = "window-end";
     public static final String CHARGE_TIMER1 = "timer1";
     public static final String CHARGE_TIMER2 = "timer2";
     public static final String CHARGE_TIMER3 = "timer3";
-    public static final String CHARGE_OVERRIDE = "override";
+    public static final String CHARGE_TIMER4 = "timer4";
     public static final String CHARGE_DEPARTURE = "-departure";
     public static final String CHARGE_ENABLED = "-enabled";
-    public static final String CHARGE_DAYS = "-days";
     public static final String CHARGE_DAY_MON = "-day-mon";
     public static final String CHARGE_DAY_TUE = "-day-tue";
     public static final String CHARGE_DAY_WED = "-day-wed";

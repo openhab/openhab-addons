@@ -28,6 +28,7 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.properties.CCM;
@@ -301,44 +302,49 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         }
     }
 
-    protected void updateChargeProfileFromContent(String content) {
-        ChargeProfileWrapper.fromJson(content).ifPresent(this::updateChargeProfile);
-    }
+    protected void updateChargeProfile(ChargeProfile cp) {
+        ChargeProfileWrapper cpw = new ChargeProfileWrapper(cp);
 
-    protected void updateChargeProfile(ChargeProfileWrapper wrapper) {
-        updateChannel(CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_PREFERENCE,
-                StringType.valueOf(Converter.toTitleCase(wrapper.getPreference())));
-        updateChannel(CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_MODE,
-                StringType.valueOf(Converter.toTitleCase(wrapper.getMode())));
-        final Boolean climate = wrapper.isEnabled(ProfileKey.CLIMATE);
-        updateChannel(CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_CLIMATE,
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE,
+                StringType.valueOf(Converter.toTitleCase(cpw.getPreference())));
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE,
+                StringType.valueOf(Converter.toTitleCase(cpw.getMode())));
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL,
+                StringType.valueOf(Converter.toTitleCase(cpw.getControlType())));
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
+                DecimalType.valueOf(Integer.toString(cpw.getChargeSettings().targetSoc)));
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_LIMIT,
+                OnOffType.from(cpw.getChargeSettings().isAcCurrentLimitActive));
+        final Boolean climate = cpw.isEnabled(ProfileKey.CLIMATE);
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CLIMATE,
                 climate == null ? UnDefType.UNDEF : OnOffType.from(climate));
-        updateTimedState(wrapper, ProfileKey.WINDOWSTART);
-        updateTimedState(wrapper, ProfileKey.WINDOWEND);
-        updateTimedState(wrapper, ProfileKey.TIMER1);
-        updateTimedState(wrapper, ProfileKey.TIMER2);
-        updateTimedState(wrapper, ProfileKey.TIMER3);
-        updateTimedState(wrapper, ProfileKey.OVERRIDE);
+        updateTimedState(cpw, ProfileKey.WINDOWSTART);
+        updateTimedState(cpw, ProfileKey.WINDOWEND);
+        updateTimedState(cpw, ProfileKey.TIMER1);
+        updateTimedState(cpw, ProfileKey.TIMER2);
+        updateTimedState(cpw, ProfileKey.TIMER3);
+        updateTimedState(cpw, ProfileKey.TIMER4);
     }
 
     protected void updateTimedState(ChargeProfileWrapper profile, ProfileKey key) {
         final TimedChannel timed = ChargeProfileUtils.getTimedChannel(key);
         if (timed != null) {
             final LocalTime time = profile.getTime(key);
-            updateChannel(CHANNEL_GROUP_CHARGE, timed.time, time == null ? UnDefType.UNDEF
+            updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.time, time == null ? UnDefType.UNDEF
                     : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
             if (timed.timer != null) {
                 final Boolean enabled = profile.isEnabled(key);
-                updateChannel(CHANNEL_GROUP_CHARGE, timed.timer + CHARGE_ENABLED,
+                updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.timer + CHARGE_ENABLED,
                         enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled));
                 if (timed.hasDays) {
                     final Set<DayOfWeek> days = profile.getDays(key);
-                    updateChannel(CHANNEL_GROUP_CHARGE, timed.timer + CHARGE_DAYS,
-                            days == null ? UnDefType.UNDEF : StringType.valueOf(ChargeProfileUtils.formatDays(days)));
                     EnumSet.allOf(DayOfWeek.class).forEach(day -> {
-                        updateChannel(CHANNEL_GROUP_CHARGE, timed.timer + ChargeProfileUtils.getDaysChannel(day),
+                        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE,
+                                timed.timer + ChargeProfileUtils.getDaysChannel(day),
                                 days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)));
                     });
+                } else {
+                    logger.info("Key {} has no days", key);
                 }
             }
         }

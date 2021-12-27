@@ -21,6 +21,8 @@ import java.util.List;
  * @author Norbert Truchsess - edit & send of charge profile
  */
 public class ChargeProfile {
+    public static final Timer INVALID_TIMER = new Timer();
+
     public ChargingWindow reductionOfChargeCurrent;
     public String chargingMode;// ": "immediateCharging",
     public String chargingPreference;// ": "chargingWindow",
@@ -28,4 +30,15 @@ public class ChargeProfile {
     public List<Timer> departureTimes;
     public boolean climatisationOn;// ": false,
     public ChargingSettings chargingSettings;
+
+    public Timer getTimerId(int id) {
+        if (departureTimes != null) {
+            for (Timer t : departureTimes) {
+                if (t.id == id) {
+                    return t;
+                }
+            }
+        }
+        return INVALID_TIMER;
+    }
 }

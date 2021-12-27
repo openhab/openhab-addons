@@ -176,7 +176,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     logger.debug("Cannot select CheckControl index {}", command.toFullString());
                 }
             }
-        } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
+        } else if (CHANNEL_GROUP_CHARGE_PROFILE.equals(group)) {
             handleChargeProfileCommand(channelUID, command);
         }
     }
@@ -324,6 +324,9 @@ public class VehicleHandler extends VehicleChannelHandler {
                         logger.info("Send update");
                         updateStatus(ThingStatus.ONLINE);
                         updateVehicle(v);
+                        if (isElectric) {
+                            updateChargeProfile(v.status.chargingProfile);
+                        }
                     } else {
                         logger.info("Vehicle not valid");
                     }
@@ -386,13 +389,13 @@ public class VehicleHandler extends VehicleChannelHandler {
                 switch (id) {
                     case CHARGE_PROFILE_PREFERENCE:
                         profile.setPreference(stringCommand);
-                        updateChannel(CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_PREFERENCE,
+                        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE,
                                 StringType.valueOf(Converter.toTitleCase(profile.getPreference())));
                         processed = true;
                         break;
                     case CHARGE_PROFILE_MODE:
                         profile.setMode(stringCommand);
-                        updateChannel(CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_MODE,
+                        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE,
                                 StringType.valueOf(Converter.toTitleCase(profile.getMode())));
                         processed = true;
                         break;

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mybmw.internal.dto.charge;
 
+import org.openhab.binding.mybmw.internal.utils.Constants;
+
 /**
  * The {@link Time} Data Transfer Object
  *
@@ -21,4 +23,9 @@ package org.openhab.binding.mybmw.internal.dto.charge;
 public class Time {
     public int hour;// ": 11,
     public int minute;// ": 0
+
+    @Override
+    public String toString() {
+        return hour + Constants.COLON + minute;
+    }
 }

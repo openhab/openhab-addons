@@ -14,6 +14,8 @@ package org.openhab.binding.mybmw.internal.dto.charge;
 
 import java.util.List;
 
+import org.openhab.binding.mybmw.internal.utils.Constants;
+
 /**
  * The {@link Timer} Data Transfer Object
  *
@@ -21,10 +23,11 @@ import java.util.List;
  * @author Norbert Truchsess - edit & send of charge profile
  */
 public class Timer {
-    public int id;// ": 1,
+    public int id = -1;// ": 1,
     public String action;// ": "deactivate",
     public Time timeStamp;
     public List<String> timerWeekDays;
+
     /**
      * "monday",
      * "tuesday",
@@ -35,4 +38,9 @@ public class Timer {
      * "sunday"
      * ]
      */
+
+    @Override
+    public String toString() {
+        return id + Constants.COLON + action + Constants.COLON + timeStamp + Constants.COLON + timerWeekDays;
+    }
 }

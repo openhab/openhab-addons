@@ -53,7 +53,7 @@ public class ChargeProfileUtils {
             put(ProfileKey.TIMER1, new TimedChannel(CHARGE_TIMER1 + CHARGE_DEPARTURE, CHARGE_TIMER1, true));
             put(ProfileKey.TIMER2, new TimedChannel(CHARGE_TIMER2 + CHARGE_DEPARTURE, CHARGE_TIMER2, true));
             put(ProfileKey.TIMER3, new TimedChannel(CHARGE_TIMER3 + CHARGE_DEPARTURE, CHARGE_TIMER3, true));
-            put(ProfileKey.OVERRIDE, new TimedChannel(CHARGE_OVERRIDE + CHARGE_DEPARTURE, CHARGE_OVERRIDE, false));
+            put(ProfileKey.TIMER4, new TimedChannel(CHARGE_TIMER4 + CHARGE_DEPARTURE, CHARGE_TIMER4, true));
         }
     };
 
@@ -106,6 +106,7 @@ public class ChargeProfileUtils {
                 put(CHARGE_TIMER1 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER1, dayOfWeek));
                 put(CHARGE_TIMER2 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER2, dayOfWeek));
                 put(CHARGE_TIMER3 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER3, dayOfWeek));
+                put(CHARGE_TIMER4 + dayChannel, new ChargeKeyDay(ProfileKey.TIMER3, dayOfWeek));
             });
         }
     };

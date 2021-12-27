@@ -1,0 +1,73 @@
+{
+	"reductionOfChargeCurrent": {
+		"start": {
+			"hour": 11,
+			"minute": 0
+		},
+		"end": {
+			"hour": 11,
+			"minute": 0
+		}
+	},
+	"chargingMode": "immediateCharging",
+	"chargingPreference": "chargingWindow",
+	"departureTimes": [
+		{
+			"id": 1,
+			"action": "deactivate",
+			"timeStamp": {
+				"hour": 16,
+				"minute": 0
+			},
+			"timerWeekDays": [
+				"monday",
+				"tuesday",
+				"wednesday",
+				"thursday",
+				"friday",
+				"saturday",
+				"sunday"
+			]
+		},
+		{
+			"id": 2,
+			"action": "activate",
+			"timeStamp": {
+				"hour": 12,
+				"minute": 2
+			},
+			"timerWeekDays": [
+				"sunday"
+			]
+		},
+		{
+			"id": 3,
+			"action": "deactivate",
+			"timeStamp": {
+				"hour": 13,
+				"minute": 3
+			},
+			"timerWeekDays": [
+				"saturday"
+			]
+		},
+		{
+			"id": 4,
+			"action": "deactivate",
+			"timeStamp": {
+				"hour": 12,
+				"minute": 2
+			},
+			"timerWeekDays": [
+				"sunday"
+			]
+		}
+	],
+	"climatisationOn": false,
+	"chargingSettings": {
+		"targetSoc": 100,
+		"isAcCurrentLimitActive": false,
+		"hospitality": "NO_ACTION",
+		"idcc": "NO_ACTION"
+	}
+}

@@ -28,6 +28,7 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mybmw.internal.dto.charge.Time;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
@@ -298,5 +299,15 @@ public class Converter {
         Date date = new Date(System.currentTimeMillis());
         isoSdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return isoSdf.format(date);
+    }
+
+    public static String getTime(Time t) {
+        StringBuffer time = new StringBuffer();
+        time.append(Integer.toString(t.hour)).append(":");
+        if (t.minute < 10) {
+            time.append("0");
+        }
+        time.append(Integer.toString(t.minute));
+        return time.toString();
     }
 }

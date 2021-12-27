@@ -61,6 +61,7 @@ public class VehicleTests {
     private static final int SERVICE_AVAILABLE = 2;
     private static final int SERVICE_EMPTY = 2;
     private static final int POSITION = 2;
+    private static final int CHARGE_PROFILE = 44;
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
@@ -189,7 +190,8 @@ public class VehicleTests {
         // assertTrue(testVehicle(content,
         // STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
         assertTrue(testVehicle(content,
-                STATUS_ELECTRIC + RANGE_HYBRID + DOORS + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY, Optional.empty()));
+                STATUS_ELECTRIC + RANGE_HYBRID + DOORS + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY + CHARGE_PROFILE,
+                Optional.empty()));
     }
 
     public void testi3Rex() {

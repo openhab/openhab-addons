@@ -18,6 +18,8 @@ import static org.openhab.binding.mybmw.internal.utils.Constants.*;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,13 +31,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.ChargingMode;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.ChargingPreference;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSettings;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargingWindow;
+import org.openhab.binding.mybmw.internal.dto.charge.Time;
 import org.openhab.binding.mybmw.internal.dto.charge.Timer;
-import org.openhab.binding.mybmw.internal.dto.charge.WeeklyPlanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link ChargeProfileWrapper} Wrapper for ChargeProfiles
@@ -47,11 +48,9 @@ import com.google.gson.JsonSyntaxException;
 public class ChargeProfileWrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChargeProfileWrapper.class);
 
-    public enum ProfileType {
-        WEEKLY,
-        TWO_TIMES,
-        EMPTY
-    }
+    private static final String CHARGING_WINDOW = "chargingWindow";
+    private static final String ACTIVATE = "activate"; // [todo check variable]
+    private static final String DEACTIVATE = "deactivate"; // [todo check variable]
 
     public enum ProfileKey {
         CLIMATE,
@@ -59,71 +58,42 @@ public class ChargeProfileWrapper {
         TIMER2,
         TIMER3,
         TIMER4,
-        OVERRIDE,
         WINDOWSTART,
         WINDOWEND
     }
 
-    protected final ProfileType type;
-
     private Optional<ChargingMode> mode = Optional.empty();
     private Optional<ChargingPreference> preference = Optional.empty();
+    private Optional<String> controlType = Optional.empty();
+    private Optional<ChargingSettings> chargeSettings = Optional.empty();
 
     private final Map<ProfileKey, Boolean> enabled = new HashMap<>();
     private final Map<ProfileKey, LocalTime> times = new HashMap<>();
     private final Map<ProfileKey, Set<DayOfWeek>> daysOfWeek = new HashMap<>();
 
-    public static Optional<ChargeProfileWrapper> fromJson(final String content) {
-        try {
-            final ChargeProfile cp = Converter.getGson().fromJson(content, ChargeProfile.class);
-            if (cp != null) {
-                return Optional.of(new ChargeProfileWrapper(cp));
-            }
-        } catch (JsonSyntaxException jse) {
-            LOGGER.debug("ChargeProfile unparsable: {}", content);
+    public ChargeProfileWrapper(final ChargeProfile profile) {
+        setPreference(profile.chargingPreference);
+        setMode(profile.chargingMode);
+        controlType = Optional.of(profile.chargingControlType);
+        chargeSettings = Optional.of(profile.chargingSettings);
+        setEnabled(CLIMATE, profile.climatisationOn);
+
+        addTimer(TIMER1, profile.getTimerId(1));
+        addTimer(TIMER2, profile.getTimerId(2));
+        addTimer(TIMER3, profile.getTimerId(3));
+        addTimer(TIMER4, profile.getTimerId(4));
+
+        if (CHARGING_WINDOW.equals(profile.chargingPreference)) {
+            addTime(WINDOWSTART, profile.reductionOfChargeCurrent.start);
+            addTime(WINDOWEND, profile.reductionOfChargeCurrent.end);
+        } else {
+            preference.ifPresent(pref -> {
+                if (ChargingPreference.chargingWindow.equals(pref)) {
+                    addTime(WINDOWSTART, null);
+                    addTime(WINDOWEND, null);
+                }
+            });
         }
-        return Optional.empty();
-    }
-
-    private ChargeProfileWrapper(final ChargeProfile profile) {
-        final WeeklyPlanner planner;
-
-        // if (profile.weeklyPlanner != null) {
-        type = ProfileType.WEEKLY;
-        // planner = profile.weeklyPlanner;
-        // } else if (profile.twoTimesTimer != null) {
-        // type = ProfileType.TWO_TIMES;
-        // planner = profile.twoTimesTimer;
-        // // timer days not supported
-        // } else {
-        // type = ProfileType.EMPTY;
-        // return;
-        // }
-
-        // setPreference(planner.chargingPreferences);
-        // setMode(planner.chargingMode);
-        //
-        // setEnabled(CLIMATE, planner.climatizationEnabled);
-        //
-        // addTimer(TIMER1, planner.timer1);
-        // addTimer(TIMER2, planner.timer2);
-        //
-        // if (planner.preferredChargingWindow != null) {
-        // // addTime(WINDOWSTART, planner.preferredChargingWindow.startTime);
-        // // addTime(WINDOWEND, planner.preferredChargingWindow.endTime);
-        // } else {
-        // preference.ifPresent(pref -> {
-        // if (ChargingPreference.CHARGING_WINDOW.equals(pref)) {
-        // addTime(WINDOWSTART, null);
-        // addTime(WINDOWEND, null);
-        // }
-        // });
-        // }
-
-        // if (isWeekly()) {
-        // addTimer(TIMER3, planner.timer3);
-        // addTimer(OVERRIDE, planner.overrideTimer);
-        // }
     }
 
     public @Nullable Boolean isEnabled(final ProfileKey key) {
@@ -140,6 +110,14 @@ public class ChargeProfileWrapper {
 
     public @Nullable String getMode() {
         return mode.map(m -> m.name()).orElse(null);
+    }
+
+    public @Nullable String getControlType() {
+        return controlType.get();
+    }
+
+    public @Nullable ChargingSettings getChargeSettings() {
+        return chargeSettings.get();
     }
 
     public void setMode(final @Nullable String mode) {
@@ -209,37 +187,35 @@ public class ChargeProfileWrapper {
 
     public String getJson() {
         final ChargeProfile profile = new ChargeProfile();
-        final WeeklyPlanner planner = new WeeklyPlanner();
 
-        preference.ifPresent(pref -> planner.chargingPreferences = pref.name());
-        planner.climatizationEnabled = isEnabled(CLIMATE);
+        preference.ifPresent(pref -> profile.chargingPreference = pref.name());
+        profile.chargingControlType = controlType.get();
+        profile.climatisationOn = isEnabled(CLIMATE);
         preference.ifPresent(pref -> {
-            if (ChargingPreference.CHARGING_WINDOW.equals(pref)) {
-                planner.chargingMode = getMode();
+            if (ChargingPreference.chargingWindow.equals(pref)) {
+                profile.chargingMode = getMode();
                 final LocalTime start = getTime(WINDOWSTART);
                 final LocalTime end = getTime(WINDOWEND);
                 if (start != null || end != null) {
-                    planner.preferredChargingWindow = new ChargingWindow();
-                    // planner.preferredChargingWindow.startTime = start == null ? null : start.format(TIME_FORMATER);
-                    // planner.preferredChargingWindow.endTime = end == null ? null : end.format(TIME_FORMATER);
+                    ChargingWindow cw = new ChargingWindow();
+                    profile.reductionOfChargeCurrent = cw;
+                    cw.start = new Time();
+                    cw.start.hour = start.getHour();
+                    cw.start.minute = start.getMinute();
+                    cw.end = new Time();
+                    cw.end.hour = end.getHour();
+                    cw.end.minute = end.getMinute();
                 }
             }
         });
-        planner.timer1 = getTimer(TIMER1);
-        planner.timer2 = getTimer(TIMER2);
-        if (isWeekly()) {
-            planner.timer3 = getTimer(TIMER3);
-            planner.overrideTimer = getTimer(OVERRIDE);
-            // profile.weeklyPlanner = planner;
-        } else if (isTwoTimes()) {
-            // profile.twoTimesTimer = planner;
-        }
+        profile.departureTimes = Arrays.asList(getTimer(TIMER1), getTimer(TIMER2), getTimer(TIMER3), getTimer(TIMER4));
+        profile.chargingSettings = chargeSettings.get();
         return Converter.getGson().toJson(profile);
     }
 
-    private void addTime(final ProfileKey key, @Nullable final String time) {
+    private void addTime(final ProfileKey key, @Nullable final Time time) {
         try {
-            times.put(key, time == null ? NULL_LOCAL_TIME : LocalTime.parse(time, TIME_FORMATER));
+            times.put(key, time == null ? NULL_LOCAL_TIME : LocalTime.parse(Converter.getTime(time), TIME_FORMATER));
         } catch (DateTimeParseException dtpe) {
             LOGGER.warn("unexpected value for {} time: {}", key.name(), time);
         }
@@ -249,51 +225,60 @@ public class ChargeProfileWrapper {
         if (timer == null) {
             enabled.put(key, false);
             addTime(key, null);
-            if (isWeekly()) {
-                daysOfWeek.put(key, EnumSet.noneOf(DayOfWeek.class));
-            }
+            daysOfWeek.put(key, EnumSet.noneOf(DayOfWeek.class));
         } else {
-            // enabled.put(key, timer.timerEnabled);
-            // addTime(key, timer.departureTime);
-            // if (isWeekly()) {
+            enabled.put(key, ACTIVATE.equals(timer.action));
+            addTime(key, timer.timeStamp);
             final EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
-            // if (timer.weekdays != null) {
-            // for (String day : timer.weekdays) {
-            // try {
-            // daySet.add(DayOfWeek.valueOf(day));
-            // } catch (IllegalArgumentException iae) {
-            // LOGGER.warn("unexpected value for {} day: {}", key.name(), day);
-            // }
-            // }
-            // }
-            daysOfWeek.put(key, daySet);
+            if (timer.timerWeekDays != null) {
+                for (String day : timer.timerWeekDays) {
+                    try {
+                        daySet.add(DayOfWeek.valueOf(day.toUpperCase()));
+                    } catch (IllegalArgumentException iae) {
+                        LOGGER.warn("unexpected value for {} day: {}", key.name(), day);
+                    }
+                    daysOfWeek.put(key, daySet);
+                }
+            }
         }
-        // }
     }
 
     private @Nullable Timer getTimer(final ProfileKey key) {
         final Timer timer = new Timer();
-        // timer.timerEnabled = enabled.get(key);
+        switch (key) {
+            case TIMER1:
+                timer.id = 1;
+                break;
+            case TIMER2:
+                timer.id = 2;
+                break;
+            case TIMER3:
+                timer.id = 3;
+                break;
+            case TIMER4:
+                timer.id = 4;
+                break;
+            default:
+                // timer id stays -1
+                break;
+        }
+        if (enabled.get(key)) {
+            timer.action = ACTIVATE;
+        } else {
+            timer.action = DEACTIVATE;
+        }
         final LocalTime time = times.get(key);
-        // timer.departureTime = time == null ? null : time.format(TIME_FORMATER);
-        if (isWeekly()) {
-            final Set<DayOfWeek> days = daysOfWeek.get(key);
-            if (days != null) {
-                // timer.weekdays = new ArrayList<>();
-                // for (DayOfWeek day : days) {
-                // timer.weekdays.add(day.name());
-                // }
+        timer.timeStamp = new Time();
+        timer.timeStamp.hour = time.getHour();
+        timer.timeStamp.minute = time.getMinute();
+        final Set<DayOfWeek> days = daysOfWeek.get(key);
+        if (days != null) {
+            timer.timerWeekDays = new ArrayList<>();
+            for (DayOfWeek day : days) {
+                timer.timerWeekDays.add(day.name().toLowerCase());
             }
         }
         // return timer.timerEnabled == null && timer.departureTime == null && timer.weekdays == null ? null : timer;
-        return null;
-    }
-
-    private boolean isWeekly() {
-        return ProfileType.WEEKLY.equals(type);
-    }
-
-    private boolean isTwoTimes() {
-        return ProfileType.TWO_TIMES.equals(type);
+        return timer;
     }
 }

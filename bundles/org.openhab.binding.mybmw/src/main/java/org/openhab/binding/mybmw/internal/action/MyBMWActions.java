@@ -106,24 +106,24 @@ public class MyBMWActions implements ThingActions {
 
     @RuleAction(label = "getOverrideTimerDeparture", description = "returns the departure time of overrideTimer")
     public @ActionOutput(name = "time", type = "java.util.Optional<java.time.LocalTime>") Optional<LocalTime> getOverrideTimerDeparture() {
-        return getTime(OVERRIDE);
+        return getTime(TIMER4);
     }
 
     @RuleAction(label = "setOverrideTimerDeparture", description = "sets the overrideTimer departure time")
     public void setOverrideTimerDeparture(
             @ActionInput(name = "time", type = "java.time.LocalTime") @Nullable LocalTime time) {
-        setTime(OVERRIDE, time);
+        setTime(TIMER4, time);
     }
 
     @RuleAction(label = "getOverrideTimerEnabled", description = "returns the enabled state of overrideTimer")
     public @ActionOutput(name = "enabled", type = "java.util.Optional<java.lang.Boolean>") Optional<Boolean> getOverrideTimerEnabled() {
-        return getEnabled(OVERRIDE);
+        return getEnabled(TIMER4);
     }
 
     @RuleAction(label = "setOverrideTimerEnabled", description = "sets the enabled state of overrideTimer")
     public void setOverrideTimerEnabled(
             @ActionInput(name = "enabled", type = "java.lang.Boolean") @Nullable Boolean enabled) {
-        setEnabled(OVERRIDE, enabled);
+        setEnabled(TIMER4, enabled);
     }
 
     @RuleAction(label = "getPreferredWindowStart", description = "returns the preferred charging-window start time")
@@ -204,13 +204,13 @@ public class MyBMWActions implements ThingActions {
 
     @RuleAction(label = "getOverrideTimerDays", description = "returns the days of week the overrideTimer is enabled for")
     public @ActionOutput(name = "days", type = "java.util.Optional<java.util.Set<java.time.DayOfWeek>>") Optional<Set<DayOfWeek>> getOverrideTimerDays() {
-        return getDays(OVERRIDE);
+        return getDays(TIMER4);
     }
 
     @RuleAction(label = "setOverrideTimerDays", description = "sets the days of week the overrideTimer is enabled for")
     public void setOverrideTimerDays(
             @ActionInput(name = "days", type = "java.util.Set<java.time.DayOfWeek>") @Nullable Set<DayOfWeek> days) {
-        setDays(OVERRIDE, days);
+        setDays(TIMER4, days);
     }
 
     @RuleAction(label = "sendChargeProfile", description = "sends the charging profile to the vehicle")

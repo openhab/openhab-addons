@@ -14,31 +14,30 @@ package org.openhab.binding.mybmw.internal.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.util.FileReader;
+import org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper;
+import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 
 /**
- * The {@link VehicleTest} Test json responses from ConnectedDrive Portal
+ * The {@link ChargeProfileTest} is testing locale settings
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class VehicleTest {
+public class ChargeProfileTest {
 
     @Test
-    public void testBevRexValues() {
-        String vehiclesJSON = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
-        List<Vehicle> vehicleList = Converter.getVehicleList(vehiclesJSON);
-        assertEquals(1, vehicleList.size(), "Vehicles found");
-        Vehicle v = vehicleList.get(0);
-        assertEquals("BMW", v.brand, "Car brand");
-        assertEquals(true, v.properties.areDoorsClosed, "Doors Closed");
-        assertEquals(76, v.properties.electricRange.distance.value, "Electric Range");
-        assertEquals(6.789, v.properties.vehicleLocation.coordinates.longitude, 0.1, "Location lon");
+    public void testProfileConversion() {
+        String json = FileReader.readFileInString("src/test/resources/vehicle-status-services.json");
+        Vehicle v = Converter.getVehicle(Constants.ANONYMOUS, json);
+        ChargeProfile cp = v.status.chargingProfile;
+        String cpJson = Converter.getGson().toJson(cp);
+        ChargeProfileWrapper cpw = new ChargeProfileWrapper(v.status.chargingProfile);
+        assertEquals(cpJson, cpw.getJson(), "JSON comparison");
     }
 }
