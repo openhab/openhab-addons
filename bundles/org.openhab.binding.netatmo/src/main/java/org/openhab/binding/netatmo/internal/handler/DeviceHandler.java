@@ -41,7 +41,6 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
 import org.openhab.binding.netatmo.internal.config.NetatmoThingConfiguration;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -181,6 +180,7 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
             localNaDevice.getModules().entrySet().forEach(entry -> {
                 DeviceHandler listener = getDataListeners().get(entry.getKey());
                 if (listener != null) {
+                    listener.updateProperties(entry.getValue());
                     listener.setNewData(entry.getValue());
                 }
             });
@@ -216,29 +216,28 @@ public class DeviceHandler extends BaseBridgeHandler implements ConnectionListen
         Map<String, String> properties = editProperties();
         int firmware = naThing.getFirmware();
         if (firmware != -1) {
-            properties.put(Thing.PROPERTY_VENDOR, VENDOR);
-            ModuleType modelId = naThing.getType();
-            properties.put(Thing.PROPERTY_MODEL_ID, modelId.name());
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(firmware));
         }
-        PointType point = null;
+        // PointType point = null;
         if (naThing instanceof NAHome) {
-            point = ((NAHome) naThing).getLocation();
+            // point = ((NAHome) naThing).getLocation();
             NAPlace place = ((NAHome) naThing).getPlace();
             if (place != null) {
                 properties.put(PROPERTY_CITY, place.getCity());
                 properties.put(PROPERTY_COUNTRY, place.getCountry());
                 properties.put(PROPERTY_TIMEZONE, place.getTimezone());
             }
-        } else if (naThing instanceof NADevice) {
-            NAPlace place = ((NADevice) naThing).getPlace();
-            if (place != null) {
-                point = place.getLocation();
-            }
         }
-        if (point != null) {
-            properties.put(PROPERTY_LOCATION, point.toString());
-        }
+
+        // else if (naThing instanceof NADevice) {
+        // NAPlace place = ((NADevice) naThing).getPlace();
+        // if (place != null) {
+        // point = place.getLocation();
+        // }
+        // }
+        // if (point != null) {
+        // properties.put(PROPERTY_LOCATION, point.toString());
+        // }
         updateProperties(properties);
     }
 

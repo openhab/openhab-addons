@@ -13,7 +13,7 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toDateTimeType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,22 +21,21 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link PressureExtendedChannelHelper} handles specific behavior of modules measuring pressure
- * with pressure trend capability
+ * The {@link TimestampExtChannelHelper} handles specific behavior
+ * of modules reporting measurement timestamp in dashboard
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class PressureExtendedChannelHelper extends PressureChannelHelper {
+public class TimestampExtChannelHelper extends TimestampChannelHelper {
 
-    public PressureExtendedChannelHelper() {
-        super(GROUP_PRESSURE_EXTENDED);
+    public TimestampExtChannelHelper() {
+        super(GROUP_EXTENDED_TIMESTAMP);
     }
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return channelId.equals(CHANNEL_TREND) ? toStringType(dashboard.getPressureTrend())
-                : super.internalGetDashboard(channelId, dashboard);
+        return CHANNEL_MEASURES_TIMESTAMP.equals(channelId) ? toDateTimeType(dashboard.getTimeUtc()) : null;
     }
 }

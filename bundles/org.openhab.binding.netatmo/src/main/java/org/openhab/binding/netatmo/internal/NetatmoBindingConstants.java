@@ -33,20 +33,19 @@ public class NetatmoBindingConstants {
 
     // Things properties
     public static final String PROPERTY_MAX_EVENT_TIME = "last-event";
-    public static final String PROPERTY_LOCATION = "location";
     public static final String PROPERTY_CITY = "city";
     public static final String PROPERTY_COUNTRY = "country";
     public static final String PROPERTY_TIMEZONE = "timezone";
+
     // Channel group ids
     public static final String GROUP_TEMPERATURE = "temperature";
     public static final String GROUP_HUMIDITY = "humidity";
-    public static final String GROUP_CO2 = "co2";
+    public static final String GROUP_AIR_QUALITY = "airquality";
     public static final String GROUP_NOISE = "noise";
     public static final String GROUP_PRESSURE = "pressure";
     public static final String GROUP_TIMESTAMP = "timestamp";
     public static final String GROUP_RAIN = "rain";
     public static final String GROUP_WIND = "wind";
-    public static final String GROUP_HEALTH = "health";
     public static final String GROUP_HOME_ENERGY = "energy";
     public static final String GROUP_SIGNAL = "signal";
     public static final String GROUP_BATTERY = "battery";
@@ -60,6 +59,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_ROOM_PROPERTIES = "room-properties";
     public static final String GROUP_TH_PROPERTIES = "th-properties";
     public static final String GROUP_TH_SETPOINT = "setpoint";
+    public static final String GROUP_LOCATION = "location";
 
     // Alternative extended groups
     public static final String GROUP_EXTENSION = "-extended";
@@ -67,6 +67,7 @@ public class NetatmoBindingConstants {
     public static final String GROUP_BATTERY_EXTENDED = GROUP_BATTERY + GROUP_EXTENSION;
     public static final String GROUP_PRESSURE_EXTENDED = GROUP_PRESSURE + GROUP_EXTENSION;
     public static final String GROUP_TEMPERATURE_EXTENDED = GROUP_TEMPERATURE + GROUP_EXTENSION;
+    public static final String GROUP_AIR_QUALITY_EXTENDED = GROUP_AIR_QUALITY + GROUP_EXTENSION;
 
     // Channel ids
     public static final String CHANNEL_VALUE = "value";
@@ -76,6 +77,8 @@ public class NetatmoBindingConstants {
     public static final String CHANNEL_MAX_VALUE = "max-today";
     public static final String CHANNEL_MIN_VALUE = "min-today";
     public static final String CHANNEL_HUMIDEX = "humidex";
+    public static final String CHANNEL_CO2 = "co2";
+    public static final String CHANNEL_HEALTH_INDEX = "health-index";
     public static final String CHANNEL_HUMIDEX_SCALE = "humidex-scale";
     public static final String CHANNEL_DEWPOINT = "dewpoint";
     public static final String CHANNEL_DEWPOINT_DEP = "dewpoint-depression";

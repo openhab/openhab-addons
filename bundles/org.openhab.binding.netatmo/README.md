@@ -130,7 +130,7 @@ Based on a standard update period of 10mn by Netatmo systems - it will auto adap
 | temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
-| co2                 | value                | Number:Dimensionless | Air quality                                      |
+| airquality          | co2                  | Number:Dimensionless | Air quality                                      |
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
@@ -187,7 +187,7 @@ All these channels are read only.
 | temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
 | temperature         | trend                | String               | Temperature evolution trend over time            |
-| co2                 | value                | Number:Dimensionless | Air quality                                      |
+| airquality          | co2                  | Number:Dimensionless | Air quality                                      |
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |
@@ -264,8 +264,8 @@ All these channels are read only.
 | temperature         | max-today            | Number:Temperature   | Maximum temperature on current day               |
 | temperature         | min-time             | DateTime             | Timestamp of today's minimum temperature         |
 | temperature         | max-time             | DateTime             | Timestamp of today's maximum temperature         |
-| health-index        | value                | Number               | Health index (*)                                 |
-| co2                 | value                | Number:Dimensionless | Air quality                                      |
+| airquality          | health-index         | Number               | Health index (*)                                 |
+| airquality          | co2                  | Number:Dimensionless | Air quality                                      |
 | timestamp           | last-seen            | DateTime             | Timestamp when module was last seen              |
 | timestamp           | measures             | DateTime             | Timestamp of current measures                    |
 | signal              | strength             | Number               | Signal strength (0 for no signal, 1 for weak...) |

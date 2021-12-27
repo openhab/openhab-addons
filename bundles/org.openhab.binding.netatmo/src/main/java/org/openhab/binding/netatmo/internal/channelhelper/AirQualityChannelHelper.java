@@ -13,28 +13,33 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link HomeCoachChannelHelper} handles specific channels of NHC thing.
+ * The {@link AirQualityChannelHelper} handles specific channels of things handling ppm measurement
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class HomeCoachChannelHelper extends AbstractChannelHelper {
+public class AirQualityChannelHelper extends AbstractChannelHelper {
 
-    public HomeCoachChannelHelper() {
-        super(GROUP_HEALTH);
+    public AirQualityChannelHelper() {
+        super(GROUP_AIR_QUALITY, MeasureClass.CO2);
+    }
+
+    protected AirQualityChannelHelper(String groupName) {
+        super(groupName, MeasureClass.CO2);
     }
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return CHANNEL_VALUE.equals(channelId) ? new DecimalType(dashboard.getHealthIdx()) : null;
+        return CHANNEL_CO2.equals(channelId) ? toQuantityType(dashboard.getCo2(), MeasureClass.CO2) : null;
     }
 }

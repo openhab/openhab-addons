@@ -36,10 +36,10 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="co2">
-		<label>CO2</label>
+	<channel-group-type id="airquality">
+		<label>Air Quality</label>
 		<channels>
-			<channel id="value" typeId="co2"/>
+			<channel id="co2" typeId="co2"/>
 		</channels>
 	</channel-group-type>
 

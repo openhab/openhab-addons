@@ -31,28 +31,29 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThermostat;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.NAWelcome;
 import org.openhab.binding.netatmo.internal.channelhelper.AbstractChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.AirQualityChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.AirQualityExtChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.BatteryChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.BatteryExtendedChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.BatteryExtChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.CameraChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.Co2ChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.HomeCoachChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HomeEnergyChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HomeSecurityChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.HumidityChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.LocationChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.MeasuresChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.NoiseChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.PersonChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.PresenceChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.PressureChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.PressureExtendedChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.PressureExtChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RainChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RoomChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.RoomSetpointChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.SignalChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.TemperatureChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.TemperatureExtendedChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.TemperatureExtChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.Therm1ChannelHelper;
-import org.openhab.binding.netatmo.internal.channelhelper.TimestampExtendedChannelHelper;
+import org.openhab.binding.netatmo.internal.channelhelper.TimestampExtChannelHelper;
 import org.openhab.binding.netatmo.internal.channelhelper.WindChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.CameraHandler;
 import org.openhab.binding.netatmo.internal.handler.DeviceHandler;
@@ -90,39 +91,38 @@ public enum ModuleType {
 
     // Weather Features
     NAMain(MainHandler.class, RefreshPolicy.AUTO, FeatureArea.WEATHER, null, NAThing.class,
-            List.of(PressureExtendedChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
-                    TemperatureExtendedChannelHelper.class, Co2ChannelHelper.class,
-                    TimestampExtendedChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class)),
+            List.of(PressureExtChannelHelper.class, NoiseChannelHelper.class, HumidityChannelHelper.class,
+                    TemperatureExtChannelHelper.class, AirQualityChannelHelper.class, LocationChannelHelper.class,
+                    TimestampExtChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class)),
     NAModule1(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
-            List.of(HumidityChannelHelper.class, TemperatureExtendedChannelHelper.class, BatteryChannelHelper.class,
-                    MeasuresChannelHelper.class, TimestampExtendedChannelHelper.class, SignalChannelHelper.class)),
+            List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, BatteryChannelHelper.class,
+                    MeasuresChannelHelper.class, TimestampExtChannelHelper.class, SignalChannelHelper.class)),
     NAModule2(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
-            List.of(WindChannelHelper.class, BatteryChannelHelper.class, TimestampExtendedChannelHelper.class,
+            List.of(WindChannelHelper.class, BatteryChannelHelper.class, TimestampExtChannelHelper.class,
                     SignalChannelHelper.class)),
     NAModule3(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
             List.of(RainChannelHelper.class, BatteryChannelHelper.class, MeasuresChannelHelper.class,
-                    TimestampExtendedChannelHelper.class, SignalChannelHelper.class)),
+                    TimestampExtChannelHelper.class, SignalChannelHelper.class)),
     NAModule4(DeviceWithMeasureHandler.class, RefreshPolicy.PARENT, FeatureArea.WEATHER, NAMain, NAModule.class,
-            List.of(HumidityChannelHelper.class, TemperatureExtendedChannelHelper.class, Co2ChannelHelper.class,
-                    BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampExtendedChannelHelper.class,
+            List.of(HumidityChannelHelper.class, TemperatureExtChannelHelper.class, AirQualityChannelHelper.class,
+                    BatteryChannelHelper.class, MeasuresChannelHelper.class, TimestampExtChannelHelper.class,
                     SignalChannelHelper.class)),
 
     // Aircare Features
     NHC(HomeCoachHandler.class, RefreshPolicy.AUTO, FeatureArea.AIR_CARE, null, NAThing.class,
-            List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, PressureChannelHelper.class,
-                    TemperatureChannelHelper.class, Co2ChannelHelper.class, HomeCoachChannelHelper.class,
-                    TimestampExtendedChannelHelper.class, MeasuresChannelHelper.class, SignalChannelHelper.class,
-                    MeasuresChannelHelper.class)),
+            List.of(NoiseChannelHelper.class, HumidityChannelHelper.class, AirQualityExtChannelHelper.class,
+                    TemperatureChannelHelper.class, PressureChannelHelper.class, TimestampExtChannelHelper.class,
+                    SignalChannelHelper.class, MeasuresChannelHelper.class, LocationChannelHelper.class)),
 
     // Energy Features
     NAPlug(DeviceHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, NAModule.class,
             List.of(SignalChannelHelper.class)),
     NATherm1(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, NAThermostat.class,
-            List.of(Therm1ChannelHelper.class, BatteryExtendedChannelHelper.class, SignalChannelHelper.class)),
+            List.of(Therm1ChannelHelper.class, BatteryExtChannelHelper.class, SignalChannelHelper.class)),
     NARoom(RoomHandler.class, RefreshPolicy.PARENT, FeatureArea.ENERGY, NAHome, NARoom.class,
             List.of(RoomChannelHelper.class, RoomSetpointChannelHelper.class)),
     NRV(DeviceHandler.class, RefreshPolicy.CONFIG, FeatureArea.ENERGY, NAHome, NAModule.class,
-            List.of(BatteryExtendedChannelHelper.class, SignalChannelHelper.class));
+            List.of(BatteryExtChannelHelper.class, SignalChannelHelper.class));
 
     public enum RefreshPolicy {
         AUTO,
@@ -170,7 +170,7 @@ public enum ModuleType {
     public int[] getSignalLevels() {
         if (!isLogical()) {
             return (channelHelpers.contains(BatteryChannelHelper.class)
-                    || channelHelpers.contains(BatteryExtendedChannelHelper.class)) ? RADIO_SIGNAL_LEVELS
+                    || channelHelpers.contains(BatteryExtChannelHelper.class)) ? RADIO_SIGNAL_LEVELS
                             : WIFI_SIGNAL_LEVELS;
         }
         throw new IllegalArgumentException("This should not be called for module type : " + name() + ", file a bug.");

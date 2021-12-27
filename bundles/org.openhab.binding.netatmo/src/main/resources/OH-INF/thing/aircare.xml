@@ -4,12 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="health">
-		<label>Health Index</label>
-		<channels>
-			<channel id="value" typeId="health-index"/>
-		</channels>
-	</channel-group-type>
+    <channel-group-type id="airquality-extended">
+        <label>Air Quality</label>
+        <channels>
+            <channel id="co2" typeId="co2"/>
+            <channel id="health-index" typeId="health-index"/>
+        </channels>
+    </channel-group-type>
 
 	<channel-group-type id="temperature">
 		<label>Temperature</label>

@@ -21,22 +21,22 @@ import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link TemperatureExtendedChannelHelper} handles specific channels of modules measuring temperature
- * with temp trend capability
+ * The {@link PressureExtChannelHelper} handles specific behavior of modules measuring pressure
+ * with pressure trend capability
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class TemperatureExtendedChannelHelper extends TemperatureChannelHelper {
+public class PressureExtChannelHelper extends PressureChannelHelper {
 
-    public TemperatureExtendedChannelHelper() {
-        super(GROUP_TEMPERATURE_EXTENDED);
+    public PressureExtChannelHelper() {
+        super(GROUP_PRESSURE_EXTENDED);
     }
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return CHANNEL_TREND.equals(channelId) ? toStringType(dashboard.getTempTrend())
+        return channelId.equals(CHANNEL_TREND) ? toStringType(dashboard.getPressureTrend())
                 : super.internalGetDashboard(channelId, dashboard);
     }
 }

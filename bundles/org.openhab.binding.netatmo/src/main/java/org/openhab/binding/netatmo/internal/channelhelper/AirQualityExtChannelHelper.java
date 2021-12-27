@@ -13,29 +13,29 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toDateTimeType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
- * The {@link TimestampExtendedChannelHelper} handles specific behavior
- * of modules reporting measurement timestamp in dashboard
+ * The {@link AirQualityExtChannelHelper} handles specific channels of NHC thing.
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class TimestampExtendedChannelHelper extends TimestampChannelHelper {
+public class AirQualityExtChannelHelper extends AirQualityChannelHelper {
 
-    public TimestampExtendedChannelHelper() {
-        super(GROUP_EXTENDED_TIMESTAMP);
+    public AirQualityExtChannelHelper() {
+        super(GROUP_AIR_QUALITY_EXTENDED);
     }
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return CHANNEL_MEASURES_TIMESTAMP.equals(channelId) ? toDateTimeType(dashboard.getTimeUtc()) : null;
+        return CHANNEL_HEALTH_INDEX.equals(channelId) ? new DecimalType(dashboard.getHealthIdx())
+                : super.internalGetDashboard(channelId, dashboard);
     }
 }

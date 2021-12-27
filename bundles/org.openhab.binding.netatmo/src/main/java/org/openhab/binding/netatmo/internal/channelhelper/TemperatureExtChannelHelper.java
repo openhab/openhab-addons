@@ -13,29 +13,30 @@
 package org.openhab.binding.netatmo.internal.channelhelper;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toQuantityType;
+import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.toStringType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.MeasureClass;
 import org.openhab.binding.netatmo.internal.api.dto.NADashboard;
 import org.openhab.core.types.State;
 
 /**
- * The {@link Co2ChannelHelper} handles specific channels of things handling ppm measurement
+ * The {@link TemperatureExtChannelHelper} handles specific channels of modules measuring temperature
+ * with temp trend capability
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class Co2ChannelHelper extends AbstractChannelHelper {
+public class TemperatureExtChannelHelper extends TemperatureChannelHelper {
 
-    public Co2ChannelHelper() {
-        super(GROUP_CO2, MeasureClass.CO2);
+    public TemperatureExtChannelHelper() {
+        super(GROUP_TEMPERATURE_EXTENDED);
     }
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getCo2(), MeasureClass.CO2) : null;
+        return CHANNEL_TREND.equals(channelId) ? toStringType(dashboard.getTempTrend())
+                : super.internalGetDashboard(channelId, dashboard);
     }
 }

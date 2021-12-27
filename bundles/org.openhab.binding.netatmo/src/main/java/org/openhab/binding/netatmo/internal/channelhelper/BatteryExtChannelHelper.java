@@ -22,16 +22,16 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.core.types.State;
 
 /**
- * The {@link BatteryExtendedChannelHelper} handles specific channels of modules using batteries
+ * The {@link BatteryExtChannelHelper} handles specific channels of modules using batteries
  * having battery status information available on top of standard information
  *
  * @author Gaël L'hopital - Initial contribution
  *
  */
 @NonNullByDefault
-public class BatteryExtendedChannelHelper extends BatteryChannelHelper {
+public class BatteryExtChannelHelper extends BatteryChannelHelper {
 
-    public BatteryExtendedChannelHelper() {
+    public BatteryExtChannelHelper() {
         super(GROUP_BATTERY_EXTENDED);
     }
 
