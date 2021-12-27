@@ -77,7 +77,7 @@
 		<label>Rain Intensity</label>
 		<description>Precipitation intensity.</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f mm/h"/>
 	</channel-type>
 
 	<channel-type id="setpoint-duration">

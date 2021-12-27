@@ -51,13 +51,13 @@
 	<channel-group-type id="timestamp-extended">
 		<label>Timestamp</label>
 		<channels>
-			<channel id="last-seen" typeId="timestamp">
-				<label>Last Seen</label>
-				<description>Last time the module reported its presence.</description>
-			</channel>
 			<channel id="measures" typeId="timestamp">
 				<label>Measures Timestamp</label>
 				<description>Timestamp of the last measures update.</description>
+			</channel>
+			<channel id="last-seen" typeId="timestamp-advanced">
+				<label>Last Seen</label>
+				<description>Last time the module reported its presence.</description>
 			</channel>
 		</channels>
 	</channel-group-type>
