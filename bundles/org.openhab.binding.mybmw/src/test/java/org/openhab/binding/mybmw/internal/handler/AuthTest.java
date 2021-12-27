@@ -174,6 +174,9 @@ class AuthTest {
             ContentResponse vehicleResponse = vehicleRequest.send();
             logger.info(vehicleResponse.getContentAsString());
 
+            /**
+             * CHARGE STATISTICS
+             */
             MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
             chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
             chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
@@ -203,6 +206,40 @@ class AuthTest {
             logger.info("{}", chargeStatisticsResponse.getStatus());
             logger.info("{}", chargeStatisticsResponse.getReason());
             logger.info("{}", chargeStatisticsResponse.getContentAsString());
+
+            /**
+             * CHARGE SESSIONS
+             */
+            MultiMap<String> chargeSessionsParams = new MultiMap<String>();
+            chargeSessionsParams.put("vin", "WBY1Z81040V905639");
+            chargeSessionsParams.put("maxResults", "40");
+            chargeSessionsParams.put("include_date_picker", "true");
+
+            params = UrlEncoded.encode(chargeSessionsParams, StandardCharsets.UTF_8, false);
+
+            String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+                    + "/eadrax-chs/v1/charging-sessions";
+            Request chargeSessionsRequest = apiHttpClient.newRequest(chargeSessionsUrl + "?" + params);
+            logger.info("{}", chargeSessionsUrl);
+            // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
+            chargeSessionsRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
+            chargeSessionsRequest.header("accept", "application/json");
+            chargeSessionsRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
+            chargeSessionsRequest.header("accept-language", "de");
+
+            // MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
+            // chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
+            // chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
+            //
+            // params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
+            logger.info("{}", params);
+            // chargeStatisticsRequest
+            // .content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED, params, StandardCharsets.UTF_8));
+
+            ContentResponse chargeSessionsResponse = chargeSessionsRequest.send();
+            logger.info("{}", chargeSessionsResponse.getStatus());
+            logger.info("{}", chargeSessionsResponse.getReason());
+            logger.info("{}", chargeSessionsResponse.getContentAsString());
 
         } catch (Exception e) {
             logger.error("{}", e.getMessage());

@@ -101,7 +101,7 @@ public class ChargeStatisticsTest {
     private boolean testVehicle(String statusContent, int callbacksExpected,
             Optional<Map<String, State>> concreteChecks) {
         assertNotNull(statusContent);
-        cch.vchargeStatisticsallback.onResponse(statusContent);
+        cch.chargeStatisticsCallback.onResponse(statusContent);
         verify(tc, times(callbacksExpected)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
         allChannels = channelCaptor.getAllValues();
         allStates = stateCaptor.getAllValues();

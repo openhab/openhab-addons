@@ -201,18 +201,35 @@ public class MyBMWProxy {
     }
 
     /**
-     * request vehicles for all possible brands
+     * request charge statistics for electric vehicles
      *
      * @param callback
      */
-    public void requestChargeStatistics(String brand, StringResponseCallback callback) {
+    public void requestChargeStatistics(VehicleConfiguration config, StringResponseCallback callback) {
         MultiMap<String> chargeStatisticsParams = new MultiMap<String>();
-        chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
+        chargeStatisticsParams.put("vin", config.vin);
         chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
         String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                 + "/eadrax-chs/v1/charging-statistics?" + params;
-        get(chargeStatisticsUrl, null, null, brand, callback);
+        get(chargeStatisticsUrl, null, null, config.brand, callback);
+    }
+
+    /**
+     * request charge statistics for electric vehicles
+     *
+     * @param callback
+     */
+    public void requestChargeSessions(VehicleConfiguration config, StringResponseCallback callback) {
+        MultiMap<String> chargeSessionsParams = new MultiMap<String>();
+        chargeSessionsParams.put("vin", "WBY1Z81040V905639");
+        chargeSessionsParams.put("maxResults", "40");
+        chargeSessionsParams.put("include_date_picker", "true");
+        String params = UrlEncoded.encode(chargeSessionsParams, StandardCharsets.UTF_8, false);
+        String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+                + "/eadrax-chs/v1/charging-sessions?" + params;
+
+        get(chargeSessionsUrl, null, null, config.brand, callback);
     }
 
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {

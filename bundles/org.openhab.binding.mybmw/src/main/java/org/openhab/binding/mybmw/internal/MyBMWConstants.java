@@ -111,11 +111,16 @@ public class MyBMWConstants {
     public static final String CHANNEL_GROUP_REMOTE = "remote";
     public static final String CHANNEL_GROUP_CHARGE_PROFILE = "profile";
     public static final String CHANNEL_GROUP_CHARGE_STATISTICS = "stats";
+    public static final String CHANNEL_GROUP_CHARGE_SESSION = "session";
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
 
-    // Charge Statistics
+    // Charge Statistics & Sessions
     public static final String SESSIONS = "sessions";
     public static final String ENERGY = "energy";
+    public static final String TITLE = "title";
+    public static final String SUBTITLE = "subtitle";
+    public static final String ISSUE = "issue";
+    public static final String STATUS = "status";
 
     // Generic Constants for several groups
     public static final String NAME = "name";

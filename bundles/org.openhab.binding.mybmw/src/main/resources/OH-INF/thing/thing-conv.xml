@@ -20,7 +20,6 @@
 			<channel-group id="service" typeId="service-values"/>
 			<channel-group id="location" typeId="location-values"/>
 			<channel-group id="remote" typeId="remote-services"/>
-			<channel-group id="destination" typeId="destination-values"/>
 			<channel-group id="image" typeId="image-values"/>
 		</channel-groups>
 

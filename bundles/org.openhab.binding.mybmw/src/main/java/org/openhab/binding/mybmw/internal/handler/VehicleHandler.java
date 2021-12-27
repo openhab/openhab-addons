@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.VehicleConfiguration;
 import org.openhab.binding.mybmw.internal.action.MyBMWActions;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
@@ -77,7 +78,8 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     private ImageProperties imageProperties = new ImageProperties();
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
-    ChargeStatisticsCallback vchargeStatisticsallback = new ChargeStatisticsCallback();
+    ChargeStatisticsCallback chargeStatisticsCallback = new ChargeStatisticsCallback();
+    ChargeSessionsCallback chargeSessionCallback = new ChargeSessionsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
     private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
@@ -235,7 +237,8 @@ public class VehicleHandler extends VehicleChannelHandler {
             configuration.ifPresentOrElse(config -> {
                 prox.requestVehicles(config.brand, vehicleStatusCallback);
                 if (isElectric) {
-                    prox.requestChargeStatistics(config.brand, vehicleStatusCallback);
+                    prox.requestChargeStatistics(config, chargeStatisticsCallback);
+                    prox.requestChargeSessions(config, chargeSessionCallback);
                 }
                 if (!imageCache.isPresent() && !imageProperties.failLimitReached()) {
                     prox.requestImage(config, imageProperties, imageCallback);
@@ -346,9 +349,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    /**
-     * The VehicleStatus is supported by all Vehicle Types so it's used to reflect the Thing Status
-     */
     public class ChargeStatisticsCallback implements StringResponseCallback {
         @Override
         public void onResponse(@Nullable String content) {
@@ -373,6 +373,40 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
+    public class ChargeSessionsCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(@Nullable String content) {
+            if (content != null) {
+                try {
+                    ChargeSessionsContainer csc = Converter.getGson().fromJson(content, ChargeSessionsContainer.class);
+                    if (csc != null) {
+                        if (csc.chargingSessions != null) {
+                            updateSessions(csc.chargingSessions.sessions);
+                        }
+                    }
+                } catch (JsonSyntaxException jse) {
+                    logger.warn("{}", jse.getLocalizedMessage());
+                }
+            } else {
+                logger.info("Content not valid");
+            }
+        }
+
+        @Override
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+        }
+    }
+
+    /**
+     * ###### Charging Profile handling
+     */
+
+    /**
+     *
+     * @param channelUID
+     * @param command
+     */
     private void handleChargeProfileCommand(ChannelUID channelUID, Command command) {
         if (chargeProfileEdit.isEmpty()) {
             chargeProfileEdit = getChargeProfileWrapper();
@@ -461,17 +495,20 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     public Optional<ChargeProfileWrapper> getChargeProfileWrapper() {
-        // return chargeProfileCache.flatMap(cache -> {
-        // return ChargeProfileWrapper.fromJson(cache).map(wrapper -> {
-        // return wrapper;
-        // }).or(() -> {
-        // logger.debug("cannot parse charging profile: {}", cache);
-        // return Optional.empty();
-        // });
-        // }).or(() -> {
-        // logger.debug("No ChargeProfile recieved so far - cannot start editing");
-        // return Optional.empty();
-        // });
+        /*
+         * [todo]
+         * return chargeProfileCache.flatMap(cache -> {
+         * return ChargeProfileWrapper.fromJson(cache).map(wrapper -> {
+         * return wrapper;
+         * }).or(() -> {
+         * logger.debug("cannot parse charging profile: {}", cache);
+         * return Optional.empty();
+         * });
+         * }).or(() -> {
+         * logger.debug("No ChargeProfile recieved so far - cannot start editing");
+         * return Optional.empty();
+         * });
+         */
         return Optional.empty();
     }
 

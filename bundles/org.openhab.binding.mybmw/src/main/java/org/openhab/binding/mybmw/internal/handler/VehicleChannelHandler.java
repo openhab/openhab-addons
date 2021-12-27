@@ -29,6 +29,7 @@ import javax.measure.quantity.Length;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeSession;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.properties.CCM;
@@ -80,6 +81,8 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected String selectedService = Constants.UNDEF;
     protected List<CCM> checkControlList = new ArrayList<CCM>();
     protected String selectedCC = Constants.UNDEF;
+    protected List<ChargeSession> sessionList = new ArrayList<ChargeSession>();
+    protected String selectedSession = Constants.UNDEF;
 
     protected MyBMWOptionProvider optionProvider;
 
@@ -299,6 +302,55 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_SERVICE, NAME, StringType.valueOf(Converter.toTitleCase(serviceEntry.type)));
             updateChannel(CHANNEL_GROUP_SERVICE, DATE,
                     DateTimeType.valueOf(Converter.getZonedDateTime(serviceEntry.dateTime)));
+        }
+    }
+
+    protected void updateSessions(List<ChargeSession> sl) {
+        // if list is empty add "undefined" element
+        if (sl.isEmpty()) {
+            ChargeSession cs = new ChargeSession();
+            cs.title = Constants.NO_ENTRIES;
+            sl.add(cs);
+        }
+
+        // add all elements to options
+        sessionList = sl;
+        List<StateOption> serviceNameOptions = new ArrayList<>();
+        boolean isSelectedElementIn = false;
+        int index = 0;
+        for (ChargeSession session : sessionList) {
+            // create StateOption with "value = list index" and "label = human readable string"
+            serviceNameOptions.add(new StateOption(Integer.toString(index), session.title));
+            if (selectedService.equals(session.title)) {
+                isSelectedElementIn = true;
+            }
+            index++;
+        }
+        setOptions(CHANNEL_GROUP_SERVICE, NAME, serviceNameOptions);
+
+        // if current selected item isn't anymore in the list select first entry
+        if (!isSelectedElementIn) {
+            selectSession(0);
+        }
+    }
+
+    protected void selectSession(int index) {
+        if (index >= 0 && index < sessionList.size()) {
+            ChargeSession sessionEntry = sessionList.get(index);
+            selectedService = sessionEntry.title;
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, TITLE, StringType.valueOf(sessionEntry.title));
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, SUBTITLE, StringType.valueOf(sessionEntry.subtitle));
+            if (sessionEntry.energyCharged != null) {
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(sessionEntry.energyCharged));
+            } else {
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ENERGY, StringType.valueOf(Constants.UNDEF));
+            }
+            if (sessionEntry.issues != null) {
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(sessionEntry.issues));
+            } else {
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(Constants.UNDEF));
+            }
+            updateChannel(CHANNEL_GROUP_CHARGE_SESSION, STATUS, StringType.valueOf(sessionEntry.sessionStatus));
         }
     }
 
