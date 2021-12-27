@@ -567,7 +567,11 @@
     <module>org.openhab.binding.powermax</module>
         
     <module>org.openhab.binding.proteusecometer</module>
+<<<<<<< HEAD
         
+=======
+    <module>org.openhab.binding.publictransportswitzerland</module>
+>>>>>>> 1cae863569 ([publictransportswitzerland] Public Transport Switzerland Initial contribution (#8540))
     <module>org.openhab.binding.pulseaudio</module>
         
     <module>org.openhab.binding.pushbullet</module>
