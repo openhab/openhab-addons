@@ -18,5 +18,8 @@ package org.openhab.binding.mybmw.internal.dto.status;
  * @author Bernd Weymann - Initial contribution
  */
 public class CCMMessage {
-    // tbd [todo]
+    public String criticalness;// ": "nonCritical",
+    public int iconId;// ": 60197,
+    public String state;// ": "OK",
+    public String title;// ": "Engine Oil"
 }

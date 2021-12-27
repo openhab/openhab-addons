@@ -102,4 +102,6 @@ public class Constants {
     // Drive Train definitions from json
     public static final String BEV = "ELECTRIC";
     public static final String REX_EXTENSION = "(+ REX)";
+    public static final String CONV = "COMBUSTION";
+    public static final String PHEV = "PLUGIN_HYBRID";
 }

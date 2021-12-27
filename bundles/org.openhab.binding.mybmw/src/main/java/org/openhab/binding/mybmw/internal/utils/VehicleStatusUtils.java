@@ -61,8 +61,11 @@ public class VehicleStatusUtils {
             } else {
                 return VehicleType.ELECTRIC;
             }
+        } else if (Constants.PHEV.equals(driveTrain)) {
+            return VehicleType.PLUGIN_HYBRID;
+        } else if (Constants.CONV.equals(driveTrain)) {
+            return VehicleType.CONVENTIONAL;
         }
-        // [todo] definitions for PHEV and CONV missing
         return VehicleType.UNKNOWN;
     }
     /**
