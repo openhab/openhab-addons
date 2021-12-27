@@ -19,13 +19,13 @@
 			<channel id="low-battery" typeId="system.low-battery"/>
 		</channels>
 	</channel-group-type>
-	
-    <channel-group-type id="location">
-        <label>Location</label>
-        <channels>
-            <channel id="value" typeId="location"/>
-        </channels>
-    </channel-group-type>
+
+	<channel-group-type id="location">
+		<label>Location</label>
+		<channels>
+			<channel id="value" typeId="location"/>
+		</channels>
+	</channel-group-type>
 
 	<channel-group-type id="battery-extended">
 		<label>Battery</label>

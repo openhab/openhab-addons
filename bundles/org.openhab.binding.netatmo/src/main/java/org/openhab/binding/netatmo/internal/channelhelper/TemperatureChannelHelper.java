@@ -32,7 +32,7 @@ import org.openhab.core.types.State;
 public class TemperatureChannelHelper extends AbstractChannelHelper {
 
     public TemperatureChannelHelper() {
-        super(GROUP_TEMPERATURE, MeasureClass.EXTERIOR_TEMPERATURE);
+        this(GROUP_TEMPERATURE);
     }
 
     protected TemperatureChannelHelper(String groupName) {
@@ -52,19 +52,16 @@ public class TemperatureChannelHelper extends AbstractChannelHelper {
                 return toDateTimeType(dashboard.getDateMinTemp());
             case CHANNEL_MAX_TIME:
                 return toDateTimeType(dashboard.getDateMaxTemp());
-        }
-        return getDerived(dashboard.getTemperature(), dashboard.getHumidity(), channelId);
-    }
-
-    private @Nullable State getDerived(double temperature, double humidity, String channelId) {
-        switch (channelId) {
             case CHANNEL_HEAT_INDEX:
-                return toQuantityType(heatIndex(temperature, humidity), MeasureClass.HEAT_INDEX);
+                return toQuantityType(heatIndex(dashboard.getTemperature(), dashboard.getHumidity()),
+                        MeasureClass.HEAT_INDEX);
             case CHANNEL_DEWPOINT:
-                return toQuantityType(dewPoint(temperature, humidity), MeasureClass.EXTERIOR_TEMPERATURE);
+                return toQuantityType(dewPoint(dashboard.getTemperature(), dashboard.getHumidity()),
+                        MeasureClass.EXTERIOR_TEMPERATURE);
             case CHANNEL_DEWPOINT_DEP:
-                double dewPoint = dewPoint(temperature, humidity);
-                return toQuantityType(dewPointDep(temperature, dewPoint), MeasureClass.EXTERIOR_TEMPERATURE);
+                double dewPoint = dewPoint(dashboard.getTemperature(), dashboard.getHumidity());
+                return toQuantityType(dewPointDep(dashboard.getTemperature(), dewPoint),
+                        MeasureClass.EXTERIOR_TEMPERATURE);
         }
         return null;
     }

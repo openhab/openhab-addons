@@ -439,13 +439,13 @@
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	
 
-    <channel-type id="location">
-        <item-type>Location</item-type>
-        <label>Location</label>
-        <description>Location of the device</description>
-        <state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
-    </channel-type>
+
+	<channel-type id="location">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>Location of the device</description>
+		<state readOnly="true" pattern="%2$s°N,%3$s°W, %1$s m"/>
+	</channel-type>
 
 </thing:thing-descriptions>

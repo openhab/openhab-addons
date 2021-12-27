@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
 public class AirQualityChannelHelper extends AbstractChannelHelper {
 
     public AirQualityChannelHelper() {
-        super(GROUP_AIR_QUALITY, MeasureClass.CO2);
+        this(GROUP_AIR_QUALITY);
     }
 
     protected AirQualityChannelHelper(String groupName) {

@@ -38,16 +38,13 @@ public class HumidityChannelHelper extends AbstractChannelHelper {
 
     @Override
     protected @Nullable State internalGetDashboard(String channelId, NADashboard dashboard) {
-        return CHANNEL_VALUE.equals(channelId) ? toQuantityType(dashboard.getHumidity(), MeasureClass.HUMIDITY)
-                : getDerived(dashboard.getTemperature(), dashboard.getHumidity(), channelId);
-    }
-
-    private @Nullable State getDerived(double temperature, double humidity, String channelId) {
         switch (channelId) {
             case CHANNEL_HUMIDEX:
-                return new DecimalType(humidex(temperature, humidity));
+                return new DecimalType(humidex(dashboard.getTemperature(), dashboard.getHumidity()));
             case CHANNEL_HUMIDEX_SCALE:
-                return new DecimalType(humidexScale(humidex(temperature, humidity)));
+                return new DecimalType(humidexScale(humidex(dashboard.getTemperature(), dashboard.getHumidity())));
+            case CHANNEL_VALUE:
+                return toQuantityType(dashboard.getHumidity(), MeasureClass.HUMIDITY);
         }
         return null;
     }
