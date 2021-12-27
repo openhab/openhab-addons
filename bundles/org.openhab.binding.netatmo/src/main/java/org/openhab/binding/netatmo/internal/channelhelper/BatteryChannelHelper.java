@@ -43,8 +43,7 @@ public class BatteryChannelHelper extends AbstractChannelHelper {
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (naThing instanceof NAModule) {
-            NAModule module = (NAModule) naThing;
-            int percent = module.getBatteryPercent();
+            int percent = ((NAModule) naThing).getBatteryPercent();
             switch (channelId) {
                 case CHANNEL_VALUE:
                     return percent >= 0 ? new DecimalType(percent) : UnDefType.NULL;

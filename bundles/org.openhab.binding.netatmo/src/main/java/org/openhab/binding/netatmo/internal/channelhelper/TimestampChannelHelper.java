@@ -31,7 +31,7 @@ import org.openhab.core.types.State;
 public class TimestampChannelHelper extends AbstractChannelHelper {
 
     public TimestampChannelHelper() {
-        super(GROUP_TIMESTAMP);
+        this(GROUP_TIMESTAMP);
     }
 
     protected TimestampChannelHelper(String groupName) {

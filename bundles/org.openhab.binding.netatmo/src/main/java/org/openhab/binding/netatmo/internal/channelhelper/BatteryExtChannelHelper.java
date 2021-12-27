@@ -37,11 +37,8 @@ public class BatteryExtChannelHelper extends BatteryChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
-        if (naThing instanceof NAModule) {
-            NAModule module = (NAModule) naThing;
-            if (CHANNEL_BATTERY_STATUS.equals(channelId)) {
-                return toStringType(module.getBatteryState());
-            }
+        if (naThing instanceof NAModule && CHANNEL_BATTERY_STATUS.equals(channelId)) {
+            return toStringType(((NAModule) naThing).getBatteryState());
         }
         return super.internalGetProperty(channelId, naThing);
     }

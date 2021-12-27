@@ -83,7 +83,7 @@ public class DeviceWithMeasureHandler extends DeviceHandler {
                 if (channelTypeUID != null) {
                     String channelId = channelTypeUID.getId();
                     String[] elements = channelId.split("-");
-                    MeasureClass.asSet.stream().filter(mt -> mt.apiDescriptor.equals(elements[0])).findFirst()
+                    MeasureClass.AS_SET.stream().filter(mt -> mt.apiDescriptor.equals(elements[0])).findFirst()
                             .ifPresent(mt -> {
                                 try {
                                     Object result;

@@ -29,7 +29,7 @@ import org.osgi.service.component.ComponentContext;
  */
 @NonNullByDefault
 public class BindingUtils {
-    public static Map<String, Object> ComponentContextToMap(ComponentContext componentContext) {
+    public static Map<String, Object> componentContextToMap(ComponentContext componentContext) {
         Dictionary<String, Object> properties = componentContext.getProperties();
         List<String> keys = Collections.list(properties.keys());
         Map<String, Object> dictCopy = keys.stream().collect(Collectors.toMap(Function.identity(), properties::get));

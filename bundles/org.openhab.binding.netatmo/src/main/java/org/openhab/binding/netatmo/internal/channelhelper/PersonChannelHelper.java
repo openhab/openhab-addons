@@ -39,13 +39,13 @@ public class PersonChannelHelper extends AbstractChannelHelper {
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
         if (naThing instanceof NAPerson) {
-            NAPerson naPerson = (NAPerson) naThing;
+            NAPerson person = (NAPerson) naThing;
             if (CHANNEL_PERSON_AT_HOME.equals(channelId)) {
-                return OnOffType.from(!naPerson.isOutOfSight());
+                return OnOffType.from(person.atHome());
             } else if (CHANNEL_LAST_SEEN.equals(channelId)) {
-                return toDateTimeType(naPerson.getLastSeen());
+                return toDateTimeType(person.getLastSeen());
             }
-            NASnapshot avatar = naPerson.getFace();
+            NASnapshot avatar = person.getFace();
             return avatar != null ? internalGetAvatar(avatar.getUrl(), channelId) : null;
         }
         return null;

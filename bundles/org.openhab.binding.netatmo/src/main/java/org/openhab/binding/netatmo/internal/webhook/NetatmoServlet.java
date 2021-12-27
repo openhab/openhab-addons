@@ -82,7 +82,7 @@ public class NetatmoServlet extends HttpServlet {
         } catch (ServletException | NamespaceException e) {
             logger.error("Could not start Netatmo Webhook Servlet : {}", e.getMessage());
         }
-        modified(BindingUtils.ComponentContextToMap(componentContext));
+        modified(BindingUtils.componentContextToMap(componentContext));
     }
 
     @Deactivate

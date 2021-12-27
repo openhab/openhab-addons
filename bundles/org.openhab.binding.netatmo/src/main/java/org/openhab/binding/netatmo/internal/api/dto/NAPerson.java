@@ -40,8 +40,8 @@ public class NAPerson extends NAModule {
         return ModuleType.NAPerson;
     }
 
-    public boolean isOutOfSight() {
-        return outOfSight;
+    public boolean atHome() {
+        return !outOfSight;
     }
 
     public @Nullable NASnapshot getFace() {

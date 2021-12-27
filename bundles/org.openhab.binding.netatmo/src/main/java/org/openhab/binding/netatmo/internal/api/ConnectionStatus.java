@@ -22,8 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConnectionStatus {
-    public static ConnectionStatus SUCCESS = new ConnectionStatus("Connected to Netatmo API");
-    public static ConnectionStatus UNKNOWN = new ConnectionStatus("Connection to Netatmo is unknown");
+    public static final ConnectionStatus SUCCESS = new ConnectionStatus("Connected to Netatmo API");
+    public static final ConnectionStatus UNKNOWN = new ConnectionStatus("Connection to Netatmo is unknown");
 
     private final String message;
 
@@ -31,7 +31,7 @@ public class ConnectionStatus {
         this.message = message;
     }
 
-    static ConnectionStatus Failed(String message, NetatmoException e) {
+    static ConnectionStatus failed(String message, NetatmoException e) {
         return new ConnectionStatus(String.format(message, e.getMessage()));
     }
 

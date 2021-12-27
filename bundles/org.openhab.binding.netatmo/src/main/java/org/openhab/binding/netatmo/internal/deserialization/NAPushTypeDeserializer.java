@@ -35,7 +35,6 @@ public class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
     @Override
     public @Nullable NAPushType deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-
         String string = json.getAsString();
         String[] elements = string.split("-");
         if (elements.length > 1) {

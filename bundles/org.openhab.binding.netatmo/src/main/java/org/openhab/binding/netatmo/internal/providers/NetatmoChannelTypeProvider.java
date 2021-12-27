@@ -43,7 +43,7 @@ public class NetatmoChannelTypeProvider implements ChannelTypeProvider {
     private final Map<ChannelTypeUID, ChannelType> channelTypes = new ConcurrentHashMap<>();
 
     public NetatmoChannelTypeProvider() {
-        MeasureClass.asSet.forEach(measure -> {
+        MeasureClass.AS_SET.forEach(measure -> {
             measure.channels.forEach((measureChannel, channelDetails) -> {
                 ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, measureChannel);
                 StateChannelTypeBuilder channelTypeBuilder = ChannelTypeBuilder

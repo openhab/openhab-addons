@@ -131,7 +131,7 @@ public enum ModuleType {
         NONE;
     }
 
-    public static final EnumSet<ModuleType> asSet = EnumSet.allOf(ModuleType.class);
+    public static final EnumSet<ModuleType> AS_SET = EnumSet.allOf(ModuleType.class);
 
     public final List<String> groups = new LinkedList<>();
     public final List<String> extensions = new LinkedList<>();

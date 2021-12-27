@@ -93,7 +93,7 @@ public class ApiBridge {
         this.gson = netatmoGson.getGson();
         this.connectApi = new AuthenticationApi(this, configuration, scheduler);
 
-        openConnection(BindingUtils.ComponentContextToMap(componentContext));
+        openConnection(BindingUtils.componentContextToMap(componentContext));
     }
 
     @Modified
@@ -124,7 +124,7 @@ public class ApiBridge {
     }
 
     private void prepareReconnection(NetatmoException e) {
-        setConnectionStatus(ConnectionStatus.Failed("Will retry to connect Netatmo API, this call failed : %s", e));
+        setConnectionStatus(ConnectionStatus.failed("Will retry to connect Netatmo API, this call failed : %s", e));
         onAccessTokenResponse(null, List.of());
         freeConnectJob();
         connectJob = scheduler.schedule(() -> openConnection(null), configuration.reconnectInterval, TimeUnit.SECONDS);

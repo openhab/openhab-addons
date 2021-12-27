@@ -47,7 +47,7 @@ public class HomeSecurityChannelHelper extends AbstractChannelHelper {
         if (naThing instanceof NAHome) {
             NAHome home = (NAHome) naThing;
 
-            List<NAPerson> present = home.getPersons().values().stream().filter(p -> !p.isOutOfSight())
+            List<NAPerson> present = home.getPersons().values().stream().filter(p -> p.atHome())
                     .collect(Collectors.toList());
 
             persons = present.size();

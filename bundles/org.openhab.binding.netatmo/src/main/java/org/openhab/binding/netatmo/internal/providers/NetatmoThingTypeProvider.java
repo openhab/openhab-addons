@@ -65,7 +65,7 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
 
     @Override
     public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
-        return ModuleType.asSet.stream().filter(mt -> mt != ModuleType.UNKNOWN)
+        return ModuleType.AS_SET.stream().filter(mt -> mt != ModuleType.UNKNOWN)
                 .map(mt -> Optional.ofNullable(getThingType(mt.thingTypeUID, locale))).map(Optional::get)
                 .collect(Collectors.toList());
     }

@@ -35,12 +35,8 @@ public class Therm1ChannelHelper extends AbstractChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing) {
-        if (naThing instanceof NAThermostat) {
-            NAThermostat thermostat = (NAThermostat) naThing;
-            if (CHANNEL_THERM_RELAY.equals(channelId)) {
-                return thermostat.getBoilerStatus();
-            }
-        }
-        return null;
+        return (naThing instanceof NAThermostat && CHANNEL_THERM_RELAY.equals(channelId))
+                ? ((NAThermostat) naThing).getBoilerStatus()
+                : null;
     }
 }

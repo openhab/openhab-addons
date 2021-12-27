@@ -87,7 +87,7 @@ public class NetatmoConstants {
         WIND_ANGLE(new Measure(0, 360, 5, Units.DEGREE_ANGLE)),
         HUMIDITY(new Measure(0, 100, 3, Units.PERCENT), "hum", true);
 
-        public static final EnumSet<MeasureClass> asSet = EnumSet.allOf(MeasureClass.class);
+        public static final EnumSet<MeasureClass> AS_SET = EnumSet.allOf(MeasureClass.class);
 
         public final Measure measureDefinition;
         public final String apiDescriptor;
@@ -204,8 +204,8 @@ public class NetatmoConstants {
                 .toArray(Scope[]::new)),
         NONE();
 
-        public static final EnumSet<FeatureArea> asSet = EnumSet.allOf(FeatureArea.class);
-        public static final String ALL_SCOPES = asSet.stream().map(f -> f.scopes).flatMap(Set::stream)
+        public static final EnumSet<FeatureArea> AS_SET = EnumSet.allOf(FeatureArea.class);
+        public static final String ALL_SCOPES = AS_SET.stream().map(f -> f.scopes).flatMap(Set::stream)
                 .map(s -> s.name().toLowerCase()).collect(Collectors.joining(" "));
 
         public final Set<Scope> scopes;

@@ -33,7 +33,8 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 public class NASnapshot extends NAObject {
-    private static UriBuilder URI_BUILDER = UriBuilder.fromUri(URL_API).path(PATH_API).path(SUB_PATH_GETCAMERAPICTURE);
+    private static final UriBuilder URI_BUILDER = UriBuilder.fromUri(URL_API).path(PATH_API)
+            .path(SUB_PATH_GETCAMERAPICTURE);
     private final Logger logger = LoggerFactory.getLogger(NASnapshot.class);
     private @Nullable String key;
 

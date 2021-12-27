@@ -62,14 +62,14 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return ModuleType.asSet.stream().anyMatch(mt -> mt.thingTypeUID.equals(thingTypeUID));
+        return ModuleType.AS_SET.stream().anyMatch(mt -> mt.thingTypeUID.equals(thingTypeUID));
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         Bridge bridge = (Bridge) thing;
-        BaseThingHandler handler = ModuleType.asSet.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID))
+        BaseThingHandler handler = ModuleType.AS_SET.stream().filter(mt -> mt.thingTypeUID.equals(thingTypeUID))
                 .findFirst().map(mt -> buildThing(bridge, mt)).orElse(null);
         if (handler instanceof DeviceWithEventHandler) {
             ((DeviceWithEventHandler) handler).setWebHookServlet(webhookServlet);

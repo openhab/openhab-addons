@@ -62,8 +62,7 @@ public class NetatmoDiscoveryService extends AbstractDiscoveryService implements
     @Activate
     public NetatmoDiscoveryService(@Reference ApiBridge apiBridge, @Reference LocaleProvider localeProvider,
             @Reference TranslationProvider translationProvider) {
-
-        super(ModuleType.asSet.stream().filter(mt -> mt != ModuleType.UNKNOWN).map(mt -> mt.thingTypeUID)
+        super(ModuleType.AS_SET.stream().filter(mt -> mt != ModuleType.UNKNOWN).map(mt -> mt.thingTypeUID)
                 .collect(Collectors.toSet()), DISCOVER_TIMEOUT_SECONDS);
         this.apiBridge = apiBridge;
         this.localeProvider = localeProvider;
