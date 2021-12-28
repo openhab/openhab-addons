@@ -554,8 +554,14 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 
 |Group     |Channel      |Type     |read-only|Description                                                                      |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
-|relay     |             |         |         |See group relay1 for Shelly 2                                                    |
-|meter     |             |         |         |See group meter1 for Shelly 2                                                    |
+|relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
+|          |autoOn       |Number   |r/w      |Sets a timer to turn the device ON after every OFF command; in seconds           |
+|          |autoOff      |Number   |r/w      |Sets a timer to turn the device OFF after every ON command; in seconds           |
+|          |timerActive  |Switch   |r/w      |ON: An auto-on/off timer is active                                               |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Accumulated energy consumption in Watts for the full last minute                 |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart) |
 
 ### Shelly Dimmer 1 + 2 (thing-type: shellydimmer, shellydimmer2)
 
