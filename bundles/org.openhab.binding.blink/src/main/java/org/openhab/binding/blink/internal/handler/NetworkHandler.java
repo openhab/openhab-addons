@@ -59,11 +59,6 @@ public class NetworkHandler extends BaseThingHandler implements EventListener {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (getBridge() == null || getBridge().getHandler() == null) {
-            logger.warn("Cannot handle commands of blink things without a bridge: {}", thing.getUID().getAsString());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "no bridge");
-            return;
-        }
         try {
             if (CHANNEL_NETWORK_ARMED.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {

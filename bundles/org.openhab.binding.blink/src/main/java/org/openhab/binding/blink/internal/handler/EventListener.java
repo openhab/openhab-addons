@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link EventListener} interface must be implemented by all things connected to the account bridge. Its methods
  * get called whenever an account level event occurs that may affect multiple things at once, thus giving things the
@@ -19,6 +21,7 @@ package org.openhab.binding.blink.internal.handler;
  *
  * @author Sascha Volkenandt - Initial contribution
  */
+@NonNullByDefault
 public interface EventListener {
 
     void handleHomescreenUpdate();

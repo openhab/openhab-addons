@@ -127,23 +127,6 @@ class NetworkHandlerTest {
     }
 
     @Test
-    void testSetOfflineOnMissingBridge() {
-        networkHandler = new NetworkHandler(thing, httpClientFactory, gson) {
-            @Override
-            public @Nullable Bridge getBridge() {
-                return null;
-            }
-        };
-        networkHandler.initialize();
-        networkHandler.setCallback(callback);
-        ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
-        networkHandler.handleCommand(testedChannel, RefreshType.REFRESH);
-        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback).statusUpdated(eq(thing), statusCaptor.capture());
-        assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
-    }
-
-    @Test
     void testHandleArmCommandRefresh() throws IOException {
         networkHandler.initialize();
         ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");

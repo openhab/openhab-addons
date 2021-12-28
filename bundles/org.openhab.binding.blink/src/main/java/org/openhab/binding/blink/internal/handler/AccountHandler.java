@@ -221,7 +221,7 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public @Nullable BlinkHomescreen getDevices(boolean refresh) {
-        if (refresh) {
+        if (refresh || cachedHomescreen == null) {
             refreshState(false);
         }
         return cachedHomescreen;

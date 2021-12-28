@@ -241,14 +241,15 @@ public class CameraHandlerTest {
         cameraHandler.cameraService = cameraService;
         BlinkCamera camera = new BlinkCamera(123L, 234L);
         camera.thumbnail = "/full/path/to/thumbnail.jpg";
-        doReturn(camera).when(accountHandler).getCameraState(ArgumentMatchers.any(CameraConfiguration.class), eq(true));
+        doReturn(camera).when(accountHandler).getCameraState(ArgumentMatchers.any(CameraConfiguration.class),
+                eq(false));
         byte[] bytes = "expected".getBytes(StandardCharsets.UTF_8);
         RawType expected = new RawType(bytes, "image/jpeg");
         doReturn(bytes).when(cameraService).getThumbnail(ArgumentMatchers.any(BlinkAccount.class), anyString());
         cameraHandler.handleCommand(CHANNEL_CAMERA_GETTHUMBNAIL, RefreshType.REFRESH);
         CameraConfiguration handlerConfig = cameraHandler.config;
         CameraConfiguration config = (handlerConfig == null) ? new CameraConfiguration() : handlerConfig;
-        verify(accountHandler).getCameraState(config, true);
+        verify(accountHandler).getCameraState(config, false);
         verify(cameraService).getThumbnail(blinkAccount, camera.thumbnail);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(CHANNEL_CAMERA_GETTHUMBNAIL), stateCaptor.capture());

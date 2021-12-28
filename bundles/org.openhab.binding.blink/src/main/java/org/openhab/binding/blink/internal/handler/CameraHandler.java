@@ -97,16 +97,16 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
                             cmdId, this::asyncCommandFinished);
                 }
             } else if (CHANNEL_CAMERA_SETTHUMBNAIL.equals(channelUID.getId())) {
-                if (command instanceof RefreshType)
+                if (command instanceof RefreshType) {
                     updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
-                if (command == OnOffType.ON) {
+                } else if (command == OnOffType.ON) {
                     Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(), config);
                     cameraService.watchCommandStatus(scheduler, accountHandler.getBlinkAccount(), config.networkId,
                             cmdId, this::setThumbnailFinished);
                 }
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
-                    String imagePath = accountHandler.getCameraState(config, true).thumbnail;
+                    String imagePath = accountHandler.getCameraState(config, false).thumbnail;
                     lastThumbnailPath = imagePath;
                     updateState(CHANNEL_CAMERA_GETTHUMBNAIL, new RawType(
                             cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath), "image/jpeg"));

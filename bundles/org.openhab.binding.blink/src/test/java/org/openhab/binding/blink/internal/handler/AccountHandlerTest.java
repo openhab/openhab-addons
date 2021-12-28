@@ -241,6 +241,7 @@ class AccountHandlerTest extends JavaTest {
         doNothing().when(accountHandler).refreshState(anyBoolean());
         accountHandler.getDevices(true);
         verify(accountHandler, times(1)).refreshState(false);
+        accountHandler.cachedHomescreen = testBlinkHomescreen();
         accountHandler.getDevices(false);
         verify(accountHandler, times(1)).refreshState(false);
     }
