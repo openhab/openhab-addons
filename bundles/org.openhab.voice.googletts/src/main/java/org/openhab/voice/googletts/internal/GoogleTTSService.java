@@ -14,12 +14,20 @@ package org.openhab.voice.googletts.internal;
 
 import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import javax.sound.sampled.AudioFormat.Encoding;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -332,6 +340,38 @@ public class GoogleTTSService implements TTSService {
         if (audio == null) {
             throw new TTSException("Could not read from Google Cloud TTS Service");
         }
-        return new ByteArrayAudioStream(audio, requestedFormat);
+
+        // compute the real format returned by google
+        AudioFormat realAudioFormat = parseAudioFormat(audio);
+
+        return new ByteArrayAudioStream(audio, realAudioFormat);
+    }
+
+    private AudioFormat parseAudioFormat(byte[] audio) {
+        try (InputStream inputStream = new ByteArrayInputStream(audio);
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);) {
+            javax.sound.sampled.AudioFormat format = audioInputStream.getFormat();
+            String javaSoundencoding = format.getEncoding().toString();
+            String codecPCMSignedOrUnsigned;
+            if (javaSoundencoding.equals(Encoding.PCM_SIGNED.toString())) {
+                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_SIGNED;
+            } else if (javaSoundencoding.equals(Encoding.PCM_UNSIGNED.toString())) {
+                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_UNSIGNED;
+            } else if (javaSoundencoding.equals(Encoding.ULAW.toString())) {
+                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_ULAW;
+            } else if (javaSoundencoding.equals(Encoding.ALAW.toString())) {
+                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_ALAW;
+            } else {
+                codecPCMSignedOrUnsigned = null;
+            }
+            Integer bitRate = Math.round(format.getFrameRate() * format.getFrameSize()) * format.getChannels();
+            Long frequency = Float.valueOf(format.getSampleRate()).longValue();
+            return new AudioFormat(AudioFormat.CONTAINER_WAVE, codecPCMSignedOrUnsigned, format.isBigEndian(),
+                    format.getSampleSizeInBits(), bitRate, frequency);
+
+        } catch (UnsupportedAudioFileException | IOException e) {
+            // assume default format
+            return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 705600, 44100L);
+        }
     }
 }
