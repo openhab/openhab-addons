@@ -20,6 +20,9 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +47,7 @@ import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.discovery.BlinkDiscoveryService;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCamera;
+import org.openhab.binding.blink.internal.dto.BlinkEvents;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkNetwork;
 import org.openhab.binding.blink.internal.service.AccountService;
@@ -79,6 +83,8 @@ class AccountHandlerTest extends JavaTest {
 
     private static final String CLIENT_ID = "CLIENT_1234";
     private static final ThingTypeUID THING_TYPE_UID = new ThingTypeUID("blink", "account");
+    private static final OffsetDateTime UPDATED_AT = OffsetDateTime.of(2021, 12, 13, 14, 15, 16, 0, ZoneOffset.UTC);
+    private static final long EVENT_ID = 0xdeadbeef;
     @Mock
     @NonNullByDefault({})
     HttpService httpService;
@@ -122,6 +128,7 @@ class AccountHandlerTest extends JavaTest {
         account.account.client_verification_required = false;
         doReturn(account).when(accountService).login(any(), anyString(), anyBoolean());
         doReturn(CLIENT_ID).when(accountService).generateClientId();
+        doNothing().when(accountHandler).loadEvents();
         accountHandler.setCallback(callback);
         accountHandler.initialize();
         waitForAssert(() -> {
@@ -204,6 +211,7 @@ class AccountHandlerTest extends JavaTest {
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         BlinkHomescreen homescreen = testBlinkHomescreen();
         doReturn(homescreen).when(accountService).getDevices(any());
+        doReturn(testBlinkEvents()).when(accountService).getEvents(any(), any());
         accountHandler.setOnline();
         // cache set
         // noinspection ConstantConditions
@@ -227,15 +235,26 @@ class AccountHandlerTest extends JavaTest {
         return homescreen;
     }
 
+    BlinkEvents testBlinkEvents() {
+        BlinkEvents.Media media = new BlinkEvents.Media();
+        media.id = EVENT_ID;
+        media.updated_at = UPDATED_AT;
+        BlinkEvents events = new BlinkEvents();
+        events.media = List.of(media);
+        return events;
+    }
+
     @Test
-    void testRefreshStateLoadsDevices() {
+    void testRefreshStateLoadsDevicesAndEvents() {
         accountHandler.config = new AccountConfiguration();
         accountHandler.config.refreshInterval = 120;
         accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         assertThat(accountHandler.refreshStateJob, is(nullValue()));
         doNothing().when(accountHandler).loadDevices();
+        doNothing().when(accountHandler).loadEvents();
         accountHandler.refreshState(false);
         verify(accountHandler).loadDevices();
+        verify(accountHandler).loadEvents();
         assertThat(accountHandler.refreshStateJob, is(notNullValue()));
     }
 
@@ -274,6 +293,22 @@ class AccountHandlerTest extends JavaTest {
         verify(cameraHandler).handleHomescreenUpdate();
         // noinspection ConstantConditions
         assertThat(accountHandler.cachedHomescreen, is(expected));
+    }
+
+    @Test
+    void testLoadEventsCallsService() throws IOException {
+        accountHandler.blinkService = accountService;
+        accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
+        BlinkEvents events = testBlinkEvents();
+        doReturn(events).when(accountService).getEvents(any(), any());
+        accountHandler.loadEvents();
+        verify(accountService).getEvents(same(accountHandler.blinkAccount), eq(Instant.EPOCH.atOffset(ZoneOffset.UTC)));
+        assertThat(accountHandler.eventSince, is(equalTo(UPDATED_AT)));
+        assertThat(accountHandler.eventStore, hasKey(EVENT_ID));
+        events.media.get(0).deleted = true;
+        accountHandler.loadEvents();
+        verify(accountService).getEvents(same(accountHandler.blinkAccount), eq(UPDATED_AT));
+        assertThat(accountHandler.eventStore, is(anEmptyMap()));
     }
 
     @Test

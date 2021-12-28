@@ -13,6 +13,7 @@
 package org.openhab.binding.blink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.blink.internal.dto.BlinkEvents;
 
 /**
  * The {@link EventListener} interface must be implemented by all things connected to the account bridge. Its methods
@@ -25,4 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface EventListener {
 
     void handleHomescreenUpdate();
+
+    default void handleEvent(BlinkEvents.Media event) {
+    }
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.blink.internal;
 
 import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,6 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 
 /**
  * The {@link BlinkHandlerFactory} is responsible for creating things and thing
@@ -60,7 +64,7 @@ public class BlinkHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public BlinkHandlerFactory(@Reference HttpService httpService, @Reference HttpClientFactory httpClientFactory,
             @Reference NetworkAddressService networkAddressService) {
-        this.gson = new Gson();
+        this.gson = createGson();
         this.httpService = httpService;
         this.httpClientFactory = httpClientFactory;
         this.networkAddressService = networkAddressService;
@@ -90,5 +94,11 @@ public class BlinkHandlerFactory extends BaseThingHandlerFactory {
             logger.error("ThingHandler not found for {}", thingTypeUID);
         }
         return null;
+    }
+
+    private static Gson createGson() {
+        JsonDeserializer<OffsetDateTime> offsetDateTimeJsonDeserializer = (json, type, context) -> OffsetDateTime
+                .parse(json.getAsString(), DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        return new GsonBuilder().registerTypeAdapter(OffsetDateTime.class, offsetDateTimeJsonDeserializer).create();
     }
 }

@@ -13,13 +13,18 @@
 package org.openhab.binding.blink.internal.handler;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,6 +34,7 @@ import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.discovery.BlinkDiscoveryService;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 import org.openhab.binding.blink.internal.dto.BlinkCamera;
+import org.openhab.binding.blink.internal.dto.BlinkEvents;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkNetwork;
 import org.openhab.binding.blink.internal.service.AccountService;
@@ -78,6 +84,8 @@ public class AccountHandler extends BaseBridgeHandler {
     BlinkAccount blinkAccount;
     @Nullable
     BlinkHomescreen cachedHomescreen;
+    OffsetDateTime eventSince = Instant.EPOCH.atOffset(ZoneOffset.UTC);
+    final Map<Long, BlinkEvents.Media> eventStore = new ConcurrentHashMap<>();
     @Nullable
     ScheduledFuture<?> refreshStateJob;
     private final Object refreshStateMonitor = new Object();
@@ -191,6 +199,8 @@ public class AccountHandler extends BaseBridgeHandler {
         logger.error("Blink Account is going offline after communication error", cause);
         blinkAccount = null;
         cachedHomescreen = null;
+        eventSince = Instant.EPOCH.atOffset(ZoneOffset.UTC);
+        eventStore.clear();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getMessage());
     }
 
@@ -224,6 +234,7 @@ public class AccountHandler extends BaseBridgeHandler {
             }
             if (ensureBlinkAccount()) {
                 loadDevices();
+                loadEvents();
             }
             refreshStateJob = scheduler.schedule(() -> refreshState(true), config.refreshInterval, TimeUnit.SECONDS);
         }
@@ -240,9 +251,29 @@ public class AccountHandler extends BaseBridgeHandler {
         logger.debug("Loading devices from Blink API");
         try {
             cachedHomescreen = blinkService.getDevices(blinkAccount);
-            fireHomescreenUpdate();
+            fireEvent(EventListener::handleHomescreenUpdate);
         } catch (IOException e) {
             setOffline(e);
+        }
+    }
+
+    void loadEvents() {
+        logger.debug("Loading events from Blink API");
+        try {
+            BlinkEvents events = blinkService.getEvents(blinkAccount, eventSince);
+            for (BlinkEvents.Media media : events.media) {
+                if (media.deleted) {
+                    eventStore.remove(media.id);
+                } else {
+                    eventStore.put(media.id, media);
+                }
+                if (eventSince.isBefore(media.updated_at)) {
+                    eventSince = media.updated_at;
+                }
+                fireEvent(handler -> handler.handleEvent(media));
+            }
+        } catch (IOException e) {
+            logger.error("Error retrieving events from Blink API", e);
         }
     }
 
@@ -325,8 +356,8 @@ public class AccountHandler extends BaseBridgeHandler {
         return OnOffType.from(getNetworkState(networkId, refreshCache).armed);
     }
 
-    private void fireHomescreenUpdate() {
+    private void fireEvent(Consumer<EventListener> handler) {
         getThing().getThings().stream().map(Thing::getHandler).filter(Objects::nonNull).map(EventListener.class::cast)
-                .forEach(EventListener::handleHomescreenUpdate);
+                .forEach(handler);
     }
 }

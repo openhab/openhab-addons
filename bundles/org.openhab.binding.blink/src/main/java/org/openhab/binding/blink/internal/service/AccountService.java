@@ -13,6 +13,8 @@
 package org.openhab.binding.blink.internal.service;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -24,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.blink.internal.config.AccountConfiguration;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
+import org.openhab.binding.blink.internal.dto.BlinkEvents;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.dto.BlinkValidation;
 
@@ -94,6 +97,15 @@ public class AccountService extends BaseBlinkApiService {
             throw new IllegalArgumentException("Cannot call Blink API without account");
         String uri = "/api/v3/accounts/" + account.account.account_id + "/homescreen";
         return apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token, null, BlinkHomescreen.class);
+    }
+
+    public BlinkEvents getEvents(@Nullable BlinkAccount account, OffsetDateTime since) throws IOException {
+        if (account == null || account.account == null) {
+            throw new IllegalArgumentException("Cannot call Blink API without account");
+        }
+        String uri = "/api/v1/accounts/" + account.account.account_id + "/media/changed";
+        Map<String, String> params = Map.of("since", since.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+        return apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token, params, BlinkEvents.class);
     }
 
     /**
