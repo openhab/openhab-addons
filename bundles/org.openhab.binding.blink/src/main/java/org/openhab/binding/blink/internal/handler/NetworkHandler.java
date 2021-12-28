@@ -74,7 +74,7 @@ public class NetworkHandler extends BaseThingHandler implements EventListener {
                 }
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            accountHandler.setOffline(e);
         }
     }
 
@@ -99,7 +99,7 @@ public class NetworkHandler extends BaseThingHandler implements EventListener {
         try {
             updateState(CHANNEL_NETWORK_ARMED, accountHandler.getNetworkArmed(String.valueOf(config.networkId), false));
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            accountHandler.setOffline(e);
         }
     }
 

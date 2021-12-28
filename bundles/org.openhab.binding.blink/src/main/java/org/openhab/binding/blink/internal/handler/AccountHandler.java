@@ -71,12 +71,11 @@ public class AccountHandler extends BaseBridgeHandler {
     AccountService blinkService;
     private final HttpService httpService;
     private final NetworkAddressService networkAddressService;
+    private String generatedClientId = "";
     @Nullable
     AccountVerificationServlet accountServlet;
     @Nullable
     BlinkAccount blinkAccount;
-    @Nullable
-    ScheduledFuture<?> refreshTokenJob;
     @Nullable
     BlinkHomescreen cachedHomescreen;
     @Nullable
@@ -130,6 +129,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 start2FA = true;
                 properties.put(GENERATED_CLIENT_ID, generatedClientId);
             }
+            this.generatedClientId = generatedClientId;
             try {
                 // call login api
                 blinkAccount = blinkService.login(config, generatedClientId, start2FA);
@@ -173,10 +173,6 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     void cleanup() {
-        if (refreshTokenJob != null) {
-            refreshTokenJob.cancel(true);
-            refreshTokenJob = null;
-        }
         synchronized (refreshStateMonitor) {
             if (refreshStateJob != null) {
                 refreshStateJob.cancel(true);
@@ -187,21 +183,32 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public void setOnline() {
-        if (refreshTokenJob == null) {
-            refreshTokenJob = scheduler.scheduleWithFixedDelay(this::refreshToken, 12, 12, TimeUnit.HOURS);
-        }
         refreshState(false);
         updateStatus(ThingStatus.ONLINE);
     }
 
-    void refreshToken() {
-        Map<String, String> properties = editProperties();
+    public void setOffline(Throwable cause) {
+        logger.error("Blink Account is going offline after communication error", cause);
+        blinkAccount = null;
+        cachedHomescreen = null;
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getMessage());
+    }
+
+    boolean ensureBlinkAccount() {
+        if (blinkAccount != null) {
+            return true;
+        }
         try {
-            blinkAccount = blinkService.login(config, blinkAccount.generatedClientId, false);
+            Map<String, String> properties = editProperties();
+            blinkAccount = blinkService.login(config, generatedClientId, false);
             properties.putAll(blinkAccount.toAccountProperties());
             updateProperties(properties);
+            updateStatus(ThingStatus.ONLINE);
+            return true;
         } catch (IOException e) {
+            // not calling setOffline since we're already offline
             logger.error("Could not update blink security token.", e);
+            return false;
         }
     }
 
@@ -215,7 +222,9 @@ public class AccountHandler extends BaseBridgeHandler {
             if (!scheduled && refreshStateJob != null) {
                 refreshStateJob.cancel(true);
             }
-            loadDevices();
+            if (ensureBlinkAccount()) {
+                loadDevices();
+            }
             refreshStateJob = scheduler.schedule(() -> refreshState(true), config.refreshInterval, TimeUnit.SECONDS);
         }
     }
@@ -233,8 +242,7 @@ public class AccountHandler extends BaseBridgeHandler {
             cachedHomescreen = blinkService.getDevices(blinkAccount);
             fireHomescreenUpdate();
         } catch (IOException e) {
-            logger.error("Error retrieving devices from Blink API", e);
-            cachedHomescreen = null;
+            setOffline(e);
         }
     }
 
@@ -244,6 +252,10 @@ public class AccountHandler extends BaseBridgeHandler {
 
     public final AccountConfiguration getConfiguration() {
         return this.config;
+    }
+
+    public final String getGeneratedClientId() {
+        return generatedClientId;
     }
 
     BlinkCamera getCameraState(CameraConfiguration camera, boolean refresh) throws IOException {

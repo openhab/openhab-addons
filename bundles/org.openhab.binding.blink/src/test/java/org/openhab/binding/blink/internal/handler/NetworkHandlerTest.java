@@ -163,10 +163,7 @@ class NetworkHandlerTest {
         networkHandler.networkService = networkService;
         ChannelUID testedChannel = new ChannelUID(new ThingUID(THING_TYPE_UID, Long.toString(NETWORK_ID)), "armed");
         networkHandler.handleCommand(testedChannel, OnOffType.OFF);
-        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(networkService).arm(accountHandler.getBlinkAccount(), Long.toString(NETWORK_ID), false);
-        verify(callback, atLeast(1)).statusUpdated(eq(thing), statusCaptor.capture());
-        assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
+        verify(accountHandler).setOffline(any(IOException.class));
     }
 
     @Test
@@ -189,10 +186,8 @@ class NetworkHandlerTest {
     void testHandleHomescreenUpdateOnException() throws IOException {
         networkHandler.initialize();
         OnOffType networkState = OnOffType.ON;
-        doThrow(new IOException()).when(accountHandler).getNetworkArmed(any(), anyBoolean());
+        doThrow(IOException.class).when(accountHandler).getNetworkArmed(any(), anyBoolean());
         networkHandler.handleHomescreenUpdate();
-        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback, atLeastOnce()).statusUpdated(same(thing), statusCaptor.capture());
-        assertThat(statusCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        verify(accountHandler).setOffline(any(IOException.class));
     }
 }

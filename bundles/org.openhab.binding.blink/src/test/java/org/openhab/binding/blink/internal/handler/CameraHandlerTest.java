@@ -144,9 +144,8 @@ public class CameraHandlerTest {
         cameraHandler.accountHandler = accountHandler;
         doThrow(IOException.class).when(accountHandler).getTemperature(any());
         cameraHandler.handleCommand(CHANNEL_CAMERA_TEMPERATURE, RefreshType.REFRESH);
-        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback, atLeastOnce()).statusUpdated(eq(thing), statusCaptor.capture());
-        assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
+        verify(accountHandler).setOffline(any(IOException.class));
+        assertThat(cameraHandler.lastThumbnailPath, is(emptyString()));
     }
 
     @Test
@@ -291,10 +290,9 @@ public class CameraHandlerTest {
     @Test
     void testHandleHomescreenUpdateOnException() throws IOException {
         cameraHandler.cameraService = cameraService;
-        doThrow(new IOException()).when(accountHandler).getTemperature(any());
+        doThrow(IOException.class).when(accountHandler).getTemperature(any());
         cameraHandler.handleHomescreenUpdate();
-        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
-        verify(callback, atLeastOnce()).statusUpdated(same(thing), statusCaptor.capture());
-        assertThat(statusCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        verify(accountHandler).setOffline(any(IOException.class));
+        assertThat(cameraHandler.lastThumbnailPath, is(emptyString()));
     }
 }

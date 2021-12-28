@@ -26,7 +26,6 @@ public class BlinkAccount {
 
     public Account account;
     public Auth auth;
-    public String generatedClientId;
 
     public static class Auth {
         public String token;
@@ -54,8 +53,7 @@ public class BlinkAccount {
 
     @Override
     public String toString() {
-        return "BlinkAccount{" + "account=" + account + ", auth=" + auth + ", generatedClientId='" + generatedClientId
-                + '\'' + '}';
+        return "BlinkAccount{" + "account=" + account + ", auth=" + auth + '}';
     }
 
     public Map<String, String> toAccountProperties() {

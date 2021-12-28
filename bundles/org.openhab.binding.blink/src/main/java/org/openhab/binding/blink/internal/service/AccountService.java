@@ -64,7 +64,6 @@ public class AccountService extends BaseBlinkApiService {
         BlinkAccount login = apiRequest("prod", uri, HttpMethod.POST, null, params, BlinkAccount.class);
         if (login.account == null || login.auth == null)
             throw new IOException("Did not receive valid account or token from API.");
-        login.generatedClientId = generatedClientId;
         return login;
     }
 

@@ -106,17 +106,6 @@ class AccountServiceTest {
     }
 
     @Test
-    void testLoginResponseHasGeneratedClientId() throws IOException {
-        String generatedClientId = "dummy_client";
-        AccountConfiguration config = testAccountConfiguration();
-        BlinkAccount account = BlinkTestUtil.testBlinkAccount();
-        doReturn(account).when(accountService).apiRequest(anyString(), anyString(),
-                ArgumentMatchers.any(HttpMethod.class), isNull(), anyMap(), eq(BlinkAccount.class));
-        BlinkAccount resultAccount = accountService.login(config, generatedClientId, false);
-        assertThat(resultAccount.generatedClientId, is(generatedClientId));
-    }
-
-    @Test
     void testExceptionOnMissingLoginFields() throws IOException {
         AccountConfiguration config = testAccountConfiguration();
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();

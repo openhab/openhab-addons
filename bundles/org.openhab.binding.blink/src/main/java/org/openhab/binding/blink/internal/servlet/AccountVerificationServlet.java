@@ -94,7 +94,7 @@ public class AccountVerificationServlet extends HttpServlet {
         @Nullable
         BlinkAccount blinkAccount = accountHandler.getBlinkAccount();
         if (request.getParameter("resend") != null && blinkAccount != null) {
-            blinkService.login(accountHandler.getConfiguration(), blinkAccount.generatedClientId, true);
+            blinkService.login(accountHandler.getConfiguration(), accountHandler.getGeneratedClientId(), true);
         }
         response.addHeader("content-type", "text/html;charset=UTF-8");
         try {

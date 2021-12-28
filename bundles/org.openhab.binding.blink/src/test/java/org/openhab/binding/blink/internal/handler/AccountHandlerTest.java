@@ -121,7 +121,7 @@ class AccountHandlerTest extends JavaTest {
         BlinkAccount account = BlinkTestUtil.testBlinkAccount();
         account.account.client_verification_required = false;
         doReturn(account).when(accountService).login(any(), anyString(), anyBoolean());
-        doCallRealMethod().when(accountService).generateClientId();
+        doReturn(CLIENT_ID).when(accountService).generateClientId();
         accountHandler.setCallback(callback);
         accountHandler.initialize();
         waitForAssert(() -> {
@@ -130,6 +130,7 @@ class AccountHandlerTest extends JavaTest {
             ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
             verify(callback, atLeastOnce()).statusUpdated(eq(bridge), statusCaptor.capture());
             assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));
+            assertThat(accountHandler.getGeneratedClientId(), is(equalTo(CLIENT_ID)));
         });
     }
 
@@ -141,7 +142,7 @@ class AccountHandlerTest extends JavaTest {
             account.account.client_verification_required = invocation.getArgument(2);
             return account;
         }).when(accountService).login(any(), anyString(), anyBoolean());
-        doCallRealMethod().when(accountService).generateClientId();
+        doReturn(CLIENT_ID).when(accountService).generateClientId();
         accountHandler.setCallback(callback);
         accountHandler.initialize();
         waitForAssert(() -> {
@@ -152,6 +153,7 @@ class AccountHandlerTest extends JavaTest {
                 verify(callback, atLeastOnce()).statusUpdated(eq(bridge), statusCaptor.capture());
                 assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
                 assertThat(statusCaptor.getValue().getStatusDetail(), is(ThingStatusDetail.CONFIGURATION_PENDING));
+                assertThat(accountHandler.getGeneratedClientId(), is(equalTo(CLIENT_ID)));
             } catch (IOException e) {
                 fail(e.getMessage());
             }
@@ -173,6 +175,7 @@ class AccountHandlerTest extends JavaTest {
             try {
                 verify(accountService, never()).generateClientId();
                 verify(accountService).login(eq(accountHandler.config), anyString(), eq(false));
+                assertThat(accountHandler.getGeneratedClientId(), is(equalTo(CLIENT_ID)));
             } catch (IOException e) {
                 fail(e.getMessage());
             }
@@ -195,10 +198,10 @@ class AccountHandlerTest extends JavaTest {
     @Test
     void testSetOnlineCacheCreatedAndStatusOnline() throws NoSuchFieldException, IllegalAccessException, IOException {
         accountHandler.setCallback(callback);
-        AccountConfiguration config = new AccountConfiguration();
-        accountHandler.config = config;
+        accountHandler.config = new AccountConfiguration();
         accountHandler.config.refreshInterval = 30;
         accountHandler.blinkService = accountService;
+        accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         BlinkHomescreen homescreen = testBlinkHomescreen();
         doReturn(homescreen).when(accountService).getDevices(any());
         accountHandler.setOnline();
@@ -207,7 +210,6 @@ class AccountHandlerTest extends JavaTest {
         assertThat(accountHandler.cachedHomescreen, is(sameInstance(homescreen)));
         // jobs created
         assertThat(accountHandler.refreshStateJob, is(notNullValue()));
-        assertThat(accountHandler.refreshTokenJob, is(notNullValue()));
         // cache expiry
         long diffInterval = accountHandler.config.refreshInterval
                 - accountHandler.refreshStateJob.getDelay(TimeUnit.SECONDS);
@@ -229,6 +231,7 @@ class AccountHandlerTest extends JavaTest {
     void testRefreshStateLoadsDevices() {
         accountHandler.config = new AccountConfiguration();
         accountHandler.config.refreshInterval = 120;
+        accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
         assertThat(accountHandler.refreshStateJob, is(nullValue()));
         doNothing().when(accountHandler).loadDevices();
         accountHandler.refreshState(false);

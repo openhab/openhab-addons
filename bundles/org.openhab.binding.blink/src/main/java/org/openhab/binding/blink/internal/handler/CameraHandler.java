@@ -113,7 +113,8 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
                 }
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            lastThumbnailPath = "";
+            accountHandler.setOffline(e);
         }
     }
 
@@ -169,7 +170,8 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
                         cameraService.getThumbnail(accountHandler.getBlinkAccount(), imagePath), "image/jpeg"));
             }
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            lastThumbnailPath = "";
+            accountHandler.setOffline(e);
         }
     }
 
