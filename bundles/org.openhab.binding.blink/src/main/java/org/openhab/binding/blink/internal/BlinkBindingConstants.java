@@ -35,6 +35,7 @@ public class BlinkBindingConstants {
     public static final String CHANNEL_CAMERA_TEMPERATURE = "temperature";
     public static final String CHANNEL_CAMERA_SETTHUMBNAIL = "setThumbnail";
     public static final String CHANNEL_CAMERA_GETTHUMBNAIL = "getThumbnail";
+    public static final String CHANNEL_CAMERA_MOTIONTRIGGERED = "motionTriggered";
     public static final String CHANNEL_NETWORK_ARMED = "armed";
     // List of property names
     public static final String PROPERTY_CAMERA_ID = "cameraId";

@@ -45,6 +45,7 @@
 				<autoUpdatePolicy>veto</autoUpdatePolicy>
 			</channel>
 			<channel id="getThumbnail" typeId="thumbnail"/>
+			<channel id="motionTriggered" typeId="motionTriggered"/>
 		</channels>
 
 		<properties>
@@ -138,6 +139,11 @@
 		<tags>
 			<tag>Switchable</tag>
 		</tags>
+	</channel-type>
+
+	<channel-type id="motionTriggered">
+		<kind>trigger</kind>
+		<label>Motion triggered</label>
 	</channel-type>
 
 </thing:thing-descriptions>

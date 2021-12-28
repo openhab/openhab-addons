@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
+import org.openhab.binding.blink.internal.dto.BlinkEvents;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.binding.blink.internal.servlet.ThumbnailServlet;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -172,6 +173,14 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
         } catch (IOException e) {
             lastThumbnailPath = "";
             accountHandler.setOffline(e);
+        }
+    }
+
+    @Override
+    public void handleEvent(BlinkEvents.Media event) {
+        if (event.isNewEvent() && event.network_id == config.networkId && event.device_id == config.cameraId) {
+            logger.debug("Triggering motion event for camera {}", config.cameraId);
+            triggerChannel(CHANNEL_CAMERA_MOTIONDETECTION);
         }
     }
 

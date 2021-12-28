@@ -35,5 +35,17 @@ public class BlinkEvents {
         public String thumbnail;
         public long device_id;
         public long network_id;
+
+        public boolean isDeletedEvent() {
+            return deleted;
+        }
+
+        public boolean isUpdatedEvent() {
+            return !created_at.isEqual(updated_at);
+        }
+
+        public boolean isNewEvent() {
+            return !isDeletedEvent() && !isUpdatedEvent();
+        }
     }
 }
