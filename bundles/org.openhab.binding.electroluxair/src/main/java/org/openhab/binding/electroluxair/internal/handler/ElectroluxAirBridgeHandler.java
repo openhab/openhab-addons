@@ -14,7 +14,6 @@ package org.openhab.binding.electroluxair.internal.handler;
 
 import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.THING_TYPE_BRIDGE;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -56,7 +55,7 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
-    private static int REFRESH_SEC = 300;
+    private int REFRESH_SEC = 300;
 
     private final Gson gson;
     private final HttpClient httpClient;
@@ -75,30 +74,26 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         ElectroluxAirBridgeConfiguration config = getConfigAs(ElectroluxAirBridgeConfiguration.class);
 
-        try {
-            ElectroluxDeltaAPI electroluxDeltaAPI = new ElectroluxDeltaAPI(config, gson, httpClient);
-            REFRESH_SEC = config.refresh;
+        ElectroluxDeltaAPI electroluxDeltaAPI = new ElectroluxDeltaAPI(config, gson, httpClient);
+        REFRESH_SEC = config.refresh;
 
-            if (config.username == null || config.password == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Configuration of username, password is mandatory");
-            } else if (REFRESH_SEC < 0) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Refresh time cannot be negative!");
-            } else {
-                try {
-                    this.api = electroluxDeltaAPI;
-                    scheduler.execute(() -> {
-                        updateStatus(ThingStatus.UNKNOWN);
-                        startAutomaticRefresh();
+        if (config.username == null || config.password == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configuration of username, password is mandatory");
+        } else if (REFRESH_SEC < 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Refresh time cannot be negative!");
+        } else {
+            try {
+                this.api = electroluxDeltaAPI;
+                scheduler.execute(() -> {
+                    updateStatus(ThingStatus.UNKNOWN);
+                    startAutomaticRefresh();
 
-                    });
-                } catch (RuntimeException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
+                });
+            } catch (RuntimeException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-        } catch (IOException e) {
-            logger.warn("Exception caught. {}", e.getMessage());
         }
     }
 

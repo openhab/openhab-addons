@@ -4,22 +4,24 @@ This is an openHAB binding for the Pure A9 Air Purifier, by Electrolux.
 
 This binding uses the Electrolux Delta REST API.
 
-![Electrolux Pure A9](doc/electrolux_pure_a9.webp)
+![Electrolux Pure A9](doc/electrolux_pure_a9.png)
 
 ## Supported Things
 
-This binding supports the following types:
+This binding supports the following thing types:
 
-- Bridge
-- Electrolux Pure A9
+- Bridge - Implements the API that is used to communicate with the Air Purifier
 
-If you define the bridge in a things-file the bridge type id is defined as `bridge`, e.g.:
+```
+Bridge electroluxair:api:myAPI
+```
 
-`Bridge electroluxair:api:myAPI "Electrolux Delta API" [username="user@password.com", password="12345", refresh="300"`
+- Electrolux Pure A9 - The Pure A9 Air Purifier
 
-If you define the thing in a things-file the thing type id is defined as:
+```
+Thing electroluxpurea9 myElectroluxPureA9`
+```
 
-`Thing electroluxpurea9 MyElectroluxPureA9  "Electrolux Pure A9"    [ deviceId="123456789" ]`
 
 ## Discovery
 
@@ -27,6 +29,9 @@ After the configuration of the Bridge, your Electrolux Pure A9 device will be au
 
 
 ### Configuration Options
+
+Only the bridge require manual configuration. The Electrolux Pure A9 thing can be added by hand, or you can let the discovery mechanism automatically find it.
+
 
 #### Bridge
 
@@ -36,11 +41,6 @@ After the configuration of the Bridge, your Electrolux Pure A9 device will be au
 | password  | The password used to connect to the Electrolux Wellbeing app | String | NA       | yes      |
 | refresh   | Specifies the refresh interval in second                     | Number | 600      | yes      |
 
-## Thing Configuration
-
-Only the bridge require manual configuration. The thing can be added by hand, or you can let the discovery mechanism automatically find your Electrolux Pure A9 thing.
-
-### Configuration Options
 
 #### Electrolux Pure A9
 
@@ -50,14 +50,6 @@ Only the bridge require manual configuration. The thing can be added by hand, or
 
 
 ## Channels
-
-### Bridge
-
-The following channels are supported:
-
-| Channel Type ID | Item Type | Description                                                                                     |
-|-----------------|-----------|-------------------------------------------------------------------------------------------------|
-| status          | String    | This channel can be used to trigger an instant refresh by sending a RefreshType.REFRESH command.|
 
 ### Electrolux Pure A9
 
@@ -76,7 +68,7 @@ The following channels are supported:
 | filterLife                  | Number:Dimensionless  | This channel reports the remaining filter life in %.                        |
 | ionizer                     | Switch                | This channel sets and reports the status of the ionizer function (On/Off).  |
 | doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                    |
-| workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.|
+| workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)|
 
 
 

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.electroluxair.internal.api;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -58,8 +57,7 @@ public class ElectroluxDeltaAPI {
     private final ElectroluxAirBridgeConfiguration configuration;
     private String authToken = "";
 
-    public ElectroluxDeltaAPI(ElectroluxAirBridgeConfiguration configuration, Gson gson, HttpClient httpClient)
-            throws IOException {
+    public ElectroluxDeltaAPI(ElectroluxAirBridgeConfiguration configuration, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.configuration = configuration;
         this.httpClient = httpClient;
