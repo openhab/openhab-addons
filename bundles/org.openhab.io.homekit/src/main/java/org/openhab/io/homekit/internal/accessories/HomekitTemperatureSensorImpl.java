@@ -45,7 +45,8 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
     public CompletableFuture<Double> getCurrentTemperature() {
         final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
                 DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
+        return CompletableFuture
+                .completedFuture(state != null ? convertToCelsius(state.doubleValue()) : getMinCurrentTemperature());
     }
 
     @Override
