@@ -131,7 +131,7 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
             logger.debug("Discovered Miele@home gateway with IP address {} and interface IP address {}", ipAddress,
                     interfaceIpAddress);
         } catch (IOException e) {
-            logger.error("An exception occurred while connecting to the Miele Gateway: '{}'", e.getMessage());
+            logger.warn("An exception occurred while connecting to the Miele Gateway: '{}'", e.getMessage());
             return null;
         }
 
