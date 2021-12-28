@@ -20,7 +20,7 @@
 				<label>Password</label>
 				<description>Blink Account Password</description>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" unit="s" min="60">
+			<parameter name="refreshInterval" type="integer" unit="s" min="30">
 				<default>120</default>
 				<label>Refresh Interval</label>
 				<description>Interval the device states linked to the account are polled in sec.</description>
