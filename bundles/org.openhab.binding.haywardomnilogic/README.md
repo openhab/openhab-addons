@@ -88,9 +88,11 @@ Hayward OmniLogic Connection Parameters:
 |---------------------|----------------------|------------------------|:----------:|
 | filterEnable        | Switch               | Filter enable          |     R/W    |
 | filterValvePosition | String               | Filter valve position  |      R     |
-| filterSpeed         | Number:Dimensionless | Filter speed in %      |     R/W    |
+| filterSpeedPercent  | Number:Dimensionless | Filter speed in %      |     R/W    |
+| filterSpeedRpm      | Number               | Filter speed in RPM    |     R/W    |
+| filterSpeedSelect   | String               | Filter speed presets   |     R/W    |
 | filterState         | String               | Filter state           |      R     |
-| filterLastSpeed     | Number:Dimensionless | Filter last speed in % |      R     |
+| filterLastSpeed     | Number:Dimensionless | Filter last speed      |      R     |
 
 ### Heater Channels
 
@@ -104,9 +106,11 @@ Hayward OmniLogic Connection Parameters:
 | Channel Type ID | Item Type            | Description          | Read Write |
 |-----------------|----------------------|----------------------|:----------:|
 | pumpEnable      | Switch               | Pump enable          |     R/W    |
-| pumpSpeed       | Number:Dimensionless | Pump speed in %      |     R/W    |
+| pumpSpeedPercent| Number:Dimensionless | Pump speed in %      |     R/W    |
+| pumpSpeedRpm    | Number               | Pump speed in RPM    |     R/W    |
+| pumpSpeedSelect | String               | Pump speed presets   |     R/W    |
 | pumpState       | String               | Pump state           |      R     |
-| pumpLastSpeed   | Number:Dimensionless | Pump last speed in % |      R     |
+| pumpLastSpeed   | Number:Dimensionless | Pump last speed      |      R     |
 
 ### Relay Channels
 
@@ -118,7 +122,7 @@ Hayward OmniLogic Connection Parameters:
 
 | Channel Type ID       | Item Type          | Description             | Read Write |
 |-----------------------|--------------------|-------------------------|:----------:|
-| heaterEnable          | Number             | Heater enable           |      R     |
+| heaterEnable          | Switch             | Heater enable           |      R     |
 | heaterCurrentSetpoint | Number:Temperature | Heater Current Setpoint |     R/W    |
 
 ## Full Example
@@ -126,49 +130,3 @@ Hayward OmniLogic Connection Parameters:
 After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.
 All pool items can be automatically discovered by scanning the bridge.  
 Goto the inbox and add the things.
-
-### demo.items:
-
-```text
-Group gPool "Pool" ["Location"]
-
-Group gHaywardChlorinator "Hayward Chlorinator" (gPool) ["Equipment"] 
-Switch               HaywardChlorinator_Power            "Power"                (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorEnable" }           
-String               HaywardChlorinator_OperatingMode    "Operating Mode"       (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorOperatingMode" }    
-Number:Dimensionless HaywardChlorinator_SaltOutput       "Salt Output (%)"      (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorTimedPercent" }     
-String               HaywardChlorinator_scMode           "scMode"               (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorScMode" }           
-Number               HaywardChlorinator_ChlorinatorError "Chlorinator Error"    (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorError" }            
-String               HaywardChlorinator_ChlorinatorAlert "Chlorinator Alert"    (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorAlert" }            
-Number:Dimensionless HaywardChlorinator_AverageSaltLevel "Average Salt Level"   (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorAvgSaltLevel" }     
-Number:Dimensionless HaywardChlorinator_InstantSaltLevel "Instant Salt Level"   (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorInstantSaltLevel" } 
-Number               HaywardChlorinator_Status           "Status"               (gHaywardChlorinator) ["Point"]  { channel="haywardomnilogic:chlorinator:3766402f00:34:chlorStatus" }           
-
-
-Group gHaywardBackyard "Hayward Backyard" (gPool) ["Equipment"]
-Number:Temperature  HaywardBackyard_AirTemp        "Air Temp"                   (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardAirTemp" } 
-String              HaywardBackyard_Status         "Status"                     (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardStatus" }  
-String              HaywardBackyard_State          "State"                      (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardState" }   
-String              HaywardBackyard_BackyardAlarm1 "Alarm"                      (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardAlarm1" }  
-String              HaywardBackyard_BackyardAlarm2 "Alarm"                      (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardAlarm2" }  
-String              HaywardBackyard_BackyardAlarm3 "Alarm"                      (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardAlarm3" }  
-String              HaywardBackyard_BackyardAlarm4 "Alarm"                      (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardAlarm4" }  
-String              HaywardBackyard_BackyardAlarm5 "Alarm"                      (gHaywardBackyard) ["Point"]  { channel="haywardomnilogic:backyard:3766402f00:35940:backyardAlarm5" }  
-
-Group gHaywardGas "Hayward Gas" (gPool) ["Equipment"]
-Number              HaywardGas_HeaterState  "Heater State"                      (gHaywardGas) ["Point"]  { channel="haywardomnilogic:heater:3766402f00:33:heaterState" }  
-Switch              HaywardGas_HeaterEnable "Heater Enable"                     (gHaywardGas) ["Point"]  { channel="haywardomnilogic:heater:3766402f00:33:heaterEnable" } 
-
-Group gHaywardJets "Hayward Jets" (gPool) ["Equipment"]
-Switch              HaywardJets_Power "Power"                                   (gHaywardJets) ["Point"]  { channel="haywardomnilogic:relay:3766402f00:37:relayState" } 
-
-Group gHaywardPool "Hayward Pool" (gPool) ["Equipment"]
-Switch              HaywardPool_FlowSensor "Flow Sensor"                        (gHaywardPool) ["Point"]  { channel="haywardomnilogic:bow:3766402f00:30:bowFlow" }      
-Number:Temperature  HaywardPool_WaterTemp  "Water Temp"                         (gHaywardPool) ["Point"]  { channel="haywardomnilogic:bow:3766402f00:30:bowWaterTemp" } 
-
-Group gHaywardPoolLight "Hayward Pool Light" (gPool) ["Equipment"]
-Switch              HaywardPoolLight_Power       "Power"                        (gHaywardPoolLight) ["Point"]  { channel="haywardomnilogic:colorlogic:3766402f00:38:colorLogicLightEnable" }      
-String              HaywardPoolLight_LightState  "Light State"                  (gHaywardPoolLight) ["Point"]  { channel="haywardomnilogic:colorlogic:3766402f00:38:colorLogicLightState" }       
-String              HaywardPoolLight_CurrentShow "Current Show"                 (gHaywardPoolLight) ["Point"]  { channel="haywardomnilogic:colorlogic:3766402f00:38:colorLogicLightCurrentShow" } 
-
-```
-
