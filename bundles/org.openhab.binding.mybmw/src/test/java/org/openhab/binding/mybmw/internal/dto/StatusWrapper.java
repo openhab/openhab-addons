@@ -68,7 +68,7 @@ public class StatusWrapper {
         isHybrid = hasFuel && isElectric;
         List<Vehicle> vl = Converter.getVehicleList(statusJson);
         assertEquals(1, vl.size(), "Vehciles found");
-        vehicle = vl.get(0);
+        vehicle = Converter.getConsistentVehcile(vl.get(0));
     }
 
     /**

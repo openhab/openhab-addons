@@ -29,6 +29,11 @@ import javax.measure.quantity.Length;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.dto.charge.Time;
+import org.openhab.binding.mybmw.internal.dto.properties.Coordinates;
+import org.openhab.binding.mybmw.internal.dto.properties.Distance;
+import org.openhab.binding.mybmw.internal.dto.properties.Location;
+import org.openhab.binding.mybmw.internal.dto.properties.Range;
+import org.openhab.binding.mybmw.internal.dto.status.Mileage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
@@ -254,10 +259,38 @@ public class Converter {
             if (vin.equals(vehicle.vin)) {
                 // declare vehicle as valid
                 vehicle.valid = true;
-                return vehicle;
+                return getConsistentVehcile(vehicle);
             }
         }
         return INVALID_VEHICLE;
+    }
+
+    /**
+     * ensure basic data like mileage and location data are in every time
+     *
+     * @param v
+     * @return
+     */
+    public static Vehicle getConsistentVehcile(Vehicle v) {
+        if (v.status.currentMileage == null) {
+            v.status.currentMileage = new Mileage();
+            v.status.currentMileage.mileage = -1;
+            v.status.currentMileage.units = "km";
+        }
+        if (v.properties.combustionRange == null) {
+            v.properties.combustionRange = new Range();
+            v.properties.combustionRange.distance = new Distance();
+            v.properties.combustionRange.distance.value = -1;
+            v.properties.combustionRange.distance.units = Constants.KILOMETERS_JSON;
+        }
+        if (v.properties.vehicleLocation == null) {
+            v.properties.vehicleLocation = new Location();
+            v.properties.vehicleLocation.heading = -1;
+            v.properties.vehicleLocation.coordinates = new Coordinates();
+            v.properties.vehicleLocation.coordinates.latitude = -1.234;
+            v.properties.vehicleLocation.coordinates.longitude = -9.876;
+        }
+        return v;
     }
 
     public static String getRandomString(int size) {

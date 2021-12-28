@@ -89,11 +89,9 @@ public class VehicleTests {
         VehicleConfiguration vc = new VehicleConfiguration();
         vc.vin = vin;
         Optional<VehicleConfiguration> ovc = Optional.of(vc);
-        logger.info("prepare Config mock");
         // when(cch.getConfiguration()).thenReturn(ovc);
         // []
         cch.configuration = ovc;
-        logger.info("Config mock done");
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
@@ -254,62 +252,28 @@ public class VehicleTests {
     @Test
     public void testG30() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "some_vin_G30");
+        setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_G30");
         String content = FileReader.readFileInString("src/test/resources/responses/G30/vehicles_v2_bmw_0.json");
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION + CHARGE_PROFILE,
+                Optional.empty()));
+    }
+
+    @Test
+    public void testF11() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F11");
+        String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
                 Optional.empty()));
     }
 
-    public void testi3Rex() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC_REX.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        assertTrue(testVehicle(content,
-                STATUS_ELECTRIC + RANGE_HYBRID + DOORS + CHECK_EMPTY + SERVICE_AVAILABLE + POSITION, Optional.empty()));
-    }
-
-    public void testi3RexMiles() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC_REX.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        // assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
-        assertTrue(testVehicle(content,
-                STATUS_ELECTRIC + RANGE_HYBRID + DOORS + CHECK_EMPTY + SERVICE_AVAILABLE + POSITION, Optional.empty()));
-    }
-
-    public void testF15() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F15/status.json");
-        // Check earliest Service by hard
-        Map<String, State> m = new HashMap<String, State>();
-        // Don>'t test on concrete timestamp - it's is different on each machine
-        // Check for cbsType which is "Oil" instead
-        // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
-        m.put(MyBMWConstants.NAME, StringType.valueOf("Oil"));
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
-                Optional.of(m)));
-    }
-
-    public void testF15Miles() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F15/status.json");
-        // Check earliest Service by hard
-        Map<String, State> m = new HashMap<String, State>();
-        // Don>'t test on concrete timestamp - it's idfferent on each machine
-        // Check for cbsType which is "Oil" instead
-        // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
-        m.put(MyBMWConstants.NAME, StringType.valueOf("Oil"));
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
-                Optional.of(m)));
-    }
-
+    @Test
     public void testF31() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
+        setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F31");
+        String content = FileReader.readFileInString("src/test/resources/responses/F31/vehicles_v2_bmw_0.json");
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
                 Optional.empty()));
     }
 

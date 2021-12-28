@@ -324,7 +324,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                 if (getConfiguration().isPresent()) {
                     Vehicle v = Converter.getVehicle(configuration.get().vin, content);
                     if (v.valid) {
-                        logger.info("Send update");
                         updateStatus(ThingStatus.ONLINE);
                         updateVehicle(v);
                         if (isElectric) {
