@@ -37,10 +37,16 @@ https://support.weather.com/s/article/PWS-Upload-Protocol?language=en_US and oth
 weather stations. If you have a weather station that submits a parameter that is unknown in the current version of the
 binding please feel free to submit an issue to have it added.
 
+Configuration using thing and item files is a laborious and error-prone method, as you have to manually replicate the
+configuration discovery produces. Items must be named as the request parameters in the channel type table and must have
+the same types. Items matching the request parameters submitted by your particular device must needs be discovered
+before being able to write appropriate item files. Both thing and item files must be created manually to achive the
+same result as automatic discovery. 
+
 ## Thing Configuration
 
 The only configurable value is the station id, which should match the one configured on the weather station. If you don't plan on submitting
-measurements to wunderground.com, it can be any unique non-empty string value.
+measurements to wunderground.com, it can be any unique non-empty string value, otherwise it must be the actual station ID.
 
 ## Channels
 
@@ -177,4 +183,3 @@ You can also define a transformation to fx. get a cardinal direction (N, S, W, E
 })(input)
 ```
 The examples were kindly provided by MikeTheTux.
-
