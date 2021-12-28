@@ -84,7 +84,6 @@ public class SensorPushDiscoveryService extends AbstractDiscoveryService impleme
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperties(properties)
                 .withLabel(label).withRepresentationProperty(PROPERTY_ID).build();
         thingDiscovered(result);
-        logger.debug("Discovered Sensor id: {} label: {}", uid, label);
     }
 
     @Override

@@ -45,6 +45,12 @@ Parameters:
 **Note:** To activate your API access, you must log in to the [Gateway Cloud Dashboard](https://dashboard.sensorpush.com/) and agree to the terms of service.
 Once you've logged in that initial time, your account will have access.
 
+Thing config file example:
+
+```
+Thing sensorpush:cloudbridge:bridge [ user="mickey@disney.com", password="mouse", poll=5 ]
+```
+
 ### Sensor thing
 
 The `sensor` thing represents an individual SensorPush sensor.
