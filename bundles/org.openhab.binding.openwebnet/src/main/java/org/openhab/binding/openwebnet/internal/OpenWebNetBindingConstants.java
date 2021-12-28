@@ -67,7 +67,7 @@ public class OpenWebNetBindingConstants {
             "bus_cenplus_scenario_control");
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
     public static final ThingTypeUID THING_TYPE_BUS_AUX = new ThingTypeUID(BINDING_ID, "bus_aux");
-    public static final String THING_LABEL_AUX_ON_OFF_SWITCH = "Auxiliary"; // modified label
+    public static final String THING_LABEL_BUS_AUX = "Auxiliary"; // modified label
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");

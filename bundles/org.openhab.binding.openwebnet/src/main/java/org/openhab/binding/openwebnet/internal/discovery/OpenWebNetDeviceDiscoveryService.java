@@ -166,8 +166,8 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 break;
             }
             case SCS_AUXILIARY_TOGGLE_CONTROL: {
-                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_AUX_ON_OFF_SWITCH;
-                thingLabel = OpenWebNetBindingConstants.THING_LABEL_AUX_ON_OFF_SWITCH;
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_AUX;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_AUX;
                 deviceWho = Who.AUX;
             }
             default:
@@ -193,7 +193,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
 
         DiscoveryResult discoveryResult = null;
 
-        String whereConfig = where.value();
+        String whereConfig = bridgeHandler.normalizeWhere(where);
         if (where instanceof WhereZigBee && WhereZigBee.UNIT_02.equals(((WhereZigBee) where).getUnit())) {
             logger.debug("UNIT=02 found (WHERE={}) -> will remove previous result if exists", where);
             thingRemoved(thingUID); // remove previously discovered thing
