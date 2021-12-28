@@ -155,13 +155,8 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
     }
 
     @Override
-    protected final Logger getLogger() {
-        return logger;
-    }
-
-    @Override
     protected void checkRequiredInfo() throws MyStromException {
-        if (mac.equals("")) {
+        if (mac.isBlank()) {
             throw new MyStromException("Cannot retrieve MAC info from myStrom device " + getThing().getUID());
         }
     }

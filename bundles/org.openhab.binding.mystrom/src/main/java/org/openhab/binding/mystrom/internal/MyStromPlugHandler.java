@@ -78,11 +78,6 @@ public class MyStromPlugHandler extends AbstractMyStromHandler {
         }
     }
 
-    @Override
-    protected final Logger getLogger() {
-        return logger;
-    }
-
     private @Nullable MyStromReport getReport() {
         try {
             String returnContent = sendHttpRequest(HttpMethod.GET, "/report", null);

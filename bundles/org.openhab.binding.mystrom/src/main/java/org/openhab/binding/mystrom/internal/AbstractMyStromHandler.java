@@ -47,8 +47,10 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link AbstractMyStromHandler} is responsible for handling commands, which are
@@ -65,6 +67,7 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
     protected String hostname = "";
     protected String mac = "";
 
+    private final Logger logger = LoggerFactory.getLogger(AbstractMyStromHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob;
     protected final Gson gson = new Gson();
 
@@ -116,12 +119,10 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
                     Locale.getDefault());
             properties.put(PROPERTY_LAST_REFRESH, formatter.format(calendar.getTime()));
             updateProperties(properties);
-        } catch (Exception ex) {
-            getLogger().debug("Updating properties failed: ", ex);
+        } catch (JsonSyntaxException | MyStromException ex) {
+            logger.debug("Updating properties failed: ", ex);
         }
     }
-
-    protected abstract Logger getLogger();
 
     /**
      * Calls the API with the given http method, request path and actual data.
