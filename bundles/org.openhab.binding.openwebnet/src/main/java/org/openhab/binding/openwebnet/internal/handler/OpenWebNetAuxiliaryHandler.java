@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.openwebnet.internal.handler;
 
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_SWITCH;
+import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_AUX;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
-import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -68,12 +68,12 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         logger.debug("handleSwitchCommand() (command={} - channel={})", command, channel);
         Where w = deviceWhere;
         if (w != null) {
-            if (channel.getId().equals(CHANNEL_SWITCH)) {
-                if (command instanceof OnOffType) {
+            if (channel.getId().equals(CHANNEL_AUX)) {// modified channelId
+                if (command instanceof StringType) {
                     try {
-                        if (OnOffType.ON.equals(command)) {
+                        if (command.toString().equals("ON")) {
                             send(Auxiliary.requestTurnOn(w.value()));
-                        } else if (OnOffType.OFF.equals(command)) {
+                        } else if (command.toString().equals("OFF")) {
                             send(Auxiliary.requestTurnOff(w.value()));
                         }
                     } catch (OWNException e) {
@@ -92,6 +92,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         requestStatus();
     }
 
+    // TODO: Thing always unknown
     /** helper method to request auxiliary status based on channel */
     private void requestStatus() {
         Where w = deviceWhere;

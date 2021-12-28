@@ -66,8 +66,8 @@ public class OpenWebNetBindingConstants {
     public static final ThingTypeUID THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL = new ThingTypeUID(BINDING_ID,
             "bus_cenplus_scenario_control");
     public static final String THING_LABEL_BUS_CENPLUS_SCENARIO_CONTROL = "CEN+ Control";
-    public static final ThingTypeUID THING_TYPE_AUX_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "aux_on_off_switch");
-    public static final String THING_LABEL_AUX_ON_OFF_SWITCH = "Auxiliary";
+    public static final ThingTypeUID THING_TYPE_BUS_AUX = new ThingTypeUID(BINDING_ID, "bus_aux");
+    public static final String THING_LABEL_AUX_ON_OFF_SWITCH = "Auxiliary"; // modified label
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -99,7 +99,7 @@ public class OpenWebNetBindingConstants {
     public static final Set<ThingTypeUID> SCENARIO_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_CEN_SCENARIO_CONTROL,
             THING_TYPE_BUS_CENPLUS_SCENARIO_CONTROL);
     // ## Aux
-    public static final Set<ThingTypeUID> AUX_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_AUX_ON_OFF_SWITCH);
+    public static final Set<ThingTypeUID> AUX_SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BUS_AUX);
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
             .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES,
@@ -135,6 +135,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_SCENARIO_BUTTON = "button#";
     public static final String CHANNEL_TYPE_CEN_BUTTON_EVENT = "cenButtonEvent";
     public static final String CHANNEL_TYPE_CEN_PLUS_BUTTON_EVENT = "cenPlusButtonEvent";
+    // Aux
+    public static final String CHANNEL_AUX = "aux";// Specific channel addition
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";
