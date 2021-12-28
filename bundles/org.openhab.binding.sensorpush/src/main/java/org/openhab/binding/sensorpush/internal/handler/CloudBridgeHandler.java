@@ -263,19 +263,16 @@ public class CloudBridgeHandler extends BaseBridgeHandler {
             this.accessToken = accessToken;
             accessTokenInfo = jwtInfo;
         } catch (TimeoutException e) {
-            logger.debug("Timeout sending auth request");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Auth request timeout");
             return;
         } catch (InterruptedException e) {
             logger.debug("Interrupted sending authorization request");
             return;
         } catch (ExecutionException e) {
-            logger.debug("Execution exception sending authorization request: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Auth request execution exception");
             return;
         } catch (JsonSyntaxException | InvalidResponseException e) {
-            logger.debug("Error parsing auth response: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing auth response");
             return;
         }
