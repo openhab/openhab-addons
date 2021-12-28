@@ -260,6 +260,16 @@ public class VehicleTests {
     }
 
     @Test
+    public void testG21() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_G21");
+        String content = FileReader.readFileInString("src/test/resources/responses/G21/vehicles_v2_bmw_0.json");
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION + CHARGE_PROFILE,
+                Optional.empty()));
+    }
+
+    @Test
     public void testF11() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F11");
@@ -277,23 +287,7 @@ public class VehicleTests {
                 Optional.empty()));
     }
 
-    public void testF31Miles() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
-                Optional.empty()));
-    }
-
     public void testF35() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_EMPTY + CHECK_EMPTY,
-                Optional.empty()));
-    }
-
-    public void testF35Miles() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), "");
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
@@ -310,23 +304,7 @@ public class VehicleTests {
                 Optional.empty()));
     }
 
-    public void testF45Miles() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F45/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_EMPTY + CHECK_EMPTY + POSITION,
-                Optional.empty()));
-    }
-
     public void testF48() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
-        assertTrue(testVehicle(content,
-                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION, Optional.empty()));
-    }
-
-    public void testF48Miles() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), "");
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
@@ -343,24 +321,7 @@ public class VehicleTests {
                 Optional.empty()));
     }
 
-    public void testG31NBTEvoMiles() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/G31_NBTevo/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
-                Optional.empty()));
-    }
-
     public void testI01NoRex() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
-        assertTrue(testVehicle(content,
-                STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
-                Optional.empty()));
-    }
-
-    public void testI01NoRexMiles() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC.toString(), "");
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
@@ -378,16 +339,6 @@ public class VehicleTests {
     }
 
     public void test318iF31() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "");
-        String content = FileReader.readFileInString("src/test/resources/responses/F31/status-318i.json");
-        Map<String, State> m = new HashMap<String, State>();
-        m.put(MyBMWConstants.WINDOWS, StringType.valueOf(Constants.INTERMEDIATE));
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
-                Optional.empty()));
-    }
-
-    public void test318iF31Miles() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), "");
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status-318i.json");
