@@ -15,7 +15,6 @@ This binding supports the following thing types:
 
 - electroluxpurea9: The Pure A9 Air Purifier
 
-
 ## Discovery
 
 After the configuration of the Bridge, your Electrolux Pure A9 device will be automatically discovered and placed as a thing in the inbox.
@@ -43,7 +42,6 @@ Only the bridge require manual configuration. The Electrolux Pure A9 thing can b
 
 ## Channels
 
-
 ### Electrolux Pure A9
 
 The following channels are supported:
@@ -62,7 +60,6 @@ The following channels are supported:
 | ionizer                     | Switch                | This channel sets and reports the status of the ionizer function (On/Off).   |
 | doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                     |
 | workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)|
-
 
 
 ## Full Example
