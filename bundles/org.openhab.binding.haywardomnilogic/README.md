@@ -92,7 +92,7 @@ Hayward OmniLogic Connection Parameters:
 | filterSpeedRpm      | Number               | Filter speed in RPM    |     R/W    |
 | filterSpeedSelect   | String               | Filter speed presets   |     R/W    |
 | filterState         | String               | Filter state           |      R     |
-| filterLastSpeed     | Number:Dimensionless | Filter last speed      |      R     |
+| filterLastSpeed     | Number:Dimensionless | Filter last speed in % |      R     |
 
 ### Heater Channels
 
@@ -110,7 +110,7 @@ Hayward OmniLogic Connection Parameters:
 | pumpSpeedRpm     | Number               | Pump speed in RPM    |     R/W    |
 | pumpSpeedSelect  | String               | Pump speed presets   |     R/W    |
 | pumpState        | String               | Pump state           |      R     |
-| pumpLastSpeed    | Number:Dimensionless | Pump last speed      |      R     |
+| pumpLastSpeed    | Number:Dimensionless | Pump last speed in % |      R     |
 
 ### Relay Channels
 
