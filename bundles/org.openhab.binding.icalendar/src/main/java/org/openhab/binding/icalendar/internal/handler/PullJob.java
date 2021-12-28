@@ -103,16 +103,16 @@ class PullJob implements Runnable {
             response = asyncListener.get(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
         } catch (InterruptedException e1) {
             logger.warn("Download of calendar was interrupted: {}", e1.getMessage());
-            request.abort(e1.getCause());
+            request.abort(e1.getCause() != null ? e1.getCause() : e1);
             return;
         } catch (TimeoutException e1) {
             logger.warn("Download of calendar timed out (waited too long for headers): {}", e1.getMessage());
-            request.abort(e1.getCause());
+            request.abort(e1.getCause() != null ? e1.getCause() : e1);
             return;
         } catch (ExecutionException e1) {
             String msg = e1.getCause() != null ? e1.getCause().getMessage() : "";
             logger.warn("Download of calendar failed with ExecutionException: {}", msg);
-            request.abort(e1.getCause());
+            request.abort(e1.getCause() != null ? e1.getCause() : e1);
             return;
         }
 
