@@ -22,13 +22,17 @@ import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.MieleBindingConstants;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +44,44 @@ import org.slf4j.LoggerFactory;
  * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
  * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
-@Component
+@Component(configurationPid = "discovery.miele")
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
     private static final String PATH_TO_CHECK_FOR_XGW3000 = "/rest/";
     private static final String SERVICE_NAME = "mieleathome";
     private static final String PATH_PROPERTY_NAME = "path";
+
+    private long removalGracePeriodSeconds = 15;
+
+    @Activate
+    public void activate(@Nullable Map<String, Object> configProperties) {
+        updateRemovalGracePeriod(configProperties);
+    }
+
+    @Modified
+    public void modified(@Nullable Map<String, Object> configProperties) {
+        updateRemovalGracePeriod(configProperties);
+    }
+
+    /**
+     * Update the removalGracePeriodSeconds when the component is activates or modified.
+     *
+     * @param configProperties the passed configuration parameters.
+     */
+    private void updateRemovalGracePeriod(Map<String, Object> configProperties) {
+        if (configProperties != null) {
+            Object value = configProperties.get(MieleBindingConstants.REMOVAL_GRACE_PERIOD);
+            if (value != null) {
+                try {
+                    removalGracePeriodSeconds = Integer.parseInt(value.toString());
+                } catch (NumberFormatException e) {
+                    logger.warn("Configuration property '{}' has invalid value: {}",
+                            MieleBindingConstants.REMOVAL_GRACE_PERIOD, value);
+                }
+            }
+        }
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -112,5 +147,15 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
     private boolean isMieleGateway(ServiceInfo service) {
         return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null
                 && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
+    }
+
+    /**
+     * Miele devices are sometimes a few seconds late in updating their mDNS announcements, which means that they are
+     * repeatedly removed from, and (re)added to, the Inbox. To prevent this, we override this method to specify an
+     * additional delay period (grace period) to wait before the device is removed from the Inbox.
+     */
+    @Override
+    public long getRemovalGracePeriodSeconds(ServiceInfo serviceInfo) {
+        return removalGracePeriodSeconds;
     }
 }

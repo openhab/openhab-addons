@@ -114,4 +114,5 @@ public class MieleBindingConstants {
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
     public static final String LANGUAGE = "language";
+    public static final String REMOVAL_GRACE_PERIOD = "removalGracePeriod";
 }
