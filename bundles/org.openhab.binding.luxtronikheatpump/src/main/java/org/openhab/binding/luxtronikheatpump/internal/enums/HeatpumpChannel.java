@@ -1193,6 +1193,42 @@ public enum HeatpumpChannel {
      */
     CHANNEL_CODE_FREQ_VD(231, "frequencyCompressor", NumberItem.class, Units.HERTZ, false, null),
 
+    // For Heatpumps with a software version > 3.X the socket serves up to 260 values
+    // As those heatpumps do no longer serve a java applet, but use a web ui, that uses
+    // a web socket connection instead it's not possible to look up the channels in the
+    // code. The following channels are determined based on their values and which value
+    // they match on a heat pump
+
+    CHANNEL_232(232, "channel232", NumberItem.class, null, false, null),
+    CHANNEL_233(233, "channel233", NumberItem.class, null, false, null),
+    CHANNEL_234(234, "channel234", NumberItem.class, null, false, null),
+    CHANNEL_235(235, "channel235", NumberItem.class, null, false, null),
+    CHANNEL_236(236, "frequencyCompressorTarget", NumberItem.class, Units.HERTZ, false, null),
+    CHANNEL_237(237, "channel237", NumberItem.class, null, false, null),
+    CHANNEL_238(238, "channel238", NumberItem.class, null, false, null),
+    CHANNEL_239(239, "channel239", NumberItem.class, null, false, null),
+    CHANNEL_240(240, "channel240", NumberItem.class, null, false, null),
+    CHANNEL_241(241, "channel241", NumberItem.class, null, false, null),
+    CHANNEL_242(242, "channel242", NumberItem.class, null, false, null),
+    CHANNEL_243(243, "channel243", NumberItem.class, null, false, null),
+    CHANNEL_244(244, "channel244", NumberItem.class, null, false, null),
+    CHANNEL_245(245, "channel245", NumberItem.class, null, false, null),
+    CHANNEL_246(246, "channel246", NumberItem.class, null, false, null),
+    CHANNEL_247(247, "channel247", NumberItem.class, null, false, null),
+    CHANNEL_248(248, "channel248", NumberItem.class, null, false, null),
+    CHANNEL_249(249, "channel249", NumberItem.class, null, false, null),
+    CHANNEL_250(250, "channel250", NumberItem.class, null, false, null),
+    CHANNEL_251(251, "channel251", NumberItem.class, null, false, null),
+    CHANNEL_252(252, "channel252", NumberItem.class, null, false, null),
+    CHANNEL_253(253, "channel253", NumberItem.class, null, false, null),
+    CHANNEL_254(254, "flowRateHeatSource2", NumberItem.class, Units.LITRE_PER_MINUTE, false, null),
+    CHANNEL_255(255, "channel255", NumberItem.class, null, false, null),
+    CHANNEL_256(256, "channel256", NumberItem.class, null, false, null),
+    CHANNEL_257(257, "heatingPowerActualValue", NumberItem.class, Units.WATT, false, null),
+    CHANNEL_258(258, "channel258", NumberItem.class, null, false, null),
+    CHANNEL_259(259, "channel259", NumberItem.class, null, false, null),
+    CHANNEL_260(260, "channel260", NumberItem.class, null, false, null),
+
     // Changeable Parameters
     // https://www.loxwiki.eu/display/LOX/Java+Webinterface?preview=/13306044/13307658/3003.txt
 
