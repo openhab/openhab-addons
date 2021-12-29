@@ -250,10 +250,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         });
     }
 
-    private void logFingerPrint() {
-        // tbd [todo]
-    }
-
     /**
      * Don't stress ConnectedDrive with unnecessary requests. One call at the beginning is done to check the response.
      * After cache has e.g. a proper error response it will be shown in the fingerprint

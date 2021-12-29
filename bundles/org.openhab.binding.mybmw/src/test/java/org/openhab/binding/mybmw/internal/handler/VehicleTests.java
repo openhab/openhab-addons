@@ -89,8 +89,6 @@ public class VehicleTests {
         VehicleConfiguration vc = new VehicleConfiguration();
         vc.vin = vin;
         Optional<VehicleConfiguration> ovc = Optional.of(vc);
-        // when(cch.getConfiguration()).thenReturn(ovc);
-        // []
         cch.configuration = ovc;
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);

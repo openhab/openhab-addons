@@ -28,6 +28,7 @@ import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 
@@ -42,9 +43,8 @@ public class DiscoveryTest {
     @Test
     public void testDiscovery() {
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
-        MyBMWBridgeHandler bh = mock(MyBMWBridgeHandler.class);
         Bridge b = mock(Bridge.class);
-        when(bh.getThing()).thenReturn(b);
+        MyBMWBridgeHandler bh = new MyBMWBridgeHandler(b, mock(HttpClientFactory.class), "en");
         when(b.getUID()).thenReturn(new ThingUID("mybmw", "account", "abc"));
         VehicleDiscovery discovery = new VehicleDiscovery();
         discovery.setThingHandler(bh);
@@ -54,7 +54,7 @@ public class DiscoveryTest {
         assertEquals(1, vl.size(), "Vehicles found");
         ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
         ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
-        discovery.onResponse(vl);
+        bh.onResponse(content);
         verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
         List<DiscoveryResult> results = discoveries.getAllValues();
         assertEquals(1, results.size(), "Found Vehicles");

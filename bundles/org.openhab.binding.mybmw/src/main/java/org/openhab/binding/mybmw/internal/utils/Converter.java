@@ -338,6 +338,9 @@ public class Converter {
 
     public static String getTime(Time t) {
         StringBuffer time = new StringBuffer();
+        if (t.hour < 10) {
+            time.append("0");
+        }
         time.append(Integer.toString(t.hour)).append(":");
         if (t.minute < 10) {
             time.append("0");

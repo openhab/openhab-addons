@@ -75,11 +75,7 @@ public class ChargeStatisticsTest {
         VehicleConfiguration vc = new VehicleConfiguration();
         vc.vin = Constants.ANONYMOUS;
         Optional<VehicleConfiguration> ovc = Optional.of(vc);
-        logger.info("prepare Config mock");
-        // when(cch.getConfiguration()).thenReturn(ovc);
-        // []
         cch.configuration = ovc;
-        logger.info("Config mock done");
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);

@@ -116,10 +116,10 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
     }
 
     private void logFingerPrint() {
-        logger.debug("###### Discovery Troubleshoot Fingerprint Data - BEGIN ######");
-        logger.debug("### Discovery Result ###");
-        logger.debug("{}", troubleshootFingerprint.get());
-        logger.debug("###### Discovery Troubleshoot Fingerprint Data - END ######");
+        logger.info("###### Discovery Troubleshoot Fingerprint Data - BEGIN ######");
+        logger.info("### Discovery Result ###");
+        logger.info("{}", troubleshootFingerprint.get());
+        logger.info("###### Discovery Troubleshoot Fingerprint Data - END ######");
     }
 
     /**
@@ -127,26 +127,20 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
      */
     @Override
     public void onResponse(@Nullable String response) {
-        boolean firstResponse = troubleshootFingerprint.isEmpty();
         if (response != null) {
             updateStatus(ThingStatus.ONLINE);
             List<Vehicle> vehicleList = Converter.getVehicleList(response);
             discoveryService.get().onResponse(vehicleList);
             // [todo calculate]
-            troubleshootFingerprint = Optional.of(Constants.EMPTY_JSON);
-        }
-        if (firstResponse) {
+            troubleshootFingerprint = Optional.of(response.replaceAll("\\s", ""));
             logFingerPrint();
         }
     }
 
     @Override
     public void onError(NetworkError error) {
-        boolean firstResponse = troubleshootFingerprint.isEmpty();
         troubleshootFingerprint = Optional.of(error.toJson());
-        if (firstResponse) {
-            logFingerPrint();
-        }
+        logFingerPrint();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
     }
 

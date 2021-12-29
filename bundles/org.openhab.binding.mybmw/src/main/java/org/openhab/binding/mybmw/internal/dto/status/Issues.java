@@ -18,5 +18,5 @@ package org.openhab.binding.mybmw.internal.dto.status;
  * @author Bernd Weymann - Initial contribution
  */
 public class Issues {
-    // tbd [todo]
+    // [todo] defiition missing
 }
