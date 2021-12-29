@@ -27,6 +27,6 @@ public interface EventListener {
 
     void handleHomescreenUpdate();
 
-    default void handleEvent(BlinkEvents.Media event) {
+    default void handleMediaEvent(BlinkEvents.Media mediaEvent) {
     }
 }

@@ -24,8 +24,8 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,6 +69,7 @@ import com.google.gson.Gson;
 public class AccountHandler extends BaseBridgeHandler {
 
     public static final String GENERATED_CLIENT_ID = "generatedClientId";
+    private static final OffsetDateTime EPOCH_UTC = Instant.EPOCH.atOffset(ZoneOffset.UTC);
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     BundleContext bundleContext;
 
@@ -84,7 +85,7 @@ public class AccountHandler extends BaseBridgeHandler {
     BlinkAccount blinkAccount;
     @Nullable
     BlinkHomescreen cachedHomescreen;
-    OffsetDateTime eventSince = Instant.EPOCH.atOffset(ZoneOffset.UTC);
+    OffsetDateTime eventSince = EPOCH_UTC;
     final Map<Long, BlinkEvents.Media> eventStore = new ConcurrentHashMap<>();
     @Nullable
     ScheduledFuture<?> refreshStateJob;
@@ -198,9 +199,6 @@ public class AccountHandler extends BaseBridgeHandler {
     public void setOffline(Throwable cause) {
         logger.error("Blink Account is going offline after communication error", cause);
         blinkAccount = null;
-        cachedHomescreen = null;
-        eventSince = Instant.EPOCH.atOffset(ZoneOffset.UTC);
-        eventStore.clear();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, cause.getMessage());
     }
 
@@ -251,7 +249,7 @@ public class AccountHandler extends BaseBridgeHandler {
         logger.debug("Loading devices from Blink API");
         try {
             cachedHomescreen = blinkService.getDevices(blinkAccount);
-            fireEvent(EventListener::handleHomescreenUpdate);
+            fireHomescreenUpdate();
         } catch (IOException e) {
             setOffline(e);
         }
@@ -261,17 +259,22 @@ public class AccountHandler extends BaseBridgeHandler {
         logger.debug("Loading events from Blink API");
         try {
             BlinkEvents events = blinkService.getEvents(blinkAccount, eventSince);
-            for (BlinkEvents.Media media : events.media) {
-                if (media.deleted) {
-                    eventStore.remove(media.id);
+            OffsetDateTime nextEventSince = eventSince;
+            for (BlinkEvents.Media mediaEvent : events.media) {
+                if (mediaEvent.deleted) {
+                    eventStore.remove(mediaEvent.id);
                 } else {
-                    eventStore.put(media.id, media);
+                    eventStore.put(mediaEvent.id, mediaEvent);
                 }
-                if (eventSince.isBefore(media.updated_at)) {
-                    eventSince = media.updated_at;
+                if (nextEventSince.isBefore(mediaEvent.updated_at)) {
+                    nextEventSince = mediaEvent.updated_at;
                 }
-                fireEvent(handler -> handler.handleEvent(media));
+                // only trigger events if not polling for the first time
+                if (!eventSince.isEqual(EPOCH_UTC)) {
+                    fireMediaEvent(mediaEvent);
+                }
             }
+            eventSince = nextEventSince;
         } catch (IOException e) {
             logger.error("Error retrieving events from Blink API", e);
         }
@@ -356,8 +359,16 @@ public class AccountHandler extends BaseBridgeHandler {
         return OnOffType.from(getNetworkState(networkId, refreshCache).armed);
     }
 
-    private void fireEvent(Consumer<EventListener> handler) {
-        getThing().getThings().stream().map(Thing::getHandler).filter(Objects::nonNull).map(EventListener.class::cast)
-                .forEach(handler);
+    private void fireHomescreenUpdate() {
+        streamEventListeners().forEach(EventListener::handleHomescreenUpdate);
+    }
+
+    void fireMediaEvent(BlinkEvents.Media mediaEvent) {
+        streamEventListeners().forEach(listener -> listener.handleMediaEvent(mediaEvent));
+    }
+
+    private Stream<EventListener> streamEventListeners() {
+        return getThing().getThings().stream().map(Thing::getHandler).filter(Objects::nonNull)
+                .map(EventListener.class::cast);
     }
 }

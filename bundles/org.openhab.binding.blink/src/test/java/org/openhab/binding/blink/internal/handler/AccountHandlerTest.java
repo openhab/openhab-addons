@@ -326,6 +326,18 @@ class AccountHandlerTest extends JavaTest {
     }
 
     @Test
+    void testLoadEventsTriggersOnlyOnConsecutiveLoad() throws IOException {
+        accountHandler.blinkService = accountService;
+        accountHandler.blinkAccount = BlinkTestUtil.testBlinkAccount();
+        BlinkEvents events = testBlinkEvents();
+        doReturn(events).when(accountService).getEvents(any(), any());
+        accountHandler.loadEvents();
+        verify(accountHandler, times(0)).fireMediaEvent(any());
+        accountHandler.loadEvents();
+        verify(accountHandler).fireMediaEvent(same(events.media.get(0)));
+    }
+
+    @Test
     void testCameraStateErrorWhenNoAccountIsSet() {
         BlinkHomescreen homescreen = testBlinkHomescreen();
         doReturn(homescreen).when(accountHandler).getDevices(anyBoolean());

@@ -177,8 +177,8 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
     }
 
     @Override
-    public void handleEvent(BlinkEvents.Media event) {
-        if (event.isNewEvent() && event.isCamera(config)) {
+    public void handleMediaEvent(BlinkEvents.Media mediaEvent) {
+        if (mediaEvent.isNewEvent() && mediaEvent.isCamera(config)) {
             logger.debug("Triggering motion event for camera {}", config.cameraId);
             triggerChannel(CHANNEL_CAMERA_MOTIONDETECTION);
         }
