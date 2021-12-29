@@ -50,6 +50,7 @@
 			<label>Language Settings for Return Values</label>
 			<description>Some channel values can be returned in the desired language</description>
 			<advanced>true</advanced>
+			<default>AUTODETECT</default>
 		</parameter>
 
 	</config-description>

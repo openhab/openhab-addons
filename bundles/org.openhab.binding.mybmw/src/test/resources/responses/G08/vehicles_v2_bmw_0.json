@@ -194,31 +194,31 @@
             "currentPressure": 220,
             "localizedCurrentPressure": "2.2 bar",
             "localizedTargetPressure": "2.3 bar",
-            "targetPressure": 230
+            "targetPressure": 231
           }
         },
         "frontRight": {
           "status": {
-            "currentPressure": 220,
+            "currentPressure": 222,
             "localizedCurrentPressure": "2.2 bar",
             "localizedTargetPressure": "2.3 bar",
-            "targetPressure": 230
+            "targetPressure": 233
           }
         },
         "rearLeft": {
           "status": {
-            "currentPressure": 260,
+            "currentPressure": 264,
             "localizedCurrentPressure": "2.6 bar",
             "localizedTargetPressure": "2.6 bar",
-            "targetPressure": 260
+            "targetPressure": 265
           }
         },
         "rearRight": {
           "status": {
-            "currentPressure": 260,
+            "currentPressure": 266,
             "localizedCurrentPressure": "2.6 bar",
             "localizedTargetPressure": "2.6 bar",
-            "targetPressure": 260
+            "targetPressure": 267
           }
         }
       },

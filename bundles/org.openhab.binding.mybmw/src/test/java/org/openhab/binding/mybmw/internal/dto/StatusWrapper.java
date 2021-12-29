@@ -509,6 +509,86 @@ public class StatusWrapper {
                         break;
                 }
                 break;
+            case FRONT_LEFT_CURRENT:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.frontLeft.status.currentPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
+            case FRONT_LEFT_WANTED:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.frontLeft.status.targetPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
+            case FRONT_RIGHT_CURRENT:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.frontRight.status.currentPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
+            case FRONT_RIGHT_WANTED:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.frontRight.status.targetPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
+            case REAR_LEFT_CURRENT:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.rearLeft.status.currentPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
+            case REAR_LEFT_WANTED:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.rearLeft.status.targetPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
+            case REAR_RIGHT_CURRENT:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.rearRight.status.currentPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
+            case REAR_RIGHT_WANTED:
+                if (vehicle.properties.tires != null) {
+                    assertTrue(state instanceof QuantityType);
+                    qt = (QuantityType) state;
+                    assertEquals(vehicle.properties.tires.rearRight.status.targetPressure / 100, qt.doubleValue(),
+                            "Fron Left Current");
+                } else {
+                    assertTrue(state.equals(UnDefType.UNDEF));
+                }
+                break;
             default:
                 if (!gUid.equals(CHANNEL_GROUP_CHARGE_PROFILE)) {
                     // fail in case of unknown update

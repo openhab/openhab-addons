@@ -38,5 +38,6 @@ public class Properties {
     public List<CCM> checkControlMessages;
     public List<CBS> serviceRequired;
     public Location vehicleLocation;
+    public Tires tires;
     // "climateControl":{} [todo]
 }

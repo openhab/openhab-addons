@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mybmw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="front-left-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Front Left Pressure</label>
+	</channel-type>
+	<channel-type id="front-left-wanted-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Front Left Pressure Wanted</label>
+	</channel-type>
+	<channel-type id="front-right-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Front Right Pressure</label>
+	</channel-type>
+	<channel-type id="front-right-wanted-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Front Right Pressure Wanted</label>
+	</channel-type>
+	<channel-type id="rear-left-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Rear Left Pressure</label>
+	</channel-type>
+	<channel-type id="rear-left-wanted-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Rear Left Pressure Wanted</label>
+	</channel-type>
+	<channel-type id="rear-right-current-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>rear Right Pressure</label>
+	</channel-type>
+	<channel-type id="rear-right-wanted-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Rear Right Pressure Wanted</label>
+	</channel-type>
+</thing:thing-descriptions>

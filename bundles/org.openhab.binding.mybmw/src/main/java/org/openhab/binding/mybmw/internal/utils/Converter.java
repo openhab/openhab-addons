@@ -251,6 +251,7 @@ public class Converter {
                 return new ArrayList<Vehicle>();
             }
         } catch (JsonSyntaxException e) {
+            LOGGER.warn("JsonSyntaxException {}", e.getMessage());
             return new ArrayList<Vehicle>();
         }
     }

@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeSession;
@@ -34,6 +35,7 @@ import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.properties.DoorsWindows;
 import org.openhab.binding.mybmw.internal.dto.properties.Location;
+import org.openhab.binding.mybmw.internal.dto.properties.Tires;
 import org.openhab.binding.mybmw.internal.dto.status.CCMMessage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils;
@@ -127,6 +129,37 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updatePosition(v.properties.vehicleLocation);
         updateServices(v.properties.serviceRequired);
         updateCheckControls(v.status.checkControlMessages);
+        updateTires(v.properties.tires);
+    }
+
+    private void updateTires(@Nullable Tires tires) {
+        if (tires == null) {
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_CURRENT, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_WANTED, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_CURRENT, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_WANTED, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_CURRENT, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_WANTED, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_CURRENT, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_WANTED, UnDefType.UNDEF);
+        } else {
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_CURRENT,
+                    QuantityType.valueOf(tires.frontLeft.status.currentPressure / 100, Units.BAR));
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_WANTED,
+                    QuantityType.valueOf(tires.frontLeft.status.targetPressure / 100, Units.BAR));
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_CURRENT,
+                    QuantityType.valueOf(tires.frontRight.status.currentPressure / 100, Units.BAR));
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_WANTED,
+                    QuantityType.valueOf(tires.frontRight.status.targetPressure / 100, Units.BAR));
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_CURRENT,
+                    QuantityType.valueOf(tires.rearLeft.status.currentPressure / 100, Units.BAR));
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_WANTED,
+                    QuantityType.valueOf(tires.rearLeft.status.targetPressure / 100, Units.BAR));
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_CURRENT,
+                    QuantityType.valueOf(tires.rearRight.status.currentPressure / 100, Units.BAR));
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_WANTED,
+                    QuantityType.valueOf(tires.rearRight.status.targetPressure / 100, Units.BAR));
+        }
     }
 
     protected void updateVehicleStatus(Vehicle v) {

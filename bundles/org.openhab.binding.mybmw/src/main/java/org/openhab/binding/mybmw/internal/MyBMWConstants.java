@@ -112,6 +112,7 @@ public class MyBMWConstants {
     public static final String CHANNEL_GROUP_CHARGE_PROFILE = "profile";
     public static final String CHANNEL_GROUP_CHARGE_STATISTICS = "statistic";
     public static final String CHANNEL_GROUP_CHARGE_SESSION = "session";
+    public static final String CHANNEL_GROUP_TIRES = "tires";
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
 
     // Charge Statistics & Sessions
@@ -208,4 +209,14 @@ public class MyBMWConstants {
     public static final String REMOTE_SERVICE_SEND_POI = "send-poi";
     public static final String REMOTE_SERVICE_COMMAND = "command";
     public static final String REMOTE_STATE = "state";
+
+    // TIRES
+    public static final String FRONT_LEFT_CURRENT = "fl-current";
+    public static final String FRONT_LEFT_WANTED = "fl-wanted";
+    public static final String FRONT_RIGHT_CURRENT = "fr-current";
+    public static final String FRONT_RIGHT_WANTED = "fr-wanted";
+    public static final String REAR_LEFT_CURRENT = "rl-current";
+    public static final String REAR_LEFT_WANTED = "rl-wanted";
+    public static final String REAR_RIGHT_CURRENT = "rr-current";
+    public static final String REAR_RIGHT_WANTED = "rr-wanted";
 }
