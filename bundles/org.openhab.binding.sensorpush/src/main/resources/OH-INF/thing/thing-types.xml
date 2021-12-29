@@ -53,7 +53,10 @@
 			<channel id="dewpoint" typeId="dewpoint-channel"/>
 			<channel id="vpd" typeId="vpd-channel"/>
 			<channel id="time" typeId="time-channel"/>
-			<channel id="rssi" typeId="rssi-channel"/>
+			<channel id="rssi" typeId="system.signal-strength">
+				<description>Received signal strength indication (RSSI)</description>
+			</channel>
+			<channel id="rssidbm" typeId="rssidbm-channel"/>
 			<channel id="voltage" typeId="voltage-channel"/>
 		</channels>
 
@@ -145,10 +148,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="rssi-channel">
+	<channel-type id="rssidbm-channel">
 		<item-type>Number:Power</item-type>
 		<label>RSSI</label>
-		<description>Received signal strength indication (RSSI)</description>
+		<description>Received signal strength indication (RSSI) in dBm</description>
 		<category>QualityOfService</category>
 		<tags>
 			<tag>Measurement</tag>

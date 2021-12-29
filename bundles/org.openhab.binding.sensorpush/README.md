@@ -72,16 +72,17 @@ Parameters:
 
 The following channels are provided by the `sensor` thing:
 
-| Channel     | Type                     | Description              |
-|-------------|--------------------------|--------------------------|
-| temperature | Number:Temperature       | Temperature              |
-| humidity    | Number:Dimensionless     | Relative humidity        |
-| pressure    | Number:Pressure          | Barometric pressure      |
-| dewpoint    | Number:Temperature       | Dew point                |
-| vpd         | Number:Pressure          | Vapor pressure deficit   |
-| time        | DateTime                 | Time of reading          |
-| rssi        | Number:Power             | Received signal strength |
-| voltage     | Number:ElectricPotential | Battery voltage          |
+| Channel     | Type                     | Description                                        |
+|-------------|--------------------------|----------------------------------------------------|
+| temperature | Number:Temperature       | Temperature                                        |
+| humidity    | Number:Dimensionless     | Relative humidity                                  |
+| pressure    | Number:Pressure          | Barometric pressure                                |
+| dewpoint    | Number:Temperature       | Dew point                                          |
+| vpd         | Number:Pressure          | Vapor pressure deficit                             |
+| time        | DateTime                 | Time of reading                                    |
+| rssi        | Number                   | Received signal strength expressed as a number 1-4 |
+| rssidbm     | Number:Power             | Received signal strength in dBm                    |
+| voltage     | Number:ElectricPotential | Battery voltage                                    |
 
 Note that all channels except `time` use QuantityType values.
 

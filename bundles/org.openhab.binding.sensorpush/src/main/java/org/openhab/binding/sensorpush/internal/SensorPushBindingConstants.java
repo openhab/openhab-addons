@@ -44,6 +44,7 @@ public class SensorPushBindingConstants {
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_TIME = "time";
     public static final String CHANNEL_RSSI = "rssi";
+    public static final String CHANNEL_RSSI_DBM = "rssidbm";
     public static final String CHANNEL_VOLTAGE = "voltage";
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_DEWPOINT = "dewpoint";
