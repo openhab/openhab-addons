@@ -49,15 +49,15 @@ The Guntamatic Heating System can be controlled using the following channels:
 |-----------------------|-----------------------------------------------------------|-------|:---------:|:-------------------------:|:--------:|:--------:|
 |	`controlBoilerApproval`	|	Set Boiler Approval (`AUTO`, `OFF`, `ON`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlProgram`	|	Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)	|	`String`	|		|	🔐 W1	|	R/W	|	false	|
-|	`controlHeatCircProgram0`	|	Set Program of Heat Circle 0 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram1`	|	Set Program of Heat Circle 1 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram2`	|	Set Program of Heat Circle 2 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram3`	|	Set Program of Heat Circle 3 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram4`	|	Set Program of Heat Circle 4 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram5`	|	Set Program of Heat Circle 5 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram6`	|	Set Program of Heat Circle 6 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram7`	|	Set Program of Heat Circle 7 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlHeatCircProgram8`	|	Set Program of Heat Circle 8 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram0`	|	Set Heat Circle 0 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram1`	|	Set Heat Circle 1 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram2`	|	Set Heat Circle 2 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram3`	|	Set Heat Circle 3 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram4`	|	Set Heat Circle 4 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram5`	|	Set Heat Circle 5 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram6`	|	Set Heat Circle 6 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram7`	|	Set Heat Circle 7 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlHeatCircProgram8`	|	Set Heat Circle 8 Program (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlWwHeat0`	|	Trigger Warm Water Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlWwHeat1`	|	Trigger Warm Water Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlWwHeat2`	|	Trigger Warm Water Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
@@ -206,15 +206,15 @@ Thing   guntamatic:biostar:mybiostar   "Guntamatic Biostar"    [ hostname="192.1
 ```java
 String              	Biostar_ControlBoilerApproval  	"Set Boiler Approval"               	{ channel="guntamatic:biostar:mybiostar:controlBoilerApproval" }
 String              	Biostar_ControlProgram         	"Set Program"                       	{ channel="guntamatic:biostar:mybiostar:controlProgram" }
-String              	Biostar_ControlHeatCircProgram0	"Set Program of Heat Circle 0"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram0" }
-String              	Biostar_ControlHeatCircProgram1	"Set Program of Heat Circle 1"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram1" }
-String              	Biostar_ControlHeatCircProgram2	"Set Program of Heat Circle 2"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram2" }
-String              	Biostar_ControlHeatCircProgram3	"Set Program of Heat Circle 3"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram3" }
-String              	Biostar_ControlHeatCircProgram4	"Set Program of Heat Circle 4"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram4" }
-String              	Biostar_ControlHeatCircProgram5	"Set Program of Heat Circle 5"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram5" }
-String              	Biostar_ControlHeatCircProgram6	"Set Program of Heat Circle 6"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram6" }
-String              	Biostar_ControlHeatCircProgram7	"Set Program of Heat Circle 7"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram7" }
-String              	Biostar_ControlHeatCircProgram8	"Set Program of Heat Circle 8"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram8" }
+String              	Biostar_ControlHeatCircProgram0	"Set Heat Circle 0 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram0" }
+String              	Biostar_ControlHeatCircProgram1	"Set Heat Circle 1 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram1" }
+String              	Biostar_ControlHeatCircProgram2	"Set Heat Circle 2 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram2" }
+String              	Biostar_ControlHeatCircProgram3	"Set Heat Circle 3 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram3" }
+String              	Biostar_ControlHeatCircProgram4	"Set Heat Circle 4 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram4" }
+String              	Biostar_ControlHeatCircProgram5	"Set Heat Circle 5 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram5" }
+String              	Biostar_ControlHeatCircProgram6	"Set Heat Circle 6 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram6" }
+String              	Biostar_ControlHeatCircProgram7	"Set Heat Circle 7 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram7" }
+String              	Biostar_ControlHeatCircProgram8	"Set Heat Circle 8 Program"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram8" }
 String              	Biostar_ControlWwHeat0         	"Trigger Warm Water Circle 0"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat0" }
 String              	Biostar_ControlWwHeat1         	"Trigger Warm Water Circle 1"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat1" }
 String              	Biostar_ControlWwHeat2         	"Trigger Warm Water Circle 2"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat2" }
