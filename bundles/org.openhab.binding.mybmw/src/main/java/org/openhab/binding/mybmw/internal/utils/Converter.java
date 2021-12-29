@@ -358,4 +358,21 @@ public class Converter {
         }
         return offsetMinutes;
     }
+
+    public static String getAnonymousFingerprint(List<Vehicle> vehicleList) {
+        for (Vehicle vehicle : vehicleList) {
+            vehicle.vin = Constants.ANONYMOUS;
+            if (vehicle.properties.vehicleLocation != null) {
+                if (vehicle.properties.vehicleLocation.address != null) {
+                    vehicle.properties.vehicleLocation.address.formatted = Constants.ANONYMOUS;
+                }
+                if (vehicle.properties.vehicleLocation.coordinates != null) {
+                    vehicle.properties.vehicleLocation.coordinates.latitude = 1.234;
+                    vehicle.properties.vehicleLocation.coordinates.longitude = 9.876;
+                }
+            }
+        }
+        return Converter.getGson().toJson(vehicleList);
+    }
+
 }

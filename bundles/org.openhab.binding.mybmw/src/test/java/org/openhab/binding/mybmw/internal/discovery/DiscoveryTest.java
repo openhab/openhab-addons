@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.discovery;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -82,5 +82,16 @@ public class DiscoveryTest {
         String servicesDisabled = VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLED_SUFFIX, false)
                 + Constants.SPACE + VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLE_SUFFIX, false);
         assertEquals(servicesDisabledReference, servicesDisabled, "Services disabled");
+    }
+
+    @Test
+    public void testFingerPrint() {
+        String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
+        List<Vehicle> vehicleList = Converter.getVehicleList(content);
+        String anonymousFingerprint = Converter.getAnonymousFingerprint(vehicleList);
+        assertTrue(anonymousFingerprint.contains("\"vin\":\"anonymous\""), "VIN check");
+        assertTrue(anonymousFingerprint.contains("\"formatted\":\"anonymous\""), "Address check");
+        assertTrue(anonymousFingerprint.contains("\"latitude\":1.234"), "Latitude check");
+        assertTrue(anonymousFingerprint.contains("\"longitude\":9.876"), "Longitude check");
     }
 }
