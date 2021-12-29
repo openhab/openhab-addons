@@ -238,6 +238,7 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `itemLeft` | Switch (read only) | Will turn ON if an API camera detects an item has been left behind. |
 | `itemTaken` | Switch (read only) | Will turn ON if an API camera detects an item has been stolen. |
 | `lastMotionType` | String | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
+| `lastEventData` | String | Detailed information about the last smart alarm that can contain information like which Line number was crossed and in which direction. The channel `lastMotionType` will hold the name of the alarm that this data belongs to. |
 | `lineCrossingAlarm` | Switch (read only) | Will turn on if the API camera detects motion has crossed a line. |
 | `mjpegUrl` | String | The URL for the ipcamera.mjpeg stream. |
 | `motionAlarm` | Switch (read only) | The status of the 'video motion' events in ONVIF and API cameras. Also see `cellMotionAlarm` as these can give different results. |

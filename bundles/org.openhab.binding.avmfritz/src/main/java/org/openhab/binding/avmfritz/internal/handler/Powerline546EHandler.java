@@ -225,7 +225,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device).concat("_Solo"));
         String ipAddress = getConfigAs(AVMFritzBoxConfiguration.class).ipAddress;
 
-        if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
+        if (POWERLINE546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             String thingName = "fritz.powerline".equals(ipAddress) ? ipAddress
                     : ipAddress.replaceAll(INVALID_PATTERN, "_");
             return new ThingUID(thingTypeUID, thingName);

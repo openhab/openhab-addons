@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="automation:jsscripting">
+		<parameter name="injectionEnabled" type="boolean" required="true">
+			<label>Use Built-in Global Variables</label>
+			<description><![CDATA[ Import all variables from the OH scripting library into all rules for common services like items, things, actions, log, etc... <br>
+			If disabled, the OH scripting library can be imported manually using "<i>require('openhab')</i>"
+			]]></description>
+			<options>
+				<option value="true">Use Built-in Variables</option>
+				<option value="false">Do Not Use Built-in Variables</option>
+			</options>
+			<default>true</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

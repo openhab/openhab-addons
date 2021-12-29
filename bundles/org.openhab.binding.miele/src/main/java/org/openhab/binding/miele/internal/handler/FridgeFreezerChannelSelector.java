@@ -15,10 +15,10 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.lang.reflect.Method;
-import java.util.Map.Entry;
 
+import org.openhab.binding.miele.internal.DeviceMetaData;
 import org.openhab.binding.miele.internal.DeviceUtil;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.MieleTranslationProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -29,8 +29,6 @@ import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonElement;
 
 /**
  * The {@link ApplianceChannelSelector} for fridges with
@@ -43,7 +41,16 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            State state = DeviceUtil.getStateTextState(s, dmd, translationProvider);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd, translationProvider);
+        }
+    },
     STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
     FREEZERSTATE("freezerState", "freezerstate", StringType.class, false),
     FRIDGESTATE("fridgeState", "fridgestate", StringType.class, false),
@@ -51,32 +58,32 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     SUPERFREEZE(null, SUPERFREEZE_CHANNEL_ID, OnOffType.class, false),
     FREEZERCURRENTTEMP("freezerCurrentTemperature", "freezercurrent", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getTemperatureState(s);
         }
     },
     FREEZERTARGETTEMP("freezerTargetTemperature", "freezertarget", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getTemperatureState(s);
         }
     },
     FRIDGECURRENTTEMP("fridgeCurrentTemperature", "fridgecurrent", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getTemperatureState(s);
         }
     },
     FRIDGETARGETTEMP("fridgeTargetTemperature", "fridgetarget", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             return getTemperatureState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
 
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
                 return getState("OPEN");
             }
@@ -131,9 +138,14 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
+    public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        return this.getState(s, dmd);
+    }
+
+    @Override
     public State getState(String s, DeviceMetaData dmd) {
         if (dmd != null) {
-            String localizedValue = getMieleEnum(s, dmd);
+            String localizedValue = dmd.getMieleEnum(s);
             if (localizedValue == null) {
                 localizedValue = dmd.LocalizedValue;
             }
@@ -168,17 +180,5 @@ public enum FridgeFreezerChannelSelector implements ApplianceChannelSelector {
             logger.warn("An exception occurred while converting '{}' into a State", s);
             return UnDefType.UNDEF;
         }
-    }
-
-    public String getMieleEnum(String s, DeviceMetaData dmd) {
-        if (dmd.MieleEnum != null) {
-            for (Entry<String, JsonElement> enumEntry : dmd.MieleEnum.entrySet()) {
-                if (enumEntry.getValue().getAsString().trim().equals(s.trim())) {
-                    return enumEntry.getKey();
-                }
-            }
-        }
-
-        return null;
     }
 }
