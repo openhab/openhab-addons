@@ -80,7 +80,7 @@ public class MyBMWProxy {
         httpClient = httpClientFactory.getCommonHttpClient();
         configuration = config;
 
-        vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+        vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
                 + BimmerConstants.API_VEHICLES;
 
         remoteCommandUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(configuration.region)
@@ -122,6 +122,7 @@ public class MyBMWProxy {
         }
         req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
         req.header(HTTPConstants.X_USER_AGENT, userAgent);
+        req.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON_ENCODED);
         req.header(HttpHeader.ACCEPT_LANGUAGE, configuration.language);
 
         req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
@@ -172,7 +173,13 @@ public class MyBMWProxy {
     public void requestVehicles(String brand, StringResponseCallback callback) {
         String userAgent = BimmerConstants.BRAND_USER_AGENTS_MAP.get(brand);
         if (userAgent != null) {
-            get(vehicleUrl, null, null, userAgent, callback);
+            // calculate necessary parameters for query
+            MultiMap<String> vehicleParams = new MultiMap<String>();
+            vehicleParams.put(BimmerConstants.TIRE_GUARD_MODE, Constants.ENABLED);
+            vehicleParams.put(BimmerConstants.APP_DATE_TIME, Long.toString(System.currentTimeMillis()));
+            vehicleParams.put(BimmerConstants.APP_TIMEZONE, Integer.toString(Converter.getOffsetMinutes()));
+            String params = UrlEncoded.encode(vehicleParams, StandardCharsets.UTF_8, false);
+            get(vehicleUrl + "?" + params, null, null, userAgent, callback);
         }
     }
 
@@ -183,7 +190,7 @@ public class MyBMWProxy {
      */
     public void requestVehicles(StringResponseCallback callback) {
         BimmerConstants.ALL_BRANDS.forEach(brand -> {
-            get(vehicleUrl, null, null, brand, callback);
+            requestVehicles(brand, callback);
         });
     }
 
@@ -309,8 +316,8 @@ public class MyBMWProxy {
             loginParams.put(PASSWORD, configuration.password);
             loginRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
                     UrlEncoded.encode(loginParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
-            ContentResponse secondResonse = loginRequest.send();
-            String authCode = getAuthCode(secondResonse.getContentAsString());
+            ContentResponse secondResponse = loginRequest.send();
+            String authCode = getAuthCode(secondResponse.getContentAsString());
 
             /**
              * Step 3) Authorize with code
@@ -342,10 +349,9 @@ public class MyBMWProxy {
                     UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse codeResponse = codeRequest.send();
             AuthResponse ar = Converter.getGson().fromJson(codeResponse.getContentAsString(), AuthResponse.class);
-            Token t = new Token();
-            t.setType(ar.tokenType);
-            t.setToken(ar.accessToken);
-            t.setExpiration(ar.expiresIn);
+            token.setType(ar.tokenType);
+            token.setToken(ar.accessToken);
+            token.setExpiration(ar.expiresIn);
             return true;
         } catch (Exception e) {
             logger.warn("Authorization Exception: {}", e.getMessage());

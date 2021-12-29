@@ -29,8 +29,6 @@ import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthQueryResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthResponse;
-import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
-import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
@@ -67,16 +65,16 @@ class AuthTest {
                     AuthQueryResponse.class);
 
             // String verifier_bytes = RandomStringUtils.randomAlphanumeric(64);
-            String verifier_bytes = Converter.getRandomString(64);
-            String code_verifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verifier_bytes.getBytes());
+            String verifierBytes = Converter.getRandomString(64);
+            String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verifierBytes.getBytes());
 
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(code_verifier.getBytes(StandardCharsets.UTF_8));
-            String code_challenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+            byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+            String codeChallenge = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 
             // String state_bytes = RandomStringUtils.randomAlphanumeric(16);
-            String state_bytes = Converter.getRandomString(16);
-            String state = Base64.getUrlEncoder().withoutPadding().encodeToString(state_bytes.getBytes());
+            String stateBytes = Converter.getRandomString(16);
+            String state = Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes.getBytes());
 
             String authUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
             logger.info(authUrl);
@@ -90,7 +88,7 @@ class AuthTest {
             baseParams.put("state", state);
             baseParams.put("nonce", "login_nonce");
             baseParams.put("scope", String.join(" ", aqr.scopes));
-            baseParams.put("code_challenge", code_challenge);
+            baseParams.put("code_challenge", codeChallenge);
             baseParams.put("code_challenge_method", "S256");
 
             MultiMap<String> loginParams = new MultiMap<String>(baseParams);
@@ -131,7 +129,7 @@ class AuthTest {
 
             MultiMap<String> codeParams = new MultiMap<String>();
             codeParams.put("code", code);
-            codeParams.put("code_verifier", code_verifier);
+            codeParams.put("code_verifier", codeVerifier);
             codeParams.put("redirect_uri", aqr.returnUrl);
             codeParams.put("grant_type", "authorization_code");
             codeRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
@@ -145,13 +143,16 @@ class AuthTest {
             t.setExpiration(ar.expiresIn);
             logger.info(t.getBearerToken());
 
+            /**
+             * REQUEST CONTENT
+             */
             HttpClient apiHttpClient = new HttpClient(sslContextFactory);
             apiHttpClient.start();
 
-            MultiMap vehicleParams = new MultiMap();
+            MultiMap<String> vehicleParams = new MultiMap<String>();
             vehicleParams.put("tireGuardMode", "ENABLED");
             vehicleParams.put("appDateTime", Long.toString(System.currentTimeMillis()));
-            vehicleParams.put("apptimezone", "60.0");
+            vehicleParams.put("apptimezone", "60");
             // vehicleRequest.param("tireGuardMode", "ENABLED");
             // vehicleRequest.param("appDateTime", Long.toString(System.currentTimeMillis()));
             // vehicleRequest.param("apptimezone", "60.0");
@@ -160,21 +161,24 @@ class AuthTest {
             // vehicleRequest.content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, vehicleParams.toString(),
             // StandardCharsets.UTF_8));
             // logger.info(vehicleRequest.getHeaders());
-            String params = UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false);
+            String params = UrlEncoded.encode(vehicleParams, StandardCharsets.UTF_8, false);
 
             String vehicleUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                     + "/eadrax-vcs/v1/vehicles";
             logger.info(vehicleUrl);
-            Request vehicleRequest = apiHttpClient.newRequest(vehicleUrl).param("tireGuardMode", "ENABLED")
-                    .param("appDateTime", Long.toString(System.currentTimeMillis())).param("apptimezone", "60.0");
+            Request vehicleRequest = apiHttpClient.newRequest(vehicleUrl + "?" + params);//
+            // .param("tireGuardMode", "ENABLED")
+            // .param("appDateTime", Long.toString(System.currentTimeMillis())).param("apptimezone", "60.0");
             // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
             vehicleRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
             vehicleRequest.header("accept", "application/json");
-            vehicleRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
             vehicleRequest.header("accept-language", "de");
-
+            vehicleRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
+            // vehicleRequest.header(HttpHeader.CONTENT_TYPE, "application/x-www-form-urlencoded");
+            // vehicleRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
+            // UrlEncoded.encode(vehicleParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse vehicleResponse = vehicleRequest.send();
-            logger.info(vehicleResponse.getContentAsString());
+            logger.info("Vehicle Status {} {}", vehicleResponse.getStatus(), vehicleResponse.getContentAsString());
 
             /**
              * CHARGE STATISTICS
@@ -254,24 +258,24 @@ class AuthTest {
             chargingControlRequest.header("accept-language", "de");
             chargingControlRequest.header("Content-Type", CONTENT_TYPE_JSON_ENCODED);
 
-            String content = FileReader.readFileInString("src/test/resources/responses/charging-profile.json");
-            logger.info("{}", content);
-            ChargeProfile cpc = Converter.getGson().fromJson(content, ChargeProfile.class);
-            String contentTranfsorm = Converter.getGson().toJson(cpc);
-            String profile = "{chargingProfile:" + contentTranfsorm + "}";
-            logger.info("{}", profile);
-            chargingControlRequest
-                    .content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, params, StandardCharsets.UTF_8));
+            // String content = FileReader.readFileInString("src/test/resources/responses/charging-profile.json");
+            // logger.info("{}", content);
+            // ChargeProfile cpc = Converter.getGson().fromJson(content, ChargeProfile.class);
+            // String contentTranfsorm = Converter.getGson().toJson(cpc);
+            // String profile = "{chargingProfile:" + contentTranfsorm + "}";
+            // logger.info("{}", profile);
+            // chargingControlRequest
+            // .content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, params, StandardCharsets.UTF_8));
 
             // chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
             // chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
             //
             // params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
 
-            ContentResponse chargingControlResponse = chargingControlRequest.send();
-            logger.info("{}", chargingControlResponse.getStatus());
-            logger.info("{}", chargingControlResponse.getReason());
-            logger.info("{}", chargingControlResponse.getContentAsString());
+            // ContentResponse chargingControlResponse = chargingControlRequest.send();
+            // logger.info("{}", chargingControlResponse.getStatus());
+            // logger.info("{}", chargingControlResponse.getReason());
+            // logger.info("{}", chargingControlResponse.getContentAsString());
 
         } catch (Exception e) {
             logger.error("{}", e.getMessage());

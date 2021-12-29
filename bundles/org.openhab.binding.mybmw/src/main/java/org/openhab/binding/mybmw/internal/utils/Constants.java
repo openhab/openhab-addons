@@ -63,6 +63,7 @@ public class Constants {
 
     // Services in Discovery
     public static final String ACTIVATED = "ACTIVATED";
+    public static final String ENABLED = "ENABLED";
     public static final String SUPPORTED = "SUPPORTED";
     public static final String NOT_SUPPORTED = "NOT_SUPPORTED";
 

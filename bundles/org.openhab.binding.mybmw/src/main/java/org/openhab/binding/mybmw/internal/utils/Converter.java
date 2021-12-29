@@ -15,6 +15,7 @@ package org.openhab.binding.mybmw.internal.utils;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -87,6 +88,7 @@ public class Converter {
     // https://www.baeldung.com/gson-list
     public static final Type VEHICLE_LIST_TYPE = new TypeToken<ArrayList<Vehicle>>() {
     }.getType();
+    public static int offsetMinutes = -1;
 
     public static double round(double value) {
         return Math.round(value * SCALE) / SCALE;
@@ -347,5 +349,13 @@ public class Converter {
         }
         time.append(Integer.toString(t.minute));
         return time.toString();
+    }
+
+    public static int getOffsetMinutes() {
+        if (offsetMinutes == -1) {
+            ZoneOffset zo = ZonedDateTime.now().getOffset();
+            offsetMinutes = zo.getTotalSeconds() / 60;
+        }
+        return offsetMinutes;
     }
 }

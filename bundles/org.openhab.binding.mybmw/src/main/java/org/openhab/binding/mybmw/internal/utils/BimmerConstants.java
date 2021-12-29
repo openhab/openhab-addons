@@ -60,6 +60,11 @@ public class BimmerConstants {
     public static final String LOGIN_NONCE = "login_nonce";
     public static final String AUTHORIZATION_CODE = "authorization_code";
 
+    // Parameters for API Requests
+    public static final String TIRE_GUARD_MODE = "tireGuardMode";
+    public static final String APP_DATE_TIME = "appDateTime";
+    public static final String APP_TIMEZONE = "apptimezone";
+
     // API endpoints
     public static final String API_OAUTH_CONFIG = "/eadrax-ucs/v1/presentation/oauth/config";
     public static final String API_VEHICLES = "/eadrax-vcs/v1/vehicles";
