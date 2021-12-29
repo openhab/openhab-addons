@@ -126,9 +126,10 @@ public class RemoteServiceHandler implements StringResponseCallback {
         if (data.length > 0) {
             dataMap.add(DATA, data[0]);
             proxy.post(serviceExecutionAPI + service.getRemoteCommand(), CONTENT_TYPE_JSON_ENCODED,
-                    "{CHARGING_PROFILE:" + data[0] + "}", Constants.EMPTY, this);
+                    "{CHARGING_PROFILE:" + data[0] + "}", handler.getConfiguration().get().vehicleBrand, this);
         } else {
-            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null, Constants.EMPTY, this);
+            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null,
+                    handler.getConfiguration().get().vehicleBrand, this);
         }
         return true;
     }
@@ -148,7 +149,8 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 final String encoded = dataMap == null || dataMap.isEmpty() ? null
                         : UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
 
-                proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null, Constants.EMPTY, this);
+                proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null,
+                        handler.getConfiguration().get().vehicleBrand, this);
             }, () -> {
                 logger.warn("No Service executed to get state");
             });

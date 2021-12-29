@@ -378,9 +378,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected void updateChargeProfile(ChargeProfile cp) {
         ChargeProfileWrapper cpw = new ChargeProfileWrapper(cp);
 
-        State s = StringType.valueOf(cpw.getPreference());
-        logger.info("Upadte {} with {}", CHARGE_PROFILE_PREFERENCE, s.toFullString());
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE, s);
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE, StringType.valueOf(cpw.getPreference()));
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE, StringType.valueOf(cpw.getMode()));
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL, StringType.valueOf(cpw.getControlType()));
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
@@ -402,21 +400,15 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         final TimedChannel timed = ChargeProfileUtils.getTimedChannel(key);
         if (timed != null) {
             final LocalTime time = profile.getTime(key);
-            logger.info("update {} Timer {} time {}", timed.time, key, time);
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.time, time == null ? UnDefType.UNDEF
                     : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
             if (timed.timer != null) {
                 final Boolean enabled = profile.isEnabled(key);
-                logger.info("update {} Timer {} enabled {}", timed.timer + CHARGE_ENABLED, key, enabled);
                 updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.timer + CHARGE_ENABLED,
                         enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled));
                 if (timed.hasDays) {
                     final Set<DayOfWeek> days = profile.getDays(key);
-                    logger.info("Timer {} has days {}", key, days == null);
                     EnumSet.allOf(DayOfWeek.class).forEach(day -> {
-                        logger.info("update {} Timer {} Day {} enabled {}",
-                                timed.timer + ChargeProfileUtils.getDaysChannel(day), key, day,
-                                days == null ? "-" : days.contains(day));
                         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE,
                                 timed.timer + ChargeProfileUtils.getDaysChannel(day),
                                 days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)));
