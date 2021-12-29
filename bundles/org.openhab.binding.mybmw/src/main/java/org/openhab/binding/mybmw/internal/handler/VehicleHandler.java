@@ -250,22 +250,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         });
     }
 
-    /**
-     * Don't stress ConnectedDrive with unnecessary requests. One call at the beginning is done to check the response.
-     * After cache has e.g. a proper error response it will be shown in the fingerprint
-     *
-     * @return
-     */
-    private boolean isSupported(String service) {
-        final String services = thing.getProperties().get(Constants.SERVICES_SUPPORTED);
-        if (services != null) {
-            if (services.contains(service)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public void updateRemoteExecutionStatus(@Nullable String service, @Nullable String status) {
         if (RemoteService.CHARGING_CONTROL.toString().equals(service)
                 && ExecutionState.EXECUTED.name().equals(status)) {

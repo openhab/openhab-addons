@@ -125,7 +125,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
      * There's only the Vehicles response available
      */
     @Override
-    public void onResponse(@Nullable String response) {
+    public synchronized void onResponse(@Nullable String response) {
         if (response != null) {
             updateStatus(ThingStatus.ONLINE);
             List<Vehicle> vehicleList = Converter.getVehicleList(response);
