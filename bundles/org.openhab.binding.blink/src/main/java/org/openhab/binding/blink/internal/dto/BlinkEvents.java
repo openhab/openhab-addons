@@ -15,6 +15,8 @@ package org.openhab.binding.blink.internal.dto;
 import java.time.OffsetDateTime;
 import java.util.List;
 
+import org.openhab.binding.blink.internal.config.CameraConfiguration;
+
 /**
  * The {@link BlinkEvents} class is the DTO for the video events api call, wrapping items showed in the new media list,
  * also being used to watch for motion.
@@ -33,6 +35,7 @@ public class BlinkEvents {
         public boolean deleted;
         public boolean watched;
         public String thumbnail;
+        public String device;
         public long device_id;
         public long network_id;
 
@@ -46,6 +49,14 @@ public class BlinkEvents {
 
         public boolean isNewEvent() {
             return !isDeletedEvent() && !isUpdatedEvent();
+        }
+
+        public boolean isCamera() {
+            return "catalina".equals(device);
+        }
+
+        public boolean isCamera(CameraConfiguration config) {
+            return isCamera() && network_id == config.networkId && device_id == config.cameraId;
         }
     }
 }
