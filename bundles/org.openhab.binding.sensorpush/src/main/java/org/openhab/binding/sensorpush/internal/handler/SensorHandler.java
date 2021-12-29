@@ -26,6 +26,7 @@ import org.openhab.binding.sensorpush.internal.config.SensorConfiguration;
 import org.openhab.binding.sensorpush.internal.protocol.Sample;
 import org.openhab.binding.sensorpush.internal.protocol.Sensor;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -159,11 +160,28 @@ public class SensorHandler extends BaseThingHandler {
                     updateState(CHANNEL_VOLTAGE, QuantityType.valueOf(batteryVoltage, VOLT));
                 }
                 if (rssi != null) {
-                    updateState(CHANNEL_RSSI, QuantityType.valueOf(rssi, DECIBEL_MILLIWATTS));
+                    updateState(CHANNEL_RSSI_DBM, QuantityType.valueOf(rssi, DECIBEL_MILLIWATTS));
+                    updateState(CHANNEL_RSSI, new DecimalType(rssiBars(rssi).longValue()));
                 }
 
                 setProperties(sensor);
             }
+        }
+    }
+
+    /**
+     * Convert RSSI value in dBm to the 0-4 number required for a channel of type system.signal-strength. An actual
+     * range of 1-4 is used so that the result matches the signal strength bars displayed in the SensorPush app.
+     */
+    public Long rssiBars(int rssi) {
+        if (rssi > -50) {
+            return Long.valueOf(4);
+        } else if (rssi > -70) {
+            return Long.valueOf(3);
+        } else if (rssi > -85) {
+            return Long.valueOf(2);
+        } else {
+            return Long.valueOf(1);
         }
     }
 
