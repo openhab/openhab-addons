@@ -143,7 +143,6 @@ public class MyBMWConstants {
     public static final String LAST_UPDATE_REASON = "last-update-reason";
     public static final String CHARGE_STATUS = "charge";
     public static final String CHARGE_TYPE = "charge-type";
-    public static final String CHARGE_REMAINING = "charge-remaining";
 
     // Door Details
     public static final String DOOR_DRIVER_FRONT = "driver-front";

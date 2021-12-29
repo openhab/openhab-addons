@@ -258,18 +258,6 @@ public class StatusWrapper {
                 assertEquals(Converter.toTitleCase(vehicle.properties.chargingState.state), st.toString(),
                         "Charge Status");
                 break;
-            case CHARGE_REMAINING:
-                // [todo]
-                // assertTrue(isElectric, "Is Electric");
-                // if (vStatus.chargingTimeRemaining == null) {
-                // assertTrue(state instanceof UnDefType, "expected UndefType");
-                // } else {
-                // assertTrue(state instanceof QuantityType);
-                // qtt = ((QuantityType) state);
-                // assertEquals(qtt.doubleValue(), vStatus.chargingTimeRemaining);
-                // assertEquals(Units.MINUTE, qtt.getUnit(), "Minutes");
-                // }
-                break;
             case PLUG_CONNECTION:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
