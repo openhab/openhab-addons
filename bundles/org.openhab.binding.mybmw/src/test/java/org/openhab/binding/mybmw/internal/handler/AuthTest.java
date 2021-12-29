@@ -29,6 +29,8 @@ import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthQueryResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthResponse;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
+import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
@@ -240,6 +242,36 @@ class AuthTest {
             logger.info("{}", chargeSessionsResponse.getStatus());
             logger.info("{}", chargeSessionsResponse.getReason());
             logger.info("{}", chargeSessionsResponse.getContentAsString());
+
+            String chargingControlUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+                    + "/eadrax-vrccs/v2/presentation/remote-commands/WBY1Z81040V905639/charging-control";
+            Request chargingControlRequest = apiHttpClient.POST(chargingControlUrl);
+            logger.info("{}", chargingControlUrl);
+            // vehicleRequest.header("Content-Type", "application/x-www-form-urlencoded");
+            chargingControlRequest.header(HttpHeader.AUTHORIZATION, t.getBearerToken());
+            chargingControlRequest.header("accept", "application/json");
+            chargingControlRequest.header("x-user-agent", "android(v1.07_20200330);bmw;1.7.0(11152)");
+            chargingControlRequest.header("accept-language", "de");
+            chargingControlRequest.header("Content-Type", CONTENT_TYPE_JSON_ENCODED);
+
+            String content = FileReader.readFileInString("src/test/resources/responses/charging-profile.json");
+            logger.info("{}", content);
+            ChargeProfile cpc = Converter.getGson().fromJson(content, ChargeProfile.class);
+            String contentTranfsorm = Converter.getGson().toJson(cpc);
+            String profile = "{chargingProfile:" + contentTranfsorm + "}";
+            logger.info("{}", profile);
+            chargingControlRequest
+                    .content(new StringContentProvider(CONTENT_TYPE_JSON_ENCODED, params, StandardCharsets.UTF_8));
+
+            // chargeStatisticsParams.put("vin", "WBY1Z81040V905639");
+            // chargeStatisticsParams.put("currentDate", Converter.getCurrentISOTime());
+            //
+            // params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
+
+            ContentResponse chargingControlResponse = chargingControlRequest.send();
+            logger.info("{}", chargingControlResponse.getStatus());
+            logger.info("{}", chargingControlResponse.getReason());
+            logger.info("{}", chargingControlResponse.getContentAsString());
 
         } catch (Exception e) {
             logger.error("{}", e.getMessage());

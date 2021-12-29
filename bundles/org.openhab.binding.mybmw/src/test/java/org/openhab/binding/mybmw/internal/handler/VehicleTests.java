@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int STATUS_ELECTRIC = 9;
-    private static final int STATUS_CONV = 6;
+    private static final int STATUS_ELECTRIC = 10;
+    private static final int STATUS_CONV = 7;
     private static final int RANGE_HYBRID = 9;
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 5;

@@ -60,8 +60,7 @@ import org.openhab.core.types.RefreshType;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link VehicleHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link VehicleHandler} handles responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit & send charge profile

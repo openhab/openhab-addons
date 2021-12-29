@@ -190,9 +190,10 @@ public class StatusWrapper {
                             ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
                 } else {
                     assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vehicle.properties.combinedRange.distance.value),
-                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
+                    assertEquals(
+                            Converter.round(vehicle.properties.combustionRange.distance.value
+                                    + vehicle.properties.electricRange.distance.value),
+                            Converter.round(qt.floatValue()), ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
             case REMAINING_FUEL:
@@ -326,12 +327,17 @@ public class StatusWrapper {
                 assertTrue(state instanceof QuantityType);
                 assertTrue(isHybrid);
                 qt = (QuantityType) state;
-                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combinedRange.distance.units)) {
-                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combinedRange.distance.value),
-                            qt.floatValue(), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Hybrid mi");
+                // BMW API provides whyever wrong value for combined range
+                // int wantedHybridRadius = vehicle.properties.combinedRange.distance.value;
+                int wantedHybridRadius = vehicle.properties.combustionRange.distance.value
+                        + vehicle.properties.electricRange.distance.value;
+
+                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combustionRange.distance.units)) {
+                    assertEquals(Converter.guessRangeRadius(wantedHybridRadius), qt.floatValue(),
+                            ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Hybrid mi");
                 } else {
-                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combinedRange.distance.value),
-                            qt.floatValue(), ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid km");
+                    assertEquals(Converter.guessRangeRadius(wantedHybridRadius), qt.floatValue(),
+                            ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid km");
                 }
                 break;
             case DOOR_DRIVER_FRONT:
@@ -414,8 +420,8 @@ public class StatusWrapper {
                     if (specialHandlingMap.containsKey(SERVICE_DATE)) {
                         assertEquals(specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString(), "Next Service");
                     } else {
-                        String dueDateString = VehicleStatusUtils
-                                .getNextServiceDate(vehicle.properties.serviceRequired);
+                        String dueDateString = VehicleStatusUtils.getNextServiceDate(vehicle.properties.serviceRequired)
+                                .toString();
                         DateTimeType expectedDTT = DateTimeType.valueOf(dueDateString);
                         assertEquals(expectedDTT.toString(), dtt.toString(), "Next Service");
                     }
@@ -426,28 +432,20 @@ public class StatusWrapper {
                 }
                 break;
             case SERVICE_MILEAGE:
-                assertTrue(state instanceof QuantityType);
-                // [todo]
-                // qt = ((QuantityType) state);
-                // if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
-                // if (imperial) {
-                // assertEquals(ImperialUnits.MILE, qt.getUnit(), "Next Service Miles");
-                // assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
-                // } else {
-                // assertEquals(KILOMETRE, qt.getUnit(), "Next Service KM");
-                // assertEquals(VehicleStatusUtils.getNextServiceMileage(vStatus), qt.intValue(), "Mileage");
-                // }
-                // } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
-                // if (imperial) {
-                // assertEquals(ImperialUnits.MILE, qt.getUnit(), "First Service Miles");
-                // assertEquals(vStatus.cbsData.get(0).cbsRemainingMileage, qt.intValue(),
-                // "First Service Mileage");
-                // } else {
-                // assertEquals(KILOMETRE, qt.getUnit(), "First Service KM");
-                // assertEquals(vStatus.cbsData.get(0).cbsRemainingMileage, qt.intValue(),
-                // "First Service Mileage");
-                // }
-                // }
+                if (!state.equals(UnDefType.UNDEF)) {
+                    qt = ((QuantityType) state);
+                    if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
+                        QuantityType<Length> wantedQt = (QuantityType) VehicleStatusUtils
+                                .getNextServiceMileage(vehicle.properties.serviceRequired);
+                        assertEquals(wantedQt.getUnit(), qt.getUnit(), "Next Service Miles");
+                        assertEquals(wantedQt.intValue(), qt.intValue(), "Mileage");
+                    } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
+                        assertEquals(vehicle.properties.serviceRequired.get(0).distance.units, qt.getUnit(),
+                                "First Service Unit");
+                        assertEquals(vehicle.properties.serviceRequired.get(0).distance.value, qt.intValue(),
+                                "First Service Mileage");
+                    }
+                }
                 break;
             case NAME:
                 assertTrue(state instanceof StringType);

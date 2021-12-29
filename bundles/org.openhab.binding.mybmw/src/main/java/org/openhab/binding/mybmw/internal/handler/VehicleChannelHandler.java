@@ -62,8 +62,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleChannelHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link VehicleChannelHandler} handles Channel updates
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - edit & send of charge profile
@@ -136,7 +135,9 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // Service Updates
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE,
-                DateTimeType.valueOf(VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired)));
+                VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired));
+        updateChannel(CHANNEL_GROUP_STATUS, SERVICE_MILEAGE,
+                VehicleStatusUtils.getNextServiceMileage(v.properties.serviceRequired));
 
         // CheckControl Active?
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
@@ -190,7 +191,9 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         if (isHybrid) {
             String unit = v.properties.combinedRange.distance.units;
             imperial = !Constants.KILOMETERS_JSON.equals(unit);
-            int rangeCombined = v.properties.combinedRange.distance.value;
+            // BMW API provides whyever wrong value for combined range
+            // int rangeCombined = v.properties.combinedRange.distance.value;
+            int rangeCombined = v.properties.electricRange.distance.value + v.properties.combustionRange.distance.value;
             QuantityType<Length> qtHybridRange = QuantityType.valueOf(rangeCombined, Constants.KILOMETRE_UNIT);
             QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeCombined),
                     Constants.KILOMETRE_UNIT);

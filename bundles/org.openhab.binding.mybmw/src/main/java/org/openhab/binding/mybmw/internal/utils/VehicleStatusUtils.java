@@ -18,6 +18,11 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link VehicleStatusUtils} Data Transfer Object
@@ -27,23 +32,44 @@ import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 @NonNullByDefault
 public class VehicleStatusUtils {
 
-    public static String getNextServiceDate(List<CBS> cbsMessageList) {
-        if (cbsMessageList.isEmpty()) {
-            return Constants.NULL_DATE;
-        } else {
-            ZonedDateTime farFuture = ZonedDateTime.now().plusYears(100);
-            ZonedDateTime serviceDate = farFuture;
-            for (CBS service : cbsMessageList) {
+    public static State getNextServiceDate(List<CBS> cbsMessageList) {
+        ZonedDateTime farFuture = ZonedDateTime.now().plusYears(100);
+        ZonedDateTime serviceDate = farFuture;
+        for (CBS service : cbsMessageList) {
+            if (service.dateTime != null) {
                 ZonedDateTime d = ZonedDateTime.parse(service.dateTime);
                 if (d.isBefore(serviceDate)) {
                     serviceDate = d;
+                } // else skip
+            }
+        }
+        if (serviceDate.equals(farFuture)) {
+            return UnDefType.UNDEF;
+        } else {
+            DateTimeType dt = DateTimeType.valueOf(serviceDate.format(Converter.DATE_INPUT_PATTERN));
+            return dt;
+        }
+    }
+
+    public static State getNextServiceMileage(List<CBS> cbsMessageList) {
+        boolean imperial = false;
+        int serviceMileage = Integer.MAX_VALUE;
+        for (CBS service : cbsMessageList) {
+            if (service.distance != null) {
+                if (service.distance.value < serviceMileage) {
+                    serviceMileage = service.distance.value;
+                    imperial = !Constants.KILOMETERS_JSON.equals(service.distance.units);
                 }
             }
-            if (serviceDate.equals(farFuture)) {
-                return Constants.NULL_DATE;
+        }
+        if (serviceMileage != Integer.MAX_VALUE) {
+            if (imperial) {
+                return QuantityType.valueOf(serviceMileage, ImperialUnits.MILE);
             } else {
-                return serviceDate.format(Converter.DATE_INPUT_PATTERN);
+                return QuantityType.valueOf(serviceMileage, Constants.KILOMETRE_UNIT);
             }
+        } else {
+            return UnDefType.UNDEF;
         }
     }
 
@@ -68,29 +94,4 @@ public class VehicleStatusUtils {
         }
         return VehicleType.UNKNOWN;
     }
-    /**
-     * public static int getNextServiceMileage(VehicleStatus vStatus) {
-     * if (vStatus.cbsData == null) {
-     * return -1;
-     * }
-     * if (vStatus.cbsData.isEmpty()) {
-     * return -1;
-     * } else {
-     * int serviceMileage = Integer.MAX_VALUE;
-     * for (int i = 0; i < vStatus.cbsData.size(); i++) {
-     * CBSMessage entry = vStatus.cbsData.get(i);
-     * if (entry.cbsRemainingMileage != -1) {
-     * if (entry.cbsRemainingMileage < serviceMileage) {
-     * serviceMileage = entry.cbsRemainingMileage;
-     * }
-     * }
-     * }
-     * if (serviceMileage != Integer.MAX_VALUE) {
-     * return serviceMileage;
-     * } else {
-     * return -1;
-     * }
-     * }
-     * }
-     */
 }

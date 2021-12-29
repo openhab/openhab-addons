@@ -21,6 +21,7 @@ import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
+import org.openhab.core.library.types.DateTimeType;
 
 /**
  * The {@link VehicleStatusTest} Test json responses from ConnectedDrive Portal
@@ -36,8 +37,11 @@ public class VehicleStatusTest {
         String json = FileReader.readFileInString("src/test/resources/vehicle-status-services.json");
         Vehicle v = Converter.getVehicle(Constants.ANONYMOUS, json);
         assertEquals(Constants.ANONYMOUS, v.vin, "VIN check");
-        assertEquals("2023-11-01T00:00:00", VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired),
+        assertEquals("2023-11-01T00:00",
+                ((DateTimeType) VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired)).getZonedDateTime()
+                        .toLocalDateTime().toString(),
                 "Service Date");
+
         assertEquals("2021-12-21T16:46:02", Converter.getZonedDateTime(v.properties.lastUpdatedAt), "Last update time");
     }
 }

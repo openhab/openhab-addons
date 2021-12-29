@@ -21,4 +21,5 @@ public class CBS {
     public String type;// ": "BRAKE_FLUID",
     public String status;// ": "OK",
     public String dateTime;// ": "2023-11-01T00:00:00.000Z"
+    public Distance distance;
 }
