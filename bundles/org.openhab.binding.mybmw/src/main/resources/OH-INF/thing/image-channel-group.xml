@@ -8,7 +8,6 @@
 		<description>Provides an Image of your Vehicle</description>
 		<channels>
 			<channel id="png" typeId="png-channel"/>
-			<channel id="size" typeId="image-size-channel"/>
 			<channel id="view" typeId="image-view-channel"/>
 		</channels>
 	</channel-group-type>

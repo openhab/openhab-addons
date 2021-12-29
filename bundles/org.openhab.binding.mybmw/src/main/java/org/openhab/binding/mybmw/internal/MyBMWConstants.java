@@ -33,7 +33,7 @@ public class MyBMWConstants {
 
     public static final int DEFAULT_IMAGE_SIZE_PX = 1024;
     public static final int DEFAULT_REFRESH_INTERVAL_MINUTES = 5;
-    public static final String DEFAULT_IMAGE_VIEWPORT = "FRONT";
+    public static final String DEFAULT_IMAGE_VIEWPORT = "Default";
 
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
@@ -47,24 +47,6 @@ public class MyBMWConstants {
         private final String type;
 
         VehicleType(String s) {
-            type = s;
-        }
-
-        @Override
-        public String toString() {
-            return type;
-        }
-    }
-
-    public enum Viewport {
-        FRONTSIDE("VehicleStatus"),
-        FRONT("VehicleInfo"),
-        SIDE("ChargingHistory"),
-        UNKNOWN("unknown");
-
-        private final String type;
-
-        Viewport(String s) {
             type = s;
         }
 
@@ -195,7 +177,6 @@ public class MyBMWConstants {
     // Image
     public static final String IMAGE_FORMAT = "png";
     public static final String IMAGE_VIEWPORT = "view";
-    public static final String IMAGE_SIZE = "size";
 
     // Remote Services
     public static final String REMOTE_SERVICE_LIGHT_FLASH = "light";

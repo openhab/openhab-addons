@@ -24,11 +24,9 @@ public class ImageProperties {
     public static final int RETRY_COUNTER = 5;
     public int failCounter = 0;
     public String viewport = Constants.EMPTY;
-    public int size = -1;
 
-    public ImageProperties(String viewport, int size) {
+    public ImageProperties(String viewport) {
         this.viewport = viewport;
-        this.size = size;
     }
 
     public ImageProperties() {
@@ -44,6 +42,6 @@ public class ImageProperties {
 
     @Override
     public String toString() {
-        return viewport + size;
+        return viewport;
     }
 }

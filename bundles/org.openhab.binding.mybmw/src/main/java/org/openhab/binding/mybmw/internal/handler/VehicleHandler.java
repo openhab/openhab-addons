@@ -41,7 +41,6 @@ import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 import org.openhab.binding.mybmw.internal.utils.RemoteServiceUtils;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
@@ -131,27 +130,12 @@ public class VehicleHandler extends VehicleChannelHandler {
                         String newViewport = command.toString();
                         synchronized (imageProperties) {
                             if (!imageProperties.viewport.equals(newViewport)) {
-                                imageProperties = new ImageProperties(newViewport, imageProperties.size);
+                                imageProperties = new ImageProperties(newViewport);
                                 imageCache = Optional.empty();
                                 proxy.ifPresent(prox -> prox.requestImage(config, imageProperties, imageCallback));
                             }
                         }
                         updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(newViewport));
-                    }
-                }
-                if (command instanceof DecimalType) {
-                    if (command instanceof DecimalType) {
-                        int newImageSize = ((DecimalType) command).intValue();
-                        if (channelUID.getIdWithoutGroup().equals(IMAGE_SIZE)) {
-                            synchronized (imageProperties) {
-                                if (imageProperties.size != newImageSize) {
-                                    imageProperties = new ImageProperties(imageProperties.viewport, newImageSize);
-                                    imageCache = Optional.empty();
-                                    proxy.ifPresent(prox -> prox.requestImage(config, imageProperties, imageCallback));
-                                }
-                            }
-                        }
-                        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE, new DecimalType(newImageSize));
                     }
                 }
             });
@@ -198,10 +182,9 @@ public class VehicleHandler extends VehicleChannelHandler {
 
         // get Image after init with config values
         synchronized (imageProperties) {
-            imageProperties = new ImageProperties(config.imageViewport, config.imageSize);
+            imageProperties = new ImageProperties(config.imageViewport);
         }
         updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf((config.imageViewport)));
-        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE, new DecimalType((config.imageSize)));
 
         // start update schedule
         startSchedule(config.refreshInterval);

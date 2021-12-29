@@ -130,8 +130,13 @@ public class MyBMWProxy {
         }
         req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
         req.header(HTTPConstants.X_USER_AGENT, userAgent);
-        req.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON_ENCODED);
         req.header(HttpHeader.ACCEPT_LANGUAGE, configuration.language);
+        if (callback instanceof ByteResponseCallback) {
+            req.header(HttpHeader.ACCEPT, "image/png");
+
+        } else {
+            req.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON_ENCODED);
+        }
 
         req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
@@ -203,13 +208,7 @@ public class MyBMWProxy {
         // "/eadrax-ics/v3/presentation/vehicles/{vin}/images?carView={view}"
         final String localImageUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                 + "/eadrax-ics/v3/presentation/vehicles/" + config.vin + "/images?carView=" + props.viewport;
-        final MultiMap<String> dataMap = new MultiMap<String>();
-        dataMap.add("width", Integer.toString(props.size));
-        dataMap.add("height", Integer.toString(props.size));
-        dataMap.add("view", props.viewport);
-
-        get(localImageUrl, CONTENT_TYPE_URL_ENCODED, UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false),
-                config.vehicleBrand, callback);
+        get(localImageUrl, null, null, config.vehicleBrand, callback);
     }
 
     /**
