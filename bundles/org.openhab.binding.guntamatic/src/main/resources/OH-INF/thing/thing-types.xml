@@ -44,22 +44,22 @@
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
 			<channel id="controlWwHeat0" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 0</label>
+				<label>Trigger Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlWwHeat1" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 1</label>
+				<label>Trigger Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlWwHeat2" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 2</label>
+				<label>Trigger Warm Water Circle 2</label>
 			</channel>
 			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 0</label>
+				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 1</label>
+				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 2</label>
+				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
@@ -76,17 +76,19 @@
 				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
-				<context>key</context>
+				<context>password</context>
 				<label>Key</label>
 				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
 					The
 					key needs to be reqested from Guntamatic support.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<default>60</default>
 				<label>Refresh Interval</label>
 				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
 			</parameter>
 			<parameter name="encoding" type="text" required="false">
+				<default>windows-1252</default>
 				<label>Encoding</label>
 				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
 			</parameter>
@@ -132,22 +134,22 @@
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
 			<channel id="controlWwHeat0" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 0</label>
+				<label>Trigger Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlWwHeat1" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 1</label>
+				<label>Trigger Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlWwHeat2" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 2</label>
+				<label>Trigger Warm Water Circle 2</label>
 			</channel>
 			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 0</label>
+				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 1</label>
+				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 2</label>
+				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
@@ -164,17 +166,19 @@
 				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
-				<context>key</context>
+				<context>password</context>
 				<label>Key</label>
 				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
 					The
 					key needs to be reqested from Guntamatic support.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<default>60</default>
 				<label>Refresh Interval</label>
 				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
 			</parameter>
 			<parameter name="encoding" type="text" required="false">
+				<default>windows-1252</default>
 				<label>Encoding</label>
 				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
 			</parameter>
@@ -220,22 +224,22 @@
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
 			<channel id="controlWwHeat0" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 0</label>
+				<label>Trigger Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlWwHeat1" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 1</label>
+				<label>Trigger Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlWwHeat2" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 2</label>
+				<label>Trigger Warm Water Circle 2</label>
 			</channel>
 			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 0</label>
+				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 1</label>
+				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 2</label>
+				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
@@ -252,17 +256,19 @@
 				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
-				<context>key</context>
+				<context>password</context>
 				<label>Key</label>
 				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
 					The
 					key needs to be reqested from Guntamatic support.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<default>60</default>
 				<label>Refresh Interval</label>
 				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
 			</parameter>
 			<parameter name="encoding" type="text" required="false">
+				<default>windows-1252</default>
 				<label>Encoding</label>
 				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
 			</parameter>
@@ -308,22 +314,22 @@
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
 			<channel id="controlWwHeat0" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 0</label>
+				<label>Trigger Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlWwHeat1" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 1</label>
+				<label>Trigger Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlWwHeat2" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 2</label>
+				<label>Trigger Warm Water Circle 2</label>
 			</channel>
 			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 0</label>
+				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 1</label>
+				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 2</label>
+				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
@@ -340,17 +346,19 @@
 				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
-				<context>key</context>
+				<context>password</context>
 				<label>Key</label>
 				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
 					The
 					key needs to be reqested from Guntamatic support.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<default>60</default>
 				<label>Refresh Interval</label>
 				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
 			</parameter>
 			<parameter name="encoding" type="text" required="false">
+				<default>windows-1252</default>
 				<label>Encoding</label>
 				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
 			</parameter>
@@ -396,22 +404,22 @@
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
 			<channel id="controlWwHeat0" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 0</label>
+				<label>Trigger Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlWwHeat1" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 1</label>
+				<label>Trigger Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlWwHeat2" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 2</label>
+				<label>Trigger Warm Water Circle 2</label>
 			</channel>
 			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 0</label>
+				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 1</label>
+				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 2</label>
+				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
@@ -428,17 +436,19 @@
 				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
-				<context>key</context>
+				<context>password</context>
 				<label>Key</label>
 				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
 					The
 					key needs to be reqested from Guntamatic support.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<default>60</default>
 				<label>Refresh Interval</label>
 				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
 			</parameter>
 			<parameter name="encoding" type="text" required="false">
+				<default>windows-1252</default>
 				<label>Encoding</label>
 				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
 			</parameter>
@@ -484,22 +494,22 @@
 				<label>Set Program of Heat Circle 8</label>
 			</channel>
 			<channel id="controlWwHeat0" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 0</label>
+				<label>Trigger Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlWwHeat1" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 1</label>
+				<label>Trigger Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlWwHeat2" typeId="controlWwHeat">
-				<label>Trigger Warm Wather Circle 2</label>
+				<label>Trigger Warm Water Circle 2</label>
 			</channel>
 			<channel id="controlExtraWwHeat0" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 0</label>
+				<label>Trigger Extra Warm Water Circle 0</label>
 			</channel>
 			<channel id="controlExtraWwHeat1" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 1</label>
+				<label>Trigger Extra Warm Water Circle 1</label>
 			</channel>
 			<channel id="controlExtraWwHeat2" typeId="controlExtraWwHeat">
-				<label>Trigger Extra Warm Wather Circle 2</label>
+				<label>Trigger Extra Warm Water Circle 2</label>
 			</channel>
 		</channels>
 		<properties>
@@ -516,17 +526,19 @@
 				<description>Hostname or IP address of the Guntamatic Heating System</description>
 			</parameter>
 			<parameter name="key" type="text" required="false">
-				<context>key</context>
+				<context>password</context>
 				<label>Key</label>
 				<description>Optional, but required to read protected parameters and to control the Guntamatic Heating System.
 					The
 					key needs to be reqested from Guntamatic support.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="1" required="false">
+				<default>60</default>
 				<label>Refresh Interval</label>
 				<description>Interval the Guntamatic Heating System is polled in seconds. Default: 60s</description>
 			</parameter>
 			<parameter name="encoding" type="text" required="false">
+				<default>windows-1252</default>
 				<label>Encoding</label>
 				<description>Code page used by the Guntamatic Heating System. Default: 'windows-1252'</description>
 			</parameter>
@@ -574,8 +586,8 @@
 	</channel-type>
 	<channel-type id="controlWwHeat" advanced="true">
 		<item-type>String</item-type>
-		<label>Trigger Warm Wather Circle 0...2</label>
-		<description>Trigger Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<label>Trigger Warm Water Circle 0...2</label>
+		<description>Trigger Warm Water Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
 		<state>
 			<options>
 				<option value="0">RECHARGE</option>
@@ -584,8 +596,8 @@
 	</channel-type>
 	<channel-type id="controlExtraWwHeat" advanced="true">
 		<item-type>String</item-type>
-		<label>Trigger Extra Warm Wather Circle 0...2</label>
-		<description>Trigger Extra Warm Wather Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<label>Trigger Extra Warm Water Circle 0...2</label>
+		<description>Trigger Extra Warm Water Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
 		<state>
 			<options>
 				<option value="0">RECHARGE</option>

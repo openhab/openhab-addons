@@ -26,8 +26,6 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provide channelTypes for Guntamatic Heating Systems
@@ -38,7 +36,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class GuntamaticChannelTypeProvider implements ChannelTypeProvider {
     private final Map<String, ChannelType> channelTypes = new ConcurrentHashMap<>();
-    private final Logger logger = LoggerFactory.getLogger(GuntamaticChannelTypeProvider.class);
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
@@ -47,26 +44,19 @@ public class GuntamaticChannelTypeProvider implements ChannelTypeProvider {
 
     @Override
     public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        if (channelTypes.containsKey(channelTypeUID.getAsString())) {
-            return channelTypes.get(channelTypeUID.getAsString());
-        }
-        return null;
+        return channelTypes.get(channelTypeUID.getAsString()); // returns null if not found
     }
 
     public void addChannelType(ChannelTypeUID channelTypeUID, String label, String itemType, String description,
             boolean advanced, String pattern) {
-        try {
-            StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create()
-                    .withReadOnly(true);
-            if (!pattern.isEmpty()) {
-                stateDescriptionFragmentBuilder.withPattern(pattern);
-            }
-            StateChannelTypeBuilder stateChannelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
-                    .withDescription(description).isAdvanced(advanced)
-                    .withStateDescriptionFragment(stateDescriptionFragmentBuilder.build());
-            channelTypes.put(channelTypeUID.getAsString(), stateChannelTypeBuilder.build());
-        } catch (Exception e) {
-            logger.warn("Failed creating channelType {}: {} ", channelTypeUID, e.getMessage());
+        StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create()
+                .withReadOnly(true);
+        if (!pattern.isEmpty()) {
+            stateDescriptionFragmentBuilder.withPattern(pattern);
         }
+        StateChannelTypeBuilder stateChannelTypeBuilder = ChannelTypeBuilder.state(channelTypeUID, label, itemType)
+                .withDescription(description).isAdvanced(advanced)
+                .withStateDescriptionFragment(stateDescriptionFragmentBuilder.build());
+        channelTypes.put(channelTypeUID.getAsString(), stateChannelTypeBuilder.build());
     }
 }

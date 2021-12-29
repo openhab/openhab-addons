@@ -58,12 +58,12 @@ The Guntamatic Heating System can be controlled using the following channels:
 |	`controlHeatCircProgram6`	|	Set Program of Heat Circle 6 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlHeatCircProgram7`	|	Set Program of Heat Circle 7 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 |	`controlHeatCircProgram8`	|	Set Program of Heat Circle 8 (`OFF`, `NORMAL`, `HEAT`, `LOWER`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat0`	|	Trigger Warm Wather Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat1`	|	Trigger Warm Wather Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlWwHeat2`	|	Trigger Warm Wather Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat0`	|	Trigger Extra Warm Wather Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat1`	|	Trigger Extra Warm Wather Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
-|	`controlExtraWwHeat2`	|	Trigger Extra Warm Wather Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat0`	|	Trigger Warm Water Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat1`	|	Trigger Warm Water Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlWwHeat2`	|	Trigger Warm Water Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat0`	|	Trigger Extra Warm Water Circle 0 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat1`	|	Trigger Extra Warm Water Circle 1 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
+|	`controlExtraWwHeat2`	|	Trigger Extra Warm Water Circle 2 (`RECHARGE`)	|	`String`	|		|	🔐 W1	|	R/W	|	true	|
 
 #### Response of Control Channels
 
@@ -215,12 +215,12 @@ String              	Biostar_ControlHeatCircProgram5	"Set Program of Heat Circle
 String              	Biostar_ControlHeatCircProgram6	"Set Program of Heat Circle 6"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram6" }
 String              	Biostar_ControlHeatCircProgram7	"Set Program of Heat Circle 7"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram7" }
 String              	Biostar_ControlHeatCircProgram8	"Set Program of Heat Circle 8"      	{ channel="guntamatic:biostar:mybiostar:controlHeatCircProgram8" }
-String              	Biostar_ControlWwHeat0         	"Trigger Warm Wather Circle 0"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat0" }
-String              	Biostar_ControlWwHeat1         	"Trigger Warm Wather Circle 1"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat1" }
-String              	Biostar_ControlWwHeat2         	"Trigger Warm Wather Circle 2"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat2" }
-String              	Biostar_ControlExtraWwHeat0    	"Trigger Extra Warm Wather Circle 0"	{ channel="guntamatic:biostar:mybiostar:controlExtraWwHeat0" }
-String              	Biostar_ControlExtraWwHeat1    	"Trigger Extra Warm Wather Circle 1"	{ channel="guntamatic:biostar:mybiostar:controlExtraWwHeat1" }
-String              	Biostar_ControlExtraWwHeat2    	"Trigger Extra Warm Wather Circle 2"	{ channel="guntamatic:biostar:mybiostar:controlExtraWwHeat2" }
+String              	Biostar_ControlWwHeat0         	"Trigger Warm Water Circle 0"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat0" }
+String              	Biostar_ControlWwHeat1         	"Trigger Warm Water Circle 1"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat1" }
+String              	Biostar_ControlWwHeat2         	"Trigger Warm Water Circle 2"      	{ channel="guntamatic:biostar:mybiostar:controlWwHeat2" }
+String              	Biostar_ControlExtraWwHeat0    	"Trigger Extra Warm Water Circle 0"	{ channel="guntamatic:biostar:mybiostar:controlExtraWwHeat0" }
+String              	Biostar_ControlExtraWwHeat1    	"Trigger Extra Warm Water Circle 1"	{ channel="guntamatic:biostar:mybiostar:controlExtraWwHeat1" }
+String              	Biostar_ControlExtraWwHeat2    	"Trigger Extra Warm Water Circle 2"	{ channel="guntamatic:biostar:mybiostar:controlExtraWwHeat2" }
 String              	Biostar_Running                	"Running"                           	{ channel="guntamatic:biostar:mybiostar:running" }
 Number:Temperature  	Biostar_OutsideTemp            	"Outside Temp."                     	{ channel="guntamatic:biostar:mybiostar:outsideTemp" }
 Number:Temperature  	Biostar_BlrTargetTemp          	"Blr.Target Temp"                   	{ channel="guntamatic:biostar:mybiostar:blrTargetTemp" }
@@ -359,3 +359,4 @@ Please provide feedback (👍 as well as 👎) when using the Binding for other 
 
 Forum topic for feedback:
  - [openHAB community #128451](https://community.openhab.org/t/guntamatic-new-binding-for-guntamatic-heating-systems-biostar-powerchip-powercorn-biocom-pro-therm/128451 "openHAB community #128451")
+
