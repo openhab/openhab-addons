@@ -14,9 +14,7 @@ package org.openhab.binding.mybmw.internal.handler;
 
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
@@ -70,10 +68,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     private Optional<MyBMWProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
     public Optional<VehicleConfiguration> configuration = Optional.empty();
-    private Optional<MyBMWBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<ScheduledFuture<?>> editTimeout = Optional.empty();
-    private Optional<List<ResponseCallback>> callbackCounter = Optional.empty();
 
     private ImageProperties imageProperties = new ImageProperties();
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
@@ -184,7 +180,6 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     @Override
     public void initialize() {
-        callbackCounter = Optional.of(new ArrayList<ResponseCallback>());
         updateStatus(ThingStatus.UNKNOWN);
         final VehicleConfiguration config = getConfigAs(VehicleConfiguration.class);
         configuration = Optional.of(config);
@@ -192,7 +187,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
             if (handler != null) {
-                bridgeHandler = Optional.of(((MyBMWBridgeHandler) handler));
                 proxy = ((MyBMWBridgeHandler) handler).getProxy();
                 remote = proxy.map(prox -> prox.getRemoteServiceHandler(this));
             } else {

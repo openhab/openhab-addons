@@ -21,7 +21,6 @@ import java.util.Map;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,7 +30,6 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -104,12 +102,10 @@ public class StatusWrapper {
         String cUid = channelUID.getIdWithoutGroup();
         String gUid = channelUID.getGroupId();
         QuantityType<Length> qt;
-        QuantityType<Time> qtt;
         StringType st;
         StringType wanted;
         DateTimeType dtt;
         PointType pt;
-        OnOffType oot;
         switch (cUid) {
             case MILEAGE:
                 assertTrue(state instanceof QuantityType);
@@ -129,15 +125,6 @@ public class StatusWrapper {
                         } else {
                             assertEquals(qt.intValue(), vehicle.properties.serviceRequired.get(0).dateTime,
                                     "Service Mileage");
-                        }
-                        break;
-                    case CHANNEL_GROUP_CHECK_CONTROL:
-                        if (vehicle.properties.checkControlMessages.isEmpty()) {
-                            assertEquals(qt.intValue(), -1, "CheckControl Mileage");
-                        } else {
-                            // [todo] tbd
-                            // assertEquals(qt.intValue(), vehicle.properties.checkControlMessages.get(0).,
-                            // "CheckControl Mileage");
                         }
                         break;
                     default:
@@ -238,10 +225,7 @@ public class StatusWrapper {
                 if (specialHandlingMap.containsKey(CHECK_CONTROL)) {
                     assertEquals(specialHandlingMap.get(CHECK_CONTROL).toString(), st.toString(), "Check Control");
                 } else {
-                    // [todo]
-                    // assertEquals(Converter.toTitleCase(VehicleStatusUtils.checkControlActive(vStatus)),
-                    // st.toString(),
-                    // "Check Control");
+                    assertEquals(vehicle.status.checkControlMessagesGeneralState, st.toString(), "Check Control");
                 }
                 break;
             case CHARGE_TYPE:
