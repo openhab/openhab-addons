@@ -118,16 +118,6 @@ public class BaseBlinkApiService {
         return contentResponse;
     }
 
-    public BlinkCommandResponse getCommandStatus(@Nullable BlinkAccount account, Long networkId, Long commandId)
-            throws IOException {
-        if (account == null || account.account == null || networkId == null)
-            throw new IllegalArgumentException("Cannot call command status api without account or network");
-        String uri = "/network/" + networkId + "/command/" + commandId;
-        BlinkCommandResponse cmd = apiRequest(account.account.tier, uri, HttpMethod.GET, account.auth.token, null,
-                BlinkCommandResponse.class);
-        return cmd;
-    }
-
     public void watchCommandStatus(ScheduledExecutorService scheduler, @Nullable BlinkAccount account, Long networkId,
             Long cmdId, Consumer<Boolean> handler) {
         if (account == null || account.account == null)
