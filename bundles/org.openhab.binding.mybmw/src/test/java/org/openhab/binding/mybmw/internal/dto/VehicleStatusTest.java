@@ -34,7 +34,7 @@ public class VehicleStatusTest {
 
     @Test
     public void testServiceDate() {
-        String json = FileReader.readFileInString("src/test/resources/vehicle-status-services.json");
+        String json = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
         Vehicle v = Converter.getVehicle(Constants.ANONYMOUS, json);
         assertEquals(Constants.ANONYMOUS, v.vin, "VIN check");
         assertEquals("2023-11-01T00:00",

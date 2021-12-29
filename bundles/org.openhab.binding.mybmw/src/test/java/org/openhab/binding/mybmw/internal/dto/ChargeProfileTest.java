@@ -33,7 +33,7 @@ public class ChargeProfileTest {
 
     @Test
     public void testProfileConversion() {
-        String json = FileReader.readFileInString("src/test/resources/vehicle-status-services.json");
+        String json = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
         Vehicle v = Converter.getVehicle(Constants.ANONYMOUS, json);
         ChargeProfile cp = v.status.chargingProfile;
         String cpJson = Converter.getGson().toJson(cp);

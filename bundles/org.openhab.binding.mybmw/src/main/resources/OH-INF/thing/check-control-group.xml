@@ -9,7 +9,7 @@
 		<channels>
 			<channel id="name" typeId="checkcontrol-name-channel"/>
 			<channel id="details" typeId="checkcontrol-details-channel"/>
-			<channel id="mileage" typeId="checkcontrol-mileage-channel"/>
+			<channel id="severity" typeId="checkcontrol-severity-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

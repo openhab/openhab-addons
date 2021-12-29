@@ -18,8 +18,11 @@ package org.openhab.binding.mybmw.internal.dto.status;
  * @author Bernd Weymann - Initial contribution
  */
 public class CCMMessage {
-    public String criticalness;// ": "nonCritical",
-    public int iconId;// ": 60197,
-    public String state;// ": "OK",
-    public String title;// ": "Engine Oil"
+    public String criticalness;// ": "semiCritical",
+    public int iconId;// ": 60217,
+    public String state;// ": "Medium",
+    public String title;// ": "Battery discharged: Start engine"
+    public String id;// ": "229",
+    public String longDescription;// ": "Charge by driving for longer periods or use external charger. Functions
+                                  // requiring battery will be switched off.",
 }

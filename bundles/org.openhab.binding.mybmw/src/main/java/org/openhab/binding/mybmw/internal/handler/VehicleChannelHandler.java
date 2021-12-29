@@ -32,9 +32,9 @@ import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeSession;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
-import org.openhab.binding.mybmw.internal.dto.properties.CCM;
 import org.openhab.binding.mybmw.internal.dto.properties.DoorsWindows;
 import org.openhab.binding.mybmw.internal.dto.properties.Location;
+import org.openhab.binding.mybmw.internal.dto.status.CCMMessage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils.TimedChannel;
@@ -78,7 +78,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     // List Interfaces
     protected List<CBS> serviceList = new ArrayList<CBS>();
     protected String selectedService = Constants.UNDEF;
-    protected List<CCM> checkControlList = new ArrayList<CCM>();
+    protected List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
     protected String selectedCC = Constants.UNDEF;
     protected List<ChargeSession> sessionList = new ArrayList<ChargeSession>();
     protected String selectedSession = Constants.UNDEF;
@@ -126,7 +126,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateWindows(v.properties.doorsAndWindows);
         updatePosition(v.properties.vehicleLocation);
         updateServices(v.properties.serviceRequired);
-        updateCheckControls(v.properties.checkControlMessages);
+        updateCheckControls(v.status.checkControlMessages);
     }
 
     protected void updateVehicleStatus(Vehicle v) {
@@ -215,38 +215,28 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         }
     }
 
-    protected void updateCheckControls(List<CCM> ccl) {
+    protected void updateCheckControls(List<CCMMessage> ccl) {
         if (ccl.isEmpty()) {
             // No Check Control available - show not active
-            CCM ccm = new CCM();
-            // [todo]
-            // ccm.ccmDescriptionLong = Constants.NO_ENTRIES;
-            // ccm.ccmDescriptionShort = Constants.NO_ENTRIES;
-            // ccm.ccmId = -1;
-            // ccm.ccmMileage = -1;
+            CCMMessage ccm = new CCMMessage();
+            ccm.title = Constants.NO_ENTRIES;
+            ccm.longDescription = Constants.NO_ENTRIES;
             ccl.add(ccm);
         }
 
         // add all elements to options
         checkControlList = ccl;
         List<StateOption> ccmDescriptionOptions = new ArrayList<>();
-        List<StateOption> ccmDetailsOptions = new ArrayList<>();
-        List<StateOption> ccmMileageOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
-        for (CCM ccEntry : checkControlList) {
-            // [todo]
-            // ccmDescriptionOptions.add(new StateOption(Integer.toString(index), ccEntry.ccmDescriptionShort));
-            // ccmDetailsOptions.add(new StateOption(Integer.toString(index), ccEntry.ccmDescriptionLong));
-            // ccmMileageOptions.add(new StateOption(Integer.toString(index), Integer.toString(ccEntry.ccmMileage)));
-            // if (selectedCC.equals(ccEntry.ccmDescriptionShort)) {
-            // isSelectedElementIn = true;
-            // }
+        for (CCMMessage ccEntry : checkControlList) {
+            ccmDescriptionOptions.add(new StateOption(Integer.toString(index), ccEntry.title));
+            if (selectedCC.equals(ccEntry.title)) {
+                isSelectedElementIn = true;
+            }
             index++;
         }
         setOptions(CHANNEL_GROUP_CHECK_CONTROL, NAME, ccmDescriptionOptions);
-        setOptions(CHANNEL_GROUP_CHECK_CONTROL, DETAILS, ccmDetailsOptions);
-        setOptions(CHANNEL_GROUP_CHECK_CONTROL, MILEAGE, ccmMileageOptions);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
@@ -256,13 +246,11 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void selectCheckControl(int index) {
         if (index >= 0 && index < checkControlList.size()) {
-            CCM ccEntry = checkControlList.get(index);
-            // [todo]
-            // selectedCC = ccEntry.ccmDescriptionShort;
-            // updateChannel(CHANNEL_GROUP_CHECK_CONTROL, NAME, StringType.valueOf(ccEntry.ccmDescriptionShort));
-            // updateChannel(CHANNEL_GROUP_CHECK_CONTROL, DETAILS, StringType.valueOf(ccEntry.ccmDescriptionLong));
-            // updateChannel(CHANNEL_GROUP_CHECK_CONTROL, MILEAGE, QuantityType.valueOf(
-            // Converter.round(ccEntry.ccmMileage), imperial ? ImperialUnits.MILE : Constants.KILOMETRE_UNIT));
+            CCMMessage ccEntry = checkControlList.get(index);
+            selectedCC = ccEntry.title;
+            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, NAME, StringType.valueOf(ccEntry.title));
+            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, DETAILS, StringType.valueOf(ccEntry.longDescription));
+            updateChannel(CHANNEL_GROUP_CHECK_CONTROL, SEVERITY, StringType.valueOf(ccEntry.state));
         }
     }
 

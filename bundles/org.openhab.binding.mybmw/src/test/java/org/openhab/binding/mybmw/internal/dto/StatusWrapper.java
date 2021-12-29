@@ -461,9 +461,8 @@ public class StatusWrapper {
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
                         wanted = StringType.valueOf(Constants.NO_ENTRIES);
-                        if (!vehicle.properties.checkControlMessages.isEmpty()) {
-                            // [todo]
-                            // wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
+                        if (!vehicle.status.checkControlMessages.isEmpty()) {
+                            wanted = StringType.valueOf(vehicle.status.checkControlMessages.get(0).title);
                         }
                         assertEquals(wanted.toString(), st.toString(), "CheckControl Name");
                         break;
@@ -486,10 +485,8 @@ public class StatusWrapper {
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
                         wanted = StringType.valueOf(Constants.NO_ENTRIES);
-                        if (!vehicle.properties.checkControlMessages.isEmpty()) {
-                            // [todo]
-                            // wanted =
-                            // StringType.valueOf(vehicle.properties.checkControlMessages.get(0).ccmDescriptionLong);
+                        if (!vehicle.status.checkControlMessages.isEmpty()) {
+                            wanted = StringType.valueOf(vehicle.status.checkControlMessages.get(0).longDescription);
                         }
                         assertEquals(wanted.toString(), st.toString(), "CheckControl Details");
                         break;
@@ -497,6 +494,15 @@ public class StatusWrapper {
                         assertFalse(true, "Channel " + channelUID + " " + state + " not found");
                         break;
                 }
+                break;
+            case SEVERITY:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(Constants.EMPTY);
+                if (!vehicle.status.checkControlMessages.isEmpty()) {
+                    wanted = StringType.valueOf(vehicle.status.checkControlMessages.get(0).state);
+                }
+                assertEquals(wanted.toString(), st.toString(), "CheckControl Details");
                 break;
             case DATE:
                 assertTrue(state instanceof DateTimeType);

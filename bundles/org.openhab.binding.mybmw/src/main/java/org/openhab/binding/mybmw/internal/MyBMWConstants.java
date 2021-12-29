@@ -74,15 +74,13 @@ public class MyBMWConstants {
         }
     }
 
-    // [todo] more modes needed from test data
     public enum ChargingMode {
         immediateCharging,
-        DELAYED_CHARGING
+        delayedCharging
     }
 
-    // [todo] more opreferences needed from test data
     public enum ChargingPreference {
-        NO_PRESELECTION,
+        noPreSelection,
         chargingWindow
     }
 
@@ -127,6 +125,7 @@ public class MyBMWConstants {
     // Generic Constants for several groups
     public static final String NAME = "name";
     public static final String DETAILS = "details";
+    public static final String SEVERITY = "severity";
     public static final String DATE = "date";
     public static final String MILEAGE = "mileage";
     public static final String GPS = "gps";

@@ -11,9 +11,8 @@
 		<item-type>String</item-type>
 		<label>CheckControl Details</label>
 	</channel-type>
-	<channel-type id="checkcontrol-mileage-channel">
-		<item-type>Number:Length</item-type>
-		<label>Mileage Occurrence</label>
-		<state pattern="%d %unit%"/>
+	<channel-type id="checkcontrol-severity-channel">
+		<item-type>String</item-type>
+		<label>Severity Level</label>
 	</channel-type>
 </thing:thing-descriptions>
