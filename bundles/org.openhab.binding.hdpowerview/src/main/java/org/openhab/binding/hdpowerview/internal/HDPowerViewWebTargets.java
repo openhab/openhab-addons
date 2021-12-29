@@ -109,8 +109,11 @@ public class HDPowerViewWebTargets {
         shades = base + "shades/";
         sceneActivate = base + "scenes";
         scenes = base + "scenes/";
-        sceneCollectionActivate = base + "sceneCollections";
-        sceneCollections = base + "sceneCollections/";
+
+        // Hub v1 only supports "scenecollections". Hub v2 will redirect to "sceneCollections".
+        sceneCollectionActivate = base + "scenecollections";
+        sceneCollections = base + "scenecollections/";
+
         scheduledEvents = base + "scheduledevents";
         this.httpClient = httpClient;
     }
@@ -237,7 +240,6 @@ public class HDPowerViewWebTargets {
      * @param query the http query parameter
      * @param jsonCommand the request command content (as a json string)
      * @return the response content (as a json string)
-     * @throws HubProcessingException
      * @throws HubMaintenanceException
      * @throws HubProcessingException
      */
