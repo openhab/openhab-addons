@@ -42,7 +42,7 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOSTAR, THING_TYPE_POWERCHIP,
             THING_TYPE_POWERCORN, THING_TYPE_BIOCOM, THING_TYPE_PRO, THING_TYPE_THERM);
 
-    protected final HttpClient httpClient;
+    private final HttpClient httpClient;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
 
     @Activate
@@ -50,10 +50,6 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
             @Reference GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
-    }
-
-    protected HttpClient getHttpClient() {
-        return httpClient;
     }
 
     @Override
