@@ -92,6 +92,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -99,13 +103,22 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<category>Humidity</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
+		</tags>
 		<state readOnly="true" min="0" max="100" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="vpd-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>VPD</label>
-		<category>Vapor pressure deficit</category>
+		<description>Vapor pressure deficit</description>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
@@ -113,6 +126,10 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Dew Point</label>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -120,6 +137,11 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Time of reading</description>
+		<category>Time</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Timestamp</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -127,6 +149,11 @@
 		<item-type>Number:Power</item-type>
 		<label>RSSI</label>
 		<description>Received signal strength indication (RSSI)</description>
+		<category>QualityOfService</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
@@ -134,6 +161,11 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Battery voltage</description>
+		<category>Battery</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
