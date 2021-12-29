@@ -1946,137 +1946,10 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-
-	<channel-type id="channel232" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 232</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel233" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 233</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel234" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 234</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel235" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 235</label>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="frequencyCompressorTarget" advanced="true">
 		<item-type>Number:Frequency</item-type>
 		<label>Compressor Target Frequency</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel237" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 237</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel238" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 238</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel239" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 239</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel240" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 240</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel241" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 241</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel242" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 242</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel243" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 243</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel244" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 244</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel245" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 245</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel246" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 246</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel247" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 247</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel248" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 248</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel249" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 249</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel250" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 250</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel251" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 251</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel252" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 252</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel253" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 253</label>
-		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="flowRateHeatSource2" advanced="true">
@@ -2085,39 +1958,15 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="channel255" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 255</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel256" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 256</label>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="heatingPowerActualValue" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Heating Power Actual Value</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="channel258" advanced="true">
+	<channel-type id="unknown" advanced="true">
 		<item-type>Number</item-type>
-		<label>Channel 258</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel259" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 259</label>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="channel260" advanced="true">
-		<item-type>Number</item-type>
-		<label>Channel 260</label>
+		<label>Unknown Channel</label>
 		<state readOnly="true"/>
 	</channel-type>
 

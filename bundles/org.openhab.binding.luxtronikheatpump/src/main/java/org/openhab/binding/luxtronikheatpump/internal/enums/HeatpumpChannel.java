@@ -1224,7 +1224,7 @@ public enum HeatpumpChannel {
     CHANNEL_254(254, "flowRateHeatSource2", NumberItem.class, Units.LITRE_PER_MINUTE, false, null),
     CHANNEL_255(255, "channel255", NumberItem.class, null, false, null),
     CHANNEL_256(256, "channel256", NumberItem.class, null, false, null),
-    CHANNEL_257(257, "powerActualValue2", NumberItem.class, Units.WATT, false, null),
+    CHANNEL_257(257, "heatingPowerActualValue", NumberItem.class, Units.WATT, false, null),
     CHANNEL_258(258, "channel258", NumberItem.class, null, false, null),
     CHANNEL_259(259, "channel259", NumberItem.class, null, false, null),
     CHANNEL_260(260, "channel260", NumberItem.class, null, false, null),
