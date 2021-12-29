@@ -203,7 +203,7 @@ class AccountHandlerTest extends JavaTest {
     }
 
     @Test
-    void testSetOnlineCacheCreatedAndStatusOnline() throws NoSuchFieldException, IllegalAccessException, IOException {
+    void testSetOnlineCacheCreatedAndStatusOnline() throws IOException {
         accountHandler.setCallback(callback);
         accountHandler.config = new AccountConfiguration();
         accountHandler.config.refreshInterval = 30;
@@ -226,6 +226,20 @@ class AccountHandlerTest extends JavaTest {
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(any(), statusCaptor.capture());
         assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));
+    }
+
+    @Test
+    void testSetOffline() {
+        accountHandler.setCallback(callback);
+        accountHandler.setOffline(new IOException());
+        ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
+        verify(callback).statusUpdated(any(), statusCaptor.capture());
+        assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.OFFLINE));
+        // noinspection ConstantConditions
+        assertThat(accountHandler.blinkAccount, is(nullValue()));
+        assertThat(accountHandler.cachedHomescreen, is(nullValue()));
+        assertThat(accountHandler.eventSince, is(equalTo(Instant.EPOCH.atOffset(ZoneOffset.UTC))));
+        assertThat(accountHandler.eventStore, is(anEmptyMap()));
     }
 
     BlinkHomescreen testBlinkHomescreen() {
