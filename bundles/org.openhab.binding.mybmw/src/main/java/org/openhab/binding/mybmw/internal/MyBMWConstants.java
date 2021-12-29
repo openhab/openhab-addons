@@ -110,7 +110,7 @@ public class MyBMWConstants {
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
     public static final String CHANNEL_GROUP_CHARGE_PROFILE = "profile";
-    public static final String CHANNEL_GROUP_CHARGE_STATISTICS = "stats";
+    public static final String CHANNEL_GROUP_CHARGE_STATISTICS = "statistic";
     public static final String CHANNEL_GROUP_CHARGE_SESSION = "session";
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
 

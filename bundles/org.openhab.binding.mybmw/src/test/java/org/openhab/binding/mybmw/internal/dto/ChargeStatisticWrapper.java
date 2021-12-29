@@ -74,7 +74,7 @@ public class ChargeStatisticWrapper {
         DecimalType dt;
         QuantityType<Energy> qte;
         switch (cUid) {
-            case NAME:
+            case TITLE:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
                 switch (gUid) {

@@ -112,7 +112,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateChargeStatistics(ChargeStatisticsContainer csc) {
-        updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, NAME, StringType.valueOf(csc.description));
+        updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, TITLE, StringType.valueOf(csc.description));
         updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, ENERGY,
                 QuantityType.valueOf(csc.statistics.totalEnergyCharged, Units.KILOWATT_HOUR));
         updateChannel(CHANNEL_GROUP_CHARGE_STATISTICS, SESSIONS,
@@ -339,7 +339,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             if (sessionEntry.issues != null) {
                 updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(sessionEntry.issues));
             } else {
-                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(Constants.UNDEF));
+                updateChannel(CHANNEL_GROUP_CHARGE_SESSION, ISSUE, StringType.valueOf(Constants.HYPHEN));
             }
             updateChannel(CHANNEL_GROUP_CHARGE_SESSION, STATUS, StringType.valueOf(sessionEntry.sessionStatus));
         }

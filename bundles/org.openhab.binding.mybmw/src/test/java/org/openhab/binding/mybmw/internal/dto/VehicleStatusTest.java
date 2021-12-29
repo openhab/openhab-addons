@@ -61,5 +61,4 @@ public class VehicleStatusTest {
         assertEquals(2, v.status.chargingProfile.getTimerId(2).id, "Timer ID");
         assertEquals("[sunday]", v.status.chargingProfile.getTimerId(2).timerWeekDays.toString(), "Timer Weekdays");
     }
-
 }

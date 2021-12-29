@@ -374,5 +374,4 @@ public class Converter {
         }
         return Converter.getGson().toJson(vehicleList);
     }
-
 }

@@ -21,6 +21,7 @@
 			<channel-group id="location" typeId="location-values"/>
 			<channel-group id="remote" typeId="remote-services"/>
 			<channel-group id="charge" typeId="charge-values"/>
+			<channel-group id="statistic" typeId="charge-statistic"/>
 			<channel-group id="session" typeId="session-values"/>
 			<channel-group id="image" typeId="image-values"/>
 		</channel-groups>
