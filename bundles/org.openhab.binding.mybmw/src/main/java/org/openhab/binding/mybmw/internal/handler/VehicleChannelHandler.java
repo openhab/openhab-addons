@@ -298,20 +298,17 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         // add all elements to options
         serviceList = sl;
         List<StateOption> serviceNameOptions = new ArrayList<>();
-        List<StateOption> serviceDateOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
         for (CBS serviceEntry : serviceList) {
             // create StateOption with "value = list index" and "label = human readable string"
             serviceNameOptions.add(new StateOption(Integer.toString(index), serviceEntry.type));
-            serviceDateOptions.add(new StateOption(Integer.toString(index), serviceEntry.dateTime));
             if (selectedService.equals(serviceEntry.type)) {
                 isSelectedElementIn = true;
             }
             index++;
         }
         setOptions(CHANNEL_GROUP_SERVICE, NAME, serviceNameOptions);
-        setOptions(CHANNEL_GROUP_SERVICE, DATE, serviceDateOptions);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {
@@ -381,12 +378,11 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected void updateChargeProfile(ChargeProfile cp) {
         ChargeProfileWrapper cpw = new ChargeProfileWrapper(cp);
 
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE,
-                StringType.valueOf(Converter.toTitleCase(cpw.getPreference())));
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE,
-                StringType.valueOf(Converter.toTitleCase(cpw.getMode())));
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL,
-                StringType.valueOf(Converter.toTitleCase(cpw.getControlType())));
+        State s = StringType.valueOf(cpw.getPreference());
+        logger.info("Upadte {} with {}", CHARGE_PROFILE_PREFERENCE, s.toFullString());
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE, s);
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE, StringType.valueOf(cpw.getMode()));
+        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL, StringType.valueOf(cpw.getControlType()));
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
                 DecimalType.valueOf(Integer.toString(cpw.getChargeSettings().targetSoc)));
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_LIMIT,
@@ -406,15 +402,21 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         final TimedChannel timed = ChargeProfileUtils.getTimedChannel(key);
         if (timed != null) {
             final LocalTime time = profile.getTime(key);
+            logger.info("update {} Timer {} time {}", timed.time, key, time);
             updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.time, time == null ? UnDefType.UNDEF
                     : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
             if (timed.timer != null) {
                 final Boolean enabled = profile.isEnabled(key);
+                logger.info("update {} Timer {} enabled {}", timed.timer + CHARGE_ENABLED, key, enabled);
                 updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.timer + CHARGE_ENABLED,
                         enabled == null ? UnDefType.UNDEF : OnOffType.from(enabled));
                 if (timed.hasDays) {
                     final Set<DayOfWeek> days = profile.getDays(key);
+                    logger.info("Timer {} has days {}", key, days == null);
                     EnumSet.allOf(DayOfWeek.class).forEach(day -> {
+                        logger.info("update {} Timer {} Day {} enabled {}",
+                                timed.timer + ChargeProfileUtils.getDaysChannel(day), key, day,
+                                days == null ? "-" : days.contains(day));
                         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE,
                                 timed.timer + ChargeProfileUtils.getDaysChannel(day),
                                 days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)));
@@ -422,7 +424,11 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                 } else {
                     logger.info("Key {} has no days", key);
                 }
+            } else {
+                logger.info("No timer found for {}", key);
             }
+        } else {
+            logger.info("No TimedChannel found for {}", key);
         }
     }
 

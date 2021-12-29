@@ -243,7 +243,7 @@ public class ChargeProfileWrapper {
         }
     }
 
-    private @Nullable Timer getTimer(final ProfileKey key) {
+    private Timer getTimer(final ProfileKey key) {
         final Timer timer = new Timer();
         switch (key) {
             case TIMER1:

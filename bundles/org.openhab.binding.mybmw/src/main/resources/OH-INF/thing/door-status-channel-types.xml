@@ -53,11 +53,6 @@
 		<label>Passenger Rear Window</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="window-rear-channel">
-		<item-type>String</item-type>
-		<label>Rear Window</label>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="sunroof-channel">
 		<item-type>String</item-type>
 		<label>Sunroof</label>

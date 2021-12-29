@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="charge-values">
+	<channel-group-type id="profile-values">
 		<label>Electric Charging</label>
 		<description>Charge Profiles of Vehicle</description>
 		<channels>
@@ -42,15 +42,15 @@
 			<channel id="timer3-day-sat" typeId="timer3-day-sat-channel"/>
 			<channel id="timer3-day-sun" typeId="timer3-day-sun-channel"/>
 			<channel id="timer3-enabled" typeId="timer3-enabled-channel"/>
-			<channel id="timer4-departure" typeId="timer3-departure-channel"/>
-			<channel id="timer4-day-mon" typeId="timer3-day-mon-channel"/>
-			<channel id="timer4-day-tue" typeId="timer3-day-tue-channel"/>
-			<channel id="timer4-day-wed" typeId="timer3-day-wed-channel"/>
-			<channel id="timer4-day-thu" typeId="timer3-day-thu-channel"/>
-			<channel id="timer4-day-fri" typeId="timer3-day-fri-channel"/>
-			<channel id="timer4-day-sat" typeId="timer3-day-sat-channel"/>
-			<channel id="timer4-day-sun" typeId="timer3-day-sun-channel"/>
-			<channel id="timer4-enabled" typeId="timer3-enabled-channel"/>
+			<channel id="timer4-departure" typeId="timer4-departure-channel"/>
+			<channel id="timer4-day-mon" typeId="timer4-day-mon-channel"/>
+			<channel id="timer4-day-tue" typeId="timer4-day-tue-channel"/>
+			<channel id="timer4-day-wed" typeId="timer4-day-wed-channel"/>
+			<channel id="timer4-day-thu" typeId="timer4-day-thu-channel"/>
+			<channel id="timer4-day-fri" typeId="timer4-day-fri-channel"/>
+			<channel id="timer4-day-sat" typeId="timer4-day-sat-channel"/>
+			<channel id="timer4-day-sun" typeId="timer4-day-sun-channel"/>
+			<channel id="timer4-enabled" typeId="timer4-enabled-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

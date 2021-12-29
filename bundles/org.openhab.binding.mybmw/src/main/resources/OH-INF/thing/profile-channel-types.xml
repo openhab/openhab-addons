@@ -14,6 +14,7 @@
 		<command>
 			<options>
 				<option value="immediateCharging">Immediate Charging</option>
+				<option value="delayedCharging">Use Charging Preference</option>
 			</options>
 		</command>
 	</channel-type>
@@ -23,6 +24,7 @@
 		<description>Preferences for delayed charging</description>
 		<command>
 			<options>
+				<option value="noPreSelection">No Selection</option>
 				<option value="chargingWindow">Charging Window</option>
 			</options>
 		</command>

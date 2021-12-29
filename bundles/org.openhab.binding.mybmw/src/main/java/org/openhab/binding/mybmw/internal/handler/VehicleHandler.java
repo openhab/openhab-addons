@@ -297,6 +297,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 if (getConfiguration().isPresent()) {
                     Vehicle v = Converter.getVehicle(configuration.get().vin, content);
                     if (v.valid) {
+                        vehicleStatusCache = Optional.of(content);
                         updateStatus(ThingStatus.ONLINE);
                         updateVehicle(v);
                         if (isElectric) {

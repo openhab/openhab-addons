@@ -17,7 +17,6 @@
 			<channel id="win-driver-rear" typeId="window-driver-rear-channel"/>
 			<channel id="win-passenger-front" typeId="window-passenger-front-channel"/>
 			<channel id="win-passenger-rear" typeId="window-passenger-rear-channel"/>
-			<channel id="win-rear" typeId="window-rear-channel"/>
 			<channel id="sunroof" typeId="sunroof-channel"/>
 		</channels>
 	</channel-group-type>
