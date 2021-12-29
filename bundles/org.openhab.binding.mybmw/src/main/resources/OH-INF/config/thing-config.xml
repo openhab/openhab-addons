@@ -41,5 +41,16 @@
 			</options>
 			<default>FRONT</default>
 		</parameter>
+		<parameter name="vehicleBrand" type="text">
+			<label>Brand of the Vehicle</label>
+			<description>Vehicle Brand like BMW or Mini</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="language" type="text">
+			<label>Language Settings for Return Values</label>
+			<description>Some channel values can be returned in the desired language</description>
+			<advanced>true</advanced>
+		</parameter>
+
 	</config-description>
 </config-description:config-descriptions>

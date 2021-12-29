@@ -89,7 +89,7 @@ public class MyBMWProxy {
     }
 
     public synchronized void call(final String url, final boolean post, final @Nullable String encoding,
-            final @Nullable String params, final String userAgent, final ResponseCallback callback) {
+            final @Nullable String params, final String brand, final ResponseCallback callback) {
         // only executed in "simulation mode"
         // SimulationTest.testSimulationOff() assures Injector is off when releasing
         if (Injector.isActive()) {
@@ -102,6 +102,14 @@ public class MyBMWProxy {
             }
             return;
         }
+
+        // return in case of unknown brand
+        String userAgent = BimmerConstants.BRAND_USER_AGENTS_MAP.get(brand.toLowerCase());
+        if (userAgent == null) {
+            logger.warn("Unknown Brand {}", brand);
+            return;
+        }
+
         final Request req;
         final String completeUrl;
 
@@ -154,14 +162,14 @@ public class MyBMWProxy {
         });
     }
 
-    public void get(String url, @Nullable String coding, @Nullable String params, final String userAgent,
+    public void get(String url, @Nullable String coding, @Nullable String params, final String brand,
             ResponseCallback callback) {
-        call(url, false, coding, params, userAgent, callback);
+        call(url, false, coding, params, brand, callback);
     }
 
-    public void post(String url, @Nullable String coding, @Nullable String params, final String userAgent,
+    public void post(String url, @Nullable String coding, @Nullable String params, final String brand,
             ResponseCallback callback) {
-        call(url, true, coding, params, userAgent, callback);
+        call(url, true, coding, params, brand, callback);
     }
 
     /**
@@ -171,16 +179,13 @@ public class MyBMWProxy {
      * @param callback
      */
     public void requestVehicles(String brand, StringResponseCallback callback) {
-        String userAgent = BimmerConstants.BRAND_USER_AGENTS_MAP.get(brand);
-        if (userAgent != null) {
-            // calculate necessary parameters for query
-            MultiMap<String> vehicleParams = new MultiMap<String>();
-            vehicleParams.put(BimmerConstants.TIRE_GUARD_MODE, Constants.ENABLED);
-            vehicleParams.put(BimmerConstants.APP_DATE_TIME, Long.toString(System.currentTimeMillis()));
-            vehicleParams.put(BimmerConstants.APP_TIMEZONE, Integer.toString(Converter.getOffsetMinutes()));
-            String params = UrlEncoded.encode(vehicleParams, StandardCharsets.UTF_8, false);
-            get(vehicleUrl + "?" + params, null, null, userAgent, callback);
-        }
+        // calculate necessary parameters for query
+        MultiMap<String> vehicleParams = new MultiMap<String>();
+        vehicleParams.put(BimmerConstants.TIRE_GUARD_MODE, Constants.ENABLED);
+        vehicleParams.put(BimmerConstants.APP_DATE_TIME, Long.toString(System.currentTimeMillis()));
+        vehicleParams.put(BimmerConstants.APP_TIMEZONE, Integer.toString(Converter.getOffsetMinutes()));
+        String params = UrlEncoded.encode(vehicleParams, StandardCharsets.UTF_8, false);
+        get(vehicleUrl + "?" + params, null, null, brand, callback);
     }
 
     /**
@@ -204,7 +209,7 @@ public class MyBMWProxy {
         dataMap.add("view", props.viewport);
 
         get(localImageUrl, CONTENT_TYPE_URL_ENCODED, UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false),
-                config.brand, callback);
+                config.vehicleBrand, callback);
     }
 
     /**
@@ -219,7 +224,7 @@ public class MyBMWProxy {
         String params = UrlEncoded.encode(chargeStatisticsParams, StandardCharsets.UTF_8, false);
         String chargeStatisticsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                 + "/eadrax-chs/v1/charging-statistics?" + params;
-        get(chargeStatisticsUrl, null, null, config.brand, callback);
+        get(chargeStatisticsUrl, null, null, config.vehicleBrand, callback);
     }
 
     /**
@@ -236,7 +241,7 @@ public class MyBMWProxy {
         String chargeSessionsUrl = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
                 + "/eadrax-chs/v1/charging-sessions?" + params;
 
-        get(chargeSessionsUrl, null, null, config.brand, callback);
+        get(chargeSessionsUrl, null, null, config.vehicleBrand, callback);
     }
 
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {

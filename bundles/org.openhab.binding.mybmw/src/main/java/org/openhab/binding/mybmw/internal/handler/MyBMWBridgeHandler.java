@@ -116,10 +116,9 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
     }
 
     private void logFingerPrint() {
-        logger.info("###### Discovery Troubleshoot Fingerprint Data - BEGIN ######");
-        logger.info("### Discovery Result ###");
+        logger.info("###### Discovery Fingerprint Data - BEGIN ######");
         logger.info("{}", troubleshootFingerprint.get());
-        logger.info("###### Discovery Troubleshoot Fingerprint Data - END ######");
+        logger.info("###### Discovery Fingerprint Data - END ######");
     }
 
     /**

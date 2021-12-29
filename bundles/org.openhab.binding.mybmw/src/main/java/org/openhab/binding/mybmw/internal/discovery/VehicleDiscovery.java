@@ -68,7 +68,6 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         ThingUID uid = new ThingUID(entry, vehicle.vin, bridgeUID.getId());
                         Map<String, String> properties = new HashMap<>();
                         // Vehicle Properties
-                        properties.put("vehicleBrand", vehicle.brand);
                         properties.put("vehicleModel", vehicle.model);
                         properties.put("vehicleDriveTrain", vehicle.driveTrain);
                         properties.put("vehicleConstructionYear", Integer.toString(vehicle.year));
@@ -135,9 +134,8 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                             remoteServicesDisabled.append(
                                     RemoteServiceHandler.RemoteService.CLIMATE_NOW.getLabel() + Constants.SPACE);
                         }
-
-                        // Porperties needed for config
-                        properties.put("brand", vehicle.brand);
+                        properties.put("remoteServicesEnabled", remoteServicesEnabled.toString().trim());
+                        properties.put("remoteServicesDisabled", remoteServicesDisabled.toString().trim());
 
                         // Update Properties for already created Things
                         bridge.getThing().getThings().forEach(vehicleThing -> {
@@ -152,7 +150,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
 
                         // Properties needed for functional Thing
                         properties.put(MyBMWConstants.VIN, vehicle.vin);
-                        properties.put("brand", vehicle.brand);
+                        properties.put("vehicleBrand", vehicle.brand);
                         properties.put("refreshInterval",
                                 Integer.toString(MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
                         properties.put("imageSize", Integer.toString(MyBMWConstants.DEFAULT_IMAGE_SIZE_PX));

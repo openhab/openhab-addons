@@ -32,7 +32,7 @@ public class VehicleConfiguration {
      * - bmw
      * - mini
      */
-    public String brand = Constants.EMPTY;
+    public String vehicleBrand = Constants.EMPTY;
 
     /**
      * Data refresh rate in minutes

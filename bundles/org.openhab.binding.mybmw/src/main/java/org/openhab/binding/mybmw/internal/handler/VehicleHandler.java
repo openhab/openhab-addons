@@ -234,7 +234,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     public void getData() {
         proxy.ifPresentOrElse(prox -> {
             configuration.ifPresentOrElse(config -> {
-                prox.requestVehicles(config.brand, vehicleStatusCallback);
+                prox.requestVehicles(config.vehicleBrand, vehicleStatusCallback);
                 if (isElectric) {
                     prox.requestChargeStatistics(config, chargeStatisticsCallback);
                     prox.requestChargeSessions(config, chargeSessionCallback);
