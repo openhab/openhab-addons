@@ -12,21 +12,21 @@
 			<channel id="listen" typeId="listen-channel"/>
 			<channel id="speak" typeId="speak-channel"/>
 			<channel id="utterance" typeId="utterance-channel"/>
-			<channel id="player" typeId="player-channel"/>
-			<!-- <channel id="volume" typeId="volume-channel"/> -->
-			<channel id="volume_mute" typeId="volume-mute-channel"/>
+			<channel id="player" typeId="system.media-control"/>
+			<!-- <channel id="volume" typeId="system.volume"/> -->
+			<channel id="volume_mute" typeId="system.mute"/>
 			<channel id="volume_duck" typeId="volume-duck-channel"/>
 			<channel id="full_message" typeId="full-message-channel"/>
 		</channels>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>Mycroft Bus Host Address</label>
+				<label>Hostname</label>
 				<description>This is the host to connect to (ip or hostname)</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="port" type="integer" required="false" min="1" max="65535">
-				<label>Mycroft Bus Port</label>
+				<label>Port</label>
 				<description>This is the port to connect to.</description>
 				<default>8181</default>
 			</parameter>
@@ -63,24 +63,6 @@
 				<default>message.type.1,message.type.2</default>
 			</parameter>
 		</config-description>
-	</channel-type>
-
-	<channel-type id="player-channel">
-		<item-type>Player</item-type>
-		<label>Player</label>
-		<description>The music player Mycroft is currently controlling.</description>
-	</channel-type>
-
-	<!-- <channel-type id="volume-channel">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>The volume of the Mycroft speaker</description>
-		</channel-type> -->
-
-	<channel-type id="volume-mute-channel">
-		<item-type>Switch</item-type>
-		<label>Volume Mute</label>
-		<description>Mute the Mycroft speaker</description>
 	</channel-type>
 
 	<channel-type id="volume-duck-channel">
