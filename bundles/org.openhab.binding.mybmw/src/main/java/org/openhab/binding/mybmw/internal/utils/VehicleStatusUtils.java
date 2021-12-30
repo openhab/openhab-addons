@@ -15,14 +15,21 @@ package org.openhab.binding.mybmw.internal.utils;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Length;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
+import org.openhab.binding.mybmw.internal.dto.status.FuelIndicator;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link VehicleStatusUtils} Data Transfer Object
@@ -31,6 +38,7 @@ import org.openhab.core.types.UnDefType;
  */
 @NonNullByDefault
 public class VehicleStatusUtils {
+    public static final Logger LOGGER = LoggerFactory.getLogger(VehicleStatusUtils.class);
 
     public static State getNextServiceDate(List<CBS> cbsMessageList) {
         ZonedDateTime farFuture = ZonedDateTime.now().plusYears(100);
@@ -94,4 +102,59 @@ public class VehicleStatusUtils {
         }
         return VehicleType.UNKNOWN;
     }
+
+    public static @Nullable Unit<Length> getLengthUnit(List<FuelIndicator> indicators) {
+        Unit<Length> ret = null;
+        for (FuelIndicator fuelIndicator : indicators) {
+            String unitAbbrev = fuelIndicator.rangeUnits;
+            switch (unitAbbrev) {
+                case Constants.KM_JSON:
+                    if (ret != null) {
+                        if (!ret.equals(Constants.KILOMETRE_UNIT)) {
+                            LOGGER.info("Ambigious Unit declarations. Found {} before {}", ret, Constants.KM_JSON);
+                        } // else - fine!
+                    } else {
+                        ret = Constants.KILOMETRE_UNIT;
+                    }
+                    break;
+                case Constants.MI_JSON:
+                    if (ret != null) {
+                        if (!ret.equals(ImperialUnits.MILE)) {
+                            LOGGER.info("Ambigious Unit declarations. Found {} before {}", ret, Constants.MI_JSON);
+                        } // else - fine!
+                    } else {
+                        ret = ImperialUnits.MILE;
+                    }
+                    break;
+                default:
+                    LOGGER.info("Cannot evaluate Unit for {}", unitAbbrev);
+                    break;
+            }
+        }
+        return ret;
+    }
+
+    public static int getRange(String unitJson, List<FuelIndicator> indicators) {
+        String rangeString = Constants.EMPTY;
+        for (FuelIndicator fuelIndicator : indicators) {
+            if (fuelIndicator.levelUnits == null) {
+                // combined range doesn't contain a valid unit
+                if (unitJson.equals(Constants.PHEV)) {
+                    rangeString = fuelIndicator.rangeValue;
+                    break;
+                }
+            } else if (fuelIndicator.levelUnits.equals(unitJson)) {
+                rangeString = fuelIndicator.rangeValue;
+            }
+        }
+        int range = Constants.INT_UNDEF;
+        try {
+            range = Integer.parseInt(rangeString);
+
+        } catch (Exception e) {
+            LOGGER.info("Unable to convert range {} into int value", rangeString);
+        }
+        return range;
+    }
+
 }

@@ -25,6 +25,7 @@ import javax.measure.quantity.Length;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
+import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
@@ -106,18 +107,24 @@ public class StatusWrapper {
         StringType wanted;
         DateTimeType dtt;
         PointType pt;
+        Unit<Length> wantedUnit;
         switch (cUid) {
             case MILEAGE:
                 switch (gUid) {
                     case CHANNEL_GROUP_RANGE:
-                        assertTrue(state instanceof QuantityType);
-                        qt = ((QuantityType) state);
-                        if ("km".equals(vehicle.status.currentMileage.units)) {
-                            assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                        if (!state.equals(UnDefType.UNDEF)) {
+                            assertTrue(state instanceof QuantityType);
+                            qt = ((QuantityType) state);
+                            if (Constants.KM_JSON.equals(vehicle.status.currentMileage.units)) {
+                                assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                            } else {
+                                assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
+                            }
+                            assertEquals(qt.intValue(), vehicle.status.currentMileage.mileage, "Mileage");
                         } else {
-                            assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
+                            assertEquals(Constants.INT_UNDEF, vehicle.status.currentMileage.mileage,
+                                    "Mileage undefined");
                         }
-                        assertEquals(qt.intValue(), vehicle.status.currentMileage.mileage, "Mileage");
                         break;
                     case CHANNEL_GROUP_SERVICE:
                         State wantedMileage = QuantityType.valueOf(Constants.INT_UNDEF, Constants.KILOMETRE_UNIT);
@@ -146,52 +153,28 @@ public class StatusWrapper {
                 assertTrue(isElectric, "Is Eelctric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.electricRange.distance.units)) {
-                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                    assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vehicle.properties.electricRange.distance.value),
-                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
-                } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vehicle.properties.electricRange.distance.value),
-                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
-                }
+                wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
+                assertEquals(wantedUnit, qt.getUnit());
+                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle.status.fuelIndicators),
+                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Electric");
                 break;
             case RANGE_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
-                if (!(state instanceof UnDefType)) {
-                    assertTrue(state instanceof QuantityType);
-                    qt = ((QuantityType) state);
-                    if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combustionRange.distance.units)) {
-                        assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                        assertEquals(Converter.round(qt.floatValue()),
-                                Converter.round(vehicle.properties.combustionRange.distance.value),
-                                ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
-                    } else {
-                        assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                        assertEquals(Converter.round(qt.floatValue()),
-                                Converter.round(vehicle.properties.combustionRange.distance.value),
-                                ALLOWED_KM_ROUND_DEVIATION, "Mileage");
-                    }
-                }
+                assertTrue(state instanceof QuantityType);
+                qt = ((QuantityType) state);
+                wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
+                assertEquals(wantedUnit, qt.getUnit());
+                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle.status.fuelIndicators),
+                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Combustion");
                 break;
             case RANGE_HYBRID:
                 assertTrue(isHybrid, "Is Hybrid");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combinedRange.distance.units)) {
-                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                    assertEquals(Converter.round(qt.floatValue()),
-                            Converter.round(vehicle.properties.combinedRange.distance.value),
-                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
-                } else {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                    assertEquals(
-                            Converter.round(vehicle.properties.combustionRange.distance.value
-                                    + vehicle.properties.electricRange.distance.value),
-                            Converter.round(qt.floatValue()), ALLOWED_KM_ROUND_DEVIATION, "Mileage");
-                }
+                wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
+                assertEquals(wantedUnit, qt.getUnit());
+                assertEquals(VehicleStatusUtils.getRange(Constants.PHEV, vehicle.status.fuelIndicators),
+                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Combined");
                 break;
             case REMAINING_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
@@ -284,43 +267,35 @@ public class StatusWrapper {
             case RANGE_RADIUS_ELECTRIC:
                 assertTrue(state instanceof QuantityType);
                 assertTrue(isElectric);
-                qt = (QuantityType) state;
-                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.electricRange.distance.units)) {
-                    assertEquals(Converter.guessRangeRadius(vehicle.properties.electricRange.distance.value),
-                            qt.floatValue(), 1, "Range Radius Electric mi");
-                } else {
-                    assertEquals(Converter.guessRangeRadius(vehicle.properties.electricRange.distance.value),
-                            qt.floatValue(), 0.1, "Range Radius Electric km");
-                }
+                qt = ((QuantityType) state);
+                wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
+                assertEquals(wantedUnit, qt.getUnit());
+                assertEquals(
+                        Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON,
+                                vehicle.status.fuelIndicators)),
+                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Electric");
                 break;
             case RANGE_RADIUS_FUEL:
                 assertTrue(state instanceof QuantityType);
                 assertTrue(hasFuel);
                 qt = (QuantityType) state;
-                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combustionRange.distance.units)) {
-                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combustionRange.distance.value),
-                            qt.floatValue(), 1, "Range Radius Fuel mi");
-                } else {
-                    assertEquals(Converter.guessRangeRadius(vehicle.properties.combustionRange.distance.value),
-                            qt.floatValue(), 0.1, "Range Radius Fuel km");
-                }
+                wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
+                assertEquals(wantedUnit, qt.getUnit());
+                assertEquals(
+                        Converter.guessRangeRadius(
+                                VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle.status.fuelIndicators)),
+                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Fuel");
                 break;
             case RANGE_RADIUS_HYBRID:
                 assertTrue(state instanceof QuantityType);
                 assertTrue(isHybrid);
                 qt = (QuantityType) state;
-                // BMW API provides whyever wrong value for combined range
-                // int wantedHybridRadius = vehicle.properties.combinedRange.distance.value;
-                int wantedHybridRadius = vehicle.properties.combustionRange.distance.value
-                        + vehicle.properties.electricRange.distance.value;
-
-                if (!Constants.KILOMETERS_JSON.equals(vehicle.properties.combustionRange.distance.units)) {
-                    assertEquals(Converter.guessRangeRadius(wantedHybridRadius), qt.floatValue(),
-                            ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Hybrid mi");
-                } else {
-                    assertEquals(Converter.guessRangeRadius(wantedHybridRadius), qt.floatValue(),
-                            ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid km");
-                }
+                wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
+                assertEquals(wantedUnit, qt.getUnit());
+                assertEquals(
+                        Converter.guessRangeRadius(
+                                VehicleStatusUtils.getRange(Constants.PHEV, vehicle.status.fuelIndicators)),
+                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Combined");
                 break;
             case DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);
@@ -490,20 +465,26 @@ public class StatusWrapper {
                 assertEquals(wanted.toString(), st.toString(), "CheckControl Details");
                 break;
             case DATE:
-                assertTrue(state instanceof DateTimeType);
-                dtt = (DateTimeType) state;
-                switch (gUid) {
-                    case CHANNEL_GROUP_SERVICE:
-                        String dueDateString = Constants.NULL_DATE;
-                        if (!vehicle.properties.serviceRequired.isEmpty()) {
-                            dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
-                        }
-                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
-                        assertEquals(expectedDTT.toString(), dtt.toString(), "ServiceSate");
-                        break;
-                    default:
-                        assertFalse(true, "Channel " + channelUID + " " + state + " not found");
-                        break;
+                if (state.equals(UnDefType.UNDEF)) {
+                    for (CBS serviceEntry : vehicle.properties.serviceRequired) {
+                        assertTrue(serviceEntry.dateTime == null, "No Service Date available");
+                    }
+                } else {
+                    assertTrue(state instanceof DateTimeType);
+                    dtt = (DateTimeType) state;
+                    switch (gUid) {
+                        case CHANNEL_GROUP_SERVICE:
+                            String dueDateString = Constants.NULL_DATE;
+                            if (!vehicle.properties.serviceRequired.isEmpty()) {
+                                dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
+                            }
+                            DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
+                            assertEquals(expectedDTT.toString(), dtt.toString(), "ServiceSate");
+                            break;
+                        default:
+                            assertFalse(true, "Channel " + channelUID + " " + state + " not found");
+                            break;
+                    }
                 }
                 break;
             case FRONT_LEFT_CURRENT:

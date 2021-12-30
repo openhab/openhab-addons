@@ -53,6 +53,10 @@ public class Constants {
     public static final String NULL_TIME = "00:00";
     public static final int INT_UNDEF = -1;
     public static final String KILOMETERS_JSON = "KILOMETERS";
+    public static final String KM_JSON = "km";
+    public static final String MI_JSON = "mi";
+    public static final String UNIT_PRECENT_JSON = "%";
+    public static final String UNIT_LITER_JSON = "l";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
 
     // Services to query

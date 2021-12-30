@@ -25,8 +25,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.TimeZone;
 
-import javax.measure.quantity.Length;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.dto.charge.Time;
@@ -37,11 +35,8 @@ import org.openhab.binding.mybmw.internal.dto.properties.Range;
 import org.openhab.binding.mybmw.internal.dto.status.Mileage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,30 +105,6 @@ public class Converter {
     public static String getZonedDateTime(String input) {
         ZonedDateTime d = ZonedDateTime.parse(input);
         return d.format(Converter.DATE_INPUT_PATTERN);
-
-        // if (input == null) {
-        // return Constants.NULL_DATE;
-        // }
-        //
-        // LocalDateTime ldt;
-        // if (input.contains(Constants.PLUS)) {
-        // ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_ZONE_PATTERN);
-        // } else {
-        // try {
-        // ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
-        // } catch (DateTimeParseException dtpe) {
-        // ldt = LocalDateTime.parse(input, Converter.LOCAL_DATE_INPUT_PATTERN);
-        // }
-        // }
-        // ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
-        // ZonedDateTime zdtLZ;
-        // zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
-        // if (timeZoneProvider.isPresent()) {
-        // zdtLZ = zdtUTC.withZoneSameInstant(timeZoneProvider.get().getTimeZone());
-        // } else {
-        // zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
-        // }
-        // return zdtLZ.format(Converter.DATE_INPUT_PATTERN);
     }
 
     public static void setTimeZoneProvider(TimeZoneProvider tzp) {
@@ -215,19 +186,6 @@ public class Converter {
         return range * 0.8;
     }
 
-    public static State getMiles(QuantityType<Length> qtLength) {
-        if (qtLength.intValue() == -1) {
-            return UnDefType.UNDEF;
-        }
-        QuantityType<Length> qt = qtLength.toUnit(ImperialUnits.MILE);
-        if (qt != null) {
-            return qt;
-        } else {
-            LOGGER.debug("Cannot convert {} to miles", qt);
-            return UnDefType.UNDEF;
-        }
-    }
-
     public static int getIndex(String fullString) {
         int index = -1;
         try {
@@ -286,7 +244,7 @@ public class Converter {
             v.properties.combustionRange = new Range();
             v.properties.combustionRange.distance = new Distance();
             v.properties.combustionRange.distance.value = -1;
-            v.properties.combustionRange.distance.units = Constants.KILOMETERS_JSON;
+            v.properties.combustionRange.distance.units = Constants.EMPTY;
         }
         if (v.properties.vehicleLocation == null) {
             v.properties.vehicleLocation = new Location();

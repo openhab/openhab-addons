@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -195,49 +196,43 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateRange(Vehicle v) {
-        boolean imperial = false;
+        // get the right unit
+        Unit<Length> lengthUnit = VehicleStatusUtils.getLengthUnit(v.status.fuelIndicators);
+        if (lengthUnit == null) {
+            return;
+        }
+        logger.info("update ranges in {}", lengthUnit.toString());
         if (isElectric) {
-            String unit = v.properties.electricRange.distance.units;
-            imperial = !Constants.KILOMETERS_JSON.equals(unit);
-            int rangeElectric = v.properties.electricRange.distance.value;
-            QuantityType<Length> qtElectricRange = QuantityType.valueOf(rangeElectric, Constants.KILOMETRE_UNIT);
+            int rangeElectric = VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, v.status.fuelIndicators);
+            QuantityType<Length> qtElectricRange = QuantityType.valueOf(rangeElectric, lengthUnit);
             QuantityType<Length> qtElectricRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeElectric),
-                    Constants.KILOMETRE_UNIT);
+                    lengthUnit);
 
-            updateChannel(CHANNEL_GROUP_RANGE, RANGE_ELECTRIC,
-                    imperial ? Converter.getMiles(qtElectricRange) : qtElectricRange);
-            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC,
-                    imperial ? Converter.getMiles(qtElectricRadius) : qtElectricRadius);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_ELECTRIC, qtElectricRange);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC, qtElectricRadius);
         }
         if (hasFuel) {
-            String unit = v.properties.combustionRange.distance.units;
-            imperial = !Constants.KILOMETERS_JSON.equals(unit);
-            int rangeFuel = v.properties.combustionRange.distance.value;
-            QuantityType<Length> qtFuelRange = QuantityType.valueOf(rangeFuel, Constants.KILOMETRE_UNIT);
-            QuantityType<Length> qtFuelRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeFuel),
-                    Constants.KILOMETRE_UNIT);
+            int rangeFuel = VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, v.status.fuelIndicators);
+            QuantityType<Length> qtFuelRange = QuantityType.valueOf(rangeFuel, lengthUnit);
+            QuantityType<Length> qtFuelRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeFuel), lengthUnit);
 
-            updateChannel(CHANNEL_GROUP_RANGE, RANGE_FUEL, imperial ? Converter.getMiles(qtFuelRange) : qtFuelRange);
-            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_FUEL,
-                    imperial ? Converter.getMiles(qtFuelRadius) : qtFuelRadius);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_FUEL, qtFuelRange);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_FUEL, qtFuelRadius);
         }
         if (isHybrid) {
-            String unit = v.properties.combinedRange.distance.units;
-            imperial = !Constants.KILOMETERS_JSON.equals(unit);
-            // BMW API provides whyever wrong value for combined range
-            // int rangeCombined = v.properties.combinedRange.distance.value;
-            int rangeCombined = v.properties.electricRange.distance.value + v.properties.combustionRange.distance.value;
-            QuantityType<Length> qtHybridRange = QuantityType.valueOf(rangeCombined, Constants.KILOMETRE_UNIT);
+            int rangeCombined = VehicleStatusUtils.getRange(Constants.PHEV, v.status.fuelIndicators);
+            QuantityType<Length> qtHybridRange = QuantityType.valueOf(rangeCombined, lengthUnit);
             QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeCombined),
-                    Constants.KILOMETRE_UNIT);
-            updateChannel(CHANNEL_GROUP_RANGE, RANGE_HYBRID,
-                    imperial ? Converter.getMiles(qtHybridRange) : qtHybridRange);
-            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID,
-                    imperial ? Converter.getMiles(qtHybridRadius) : qtHybridRadius);
+                    lengthUnit);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_HYBRID, qtHybridRange);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID, qtHybridRadius);
         }
-
-        updateChannel(CHANNEL_GROUP_RANGE, MILEAGE, QuantityType.valueOf(v.status.currentMileage.mileage,
-                imperial ? ImperialUnits.MILE : Constants.KILOMETRE_UNIT));
+        if (v.status.currentMileage.mileage == Constants.INT_UNDEF) {
+            updateChannel(CHANNEL_GROUP_RANGE, MILEAGE, UnDefType.UNDEF);
+        } else {
+            updateChannel(CHANNEL_GROUP_RANGE, MILEAGE,
+                    QuantityType.valueOf(v.status.currentMileage.mileage, lengthUnit));
+        }
         if (isElectric) {
             updateChannel(CHANNEL_GROUP_RANGE, SOC,
                     QuantityType.valueOf(v.properties.chargingState.chargePercentage, Units.PERCENT));
