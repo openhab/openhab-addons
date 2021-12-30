@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.status.FuelIndicator;
+import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -134,7 +135,46 @@ public class VehicleStatusUtils {
         return ret;
     }
 
-    public static int getRange(String unitJson, List<FuelIndicator> indicators) {
+    /**
+     * The range values delivered by BMW are quite ambiguous!
+     * - status fuel indicators are missing a unique identifier
+     * - properties ranges delivering wrong values for hybrid range
+     * - properties ranges are not reflecting mi / km - every time km
+     *
+     * So getRange will try
+     * 1) fuel indicator
+     * 2) ranges from properties, except combined range
+     * 3) take a guess from fuel indicators
+     *
+     * @param unitJson
+     * @param indicators
+     * @return
+     */
+    public static int getRange(String unitJson, Vehicle vehicle) {
+        // First: fuel indicators based on unit
+        int range = getFuelIndicatorRange(unitJson, vehicle.status.fuelIndicators);
+
+        // if not successful try ranges in properties section
+        if (range == -1) {
+            if (unitJson.equals(Constants.UNIT_LITER_JSON)) {
+                if (vehicle.properties.combustionRange != null) {
+                    range = vehicle.properties.combustionRange.distance.value;
+                }
+            } else if (unitJson.equals(Constants.UNIT_PRECENT_JSON)) {
+                if (vehicle.properties.electricRange != null) {
+                    range = vehicle.properties.electricRange.distance.value;
+                }
+            }
+        }
+
+        // still not valid - take a guess
+        if (range == -1) {
+            range = VehicleStatusUtils.guessRange(unitJson, vehicle);
+        }
+        return range;
+    }
+
+    public static int getFuelIndicatorRange(String unitJson, List<FuelIndicator> indicators) {
         String rangeString = Constants.EMPTY;
         for (FuelIndicator fuelIndicator : indicators) {
             if (fuelIndicator.levelUnits == null) {
@@ -155,6 +195,44 @@ public class VehicleStatusUtils {
             LOGGER.info("Unable to convert range {} into int value", rangeString);
         }
         return range;
+    }
+
+    public static int guessRange(String unitJson, Vehicle vehicle) {
+        int electricGuess = Constants.INT_UNDEF;
+        int fuelGuess = Constants.INT_UNDEF;
+        int hybridGuess = Constants.INT_UNDEF;
+        int undefinedGuess = Constants.INT_UNDEF;
+        for (FuelIndicator fuelIndicator : vehicle.status.fuelIndicators) {
+            if (fuelIndicator.levelUnits == null) {
+                if (undefinedGuess == Constants.INT_UNDEF) {
+                    // found value - store!
+                    undefinedGuess = Integer.parseInt(fuelIndicator.rangeValue);
+                } else {
+                    // there's already a value! Compare and guess!
+                    int newGuess = Integer.parseInt(fuelIndicator.rangeValue);
+                    if (newGuess > undefinedGuess) {
+                        hybridGuess = newGuess;
+                        fuelGuess = undefinedGuess;
+                    } else {
+                        hybridGuess = undefinedGuess;
+                        fuelGuess = newGuess;
+                    }
+                }
+            } else if (fuelIndicator.levelUnits.equals(Constants.UNIT_PRECENT_JSON)) {
+                // found electric
+                electricGuess = Integer.parseInt(fuelIndicator.rangeValue);
+            }
+        }
+        switch (unitJson) {
+            case Constants.UNIT_PRECENT_JSON:
+                return electricGuess;
+            case Constants.UNIT_LITER_JSON:
+                return fuelGuess;
+            case Constants.PHEV:
+                return hybridGuess;
+            default:
+                return Constants.INT_UNDEF;
+        }
     }
 
 }

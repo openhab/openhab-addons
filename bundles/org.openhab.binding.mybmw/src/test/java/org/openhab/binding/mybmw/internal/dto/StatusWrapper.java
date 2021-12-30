@@ -155,7 +155,7 @@ public class StatusWrapper {
                 qt = ((QuantityType) state);
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
-                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle.status.fuelIndicators),
+                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle),
                         Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Electric");
                 break;
             case RANGE_FUEL:
@@ -164,7 +164,7 @@ public class StatusWrapper {
                 qt = ((QuantityType) state);
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
-                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle.status.fuelIndicators),
+                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle),
                         Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Combustion");
                 break;
             case RANGE_HYBRID:
@@ -173,8 +173,8 @@ public class StatusWrapper {
                 qt = ((QuantityType) state);
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
-                assertEquals(VehicleStatusUtils.getRange(Constants.PHEV, vehicle.status.fuelIndicators),
-                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Combined");
+                assertEquals(VehicleStatusUtils.getRange(Constants.PHEV, vehicle), Converter.round(qt.floatValue()),
+                        ALLOWED_MILE_CONVERSION_DEVIATION, "Range Combined");
                 break;
             case REMAINING_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
@@ -271,8 +271,7 @@ public class StatusWrapper {
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(
-                        Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON,
-                                vehicle.status.fuelIndicators)),
+                        Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle)),
                         Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Electric");
                 break;
             case RANGE_RADIUS_FUEL:
@@ -282,8 +281,7 @@ public class StatusWrapper {
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(
-                        Converter.guessRangeRadius(
-                                VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle.status.fuelIndicators)),
+                        Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle)),
                         Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Fuel");
                 break;
             case RANGE_RADIUS_HYBRID:
@@ -292,9 +290,7 @@ public class StatusWrapper {
                 qt = (QuantityType) state;
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
-                assertEquals(
-                        Converter.guessRangeRadius(
-                                VehicleStatusUtils.getRange(Constants.PHEV, vehicle.status.fuelIndicators)),
+                assertEquals(Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.PHEV, vehicle)),
                         Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Combined");
                 break;
             case DOOR_DRIVER_FRONT:

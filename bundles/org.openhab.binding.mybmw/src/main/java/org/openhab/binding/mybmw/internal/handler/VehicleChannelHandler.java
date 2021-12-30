@@ -201,26 +201,23 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         if (lengthUnit == null) {
             return;
         }
-        logger.info("update ranges in {}", lengthUnit.toString());
         if (isElectric) {
-            int rangeElectric = VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, v.status.fuelIndicators);
+            int rangeElectric = VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, v);
             QuantityType<Length> qtElectricRange = QuantityType.valueOf(rangeElectric, lengthUnit);
             QuantityType<Length> qtElectricRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeElectric),
                     lengthUnit);
-
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_ELECTRIC, qtElectricRange);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC, qtElectricRadius);
         }
         if (hasFuel) {
-            int rangeFuel = VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, v.status.fuelIndicators);
+            int rangeFuel = VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, v);
             QuantityType<Length> qtFuelRange = QuantityType.valueOf(rangeFuel, lengthUnit);
             QuantityType<Length> qtFuelRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeFuel), lengthUnit);
-
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_FUEL, qtFuelRange);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_FUEL, qtFuelRadius);
         }
         if (isHybrid) {
-            int rangeCombined = VehicleStatusUtils.getRange(Constants.PHEV, v.status.fuelIndicators);
+            int rangeCombined = VehicleStatusUtils.getRange(Constants.PHEV, v);
             QuantityType<Length> qtHybridRange = QuantityType.valueOf(rangeCombined, lengthUnit);
             QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(rangeCombined),
                     lengthUnit);
@@ -426,13 +423,13 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                                 days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)));
                     });
                 } else {
-                    logger.info("Key {} has no days", key);
+                    logger.debug("Key {} has no days", key);
                 }
             } else {
-                logger.info("No timer found for {}", key);
+                logger.debug("No timer found for {}", key);
             }
         } else {
-            logger.info("No TimedChannel found for {}", key);
+            logger.debug("No TimedChannel found for {}", key);
         }
     }
 

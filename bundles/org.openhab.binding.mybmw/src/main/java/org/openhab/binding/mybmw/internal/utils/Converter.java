@@ -182,8 +182,8 @@ public class Converter {
      * @param range
      * @return mapping from air-line distance to "real road" distance
      */
-    public static double guessRangeRadius(double range) {
-        return range * 0.8;
+    public static int guessRangeRadius(double range) {
+        return (int) (range * 0.8);
     }
 
     public static int getIndex(String fullString) {
