@@ -24,17 +24,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sound.sampled.AudioFormat.Encoding;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.ByteArrayAudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
@@ -350,31 +346,11 @@ public class GoogleTTSService implements TTSService {
         return new ByteArrayAudioStream(audio, finalFormat);
     }
 
-    private AudioFormat parseAudioFormat(byte[] audio) {
-        try (InputStream inputStream = new ByteArrayInputStream(audio);
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(inputStream);) {
-            javax.sound.sampled.AudioFormat format = audioInputStream.getFormat();
-            String javaSoundencoding = format.getEncoding().toString();
-            String codecPCMSignedOrUnsigned;
-            if (javaSoundencoding.equals(Encoding.PCM_SIGNED.toString())) {
-                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_SIGNED;
-            } else if (javaSoundencoding.equals(Encoding.PCM_UNSIGNED.toString())) {
-                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_UNSIGNED;
-            } else if (javaSoundencoding.equals(Encoding.ULAW.toString())) {
-                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_ULAW;
-            } else if (javaSoundencoding.equals(Encoding.ALAW.toString())) {
-                codecPCMSignedOrUnsigned = AudioFormat.CODEC_PCM_ALAW;
-            } else {
-                codecPCMSignedOrUnsigned = null;
-            }
-            Integer bitRate = Math.round(format.getFrameRate() * format.getFrameSize()) * format.getChannels();
-            Long frequency = Float.valueOf(format.getSampleRate()).longValue();
-            return new AudioFormat(AudioFormat.CONTAINER_WAVE, codecPCMSignedOrUnsigned, format.isBigEndian(),
-                    format.getSampleSizeInBits(), bitRate, frequency);
-
-        } catch (UnsupportedAudioFileException | IOException e) {
-            // assume default format
-            return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 705600, 44100L);
+    private AudioFormat parseAudioFormat(byte[] audio) throws TTSException {
+        try (InputStream inputStream = new ByteArrayInputStream(audio)) {
+            return AudioWaveUtils.parseWavFormat(inputStream);
+        } catch (IOException e) {
+            throw new TTSException("Cannot parse WAV format", e);
         }
     }
 }
