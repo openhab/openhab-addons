@@ -1,48 +1,11 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
-=======
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-=======
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-<<<<<<< HEAD
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
->>>>>>> 48746f5e3f (Apply spotless)
-=======
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
->>>>>>> cc47ef7f3e (pom update from http to https reference (#11833))
-
->>>>>>> 6dc031e6cf ([unleash-maven-plugin] Preparation for next development cycle.)
-=======
-
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
->>>>>>> d68a7739c7 (spotless apply on pom.xml)
-=======
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
->>>>>>> 04b99201de (removing empty lines in pom.xml)
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-    <version>3.2.0-SNAPSHOT</version>
-      
-=======
     <version>3.3.0-SNAPSHOT</version>
->>>>>>> 6dc031e6cf ([unleash-maven-plugin] Preparation for next development cycle.)
-=======
-    <version>3.3.0-SNAPSHOT</version>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
   </parent>
   <groupId>org.openhab.addons.bundles</groupId>
   <artifactId>org.openhab.addons.reactor.bundles</artifactId>
@@ -87,15 +50,7 @@
     <module>org.openhab.binding.ambientweather</module>
     <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
     <module>org.openhab.binding.anel</module>
->>>>>>> 0adacaf596 ([anel] Initial contribution of the Anel NET-PwrCtrl binding for OH3 (#10952))
-=======
-    <module>org.openhab.binding.anel</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.atlona</module>
     <module>org.openhab.binding.autelis</module>
@@ -137,28 +92,12 @@
     <module>org.openhab.binding.dbquery</module>
     <module>org.openhab.binding.deconz</module>
     <module>org.openhab.binding.denonmarantz</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
     <module>org.openhab.binding.deutschebahn</module>
->>>>>>> 50d5622e79 ([deutschebahn] Initial contribution: New binding for DeutscheBahn Fahrplan (#11384))
-=======
-    <module>org.openhab.binding.deutschebahn</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.digiplex</module>
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
     <module>org.openhab.binding.dominoswiss</module>
->>>>>>> 15b83cc40f ([dominoswiss] Initial contribution (#11585))
-=======
-    <module>org.openhab.binding.dominoswiss</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.draytonwiser</module>
     <module>org.openhab.binding.dscalarm</module>
@@ -333,15 +272,7 @@
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.proteusecometer</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
     <module>org.openhab.binding.publictransportswitzerland</module>
->>>>>>> 1cae863569 ([publictransportswitzerland] Public Transport Switzerland Initial contribution (#8540))
-=======
-    <module>org.openhab.binding.publictransportswitzerland</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.pushover</module>
@@ -351,15 +282,7 @@
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>
     <module>org.openhab.binding.remoteopenhab</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
     <module>org.openhab.binding.renault</module>
->>>>>>> 3d2663cbf7 ([renault] Initial Contribution (#11467))
-=======
-    <module>org.openhab.binding.renault</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.resol</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
@@ -386,34 +309,14 @@
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smhi</module>
     <module>org.openhab.binding.smartthings</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
     <module>org.openhab.binding.sncf</module>
->>>>>>> cb0c4bbcb4 ([SNCF] A binding to get French railways arrivals and departures (#11607))
-=======
-    <module>org.openhab.binding.sncf</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-	
-	<module>org.openhab.binding.sonnen</module>
-        
-=======
-
     <module>org.openhab.binding.sonnen</module>
-
->>>>>>> d68a7739c7 (spotless apply on pom.xml)
-=======
-    <module>org.openhab.binding.sonnen</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.sonyprojector</module>
@@ -426,17 +329,7 @@
     <module>org.openhab.binding.tacmi</module>
     <module>org.openhab.binding.tado</module>
     <module>org.openhab.binding.tankerkoenig</module>
-<<<<<<< HEAD
-<<<<<<< HEAD
-
     <module>org.openhab.binding.tapocontrol</module>
-
-=======
-    <module>org.openhab.binding.tapocontrol</module>
->>>>>>> 612afd2e07 ([Tapocontrol] Binding to control Tapo (by TP-Link) Devices (#11111))
-=======
-    <module>org.openhab.binding.tapocontrol</module>
->>>>>>> 04b99201de (removing empty lines in pom.xml)
     <module>org.openhab.binding.telegram</module>
     <module>org.openhab.binding.teleinfo</module>
     <module>org.openhab.binding.tellstick</module>
