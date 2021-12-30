@@ -42,6 +42,8 @@ public class DeviceFactory {
                 return new CeilingDeviceWithAmbientDevice(id);
             case color:
                 return new WonderDevice(id);
+            case color4:
+                return new WonderDevice(id);
             case mono:
                 return new MonoDevice(id);
             case ct_bulb:
