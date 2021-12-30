@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -173,27 +174,22 @@ public class MycroftConnection {
         logger.trace("{} received raw data: {}", socketName, message);
 
         try {
-            // listeners on message type :
+            // get the base message information :
             BaseMessage mycroftMessage = gson.fromJson(message, BaseMessage.class);
             Objects.requireNonNull(mycroftMessage);
+            // now that we have the message type, we can use a second and more precise parsing:
+            if (mycroftMessage.type != MessageType.any) {
+                mycroftMessage = gson.fromJson(message, mycroftMessage.type.getMessageTypeClass());
+                Objects.requireNonNull(mycroftMessage);
+            }
+            // adding the raw message:
             mycroftMessage.message = message;
 
-            // special listener : to any messages
-            Set<MycroftMessageListener<? extends BaseMessage>> listenersAnyToNotify = listeners.get(MessageType.any);
-            if (listenersAnyToNotify != null && !listenersAnyToNotify.isEmpty()) {
-                for (MycroftMessageListener<? extends BaseMessage> listener : listenersAnyToNotify) {
-                    listener.baseMessageReceived(mycroftMessage);
-                }
-            }
-
-            // listener for specific message type
-            Set<MycroftMessageListener<? extends BaseMessage>> listenersToNotify = listeners.get(mycroftMessage.type);
-            if (mycroftMessage.type != MessageType.any && listenersToNotify != null && !listenersToNotify.isEmpty()) {
-                BaseMessage fullMycroftMessage = gson.fromJson(message, mycroftMessage.type.getMessageTypeClass());
-                mycroftMessage.message = message;
-                Objects.requireNonNull(fullMycroftMessage);
-                listenersToNotify.forEach(listener -> listener.baseMessageReceived(fullMycroftMessage));
-            }
+            final BaseMessage finalMessage = mycroftMessage;
+            Stream.concat(listeners.getOrDefault(MessageType.any, new HashSet<>()).stream(),
+                    listeners.getOrDefault(mycroftMessage.type, new HashSet<>()).stream()).forEach(listener -> {
+                        listener.baseMessageReceived(finalMessage);
+                    });
 
         } catch (RuntimeException e) {
             // we need to catch all processing exceptions, otherwise they could affect the connection
