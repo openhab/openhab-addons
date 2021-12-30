@@ -31,8 +31,8 @@
 	</channel-type>
 	<channel-type id="profile-control-channel">
 		<item-type>String</item-type>
-		<label>Charging Control Type</label>
-		<description>Charging control selection</description>
+		<label>Charging Plan</label>
+		<description>Charging plan selection</description>
 		<command>
 			<options>
 				<option value="weeklyPlanner">Weekly Schedule</option>

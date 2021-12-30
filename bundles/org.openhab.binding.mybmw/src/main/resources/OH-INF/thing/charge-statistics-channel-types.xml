@@ -5,12 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="statistic-title-channel">
 		<item-type>String</item-type>
-		<label>Title</label>
+		<label>Charge Statistic Month</label>
 	</channel-type>
 	<channel-type id="statistic-energy-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Charged</label>
 		<description>Total energy charged in current month</description>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="statistic-sessions-channel">
 		<item-type>Number</item-type>

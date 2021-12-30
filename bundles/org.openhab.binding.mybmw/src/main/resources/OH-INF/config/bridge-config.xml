@@ -24,5 +24,11 @@
 			</options>
 			<default>ROW</default>
 		</parameter>
+		<parameter name="language" type="text">
+			<label>Language Settings</label>
+			<description>Channel data can be returned in the desired language like en, de, fr ...</description>
+			<advanced>true</advanced>
+			<default>AUTODETECT</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

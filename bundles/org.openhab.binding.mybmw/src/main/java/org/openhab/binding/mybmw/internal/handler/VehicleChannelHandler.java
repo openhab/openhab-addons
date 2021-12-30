@@ -33,6 +33,7 @@ import org.openhab.binding.mybmw.internal.MyBMWConstants.VehicleType;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeSession;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
+import org.openhab.binding.mybmw.internal.dto.charge.ChargingSettings;
 import org.openhab.binding.mybmw.internal.dto.properties.CBS;
 import org.openhab.binding.mybmw.internal.dto.properties.DoorsWindows;
 import org.openhab.binding.mybmw.internal.dto.properties.Location;
@@ -390,10 +391,13 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE, StringType.valueOf(cpw.getPreference()));
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE, StringType.valueOf(cpw.getMode()));
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CONTROL, StringType.valueOf(cpw.getControlType()));
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
-                DecimalType.valueOf(Integer.toString(cpw.getChargeSettings().targetSoc)));
-        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_LIMIT,
-                OnOffType.from(cpw.getChargeSettings().isAcCurrentLimitActive));
+        ChargingSettings cs = cpw.getChargeSettings();
+        if (cs != null) {
+            updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_TARGET,
+                    DecimalType.valueOf(Integer.toString(cs.targetSoc)));
+            updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_LIMIT,
+                    OnOffType.from(cs.isAcCurrentLimitActive));
+        }
         final Boolean climate = cpw.isEnabled(ProfileKey.CLIMATE);
         updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_CLIMATE,
                 climate == null ? UnDefType.UNDEF : OnOffType.from(climate));
@@ -422,14 +426,8 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                                 timed.timer + ChargeProfileUtils.getDaysChannel(day),
                                 days == null ? UnDefType.UNDEF : OnOffType.from(days.contains(day)));
                     });
-                } else {
-                    logger.debug("Key {} has no days", key);
                 }
-            } else {
-                logger.debug("No timer found for {}", key);
             }
-        } else {
-            logger.debug("No TimedChannel found for {}", key);
         }
     }
 

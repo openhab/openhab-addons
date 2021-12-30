@@ -316,5 +316,4 @@ public class VehicleTests {
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
                 + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
-
 }

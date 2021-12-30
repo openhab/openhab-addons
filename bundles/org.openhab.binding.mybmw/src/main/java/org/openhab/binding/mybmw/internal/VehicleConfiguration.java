@@ -38,14 +38,4 @@ public class VehicleConfiguration {
      * Data refresh rate in minutes
      */
     public int refreshInterval = MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES;
-
-    /**
-     * image viewport defined as options in thing xml
-     * <option value="FRONT">Front</option>
-     * <option value="REAR">Rear</option>
-     * <option value="SIDE">Slide</option>
-     * <option value="DASHBOARD">Dashboard</option>
-     * <option value="DRIVERDOOR">Driver Door</option>
-     */
-    public String imageViewport = MyBMWConstants.DEFAULT_IMAGE_VIEWPORT;
 }

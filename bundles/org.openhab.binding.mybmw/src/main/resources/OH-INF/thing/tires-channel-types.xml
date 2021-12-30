@@ -5,34 +5,34 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="front-left-current-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>Front Left Pressure</label>
+		<label>Tire Pressure Front Left</label>
 	</channel-type>
 	<channel-type id="front-left-wanted-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>Front Left Pressure Wanted</label>
+		<label>Tire Pressure Front Left Target</label>
 	</channel-type>
 	<channel-type id="front-right-current-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>Front Right Pressure</label>
+		<label>Tire Pressure Front Right</label>
 	</channel-type>
 	<channel-type id="front-right-wanted-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>Front Right Pressure Wanted</label>
+		<label>Tire Pressure Front Right Target</label>
 	</channel-type>
 	<channel-type id="rear-left-current-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>Rear Left Pressure</label>
+		<label>Tire Pressure Rear Left</label>
 	</channel-type>
 	<channel-type id="rear-left-wanted-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>Rear Left Pressure Wanted</label>
+		<label>Tire Pressure Rear Left Target</label>
 	</channel-type>
 	<channel-type id="rear-right-current-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>rear Right Pressure</label>
+		<label>Tire Pressure Rear Right</label>
 	</channel-type>
 	<channel-type id="rear-right-wanted-channel">
 		<item-type>Number:Pressure</item-type>
-		<label>Rear Right Pressure Wanted</label>
+		<label>Tire Pressure Rear Right Target</label>
 	</channel-type>
 </thing:thing-descriptions>

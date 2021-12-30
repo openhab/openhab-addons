@@ -146,9 +146,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 counter++;
                 final MultiMap<String> dataMap = new MultiMap<String>();
                 dataMap.add(EVENT_ID, executingEventId.get());
-                final String encoded = dataMap == null || dataMap.isEmpty() ? null
-                        : UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
-
+                final String encoded = UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
                 proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null,
                         handler.getConfiguration().get().vehicleBrand, this);
             }, () -> {

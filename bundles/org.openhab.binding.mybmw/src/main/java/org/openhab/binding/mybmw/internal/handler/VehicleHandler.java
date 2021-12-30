@@ -189,11 +189,8 @@ public class VehicleHandler extends VehicleChannelHandler {
             logger.debug("Bridge null");
         }
 
-        // get Image after init with config values
-        synchronized (imageProperties) {
-            imageProperties = new ImageProperties(config.imageViewport);
-        }
-        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf((config.imageViewport)));
+        imageProperties = new ImageProperties();
+        updateChannel(CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT, StringType.valueOf(imageProperties.viewport));
 
         // start update schedule
         startSchedule(config.refreshInterval);

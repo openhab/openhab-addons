@@ -47,6 +47,8 @@ import org.slf4j.LoggerFactory;
 public class ChargeStatisticsTest {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
+    private static final int EXPECTED_UPDATE_COUNT = 3;
+
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
     @Nullable
@@ -103,13 +105,35 @@ public class ChargeStatisticsTest {
     }
 
     @Test
-    public void testI01Rex() {
+    public void testI01REX() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/charge-statistics-de.json");
-        // [todo] exact count needs to be evaluated
-        // assertTrue(testVehicle(content,
-        // STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
-        assertTrue(testVehicle(content, 3, Optional.empty()));
+        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
+    }
+
+    @Test
+    public void testG21() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), false);
+        String content = FileReader.readFileInString("src/test/resources/responses/G21/charging-statistics_0.json");
+        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
+    }
+
+    @Test
+    public void testG30() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), false);
+        String content = FileReader.readFileInString("src/test/resources/responses/G30/charging-statistics_0.json");
+        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
+    }
+
+    @Test
+    public void testI01NOREX() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.ELECTRIC.toString(), false);
+        String content = FileReader
+                .readFileInString("src/test/resources/responses/I01_NOREX/charging-statistics_0.json");
+        assertTrue(testVehicle(content, EXPECTED_UPDATE_COUNT, Optional.empty()));
     }
 }

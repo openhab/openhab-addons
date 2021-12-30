@@ -234,5 +234,4 @@ public class VehicleStatusUtils {
                 return Constants.INT_UNDEF;
         }
     }
-
 }

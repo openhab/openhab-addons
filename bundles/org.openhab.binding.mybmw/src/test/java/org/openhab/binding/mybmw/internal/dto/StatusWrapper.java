@@ -49,8 +49,7 @@ import org.openhab.core.types.UnDefType;
 @SuppressWarnings("null")
 public class StatusWrapper {
     private static final Unit<Length> KILOMETRE = Constants.KILOMETRE_UNIT;
-    private static final double ALLOWED_MILE_CONVERSION_DEVIATION = 1.5;
-    private static final double ALLOWED_KM_ROUND_DEVIATION = 0.1;
+    private static final double ALLOWED_CONVERSION_DEVIATION = 0.01;
 
     private Vehicle vehicle;
     private boolean isElectric;
@@ -156,7 +155,7 @@ public class StatusWrapper {
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle),
-                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Electric");
+                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Electric");
                 break;
             case RANGE_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
@@ -165,7 +164,7 @@ public class StatusWrapper {
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle),
-                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Combustion");
+                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Combustion");
                 break;
             case RANGE_HYBRID:
                 assertTrue(isHybrid, "Is Hybrid");
@@ -174,7 +173,7 @@ public class StatusWrapper {
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(VehicleStatusUtils.getRange(Constants.PHEV, vehicle), Converter.round(qt.floatValue()),
-                        ALLOWED_MILE_CONVERSION_DEVIATION, "Range Combined");
+                        ALLOWED_CONVERSION_DEVIATION, "Range Combined");
                 break;
             case REMAINING_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
@@ -272,7 +271,7 @@ public class StatusWrapper {
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(
                         Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle)),
-                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Electric");
+                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Radius Electric");
                 break;
             case RANGE_RADIUS_FUEL:
                 assertTrue(state instanceof QuantityType);
@@ -282,7 +281,7 @@ public class StatusWrapper {
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(
                         Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle)),
-                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Fuel");
+                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Radius Fuel");
                 break;
             case RANGE_RADIUS_HYBRID:
                 assertTrue(state instanceof QuantityType);
@@ -291,7 +290,7 @@ public class StatusWrapper {
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.PHEV, vehicle)),
-                        Converter.round(qt.floatValue()), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Combined");
+                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Radius Combined");
                 break;
             case DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);

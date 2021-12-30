@@ -153,8 +153,6 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         properties.put("vehicleBrand", vehicle.brand);
                         properties.put("refreshInterval",
                                 Integer.toString(MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES));
-                        properties.put("imageSize", Integer.toString(MyBMWConstants.DEFAULT_IMAGE_SIZE_PX));
-                        properties.put("imageViewport", MyBMWConstants.DEFAULT_IMAGE_VIEWPORT);
 
                         String vehicleLabel = vehicle.brand + " " + vehicle.model;
                         Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);

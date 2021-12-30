@@ -14,29 +14,10 @@
 			<description>Data Refresh Rate for your Vehicle data</description>
 			<default>5</default>
 		</parameter>
-		<parameter name="imageViewport" type="text">
-			<label>Image Viewport</label>
-			<description>Viewport for Vehicle Image</description>
-			<options>
-				<option value="FRONT">Front View</option>
-				<option value="REAR">Rear View</option>
-				<option value="SIDE">Side View</option>
-				<option value="DASHBOARD">Dashboard View</option>
-				<option value="DRIVERDOOR">Driver Door View</option>
-			</options>
-			<default>FRONT</default>
-		</parameter>
 		<parameter name="vehicleBrand" type="text">
 			<label>Brand of the Vehicle</label>
-			<description>Vehicle Brand like BMW or Mini</description>
+			<description>Vehicle Brand like BMW or Mini. Don't change if you don't know what you're doing!</description>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="language" type="text">
-			<label>Language Settings for Return Values</label>
-			<description>Some channel values can be returned in the desired language</description>
-			<advanced>true</advanced>
-			<default>AUTODETECT</default>
-		</parameter>
-
 	</config-description>
 </config-description:config-descriptions>

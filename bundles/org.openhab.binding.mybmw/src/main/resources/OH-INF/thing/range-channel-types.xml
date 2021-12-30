@@ -35,7 +35,7 @@
 	</channel-type>
 	<channel-type id="range-radius-electric-channel">
 		<item-type>Number:Length</item-type>
-		<label>Electric Range Radius if Fully Charged</label>
+		<label>Electric Range Radius</label>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="range-radius-fuel-channel">
