@@ -332,9 +332,9 @@ public class DeviceManager {
         }
         switch (device.getDeviceType()) {
             case ceiling:
-            case ceiling3:
                 return "Yeelight LED Ceiling";
             case ceiling1:
+            case ceiling3:
                 return "Yeelight LED Ceiling with night mode";
             case ceiling4:
                 return "Yeelight LED Ceiling with ambient light";
