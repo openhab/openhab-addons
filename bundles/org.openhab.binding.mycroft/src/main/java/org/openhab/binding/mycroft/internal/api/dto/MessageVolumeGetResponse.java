@@ -15,6 +15,10 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message is sent in response to a VolumeGet message
+ * with the current volume in Mycroft
+ * NOT FUNCTIONAL
+ * (see https://community.mycroft.ai/t/openhab-plugin-development-audio-volume-message-types-missing/10576)
  *
  * @author Gwendal Roulleau - Initial contribution
  */

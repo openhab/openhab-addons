@@ -18,6 +18,8 @@ import java.util.List;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message is sent to the skills
+ * module to trigger an intent from a text.
  *
  * @author Gwendal Roulleau - Initial contribution
  */

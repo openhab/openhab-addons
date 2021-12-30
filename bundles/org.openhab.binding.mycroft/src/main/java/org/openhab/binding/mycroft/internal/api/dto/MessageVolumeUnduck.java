@@ -15,6 +15,8 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message is sent by Mycroft to signal that the volume
+ * is no longer ducked after a STT recognition process.
  *
  * @author Gwendal Roulleau - Initial contribution
  */

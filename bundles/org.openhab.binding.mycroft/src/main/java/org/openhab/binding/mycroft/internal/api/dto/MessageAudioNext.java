@@ -15,6 +15,8 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message asks Mycroft to play the next title in
+ * its underlying player.
  *
  * @author Gwendal Roulleau - Initial Contribution
  *

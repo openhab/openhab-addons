@@ -15,6 +15,8 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message informs the bus clients that Mycroft
+ * is actively listening and trying to do STT.
  *
  * @author Gwendal Roulleau - Initial contribution
  */

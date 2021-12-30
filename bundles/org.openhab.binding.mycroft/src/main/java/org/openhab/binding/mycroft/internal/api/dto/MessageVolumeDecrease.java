@@ -15,6 +15,7 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message asks Mycroft to decrease the volume by 10%
  *
  * @author Gwendal Roulleau - Initial contribution
  */

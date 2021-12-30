@@ -15,7 +15,10 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
- *
+ * This message asks Mycroft to give information about
+ * the title played on its underlying player.
+ * Work in progress
+ * 
  * @author Gwendal Roulleau - Initial contribution
  */
 public class MessageAudioTrackInfo extends BaseMessage {

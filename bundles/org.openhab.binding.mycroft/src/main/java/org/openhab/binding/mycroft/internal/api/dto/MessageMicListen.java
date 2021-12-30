@@ -15,6 +15,8 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message asks Mycroft to begin to listen to the mic
+ * and to try to do STT and intent recognition.
  *
  * @author Gwendal Roulleau - Initial contribution
  */

@@ -15,6 +15,8 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
+ * This message informs the bus clients that Mycroft
+ * finished listening to the mic.
  *
  * @author Gwendal Roulleau - Initial contribution
  */
