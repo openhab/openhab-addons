@@ -192,7 +192,14 @@ public class DateTimeUtils {
                 next = calendar;
             }
         }
-        return next == null ? firstSeasonOfYear : next;
+        if (next == null) {
+            final Calendar nextYearSeason = (Calendar) firstSeasonOfYear.clone();
+
+            nextYearSeason.add(Calendar.YEAR, 1);
+            return nextYearSeason;
+        } else {
+            return next;
+        }
     }
 
     /**
