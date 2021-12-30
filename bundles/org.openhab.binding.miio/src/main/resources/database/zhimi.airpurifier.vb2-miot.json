@@ -1041,13 +1041,13 @@
 				"piid": 8,
 				"friendlyName": "Others - Powertime",
 				"channel": "powertime",
-				"type": "Number:duration",
+				"type": "Number:Time",
 				"unit": "seconds",
 				"stateDescription": {
 					"minimum": 0,
 					"maximum": 2147483647,
 					"step": 1,
-					"pattern": "%.0f",
+					"pattern": "%.0f %unit%",
 					"readOnly": true
 				},
 				"refresh": true,
