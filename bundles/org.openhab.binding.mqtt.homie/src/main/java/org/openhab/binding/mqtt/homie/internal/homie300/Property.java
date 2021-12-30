@@ -30,6 +30,7 @@ import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
+import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
@@ -217,6 +218,9 @@ public class Property implements AttributeChanged {
                 } else {
                     value = new NumberValue(min, max, step, attributes.unit);
                 }
+                break;
+            case datetime_:
+                value = new DateTimeValue();
                 break;
             case string_:
             case unknown:

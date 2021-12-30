@@ -36,7 +36,8 @@ public class PropertyAttributes extends AbstractMqttAttributeClass {
         boolean_,
         string_,
         enum_,
-        color_
+        color_,
+        datetime_
     }
 
     public String name = "";
