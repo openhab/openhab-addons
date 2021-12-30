@@ -254,6 +254,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             CCMMessage ccm = new CCMMessage();
             ccm.title = Constants.NO_ENTRIES;
             ccm.longDescription = Constants.NO_ENTRIES;
+            ccm.state = Constants.NO_ENTRIES;
             ccl.add(ccm);
         }
 
@@ -323,6 +324,18 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_SERVICE, NAME, StringType.valueOf(Converter.toTitleCase(serviceEntry.type)));
             updateChannel(CHANNEL_GROUP_SERVICE, DATE,
                     DateTimeType.valueOf(Converter.getZonedDateTime(serviceEntry.dateTime)));
+            if (serviceEntry.distance != null) {
+                if (Constants.KILOMETERS_JSON.equals(serviceEntry.distance.units)) {
+                    updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
+                            QuantityType.valueOf(serviceEntry.distance.value, Constants.KILOMETRE_UNIT));
+                } else {
+                    updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
+                            QuantityType.valueOf(serviceEntry.distance.value, ImperialUnits.MILE));
+                }
+            } else {
+                updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
+                        QuantityType.valueOf(Constants.INT_UNDEF, Constants.KILOMETRE_UNIT));
+            }
         }
     }
 

@@ -58,8 +58,8 @@ public class VehicleTests {
     private static final int DOORS = 11;
     private static final int CHECK_EMPTY = 3;
     private static final int CHECK_AVAILABLE = 3;
-    private static final int SERVICE_AVAILABLE = 2;
-    private static final int SERVICE_EMPTY = 2;
+    private static final int SERVICE_AVAILABLE = 3;
+    private static final int SERVICE_EMPTY = 3;
     private static final int POSITION = 2;
     private static final int CHARGE_PROFILE = 44;
     private static final int TIRES = 8;

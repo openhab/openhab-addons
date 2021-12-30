@@ -39,7 +39,7 @@ public class Constants {
     public static final String OK = "Ok";
     public static final String ACTIVE = "Active";
     public static final String NOT_ACTIVE = "Not Active";
-    public static final String NO_ENTRIES = "No Entries";
+    public static final String NO_ENTRIES = "-";
     public static final String OPEN = "Open";
     public static final String INVALID = "Invalid";
     public static final String CLOSED = "Closed";
@@ -54,7 +54,6 @@ public class Constants {
     public static final int INT_UNDEF = -1;
     public static final String KILOMETERS_JSON = "KILOMETERS";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
-    // public static final Unit<Energy> KILO_WATT_UNIT = MetricPrefix.KILO(QuantityType.);
 
     // Services to query
     public static final String SERVICES_SUPPORTED = "servicesSupported";

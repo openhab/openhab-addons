@@ -108,24 +108,34 @@ public class StatusWrapper {
         PointType pt;
         switch (cUid) {
             case MILEAGE:
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                if ("km".equals(vehicle.status.currentMileage.units)) {
-                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
-                } else {
-                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
-                }
                 switch (gUid) {
                     case CHANNEL_GROUP_RANGE:
+                        assertTrue(state instanceof QuantityType);
+                        qt = ((QuantityType) state);
+                        if ("km".equals(vehicle.status.currentMileage.units)) {
+                            assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                        } else {
+                            assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
+                        }
                         assertEquals(qt.intValue(), vehicle.status.currentMileage.mileage, "Mileage");
                         break;
                     case CHANNEL_GROUP_SERVICE:
-                        if (vehicle.properties.serviceRequired.isEmpty()) {
-                            assertEquals(qt.intValue(), -1, "Service Mileage");
-                        } else {
-                            assertEquals(qt.intValue(), vehicle.properties.serviceRequired.get(0).dateTime,
-                                    "Service Mileage");
+                        State wantedMileage = QuantityType.valueOf(Constants.INT_UNDEF, Constants.KILOMETRE_UNIT);
+                        if (!vehicle.properties.serviceRequired.isEmpty()) {
+                            if (vehicle.properties.serviceRequired.get(0).distance != null) {
+                                if (vehicle.properties.serviceRequired.get(0).distance.units
+                                        .equals(Constants.KILOMETERS_JSON)) {
+                                    wantedMileage = QuantityType.valueOf(
+                                            vehicle.properties.serviceRequired.get(0).distance.value,
+                                            Constants.KILOMETRE_UNIT);
+                                } else {
+                                    wantedMileage = QuantityType.valueOf(
+                                            vehicle.properties.serviceRequired.get(0).distance.value,
+                                            ImperialUnits.MILE);
+                                }
+                            }
                         }
+                        assertEquals(wantedMileage, state, "Service Mileage");
                         break;
                     default:
                         assertFalse(true, "Channel " + channelUID + " " + state + " not found");
@@ -424,7 +434,7 @@ public class StatusWrapper {
                 st = (StringType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
-                        wanted = StringType.valueOf(Converter.toTitleCase(Constants.NO_ENTRIES));
+                        wanted = StringType.valueOf(Constants.NO_ENTRIES);
                         if (!vehicle.properties.serviceRequired.isEmpty()) {
                             wanted = StringType
                                     .valueOf(Converter.toTitleCase(vehicle.properties.serviceRequired.get(0).type));
@@ -470,7 +480,7 @@ public class StatusWrapper {
             case SEVERITY:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Constants.EMPTY);
+                wanted = StringType.valueOf(Constants.NO_ENTRIES);
                 if (!vehicle.status.checkControlMessages.isEmpty()) {
                     wanted = StringType.valueOf(vehicle.status.checkControlMessages.get(0).state);
                 }

@@ -52,7 +52,7 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
             final @Reference LocaleProvider lp, final @Reference TimeZoneProvider timeZoneProvider) {
         httpClientFactory = hcf;
         optionProvider = op;
-        localeLanguage = lp.getLocale().getLanguage().toUpperCase();
+        localeLanguage = lp.getLocale().getLanguage().toLowerCase();
         Converter.setTimeZoneProvider(timeZoneProvider);
     }
 

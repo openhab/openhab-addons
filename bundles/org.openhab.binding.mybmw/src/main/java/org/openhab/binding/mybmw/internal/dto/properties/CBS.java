@@ -12,14 +12,16 @@
  */
 package org.openhab.binding.mybmw.internal.dto.properties;
 
+import org.openhab.binding.mybmw.internal.utils.Constants;
+
 /**
  * The {@link CBS} Data Transfer Object ConditionBasedService
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class CBS {
-    public String type;// ": "BRAKE_FLUID",
-    public String status;// ": "OK",
+    public String type = Constants.NO_ENTRIES;// ": "BRAKE_FLUID",
+    public String status = Constants.NO_ENTRIES;// ": "OK",
     public String dateTime;// ": "2023-11-01T00:00:00.000Z"
     public Distance distance;
 }

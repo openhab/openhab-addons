@@ -40,11 +40,6 @@ public class VehicleConfiguration {
     public int refreshInterval = MyBMWConstants.DEFAULT_REFRESH_INTERVAL_MINUTES;
 
     /**
-     * image size - width & length (square)
-     */
-    public int imageSize = MyBMWConstants.DEFAULT_IMAGE_SIZE_PX;
-
-    /**
      * image viewport defined as options in thing xml
      * <option value="FRONT">Front</option>
      * <option value="REAR">Rear</option>
