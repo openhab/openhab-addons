@@ -87,10 +87,12 @@ public class VolumeChannel extends MycroftChannel<State> {
     }
 
     /**
-     * Volume between 0 and 100
+     * Protection method for volume with
+     * potentially wrong value.
      *
-     * @param volume
-     * @return
+     * @param volume The requested volume, on a scale from 0 to 100.
+     *            Could be out of bond, then it will be corrected.
+     * @return A safe volume in PercentType between 0 and 100
      */
     private PercentType normalizeVolume(int volume) {
         if (volume >= 100) {
@@ -103,10 +105,11 @@ public class VolumeChannel extends MycroftChannel<State> {
     }
 
     /**
-     * Volume between 0 and 1
+     * Protection method for volume with
+     * potentially wrong value.
      *
-     * @param volume
-     * @return
+     * @param volume The requested volume, on a scale from 0 to 1.
+     * @return A safe volume in PercentType between 0 and 100
      */
     private PercentType normalizeVolume(float volume) {
         if (volume >= 1) {
