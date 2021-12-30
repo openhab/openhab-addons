@@ -267,11 +267,17 @@ public class ChromecastStatusUpdater {
 
     private @Nullable RawType downloadImage(String url) {
         logger.debug("Trying to download the content of URL '{}'", url);
-        RawType downloadedImage = HttpUtil.downloadImage(url);
-        if (downloadedImage == null) {
-            logger.debug("Failed to download the content of URL '{}'", url);
+        try {
+            RawType downloadedImage = HttpUtil.downloadImage(url);
+            if (downloadedImage == null) {
+                logger.debug("Failed to download the content of URL '{}'", url);
+            }
+            return downloadedImage;
+        } catch (IllegalArgumentException e) {
+            // we catch this exception to avoid confusion errors in the log file
+            // see https://github.com/openhab/openhab-core/issues/2494#issuecomment-970162025
         }
-        return downloadedImage;
+        return null;
     }
 
     private @Nullable RawType downloadImageFromCache(String url) {
