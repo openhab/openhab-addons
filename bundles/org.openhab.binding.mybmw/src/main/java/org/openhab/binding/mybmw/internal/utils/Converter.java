@@ -143,6 +143,8 @@ public class Converter {
     public static String toTitleCase(@Nullable String input) {
         if (input == null) {
             return toTitleCase(Constants.UNDEF);
+        } else if (input.length() == 1) {
+            return input;
         } else {
             String lower = input.replaceAll(Constants.UNDERLINE, Constants.SPACE).toLowerCase();
             String converted = toTitleCase(lower, Constants.SPACE);

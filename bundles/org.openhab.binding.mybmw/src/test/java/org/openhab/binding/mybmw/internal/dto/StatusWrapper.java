@@ -396,21 +396,24 @@ public class StatusWrapper {
                 assertEquals(wanted.toString(), st.toString(), "Window");
                 break;
             case SERVICE_DATE:
-                assertTrue(state instanceof DateTimeType);
-                dtt = (DateTimeType) state;
-                if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
-                    if (specialHandlingMap.containsKey(SERVICE_DATE)) {
-                        assertEquals(specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString(), "Next Service");
-                    } else {
-                        String dueDateString = VehicleStatusUtils.getNextServiceDate(vehicle.properties.serviceRequired)
-                                .toString();
-                        DateTimeType expectedDTT = DateTimeType.valueOf(dueDateString);
-                        assertEquals(expectedDTT.toString(), dtt.toString(), "Next Service");
+                if (!state.equals(UnDefType.UNDEF)) {
+                    assertTrue(state instanceof DateTimeType);
+                    dtt = (DateTimeType) state;
+                    if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
+                        if (specialHandlingMap.containsKey(SERVICE_DATE)) {
+                            assertEquals(specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString(),
+                                    "Next Service");
+                        } else {
+                            String dueDateString = VehicleStatusUtils
+                                    .getNextServiceDate(vehicle.properties.serviceRequired).toString();
+                            DateTimeType expectedDTT = DateTimeType.valueOf(dueDateString);
+                            assertEquals(expectedDTT.toString(), dtt.toString(), "Next Service");
+                        }
+                    } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
+                        String dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
+                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
+                        assertEquals(expectedDTT.toString(), dtt.toString(), "First Service Date");
                     }
-                } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
-                    String dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
-                    DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
-                    assertEquals(expectedDTT.toString(), dtt.toString(), "First Service Date");
                 }
                 break;
             case SERVICE_MILEAGE:

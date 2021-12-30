@@ -322,8 +322,12 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             CBS serviceEntry = serviceList.get(index);
             selectedService = serviceEntry.type;
             updateChannel(CHANNEL_GROUP_SERVICE, NAME, StringType.valueOf(Converter.toTitleCase(serviceEntry.type)));
-            updateChannel(CHANNEL_GROUP_SERVICE, DATE,
-                    DateTimeType.valueOf(Converter.getZonedDateTime(serviceEntry.dateTime)));
+            if (serviceEntry.dateTime != null) {
+                updateChannel(CHANNEL_GROUP_SERVICE, DATE,
+                        DateTimeType.valueOf(Converter.getZonedDateTime(serviceEntry.dateTime)));
+            } else {
+                updateChannel(CHANNEL_GROUP_SERVICE, DATE, UnDefType.UNDEF);
+            }
             if (serviceEntry.distance != null) {
                 if (Constants.KILOMETERS_JSON.equals(serviceEntry.distance.units)) {
                     updateChannel(CHANNEL_GROUP_SERVICE, MILEAGE,
@@ -349,18 +353,18 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         sessionList = sl;
-        List<StateOption> serviceNameOptions = new ArrayList<>();
+        List<StateOption> sessionNameOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
         for (ChargeSession session : sessionList) {
             // create StateOption with "value = list index" and "label = human readable string"
-            serviceNameOptions.add(new StateOption(Integer.toString(index), session.title));
+            sessionNameOptions.add(new StateOption(Integer.toString(index), session.title));
             if (selectedService.equals(session.title)) {
                 isSelectedElementIn = true;
             }
             index++;
         }
-        setOptions(CHANNEL_GROUP_SERVICE, NAME, serviceNameOptions);
+        setOptions(CHANNEL_GROUP_CHARGE_SESSION, TITLE, sessionNameOptions);
 
         // if current selected item isn't anymore in the list select first entry
         if (!isSelectedElementIn) {

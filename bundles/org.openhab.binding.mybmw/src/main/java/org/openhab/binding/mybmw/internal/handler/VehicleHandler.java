@@ -157,6 +157,15 @@ public class VehicleHandler extends VehicleChannelHandler {
                     logger.debug("Cannot select CheckControl index {}", command.toFullString());
                 }
             }
+        } else if (CHANNEL_GROUP_CHARGE_SESSION.equals(group)) {
+            if (command instanceof StringType) {
+                int index = Converter.getIndex(command.toFullString());
+                if (index != -1) {
+                    selectSession(index);
+                } else {
+                    logger.debug("Cannot select Session index {}", command.toFullString());
+                }
+            }
         } else if (CHANNEL_GROUP_CHARGE_PROFILE.equals(group)) {
             handleChargeProfileCommand(channelUID, command);
         }
