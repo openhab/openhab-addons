@@ -15,6 +15,8 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -38,8 +40,8 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
 
     private final Logger logger = LoggerFactory.getLogger(FridgeHandler.class);
 
-    public FridgeHandler(Thing thing) {
-        super(thing, FridgeChannelSelector.class, MIELE_DEVICE_CLASS_FRIDGE);
+    public FridgeHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+        super(thing, i18nProvider, localeProvider, FridgeChannelSelector.class, MIELE_DEVICE_CLASS_FRIDGE);
     }
 
     @Override

@@ -16,7 +16,7 @@ package org.openhab.binding.miele.internal.handler;
  * Appliance handlers can implement the {@link ExtendedDeviceStateListener} interface
  * to extract additional information from the ExtendedDeviceState property.
  *
- * @author Jacob Laursen - Added power/water consumption channels
+ * @author Jacob Laursen - Initial contribution
  */
 public interface ExtendedDeviceStateListener {
     void onApplianceExtendedStateChanged(byte[] extendedDeviceState);

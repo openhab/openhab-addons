@@ -63,7 +63,7 @@ import com.google.gson.JsonParser;
 public class MiotParser {
     private final Logger logger = LoggerFactory.getLogger(MiotParser.class);
 
-    private static final String BASEURL = "http://miot-spec.org/miot-spec-v2/";
+    private static final String BASEURL = "https://miot-spec.org/miot-spec-v2/";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final boolean SKIP_SIID_1 = true;
 
@@ -331,7 +331,7 @@ public class MiotParser {
         if (actionText.length() > 35) {
             deviceMapping.setReadmeComment(
                     "Identified " + actionText.toString().replace("Manual", "manual").replace("\r\n", "<br />")
-                            + "Please test and feedback if they are working to they can be linked to a channel.");
+                            + "Please test and feedback if they are working so they can be linked to a channel.");
         }
         logger.info(channelConfigText.toString());
         if (actionText.length() > 30) {
