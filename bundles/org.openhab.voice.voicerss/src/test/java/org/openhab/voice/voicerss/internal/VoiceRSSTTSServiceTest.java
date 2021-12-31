@@ -38,6 +38,10 @@ public class VoiceRSSTTSServiceTest {
             AudioFormat.CODEC_VORBIS, null, 16, null, 44_100L);
     private static final AudioFormat AAC_44KHZ_16BIT = new AudioFormat(AudioFormat.CONTAINER_NONE,
             AudioFormat.CODEC_MP3, null, 16, null, 44_100L);
+    private static final AudioFormat WAV_22KHZ_8BIT = new AudioFormat(AudioFormat.CONTAINER_WAVE,
+            AudioFormat.CODEC_PCM_UNSIGNED, null, 8, null, 22_050L);
+    private static final AudioFormat WAV_48KHZ_16BIT = new AudioFormat(AudioFormat.CONTAINER_WAVE,
+            AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 48_000L);
 
     /**
      * The {@link VoiceRSSTTSService} under test.
@@ -58,6 +62,7 @@ public class VoiceRSSTTSServiceTest {
 
         // check generic formats without any further constraints
         assertThat(supportedFormats, hasItem(compatibleAudioFormat(MP3)));
+        assertThat(supportedFormats, hasItem(compatibleAudioFormat(WAV)));
         assertThat(supportedFormats, hasItem(compatibleAudioFormat(OGG)));
         assertThat(supportedFormats, hasItem(compatibleAudioFormat(AAC)));
 
@@ -65,6 +70,11 @@ public class VoiceRSSTTSServiceTest {
         assertThat(supportedFormats, hasItem(compatibleAudioFormat(MP3_44KHZ_16BIT)));
         assertThat(supportedFormats, hasItem(compatibleAudioFormat(OGG_44KHZ_16BIT)));
         assertThat(supportedFormats, hasItem(compatibleAudioFormat(AAC_44KHZ_16BIT)));
+        assertThat(supportedFormats, hasItem(compatibleAudioFormat(WAV_22KHZ_8BIT)));
+        assertThat(supportedFormats, hasItem(compatibleAudioFormat(WAV_48KHZ_16BIT)));
+
+        // check specific formats with additional constraints
+        assertThat(supportedFormats, hasItem(compatibleAudioFormat(bitRate(WAV, 705_600)))); // 44.1 kHz 16-bit
 
         // check unsupported formats
         assertThat(supportedFormats, not(hasItem(compatibleAudioFormat(bitDepth(WAV, 24)))));
