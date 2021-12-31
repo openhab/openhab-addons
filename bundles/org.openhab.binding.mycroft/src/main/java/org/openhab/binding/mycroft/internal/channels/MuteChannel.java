@@ -21,6 +21,7 @@ import org.openhab.binding.mycroft.internal.MycroftHandler;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 import org.openhab.binding.mycroft.internal.api.dto.BaseMessage;
 import org.openhab.binding.mycroft.internal.api.dto.MessageVolumeMute;
+import org.openhab.binding.mycroft.internal.api.dto.MessageVolumeSet;
 import org.openhab.binding.mycroft.internal.api.dto.MessageVolumeUnmute;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.Command;
@@ -33,22 +34,47 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class MuteChannel extends MycroftChannel<OnOffType> {
 
-    public MuteChannel(MycroftHandler handler) {
+    private int volumeRestorationLevel;
+
+    public MuteChannel(MycroftHandler handler, int volumeRestorationLevel) {
         super(handler, MycroftBindingConstants.VOLUME_MUTE_CHANNEL);
+        this.volumeRestorationLevel = volumeRestorationLevel;
     }
 
     @Override
     public List<MessageType> getMessageToListenTo() {
-        return Arrays.asList(MessageType.mycroft_volume_mute, MessageType.mycroft_volume_unmute);
+        // we don't listen to mute/unmute message because duck/unduck seems sufficient
+        // and we don't want to change state twice for the same event
+        // but it should be tested on mark I, as volume is handled differently
+        return Arrays.asList(MessageType.mycroft_volume_duck, MessageType.mycroft_volume_unduck,
+                MessageType.mycroft_volume_set, MessageType.mycroft_volume_increase);
     }
 
     @Override
     public void messageReceived(BaseMessage message) {
-        if (message.type == MessageType.mycroft_volume_mute) {
-            updateMyState(OnOffType.ON);
-        } else if (message.type == MessageType.mycroft_volume_unmute) {
-            updateMyState(OnOffType.OFF);
+        switch (message.type) {
+            case mycroft_volume_mute:
+            case mycroft_volume_duck:
+                updateMyState(OnOffType.ON);
+                break;
+            case mycroft_volume_unmute:
+            case mycroft_volume_unduck:
+            case mycroft_volume_increase:
+                updateMyState(OnOffType.OFF);
+                break;
+            case mycroft_volume_set:
+                if (((MessageVolumeSet) message).data.percent > 0) {
+                    updateMyState(OnOffType.OFF);
+                }
+                break;
+            default:
         }
+    }
+
+    private boolean sendVolumeSetMessage(float volume) {
+        String messageToSend = VolumeChannel.VOLUME_SETTER_MESSAGE.replaceAll("\\$\\$VOLUME",
+                Float.valueOf(volume).toString());
+        return handler.sendMessage(messageToSend);
     }
 
     @Override
@@ -61,6 +87,17 @@ public class MuteChannel extends MycroftChannel<OnOffType> {
             } else if (command == OnOffType.OFF) {
                 if (handler.sendMessage(new MessageVolumeUnmute())) {
                     updateMyState(OnOffType.OFF);
+                    // if configured, we can restore the volume to a fixed amount
+                    // usefull as a workaround for the broken Mycroft volume behavior
+                    if (volumeRestorationLevel > 0) {
+                        // we must wait 100ms for Mycroft to handle the message and
+                        // setting old volume before forcing to our value
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                        }
+                        sendVolumeSetMessage(Float.valueOf(volumeRestorationLevel));
+                    }
                 }
             }
         }

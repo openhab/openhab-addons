@@ -29,7 +29,6 @@ import org.openhab.binding.mycroft.internal.api.dto.BaseMessage;
 import org.openhab.binding.mycroft.internal.api.dto.MessageVolumeGet;
 import org.openhab.binding.mycroft.internal.channels.AudioPlayerChannel;
 import org.openhab.binding.mycroft.internal.channels.ChannelCommandHandler;
-import org.openhab.binding.mycroft.internal.channels.DuckChannel;
 import org.openhab.binding.mycroft.internal.channels.FullMessageChannel;
 import org.openhab.binding.mycroft.internal.channels.ListenChannel;
 import org.openhab.binding.mycroft.internal.channels.MuteChannel;
@@ -150,8 +149,7 @@ public class MycroftHandler extends BaseThingHandler implements MycroftConnectio
 
         registerChannel(new ListenChannel(this));
         registerChannel(new VolumeChannel(this));
-        registerChannel(new MuteChannel(this));
-        registerChannel(new DuckChannel(this));
+        registerChannel(new MuteChannel(this, config.volume_restoration_level));
         registerChannel(new SpeakChannel(this));
         registerChannel(new AudioPlayerChannel(this));
         registerChannel(new UtteranceChannel(this));

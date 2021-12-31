@@ -35,7 +35,6 @@ public class MycroftBindingConstants {
     public static final String PLAYER_CHANNEL = "player";
     public static final String VOLUME_CHANNEL = "volume";
     public static final String VOLUME_MUTE_CHANNEL = "volume_mute";
-    public static final String VOLUME_DUCK_CHANNEL = "volume_duck";
     public static final String UTTERANCE_CHANNEL = "utterance";
     public static final String FULL_MESSAGE_CHANNEL = "full_message";
 

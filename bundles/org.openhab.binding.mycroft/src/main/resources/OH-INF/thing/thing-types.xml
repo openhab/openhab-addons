@@ -13,9 +13,8 @@
 			<channel id="speak" typeId="speak-channel"/>
 			<channel id="utterance" typeId="utterance-channel"/>
 			<channel id="player" typeId="system.media-control"/>
-			<!-- <channel id="volume" typeId="system.volume"/> -->
+			<!-- channel id="volume" typeId="system.volume"/> -->
 			<channel id="volume_mute" typeId="system.mute"/>
-			<channel id="volume_duck" typeId="volume-duck-channel"/>
 			<channel id="full_message" typeId="full-message-channel"/>
 		</channels>
 
@@ -30,6 +29,12 @@
 				<description>This is the port to connect to.</description>
 				<default>8181</default>
 			</parameter>
+			<parameter name="volume_restoration_level" type="integer" required="false" min="1" max="100">
+				<advanced>true</advanced>
+				<label>Volume Restoration Level</label>
+				<description>When unmuted, force Mycroft to restore volume to this value</description>
+			</parameter>
+
 		</config-description>
 
 	</thing-type>
@@ -63,12 +68,6 @@
 				<default>message.type.1,message.type.2</default>
 			</parameter>
 		</config-description>
-	</channel-type>
-
-	<channel-type id="volume-duck-channel">
-		<item-type>Switch</item-type>
-		<label>Volume Duck</label>
-		<description>Duck the volume of the Mycroft speaker</description>
 	</channel-type>
 
 </thing:thing-descriptions>

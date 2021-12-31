@@ -15,8 +15,10 @@ package org.openhab.binding.mycroft.internal.api.dto;
 import org.openhab.binding.mycroft.internal.api.MessageType;
 
 /**
- * This message asks Mycroft to set the volume to an amount
- * specified in the data payload
+ * This message asks IN THEORY Mycroft to set the volume to an amount
+ * specified in the data payload.
+ * But it seems in fact to be a message to inform third party of a
+ * volume change
  *
  * @author Gwendal Roulleau - Initial contribution
  */

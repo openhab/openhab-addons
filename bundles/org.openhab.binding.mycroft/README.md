@@ -8,7 +8,7 @@ Possibilies include:
 - Simulate a voice command to launch a skill, as if you just spoke it
 - Send some text that Mycroft will say (Using its Text To Speech service)
 - Control the music player
-- Mute or duck the sound volume of Mycroft
+- Mute the sound volume of Mycroft
 - React to all the aforementioned events ...
 - ... and send/receive any other kind of messages on the message bus
 
@@ -37,10 +37,11 @@ The default port is 8181, which can be changed.
 Thing mycroft:mycroft:myMycroft "Mycroft A.I." @ "Living Room" [host="192.168.X.X"]
 ```
 
-|   property    |              type               |         description                                                     | mandatory |
-|---------------|---------------------------------|-------------------------------------------------------------------------|-----------|
-| host          | IP or string                    | IP address or hostname                                                  |   Yes     |
-| port          | integer                         | Port to reach Mycroft (default 8181)                                    |   No      |
+|   property               |         type           |         description                                              | mandatory |
+|--------------------------|------------------------|------------------------------------------------------------------|-----------|
+| host                     | IP or string           | IP address or hostname                                           |   Yes     |
+| port                     | integer                | Port to reach Mycroft (default 8181)                             |   No      |
+| volume_restoration_level | integer                | When unmuted, force Mycroft to restore volume to this value      |   No      |
 
 
 ## Channels
@@ -55,7 +56,6 @@ A Mycroft thing has the following channels:
 | utterance                    | String    | The last utterance Mycroft receive                                                             |
 | player                       | Player    | The music player Mycroft is currently controlling                                              |
 | volume_mute                  | Switch    | Mute the Mycroft speaker                                                                       |
-| volume_duck                  | Switch    | Duck the volume of the Mycroft speaker                                                         |
 | full_message                 | String    | The last message (full json) seen on the Mycroft Bus. Filtered by the messageTypes properties  |
 
 
@@ -85,7 +85,6 @@ The `mycroft.item` file:
 
 ```java
 Switch myMycroft_mute                  "Mute"                      { channel="mycroft:mycroft:myMycroft:volume_mute" }
-Switch myMycroft_duck                  "Duck"                      { channel="mycroft:mycroft:myMycroft:volume_duck" }
 Player myMycroft_player                "Control"                   { channel="mycroft:mycroft:myMycroft:player" }
 Switch myMycroft_listen                "Wake and listen"           { channel="mycroft:mycroft:myMycroft:listen" }
 String myMycroft_speak                 "Speak STT"                 { channel="mycroft:mycroft:myMycroft:speak" }
@@ -102,7 +101,6 @@ sitemap demo label="myMycroft"
 {
     Frame label="myMycroft" {
         Switch    item=myMycroft_mute
-        Switch    item=myMycroft_duck
         Default   item=myMycroft_player
         Switch    item=myMycroft_listen
         Text      item=myMycroft_speak

@@ -24,4 +24,5 @@ public class MycroftConfiguration {
 
     public String host = "";
     public int port = 8181;
+    public int volume_restoration_level = 0;
 }
