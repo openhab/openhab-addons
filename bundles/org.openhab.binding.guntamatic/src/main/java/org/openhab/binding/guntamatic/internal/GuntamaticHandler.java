@@ -121,8 +121,8 @@ public class GuntamaticHandler extends BaseThingHandler {
                         return;
                 }
                 String response = sendGetRequest(PARSET_URL, "syn=" + param, "value=" + command.toString());
-                State newState = new StringType(response);
-                if (newState != null) {
+                if (response != null) {
+                    State newState = new StringType(response);
                     updateState(channelID, newState);
                 }
             } else {
