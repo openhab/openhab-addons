@@ -17,6 +17,7 @@ import static org.openhab.binding.guntamatic.internal.GuntamaticBindingConstants
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -61,16 +62,16 @@ import com.google.gson.JsonParser;
 public class GuntamaticHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(GuntamaticHandler.class);
+    private final HttpClient httpClient;
 
     private @Nullable GuntamaticConfiguration config;
-
     private @Nullable ScheduledFuture<?> pollingFuture = null;
+
     private Boolean initalized = false;
-    private final HttpClient httpClient;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
-    private HashMap<Integer, String> channels = new HashMap<Integer, String>();
-    private HashMap<Integer, String> types = new HashMap<Integer, String>();
-    private HashMap<Integer, String> units = new HashMap<Integer, String>();
+    private Map<Integer, String> channels = new HashMap<>();
+    private Map<Integer, String> types = new HashMap<>();
+    private Map<Integer, String> units = new HashMap<>();
 
     public GuntamaticHandler(Thing thing, HttpClient httpClient,
             GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
@@ -119,10 +120,11 @@ public class GuntamaticHandler extends BaseThingHandler {
                     default:
                         return;
                 }
-                String response = sendGetRequest(PARSET_URL, "syn=" + param + "&value=" + command.toString());
-                // logger.warn("{} syn={}&value={}", PARSET_URL, param, command.toString());
+                String response = sendGetRequest(PARSET_URL, "syn=" + param, "value=" + command.toString());
                 State newState = new StringType(response);
-                updateState(channelID, newState);
+                if (newState != null) {
+                    updateState(channelID, newState);
+                }
             } else {
                 logger.warn("A 'key' needs to be configured in order to control the Guntamatic Heating System");
             }
@@ -147,7 +149,6 @@ public class GuntamaticHandler extends BaseThingHandler {
             } else {
                 logger.warn("Data for not intialized ChannelId '{}' received", i);
             }
-            // TypeParser.parseState(this.acceptedDataTypes, sensorValue);
         }
     }
 
@@ -159,7 +160,6 @@ public class GuntamaticHandler extends BaseThingHandler {
                 JsonObject points = json.get(i).getAsJsonObject();
                 int id = points.get("id").getAsInt();
                 String type = points.get("type").getAsString();
-                // logger.warn("TypeId: {}, Type {}", id, type);
                 types.put(id, type);
             }
         } catch (JsonParseException e) {
@@ -248,11 +248,6 @@ public class GuntamaticHandler extends BaseThingHandler {
                     logger.debug(
                             "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
                             String.format("%03d", i), label, channel, type, itemType, unit, pattern);
-
-                    /*
-                     * logger.debug("Supported Channel: Idx: {}, Name: {}, Type: {}", String.format("%03d", i), channel,
-                     * itemType);
-                     */
                 }
             }
         }
@@ -325,15 +320,22 @@ public class GuntamaticHandler extends BaseThingHandler {
         String errorReason = "";
         if (config == null) {
             errorReason = "Invalid Binding configuration";
-        } else if (config.hostname.isEmpty()) {
+        } else if (config.hostname.isBlank()) {
             errorReason = "Invalid hostname configuration";
         } else {
             String req = "http://" + config.hostname + url;
-            if (!config.key.isEmpty()) {
+
+            if (!config.key.isBlank()) {
                 req += "?key=" + config.key;
             }
+
             for (int i = 0; i < params.length; i++) {
-                req += "&" + params[i];
+                if ((i == 0) && config.key.isBlank()) {
+                    req += "?";
+                } else {
+                    req += "&";
+                }
+                req += params[i];
             }
 
             Request request = httpClient.newRequest(req);
@@ -378,7 +380,6 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private void pollGuntamatic() {
-        // logger.warn("pollGuntamatic: initalized: {}", initalized);
         if (initalized == false) {
             if (!config.key.isEmpty()) {
                 sendGetRequest(DAQEXTDESC_URL);
@@ -392,28 +393,15 @@ public class GuntamaticHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(GuntamaticConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
-        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
-                TimeUnit.SECONDS);
-
-        // These logging types should be primarily used by bindings
-        /*
-         * logger.trace("Example trace message");
-         * logger.debug("Example debug message");
-         * logger.warn("Example warn message");
-         */
+        if (config.hostname.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid hostname configuration");
+        } else {
+            updateStatus(ThingStatus.UNKNOWN);
+            pollingFuture = scheduler.scheduleWithFixedDelay(this::pollGuntamatic, 1, config.refreshInterval,
+                    TimeUnit.SECONDS);
+        }
     }
 
-    /*
-     * @Override
-     * public void thingUpdated(Thing thing) {
-     * this.thing = thing;
-     * logger.warn("thingUpdated: initalized: {}", initalized);
-     * if (initalized == false) {
-     * initialize();
-     * }
-     * }
-     */
     @Override
     public void dispose() {
         final ScheduledFuture<?> job = pollingFuture;

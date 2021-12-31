@@ -573,8 +573,8 @@
 	</channel-type>
 	<channel-type id="controlHeatCircProgram" advanced="true">
 		<item-type>String</item-type>
-		<label>Set Heat Circle 0...8 Program</label>
-		<description>Set Heat Circle 0...8 of the Guntamatic Heating System (OFF, NORMAL, HEAT, LOWER)</description>
+		<label>Set Heat Circle Program</label>
+		<description>Set Heat Circle of the Guntamatic Heating System (OFF, NORMAL, HEAT, LOWER)</description>
 		<state>
 			<options>
 				<option value="0">OFF</option>
@@ -586,8 +586,8 @@
 	</channel-type>
 	<channel-type id="controlWwHeat" advanced="true">
 		<item-type>String</item-type>
-		<label>Trigger Warm Water Circle 0...2</label>
-		<description>Trigger Warm Water Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<label>Trigger Warm Water Circle</label>
+		<description>Trigger Warm Water Circle of the Guntamatic Heating System (RECHARGE)</description>
 		<state>
 			<options>
 				<option value="0">RECHARGE</option>
@@ -596,8 +596,8 @@
 	</channel-type>
 	<channel-type id="controlExtraWwHeat" advanced="true">
 		<item-type>String</item-type>
-		<label>Trigger Extra Warm Water Circle 0...2</label>
-		<description>Trigger Extra Warm Water Circle 0...2 of the Guntamatic Heating System (RECHARGE)</description>
+		<label>Trigger Extra Warm Water Circle</label>
+		<description>Trigger Extra Warm Water Circle of the Guntamatic Heating System (RECHARGE)</description>
 		<state>
 			<options>
 				<option value="0">RECHARGE</option>
