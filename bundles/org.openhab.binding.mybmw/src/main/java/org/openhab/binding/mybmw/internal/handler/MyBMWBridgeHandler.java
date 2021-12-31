@@ -73,7 +73,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
         MyBMWConfiguration config = getConfigAs(MyBMWConfiguration.class);
-        if (config.language.equals(Constants.EMPTY)) {
+        if (config.language.equals(Constants.LANGUAGE_AUTODETECT)) {
             config.language = localeLanguage;
         }
         if (!checkConfiguration(config)) {

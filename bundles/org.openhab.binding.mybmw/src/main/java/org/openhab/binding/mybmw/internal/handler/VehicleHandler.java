@@ -29,8 +29,6 @@ import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
-import org.openhab.binding.mybmw.internal.handler.RemoteServiceHandler.ExecutionState;
-import org.openhab.binding.mybmw.internal.handler.RemoteServiceHandler.RemoteService;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils.ChargeKeyDay;
 import org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper;
@@ -234,10 +232,11 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     public void updateRemoteExecutionStatus(@Nullable String service, @Nullable String status) {
-        if (RemoteService.CHARGING_CONTROL.toString().equals(service)
-                && ExecutionState.EXECUTED.name().equals(status)) {
-            saveChargeProfileSent();
-        }
+        // [todo] not working yet
+        // if (RemoteService.CHARGING_CONTROL.toString().equals(service)
+        // && ExecutionState.EXECUTED.name().equals(status)) {
+        // saveChargeProfileSent();
+        // }
         updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType
                 .valueOf(Converter.toTitleCase((service == null ? "-" : service) + Constants.SPACE + status)));
     }
@@ -478,7 +477,8 @@ public class VehicleHandler extends VehicleChannelHandler {
         profile.map(profil -> profil.getJson()).ifPresent(json -> {
             logger.debug("sending charging profile: {}", json);
             chargeProfileSent = Optional.of(json);
-            remote.ifPresent(rem -> rem.execute(RemoteService.CHARGING_CONTROL, json));
+            // [todo] Not working yet
+            // remote.ifPresent(rem -> rem.execute(RemoteService.CHARGING_CONTROL, json));
         });
     }
 }

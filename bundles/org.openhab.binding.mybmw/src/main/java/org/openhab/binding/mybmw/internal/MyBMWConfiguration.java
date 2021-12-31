@@ -41,5 +41,5 @@ public class MyBMWConfiguration {
     /**
      * Preferred Locale language
      */
-    public String language = Constants.EMPTY;
+    public String language = Constants.LANGUAGE_AUTODETECT;
 }

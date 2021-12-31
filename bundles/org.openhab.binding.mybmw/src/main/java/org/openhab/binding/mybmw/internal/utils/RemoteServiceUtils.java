@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.utils;
 
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,8 +35,9 @@ public class RemoteServiceUtils {
     private static final Map<String, RemoteService> COMMAND_SERVICES = Stream.of(RemoteService.values())
             .collect(Collectors.toUnmodifiableMap(RemoteService::getCommand, service -> service));
 
-    private static final Set<RemoteService> ELECTRIC_SERVICES = EnumSet.of(RemoteService.CHARGE_NOW,
-            RemoteService.CHARGING_CONTROL);
+    // [tofdo] Not working yet
+    private static final Set<RemoteService> ELECTRIC_SERVICES = Collections.<RemoteService> emptySet();// =
+    // EnumSet.of(RemoteService.CHARGE_NOW,RemoteService.CHARGING_CONTROL);
 
     public static Optional<RemoteService> getRemoteService(final String command) {
         return Optional.ofNullable(COMMAND_SERVICES.get(command));
