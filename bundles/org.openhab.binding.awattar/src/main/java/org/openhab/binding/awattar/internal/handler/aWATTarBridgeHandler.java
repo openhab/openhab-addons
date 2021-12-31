@@ -130,9 +130,11 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
 
     private void getPrices() {
         try {
-            ZonedDateTime zdt = LocalDate.now(zone).atStartOfDay(zone);
+            // we start one day in the past to cover ranges that already started yesterday
+            ZonedDateTime zdt = LocalDate.now(zone).atStartOfDay(zone).minusDays(1);
             long start = zdt.toInstant().toEpochMilli();
-            zdt = zdt.plusDays(2);
+            // Starting from midnight yesterday we add three days so that the range covers the whole next day.
+            zdt = zdt.plusDays(3);
             long end = zdt.toInstant().toEpochMilli();
 
             StringBuilder request = new StringBuilder(URL);
