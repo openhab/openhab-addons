@@ -43,7 +43,7 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="1" required="true" unit="s">
 			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
@@ -89,7 +89,7 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="1" required="true" unit="s">
 			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
@@ -142,7 +142,7 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="1" required="true" unit="s">
 			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
@@ -183,7 +183,7 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="1" required="true" unit="s">
 			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
@@ -218,7 +218,7 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="1" required="true" unit="s">
 			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
@@ -261,10 +261,10 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" min="60" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="1" required="true" unit="s">
 			<label>General Update Interval</label>
 			<description>Interval to query an update from the device.</description>
-			<default>900</default>
+			<default>60</default>
 			<unitLabel>seconds</unitLabel>
 			<advanced>true</advanced>
 		</parameter>
@@ -297,7 +297,7 @@
 			<advanced>true</advanced>
 			<default>true</default>
 		</parameter>
-		<parameter name="updateInterval" type="integer" min="10" required="true" unit="s">
+		<parameter name="updateInterval" type="integer" min="1" required="true" unit="s">
 			<label>Update Interval</label>
 			<description>Interval to query an update from the device.</description>
 			<default>60</default>
