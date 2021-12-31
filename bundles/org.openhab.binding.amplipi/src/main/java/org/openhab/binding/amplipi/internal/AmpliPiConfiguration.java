@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.amplipi.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link AmpliPiConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Kai Kreuzer - Initial contribution
  */
+@NonNullByDefault
 public class AmpliPiConfiguration {
 
     /**
      * Sample configuration parameters. Replace with your own.
      */
-    public String hostname;
+    public @Nullable String hostname;
     public int refreshInterval;
 }

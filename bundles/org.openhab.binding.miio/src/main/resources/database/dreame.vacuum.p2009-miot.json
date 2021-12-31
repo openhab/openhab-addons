@@ -1007,7 +1007,6 @@
 				"actions": []
 			}
 		],
-		"readmeComment": "Identified manual actions for execution not linked in the database \u003e`action{\"did\":\"vacuum-extend-start-clean\",\"siid\":4,\"aiid\":1,\"in\":[10.0]}`\u003cbr /\u003e`action{\"did\":\"vacuum-extend-stop-clean\",\"siid\":4,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"map-map-req\",\"siid\":6,\"aiid\":1,\"in\":[2.0]}`\u003cbr /\u003e`action{\"did\":\"map-update-map\",\"siid\":6,\"aiid\":2,\"in\":[4.0]}`\u003cbr /\u003e`action{\"did\":\"audio-position\",\"siid\":7,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"audio-play-sound\",\"siid\":7,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"time-delete-timer\",\"siid\":8,\"aiid\":1,\"in\":[3.0]}`\u003cbr /\u003e",
 		"experimental": false
 	}
 }

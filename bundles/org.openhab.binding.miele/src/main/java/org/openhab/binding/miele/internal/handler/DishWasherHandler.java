@@ -19,6 +19,8 @@ import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CON
 
 import java.math.BigDecimal;
 
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -49,8 +51,8 @@ public class DishWasherHandler extends MieleApplianceHandler<DishwasherChannelSe
 
     private final Logger logger = LoggerFactory.getLogger(DishWasherHandler.class);
 
-    public DishWasherHandler(Thing thing) {
-        super(thing, DishwasherChannelSelector.class, MIELE_DEVICE_CLASS_DISHWASHER);
+    public DishWasherHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+        super(thing, i18nProvider, localeProvider, DishwasherChannelSelector.class, MIELE_DEVICE_CLASS_DISHWASHER);
     }
 
     @Override

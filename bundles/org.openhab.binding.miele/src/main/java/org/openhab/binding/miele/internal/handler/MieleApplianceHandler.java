@@ -15,18 +15,23 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.IllformedLocaleException;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.openhab.binding.miele.internal.DeviceMetaData;
 import org.openhab.binding.miele.internal.DeviceUtil;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
+import org.openhab.binding.miele.internal.MieleTranslationProvider;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceClassObject;
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceProperty;
 import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -71,13 +76,19 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
     protected String applianceId;
     protected MieleBridgeHandler bridgeHandler;
+    protected TranslationProvider i18nProvider;
+    protected LocaleProvider localeProvider;
+    protected MieleTranslationProvider translationProvider;
     private Class<E> selectorType;
     protected String modelID;
 
     protected Map<String, String> metaDataCache = new HashMap<>();
 
-    public MieleApplianceHandler(Thing thing, Class<E> selectorType, String modelID) {
+    public MieleApplianceHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider,
+            Class<E> selectorType, String modelID) {
         super(thing);
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
         this.selectorType = selectorType;
         this.modelID = modelID;
     }
@@ -129,6 +140,25 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         if (bridge != null && getMieleBridgeHandler() != null) {
             ThingStatusInfo statusInfo = bridge.getStatusInfo();
             updateStatus(statusInfo.getStatus(), statusInfo.getStatusDetail(), statusInfo.getDescription());
+            initializeTranslationProvider(bridge);
+        }
+    }
+
+    private void initializeTranslationProvider(Bridge bridge) {
+        Locale locale = null;
+        String language = (String) bridge.getConfiguration().get(LANGUAGE);
+        if (language != null && !language.isBlank()) {
+            try {
+                locale = new Locale.Builder().setLanguageTag(language).build();
+            } catch (IllformedLocaleException e) {
+                logger.error("Invalid language configured: {}", e.getMessage());
+            }
+        }
+        if (locale == null) {
+            logger.debug("No language configured, using system language.");
+            this.translationProvider = new MieleTranslationProvider(i18nProvider, localeProvider);
+        } else {
+            this.translationProvider = new MieleTranslationProvider(i18nProvider, localeProvider, locale);
         }
     }
 
@@ -240,7 +270,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     ChannelUID theChannelUID = new ChannelUID(getThing().getUID(), selector.getChannelID());
 
                     if (dp.Value != null) {
-                        State state = selector.getState(dpValue, dmd);
+                        State state = selector.getState(dpValue, dmd, this.translationProvider);
                         logger.trace("Update state of {} with getState '{}'", theChannelUID, state);
                         updateState(theChannelUID, state);
                         updateRawChannel(dp.Name, dpValue);
@@ -249,10 +279,11 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     }
                 } else {
                     logger.debug("Updating the property '{}' of '{}' to '{}'", selector.getChannelID(),
-                            getThing().getUID(), selector.getState(dpValue, dmd).toString());
+                            getThing().getUID(), selector.getState(dpValue, dmd, this.translationProvider).toString());
                     @NonNull
                     Map<@NonNull String, @NonNull String> properties = editProperties();
-                    properties.put(selector.getChannelID(), selector.getState(dpValue, dmd).toString());
+                    properties.put(selector.getChannelID(),
+                            selector.getState(dpValue, dmd, this.translationProvider).toString());
                     updateProperties(properties);
                 }
             }

@@ -285,11 +285,6 @@ Otherwise, all you need to do is re-authorize your bridge.
 
 ## FAQ
 
-### I can't start my oven via openHAB.
-
-Some operations are not possible at the moment. You need to sign an "Additional Partner Agreement". Please have a look at:
-https://developer.home-connect.com/docs/authorization/scope
-
 ### I can't switch remote start to on.
 
 The channel of type `remote_start_allowance_state` is read only. You can only enable it directly on the physical appliance.

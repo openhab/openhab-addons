@@ -2,7 +2,7 @@
 <features name="org.openhab.binding.miio-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-	<feature name="openhab-binding-miio" description="Xiaomi Mi IO Binding" version="${project.version}">
+	<feature name="openhab-binding-miio" description="Xiaomi Wifi devices (Mi IO) Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-mdns</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.miio/${project.version}</bundle>

@@ -97,12 +97,22 @@ public class MieleBindingConstants {
     public static final int STATE_NOT_CONNECTED = 255;
 
     // Miele missing string prefixes
+    public static final String MISSING_STATE_TEXT_PREFIX = "state.";
     public static final String MISSING_PROGRAM_TEXT_PREFIX = "program.";
     public static final String MISSING_PHASE_TEXT_PREFIX = "phase.";
+
+    // Miele appliance localization text prefixes
+    public static final String MIELE_COFFEE_MACHINE_TEXT_PREFIX = "coffeemachine.";
+    public static final String MIELE_DISHWASHER_TEXT_PREFIX = "dishwasher.";
+    public static final String MIELE_OVEN_TEXT_PREFIX = "oven.";
+    public static final String MIELE_TUMBLE_DRYER_TEXT_PREFIX = "tumbledryer.";
+    public static final String MIELE_WASHING_MACHINE_TEXT_PREFIX = "washingmachine.";
 
     // Bridge config properties
     public static final String HOST = "ipAddress";
     public static final String INTERFACE = "interface";
     public static final String USER_NAME = "userName";
     public static final String PASSWORD = "password";
+    public static final String LANGUAGE = "language";
+    public static final String REMOVAL_GRACE_PERIOD = "removalGracePeriod";
 }

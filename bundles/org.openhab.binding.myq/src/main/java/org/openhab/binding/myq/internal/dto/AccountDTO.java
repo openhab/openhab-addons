@@ -18,21 +18,7 @@ package org.openhab.binding.myq.internal.dto;
  * @author Dan Cunningham - Initial contribution
  */
 public class AccountDTO {
-
-    public UsersDTO users;
-    public Boolean admin;
-    public AccountInfoDTO account;
-    public String analyticsId;
-    public String userId;
-    public String userName;
-    public String email;
-    public String firstName;
-    public String lastName;
-    public String cultureCode;
-    public AddressDTO address;
-    public TimeZoneDTO timeZone;
-    public Boolean mailingListOptIn;
-    public Boolean requestAccountLinkInfo;
-    public String phone;
-    public Boolean diagnosticDataOptIn;
+    public String id;
+    public String name;
+    public String createdBy;
 }

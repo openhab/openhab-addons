@@ -25,6 +25,7 @@ public class DeviceDTO {
     public String deviceType;
     public String name;
     public String createdDate;
+    public String accountId;
     public DeviceStateDTO state;
     public String parentDevice;
     public String parentDeviceId;

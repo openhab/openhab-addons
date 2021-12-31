@@ -26,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
+ * @author Jacob Laursen - Add support for scene groups and automations
  */
 @NonNullByDefault
 public class HDPowerViewBindingConstants {
@@ -45,7 +46,13 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String CHANNEL_SHADE_SIGNAL_STRENGTH = "signalStrength";
 
+    public static final String CHANNEL_GROUP_SCENES = "scenes";
+    public static final String CHANNEL_GROUP_SCENE_GROUPS = "sceneGroups";
+    public static final String CHANNEL_GROUP_AUTOMATIONS = "automations";
+
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
+    public static final String CHANNELTYPE_SCENE_GROUP_ACTIVATE = "scene-group-activate";
+    public static final String CHANNELTYPE_AUTOMATION_ENABLED = "automation-enabled";
 
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 

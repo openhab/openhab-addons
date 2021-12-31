@@ -31,8 +31,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IllformedLocaleException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -50,6 +52,7 @@ import java.util.zip.GZIPInputStream;
 import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.miele.internal.FullyQualifiedApplianceIdentifier;
 import org.openhab.core.common.NamedThreadFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -209,15 +212,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public class DeviceMetaData {
-        public String Filter;
-        public String description;
-        public String LocalizedID;
-        public String LocalizedValue;
-        public JsonObject MieleEnum;
-        public String access;
-    }
-
     public MieleBridgeHandler(Bridge bridge) {
         super(bridge);
     }
@@ -226,31 +220,59 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing the Miele bridge handler.");
 
-        if (getConfig().get(HOST) != null && getConfig().get(INTERFACE) != null) {
-            if (IP_PATTERN.matcher((String) getConfig().get(HOST)).matches()
-                    && IP_PATTERN.matcher((String) getConfig().get(INTERFACE)).matches()) {
-                try {
-                    url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
-                } catch (MalformedURLException e) {
-                    logger.debug("An exception occurred while defining an URL :'{}'", e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
-                    return;
-                }
-
-                // for future usage - no headers to be set for now
-                headers = new HashMap<>();
-
-                onUpdate();
-                updateStatus(ThingStatus.UNKNOWN);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        "Invalid IP address for the Miele@Home gateway or multicast interface:" + getConfig().get(HOST)
-                                + "/" + getConfig().get(INTERFACE));
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                    "Cannot connect to the Miele gateway. host IP address or multicast interface are not set.");
+        if (!validateConfig(getConfig())) {
+            return;
         }
+
+        try {
+            url = new URL("http://" + (String) getConfig().get(HOST) + "/remote/json-rpc");
+        } catch (MalformedURLException e) {
+            logger.debug("An exception occurred while defining an URL :'{}'", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        // for future usage - no headers to be set for now
+        headers = new HashMap<>();
+
+        onUpdate();
+        lastBridgeConnectionState = false;
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    private boolean validateConfig(Configuration config) {
+        if (config.get(HOST) == null || ((String) config.get(HOST)).isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.ip-address-not-set");
+            return false;
+        }
+        if (config.get(INTERFACE) == null || ((String) config.get(INTERFACE)).isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.ip-multicast-interface-not-set");
+            return false;
+        }
+        if (!IP_PATTERN.matcher((String) config.get(HOST)).matches()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-ip-gateway [\"" + config.get(HOST) + "\"]");
+            return false;
+        }
+        if (!IP_PATTERN.matcher((String) config.get(INTERFACE)).matches()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.invalid-ip-multicast-interface [\"" + config.get(INTERFACE)
+                            + "\"]");
+            return false;
+        }
+        String language = (String) config.get(LANGUAGE);
+        if (language != null && !language.isBlank()) {
+            try {
+                new Locale.Builder().setLanguageTag(language).build();
+            } catch (IllformedLocaleException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                        "@text/offline.configuration-error.invalid-language [\"" + language + "\"]");
+                return false;
+            }
+        }
+        return true;
     }
 
     private Runnable pollingRunnable = new Runnable() {
@@ -564,7 +586,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         if (responseData != null) {
-            logger.debug("The request '{}' yields '{}'", requestData, responseData);
+            logger.trace("The request '{}' yields '{}'", requestData, responseData);
             JsonObject resp = (JsonObject) JsonParser.parseReader(new StringReader(responseData));
 
             result = resp.get("result");

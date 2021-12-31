@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:tapo:device">
+		<parameter name="ipAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>IP Address</label>
+		</parameter>
+		<parameter name="pollingInterval" type="integer" min="0" max="9999" required="false">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for refreshing the data in seconds. (0=disabled)</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="bridge-type:tapo:bridge">
+		<parameter name="username" type="text" required="true">
+			<context>email</context>
+			<label>Username</label>
+			<description>Tapo-Cloud Login User (e-Mail)</description>
+		</parameter>
+		<parameter name="password" type="text" required="true">
+			<context>password</context>
+			<label>Password</label>
+			<description>Tapo-Cloud Login Password</description>
+		</parameter>
+		<parameter name="cloudDiscovery" type="boolean" required="false">
+			<label>Cloud Discovery</label>
+			<description>Use Cloud Discovery-Service</description>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="discoveryInterval" type="integer" min="1" max="10080" required="false">
+			<label>Background Discovery Interval</label>
+			<description>Interval background discovery in minutes (default 60)</description>
+			<default>60</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

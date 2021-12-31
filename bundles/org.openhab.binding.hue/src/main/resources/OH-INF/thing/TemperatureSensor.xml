@@ -21,20 +21,6 @@
 
 		<representation-property>uniqueId</representation-property>
 
-		<config-description>
-			<parameter name="sensorId" type="text" required="true">
-				<label>Sensor ID</label>
-				<description>The identifier that is used within the hue bridge.</description>
-			</parameter>
-			<parameter name="on" type="boolean">
-				<label>Sensor Status</label>
-				<description>Enables or disables the sensor.</description>
-			</parameter>
-			<parameter name="ledindication" type="boolean">
-				<label>LED Indication</label>
-				<description>Turns device LED during normal operation on or off. Devices might still indicate exceptional operation
-					(Reset, SW Update, Battery Low).</description>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:hue:temperaturesensor"/>
 	</thing-type>
 </thing:thing-descriptions>

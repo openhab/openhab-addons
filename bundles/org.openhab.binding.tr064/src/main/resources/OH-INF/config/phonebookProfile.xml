@@ -6,8 +6,8 @@
 
 	<config-description uri="profile:transform:PHONEBOOK">
 		<parameter name="phonebook" type="text" required="true">
-			<label>Phone book</label>
-			<description>The name of the the phone book</description>
+			<label>Phone Book</label>
+			<description>The name of the the phone book.</description>
 		</parameter>
 		<parameter name="matchCount" type="integer" min="0" step="1">
 			<label>Match Count</label>
@@ -17,7 +17,7 @@
 		<parameter name="phoneNumberIndex" type="integer" min="0" max="1" step="1">
 			<label>Phone Number Index</label>
 			<description>The index of the phone number to be resolved from a CallItem state (StringListType), 0 or 1 (default is
-				0)</description>
+				0).</description>
 			<default>0</default>
 		</parameter>
 	</config-description>

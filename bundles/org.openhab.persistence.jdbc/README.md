@@ -16,6 +16,7 @@ The following databases are currently supported and tested:
 | [MySQL](https://www.mysql.com/)              | [mysql-connector-java-5.1.39.jar](https://mvnrepository.com/artifact/mysql/mysql-connector-java) |
 | [PostgreSQL](https://www.postgresql.org/)    | [postgresql-9.4.1209.jre7.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 | [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.16.1.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc) |
+| [TimescaleDB](https://www.timescale.com/)    | [postgresql-9.4.1209.jre7.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql) |
 
 ## Table of Contents
 

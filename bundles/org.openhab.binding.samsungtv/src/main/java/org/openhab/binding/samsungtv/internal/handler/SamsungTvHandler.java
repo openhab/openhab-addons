@@ -375,6 +375,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
             logger.debug("Device removed: udn={}", upnpUDN);
             shutdown();
             putOffline();
+            checkCreateManualConnection();
         }
     }
 
