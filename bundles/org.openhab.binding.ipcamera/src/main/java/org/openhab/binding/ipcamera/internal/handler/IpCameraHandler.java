@@ -1353,6 +1353,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     void pollingCameraConnection() {
+        keepMjpegRunning();
         if (thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
             if (rtspUri.isEmpty()) {
                 logger.warn("Binding has not been supplied with a FFmpeg Input URL, so some features will not work.");
@@ -1362,13 +1363,11 @@ public class IpCameraHandler extends BaseThingHandler {
             } else {
                 updateSnapshot();
             }
-            keepMjpegRunning();
             return;
         }
         if (!onvifCamera.isConnected()) {
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
-            keepMjpegRunning();
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
         if ("ffmpeg".equals(snapshotUri)) {
