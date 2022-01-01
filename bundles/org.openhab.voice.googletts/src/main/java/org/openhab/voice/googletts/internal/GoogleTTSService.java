@@ -32,7 +32,7 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
-import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
+import org.openhab.voice.googletts.internal.dto.AudioEncoding;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;

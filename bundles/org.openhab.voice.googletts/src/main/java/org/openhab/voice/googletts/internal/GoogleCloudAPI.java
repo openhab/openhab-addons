@@ -44,15 +44,15 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.i18n.CommunicationException;
 import org.openhab.core.io.net.http.HttpRequestBuilder;
-import org.openhab.voice.googletts.internal.protocol.AudioConfig;
-import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
-import org.openhab.voice.googletts.internal.protocol.ListVoicesResponse;
-import org.openhab.voice.googletts.internal.protocol.SsmlVoiceGender;
-import org.openhab.voice.googletts.internal.protocol.SynthesisInput;
-import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechRequest;
-import org.openhab.voice.googletts.internal.protocol.SynthesizeSpeechResponse;
-import org.openhab.voice.googletts.internal.protocol.Voice;
-import org.openhab.voice.googletts.internal.protocol.VoiceSelectionParams;
+import org.openhab.voice.googletts.internal.dto.AudioConfig;
+import org.openhab.voice.googletts.internal.dto.AudioEncoding;
+import org.openhab.voice.googletts.internal.dto.ListVoicesResponse;
+import org.openhab.voice.googletts.internal.dto.SsmlVoiceGender;
+import org.openhab.voice.googletts.internal.dto.SynthesisInput;
+import org.openhab.voice.googletts.internal.dto.SynthesizeSpeechRequest;
+import org.openhab.voice.googletts.internal.dto.SynthesizeSpeechResponse;
+import org.openhab.voice.googletts.internal.dto.Voice;
+import org.openhab.voice.googletts.internal.dto.VoiceSelectionParams;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
@@ -196,7 +196,7 @@ class GoogleCloudAPI {
                         "Error fetching access token. Invalid authcode? Please generate a new one.");
             } catch (IOException e) {
                 throw new CommunicationException(
-                        String.format("An unexpected IOException occured: %s", e.getMessage()));
+                        String.format("An unexpected IOException occurred: %s", e.getMessage()));
             }
 
             config.authcode = null;
@@ -226,7 +226,7 @@ class GoogleCloudAPI {
             throw new AuthenticationException(
                     "Error fetching access token. Invalid authcode? Please generate a new one.");
         } catch (IOException e) {
-            throw new CommunicationException(String.format("An unexpected IOException occured: %s", e.getMessage()));
+            throw new CommunicationException(String.format("An unexpected IOException occurred: %s", e.getMessage()));
         }
         if (accessTokenResponse == null || accessTokenResponse.getAccessToken() == null
                 || accessTokenResponse.getAccessToken().isEmpty()) {
@@ -319,7 +319,7 @@ class GoogleCloudAPI {
         } catch (JsonSyntaxException e) {
             // do nothing
         } catch (IOException e) {
-            throw new CommunicationException(String.format("An unexpected IOException occured: %s", e.getMessage()));
+            throw new CommunicationException(String.format("An unexpected IOException occurred: %s", e.getMessage()));
         }
         return List.of();
     }
@@ -364,9 +364,9 @@ class GoogleCloudAPI {
             initialized = false;
             voices.clear();
         } catch (FileNotFoundException e) {
-            logger.warn("Could not write file {} to cache: ", audioFileInCache, e.getMessage());
+            logger.warn("Could not write file {} to cache: {}", audioFileInCache, e.getMessage());
         } catch (IOException e) {
-            logger.debug("An unexpected IOException occured: %s", e.getMessage());
+            logger.debug("An unexpected IOException occurred: {}", e.getMessage());
         }
         return null;
     }
@@ -458,7 +458,7 @@ class GoogleCloudAPI {
         } catch (JsonSyntaxException e) {
             // do nothing
         } catch (IOException e) {
-            throw new CommunicationException(String.format("An unexpected IOException occured: %s", e.getMessage()));
+            throw new CommunicationException(String.format("An unexpected IOException occurred: %s", e.getMessage()));
         }
         return null;
     }
