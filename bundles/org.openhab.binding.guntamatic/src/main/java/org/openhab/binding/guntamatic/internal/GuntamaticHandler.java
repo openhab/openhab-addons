@@ -17,6 +17,7 @@ import static org.openhab.binding.guntamatic.internal.GuntamaticBindingConstants
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -30,6 +31,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -83,7 +85,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (!(command instanceof RefreshType)) {
-            if (!config.key.isEmpty()) {
+            if (!config.key.isBlank()) {
                 String param;
                 String channelID = channelUID.getId();
                 switch (channelID) {
@@ -169,7 +171,7 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     private void parseAndInit(String html) {
         String[] daqdesc = html.split("\\n");
-        ArrayList<Channel> channelList = new ArrayList<Channel>();
+        List<Channel> channelList = new ArrayList<>();
 
         for (String channelID : CHANNELIDS) {
             Channel channel = thing.getChannel(channelID);
@@ -189,13 +191,13 @@ public class GuntamaticHandler extends BaseThingHandler {
                 label = label.substring(0, 1).toUpperCase() + label.substring(1);
 
                 String unit;
-                if ((param.length == 1) || (param[1].isEmpty())) {
+                if ((param.length == 1) || (param[1].isBlank())) {
                     unit = "";
                 } else {
                     unit = param[1].trim().replace("m3", "m³");
                 }
 
-                boolean channelInitialized = (channels.containsValue(channel));
+                boolean channelInitialized = channels.containsValue(channel);
                 if (!channelInitialized) {
                     String itemType;
                     String pattern;
@@ -209,7 +211,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                         pattern = "";
                     } else if ("integer".equals(type)) {
                         pattern = "%d";
-                        if (unit.isEmpty()) {
+                        if (unit.isBlank()) {
                             itemType = "Number";
                         } else {
                             itemType = guessQuantityType("Number", unit);
@@ -217,7 +219,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                         }
                     } else if ("float".equals(type)) {
                         pattern = "%.2f";
-                        if (unit.isEmpty()) {
+                        if (unit.isBlank()) {
                             itemType = "Number";
                         } else {
                             itemType = guessQuantityType("Number", unit);
@@ -227,7 +229,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                         itemType = "String";
                         pattern = "";
                     } else {
-                        if (unit.isEmpty()) {
+                        if (unit.isBlank()) {
                             itemType = "String";
                             pattern = "";
                         } else {
@@ -252,7 +254,6 @@ public class GuntamaticHandler extends BaseThingHandler {
             }
         }
         ThingBuilder thingBuilder = editThing();
-        thingBuilder.withoutChannels(channelList);
         thingBuilder.withChannels(channelList);
         updateThing(thingBuilder.build());
         initalized = true;
@@ -261,7 +262,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     private static String guessQuantityType(String type, String unit) {
         String quantityType;
 
-        if (type.isEmpty()) {
+        if (type.isBlank()) {
             type = "Number";
         }
 
@@ -320,8 +321,6 @@ public class GuntamaticHandler extends BaseThingHandler {
         String errorReason = "";
         if (config == null) {
             errorReason = "Invalid Binding configuration";
-        } else if (config.hostname.isBlank()) {
-            errorReason = "Invalid hostname configuration";
         } else {
             String req = "http://" + config.hostname + url;
 
@@ -339,23 +338,23 @@ public class GuntamaticHandler extends BaseThingHandler {
             }
 
             Request request = httpClient.newRequest(req);
-            request.method(HttpMethod.GET).timeout(5, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
+            request.method(HttpMethod.GET).timeout(60, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
 
             try {
                 ContentResponse contentResponse = request.send();
-                if (contentResponse.getStatus() == 200) {
+                if (Code.OK.equals(contentResponse.getStatus())) {
                     if (!this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                         updateStatus(ThingStatus.ONLINE);
                     }
                     try {
                         String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
-                        if (url == DAQEXTDESC_URL) {
+                        if (url.equals(DAQEXTDESC_URL)) {
                             parseAndJsonInit(response);
-                        } else if (url == DAQDATA_URL) {
+                        } else if (url.equals(DAQDATA_URL)) {
                             parseAndUpdate(response);
-                        } else if (url == DAQDESC_URL) {
+                        } else if (url.equals(DAQDESC_URL)) {
                             parseAndInit(response);
-                        } else if (url == PARSET_URL) {
+                        } else if (url.equals(PARSET_URL)) {
                             // via return
                         }
                         return response;
@@ -381,7 +380,7 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     private void pollGuntamatic() {
         if (initalized == false) {
-            if (!config.key.isEmpty()) {
+            if (!config.key.isBlank()) {
                 sendGetRequest(DAQEXTDESC_URL);
             }
             sendGetRequest(DAQDESC_URL);
