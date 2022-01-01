@@ -13,11 +13,11 @@
 package org.openhab.persistence.jdbc.db;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -327,13 +327,23 @@ public class JdbcBaseDAO {
         Yank.execute(sql, null);
     }
 
-    public void doStoreItemValue(Item item, ItemVO vo) {
-        ItemVO storedVO = storeItemValueProvider(item, vo);
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" },
                 new String[] { storedVO.getTableName(), sqlTypes.get("tablePrimaryValue") });
         Object[] params = new Object[] { storedVO.getValue(), storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
+        Yank.execute(sql, params);
+    }
+
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo, Date date) {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
+        String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
+                new String[] { "#tableName#", "#tablePrimaryValue#" }, new String[] { storedVO.getTableName(), "?" });
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.getTime());
+        Object[] params = new Object[] { storedVO.getValue(), timestamp, storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         Yank.execute(sql, params);
     }
 
@@ -402,14 +412,14 @@ public class JdbcBaseDAO {
         return queryString;
     }
 
-    protected ItemVO storeItemValueProvider(Item item, ItemVO vo) {
+    protected ItemVO storeItemValueProvider(Item item, State itemState, ItemVO vo) {
         String itemType = getItemType(item);
 
         logger.debug("JDBC::storeItemValueProvider: item '{}' as Type '{}' in '{}' with state '{}'", item.getName(),
-                itemType, vo.getTableName(), item.getState());
+                itemType, vo.getTableName(), itemState);
 
         // insertItemValue
-        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", item.getState());
+        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", itemState);
         /*
          * !!ATTENTION!!
          *
@@ -427,20 +437,19 @@ public class JdbcBaseDAO {
         switch (itemType) {
             case "COLORITEM":
                 vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
-                vo.setValue(item.getState().toString());
+                vo.setValue(itemState.toString());
                 break;
             case "NUMBERITEM":
-                State state = item.getState();
-                State convertedState = state;
-                if (item instanceof NumberItem && state instanceof QuantityType) {
+                State convertedState = itemState;
+                if (item instanceof NumberItem && itemState instanceof QuantityType) {
                     Unit<? extends Quantity<?>> unit = ((NumberItem) item).getUnit();
                     if (unit != null && !Units.ONE.equals(unit)) {
-                        convertedState = ((QuantityType<?>) state).toUnit(unit);
+                        convertedState = ((QuantityType<?>) itemState).toUnit(unit);
                         if (convertedState == null) {
                             logger.warn(
                                     "JDBC::storeItemValueProvider: Failed to convert state '{}' to unit '{}'. Please check your item definition for correctness.",
-                                    state, unit);
-                            convertedState = state;
+                                    itemState, unit);
+                            convertedState = itemState;
                         }
                     }
                 }
@@ -469,14 +478,14 @@ public class JdbcBaseDAO {
             case "ROLLERSHUTTERITEM":
             case "DIMMERITEM":
                 vo.setValueTypes(getSqlTypes().get(itemType), java.lang.Integer.class);
-                int value = ((DecimalType) item.getState()).intValue();
+                int value = ((DecimalType) itemState).intValue();
                 logger.debug("JDBC::storeItemValueProvider: newVal.intValue: '{}'", value);
                 vo.setValue(value);
                 break;
             case "DATETIMEITEM":
                 vo.setValueTypes(getSqlTypes().get(itemType), java.sql.Timestamp.class);
                 java.sql.Timestamp d = new java.sql.Timestamp(
-                        ((DateTimeType) item.getState()).getZonedDateTime().toInstant().toEpochMilli());
+                        ((DateTimeType) itemState).getZonedDateTime().toInstant().toEpochMilli());
                 logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
                 vo.setValue(d);
                 break;
@@ -489,8 +498,8 @@ public class JdbcBaseDAO {
             default:
                 // All other items should return the best format by default
                 vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
-                logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'", item.getState());
-                vo.setValue(item.getState().toString());
+                logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'", itemState);
+                vo.setValue(itemState.toString());
                 break;
         }
         return vo;
@@ -533,9 +542,10 @@ public class JdbcBaseDAO {
 
     protected ZonedDateTime objectAsDate(Object v) {
         if (v instanceof java.lang.String) {
-            return ZonedDateTime.ofInstant(Timestamp.valueOf(v.toString()).toInstant(), ZoneId.systemDefault());
+            return ZonedDateTime.ofInstant(java.sql.Timestamp.valueOf(v.toString()).toInstant(),
+                    ZoneId.systemDefault());
         }
-        return ZonedDateTime.ofInstant(((Timestamp) v).toInstant(), ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(((java.sql.Timestamp) v).toInstant(), ZoneId.systemDefault());
     }
 
     protected Long objectAsLong(Object v) {

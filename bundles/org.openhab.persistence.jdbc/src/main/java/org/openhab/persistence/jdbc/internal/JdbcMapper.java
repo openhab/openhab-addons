@@ -13,18 +13,21 @@
 package org.openhab.persistence.jdbc.internal;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
+import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.dto.JdbcPersistenceItemInfo;
@@ -145,15 +148,19 @@ public class JdbcMapper {
         return vo;
     }
 
-    public Item storeItemValue(Item item) {
-        logger.debug("JDBC::storeItemValue: item={}", item);
+    public Item storeItemValue(Item item, State itemState, @Nullable Date date) {
+        logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
         String tableName = getTable(item);
         if (tableName == null) {
             logger.error("JDBC::store: Unable to store item '{}'.", item.getName());
             return item;
         }
         long timerStart = System.currentTimeMillis();
-        conf.getDBDAO().doStoreItemValue(item, new ItemVO(tableName, null));
+        if (date == null) {
+            conf.getDBDAO().doStoreItemValue(item, itemState, new ItemVO(tableName, null));
+        } else {
+            conf.getDBDAO().doStoreItemValue(item, itemState, new ItemVO(tableName, null), date);
+        }
         logTime("storeItemValue", timerStart, System.currentTimeMillis());
         errCnt = 0;
         return item;
