@@ -101,7 +101,7 @@ public class StreamOutput {
         }
     }
 
-    public void sendInitialHeaders() {
+    private void sendInitialHeaders() {
         response.setContentType(contentType);
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Expose-Headers", "*");
