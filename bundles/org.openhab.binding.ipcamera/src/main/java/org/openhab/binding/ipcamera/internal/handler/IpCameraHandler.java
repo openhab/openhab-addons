@@ -232,17 +232,17 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             if (contentType.contains("multipart")) {
+                                boundary = Helper.searchString(contentType, "boundary=");
                                 if (mjpegUri.equals(requestUrl)) {
                                     if (msg instanceof HttpMessage) {
                                         // very start of stream only
                                         mjpegContentType = contentType;
                                         CameraServlet localServlet = servlet;
                                         if (localServlet != null) {
-                                            localServlet.openStreams.updateContentType(contentType);
+                                            logger.debug("Setting Content-Type to:{}", contentType);
+                                            localServlet.openStreams.updateContentType(contentType, boundary);
                                         }
                                     }
-                                } else {
-                                    boundary = Helper.searchString(contentType, "boundary=");
                                 }
                             } else if (contentType.contains("image/jp")) {
                                 if (bytesToRecieve == 0) {
@@ -669,8 +669,13 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void openCamerasStream() {
+        if (mjpegUri.isEmpty() || "ffmpeg".equals(mjpegUri)) {
+            setupFfmpegFormat(FFmpegFormat.MJPEG);
+            return;
+        }
         closeChannel(getTinyUrl(mjpegUri));
-        mainEventLoopGroup.schedule(this::openMjpegStream, 0, TimeUnit.MILLISECONDS);
+        // Dahua cameras crash if you refresh (close and open) the stream without this delay.
+        mainEventLoopGroup.schedule(this::openMjpegStream, 300, TimeUnit.MILLISECONDS);
     }
 
     private void openMjpegStream() {
@@ -1311,6 +1316,12 @@ public class IpCameraHandler extends BaseThingHandler {
 
         pollCameraJob = threadPool.scheduleWithFixedDelay(this::pollCameraRunnable, 1000, 8000, TimeUnit.MILLISECONDS);
 
+        // auto restart mjpeg stream now camera is back online.
+        CameraServlet localServlet = servlet;
+        if (localServlet != null && !localServlet.openStreams.isEmpty()) {
+            openCamerasStream();
+        }
+
         if (!rtspUri.isEmpty()) {
             updateState(CHANNEL_RTSP_URL, new StringType(rtspUri));
         }
@@ -1351,11 +1362,13 @@ public class IpCameraHandler extends BaseThingHandler {
             } else {
                 updateSnapshot();
             }
+            keepMjpegRunning();
             return;
         }
         if (!onvifCamera.isConnected()) {
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", cameraConfig.getIp(),
                     cameraConfig.getOnvifPort());
+            keepMjpegRunning();
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
         if ("ffmpeg".equals(snapshotUri)) {
@@ -1643,7 +1656,17 @@ public class IpCameraHandler extends BaseThingHandler {
             // Only use ONVIF events if it is not an API camera.
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
-        cameraConnectionJob = threadPool.scheduleWithFixedDelay(this::pollingCameraConnection, 4, 30, TimeUnit.SECONDS);
+        cameraConnectionJob = threadPool.scheduleWithFixedDelay(this::pollingCameraConnection, 4, 8, TimeUnit.SECONDS);
+    }
+
+    private void keepMjpegRunning() {
+        CameraServlet localServlet = servlet;
+        if (localServlet != null && !localServlet.openStreams.isEmpty()) {
+            if (!mjpegUri.isEmpty() && !"ffmpeg".equals(mjpegUri)) {
+                localServlet.openStreams.queueFrame(("--" + localServlet.openStreams.boundary + "\r\n\r\n").getBytes());
+            }
+            localServlet.openStreams.queueFrame(getSnapshot());
+        }
     }
 
     // What the camera needs to re-connect if the initialize() is not called.

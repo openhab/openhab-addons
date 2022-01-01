@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class OpenStreams {
     private List<StreamOutput> openStreams = Collections.synchronizedList(new ArrayList<StreamOutput>());
+    public String boundary = "thisMjpegStream";
 
     public synchronized void addStream(StreamOutput stream) {
         openStreams.add(stream);
@@ -46,7 +47,8 @@ public class OpenStreams {
         return openStreams.isEmpty();
     }
 
-    public synchronized void updateContentType(String contentType) {
+    public synchronized void updateContentType(String contentType, String boundary) {
+        this.boundary = boundary;
         for (StreamOutput stream : openStreams) {
             stream.updateContentType(contentType);
         }
