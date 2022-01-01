@@ -69,7 +69,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     private @Nullable GuntamaticConfiguration config;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
 
-    private Boolean initalized = false;
+    private Boolean channelsInitialized = false;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
     private Map<Integer, String> channels = new HashMap<>();
     private Map<Integer, String> types = new HashMap<>();
@@ -214,7 +214,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                         if (unit.isBlank()) {
                             itemType = "Number";
                         } else {
-                            itemType = guessQuantityType("Number", unit);
+                            itemType = guessQuantityType(unit);
                             pattern += " %unit%";
                         }
                     } else if ("float".equals(type)) {
@@ -222,18 +222,18 @@ public class GuntamaticHandler extends BaseThingHandler {
                         if (unit.isBlank()) {
                             itemType = "Number";
                         } else {
-                            itemType = guessQuantityType("Number", unit);
+                            itemType = guessQuantityType(unit);
                             pattern += " %unit%";
                         }
                     } else if ("string".equals(type)) {
                         itemType = "String";
-                        pattern = "";
+                        pattern = "%s";
                     } else {
                         if (unit.isBlank()) {
                             itemType = "String";
-                            pattern = "";
+                            pattern = "%s";
                         } else {
-                            itemType = guessQuantityType("", unit);
+                            itemType = guessQuantityType(unit);
                             pattern = "%.2f %unit%";
                         }
                     }
@@ -256,26 +256,22 @@ public class GuntamaticHandler extends BaseThingHandler {
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withChannels(channelList);
         updateThing(thingBuilder.build());
-        initalized = true;
+        channelsInitialized = true;
     }
 
-    private static String guessQuantityType(String type, String unit) {
-        String quantityType;
-
-        if (type.isBlank()) {
-            type = "Number";
-        }
+    private static String guessQuantityType(String unit) {
+        String quantityType = "Number";
 
         if ("%".equals(unit)) {
-            quantityType = type + ":Dimensionless";
+            quantityType += ":Dimensionless";
         } else if ("°C".equals(unit) || "°F".equals(unit)) {
-            quantityType = type + ":Temperature";
+            quantityType += ":Temperature";
         } else if ("m³".equals(unit)) {
-            quantityType = type + ":Volume";
+            quantityType += ":Volume";
         } else if ("d".equals(unit) || "h".equals(unit)) {
-            quantityType = type + ":Time";
+            quantityType += ":Time";
         } else {
-            quantityType = type;
+            // "Number"
         }
 
         return quantityType;
@@ -296,15 +292,15 @@ public class GuntamaticHandler extends BaseThingHandler {
         return output;
     }
 
-    private String toLowerCamelCase(String string) {
+    private String toLowerCamelCase(String input) {
         char delimiter = ' ';
-        string = string.replace("´", "").replaceAll("[^\\w]", String.valueOf(delimiter));
+        String output = input.replace("´", "").replaceAll("[^\\w]", String.valueOf(delimiter));
 
         StringBuilder builder = new StringBuilder();
         boolean nextCharLow = true;
 
-        for (int i = 0; i < string.length(); i++) {
-            char currentChar = string.charAt(i);
+        for (int i = 0; i < output.length(); i++) {
+            char currentChar = output.charAt(i);
             if (delimiter == currentChar) {
                 nextCharLow = false;
             } else if (nextCharLow) {
@@ -359,19 +355,21 @@ public class GuntamaticHandler extends BaseThingHandler {
                         }
                         return response;
                     } catch (IllegalArgumentException e) {
-                        errorReason = String.format("IllegalArgumentException: %s", e.getMessage());
+                        errorReason = String.format("IllegalArgumentException: %s",
+                                ((e.getMessage() != null) ? e.getMessage() : ""));
                     }
                 } else {
                     errorReason = String.format("Guntamatic request failed with %d: %s", contentResponse.getStatus(),
-                            contentResponse.getReason());
+                            ((contentResponse.getReason() != null) ? contentResponse.getReason() : ""));
                 }
             } catch (TimeoutException e) {
                 errorReason = "TimeoutException: Guntamatic was not reachable on your network";
             } catch (ExecutionException e) {
-                errorReason = String.format("ExecutionException: %s", e.getMessage());
+                errorReason = String.format("ExecutionException: %s", ((e.getMessage() != null) ? e.getMessage() : ""));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                errorReason = String.format("InterruptedException: %s", e.getMessage());
+                errorReason = String.format("InterruptedException: %s",
+                        ((e.getMessage() != null) ? e.getMessage() : ""));
             }
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
@@ -379,7 +377,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private void pollGuntamatic() {
-        if (initalized == false) {
+        if (channelsInitialized == false) {
             if (!config.key.isBlank()) {
                 sendGetRequest(DAQEXTDESC_URL);
             }
@@ -408,6 +406,6 @@ public class GuntamaticHandler extends BaseThingHandler {
             job.cancel(true);
             pollingFuture = null;
         }
-        initalized = false;
+        channelsInitialized = false;
     }
 }
