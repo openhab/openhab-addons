@@ -29,7 +29,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -64,33 +63,26 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVERY_TIMEOUT = 30;
 
     private class Runner implements Runnable {
-        private final ReentrantLock lock = new ReentrantLock();
-        private String host;
+        private String address;
 
         public Runner(final String address) {
-            this.host = address;
+            this.address = address;
         }
 
         @Override
         public void run() {
             try {
-                if (Ping.checkVitality(host, LOGO_PORT, CONNECTION_TIMEOUT)) {
-                    logger.debug("LOGO! device found at: {}.", host);
+                if (Ping.checkVitality(address, LOGO_PORT, CONNECTION_TIMEOUT)) {
+                    logger.debug("LOGO! device found at: {}.", address);
 
-                    ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, host.replace('.', '_'));
+                    ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, address.replace('.', '_'));
                     DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID);
-                    builder.withProperty(LOGO_HOST, host);
-                    builder.withLabel(host);
-
-                    lock.lock();
-                    try {
-                        thingDiscovered(builder.build());
-                    } finally {
-                        lock.unlock();
-                    }
+                    builder.withProperty(LOGO_HOST, address);
+                    builder.withLabel(address);
+                    thingDiscovered(builder.build());
                 }
             } catch (IOException exception) {
-                logger.debug("LOGO! device not found at: {}.", host);
+                logger.debug("LOGO! device not found at: {}.", address);
             }
         }
     }

@@ -14,12 +14,9 @@ package org.openhab.binding.plclogo.internal.handler;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
@@ -55,44 +52,36 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCDigitalHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIGITAL);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DIGITAL);
 
     private final Logger logger = LoggerFactory.getLogger(PLCDigitalHandler.class);
-    private AtomicReference<PLCDigitalConfiguration> config = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCDigitalConfiguration config;
 
-    private static final Map<String, Integer> LOGO_BLOCKS_0BA7;
-    static {
-        Map<String, Integer> buffer = new HashMap<>();
-        buffer.put(I_DIGITAL, 24); // 24 digital inputs
-        buffer.put(Q_DIGITAL, 16); // 16 digital outputs
-        buffer.put(M_DIGITAL, 27); // 27 digital markers
-        LOGO_BLOCKS_0BA7 = Collections.unmodifiableMap(buffer);
-    }
+    private static final Map<String, Integer> LOGO_BLOCKS_0BA7 = Map.ofEntries( // Logo7 IO-block configuration
+            Map.entry(I_DIGITAL, 24), // 24 digital inputs
+            Map.entry(Q_DIGITAL, 16), // 16 digital outputs
+            Map.entry(M_DIGITAL, 27) // 27 digital markers
+    );
 
-    private static final Map<String, Integer> LOGO_BLOCKS_0BA8;
-    static {
-        Map<String, Integer> buffer = new HashMap<>();
-        buffer.put(I_DIGITAL, 24); // 24 digital inputs
-        buffer.put(Q_DIGITAL, 20); // 20 digital outputs
-        buffer.put(M_DIGITAL, 64); // 64 digital markers
-        buffer.put(NI_DIGITAL, 64); // 64 network inputs
-        buffer.put(NQ_DIGITAL, 64); // 64 network outputs
-        LOGO_BLOCKS_0BA8 = Collections.unmodifiableMap(buffer);
-    }
+    private static final Map<String, Integer> LOGO_BLOCKS_0BA8 = Map.ofEntries( // Logo8 IO-block configuration
+            Map.entry(I_DIGITAL, 24), // 24 digital inputs
+            Map.entry(Q_DIGITAL, 20), // 20 digital outputs
+            Map.entry(M_DIGITAL, 64), // 64 digital markers
+            Map.entry(NI_DIGITAL, 64), // 64 network inputs
+            Map.entry(NQ_DIGITAL, 64) // 64 network outputs
+    );
 
-    private static final Map<String, Map<String, Integer>> LOGO_BLOCK_NUMBER;
-    static {
-        Map<String, Map<String, Integer>> buffer = new HashMap<>();
-        buffer.put(LOGO_0BA7, LOGO_BLOCKS_0BA7);
-        buffer.put(LOGO_0BA8, LOGO_BLOCKS_0BA8);
-        LOGO_BLOCK_NUMBER = Collections.unmodifiableMap(buffer);
-    }
+    private static final Map<String, Map<String, Integer>> LOGO_BLOCK_NUMBER = Map.ofEntries( //
+            Map.entry(LOGO_0BA7, LOGO_BLOCKS_0BA7), // Possible blocks for Logo7
+            Map.entry(LOGO_0BA8, LOGO_BLOCKS_0BA8) // Possible blocks for Logo8
+    );
 
     /**
      * Constructor.
      */
     public PLCDigitalHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(PLCDigitalConfiguration.class);
     }
 
     @Override
@@ -125,9 +114,9 @@ public class PLCDigitalHandler extends PLCCommonHandler {
                 byte[] buffer = new byte[1];
                 String type = channel.getAcceptedItemType();
                 if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
-                    S7.SetBitAt(buffer, 0, 0, ((OpenClosedType) command) == OpenClosedType.CLOSED);
+                    S7.SetBitAt(buffer, 0, 0, OpenClosedType.CLOSED.equals(command));
                 } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
-                    S7.SetBitAt(buffer, 0, 0, ((OnOffType) command) == OnOffType.ON);
+                    S7.SetBitAt(buffer, 0, 0, OnOffType.ON.equals(command));
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
@@ -160,7 +149,6 @@ public class PLCDigitalHandler extends PLCCommonHandler {
             return;
         }
 
-        Boolean force = config.get().isUpdateForced();
         for (Channel channel : channels) {
             ChannelUID channelUID = channel.getUID();
             String name = getBlockFromChannel(channel);
@@ -170,7 +158,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
             if ((address != INVALID) && (bit != INVALID)) {
                 DecimalType state = (DecimalType) getOldValue(name);
                 boolean value = S7.GetBitAt(data, address - getBase(name), bit);
-                if ((state == null) || ((value ? 1 : 0) != state.intValue()) || force) {
+                if ((state == null) || ((value ? 1 : 0) != state.intValue()) || config.isUpdateForced()) {
                     updateChannel(channel, value);
                 }
                 if (logger.isTraceEnabled()) {
@@ -199,7 +187,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCDigitalConfiguration.class));
+        config = getConfigAs(PLCDigitalConfiguration.class);
     }
 
     @Override
@@ -217,7 +205,7 @@ public class PLCDigitalHandler extends PLCCommonHandler {
 
     @Override
     protected String getBlockKind() {
-        return config.get().getBlockKind();
+        return config.getBlockKind();
     }
 
     @Override
@@ -244,15 +232,14 @@ public class PLCDigitalHandler extends PLCCommonHandler {
 
     @Override
     protected void doInitialization() {
-        Thing thing = getThing();
         logger.debug("Initialize LOGO! digital input blocks handler.");
 
-        config.set(getConfigAs(PLCDigitalConfiguration.class));
+        config = getConfigAs(PLCDigitalConfiguration.class);
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
             String kind = getBlockKind();
-            String type = config.get().getChannelType();
+            String type = config.getChannelType();
             String text = DIGITAL_INPUT_ITEM.equalsIgnoreCase(type) ? "input" : "output";
 
             ThingBuilder tBuilder = editThing();
@@ -266,13 +253,13 @@ public class PLCDigitalHandler extends PLCCommonHandler {
             tBuilder.withLabel(label);
 
             for (int i = 0; i < getNumberOfChannels(); i++) {
-                String name = kind + String.valueOf(i + 1);
+                String name = String.format("%s%d", kind, i + 1);
                 ChannelUID uid = new ChannelUID(thing.getUID(), name);
                 ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
                 cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
                 cBuilder.withLabel(name);
                 cBuilder.withDescription("Digital " + text + " block " + name);
-                cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+                cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
                 tBuilder.withChannel(cBuilder.build());
                 setOldValue(name, null);
             }

@@ -14,11 +14,10 @@ package org.openhab.binding.plclogo.internal.handler;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,17 +54,18 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCPulseHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PULSE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PULSE);
 
     private final Logger logger = LoggerFactory.getLogger(PLCPulseHandler.class);
-    private AtomicReference<PLCPulseConfiguration> config = new AtomicReference<>();
-    private AtomicReference<@Nullable Boolean> received = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCPulseConfiguration config;
+    private volatile @Nullable Boolean received = null;
 
     /**
      * Constructor.
      */
     public PLCPulseHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(PLCPulseConfiguration.class);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
             return;
         }
 
-        Channel channel = getThing().getChannel(channelUID.getId());
+        Channel channel = thing.getChannel(channelUID.getId());
         String name = getBlockFromChannel(channel);
         if (!isValid(name) || (channel == null)) {
             logger.debug("Can not update channel {}, block {}.", channelUID, name);
@@ -96,13 +96,11 @@ public class PLCPulseHandler extends PLCCommonHandler {
             } else if ((command instanceof OpenClosedType) || (command instanceof OnOffType)) {
                 String type = channel.getAcceptedItemType();
                 if (DIGITAL_INPUT_ITEM.equalsIgnoreCase(type)) {
-                    boolean flag = ((OpenClosedType) command == OpenClosedType.CLOSED);
-                    S7.SetBitAt(buffer, 0, 0, flag);
-                    received.set(flag);
+                    received = OpenClosedType.CLOSED.equals(command);
+                    S7.SetBitAt(buffer, 0, 0, received.booleanValue());
                 } else if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type)) {
-                    boolean flag = ((OnOffType) command == OnOffType.ON);
-                    S7.SetBitAt(buffer, 0, 0, flag);
-                    received.set(flag);
+                    received = OnOffType.ON.equals(command);
+                    S7.SetBitAt(buffer, 0, 0, received.booleanValue());
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
@@ -158,23 +156,20 @@ public class PLCPulseHandler extends PLCCommonHandler {
                     handleCommand(channelUID, RefreshType.REFRESH);
                     DecimalType current = (DecimalType) getOldValue(channelUID.getId());
                     if ((state != null) && (current.intValue() != state.intValue())) {
-                        Integer pulse = config.get().getPulseLength();
-                        scheduler.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                Boolean value = received.getAndSet(null);
-                                if (value != null) {
-                                    byte[] buffer = new byte[1];
-                                    S7.SetBitAt(buffer, 0, 0, !value.booleanValue());
-                                    String block = config.get().getBlockName();
-                                    int bit = 8 * getAddress(block) + getBit(block);
-                                    int result = client.writeDBArea(1, bit, buffer.length, S7Client.S7WLBit, buffer);
-                                    if (result != 0) {
-                                        logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
-                                    }
-                                } else {
-                                    logger.debug("Invalid received value on channel {}.", channelUID);
+                        Integer pulse = config.getPulseLength();
+                        scheduler.schedule(() -> {
+                            if (received != null) {
+                                byte[] buffer = new byte[1];
+                                S7.SetBitAt(buffer, 0, 0, !received.booleanValue());
+                                String block = config.getBlockName();
+                                int bit1 = 8 * getAddress(block) + getBit(block);
+                                int result = client.writeDBArea(1, bit1, buffer.length, S7Client.S7WLBit, buffer);
+                                if (result != 0) {
+                                    logger.debug("Can not write data to LOGO!: {}.", S7Client.ErrorText(result));
                                 }
+                                received = null;
+                            } else {
+                                logger.debug("Invalid received value on channel {}.", channelUID);
                             }
                         }, pulse.longValue(), TimeUnit.MILLISECONDS);
                     }
@@ -202,13 +197,13 @@ public class PLCPulseHandler extends PLCCommonHandler {
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCPulseConfiguration.class));
+        config = getConfigAs(PLCPulseConfiguration.class);
     }
 
     @Override
     protected boolean isValid(final String name) {
         if (2 <= name.length() && (name.length() <= 7)) {
-            String kind = config.get().getObservedBlockKind();
+            String kind = config.getObservedBlockKind();
             if (Character.isDigit(name.charAt(1))) {
                 boolean valid = I_DIGITAL.equalsIgnoreCase(kind) || Q_DIGITAL.equalsIgnoreCase(kind);
                 return name.startsWith(kind) && (valid || M_DIGITAL.equalsIgnoreCase(kind));
@@ -224,7 +219,7 @@ public class PLCPulseHandler extends PLCCommonHandler {
 
     @Override
     protected String getBlockKind() {
-        return config.get().getBlockKind();
+        return config.getBlockKind();
     }
 
     @Override
@@ -248,10 +243,9 @@ public class PLCPulseHandler extends PLCCommonHandler {
 
     @Override
     protected void doInitialization() {
-        Thing thing = getThing();
         logger.debug("Initialize LOGO! pulse handler.");
 
-        config.set(getConfigAs(PLCPulseConfiguration.class));
+        config = getConfigAs(PLCPulseConfiguration.class);
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
@@ -265,24 +259,24 @@ public class PLCPulseHandler extends PLCCommonHandler {
             }
             tBuilder.withLabel(label);
 
-            String bName = config.get().getBlockName();
-            String bType = config.get().getChannelType();
+            String bName = config.getBlockName();
+            String bType = config.getChannelType();
             ChannelUID uid = new ChannelUID(thing.getUID(), STATE_CHANNEL);
             ChannelBuilder cBuilder = ChannelBuilder.create(uid, bType);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, bType.toLowerCase()));
             cBuilder.withLabel(bName);
             cBuilder.withDescription("Control block " + bName);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, bName));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, bName));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(STATE_CHANNEL, null);
 
-            String oName = config.get().getObservedBlock();
-            String oType = config.get().getObservedChannelType();
+            String oName = config.getObservedBlock();
+            String oType = config.getObservedChannelType();
             cBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), OBSERVE_CHANNEL), oType);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, oType.toLowerCase()));
             cBuilder.withLabel(oName);
             cBuilder.withDescription("Observed block " + oName);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, oName));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, oName));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(OBSERVE_CHANNEL, null);
 

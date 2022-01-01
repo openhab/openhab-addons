@@ -15,10 +15,9 @@ package org.openhab.binding.plclogo.internal.handler;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
@@ -53,16 +52,17 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCDateTimeHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DATETIME);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DATETIME);
 
     private final Logger logger = LoggerFactory.getLogger(PLCDateTimeHandler.class);
-    private AtomicReference<PLCDateTimeConfiguration> config = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCDateTimeConfiguration config;
 
     /**
      * Constructor.
      */
     public PLCDateTimeHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(PLCDateTimeConfiguration.class);
     }
 
     @Override
@@ -71,8 +71,8 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             return;
         }
 
-        Channel channel = getThing().getChannel(channelUID.getId());
-        String name = config.get().getBlockName();
+        Channel channel = thing.getChannel(channelUID.getId());
+        String name = config.getBlockName();
         if (!isValid(name) || (channel == null)) {
             logger.debug("Can not update channel {}, block {}.", channelUID, name);
             return;
@@ -127,20 +127,19 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             return;
         }
 
-        List<Channel> channels = getThing().getChannels();
+        List<Channel> channels = thing.getChannels();
         if (channels.size() != getNumberOfChannels()) {
             logger.info("Received and configured channel sizes does not match.");
             return;
         }
 
-        String name = config.get().getBlockName();
-        Boolean force = config.get().isUpdateForced();
+        final String name = config.getBlockName();
         for (Channel channel : channels) {
             int address = getAddress(name);
             if (address != INVALID) {
                 DecimalType state = (DecimalType) getOldValue(name);
                 int value = S7.GetShortAt(data, address);
-                if ((state == null) || (value != state.intValue()) || force) {
+                if ((state == null) || (value != state.intValue()) || config.isUpdateForced()) {
                     updateChannel(channel, value);
                 }
                 if (logger.isTraceEnabled()) {
@@ -156,14 +155,14 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
     protected void updateState(ChannelUID channelUID, State state) {
         super.updateState(channelUID, state);
         if (state instanceof DecimalType) {
-            setOldValue(config.get().getBlockName(), state);
+            setOldValue(config.getBlockName(), state);
         }
     }
 
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCDateTimeConfiguration.class));
+        config = getConfigAs(PLCDateTimeConfiguration.class);
     }
 
     @Override
@@ -179,7 +178,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
 
     @Override
     protected String getBlockKind() {
-        return config.get().getBlockKind();
+        return config.getBlockKind();
     }
 
     @Override
@@ -189,14 +188,13 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
 
     @Override
     protected void doInitialization() {
-        Thing thing = getThing();
         logger.debug("Initialize LOGO! date/time handler.");
 
-        config.set(getConfigAs(PLCDateTimeConfiguration.class));
+        config = getConfigAs(PLCDateTimeConfiguration.class);
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
-            String block = config.get().getBlockType();
+            String block = config.getBlockType();
             String text = "Time".equalsIgnoreCase(block) ? "Time" : "Date";
 
             ThingBuilder tBuilder = editThing();
@@ -209,21 +207,21 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
             }
             tBuilder.withLabel(label);
 
-            String name = config.get().getBlockName();
-            String type = config.get().getChannelType();
+            final String name = config.getBlockName();
+            final String type = config.getChannelType();
             ChannelUID uid = new ChannelUID(thing.getUID(), "Time".equalsIgnoreCase(block) ? "time" : "date");
             ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " block parameter " + name);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
             tBuilder.withChannel(cBuilder.build());
 
             cBuilder = ChannelBuilder.create(new ChannelUID(thing.getUID(), VALUE_CHANNEL), ANALOG_ITEM);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, ANALOG_ITEM.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " block parameter " + name);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(name, null);
 
@@ -236,8 +234,7 @@ public class PLCDateTimeHandler extends PLCCommonHandler {
         ChannelUID channelUID = channel.getUID();
         PLCBridgeHandler handler = getBridgeHandler();
         if (handler == null) {
-            String name = config.get().getBlockName();
-            logger.debug("Can not update channel {}, block {}.", channelUID, name);
+            logger.debug("Can not update channel {}, block {}.", channelUID, config.getBlockName());
             return;
         }
 

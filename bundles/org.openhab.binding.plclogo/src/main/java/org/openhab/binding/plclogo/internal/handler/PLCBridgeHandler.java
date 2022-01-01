@@ -15,18 +15,18 @@ package org.openhab.binding.plclogo.internal.handler;
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
 import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -61,33 +61,41 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCBridgeHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DEVICE);
 
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
 
-    private Map<ChannelUID, String> oldValues = new HashMap<>();
+    private final Map<ChannelUID, String> oldValues = new HashMap<>();
 
-    @Nullable
-    private volatile PLCLogoClient client; // S7 client used for communication with Logo!
+    private volatile @Nullable PLCLogoClient client; // S7 client used for communication with Logo!
     private final Set<PLCCommonHandler> handlers = new HashSet<>();
-    private AtomicReference<PLCLogoBridgeConfiguration> config = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCLogoBridgeConfiguration config;
 
-    @Nullable
-    private ScheduledFuture<?> rtcJob;
-    private AtomicReference<ZonedDateTime> rtc = new AtomicReference<>(ZonedDateTime.now());
-    private final Runnable rtcReader = new Runnable() {
-        private final List<Channel> channels = getThing().getChannels();
+    private static final Map<Integer, String> LOGO_STATES_0BA7 = Map.ofEntries(
+    // buffer.put(???, "Network access error"); // Netzwerkzugriffsfehler
+    // buffer.put(???, "Expansion module bus error"); // Erweiterungsmodul-Busfehler
+    // buffer.put(???, "SD card read/write error"); // Fehler beim Lesen oder Schreiben der SD-Karte
+    // buffer.put(???, "SD card write protection"); // Schreibschutz der SD-Karte
+    );
 
-        @Override
-        public void run() {
-            for (Channel channel : channels) {
-                handleCommand(channel.getUID(), RefreshType.REFRESH);
-            }
-        }
-    };
+    private static final Map<Integer, String> LOGO_STATES_0BA8 = Map.ofEntries( //
+            Map.entry(1, "Ethernet link error"), // Netzwerk Verbindungsfehler
+            Map.entry(2, "Expansion module changed"), // Ausgetauschtes Erweiterungsmodul
+            Map.entry(4, "SD card read/write error"), // Fehler beim Lesen oder Schreiben der SD-Karte
+            Map.entry(8, "SD Card does not exist"), // "SD-Karte nicht vorhanden"
+            Map.entry(16, "SD Card is full") // SD-Karte voll
+    // Map.entry(???, "Network S7 Tcp Error");
+    );
 
-    @Nullable
-    private ScheduledFuture<?> readerJob;
+    public static final Map<String, Map<Integer, String>> LOGO_STATES = Map.ofEntries( //
+            Map.entry(LOGO_0BA7, LOGO_STATES_0BA7), // Possible blocks for Logo7
+            Map.entry(LOGO_0BA8, LOGO_STATES_0BA8) // Possible blocks for Logo7
+    );
+
+    private @Nullable ScheduledFuture<?> rtcJob;
+    private volatile ZonedDateTime rtc = ZonedDateTime.now();
+
+    private @Nullable ScheduledFuture<?> readerJob;
     private final Runnable dataReader = new Runnable() {
         // Buffer for block data read operation
         private final byte[] buffer = new byte[2048];
@@ -129,13 +137,13 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      */
     public PLCBridgeHandler(Bridge bridge) {
         super(bridge);
+        config = getConfigAs(PLCLogoBridgeConfiguration.class);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Handle command {} on channel {}", command, channelUID);
 
-        Thing thing = getThing();
         if (ThingStatus.ONLINE != thing.getStatus()) {
             return;
         }
@@ -155,24 +163,19 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
             int result = localClient.readDBArea(1, layout.address, buffer.length, S7Client.S7WLByte, buffer);
             if (result == 0) {
                 if (RTC_CHANNEL.equals(channelId)) {
-                    ZonedDateTime clock = ZonedDateTime.now();
+                    rtc = ZonedDateTime.now();
                     if (!LOGO_0BA7.equalsIgnoreCase(getLogoFamily())) {
                         try {
-                            int year = clock.getYear() / 100;
-                            clock = clock.withYear(100 * year + buffer[0]);
-                            clock = clock.withMonth(buffer[1]);
-                            clock = clock.withDayOfMonth(buffer[2]);
-                            clock = clock.withHour(buffer[3]);
-                            clock = clock.withMinute(buffer[4]);
-                            clock = clock.withSecond(buffer[5]);
+                            int year = rtc.getYear() - rtc.getYear() % 100;
+                            LocalDate date = LocalDate.of(year + buffer[0], buffer[1], buffer[2]);
+                            LocalTime time = LocalTime.of(buffer[3], buffer[4], buffer[5]);
+                            rtc = ZonedDateTime.of(date, time, ZoneId.systemDefault());
                         } catch (DateTimeException exception) {
-                            clock = ZonedDateTime.now();
                             logger.info("Return local server time: {}.", exception.getMessage());
                         }
                     }
-                    rtc.set(clock);
-                    updateState(channelUID, new DateTimeType(clock));
-                } else if (DAIGNOSTICS_CHANNEL.equals(channelId)) {
+                    updateState(channelUID, new DateTimeType(rtc));
+                } else if (DIAGNOSTIC_CHANNEL.equals(channelId)) {
                     Map<Integer, String> states = LOGO_STATES.get(getLogoFamily());
                     if (states != null) {
                         for (Integer key : states.keySet()) {
@@ -217,10 +220,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         synchronized (oldValues) {
             oldValues.clear();
         }
-        config.set(getConfigAs(PLCLogoBridgeConfiguration.class));
+        config = getConfigAs(PLCLogoBridgeConfiguration.class);
 
-        boolean configured = (config.get().getLocalTSAP() != null);
-        configured = configured && (config.get().getRemoteTSAP() != null);
+        boolean configured = (config.getLocalTSAP() != null);
+        configured = configured && (config.getRemoteTSAP() != null);
 
         if (configured) {
             if (client == null) {
@@ -233,15 +236,19 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         }
 
         if (configured) {
-            String host = config.get().getAddress();
+            String host = config.getAddress();
             if (readerJob == null) {
-                Integer interval = config.get().getRefreshRate();
+                Integer interval = config.getRefreshRate();
                 logger.info("Creating new reader job for {} with interval {} ms.", host, interval);
                 readerJob = scheduler.scheduleWithFixedDelay(dataReader, 100, interval, TimeUnit.MILLISECONDS);
             }
             if (rtcJob == null) {
                 logger.info("Creating new RTC job for {} with interval 1 s.", host);
-                rtcJob = scheduler.scheduleAtFixedRate(rtcReader, 100, 1000, TimeUnit.MILLISECONDS);
+                rtcJob = scheduler.scheduleAtFixedRate(() -> {
+                    for (Channel channel : thing.getChannels()) {
+                        handleCommand(channel.getUID(), RefreshType.REFRESH);
+                    }
+                }, 100, 1000, TimeUnit.MILLISECONDS);
             }
 
             updateStatus(ThingStatus.ONLINE);
@@ -257,17 +264,19 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
         logger.debug("Dispose LOGO! bridge handler.");
         super.dispose();
 
-        if (rtcJob != null) {
-            rtcJob.cancel(false);
-            rtcJob = null;
-            logger.info("Destroy RTC job for {}.", config.get().getAddress());
+        ScheduledFuture<?> rtcFuture = rtcJob;
+        if (rtcFuture != null) {
+            rtcFuture.cancel(false);
+            logger.info("Destroy RTC job for {}.", config.getAddress());
         }
+        rtcJob = null;
 
-        if (readerJob != null) {
-            readerJob.cancel(false);
-            readerJob = null;
-            logger.info("Destroy reader job for {}.", config.get().getAddress());
+        ScheduledFuture<?> readerFuture = readerJob;
+        if (readerFuture != null) {
+            readerFuture.cancel(false);
+            logger.info("Destroy reader job for {}.", config.getAddress());
         }
+        readerJob = null;
 
         if (disconnect()) {
             client = null;
@@ -282,11 +291,8 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
         if (childHandler instanceof PLCCommonHandler) {
-            PLCCommonHandler handler = (PLCCommonHandler) childHandler;
             synchronized (handlers) {
-                if (!handlers.contains(handler)) {
-                    handlers.add(handler);
-                }
+                handlers.add((PLCCommonHandler) childHandler);
             }
         }
     }
@@ -294,11 +300,8 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         if (childHandler instanceof PLCCommonHandler) {
-            PLCCommonHandler handler = (PLCCommonHandler) childHandler;
             synchronized (handlers) {
-                if (handlers.contains(handler)) {
-                    handlers.remove(handler);
-                }
+                handlers.remove((PLCCommonHandler) childHandler);
             }
         }
         super.childHandlerDisposed(childHandler, childThing);
@@ -319,7 +322,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      * @return Configured Siemens LOGO! family
      */
     public String getLogoFamily() {
-        return config.get().getFamily();
+        return config.getFamily();
     }
 
     /**
@@ -328,13 +331,13 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
      * @return Siemens LOGO! RTC
      */
     public ZonedDateTime getLogoRTC() {
-        return rtc.get();
+        return rtc;
     }
 
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCLogoBridgeConfiguration.class));
+        config = getConfigAs(PLCLogoBridgeConfiguration.class);
     }
 
     /**
@@ -347,10 +350,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
         PLCLogoClient localClient = client;
         if (localClient != null) {
-            Integer local = config.get().getLocalTSAP();
-            Integer remote = config.get().getRemoteTSAP();
+            Integer local = config.getLocalTSAP();
+            Integer remote = config.getRemoteTSAP();
             if (!localClient.isConnected() && (local != null) && (remote != null)) {
-                localClient.Connect(config.get().getAddress(), local.intValue(), remote.intValue());
+                localClient.Connect(config.getAddress(), local.intValue(), remote.intValue());
             }
             result = localClient.isConnected();
         }

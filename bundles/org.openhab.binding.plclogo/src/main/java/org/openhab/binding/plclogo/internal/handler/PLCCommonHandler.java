@@ -47,7 +47,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(PLCCommonHandler.class);
 
-    private Map<String, @Nullable State> oldValues = new HashMap<>();
+    private final Map<String, @Nullable State> oldValues = new HashMap<>();
 
     private @Nullable PLCLogoClient client;
     private String family = NOT_SUPPORTED;
@@ -73,7 +73,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         super.dispose();
 
         ThingBuilder tBuilder = editThing();
-        for (Channel channel : getThing().getChannels()) {
+        for (Channel channel : thing.getChannels()) {
             tBuilder.withoutChannel(channel.getUID());
         }
         updateThing(tBuilder.build());
@@ -208,7 +208,6 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
     protected boolean isThingOnline() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            Thing thing = getThing();
             return ((ThingStatus.ONLINE == bridge.getStatus()) && (ThingStatus.ONLINE == thing.getStatus()));
         }
         return false;
@@ -243,7 +242,7 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             BridgeHandler handler = bridge.getHandler();
-            if ((handler != null) && (handler instanceof PLCBridgeHandler)) {
+            if (handler instanceof PLCBridgeHandler) {
                 return (PLCBridgeHandler) handler;
             }
         }
@@ -272,8 +271,6 @@ public abstract class PLCCommonHandler extends BaseThingHandler {
             if ((client == null) || NOT_SUPPORTED.equalsIgnoreCase(family)) {
                 String message = "Can not initialize LOGO! block handler.";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
-
-                Thing thing = getThing();
                 logger.warn("Can not initialize thing {} for LOGO! {}.", thing.getUID(), thing.getBridgeUID());
             }
         }

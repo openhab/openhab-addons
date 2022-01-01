@@ -14,12 +14,9 @@ package org.openhab.binding.plclogo.internal.handler;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
@@ -53,44 +50,36 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCAnalogHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ANALOG);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ANALOG);
 
     private final Logger logger = LoggerFactory.getLogger(PLCAnalogHandler.class);
-    private AtomicReference<PLCAnalogConfiguration> config = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCAnalogConfiguration config;
 
-    private static final Map<String, Integer> LOGO_BLOCKS_0BA7;
-    static {
-        Map<String, Integer> buffer = new HashMap<>();
-        buffer.put(I_ANALOG, 8); // 8 analog inputs
-        buffer.put(Q_ANALOG, 2); // 2 analog outputs
-        buffer.put(M_ANALOG, 16); // 16 analog markers
-        LOGO_BLOCKS_0BA7 = Collections.unmodifiableMap(buffer);
-    }
+    private static final Map<String, Integer> LOGO_BLOCKS_0BA7 = Map.ofEntries( // Logo7 IO-block configuration
+            Map.entry(I_ANALOG, 8), // 8 analog inputs
+            Map.entry(Q_ANALOG, 2), // 2 analog outputs
+            Map.entry(M_ANALOG, 16)// 16 analog markers
+    );
 
-    private static final Map<String, Integer> LOGO_BLOCKS_0BA8;
-    static {
-        Map<String, Integer> buffer = new HashMap<>();
-        buffer.put(I_ANALOG, 8); // 8 analog inputs
-        buffer.put(Q_ANALOG, 8); // 8 analog outputs
-        buffer.put(M_ANALOG, 64); // 64 analog markers
-        buffer.put(NI_ANALOG, 32); // 32 network analog inputs
-        buffer.put(NQ_ANALOG, 16); // 16 network analog outputs
-        LOGO_BLOCKS_0BA8 = Collections.unmodifiableMap(buffer);
-    }
+    private static final Map<String, Integer> LOGO_BLOCKS_0BA8 = Map.ofEntries( // Logo8 IO-block configuration
+            Map.entry(I_ANALOG, 8), // 8 analog inputs
+            Map.entry(Q_ANALOG, 8), // 8 analog outputs
+            Map.entry(M_ANALOG, 64), // 64 analog markers
+            Map.entry(NI_ANALOG, 32), // 32 network analog inputs
+            Map.entry(NQ_ANALOG, 16) // 16 network analog outputs
+    );
 
-    private static final Map<String, Map<String, Integer>> LOGO_BLOCK_NUMBER;
-    static {
-        Map<String, Map<String, Integer>> buffer = new HashMap<>();
-        buffer.put(LOGO_0BA7, LOGO_BLOCKS_0BA7);
-        buffer.put(LOGO_0BA8, LOGO_BLOCKS_0BA8);
-        LOGO_BLOCK_NUMBER = Collections.unmodifiableMap(buffer);
-    }
+    private static final Map<String, Map<String, Integer>> LOGO_BLOCK_NUMBER = Map.ofEntries( //
+            Map.entry(LOGO_0BA7, LOGO_BLOCKS_0BA7), // Possible blocks for Logo7
+            Map.entry(LOGO_0BA8, LOGO_BLOCKS_0BA8) // Possible blocks for Logo8
+    );
 
     /**
      * Constructor.
      */
     public PLCAnalogHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(PLCAnalogConfiguration.class);
     }
 
     @Override
@@ -99,7 +88,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
             return;
         }
 
-        Channel channel = getThing().getChannel(channelUID.getId());
+        Channel channel = thing.getChannel(channelUID.getId());
         String name = getBlockFromChannel(channel);
         if (!isValid(name) || (channel == null)) {
             logger.debug("Can not update channel {}, block {}.", channelUID, name);
@@ -155,8 +144,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
             return;
         }
 
-        Boolean force = config.get().isUpdateForced();
-        Integer threshold = config.get().getThreshold();
+        final Integer threshold = config.getThreshold();
         for (Channel channel : channels) {
             ChannelUID channelUID = channel.getUID();
             String name = getBlockFromChannel(channel);
@@ -165,7 +153,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
             if (address != INVALID) {
                 DecimalType state = (DecimalType) getOldValue(name);
                 int value = S7.GetShortAt(data, address - getBase(name));
-                if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || force) {
+                if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || config.isUpdateForced()) {
                     updateChannel(channel, value);
                 }
                 if (logger.isTraceEnabled()) {
@@ -189,7 +177,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCAnalogConfiguration.class));
+        config = getConfigAs(PLCAnalogConfiguration.class);
     }
 
     @Override
@@ -207,7 +195,7 @@ public class PLCAnalogHandler extends PLCCommonHandler {
 
     @Override
     protected String getBlockKind() {
-        return config.get().getBlockKind();
+        return config.getBlockKind();
     }
 
     @Override
@@ -234,10 +222,9 @@ public class PLCAnalogHandler extends PLCCommonHandler {
 
     @Override
     protected void doInitialization() {
-        Thing thing = getThing();
         logger.debug("Initialize LOGO! analog input blocks handler.");
 
-        config.set(getConfigAs(PLCAnalogConfiguration.class));
+        config = getConfigAs(PLCAnalogConfiguration.class);
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
@@ -254,15 +241,15 @@ public class PLCAnalogHandler extends PLCCommonHandler {
             }
             tBuilder.withLabel(label);
 
-            String type = config.get().getChannelType();
+            final String type = config.getChannelType();
             for (int i = 0; i < getNumberOfChannels(); i++) {
-                String name = kind + String.valueOf(i + 1);
+                String name = String.format("%s%d", kind, i + 1);
                 ChannelUID uid = new ChannelUID(thing.getUID(), name);
                 ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
                 cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
                 cBuilder.withLabel(name);
                 cBuilder.withDescription("Analog " + text + " block " + name);
-                cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+                cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
                 tBuilder.withChannel(cBuilder.build());
                 setOldValue(name, null);
             }

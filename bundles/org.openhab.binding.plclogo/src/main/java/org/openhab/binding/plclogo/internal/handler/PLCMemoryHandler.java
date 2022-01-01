@@ -14,10 +14,9 @@ package org.openhab.binding.plclogo.internal.handler;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.plclogo.internal.PLCLogoClient;
@@ -52,16 +51,17 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCMemoryHandler extends PLCCommonHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MEMORY);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_MEMORY);
 
     private final Logger logger = LoggerFactory.getLogger(PLCMemoryHandler.class);
-    private AtomicReference<PLCMemoryConfiguration> config = new AtomicReference<>();
+    private volatile @NonNullByDefault({}) PLCMemoryConfiguration config;
 
     /**
      * Constructor.
      */
     public PLCMemoryHandler(Thing thing) {
         super(thing);
+        config = getConfigAs(PLCMemoryConfiguration.class);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
             } else if (command instanceof OnOffType) {
                 byte[] buffer = new byte[1];
                 if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                    S7.SetBitAt(buffer, 0, 0, ((OnOffType) command) == OnOffType.ON);
+                    S7.SetBitAt(buffer, 0, 0, OnOffType.ON.equals(command));
                 } else {
                     logger.debug("Channel {} will not accept {} items.", channelUID, type);
                 }
@@ -168,12 +168,10 @@ public class PLCMemoryHandler extends PLCCommonHandler {
             if (address != INVALID) {
                 String kind = getBlockKind();
                 String type = channel.getAcceptedItemType();
-                Boolean force = config.get().isUpdateForced();
-
                 if (DIGITAL_OUTPUT_ITEM.equalsIgnoreCase(type) && kind.equalsIgnoreCase(MEMORY_BYTE)) {
                     OnOffType state = (OnOffType) getOldValue(name);
                     OnOffType value = S7.GetBitAt(data, address, getBit(name)) ? OnOffType.ON : OnOffType.OFF;
-                    if ((state == null) || (value != state) || force) {
+                    if ((state == null) || (value != state) || config.isUpdateForced()) {
                         updateState(channelUID, value);
                         logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
                     }
@@ -183,10 +181,11 @@ public class PLCMemoryHandler extends PLCCommonHandler {
                                 Integer.toBinaryString(buffer).substring(1));
                     }
                 } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_BYTE.equalsIgnoreCase(kind)) {
-                    Integer threshold = config.get().getThreshold();
+                    Integer threshold = config.getThreshold();
                     DecimalType state = (DecimalType) getOldValue(name);
                     int value = data[address];
-                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || force) {
+                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold)
+                            || config.isUpdateForced()) {
                         updateState(channelUID, new DecimalType(value));
                         logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
                     }
@@ -194,10 +193,11 @@ public class PLCMemoryHandler extends PLCCommonHandler {
                         logger.trace("Channel {} received [{}].", channelUID, data[address]);
                     }
                 } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_WORD.equalsIgnoreCase(kind)) {
-                    Integer threshold = config.get().getThreshold();
+                    Integer threshold = config.getThreshold();
                     DecimalType state = (DecimalType) getOldValue(name);
                     int value = S7.GetShortAt(data, address);
-                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || force) {
+                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold)
+                            || config.isUpdateForced()) {
                         updateState(channelUID, new DecimalType(value));
                         logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
                     }
@@ -205,10 +205,11 @@ public class PLCMemoryHandler extends PLCCommonHandler {
                         logger.trace("Channel {} received [{}, {}].", channelUID, data[address], data[address + 1]);
                     }
                 } else if (ANALOG_ITEM.equalsIgnoreCase(type) && MEMORY_DWORD.equalsIgnoreCase(kind)) {
-                    Integer threshold = config.get().getThreshold();
+                    Integer threshold = config.getThreshold();
                     DecimalType state = (DecimalType) getOldValue(name);
                     int value = S7.GetDIntAt(data, address);
-                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold) || force) {
+                    if ((state == null) || (Math.abs(value - state.intValue()) > threshold)
+                            || config.isUpdateForced()) {
                         updateState(channelUID, new DecimalType(value));
                         logger.debug("Channel {} accepting {} was set to {}.", channelUID, type, value);
                     }
@@ -236,7 +237,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
     @Override
     protected void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
-        config.set(getConfigAs(PLCMemoryConfiguration.class));
+        config = getConfigAs(PLCMemoryConfiguration.class);
     }
 
     @Override
@@ -253,7 +254,7 @@ public class PLCMemoryHandler extends PLCCommonHandler {
 
     @Override
     protected String getBlockKind() {
-        return config.get().getBlockKind();
+        return config.getBlockKind();
     }
 
     @Override
@@ -263,15 +264,14 @@ public class PLCMemoryHandler extends PLCCommonHandler {
 
     @Override
     protected void doInitialization() {
-        Thing thing = getThing();
         logger.debug("Initialize LOGO! memory handler.");
 
-        config.set(getConfigAs(PLCMemoryConfiguration.class));
+        config = getConfigAs(PLCMemoryConfiguration.class);
 
         super.doInitialization();
         if (ThingStatus.OFFLINE != thing.getStatus()) {
             String kind = getBlockKind();
-            String name = config.get().getBlockName();
+            String name = config.getBlockName();
             boolean isDigital = MEMORY_BYTE.equalsIgnoreCase(kind) && (getBit(name) != INVALID);
             String text = isDigital ? "Digital" : "Analog";
 
@@ -285,13 +285,13 @@ public class PLCMemoryHandler extends PLCCommonHandler {
             }
             tBuilder.withLabel(label);
 
-            String type = config.get().getChannelType();
+            String type = config.getChannelType();
             ChannelUID uid = new ChannelUID(thing.getUID(), isDigital ? STATE_CHANNEL : VALUE_CHANNEL);
             ChannelBuilder cBuilder = ChannelBuilder.create(uid, type);
             cBuilder.withType(new ChannelTypeUID(BINDING_ID, type.toLowerCase()));
             cBuilder.withLabel(name);
             cBuilder.withDescription(text + " in/output block " + name);
-            cBuilder.withProperties(Collections.singletonMap(BLOCK_PROPERTY, name));
+            cBuilder.withProperties(Map.of(BLOCK_PROPERTY, name));
             tBuilder.withChannel(cBuilder.build());
             setOldValue(name, null);
 

@@ -14,8 +14,6 @@ package org.openhab.binding.plclogo.internal;
 
 import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,17 +42,8 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.plclogo")
 public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS;
-    static {
-        Set<ThingTypeUID> buffer = new HashSet<>();
-        buffer.add(THING_TYPE_DEVICE);
-        buffer.add(THING_TYPE_MEMORY);
-        buffer.add(THING_TYPE_ANALOG);
-        buffer.add(THING_TYPE_DIGITAL);
-        buffer.add(THING_TYPE_DATETIME);
-        buffer.add(THING_TYPE_PULSE);
-        SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(buffer);
-    }
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE, THING_TYPE_MEMORY,
+            THING_TYPE_ANALOG, THING_TYPE_DIGITAL, THING_TYPE_DATETIME, THING_TYPE_PULSE);
 
     /**
      * Constructor.
