@@ -1,7 +1,8 @@
 {
 	"deviceMapping": {
 		"id": [
-			"deerma.humidifier.jsq5"
+			"deerma.humidifier.jsq5",
+			"deerma.humidifier.jsqs"
 		],
 		"propertyMethod": "get_properties",
 		"maxProperties": 1,

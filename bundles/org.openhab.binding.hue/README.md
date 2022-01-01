@@ -19,7 +19,7 @@ Additionally, it is possible to use OSRAM Lightify devices as well as other ZigB
 Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue bridge before it is possible for this binding to use them.
 
-The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf).
+The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
 These are:
 
 | Device type              | ZigBee Device ID | Thing type |

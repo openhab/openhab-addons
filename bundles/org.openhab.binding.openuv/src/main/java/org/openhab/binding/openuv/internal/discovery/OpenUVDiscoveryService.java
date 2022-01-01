@@ -50,7 +50,10 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService implements 
     @Override
     public void setThingHandler(ThingHandler handler) {
         if (handler instanceof OpenUVBridgeHandler) {
-            this.bridgeHandler = (OpenUVBridgeHandler) handler;
+            OpenUVBridgeHandler localHandler = (OpenUVBridgeHandler) handler;
+            this.bridgeHandler = localHandler;
+            this.i18nProvider = localHandler.getI18nProvider();
+            this.localeProvider = localHandler.getLocaleProvider();
         }
     }
 

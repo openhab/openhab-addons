@@ -75,7 +75,7 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (BRIDGE_THING_TYPE.equals(thingTypeUID)) {
             return new BoxHandler((Bridge) thing, httpClient, commandDescriptionProvider);
-        } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
+        } else if (POWERLINE546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             return new Powerline546EHandler((Bridge) thing, httpClient, commandDescriptionProvider);
         } else if (SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)) {
             return new AVMFritzColorLightDeviceHandler(thing);

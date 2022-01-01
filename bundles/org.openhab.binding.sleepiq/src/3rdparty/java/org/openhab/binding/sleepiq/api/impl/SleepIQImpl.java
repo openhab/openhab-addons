@@ -49,8 +49,7 @@ import org.openhab.binding.sleepiq.api.model.Sleeper;
 import org.openhab.binding.sleepiq.api.model.SleepersResponse;
 import org.openhab.binding.sleepiq.internal.GsonProvider;
 
-public class SleepIQImpl extends AbstractClient implements SleepIQ
-{
+public class SleepIQImpl extends AbstractClient implements SleepIQ {
     protected static final String PARAM_KEY = "_k";
 
     protected static final String DATA_BED_ID = "bedId";
@@ -59,47 +58,36 @@ public class SleepIQImpl extends AbstractClient implements SleepIQ
 
     private volatile LoginInfo loginInfo;
 
-    public SleepIQImpl(Configuration config)
-    {
+    private final ClientBuilder clientBuilder;
+
+    public SleepIQImpl(Configuration config, ClientBuilder clientBuilder) {
         this.config = config;
+        this.clientBuilder = clientBuilder;
     }
 
     @Override
-    public LoginInfo login() throws LoginException
-    {
-        if (loginInfo == null)
-        {
-            synchronized (this)
-            {
-                if (loginInfo == null)
-                {
-                    Response response = getClient().target(config.getBaseUri())
-                                                   .path(Endpoints.login())
-                                                   .request(MediaType.APPLICATION_JSON_TYPE)
-                                                   .put(Entity.json(new LoginRequest().withLogin(config.getUsername())
-                                                                                      .withPassword(config.getPassword())));
+    public LoginInfo login() throws LoginException {
+        if (loginInfo == null) {
+            synchronized (this) {
+                if (loginInfo == null) {
+                    Response response = getClient().target(config.getBaseUri()).path(Endpoints.login())
+                            .request(MediaType.APPLICATION_JSON_TYPE).put(Entity.json(new LoginRequest()
+                                    .withLogin(config.getUsername()).withPassword(config.getPassword())));
 
-                    if (isUnauthorized(response))
-                    {
+                    if (isUnauthorized(response)) {
                         throw new UnauthorizedException(response.readEntity(Failure.class));
                     }
 
-                    if (!Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
-                    {
+                    if (!Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
                         throw new LoginException(response.readEntity(Failure.class));
                     }
 
                     // add the received cookies to all future requests
-                    getClient().register(new ClientRequestFilter()
-                    {
+                    getClient().register(new ClientRequestFilter() {
                         @Override
-                        public void filter(ClientRequestContext requestContext) throws IOException
-                        {
-                            List<Object> cookies = response.getCookies()
-                                                           .values()
-                                                           .stream()
-                                                           .map(newCookie -> newCookie.toCookie())
-                                                           .collect(Collectors.toList());
+                        public void filter(ClientRequestContext requestContext) throws IOException {
+                            List<Object> cookies = response.getCookies().values().stream()
+                                    .map(newCookie -> newCookie.toCookie()).collect(Collectors.toList());
                             requestContext.getHeaders().put("Cookie", cookies);
                         }
                     });
@@ -113,106 +101,76 @@ public class SleepIQImpl extends AbstractClient implements SleepIQ
     }
 
     @Override
-    public List<Bed> getBeds()
-    {
+    public List<Bed> getBeds() {
         return getSessionResponse(this::getBedsResponse).readEntity(BedsResponse.class).getBeds();
     }
 
-    protected Response getBedsResponse(Map<String, Object> data) throws LoginException
-    {
+    protected Response getBedsResponse(Map<String, Object> data) throws LoginException {
         LoginInfo login = login();
-        return getClient().target(config.getBaseUri())
-                          .path(Endpoints.bed())
-                          .queryParam(PARAM_KEY, login.getKey())
-                          .request(MediaType.APPLICATION_JSON_TYPE)
-                          .get();
+        return getClient().target(config.getBaseUri()).path(Endpoints.bed()).queryParam(PARAM_KEY, login.getKey())
+                .request(MediaType.APPLICATION_JSON_TYPE).get();
     }
 
     @Override
-    public List<Sleeper> getSleepers()
-    {
-        return getSessionResponse(this::getSleepersResponse).readEntity(SleepersResponse.class)
-                                                            .getSleepers();
+    public List<Sleeper> getSleepers() {
+        return getSessionResponse(this::getSleepersResponse).readEntity(SleepersResponse.class).getSleepers();
     }
 
-    protected Response getSleepersResponse(Map<String, Object> data) throws LoginException
-    {
+    protected Response getSleepersResponse(Map<String, Object> data) throws LoginException {
         LoginInfo login = login();
-        return getClient().target(config.getBaseUri())
-                          .path(Endpoints.sleeper())
-                          .queryParam(PARAM_KEY, login.getKey())
-                          .request(MediaType.APPLICATION_JSON_TYPE)
-                          .get();
+        return getClient().target(config.getBaseUri()).path(Endpoints.sleeper()).queryParam(PARAM_KEY, login.getKey())
+                .request(MediaType.APPLICATION_JSON_TYPE).get();
     }
 
     @Override
-    public FamilyStatus getFamilyStatus()
-    {
+    public FamilyStatus getFamilyStatus() {
         return getSessionResponse(this::getFamilyStatusResponse).readEntity(FamilyStatus.class);
     }
 
-    protected Response getFamilyStatusResponse(Map<String, Object> data) throws LoginException
-    {
+    protected Response getFamilyStatusResponse(Map<String, Object> data) throws LoginException {
         LoginInfo login = login();
-        return getClient().target(config.getBaseUri())
-                          .path(Endpoints.bed())
-                          .path(Endpoints.familyStatus())
-                          .queryParam(PARAM_KEY, login.getKey())
-                          .request(MediaType.APPLICATION_JSON_TYPE)
-                          .get();
+        return getClient().target(config.getBaseUri()).path(Endpoints.bed()).path(Endpoints.familyStatus())
+                .queryParam(PARAM_KEY, login.getKey()).request(MediaType.APPLICATION_JSON_TYPE).get();
     }
 
     @Override
-    public PauseMode getPauseMode(String bedId) throws BedNotFoundException
-    {
+    public PauseMode getPauseMode(String bedId) throws BedNotFoundException {
         Map<String, Object> data = new HashMap<>();
         data.put(DATA_BED_ID, bedId);
 
         Response response = getSessionResponse(this::getPauseModeResponse, data);
 
-        if (!Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily()))
-        {
+        if (!Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
             throw new BedNotFoundException(response.readEntity(Failure.class));
         }
 
         return response.readEntity(PauseMode.class);
     }
 
-    protected Response getPauseModeResponse(Map<String, Object> data) throws LoginException
-    {
+    protected Response getPauseModeResponse(Map<String, Object> data) throws LoginException {
         LoginInfo login = login();
-        return getClient().target(config.getBaseUri())
-                          .path(Endpoints.bed())
-                          .path(data.get(DATA_BED_ID).toString())
-                          .path(Endpoints.pauseMode())
-                          .queryParam(PARAM_KEY, login.getKey())
-                          .request(MediaType.APPLICATION_JSON_TYPE)
-                          .get();
+        return getClient().target(config.getBaseUri()).path(Endpoints.bed()).path(data.get(DATA_BED_ID).toString())
+                .path(Endpoints.pauseMode()).queryParam(PARAM_KEY, login.getKey())
+                .request(MediaType.APPLICATION_JSON_TYPE).get();
     }
 
-    protected boolean isUnauthorized(Response response)
-    {
+    protected boolean isUnauthorized(Response response) {
         return Status.UNAUTHORIZED.getStatusCode() == response.getStatusInfo().getStatusCode();
     }
 
-    protected synchronized void resetLogin()
-    {
+    protected synchronized void resetLogin() {
         loginInfo = null;
     }
 
-    protected Response getSessionResponse(Request request)
-    {
+    protected Response getSessionResponse(Request request) {
         return getSessionResponse(request, Collections.emptyMap());
     }
 
-    protected Response getSessionResponse(Request request, Map<String, Object> data)
-    {
-        try
-        {
+    protected Response getSessionResponse(Request request, Map<String, Object> data) {
+        try {
             Response response = request.execute(data);
 
-            if (isUnauthorized(response))
-            {
+            if (isUnauthorized(response)) {
                 // session timed out
                 response.close();
                 resetLogin();
@@ -220,35 +178,27 @@ public class SleepIQImpl extends AbstractClient implements SleepIQ
             }
 
             return response;
-        }
-        catch (LoginException e)
-        {
+        } catch (LoginException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     @Override
-    protected Client createClient()
-    {
-        ClientBuilder builder = ClientBuilder.newBuilder();
-
+    protected Client createClient() {
         // setup Gson (de)serialization
         GsonProvider<Object> gsonProvider = new GsonProvider<>(getGson());
-        builder.register(gsonProvider);
+        clientBuilder.register(gsonProvider);
 
         // turn on logging if requested
-        if (config.isLogging())
-        {
-            builder.register(new LoggingFilter(Logger.getLogger(SleepIQImpl.class.getName()),
-                                               true));
+        if (config.isLogging()) {
+            clientBuilder.register(new LoggingFilter(Logger.getLogger(SleepIQImpl.class.getName()), true));
         }
 
-        return builder.build();
+        return clientBuilder.build();
     }
 
     @FunctionalInterface
-    public static interface Request
-    {
+    public static interface Request {
         public Response execute(Map<String, Object> data) throws LoginException;
     }
 }

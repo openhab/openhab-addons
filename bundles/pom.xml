@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>3.3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -102,6 +102,7 @@
     <module>org.openhab.binding.digitalstrom</module>
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
+    <module>org.openhab.binding.dominoswiss</module>
     <module>org.openhab.binding.doorbird</module>
     <module>org.openhab.binding.draytonwiser</module>
     <module>org.openhab.binding.dscalarm</module>
@@ -276,6 +277,7 @@
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.proteusecometer</module>
+    <module>org.openhab.binding.publictransportswitzerland</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.pushover</module>
@@ -285,6 +287,7 @@
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.revogi</module>
     <module>org.openhab.binding.remoteopenhab</module>
+    <module>org.openhab.binding.renault</module>
     <module>org.openhab.binding.resol</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>
@@ -311,6 +314,7 @@
     <module>org.openhab.binding.smartmeter</module>
     <module>org.openhab.binding.smhi</module>
     <module>org.openhab.binding.smartthings</module>
+    <module>org.openhab.binding.sncf</module>
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
