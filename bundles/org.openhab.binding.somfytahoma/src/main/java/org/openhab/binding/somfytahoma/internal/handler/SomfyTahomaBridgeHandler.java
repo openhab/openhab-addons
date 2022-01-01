@@ -45,6 +45,7 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Reponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRegisterEventsResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
@@ -213,8 +214,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         reLoginNeeded = false;
 
         try {
-            String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
-                    + urlEncode(thingConfig.getPassword());
+
+            String urlParameters = "";
+
+            // if cozytouch, must use oauth server
+            if (thingConfig.getCloudPortal().equalsIgnoreCase("ha110-1.overkiz.com")) {
+                logger.debug("CozyTouch Oauth2 authentication flow");
+                urlParameters = "jwt=" + loginCozytouch();
+            } else {
+                urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
+                        + urlEncode(thingConfig.getPassword());
+            }
 
             ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
                     .content(new StringContentProvider(urlParameters),
@@ -649,6 +659,43 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 .header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en").header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate")
                 .header("X-Requested-With", "XMLHttpRequest").timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS)
                 .agent(TAHOMA_AGENT);
+    }
+
+    /**
+     * Returns JSESSIONID cookie value
+     *
+     * @return
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     */
+    private String loginCozytouch() throws InterruptedException, TimeoutException, ExecutionException {
+        String authBaseUrl = "https://" + COZYTOUCH_OAUTH2_URL;
+
+        String urlParameters = "grant_type=password&username=" + urlEncode(thingConfig.getEmail()) + "&password="
+                + urlEncode(thingConfig.getPassword());
+
+        ContentResponse response = httpClient.newRequest(authBaseUrl + COZYTOUCH_OAUTH2_TOKEN_URL)
+                .method(HttpMethod.POST).header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
+                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").header("X-Requested-With", "XMLHttpRequest")
+                .header(HttpHeader.AUTHORIZATION, "Basic " + COZYTOUCH_OAUTH2_BASICAUTH)
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT)
+                .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
+                .send();
+
+        SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
+                SomfyTahomaOauth2Reponse.class);
+
+        logger.debug("OAuth2 Access Token: {}", oauth2response.getAccess_token());
+
+        response = httpClient.newRequest(authBaseUrl + COZYTOUCH_OAUTH2_JWT_URL).method(HttpMethod.GET)
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + oauth2response.getAccess_token())
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).send();
+
+        String jwt = response.getContentAsString();
+
+        logger.debug("JWT value: {}", jwt);
+        return jwt.replace("\"", "");
     }
 
     private String getApiFullUrl(String subUrl) {

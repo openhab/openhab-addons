@@ -1,0 +1,220 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.somfytahoma.internal.handler;
+
+import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link SomfyTahomaWaterHeatingSystemHandler} is responsible for handling commands,
+ * which are sent to one of the channels of the Water Heating system thing.
+ *
+ * @author Benjamin Lafois - Initial contribution
+ */
+@NonNullByDefault
+public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaWaterHeatingSystemHandler.class);
+
+    private boolean boostMode = false;
+    private boolean awayMode = false;
+
+    public SomfyTahomaWaterHeatingSystemHandler(Thing thing) {
+        super(thing);
+
+        stateNames.put(MANUFACTURER, MANUFACTURER_NAME_STATE);
+        stateNames.put(MIDDLEWATER_TEMPERATURE, MIDDLE_WATER_TEMPERATURE_STATE);
+        stateNames.put(TARGET_TEMPERATURE, TARGET_TEMPERATURE_STATE);
+        // stateNames.put(WATER_TEMPERATURE, TEMPERATURE_STATE);
+        stateNames.put(WATER_HEATER_MODE, WATER_HEATER_MODE_STATE);
+
+        stateNames.put(BOOST_MODE_DURATION, BOOST_MODE_DURATION_STATE);
+        // override state type because the cloud sends consumption in percent
+        cacheStateType(BOOST_MODE_DURATION_STATE, TYPE_DECIMAL);
+
+        stateNames.put(AWAY_MODE_DURATION, AWAY_MODE_DURATION_STATE);
+        // override state type because the cloud sends consumption in percent
+        cacheStateType(AWAY_MODE_DURATION_STATE, TYPE_DECIMAL);
+
+        stateNames.put(HEAT_PUMP_OPERATING_TIME, HEAT_PUMP_OPERATING_TIME_STATE);
+        // override state type because the cloud sends consumption in percent
+        cacheStateType(HEAT_PUMP_OPERATING_TIME_STATE, TYPE_DECIMAL);
+
+        stateNames.put(ELECTRIC_BOOSTER_OPERATING_TIME, ELECTRIC_BOOSTER_OPERATING_TIME_STATE);
+        // override state type because the cloud sends consumption in percent
+        cacheStateType(ELECTRIC_BOOSTER_OPERATING_TIME_STATE, TYPE_DECIMAL);
+
+        stateNames.put(POWER_HEAT_PUMP, POWER_HEAT_PUMP_STATE);
+        // override state type because the cloud sends consumption in percent
+        cacheStateType(POWER_HEAT_PUMP_STATE, TYPE_DECIMAL);
+
+        stateNames.put(POWER_HEAT_ELEC, POWER_HEAT_ELEC_STATE);
+        // override state type because the cloud sends consumption in percent
+        cacheStateType(POWER_HEAT_ELEC_STATE, TYPE_DECIMAL);
+    }
+
+    @Override
+    public void updateThingChannels(SomfyTahomaState state) {
+
+        if (OPERATING_MODE_STATE.equals(state.getName()) && state.getValue() instanceof Map) {
+            logger.debug("Operating Mode State: {}  {}", state.getValue().getClass().getName(), state.getValue());
+
+            Map<String, String> data = (Map<String, String>) state.getValue();
+
+            Object relaunchValue = data.get("relaunch");
+            if (relaunchValue != null) {
+                this.boostMode = relaunchValue.toString().equalsIgnoreCase("on");
+                logger.debug("Boost Value: {}", this.boostMode);
+                Channel chBoost = thing.getChannel(BOOST_MODE);
+                if (chBoost != null) {
+                    updateState(chBoost.getUID(), OnOffType.from(this.boostMode));
+                }
+            }
+
+            Object awayValue = data.get("absence");
+            if (awayValue != null) {
+                this.awayMode = awayValue.toString().equalsIgnoreCase("on");
+                logger.debug("Away Value: {}", this.awayMode);
+                Channel chAway = thing.getChannel(AWAY_MODE);
+                if (chAway != null) {
+                    updateState(chAway.getUID(), OnOffType.from(this.awayMode));
+                }
+            }
+        } else if (TARGET_TEMPERATURE_STATE.equals(state.getName())) {
+            logger.debug("Target Temperature: {}", state.getValue());
+            // 50 -> 3
+            // 54.5 -> 4
+            // 62 -> 5
+            Double temp = Double.parseDouble(state.getValue().toString());
+            int v = 0;
+            if (temp == 50) {
+                v = 3;
+            } else if (temp == 54.5) {
+                v = 4;
+            } else if (temp == 62) {
+                v = 5;
+            }
+
+            Channel chAway = thing.getChannel(SHOWERS);
+            if (chAway != null) {
+                updateState(chAway.getUID(), new DecimalType(v));
+            }
+        }
+
+        super.updateThingChannels(state);
+    }
+
+    private void sendOPeratingMode() {
+        sendCommand(COMMAND_SET_CURRENT_OPERATING_MODE.toString(), "[ { \"relaunch\":\""
+                + (this.boostMode ? "on" : "off") + "\", \"absence\":\"" + (this.awayMode ? "on" : "off") + "\"} ]");
+    }
+
+    private void sendBoostDuration(int duration) {
+        sendCommand(COMMAND_SET_BOOST_MODE_DURATION.toString(), "[ " + duration + " ]");
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+
+        if (command instanceof RefreshType) {
+            return;
+        } else {
+            logger.debug("Command received: {}/{}", channelUID.getId(), command.toString());
+
+            if (BOOST_MODE_DURATION.equals(channelUID.getId())) {
+                int duration = Integer.parseInt(command.toString());
+                if (duration == 0) {
+                    this.boostMode = false;
+                    sendOPeratingMode();
+                } else if (duration > 0 && duration < 8) {
+                    this.boostMode = true;
+                    sendOPeratingMode();
+                    sendBoostDuration(duration);
+                }
+            } else if (WATER_HEATER_MODE.equals(channelUID.getId())) {
+                sendCommand(COMMAND_SET_WATER_HEATER_MODE.toString(), "[ \"" + command.toString() + "\" ]");
+            } else if (AWAY_MODE_DURATION.equals(channelUID.getId())) {
+                sendCommand(COMMAND_SET_AWAY_MODE_DURATION.toString(), "[ \"" + command.toString() + "\" ]");
+            } else if (BOOST_MODE.equals(channelUID.getId())) {
+                if (command == OnOffType.ON) {
+                    if (this.boostMode == true) {
+                        return;
+                    }
+                    this.boostMode = true;
+
+                    scheduler.execute(() -> {
+                        sendBoostDuration(1); // by default, boost for 1 day
+                    });
+
+                    scheduler.schedule(() -> {
+                        sendCommand(COMMAND_REFRESH_DHWMODE.toString(), "[ ]");
+                    }, 1, TimeUnit.SECONDS);
+
+                    scheduler.schedule(() -> {
+                        sendOPeratingMode();
+                    }, 2, TimeUnit.SECONDS);
+
+                    scheduler.schedule(() -> {
+                        sendCommand(COMMAND_REFRESH_BOOST_MODE_DURATION.toString(), "[ ]");
+                    }, 3, TimeUnit.SECONDS);
+
+                } else {
+                    this.boostMode = false;
+                    sendOPeratingMode();
+                }
+            } else if (AWAY_MODE.equals(channelUID.getId())) {
+                if (command == OnOffType.ON) {
+                    this.boostMode = false;
+                    this.awayMode = true;
+                } else {
+                    this.awayMode = false;
+                }
+                sendOPeratingMode();
+            } else if (SHOWERS.equals(channelUID.getId())) {
+                int showers = Integer.parseInt(command.toString());
+                Double value = 0.0;
+
+                switch (showers) {
+                    case 3:
+                        value = 50.0;
+                        break;
+                    case 4:
+                        value = 54.5;
+                        break;
+                    case 5:
+                        value = 62.0;
+                        break;
+                    default:
+                        break;
+                }
+                sendCommand(COMMAND_SET_TARGET_TEMPERATURE.toString(), "[ " + value.toString() + " ]");
+            }
+
+        }
+    }
+}
