@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 public class StreamOutput {
     public final Logger logger = LoggerFactory.getLogger(getClass());
     private final HttpServletResponse response;
-    private String boundary;
+    private final String boundary;
     private String contentType;
     private final ServletOutputStream output;
     private BlockingQueue<byte[]> fifo = new ArrayBlockingQueue<byte[]>(30);
