@@ -37,6 +37,7 @@ import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
@@ -54,14 +55,14 @@ import com.google.gson.GsonBuilder;
 
 /**
  * This is the implementation of the MapDB {@link PersistenceService}. To learn more about MapDB please visit their
- * <a href="http://www.mapdb.org/">website</a>.
+ * <a href="https://www.mapdb.org/">website</a>.
  *
  * @author Jens Viebig - Initial contribution
  * @author Martin Kühl - Port to 3.x
  */
 @NonNullByDefault
 @Component(service = { PersistenceService.class, QueryablePersistenceService.class })
-public class MapDbPersistenceService implements QueryablePersistenceService {
+public class MapDbPersistenceService implements ModifiablePersistenceService {
 
     private static final String SERVICE_ID = "mapdb";
     private static final String SERVICE_LABEL = "MapDB";
@@ -169,7 +170,16 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     @Override
     public void store(Item item, @Nullable String alias) {
-        if (item.getState() instanceof UnDefType) {
+        internalStore(item, alias, new Date(), item.getState());
+    }
+
+    @Override
+    public void store(Item item, Date date, State state) {
+        internalStore(item, null, date, state);
+    }
+
+    private void internalStore(Item item, @Nullable String alias, Date date, State state) {
+        if (state instanceof UnDefType) {
             return;
         }
 
@@ -177,11 +187,10 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         String localAlias = alias == null ? item.getName() : alias;
         logger.debug("store called for {}", localAlias);
 
-        State state = item.getState();
         MapDbItem mItem = new MapDbItem();
         mItem.setName(localAlias);
         mItem.setState(state);
-        mItem.setTimestamp(new Date());
+        mItem.setTimestamp(date);
         String json = serialize(mItem);
         map.put(localAlias, json);
         commit();
@@ -204,7 +213,6 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
         return mapper.toJson(item);
     }
 
-    @SuppressWarnings("null")
     private Optional<MapDbItem> deserialize(String json) {
         MapDbItem item = mapper.<MapDbItem> fromJson(json, MapDbItem.class);
         if (item == null || !item.isValid()) {
@@ -228,5 +236,13 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.RESTORE, PersistenceStrategy.Globals.CHANGE);
+    }
+
+    @Override
+    public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
+        if (filter.getItemName() == null) {
+            throw new IllegalArgumentException("Item name must not be null");
+        }
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }
