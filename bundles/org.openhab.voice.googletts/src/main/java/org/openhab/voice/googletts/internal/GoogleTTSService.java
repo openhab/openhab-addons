@@ -330,7 +330,7 @@ public class GoogleTTSService implements TTSService {
         // create the audio byte array for given text, locale, format
         byte[] audio = apiImpl.synthesizeSpeech(trimmedText, (GoogleTTSVoice) voice, requestedFormat.getCodec());
         if (audio == null) {
-            throw new TTSException("Could not read from Google Cloud TTS Service");
+            throw new TTSException("Could not synthesize text via Google Cloud TTS Service");
         }
         return new ByteArrayAudioStream(audio, requestedFormat);
     }
