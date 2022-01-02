@@ -104,8 +104,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
+        if (RefreshType.REFRESH == command) {
             requestRefreshShadePosition();
+            requestRefreshShadeBatteryLevel();
             return;
         }
 
