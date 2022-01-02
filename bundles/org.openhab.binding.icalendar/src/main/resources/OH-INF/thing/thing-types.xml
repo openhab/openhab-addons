@@ -156,6 +156,7 @@
 
 			<parameter name="maxEvents" type="integer" required="true" min="0" groupName="general">
 				<label>Maximum Matches</label>
+				<description>Maximum Matches found by this filter</description>
 			</parameter>
 			<parameter name="refreshTime" type="integer" required="true" min="1" groupName="general" unit="min">
 				<label>Refresh Time</label>
@@ -171,7 +172,8 @@
 					<option value="WEEK">week</option>
 				</options>
 				<default>HOUR</default>
-				<label>Date or Time Unit for Start and End</label>
+				<label>Date/Time Unit</label>
+				<description>Date or Time Unit for Start and End</description>
 			</parameter>
 			<parameter name="datetimeStart" type="integer" groupName="datetime_based">
 				<label>Start</label>
