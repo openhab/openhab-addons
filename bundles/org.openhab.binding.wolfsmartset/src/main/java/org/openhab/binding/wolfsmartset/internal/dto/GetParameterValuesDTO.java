@@ -53,8 +53,8 @@ public class GetParameterValuesDTO {
         this.values = values;
     }
 
-    public Boolean getIsNewJobCreated() {
-        return isNewJobCreated;
+    public boolean getIsNewJobCreated() {
+        return isNewJobCreated != null ? isNewJobCreated : false;
     }
 
     public void setIsNewJobCreated(Boolean isNewJobCreated) {
