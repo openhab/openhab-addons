@@ -227,14 +227,18 @@ public class AccountHandler extends BaseBridgeHandler {
      */
     void refreshState(boolean scheduled) {
         synchronized (refreshStateMonitor) {
-            if (!scheduled && refreshStateJob != null) {
-                refreshStateJob.cancel(true);
+            try {
+                if (!scheduled && refreshStateJob != null) {
+                    refreshStateJob.cancel(true);
+                }
+                if (ensureBlinkAccount()) {
+                    loadDevices();
+                    loadEvents();
+                }
+            } finally {
+                refreshStateJob = scheduler.schedule(() -> refreshState(true), config.refreshInterval,
+                        TimeUnit.SECONDS);
             }
-            if (ensureBlinkAccount()) {
-                loadDevices();
-                loadEvents();
-            }
-            refreshStateJob = scheduler.schedule(() -> refreshState(true), config.refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -276,7 +280,7 @@ public class AccountHandler extends BaseBridgeHandler {
             }
             eventSince = nextEventSince;
         } catch (IOException e) {
-            logger.error("Error retrieving events from Blink API", e);
+            setOffline(e);
         }
     }
 
