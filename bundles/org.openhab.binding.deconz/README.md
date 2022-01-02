@@ -239,8 +239,8 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
 Switch                  Livingroom_Presence     "Presence Livingroom [%s]"          <motion>        { channel="deconz:presencesensor:homeserver:livingroom-presence:presence" }
 Number:Temperature      Livingroom_Temperature  "Temperature Livingroom [%.1f °C]"  <temperature>   { channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature" }
 Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]"     <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
-String                  LIVING_ROOM_VOC_LABEL    "Air quality Livingroom [%s]"      <none>          { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
-Number                  LIVING_ROOM_VOC          "Air quality [%d ppb]"             <none>          {           channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
+String                  Livingroom_voc_label    "Air quality Livingroom [%s]"       <none>          { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
+Number                  Livingroom_voc          "Air quality [%d]"                  <none>          {           channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
 Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
