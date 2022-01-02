@@ -221,7 +221,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     presencesensor      livingroom-presence     "Livingroom Presence"       [ id="1" ]
     temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
     humiditysensor      livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
-    airqualitysensor    livingroom-voc          "Livingroom Voc"            [ id="4" ]
+    airqualitysensor    livingroom-voc          "Livingroom Voc"            [ id="9" ]
     pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
