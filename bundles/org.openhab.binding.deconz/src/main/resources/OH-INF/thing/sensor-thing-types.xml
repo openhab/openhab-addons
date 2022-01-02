@@ -497,7 +497,7 @@
 			<bridge-type-ref id="deconz"/>
 		</supported-bridge-type-refs>
 		<label>Air quality Sensor</label>
-		<description>A air quality sensor</description>
+		<description>An air quality sensor</description>
 		<channels>
 			<channel typeId="airquality" id="airquality"/>
 			<channel typeId="airqualityppb" id="airqualityppb"/>
