@@ -26,14 +26,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.grohe.ondus.api.OndusService;
-import org.grohe.ondus.api.model.BaseApplianceCommand;
-import org.grohe.ondus.api.model.BaseApplianceData;
-import org.grohe.ondus.api.model.guard.Appliance;
-import org.grohe.ondus.api.model.guard.ApplianceCommand;
-import org.grohe.ondus.api.model.guard.ApplianceData;
-import org.grohe.ondus.api.model.guard.ApplianceData.Data;
-import org.grohe.ondus.api.model.guard.ApplianceData.Measurement;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -50,6 +42,15 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.github.floriansw.ondus.api.OndusService;
+import io.github.floriansw.ondus.api.model.BaseApplianceCommand;
+import io.github.floriansw.ondus.api.model.BaseApplianceData;
+import io.github.floriansw.ondus.api.model.guard.Appliance;
+import io.github.floriansw.ondus.api.model.guard.ApplianceCommand;
+import io.github.floriansw.ondus.api.model.guard.ApplianceData;
+import io.github.floriansw.ondus.api.model.guard.ApplianceData.Data;
+import io.github.floriansw.ondus.api.model.guard.ApplianceData.Measurement;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution

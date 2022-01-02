@@ -18,10 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.grohe.ondus.api.OndusService;
-import org.grohe.ondus.api.model.BaseAppliance;
-import org.grohe.ondus.api.model.Location;
-import org.grohe.ondus.api.model.Room;
 import org.openhab.binding.groheondus.internal.GroheOndusApplianceConfiguration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -33,6 +29,11 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.github.floriansw.ondus.api.OndusService;
+import io.github.floriansw.ondus.api.model.BaseAppliance;
+import io.github.floriansw.ondus.api.model.Location;
+import io.github.floriansw.ondus.api.model.Room;
 
 /**
  * @author Florian Schmidt - Initial contribution

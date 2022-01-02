@@ -25,12 +25,6 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.grohe.ondus.api.OndusService;
-import org.grohe.ondus.api.model.ApplianceStatus;
-import org.grohe.ondus.api.model.BaseApplianceData;
-import org.grohe.ondus.api.model.sense.Appliance;
-import org.grohe.ondus.api.model.sense.ApplianceData;
-import org.grohe.ondus.api.model.sense.ApplianceData.Measurement;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -45,6 +39,13 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.github.floriansw.ondus.api.OndusService;
+import io.github.floriansw.ondus.api.model.ApplianceStatus;
+import io.github.floriansw.ondus.api.model.BaseApplianceData;
+import io.github.floriansw.ondus.api.model.sense.Appliance;
+import io.github.floriansw.ondus.api.model.sense.ApplianceData;
+import io.github.floriansw.ondus.api.model.sense.ApplianceData.Measurement;
 
 /**
  * @author Florian Schmidt - Initial contribution

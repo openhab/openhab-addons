@@ -23,7 +23,6 @@ import javax.security.auth.login.LoginException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.grohe.ondus.api.OndusService;
 import org.openhab.binding.groheondus.internal.AccountServlet;
 import org.openhab.binding.groheondus.internal.GroheOndusAccountConfiguration;
 import org.openhab.core.storage.Storage;
@@ -36,6 +35,8 @@ import org.openhab.core.types.Command;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.github.floriansw.ondus.api.OndusService;
 
 /**
  * @author Florian Schmidt and Arne Wohlert - Initial contribution
