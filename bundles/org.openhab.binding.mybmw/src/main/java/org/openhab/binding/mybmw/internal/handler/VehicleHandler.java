@@ -100,12 +100,22 @@ public class VehicleHandler extends VehicleChannelHandler {
                 remote.ifPresent(remot -> {
                     switch (serviceCommand) {
                         case REMOTE_SERVICE_LIGHT_FLASH:
-                        case REMOTE_SERVICE_AIR_CONDITIONING:
                         case REMOTE_SERVICE_DOOR_LOCK:
                         case REMOTE_SERVICE_DOOR_UNLOCK:
                         case REMOTE_SERVICE_HORN:
                         case REMOTE_SERVICE_VEHICLE_FINDER:
-                        case REMOTE_SERVICE_CHARGE_NOW:
+                            RemoteServiceUtils.getRemoteService(serviceCommand)
+                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
+                                        logger.debug("Remote service execution {} unknown", serviceCommand);
+                                    });
+                            break;
+                        case REMOTE_SERVICE_AIR_CONDITIONING_START:
+                            RemoteServiceUtils.getRemoteService(serviceCommand)
+                                    .ifPresentOrElse(service -> remot.execute(service), () -> {
+                                        logger.debug("Remote service execution {} unknown", serviceCommand);
+                                    });
+                            break;
+                        case REMOTE_SERVICE_AIR_CONDITIONING_STOP:
                             RemoteServiceUtils.getRemoteService(serviceCommand)
                                     .ifPresentOrElse(service -> remot.execute(service), () -> {
                                         logger.debug("Remote service execution {} unknown", serviceCommand);

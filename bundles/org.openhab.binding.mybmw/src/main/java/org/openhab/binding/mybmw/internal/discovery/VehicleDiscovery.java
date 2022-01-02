@@ -130,10 +130,10 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         // }
                         if (vehicle.capabilities.climateNow.isEnabled) {
                             remoteServicesEnabled.append(
-                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW_START.getLabel() + Constants.SPACE);
                         } else {
                             remoteServicesDisabled.append(
-                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW_START.getLabel() + Constants.SPACE);
                         }
                         properties.put("remoteServicesEnabled", remoteServicesEnabled.toString().trim());
                         properties.put("remoteServicesDisabled", remoteServicesDisabled.toString().trim());

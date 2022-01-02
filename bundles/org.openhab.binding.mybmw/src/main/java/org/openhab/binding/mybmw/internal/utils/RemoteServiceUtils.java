@@ -33,7 +33,7 @@ import org.openhab.core.types.StateOption;
 public class RemoteServiceUtils {
 
     private static final Map<String, RemoteService> COMMAND_SERVICES = Stream.of(RemoteService.values())
-            .collect(Collectors.toUnmodifiableMap(RemoteService::getCommand, service -> service));
+            .collect(Collectors.toUnmodifiableMap(RemoteService::getRemoteCommand, service -> service));
 
     // [tofdo] Not working yet
     private static final Set<RemoteService> ELECTRIC_SERVICES = Collections.<RemoteService> emptySet();// =
@@ -46,7 +46,7 @@ public class RemoteServiceUtils {
     public static List<StateOption> getOptions(final boolean isElectric) {
         return Stream.of(RemoteService.values())
                 .filter(service -> isElectric ? true : !ELECTRIC_SERVICES.contains(service))
-                .map(service -> new StateOption(service.getCommand(), service.getLabel()))
+                .map(service -> new StateOption(service.getRemoteCommand(), service.getLabel()))
                 .collect(Collectors.toUnmodifiableList());
     }
 }

@@ -57,6 +57,8 @@ public class Constants {
     public static final String MI_JSON = "mi";
     public static final String UNIT_PRECENT_JSON = "%";
     public static final String UNIT_LITER_JSON = "l";
+    public static final String ACTION_START_JSON = "{\"action\" : \"START\"}";
+    public static final String ACTION_STOP_JSON = "{\"action\" : \"STOP\"}";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
 
     // Services to query

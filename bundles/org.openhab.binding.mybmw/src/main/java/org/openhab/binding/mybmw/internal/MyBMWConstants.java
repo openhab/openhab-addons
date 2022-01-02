@@ -178,15 +178,15 @@ public class MyBMWConstants {
     public static final String IMAGE_VIEWPORT = "view";
 
     // Remote Services
-    public static final String REMOTE_SERVICE_LIGHT_FLASH = "light";
-    public static final String REMOTE_SERVICE_VEHICLE_FINDER = "finder";
-    public static final String REMOTE_SERVICE_DOOR_LOCK = "lock";
-    public static final String REMOTE_SERVICE_DOOR_UNLOCK = "unlock";
+    public static final String REMOTE_SERVICE_LIGHT_FLASH = "light-flash";
+    public static final String REMOTE_SERVICE_VEHICLE_FINDER = "vehicle-finder";
+    public static final String REMOTE_SERVICE_DOOR_LOCK = "door-lock";
+    public static final String REMOTE_SERVICE_DOOR_UNLOCK = "door-unlock";
     public static final String REMOTE_SERVICE_HORN = "horn";
-    public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
-    public static final String REMOTE_SERVICE_CHARGE_NOW = "charge-now";
-    public static final String REMOTE_SERVICE_CHARGING_CONTROL = "charge-control";
-    public static final String REMOTE_SERVICE_SEND_POI = "send-poi";
+    public static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now?action=START";
+    public static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now?action=STOP";
+    public static final String REMOTE_SERVICE_CHARGING_CONTROL = "charge-control"; // [todo] check correctness
+
     public static final String REMOTE_SERVICE_COMMAND = "command";
     public static final String REMOTE_STATE = "state";
 

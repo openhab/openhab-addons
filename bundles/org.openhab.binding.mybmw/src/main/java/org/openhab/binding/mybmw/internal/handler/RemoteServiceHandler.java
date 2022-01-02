@@ -72,28 +72,20 @@ public class RemoteServiceHandler implements StringResponseCallback {
     }
 
     public enum RemoteService {
-        LIGHT_FLASH(REMOTE_SERVICE_LIGHT_FLASH, "Flash Lights", "light-flash"),
-        VEHICLE_FINDER(REMOTE_SERVICE_VEHICLE_FINDER, "Vehicle Finder", "vehicle-finder"),
-        DOOR_LOCK(REMOTE_SERVICE_DOOR_LOCK, "Door Lock", "door-lock"),
-        DOOR_UNLOCK(REMOTE_SERVICE_DOOR_UNLOCK, "Door Unlock", "door-unlock"),
-        HORN_BLOW(REMOTE_SERVICE_HORN, "Horn Blow", "horn-blow"),
-        CLIMATE_NOW(REMOTE_SERVICE_AIR_CONDITIONING, "Climate Control", "air-conditioning"),
-        CHARGE_NOW(REMOTE_SERVICE_CHARGE_NOW, "Start Charging", "charge-now");
-        // CHARGING_CONTROL(REMOTE_SERVICE_CHARGING_CONTROL, "Send Charging Profile", "charging-control"),
-        // SEND_POI(REMOTE_SERVICE_SEND_POI, "Send Point of Interest", "send-poi"); // [variables needs to be checked]
+        LIGHT_FLASH("Flash Lights", REMOTE_SERVICE_LIGHT_FLASH),
+        VEHICLE_FINDER("Vehicle Finder", REMOTE_SERVICE_VEHICLE_FINDER),
+        DOOR_LOCK("Door Lock", REMOTE_SERVICE_DOOR_LOCK),
+        DOOR_UNLOCK("Door Unlock", REMOTE_SERVICE_DOOR_UNLOCK),
+        HORN_BLOW("Horn Blow", REMOTE_SERVICE_HORN),
+        CLIMATE_NOW_START("Start Climate", REMOTE_SERVICE_AIR_CONDITIONING_START),
+        CLIMATE_NOW_STOP("Stop Climate", REMOTE_SERVICE_AIR_CONDITIONING_STOP);
 
-        private final String command;
         private final String label;
         private final String remoteCommand;
 
-        RemoteService(final String command, final String label, final String remoteCommand) {
-            this.command = command;
+        RemoteService(final String label, final String remoteCommand) {
             this.label = label;
             this.remoteCommand = remoteCommand;
-        }
-
-        public String getCommand() {
-            return command;
         }
 
         public String getLabel() {
@@ -114,6 +106,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
     }
 
     boolean execute(RemoteService service, String... data) {
+        logger.info("Execute {} with parameters {}", service.getRemoteCommand(), data);
         synchronized (this) {
             if (serviceExecuting.isPresent()) {
                 logger.debug("Execution rejected - {} still pending", serviceExecuting.get());
@@ -125,8 +118,8 @@ public class RemoteServiceHandler implements StringResponseCallback {
         final MultiMap<String> dataMap = new MultiMap<String>();
         if (data.length > 0) {
             dataMap.add(DATA, data[0]);
-            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), CONTENT_TYPE_JSON_ENCODED,
-                    "{CHARGING_PROFILE:" + data[0] + "}", handler.getConfiguration().get().vehicleBrand, this);
+            proxy.post(serviceExecutionAPI + service.getRemoteCommand(), CONTENT_TYPE_JSON_ENCODED, data[0],
+                    handler.getConfiguration().get().vehicleBrand, this);
         } else {
             proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null,
                     handler.getConfiguration().get().vehicleBrand, this);
@@ -158,6 +151,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     @Override
     public void onResponse(@Nullable String result) {
+        logger.info("Remote execution result {}", result);
         if (result != null) {
             try {
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
