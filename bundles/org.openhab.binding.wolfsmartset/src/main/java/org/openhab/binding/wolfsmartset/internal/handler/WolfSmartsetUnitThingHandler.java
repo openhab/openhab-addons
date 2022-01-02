@@ -185,7 +185,7 @@ public class WolfSmartsetUnitThingHandler extends BaseThingHandler {
     public void updateValues(@Nullable GetParameterValuesDTO values) {
         var thingId = thing.getUID();
         if (values != null && values.getValues() != null && values.getValues().size() > 0) {
-            if (Boolean.TRUE.equals(values.getIsNewJobCreated())) {
+            if (Boolean.FALSE.equals(values.getIsNewJobCreated())) {
                 lastRefreshTime = Instant.now();
             }
 
