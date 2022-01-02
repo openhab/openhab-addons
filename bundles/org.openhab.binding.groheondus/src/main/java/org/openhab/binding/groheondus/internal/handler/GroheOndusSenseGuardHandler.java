@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -95,12 +96,28 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             case CHANNEL_WATERCONSUMPTION:
                 newState = sumWaterCosumption(dataPoint);
                 break;
+            case CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT:
+                newState = sumWaterCosumptionSinceMidnight(dataPoint);
+                break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
         }
         if (newState != null) {
             updateState(channelUID, newState);
         }
+    }
+
+    private State sumWaterCosumptionSinceMidnight(Data dataPoint) {
+        Instant start = Instant.now().truncatedTo(ChronoUnit.DAYS);
+        Instant end = start.plus(1, ChronoUnit.DAYS);
+
+        Date earliestWithdrawal = new Date(start.toEpochMilli());
+        Date latestWithdrawal = new Date(end.toEpochMilli());
+
+        Double waterConsumption = dataPoint.getWithdrawals().stream()
+                .filter(e -> e.starttime.after(earliestWithdrawal) && e.starttime.before(latestWithdrawal))
+                .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
+        return new DecimalType(waterConsumption);
     }
 
     private DecimalType sumWaterCosumption(Data dataPoint) {

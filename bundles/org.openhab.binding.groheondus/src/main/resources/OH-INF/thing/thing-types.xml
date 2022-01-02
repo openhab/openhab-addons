@@ -35,6 +35,7 @@
 			<channel id="pressure" typeId="pressure"/>
 			<channel id="temperature_guard" typeId="temperature_guard"/>
 			<channel id="waterconsumption" typeId="waterconsumption"/>
+			<channel id="waterconsumption_since_midnight" typeId="waterconsumption_since_midnight"/>
 			<channel id="valve_open" typeId="valve_open"/>
 		</channels>
 
@@ -143,5 +144,11 @@
 				<default>1</default>
 			</parameter>
 		</config-description>
+	</channel-type>
+	<channel-type id="waterconsumption_since_midnight">
+		<item-type>Number</item-type>
+		<label>Water Consumption Since Midnight</label>
+		<description>The amount of water consumed since midnight</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

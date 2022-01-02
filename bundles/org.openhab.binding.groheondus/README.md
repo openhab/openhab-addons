@@ -54,13 +54,14 @@ and the `locationId`. Once the account bridge is configured, the appliances in y
 
 ##### senseguard
 
-| Channel                  | Type                     | Description                                           |
-|--------------------------|--------------------------|-------------------------------------------------------|
-| name                     | String                   | The name of the appliance                             |
-| pressure                 | Number:Pressure          | The pressure of your water supply                     |
-| temperature_guard        | Number:Temperature       | The ambient temperature of the appliance              |
-| valve_open               | Switch                   | Valve switch                                          |
-| waterconsumption         | Number                   | The amount of water used in a specific timeframe      |
+| Channel                         | Type                     | Description                                      |
+|---------------------------------|--------------------------|--------------------------------------------------|
+| name                            | String                   | The name of the appliance                        |
+| pressure                        | Number:Pressure          | The pressure of your water supply                |
+| temperature_guard               | Number:Temperature       | The ambient temperature of the appliance         |
+| valve_open                      | Switch                   | Valve switch                                     |
+| waterconsumption                | Number                   | The amount of water used in a specific timeframe |
+| waterconsumption_since_midnight | Number                   | The amount of water used since midnight          |
 
 ##### sense
 
