@@ -154,6 +154,13 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
         }
     }
 
+    @Override
+    protected void checkRequiredInfo() throws MyStromException {
+        if (mac.isBlank()) {
+            throw new MyStromException("Cannot retrieve MAC info from myStrom device " + getThing().getUID());
+        }
+    }
+
     private @Nullable Map<String, MyStromDeviceSpecificInfo> getReport() {
         try {
             String returnContent = sendHttpRequest(HttpMethod.GET, "/api/v1/device", null);

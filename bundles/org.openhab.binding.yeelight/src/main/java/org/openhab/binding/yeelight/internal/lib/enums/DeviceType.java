@@ -22,6 +22,7 @@ public enum DeviceType {
     mono4,
     ct_bulb,
     color,
+    color4,
     ceiling,
     ceiling1,
     ceiling3,

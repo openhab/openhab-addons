@@ -211,6 +211,87 @@
 			<channel id="temperatureRoomTarget" typeId="temperatureRoomTarget"/>
 			<channel id="temperatureHotWaterTop" typeId="temperatureHotWaterTop"/>
 			<channel id="frequencyCompressor" typeId="frequencyCompressor"/>
+			<channel id="channel232" typeId="unknown">
+				<label>Channel 232</label>
+			</channel>
+			<channel id="channel233" typeId="unknown">
+				<label>Channel 233</label>
+			</channel>
+			<channel id="channel234" typeId="unknown">
+				<label>Channel 234</label>
+			</channel>
+			<channel id="channel235" typeId="unknown">
+				<label>Channel 235</label>
+			</channel>
+			<channel id="frequencyCompressorTarget" typeId="frequencyCompressorTarget"/>
+			<channel id="channel237" typeId="unknown">
+				<label>Channel 237</label>
+			</channel>
+			<channel id="channel238" typeId="unknown">
+				<label>Channel 238</label>
+			</channel>
+			<channel id="channel239" typeId="unknown">
+				<label>Channel 239</label>
+			</channel>
+			<channel id="channel240" typeId="unknown">
+				<label>Channel 240</label>
+			</channel>
+			<channel id="channel241" typeId="unknown">
+				<label>Channel 241</label>
+			</channel>
+			<channel id="channel242" typeId="unknown">
+				<label>Channel 242</label>
+			</channel>
+			<channel id="channel243" typeId="unknown">
+				<label>Channel 243</label>
+			</channel>
+			<channel id="channel244" typeId="unknown">
+				<label>Channel 244</label>
+			</channel>
+			<channel id="channel245" typeId="unknown">
+				<label>Channel 245</label>
+			</channel>
+			<channel id="channel246" typeId="unknown">
+				<label>Channel 246</label>
+			</channel>
+			<channel id="channel247" typeId="unknown">
+				<label>Channel 247</label>
+			</channel>
+			<channel id="channel248" typeId="unknown">
+				<label>Channel 248</label>
+			</channel>
+			<channel id="channel249" typeId="unknown">
+				<label>Channel 249</label>
+			</channel>
+			<channel id="channel250" typeId="unknown">
+				<label>Channel 250</label>
+			</channel>
+			<channel id="channel251" typeId="unknown">
+				<label>Channel 251</label>
+			</channel>
+			<channel id="channel252" typeId="unknown">
+				<label>Channel 252</label>
+			</channel>
+			<channel id="channel253" typeId="unknown">
+				<label>Channel 253</label>
+			</channel>
+			<channel id="flowRateHeatSource2" typeId="flowRateHeatSource2"/>
+			<channel id="channel255" typeId="unknown">
+				<label>Channel 255</label>
+			</channel>
+			<channel id="channel256" typeId="unknown">
+				<label>Channel 256</label>
+			</channel>
+			<channel id="heatingPowerActualValue" typeId="heatingPowerActualValue"/>
+			<channel id="channel258" typeId="unknown">
+				<label>Channel 258</label>
+			</channel>
+			<channel id="channel259" typeId="unknown">
+				<label>Channel 259</label>
+			</channel>
+			<channel id="channel260" typeId="unknown">
+				<label>Channel 260</label>
+			</channel>
 
 			<channel id="temperatureHeatingParallelShift" typeId="temperatureHeatingParallelShift"/>
 			<channel id="heatingMode" typeId="heatingMode"/>

@@ -104,12 +104,25 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
-            requestRefreshShadePosition();
+        String channelId = channelUID.getId();
+
+        if (RefreshType.REFRESH == command) {
+            switch (channelId) {
+                case CHANNEL_SHADE_POSITION:
+                case CHANNEL_SHADE_SECONDARY_POSITION:
+                case CHANNEL_SHADE_VANE:
+                    requestRefreshShadePosition();
+                    break;
+                case CHANNEL_SHADE_LOW_BATTERY:
+                case CHANNEL_SHADE_BATTERY_LEVEL:
+                case CHANNEL_SHADE_BATTERY_VOLTAGE:
+                    requestRefreshShadeBatteryLevel();
+                    break;
+            }
             return;
         }
 
-        switch (channelUID.getId()) {
+        switch (channelId) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
                     moveShade(PRIMARY_ACTUATOR, ZERO_IS_CLOSED, ((PercentType) command).intValue());
