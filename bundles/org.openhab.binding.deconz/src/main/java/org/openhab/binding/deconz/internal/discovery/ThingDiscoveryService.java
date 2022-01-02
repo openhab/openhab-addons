@@ -282,7 +282,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         } else if (sensor.type.contains("ZHAThermostat")) {
             thingTypeUID = THING_TYPE_THERMOSTAT; // ZHAThermostat
         } else if (sensor.type.contains("ZHAAirQuality")) {
-            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR; // ZHAAirQuality
+            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
         } else {
             logger.debug("Unknown type {}", sensor.type);
             return;
