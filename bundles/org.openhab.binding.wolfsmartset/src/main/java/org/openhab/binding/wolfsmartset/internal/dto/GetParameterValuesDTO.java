@@ -16,8 +16,6 @@ import java.util.List;
 
 import javax.annotation.Generated;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -55,7 +53,7 @@ public class GetParameterValuesDTO {
         this.values = values;
     }
 
-    public @NonNullByDefault Boolean getIsNewJobCreated() {
+    public boolean getIsNewJobCreated() {
         return isNewJobCreated != null ? isNewJobCreated : false;
     }
 
