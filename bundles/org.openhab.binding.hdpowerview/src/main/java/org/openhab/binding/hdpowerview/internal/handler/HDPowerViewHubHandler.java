@@ -72,10 +72,12 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * @author Jacob Laursen - Add support for scene groups and automations
+ * @author Jacob Laursen - Added support for scene groups and automations
  */
 @NonNullByDefault
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
+
+    private static final long INITIAL_SOFT_POLL_DELAY_MS = 5_000;
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
     private final HttpClient httpClient;
@@ -113,7 +115,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
+        if (RefreshType.REFRESH == command) {
             requestRefreshShadePositions();
             return;
         }
@@ -129,12 +131,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 throw new ProcessingException("Web targets not initialized");
             }
             int id = Integer.parseInt(channelUID.getIdWithoutGroup());
-            if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
+            if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateScene(id);
-            } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
+                // Reschedule soft poll for immediate shade position update.
+                scheduleSoftPoll(0);
+            } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateSceneCollection(id);
+                // Reschedule soft poll for immediate shade position update.
+                scheduleSoftPoll(0);
             } else if (automationChannelTypeUID.equals(channel.getChannelTypeUID())) {
-                webTargets.enableScheduledEvent(id, OnOffType.ON.equals(command));
+                webTargets.enableScheduledEvent(id, OnOffType.ON == command);
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
@@ -169,6 +175,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         sceneCache.clear();
         sceneCollectionCache.clear();
         scheduledEventCache.clear();
+        deprecatedChannelsCreated = false;
     }
 
     public @Nullable HDPowerViewWebTargets getWebTargets() {
@@ -188,14 +195,22 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void schedulePoll() {
+        scheduleSoftPoll(INITIAL_SOFT_POLL_DELAY_MS);
+        scheduleHardPoll();
+    }
+
+    private void scheduleSoftPoll(long initialDelay) {
         ScheduledFuture<?> future = this.pollFuture;
         if (future != null) {
             future.cancel(false);
         }
-        logger.debug("Scheduling poll for 5000ms out, then every {}ms", refreshInterval);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 5000, refreshInterval, TimeUnit.MILLISECONDS);
+        logger.debug("Scheduling poll for {} ms out, then every {} ms", initialDelay, refreshInterval);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, initialDelay, refreshInterval,
+                TimeUnit.MILLISECONDS);
+    }
 
-        future = this.hardRefreshPositionFuture;
+    private void scheduleHardPoll() {
+        ScheduledFuture<?> future = this.hardRefreshPositionFuture;
         if (future != null) {
             future.cancel(false);
         }

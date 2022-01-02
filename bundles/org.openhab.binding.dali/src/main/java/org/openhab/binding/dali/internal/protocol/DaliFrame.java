@@ -67,7 +67,7 @@ public class DaliFrame {
         byte[] result = new byte[bytesList.size()];
         int i = 0;
         for (byte b : bytesList) {
-            result[bytesList.size() - i++] = b;
+            result[bytesList.size() - ++i] = b;
         }
         return result;
     }
