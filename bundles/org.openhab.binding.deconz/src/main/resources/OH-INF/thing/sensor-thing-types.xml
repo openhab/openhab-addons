@@ -512,16 +512,14 @@
 	<channel-type id="airquality">
 		<item-type>String</item-type>
 		<label>Air quality level</label>
-		<description>Current air quality level</description>
-		<category>Airquality</category>
+		<description>Current air quality level based on volatile organic compounds (VOCs) measurement. Example: good or poor, ...</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 
 	<channel-type id="airqualityppb">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Air quality in ppb</label>
-		<description>Current air quality ppb (parts per billion)</description>
-		<category>Airquality</category>
+		<description>Current air quality based on measurements of volatile organic compounds (VOCs). The measured value is specified in ppb (parts per billion).</description>
 		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 
