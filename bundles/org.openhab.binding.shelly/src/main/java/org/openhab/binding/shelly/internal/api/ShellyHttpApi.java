@@ -199,8 +199,8 @@ public class ShellyHttpApi {
             status.tmp.tC = status.tmp.units.equals(SHELLY_TEMP_CELSIUS) ? status.tmp.value
                     : ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(getDouble(status.tmp.value))
                             .doubleValue();
-            double f = (double) SIUnits.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT)
-                    .convert(getDouble(status.tmp.value));
+            double f = SIUnits.CELSIUS.getConverterTo(ImperialUnits.FAHRENHEIT).convert(getDouble(status.tmp.value))
+                    .doubleValue();
             status.tmp.tF = status.tmp.units.equals(SHELLY_TEMP_FAHRENHEIT) ? status.tmp.value : f;
         }
         if ((status.charger == null) && (profile.settings.externalPower != null)) {
