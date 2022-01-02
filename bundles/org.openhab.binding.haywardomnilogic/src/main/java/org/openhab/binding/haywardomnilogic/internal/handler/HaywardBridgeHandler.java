@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.haywardomnilogic.internal.handler;
 
-import java.io.IOException;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -82,7 +79,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
     private int commFailureCount;
     public HaywardConfig config = getConfig().as(HaywardConfig.class);
     public HaywardAccount account = getConfig().as(HaywardAccount.class);
-    public boolean debugXML = false;
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
@@ -280,16 +276,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
 
         String xmlResponse = httpXmlResponse(urlParameters);
 
-        // Debug: Inject xml file for testing
-        if (debugXML) {
-            String path = "C:/Users/Controls/Desktop/Hayward User Data/stagF15 getMSP.txt";
-            try {
-                xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
-            } catch (IOException e) {
-                logger.debug("Hayward getMSPConfig XML File Open: IO Exception: {}", e.getMessage());
-            }
-        }
-
         if (xmlResponse.isEmpty()) {
             logger.debug("Hayward Connection thing: requestConfig XML response was null");
             return "Fail";
@@ -327,16 +313,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler {
                 + "</Parameter></Parameters></Request>";
 
         String xmlResponse = httpXmlResponse(urlParameters);
-
-        // Debug: Inject xml file for testing
-        if (debugXML) {
-            String path = "C:/Users/Controls/Desktop/Hayward User Data/stagF15 getTelemetry2.txt";
-            try {
-                xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
-            } catch (IOException e) {
-                logger.debug("Hayward getTelemetry XML File Open: IO Exception: {}", e.getMessage());
-            }
-        }
 
         if (xmlResponse.isEmpty()) {
             logger.debug("Hayward Connection thing: getTelemetry XML response was null");
