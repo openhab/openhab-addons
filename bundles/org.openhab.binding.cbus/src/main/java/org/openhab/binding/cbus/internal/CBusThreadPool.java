@@ -48,7 +48,7 @@ public class CBusThreadPool extends CGateThreadPool {
         private final ExecutorService threadPool;
 
         public CBusThreadPoolExecutor(@Nullable String poolName) {
-            threadPool = (ExecutorService) ThreadPoolManager.getPool("binding.cbus-" + poolName);
+            threadPool = ThreadPoolManager.getPool("binding.cbus-" + poolName);
         }
 
         @Override
