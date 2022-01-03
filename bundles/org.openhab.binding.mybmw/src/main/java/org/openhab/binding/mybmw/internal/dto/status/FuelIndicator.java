@@ -24,21 +24,18 @@ public class FuelIndicator {
     public String levelUnits;// ": "%",
     public String levelValue;// ": "74",
 
-    /**
-     * not used
-     * "secondaryBarValue": 0,
-     * "infoIconId": 59694,
-     * "rangeIconId": 59683,
-     * "levelIconId": 59694,
-     * "showsBar": true,
-     * "showBarGoal": false,
-     * "barType": null,
-     * "infoLabel": "State of Charge",
-     * "isInaccurate": false,
-     * "isCircleIcon": false,
-     * "iconOpacity": "high",
-     * "chargingType": null,
-     * "chargingStatusType": "DEFAULT",
-     * "chargingStatusIndicatorType": "DEFAULT"
-     **/
+    public int secondaryBarValue;// ": 0,
+    public int infoIconId;// ": 59694,
+    public int rangeIconId;// ": 59683,
+    public int levelIconId;// ": 59694,
+    public boolean showsBar;// ": true,
+    public boolean showBarGoal;// ": false,
+    public String barType;// ": null,
+    public String infoLabel;// ": "State of Charge",
+    public boolean isInaccurate;// ": false,
+    public boolean isCircleIcon;// ": false,
+    public String iconOpacity;// ": "high",
+    public String chargingType;// ": null,
+    public String chargingStatusType;// ": "DEFAULT",
+    public String chargingStatusIndicatorType;// ": "DEFAULT"
 }
