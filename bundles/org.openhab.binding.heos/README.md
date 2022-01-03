@@ -81,7 +81,7 @@ PID behind the heos:player:--- should be changed as required.
 It is recommended to use the Player PID.
 If the PID isn't known it can be discovered by establishing a Telnet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
 Another way is to use the UI to discover the Player via the bridge and get the PID.
-For further details refer to the [HEOS CLI](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf) specification.
+For further details refer to the [HEOS CLI](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf) specification.
 
 ### Group Configuration
 
@@ -213,7 +213,7 @@ You can send commands to these channels from rules by sending the name of the se
 | tvaudio       |
 | phono         |
 
-A current list can be found within the HEOS CLI protocol which can be found [here](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
+A current list can be found within the HEOS CLI protocol which can be found [here](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf).
 
 ### Channels of Thing type 'bridge'
 
@@ -222,7 +222,7 @@ A current list can be found within the HEOS CLI protocol which can be found [her
 | Reboot                | Switch        | Reboot the whole HEOS System. Can be used if you get in trouble with the system                                                                           |
 | BuildGroup            | Switch        | Is used to define a group. The player which shall be grouped has to be selected first. If Switch is then activated the group is built.                    |
 
-For a list of the commands please refer to the [HEOS CLI protocol](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification.pdf).
+For a list of the commands please refer to the [HEOS CLI protocol](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf).
 
 ## *Dynamic Channels*
 
