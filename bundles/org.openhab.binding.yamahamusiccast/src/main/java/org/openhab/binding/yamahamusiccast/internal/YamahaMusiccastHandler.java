@@ -141,12 +141,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                         // check on scheduler task for UDP events
                         ScheduledFuture<?> localGeneralHousekeepingTask = generalHousekeepingTask;
                         if (localGeneralHousekeepingTask == null) {
-                            logger.info("YXC - No scheduler task found!");
+                            logger.debug("YXC - No scheduler task found!");
                             generalHousekeepingTask = scheduler.scheduleWithFixedDelay(this::generalHousekeeping, 5,
                                     300, TimeUnit.SECONDS);
 
                         } else {
-                            logger.info("Scheduler task found!");
+                            logger.debug("Scheduler task found!");
                         }
 
                     } else if (command == OnOffType.OFF) {

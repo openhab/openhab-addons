@@ -60,7 +60,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="playerControls">
-		<label>player Controls</label>
+		<label>Player Controls</label>
 		<channels>
 			<channel id="player" typeId="player"/>
 			<channel id="artist" typeId="artist"/>
