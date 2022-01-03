@@ -14,7 +14,6 @@ package org.openhab.binding.nibeuplink.internal.connector;
 
 import static org.openhab.binding.nibeuplink.internal.NibeUplinkBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -200,8 +199,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
 
     /**
      * authenticates with the Nibe Uplink WEB interface
-     *
-     * @throws UnsupportedEncodingException
      */
     private synchronized void authenticate() {
         setAuthenticated(false);
