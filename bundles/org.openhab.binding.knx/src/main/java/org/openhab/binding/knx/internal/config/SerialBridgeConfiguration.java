@@ -28,7 +28,7 @@ public class SerialBridgeConfiguration extends BridgeConfiguration {
         return serialPort;
     }
 
-    public Boolean getUseCEMI() {
+    public boolean getUseCEMI() {
         return useCEMI;
     }
 }
