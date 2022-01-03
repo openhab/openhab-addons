@@ -36,7 +36,7 @@ public class RemoteServiceUtils {
             .collect(Collectors.toUnmodifiableMap(RemoteService::getId, service -> service));
 
     // [tofdo] Not working yet
-    private static final Set<RemoteService> ELECTRIC_SERVICES = Collections.<RemoteService>emptySet();// =
+    private static final Set<RemoteService> ELECTRIC_SERVICES = Collections.<RemoteService> emptySet();// =
     // EnumSet.of(RemoteService.CHARGE_NOW,RemoteService.CHARGING_CONTROL);
 
     public static Optional<RemoteService> getRemoteService(final String command) {

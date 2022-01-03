@@ -49,7 +49,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     private static final String EVENT_ID = "eventId";
     private static final String DATA = "data";
-    private static final int GIVEUP_COUNTER = 6; // after 6 retries the state update will give up
+    private static final int GIVEUP_COUNTER = 12; // after 12 retries the state update will give up
     private static final int STATE_UPDATE_SEC = HTTPConstants.HTTP_TIMEOUT_SEC + 1; // regular timeout + 1sec
 
     private final MyBMWProxy proxy;
@@ -69,6 +69,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
         DELIVERED,
         EXECUTED,
         ERROR,
+        TIMEOUT
     }
 
     public enum RemoteService {
@@ -138,16 +139,18 @@ public class RemoteServiceHandler implements StringResponseCallback {
             serviceExecuting.ifPresentOrElse(service -> {
                 if (counter >= GIVEUP_COUNTER) {
                     logger.warn("Giving up updating state for {} after {} times", service, GIVEUP_COUNTER);
+                    handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), ExecutionState.TIMEOUT.name());
                     reset();
                     // immediately refresh data
                     handler.getData();
+                } else {
+                    counter++;
+                    final MultiMap<String> dataMap = new MultiMap<String>();
+                    dataMap.add(EVENT_ID, executingEventId.get());
+                    final String encoded = UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
+                    proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null,
+                            handler.getConfiguration().get().vehicleBrand, this);
                 }
-                counter++;
-                final MultiMap<String> dataMap = new MultiMap<String>();
-                dataMap.add(EVENT_ID, executingEventId.get());
-                final String encoded = UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
-                proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null,
-                        handler.getConfiguration().get().vehicleBrand, this);
             }, () -> {
                 logger.warn("No Service executed to get state");
             });
@@ -162,33 +165,19 @@ public class RemoteServiceHandler implements StringResponseCallback {
             try {
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
                 if (esc != null) {
-                    if (esc.executionStatus != null) {
-                        // handling remote services updates
-                        String status = esc.executionStatus.status;
-                        if (status != null) {
-                            synchronized (this) {
-                                handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), status);
-                                if (ExecutionState.EXECUTED.name().equals(status)) {
-                                    // refresh loop ends - update of status handled in the normal refreshInterval.
-                                    // Earlier update doesn't show better results!
-                                    reset();
-                                    return;
-                                }
-                            }
-                        }
-                    } else if (esc.eventId != null) {
-                        // store event id for further MyBMW updates
+                    if (esc.eventId != null) {
+                        // service initiated - store event id for further MyBMW updates
                         executingEventId = Optional.of(esc.eventId);
                         handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
                                 ExecutionState.INITIATED.name());
                     } else if (esc.eventStatus != null) {
-                        // update status for MyBMW API
+                        // service status updated
                         synchronized (this) {
                             handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), esc.eventStatus);
-                            if (ExecutionState.EXECUTED.name().equals(esc.eventStatus)) {
+                            if (ExecutionState.EXECUTED.name().equals(esc.eventStatus)
+                                    || ExecutionState.ERROR.name().equals(esc.eventStatus)) {
                                 // refresh loop ends - update of status handled in the normal refreshInterval.
-                                // Earlier
-                                // update doesn't show better results!
+                                // Earlier update doesn't show better results!
                                 reset();
                                 return;
                             }

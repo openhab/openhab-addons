@@ -18,8 +18,8 @@ package org.openhab.binding.mybmw.internal.dto.remote;
  * @author Bernd Weymann - Initial contribution
  */
 public class ExecutionStatusContainer {
-    public ExecutionStatus executionStatus;
     public String eventId;
     public String creationTime;
     public String eventStatus;
+    public ExecutionError errorDetails;
 }
