@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 
 /**
- * The {@link Token} BMW ConnectedDrive Token storage
+ * The {@link Token} MyBMW Token storage
  *
  * @author Bernd Weymann - Initial contribution
  */

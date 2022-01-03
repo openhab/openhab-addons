@@ -25,7 +25,7 @@ import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link VehiclePropertiesTest} Test json responses from ConnectedDrive Portal
+ * The {@link VehiclePropertiesTest} tests stored fingerprint responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
  */

@@ -41,7 +41,7 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link StatusWrapper} Test json responses from ConnectedDrive Portal
+ * The {@link StatusWrapper} tests stored fingerprint responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
  */

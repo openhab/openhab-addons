@@ -97,9 +97,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
         }
     }
 
-    public RemoteServiceHandler(VehicleHandler vehicleHandler, MyBMWProxy connectedDriveProxy) {
+    public RemoteServiceHandler(VehicleHandler vehicleHandler, MyBMWProxy myBmwProxy) {
         handler = vehicleHandler;
-        proxy = connectedDriveProxy;
+        proxy = myBmwProxy;
         final VehicleConfiguration config = handler.getConfiguration().get();
         serviceExecutionAPI = proxy.remoteCommandUrl + config.vin + "/";
         serviceExecutionStateAPI = proxy.remoteStatusUrl;
@@ -157,15 +157,14 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
                 if (esc != null) {
                     if (esc.executionStatus != null) {
-                        // handling of BMW ConnectedDrive updates
+                        // handling remote services updates
                         String status = esc.executionStatus.status;
                         if (status != null) {
                             synchronized (this) {
                                 handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), status);
                                 if (ExecutionState.EXECUTED.name().equals(status)) {
                                     // refresh loop ends - update of status handled in the normal refreshInterval.
-                                    // Earlier
-                                    // update doesn't show better results!
+                                    // Earlier update doesn't show better results!
                                     reset();
                                     return;
                                 }
@@ -174,6 +173,8 @@ public class RemoteServiceHandler implements StringResponseCallback {
                     } else if (esc.eventId != null) {
                         // store event id for further MyBMW updates
                         executingEventId = Optional.of(esc.eventId);
+                        handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+                                ExecutionState.INITIATED.name());
                     } else if (esc.eventStatus != null) {
                         // update status for MyBMW API
                         synchronized (this) {

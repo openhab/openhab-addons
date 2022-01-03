@@ -369,6 +369,7 @@ public class MyBMWProxy {
             token.setType(ar.tokenType);
             token.setToken(ar.accessToken);
             token.setExpiration(ar.expiresIn);
+            logger.info("Token valid {}", token.isValid());
             return true;
         } catch (Exception e) {
             logger.warn("Authorization Exception: {}", e.getMessage());

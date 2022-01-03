@@ -182,7 +182,7 @@ public class MyBMWConstants {
     public static final String REMOTE_SERVICE_VEHICLE_FINDER = "vehicle-finder";
     public static final String REMOTE_SERVICE_DOOR_LOCK = "door-lock";
     public static final String REMOTE_SERVICE_DOOR_UNLOCK = "door-unlock";
-    public static final String REMOTE_SERVICE_HORN = "horn";
+    public static final String REMOTE_SERVICE_HORN = "horn-blow";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now?action=START";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now?action=STOP";
     public static final String REMOTE_SERVICE_CHARGING_CONTROL = "charge-control"; // [todo] check correctness

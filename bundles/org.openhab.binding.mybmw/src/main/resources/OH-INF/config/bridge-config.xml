@@ -7,11 +7,11 @@
 	<config-description uri="thing-type:mybmw:bridge">
 		<parameter name="userName" type="text" required="true">
 			<label>Username</label>
-			<description>BMW Connected Drive Username</description>
+			<description>MyBMW Username</description>
 		</parameter>
 		<parameter name="password" type="text" required="true">
 			<label>Password</label>
-			<description>BMW Connected Drive Password</description>
+			<description>MyBMW Password</description>
 			<context>password</context>
 		</parameter>
 		<parameter name="region" type="text" required="true">

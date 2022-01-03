@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="account">
-		<label>BMW ConnectedDrive Account</label>
-		<description>Access to BMW ConnectedDrive Portal for a specific user</description>
+		<label>MyBMW Account</label>
+		<description>Your BMW account data</description>
 		<config-description-ref uri="thing-type:mybmw:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>

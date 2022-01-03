@@ -31,7 +31,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
 
 /**
- * The {@link ChargeStatisticWrapper} Test json responses from ConnectedDrive Portal
+ * The {@link ChargeStatisticWrapper} tests stored fingerprint responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
  */

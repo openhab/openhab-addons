@@ -26,7 +26,7 @@ import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
 
 /**
- * The {@link VehicleStatusTest} Test json responses from ConnectedDrive Portal
+ * The {@link VehicleStatusTest} tests stored fingerprint responses from BMW API
  *
  * @author Bernd Weymann - Initial contribution
  */

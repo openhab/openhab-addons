@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleDiscovery} requests data from ConnectedDrive and is identifying the Vehicles after response
+ * The {@link VehicleDiscovery} requests data from BMW API and is identifying the Vehicles after response
  *
  * @author Bernd Weymann - Initial contribution
  */
