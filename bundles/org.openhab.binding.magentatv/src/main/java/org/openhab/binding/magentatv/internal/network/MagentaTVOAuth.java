@@ -15,7 +15,6 @@ package org.openhab.binding.magentatv.internal.network;
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
 import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.HttpCookie;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -291,11 +290,6 @@ public class MagentaTVOAuth {
     }
 
     private String urlEncode(String url) {
-        try {
-            return URLEncoder.encode(url, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("OAuth: Unable to URL encode string {}", url, e);
-            return "";
-        }
+        return URLEncoder.encode(url, StandardCharsets.UTF_8);
     }
 }

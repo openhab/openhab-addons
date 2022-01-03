@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.heos.internal.json;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -90,10 +89,6 @@ public class HeosJsonParser {
     }
 
     private static String decode(String encoded) {
-        try {
-            return URLDecoder.decode(encoded, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("Impossible: UTF-8 is a required encoding", e);
-        }
+        return URLDecoder.decode(encoded, StandardCharsets.UTF_8);
     }
 }
