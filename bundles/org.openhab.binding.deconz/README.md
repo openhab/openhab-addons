@@ -152,7 +152,7 @@ The sensor devices support some of the following channels:
 | battery_low     | Switch                   | R           | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                        |
 | carbonmonoxide  | Switch                   | R           | `ON` = carbon monoxide detected                                                           | carbonmonoxide                                    |
 | airquality      | String                   | R           | Current air quality level                                                                 | airqualitysensor                                  |
-| airqualityppb   | Integer                  | R           | Current air quality ppb (parts per billion)                                               | airqualitysensor                                  |
+| airqualityppb   | Number:Dimensionless     | R           | Current air quality ppb (parts per billion)                                               | airqualitysensor                                  |
 | color           | Color                    | R           | Color set by remote                                                                       | colorcontrol                                      |
 | windowopen      | Contact                  | R           | `windowopen` status is reported by some thermostats                                       | thermostat                                        |
 
@@ -240,7 +240,7 @@ Switch                  Livingroom_Presence     "Presence Livingroom [%s]"      
 Number:Temperature      Livingroom_Temperature  "Temperature Livingroom [%.1f °C]"  <temperature>   { channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature" }
 Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]"     <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
 String                  Livingroom_voc_label    "Air quality Livingroom [%s]"       <none>          { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
-Number                  Livingroom_voc          "Air quality [%d]"                  <none>          {           channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
+Number:Dimensionless    Livingroom_voc          "Air quality [%d ppb]"              <none>          {           channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
 Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }
