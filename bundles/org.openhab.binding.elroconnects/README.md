@@ -46,13 +46,10 @@ It will not be possible to receive alarms and control them from openHAB in this 
 
 ### K1 connector hub
 
-The K1 connector has one required configuration parameter, `connectorId`.
-It should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector.
-This `connectorId` can also be found in the ELRO Connects mobile application.
-                    
-There is one optional advanced parameter, `refreshInterval`.
-This parameter controls the connection refresh heartbeat interval.
-The default is 60s.
+| Parameter         | Description            |
+|--------------------|----------------------|
+| `connectorId` | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application. |
+| `refreshInterval` | This parameter controls the connection refresh heartbeat interval. The default is 60s. |
 
 The syntax for configuration in a `.things` file is:
 
@@ -62,9 +59,9 @@ Thing elroconnects:connector:<connectorId> [connectorId="ST_<MAC address of conn
 
 ### Devices connected to K1 connected hub
 
-All devices have only one configuration parameter, `deviceId`.
-This parameter is set by discovery and cannot easily be found manually.
-It should be a number.
+| Parameter         | Description            |
+|--------------------|----------------------|
+| `deviceId` | Required parameter, set by discovery and cannot easily be found manually. It should be a number. |
 
 The syntax for configuration in a `.things` file is:
 
@@ -96,6 +93,7 @@ All these things have the same channels:
 | `lowBattery`       | Switch               | R           | on for low battery (below 15%)                     |
 
 Each also has a trigger channel, resp. `smokeAlarm`, `coAlarm`, `heatAlarm` and `waterAlarm`.
+The payload for these trigger channels is empty.
 
 ## Door/window contact
 

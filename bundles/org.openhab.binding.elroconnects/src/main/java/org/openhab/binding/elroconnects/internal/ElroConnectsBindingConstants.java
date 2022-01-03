@@ -168,5 +168,5 @@ public class ElroConnectsBindingConstants {
     }
 
     // Listener threadname prefix
-    public static final String THREAD_NAME_PREFIX = "OH-binding-";
+    public static final String THREAD_NAME_PREFIX = "binding-";
 }

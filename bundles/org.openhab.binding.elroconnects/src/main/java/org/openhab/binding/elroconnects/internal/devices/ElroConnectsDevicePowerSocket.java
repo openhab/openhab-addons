@@ -54,7 +54,7 @@ public class ElroConnectsDevicePowerSocket extends ElroConnectsDevice {
         try {
             bridge.deviceControl(deviceId, state ? CMD_ON : CMD_OFF);
         } catch (IOException e) {
-            logger.debug("Failed to control device");
+            logger.debug("Failed to control device: {}", e.getMessage());
         }
     }
 

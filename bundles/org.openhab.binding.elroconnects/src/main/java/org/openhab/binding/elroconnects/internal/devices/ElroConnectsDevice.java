@@ -101,8 +101,7 @@ public abstract class ElroConnectsDevice {
      * Update all {@link ElroConnectsDeviceHandler} channel states with information received from the device. This
      * method needs to be implemented in the concrete subclass when any state updates are received from the device.
      */
-    public void updateState() {
-    }
+    public abstract void updateState();
 
     /**
      * Send alarm test message to the device. This method is called from the {@link ElroConnectsDeviceHandler}. The

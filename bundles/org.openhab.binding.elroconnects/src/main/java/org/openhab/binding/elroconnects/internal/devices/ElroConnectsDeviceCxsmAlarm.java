@@ -82,7 +82,7 @@ public class ElroConnectsDeviceCxsmAlarm extends ElroConnectsDevice {
                 bridge.deviceControl(deviceId, CMD_SILENCE_1);
             }
         } catch (IOException e) {
-            logger.debug("Failed to control device");
+            logger.debug("Failed to control device: {}", e.getMessage());
         }
     }
 
@@ -94,7 +94,7 @@ public class ElroConnectsDeviceCxsmAlarm extends ElroConnectsDevice {
                 bridge.deviceControl(deviceId, CMD_TEST);
             }
         } catch (IOException e) {
-            logger.debug("Failed to control device");
+            logger.debug("Failed to control device: {}", e.getMessage());
         }
     }
 

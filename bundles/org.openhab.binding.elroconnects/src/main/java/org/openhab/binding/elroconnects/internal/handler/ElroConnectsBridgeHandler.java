@@ -49,6 +49,7 @@ import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDevicePower
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsDeviceTemperatureSensor;
 import org.openhab.binding.elroconnects.internal.discovery.ElroConnectsDiscoveryService;
 import org.openhab.binding.elroconnects.internal.util.ElroConnectsUtil;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.net.NetworkAddressService;
@@ -125,7 +126,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private volatile @Nullable DatagramPacket ackPacket;
 
     private volatile @Nullable ScheduledFuture<?> syncFuture;
-    private volatile boolean keepRunning = false;
     private volatile @Nullable CompletableFuture<Boolean> awaitResponse;
 
     private ElroConnectsDynamicStateDescriptionProvider stateDescriptionProvider;
@@ -205,7 +205,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             this.socket = socket;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Socket error while starting communication.");
+                    "Socket error while starting communication: " + e.getMessage());
             stopCommunication();
             return;
         }
@@ -217,7 +217,8 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         try {
             // Start ELRO Connects listener. This listener will act on all messages coming from
             // ELRO K1 Connector.
-            (new Thread(this::runElroEvents, THREAD_NAME_PREFIX + thing.getUID().getAsString())).start();
+            (new NamedThreadFactory(THREAD_NAME_PREFIX + thing.getUID().getAsString()).newThread(this::runElroEvents))
+                    .start();
 
             keepAlive();
 
@@ -233,7 +234,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             updateState(SCENE, new StringType(String.valueOf(currentScene)));
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error in communication getting initial data.");
+                    "Error in communication getting initial data: " + e.getMessage());
             restartCommunication();
             return;
         }
@@ -256,8 +257,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             logger.debug("Key: {}", ctrlKey);
 
             return addr;
-        } catch (IOException e) {
-            throw (e);
         }
     }
 
@@ -269,7 +268,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
     private void keepAlive() throws IOException {
         DatagramSocket socket = this.socket;
         if (socket != null) {
-            logger.debug("Keep alive");
+            logger.trace("Keep alive");
             // Sending query string, so the connection with the K1 hub stays alive
             awaitResponse(true);
             send(socket, queryString, false);
@@ -292,7 +291,6 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
         stopAwaitResponse();
 
-        keepRunning = false;
         DatagramSocket socket = this.socket;
         if (socket != null && !socket.isClosed()) {
             socket.close();
@@ -341,14 +339,13 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             try {
                 byte[] buffer = new byte[4096];
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                keepRunning = true;
-                while (keepRunning) {
+                while (!Thread.interrupted()) {
                     String response = receive(socket, buffer, packet);
                     processMessage(socket, response);
                 }
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication error in listener.");
+                        "Communication error in listener: " + e.getMessage());
                 restartCommunication();
             }
         } else {
@@ -369,7 +366,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 getCurrentScene();
             } catch (IOException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error in communication refreshing device status.");
+                        "Error in communication refreshing device status: " + e.getMessage());
                 restartCommunication();
             }
         }, refreshInterval, refreshInterval, TimeUnit.SECONDS);
@@ -759,7 +756,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                     selectScene(((DecimalType) command).intValue());
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error in communication while setting scene.");
+                            "Error in communication while setting scene: " + e.getMessage());
                     restartCommunication();
                     return;
                 }

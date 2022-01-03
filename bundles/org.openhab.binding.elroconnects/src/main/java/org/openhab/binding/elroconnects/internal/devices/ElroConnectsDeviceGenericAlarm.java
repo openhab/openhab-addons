@@ -75,7 +75,7 @@ public class ElroConnectsDeviceGenericAlarm extends ElroConnectsDevice {
         try {
             bridge.deviceControl(deviceId, CMD_SILENCE);
         } catch (IOException e) {
-            logger.debug("Failed to control device");
+            logger.debug("Failed to control device: {}", e.getMessage());
         }
     }
 
@@ -87,7 +87,7 @@ public class ElroConnectsDeviceGenericAlarm extends ElroConnectsDevice {
                 bridge.deviceControl(deviceId, CMD_TEST);
             }
         } catch (IOException e) {
-            logger.debug("Failed to control device");
+            logger.debug("Failed to control device: {}", e.getMessage());
         }
     }
 
