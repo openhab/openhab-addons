@@ -189,6 +189,43 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="modeCentralUnit">
+		<item-type>String</item-type>
+		<label>Central Unit Mode</label>
+		<description>Set mode of the central unit (read/write)</description>
+		<state>
+			<options>
+				<option value="MANUAL">Manual</option>
+				<option value="PROTECTION">Protection</option>
+				<option value="OFF">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="remoteControl" advanced="true">
+		<item-type>String</item-type>
+		<label>Remote Control</label>
+		<description>Central Unit Remote Control status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="DISABLED">DISABLED</option>
+				<option value="ENABLED">ENABLED</option>
+			</options>
+		</state>
+	</channel-type>
+	
+	<channel-type id="batteryStatus" advanced="true">
+		<item-type>String</item-type>
+		<label>Battery Status</label>
+		<description>Central Unit Battery status (read only)</description>
+		<state readOnly="true">
+			<options>
+				<option value="OK">OK</option>
+				<option value="KO">KO</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<!-- Energy channels -->
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
