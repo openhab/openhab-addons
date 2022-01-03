@@ -16,7 +16,7 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.voice.Voice;
-import org.openhab.voice.googletts.internal.protocol.SsmlVoiceGender;
+import org.openhab.voice.googletts.internal.dto.SsmlVoiceGender;
 
 /**
  * Implementation of the Voice interface for Google Cloud TTS Service.
