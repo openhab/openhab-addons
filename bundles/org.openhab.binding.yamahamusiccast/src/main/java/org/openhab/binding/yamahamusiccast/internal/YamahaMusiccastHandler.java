@@ -122,7 +122,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         String localDefaultAfterMCLink = "";
         String localRoleSelectedThing = "";
         if (command != RefreshType.REFRESH) {
-            logger.debug("Handling command {} for channel {}", command, channelUID);
+            logger.trace("Handling command {} for channel {}", command, channelUID);
             channelWithoutGroup = channelUID.getIdWithoutGroup();
             zone = channelUID.getGroupId();
             DistributionInfo distributioninfo = new DistributionInfo();
@@ -141,12 +141,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                         // check on scheduler task for UDP events
                         ScheduledFuture<?> localGeneralHousekeepingTask = generalHousekeepingTask;
                         if (localGeneralHousekeepingTask == null) {
-                            logger.debug("YXC - No scheduler task found!");
+                            logger.trace("YXC - No scheduler task found!");
                             generalHousekeepingTask = scheduler.scheduleWithFixedDelay(this::generalHousekeeping, 5,
                                     300, TimeUnit.SECONDS);
 
                         } else {
-                            logger.debug("Scheduler task found!");
+                            logger.trace("Scheduler task found!");
                         }
 
                     } else if (command == OnOffType.OFF) {
@@ -336,7 +336,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                                 if ("none".equals(localRole)) {
                                     json = "{\"group_id\":\"" + groupId + "\", \"zone\":\"" + mclinkSetupZone
                                             + "\", \"type\":\"add\", \"client_list\":[\"" + this.host + "\"]}";
-                                    logger.debug("setServerInfo json: {}", json);
+                                    logger.trace("setServerInfo json: {}", json);
                                     httpResponse = setClientServerInfo(mclinkSetupServer, json, "setServerInfo");
                                     // All zones of Model are required for MC Link
                                     tmpString = "";
@@ -357,7 +357,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                                         }
                                     }
                                     json = "{\"group_id\":\"" + groupId + "\", \"zone\":[" + tmpString + "]}";
-                                    logger.debug("setClientInfo json: {}", json);
+                                    logger.trace("setClientInfo json: {}", json);
                                     httpResponse = setClientServerInfo(this.host, json, "setClientInfo");
                                     httpResponse = startDistribution(mclinkSetupServer);
                                 }
@@ -388,7 +388,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         this.host = localHost;
         if (!"".equals(this.host)) {
             zoneNum = getNumberOfZones(this.host);
-            logger.debug("Zones found: {} - {}", zoneNum, thingLabel);
+            logger.trace("Zones found: {} - {}", zoneNum, thingLabel);
 
             if (zoneNum > 0) {
                 refreshOnStartup();
@@ -403,7 +403,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
 
     private void generalHousekeeping() {
         thingLabel = thing.getLabel();
-        logger.debug("YXC - Start Keep Alive UDP events (5 minutes - {}) ", thingLabel);
+        logger.trace("YXC - Start Keep Alive UDP events (5 minutes - {}) ", thingLabel);
         keepUdpEventsAlive(this.host);
         fillOptionsForMCLink();
         updateMCLinkStatus();
@@ -481,7 +481,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     }
 
     public void processUDPEvent(String json, String trackingID) {
-        logger.debug("UDP package: {} (Tracking: {})", json, trackingID);
+        logger.trace("UDP package: {} (Tracking: {})", json, trackingID);
         @Nullable
         UdpMessage targetObject = gson.fromJson(json, UdpMessage.class);
         if (targetObject != null) {
@@ -517,7 +517,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         int presetNumber = 0;
         int playTime = 0;
         String distInfoUpdated = "";
-        logger.debug("Handling UDP for {}", zoneToUpdate);
+        logger.trace("Handling UDP for {}", zoneToUpdate);
         switch (zoneToUpdate) {
             case "main":
                 powerState = targetObject.getMain().getPower();
@@ -594,7 +594,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         }
 
         if (presetNumber != 0) {
-            logger.debug("Preset detected: {}", presetNumber);
+            logger.trace("Preset detected: {}", presetNumber);
             updatePresets(presetNumber);
         }
 
@@ -629,14 +629,14 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             soundProgramState = targetObject.getSoundProgram();
             sleepState = targetObject.getSleep();
 
-            logger.debug("{} - Response: {}", zoneToUpdate, responseCode);
-            logger.debug("{} - Power: {}", zoneToUpdate, powerState);
-            logger.debug("{} - Mute: {}", zoneToUpdate, muteState);
-            logger.debug("{} - Volume: {}", zoneToUpdate, volumeState);
-            logger.debug("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
-            logger.debug("{} - Input: {}", zoneToUpdate, inputState);
-            logger.debug("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
-            logger.debug("{} - Sleep: {}", zoneToUpdate, sleepState);
+            logger.trace("{} - Response: {}", zoneToUpdate, responseCode);
+            logger.trace("{} - Power: {}", zoneToUpdate, powerState);
+            logger.trace("{} - Mute: {}", zoneToUpdate, muteState);
+            logger.trace("{} - Volume: {}", zoneToUpdate, volumeState);
+            logger.trace("{} - Max Volume: {}", zoneToUpdate, maxVolumeState);
+            logger.trace("{} - Input: {}", zoneToUpdate, inputState);
+            logger.trace("{} - Soundprogram: {}", zoneToUpdate, soundProgramState);
+            logger.trace("{} - Sleep: {}", zoneToUpdate, sleepState);
 
             switch (responseCode) {
                 case "0":
@@ -701,7 +701,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                     }
                     break;
                 case "999":
-                    logger.debug("Nothing to do! - {} ({})", thingLabel, zoneToUpdate);
+                    logger.trace("Nothing to do! - {} ({})", thingLabel, zoneToUpdate);
                     break;
             }
         }
@@ -879,7 +879,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
             for (Thing thing : bridge.getThings()) {
                 label = thing.getLabel();
                 host = thing.getConfiguration().get("host").toString();
-                logger.debug("Thing found on Bridge: {} - {}", label, host);
+                logger.trace("Thing found on Bridge: {} - {}", label, host);
                 zonesPerHost = getNumberOfZones(host);
                 for (int i = 1; i <= zonesPerHost; i++) {
                     switch (i) {
@@ -962,7 +962,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
     }
 
     private void setVolumeLinkedDevice(int value, @Nullable String zone, String host) {
-        logger.debug("setVolumeLinkedDevice: {}", host);
+        logger.trace("setVolumeLinkedDevice: {}", host);
         int zoneNumLinkedDevice = getNumberOfZones(host);
         int maxVolumeLinkedDevice = 0;
         @Nullable
@@ -1111,10 +1111,10 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         String response = "";
         try {
             response = HttpUtil.executeUrl("GET", HTTP + url, LONG_CONNECTION_TIMEOUT_MILLISEC);
-            logger.debug("{} - {}", topicAVR, response);
+            logger.trace("{} - {}", topicAVR, response);
             return response;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", topicAVR, e.getMessage());
+            logger.trace("IO Exception - {} - {}", topicAVR, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -1201,10 +1201,10 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         try {
             url = "http://" + host + YAMAHA_EXTENDED_CONTROL + "dist/" + type;
             httpResponse = HttpUtil.executeUrl("POST", url, is, "", LONG_CONNECTION_TIMEOUT_MILLISEC);
-            logger.debug("MC Link/Unlink Client {}", httpResponse);
+            logger.trace("MC Link/Unlink Client {}", httpResponse);
             return httpResponse;
         } catch (IOException e) {
-            logger.warn("IO Exception - {} - {}", type, e.getMessage());
+            logger.trace("IO Exception - {} - {}", type, e.getMessage());
             return "{\"response_code\":\"999\"}";
         }
     }
@@ -1234,10 +1234,10 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
         try {
             httpResponse = HttpUtil.executeUrl("GET", HTTP + host + YAMAHA_EXTENDED_CONTROL + "netusb/getPlayInfo",
                     appProps, null, "", LONG_CONNECTION_TIMEOUT_MILLISEC);
-            // logger.debug("{}", httpResponse);
-            logger.debug("{} - {}", "UDP task", httpResponse);
+            // logger.trace("{}", httpResponse);
+            logger.trace("{} - {}", "UDP task", httpResponse);
         } catch (IOException e) {
-            logger.warn("UDP refresh failed - {}", e.getMessage());
+            logger.trace("UDP refresh failed - {}", e.getMessage());
         }
     }
     // End General/System API calls

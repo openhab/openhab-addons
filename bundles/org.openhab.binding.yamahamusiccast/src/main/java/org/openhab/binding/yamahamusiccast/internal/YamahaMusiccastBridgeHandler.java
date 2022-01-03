@@ -49,7 +49,9 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
     private Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(YamahaMusiccastBridgeHandler.class);
     private String threadname = getThing().getUID().getAsString();
-    private @Nullable ExecutorService executor = Executors.newSingleThreadExecutor(new NamedThreadFactory(threadname));
+    // private @Nullable ExecutorService executor = Executors.newSingleThreadExecutor(new
+    // NamedThreadFactory(threadname));
+    private @Nullable ExecutorService executor;
     private @Nullable Future<?> eventListenerJob;
     private static final int UDP_PORT = 41100;
     private static final int SOCKET_TIMEOUT_MILLISECONDS = 3000;
@@ -64,9 +66,9 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
             InetSocketAddress address = new InetSocketAddress(UDP_PORT);
             s.bind(address);
             socket = s;
-            logger.debug("UDP Listener got socket on port {} with timeout {}", UDP_PORT, SOCKET_TIMEOUT_MILLISECONDS);
+            logger.trace("UDP Listener got socket on port {} with timeout {}", UDP_PORT, SOCKET_TIMEOUT_MILLISECONDS);
         } catch (SocketException e) {
-            logger.debug("UDP Listener got SocketException: {}", e.getMessage(), e);
+            logger.trace("UDP Listener got SocketException: {}", e.getMessage(), e);
             socket = null;
             return;
         }
@@ -78,16 +80,16 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
                 localSocket.receive(packet);
                 String received = new String(packet.getData(), 0, packet.getLength());
                 String trackingID = UUID.randomUUID().toString().replace("-", "").substring(0, 32);
-                logger.debug("Received packet: {} (Tracking: {})", received, trackingID);
+                logger.trace("Received packet: {} (Tracking: {})", received, trackingID);
                 handleUDPEvent(received, trackingID);
             } catch (SocketTimeoutException e) {
                 // Nothing to do on socket timeout
             } catch (IOException e) {
-                logger.debug("UDP Listener got IOException waiting for datagram: {}", e.getMessage());
+                logger.trace("UDP Listener got IOException waiting for datagram: {}", e.getMessage());
                 localSocket = null;
             }
         }
-        logger.debug("UDP Listener exiting");
+        logger.trace("UDP Listener exiting");
     }
 
     public YamahaMusiccastBridgeHandler(Bridge bridge) {
@@ -101,6 +103,7 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.ONLINE);
+        executor = Executors.newSingleThreadExecutor(new NamedThreadFactory(threadname));
         Future<?> localEventListenerJob = eventListenerJob;
         ExecutorService localExecutor = executor;
         if (localEventListenerJob == null || localEventListenerJob.isCancelled()) {
@@ -132,10 +135,10 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
             ThingStatusInfo statusInfo = thing.getStatusInfo();
             switch (statusInfo.getStatus()) {
                 case ONLINE:
-                    logger.debug("Thing Status: ONLINE - {}", thing.getLabel());
+                    logger.trace("Thing Status: ONLINE - {}", thing.getLabel());
                     YamahaMusiccastHandler handler = (YamahaMusiccastHandler) thing.getHandler();
                     if (handler != null) {
-                        logger.debug("UDP: {} - {} ({} - Tracking: {})", json, handler.getDeviceId(), thing.getLabel(),
+                        logger.trace("UDP: {} - {} ({} - Tracking: {})", json, handler.getDeviceId(), thing.getLabel(),
                                 trackingID);
 
                         @Nullable
@@ -149,7 +152,7 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
                     }
                     break;
                 default:
-                    logger.debug("Thing Status: NOT ONLINE - {} (Tracking: {})", thing.getLabel(), trackingID);
+                    logger.trace("Thing Status: NOT ONLINE - {} (Tracking: {})", thing.getLabel(), trackingID);
                     break;
             }
         }
