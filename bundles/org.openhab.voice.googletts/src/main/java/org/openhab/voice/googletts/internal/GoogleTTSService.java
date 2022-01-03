@@ -32,7 +32,7 @@ import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
-import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
+import org.openhab.voice.googletts.internal.dto.AudioEncoding;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
@@ -330,7 +330,7 @@ public class GoogleTTSService implements TTSService {
         // create the audio byte array for given text, locale, format
         byte[] audio = apiImpl.synthesizeSpeech(trimmedText, (GoogleTTSVoice) voice, requestedFormat.getCodec());
         if (audio == null) {
-            throw new TTSException("Could not read from Google Cloud TTS Service");
+            throw new TTSException("Could not synthesize text via Google Cloud TTS Service");
         }
         return new ByteArrayAudioStream(audio, requestedFormat);
     }
