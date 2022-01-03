@@ -12,8 +12,8 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +148,7 @@ public class JdbcMapper {
         return vo;
     }
 
-    public Item storeItemValue(Item item, State itemState, @Nullable Date date) {
+    public Item storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) {
         logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
         String tableName = getTable(item);
         if (tableName == null) {

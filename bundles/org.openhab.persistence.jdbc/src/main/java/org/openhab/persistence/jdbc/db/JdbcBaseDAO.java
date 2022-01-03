@@ -17,7 +17,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -337,11 +336,11 @@ public class JdbcBaseDAO {
         Yank.execute(sql, params);
     }
 
-    public void doStoreItemValue(Item item, State itemState, ItemVO vo, Date date) {
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo, ZonedDateTime date) {
         ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#tablePrimaryValue#" }, new String[] { storedVO.getTableName(), "?" });
-        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.getTime());
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(date.toInstant().toEpochMilli());
         Object[] params = new Object[] { storedVO.getValue(), timestamp, storedVO.getValue() };
         logger.debug("JDBC::doStoreItemValue sql={} timestamp={} value='{}'", sql, timestamp, storedVO.getValue());
         Yank.execute(sql, params);

@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -135,11 +136,11 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     }
 
     @Override
-    public void store(Item item, Date date, State state) {
+    public void store(Item item, ZonedDateTime date, State state) {
         internalStore(item, date, state);
     }
 
-    private void internalStore(Item item, @Nullable Date date, State state) {
+    private void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
         // Do not store undefined/uninitialized data
         if (state instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());
