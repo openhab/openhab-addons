@@ -156,6 +156,18 @@ then
 end
 ```
 
+For single shades the refresh takes the item's channel into consideration:
+
+| Channel        | Hard refresh kind |
+|----------------|-------------------|
+| position       | Position          |
+| secondary      | Position          |
+| vane           | Position          |
+| lowBattery     | Battery           |
+| batteryLevel   | Battery           |
+| batteryVoltage | Battery           |
+| signalStrength | Survey            |
+
 ## Full Example
 
 ### `demo.things` File

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.voice.googletts.internal.protocol;
+package org.openhab.voice.googletts.internal.dto;
 
 /**
  * Contains text input to be synthesized. Either text or ssml must be supplied. Supplying both or neither returns

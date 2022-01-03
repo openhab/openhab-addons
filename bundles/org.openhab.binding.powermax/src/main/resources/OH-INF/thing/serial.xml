@@ -80,15 +80,15 @@
 				<description>@text/config.panelType.description</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
-					<option value="PowerMax">PowerMax</option>
-					<option value="PowerMax+">PowerMax+</option>
-					<option value="PowerMaxPro">PowerMax Pro</option>
-					<option value="PowerMaxComplete">PowerMax Complete</option>
-					<option value="PowerMaxProPart">PowerMax Pro Part</option>
-					<option value="PowerMaxCompletePart">PowerMax Complete Part</option>
-					<option value="PowerMaxExpress">PowerMax Express</option>
-					<option value="PowerMaster10">PowerMaster 10</option>
-					<option value="PowerMaster30">PowerMaster 30</option>
+					<option value="PowerMax">@text/config.panelType.option.PowerMax</option>
+					<option value="PowerMax+">@text/config.panelType.option.PowerMaxPlus</option>
+					<option value="PowerMaxPro">@text/config.panelType.option.PowerMaxPro</option>
+					<option value="PowerMaxComplete">@text/config.panelType.option.PowerMaxComplete</option>
+					<option value="PowerMaxProPart">@text/config.panelType.option.PowerMaxProPart</option>
+					<option value="PowerMaxCompletePart">@text/config.panelType.option.PowerMaxCompletePart</option>
+					<option value="PowerMaxExpress">@text/config.panelType.option.PowerMaxExpress</option>
+					<option value="PowerMaster10">@text/config.panelType.option.PowerMaster10</option>
+					<option value="PowerMaster30">@text/config.panelType.option.PowerMaster30</option>
 				</options>
 				<default>PowerMaxPro</default>
 				<advanced>true</advanced>
