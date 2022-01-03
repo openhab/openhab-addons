@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- L530 Series THING-TYPE (Multicolor LED-Lightstrip) -->
+	<!-- L920 THING-TYPE (Multicolor LED-Lightstrip) -->
 	<thing-type id="L920">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
