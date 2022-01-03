@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.TooManyListenersException;
 
 import org.openhab.binding.dscalarm.internal.config.IT100BridgeConfiguration;
@@ -98,7 +99,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             serialPort.enableReceiveThreshold(1);
             serialPort.disableReceiveTimeout();
 
-            serialOutput = new OutputStreamWriter(serialPort.getOutputStream(), "US-ASCII");
+            serialOutput = new OutputStreamWriter(serialPort.getOutputStream(), StandardCharsets.US_ASCII);
             serialInput = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 
             setSerialEventHandler(this);
