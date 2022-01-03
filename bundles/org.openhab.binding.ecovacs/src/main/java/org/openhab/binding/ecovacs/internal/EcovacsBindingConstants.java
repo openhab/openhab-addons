@@ -1,0 +1,134 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.ecovacs.internal;
+
+import java.util.HashMap;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ecovacs.internal.api.model.CleanMode;
+import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
+import org.openhab.binding.ecovacs.internal.api.model.MoppingWaterAmount;
+import org.openhab.binding.ecovacs.internal.api.model.SuctionPower;
+import org.openhab.core.thing.ThingTypeUID;
+
+/**
+ * The {@link EcovacsBindingConstants} class defines common constants, which are
+ * used across the whole binding.
+ *
+ * @author Danny Baumann - Initial contribution
+ */
+@NonNullByDefault
+public class EcovacsBindingConstants {
+    private static final String BINDING_ID = "ecovacs";
+
+    // List of all Thing Type UIDs
+    public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "ecovacsapi");
+    public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
+
+    // List of all channel UIDs
+    public static final String CHANNEL_ID_BATTERY_LEVEL = "status#battery";
+    public static final String CHANNEL_ID_CLEANING_TIME = "status#current-cleaning-time";
+    public static final String CHANNEL_ID_CLEANED_AREA = "status#current-cleaned-area";
+    public static final String CHANNEL_ID_COMMAND = "actions#command";
+    public static final String CHANNEL_ID_DUST_FILTER_LIFETIME = "consumables#dust-filter-lifetime";
+    public static final String CHANNEL_ID_ERROR_CODE = "status#error-code";
+    public static final String CHANNEL_ID_ERROR_DESCRIPTION = "status#error-description";
+    public static final String CHANNEL_ID_LAST_CLEAN_START = "last-clean#last-clean-start";
+    public static final String CHANNEL_ID_LAST_CLEAN_DURATION = "last-clean#last-clean-duration";
+    public static final String CHANNEL_ID_LAST_CLEAN_AREA = "last-clean#last-clean-area";
+    public static final String CHANNEL_ID_LAST_CLEAN_MODE = "last-clean#last-clean-mode";
+    public static final String CHANNEL_ID_LAST_CLEAN_MAP = "last-clean#last-clean-map";
+    public static final String CHANNEL_ID_MAIN_BRUSH_LIFETIME = "consumables#main-brush-lifetime";
+    public static final String CHANNEL_ID_SIDE_BRUSH_LIFETIME = "consumables#side-brush-lifetime";
+    public static final String CHANNEL_ID_STATE = "status#state";
+    public static final String CHANNEL_ID_SUCTION_POWER = "settings#suction-power";
+    public static final String CHANNEL_ID_TOTAL_CLEANING_TIME = "total-stats#total-cleaning-time";
+    public static final String CHANNEL_ID_TOTAL_CLEANED_AREA = "total-stats#total-cleaned-area";
+    public static final String CHANNEL_ID_TOTAL_CLEAN_RUNS = "total-stats#total-clean-runs";
+    public static final String CHANNEL_ID_VOICE_VOLUME = "settings#voice-volume";
+    public static final String CHANNEL_ID_WATER_PLATE_PRESENT = "status#water-system-present";
+    public static final String CHANNEL_ID_WATER_AMOUNT = "settings#water-amount";
+    public static final String CHANNEL_ID_WIFI_RSSI = "status#wifi-rssi";
+
+    public static final String CMD_AUTO_CLEAN = "clean";
+    public static final String CMD_PAUSE = "pause";
+    public static final String CMD_RESUME = "resume";
+    public static final String CMD_CHARGE = "charge";
+    public static final String CMD_STOP = "stop";
+    public static final String CMD_SPOT_AREA = "spotArea";
+
+    public static class StateOptionEntry<T extends Enum<T>> {
+        public final T enumValue;
+        public final String value;
+        public final @Nullable DeviceCapability capability;
+
+        StateOptionEntry(T enumValue, String value) {
+            this(enumValue, value, null);
+        }
+
+        StateOptionEntry(T enumValue, String value, @Nullable DeviceCapability capability) {
+            this.enumValue = enumValue;
+            this.value = value;
+            this.capability = capability;
+        }
+    }
+
+    public static class StateOptionMapping<T extends Enum<T>> extends HashMap<T, StateOptionEntry<T>> {
+        private static final long serialVersionUID = -6828690091106259902L;
+
+        public String getMappedValue(T key) {
+            StateOptionEntry<T> entry = get(key);
+            assert entry != null;
+            return entry.value;
+        }
+
+        public @Nullable T findMappedEnumValue(String value) {
+            return entrySet().stream().filter(entry -> entry.getValue().value.equals(value))
+                    .map(entry -> entry.getKey()).findFirst().get();
+        }
+
+        @SafeVarargs
+        public static <T extends Enum<T>> StateOptionMapping<T> of(StateOptionEntry<T>... entries) {
+            StateOptionMapping<T> map = new StateOptionMapping<>();
+            for (StateOptionEntry<T> entry : entries) {
+                map.put(entry.enumValue, entry);
+            }
+            return map;
+        }
+    }
+
+    public static final StateOptionMapping<CleanMode> CLEAN_MODE_MAPPING = StateOptionMapping.<CleanMode> of(
+            new StateOptionEntry<CleanMode>(CleanMode.AUTO, "auto"),
+            new StateOptionEntry<CleanMode>(CleanMode.EDGE, "edge", DeviceCapability.EDGE_CLEANING),
+            new StateOptionEntry<CleanMode>(CleanMode.SPOT, "spot", DeviceCapability.SPOT_CLEANING),
+            new StateOptionEntry<CleanMode>(CleanMode.SPOT_AREA, "spotArea", DeviceCapability.SPOT_AREA_CLEANING),
+            new StateOptionEntry<CleanMode>(CleanMode.CUSTOM_AREA, "customArea", DeviceCapability.CUSTOM_AREA_CLEANING),
+            new StateOptionEntry<CleanMode>(CleanMode.SINGLE_ROOM, "singleRoom", DeviceCapability.SINGLE_ROOM_CLEANING),
+            new StateOptionEntry<CleanMode>(CleanMode.PAUSE, "pause"),
+            new StateOptionEntry<CleanMode>(CleanMode.STOP, "stop"),
+            new StateOptionEntry<CleanMode>(CleanMode.RETURNING, "returning"));
+
+    public static final StateOptionMapping<MoppingWaterAmount> WATER_AMOUNT_MAPPING = StateOptionMapping
+            .<MoppingWaterAmount> of(new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.LOW, "low"),
+                    new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.MEDIUM, "medium"),
+                    new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.HIGH, "high"),
+                    new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.VERY_HIGH, "veryhigh"));
+
+    public static final StateOptionMapping<SuctionPower> SUCTION_POWER_MAPPING = StateOptionMapping.<SuctionPower> of(
+            new StateOptionEntry<SuctionPower>(SuctionPower.SILENT, "silent",
+                    DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL),
+            new StateOptionEntry<SuctionPower>(SuctionPower.NORMAL, "normal"),
+            new StateOptionEntry<SuctionPower>(SuctionPower.HIGH, "high"), new StateOptionEntry<SuctionPower>(
+                    SuctionPower.HIGHER, "higher", DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL));
+}

@@ -82,6 +82,7 @@
 /bundles/org.openhab.binding.echonetlite/ @mikeb01
 /bundles/org.openhab.binding.ecobee/ @mhilbush
 /bundles/org.openhab.binding.ecotouch/ @sibbi77
+/bundles/org.openhab.binding.ecovacs/ @maniac103
 /bundles/org.openhab.binding.ecowatt/ @lolodomo
 /bundles/org.openhab.binding.ekey/ @hmerk
 /bundles/org.openhab.binding.electroluxair/ @jannegpriv
