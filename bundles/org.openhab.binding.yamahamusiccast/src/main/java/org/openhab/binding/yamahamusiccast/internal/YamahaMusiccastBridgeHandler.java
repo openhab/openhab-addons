@@ -49,8 +49,6 @@ public class YamahaMusiccastBridgeHandler extends BaseBridgeHandler {
     private Gson gson = new Gson();
     private final Logger logger = LoggerFactory.getLogger(YamahaMusiccastBridgeHandler.class);
     private String threadname = getThing().getUID().getAsString();
-    // private @Nullable ExecutorService executor = Executors.newSingleThreadExecutor(new
-    // NamedThreadFactory(threadname));
     private @Nullable ExecutorService executor;
     private @Nullable Future<?> eventListenerJob;
     private static final int UDP_PORT = 41100;
