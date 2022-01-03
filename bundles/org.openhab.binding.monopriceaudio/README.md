@@ -18,7 +18,7 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.  
 Monoprice 31028 70V Amplifiers use the `monoprice70v` id. Supports 6 zones per amp with 2 source inputs, not linkable.  
 Dayton Audio DAX88 Amplifiers use the `dax88` id. Supports 8 zones (2 un-amplified) per amp with 8 source inputs, not linkable.  
-Xantech MRC88 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs. Note: Xantech MRC44 amps do not support serial control.  
+Xantech MRC88 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs. Note: MRC44 amps do not support serial control.  
 
 ## Discovery
 
@@ -41,7 +41,7 @@ The thing has the following configuration parameters (number of sources and zone
 | Port                 | port             | Communication port (default 8080 for newer amps with built-in serial over IP)                                                  | TCP port number  |
 | Number of Zones      | numZones         | (Optional) Number of amplifier zones to utilize in the binding (See Supported Things for max number of zones per Thing type)   | 1-18; default 6  |
 | Polling Interval     | pollingInterval  | (Optional) Configures how often (in seconds) to poll the amplifier to check for zone updates                                   | 5-60; default 15 |
-| Ignore Zones         | ignoreZones      | (Optional) A comma seperated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
+| Ignore Zones         | ignoreZones      | (Optional) A comma separated list of Zone numbers that will ignore the 'All Zone' (except All Off) commands                    | ie: "1,6,10"     |
 | Initial All Volume   | initialAllVolume | (Optional) When 'All' zones are activated, the volume will reset to this value to prevent excessive blaring of sound ;)        | 1-30; default 10 |
 | Source 1 Input Label | inputLabel1      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 1") | A free text name |
 | Source 2 Input Label | inputLabel2      | (Optional) Friendly name for the input source to be displayed in the UI (ie: Chromecast, Radio, CD, etc.) (default "Source 2") | A free text name |
@@ -68,24 +68,25 @@ Some notes:
 
 ## Channels
 
-The following channels are available (dnd, page and keypad not available on all amps):
+The following channels are available:
+Note that dnd, page and keypad not available on all amps.
 
-| Channel ID                    | Item Type | Description                                                                                                                          |
-|-------------------------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------|
-| all#allpower                  | Switch    | Turn all zones on or off simultaneously (those specified by the ignoreZones config option will not turn on)                          |
-| all#allsource                 | Number    | Select the input source for all zones simultaneously (1-8) [number of sources is amplifier dependent] (except ignoreZones)           |
-| all#allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to the paticular amplifier's volume range] (except ignoreZones) |
-| all#allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                                         |
-| zoneN#power (where N= 1-18)   | Switch    | Turn the power for a zone on or off                                                                                                  |
-| zoneN#source (where N= 1-18)  | Number    | Select the input source for a zone (1-8) [number of sources is amplifier dependent]                                                  |
-| zoneN#volume (where N= 1-18)  | Dimmer    | Control the volume for a zone (0-100%) [translates to the paticular amplifier's volume range]                                        |
-| zoneN#mute (where N= 1-18)    | Switch    | Mute or unmute a zone                                                                                                                |
-| zoneN#treble (where N= 1-18)  | Number    | Adjust the treble control for a zone [range is amplifier dependent]                                                                  |
-| zoneN#bass (where N= 1-18)    | Number    | Adjust the bass control for a zone [range is amplifier dependent]                                                                    |
-| zoneN#balance (where N= 1-18) | Number    | Adjust the balance control for a zone [0=center, range is amplifier dependent]                                                       |
-| zoneN#dnd (where N= 1-18)     | Switch    | Turn on or off the Do Not Disturb for the zone (for when the amplifier's external page trigger is activated)                         |
-| zoneN#page (where N= 1-18)    | Contact   | Indicates if the page input is activated for the zone                                                                                |
-| zoneN#keypad (where N= 1-18)  | Contact   | Indicates if the physical keypad is attached to a zone                                                                               |
+| Channel ID                    | Item Type | Description                                                                                                                           |
+|-------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------------------------|
+| all#allpower                  | Switch    | Turn all zones on or off simultaneously (those specified by the ignoreZones config option will not turn on)                           |
+| all#allsource                 | Number    | Select the input source for all zones simultaneously (1-8) [number of sources is amplifier dependent] (except ignoreZones)            |
+| all#allvolume                 | Dimmer    | Control the volume for all zones simultaneously (0-100%) [translates to the particular amplifier's volume range] (except ignoreZones) |
+| all#allmute                   | Switch    | Mute or unmute all zones simultaneously (except ignoreZones)                                                                          |
+| zoneN#power (where N= 1-18)   | Switch    | Turn the power for a zone on or off                                                                                                   |
+| zoneN#source (where N= 1-18)  | Number    | Select the input source for a zone (1-8) [number of sources is amplifier dependent]                                                   |
+| zoneN#volume (where N= 1-18)  | Dimmer    | Control the volume for a zone (0-100%) [translates to the particular amplifier's volume range]                                        |
+| zoneN#mute (where N= 1-18)    | Switch    | Mute or unmute a zone                                                                                                                 |
+| zoneN#treble (where N= 1-18)  | Number    | Adjust the treble control for a zone [range is amplifier dependent]                                                                   |
+| zoneN#bass (where N= 1-18)    | Number    | Adjust the bass control for a zone [range is amplifier dependent]                                                                     |
+| zoneN#balance (where N= 1-18) | Number    | Adjust the balance control for a zone [0=center, range is amplifier dependent]                                                        |
+| zoneN#dnd (where N= 1-18)     | Switch    | Turn on or off the Do Not Disturb for the zone (for when the amplifier's external page trigger is activated)                          |
+| zoneN#page (where N= 1-18)    | Contact   | Indicates if the page input is activated for the zone                                                                                 |
+| zoneN#keypad (where N= 1-18)  | Contact   | Indicates if the physical keypad is attached to a zone                                                                                |
 
 ## Full Example
 
@@ -112,7 +113,7 @@ monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=
 monoprice.items:
 
 ```
-// substitute 'amplifier' for the appropriate thing id if using 31028, DAX88 or Xantech amplifier
+// substitute 'amplifier' for the appropriate thing id if using 31028, DAX88 or MRC88 amplifier
 
 Switch all_allpower "All Zones Power" { channel="monopriceaudio:amplifier:myamp:all#allpower" }
 Number all_source "Source Input [%s]" { channel="monopriceaudio:amplifier:myamp:all#allsource" }
