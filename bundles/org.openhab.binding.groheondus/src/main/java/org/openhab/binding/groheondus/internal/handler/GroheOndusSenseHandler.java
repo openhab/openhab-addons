@@ -139,13 +139,14 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     private @Nullable ApplianceData getApplianceData(Appliance appliance) {
         // Dates are stripped of time part inside library
         Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
-        Instant today = Instant.now().plus(1, ChronoUnit.DAYS);
+        Instant tomorrow = Instant.now().plus(1, ChronoUnit.DAYS);
         OndusService service = getOndusService();
         if (service == null) {
             return null;
         }
         try {
-            BaseApplianceData applianceData = service.applianceData(appliance, yesterday, today).orElse(null);
+            logger.debug("Fetching data for {} from {} to {}", thing.getUID(), yesterday, tomorrow);
+            BaseApplianceData applianceData = service.applianceData(appliance, yesterday, tomorrow).orElse(null);
             if (applianceData != null) {
                 if (applianceData.getType() != Appliance.TYPE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -154,12 +155,12 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
                 }
                 return (ApplianceData) applianceData;
             } else {
-                logger.debug("Could not load appliance data");
+                logger.debug("Could not load appliance data for {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to find applicance data");
             }
         } catch (IOException e) {
-            logger.debug("Could not load appliance data", e);
+            logger.debug("Could not load appliance data for {}", thing.getUID(), e);
         }
         return null;
     }

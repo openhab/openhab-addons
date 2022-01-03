@@ -184,6 +184,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             return null;
         }
         try {
+            logger.debug("Fetching data for {} from {} to {}", thing.getUID(), from, to);
             BaseApplianceData applianceData = service.applianceData(appliance, from, to).orElse(null);
             if (applianceData != null) {
                 if (applianceData.getType() != Appliance.TYPE) {
@@ -198,7 +199,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                         "Failed to find applicance data");
             }
         } catch (IOException e) {
-            logger.debug("Could not load appliance data", e);
+            logger.debug("Could not load appliance data for {}", thing.getUID(), e);
         }
         return null;
     }
