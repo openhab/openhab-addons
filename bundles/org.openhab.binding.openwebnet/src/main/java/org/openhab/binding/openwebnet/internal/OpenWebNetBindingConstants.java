@@ -127,6 +127,9 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_HEATING_VALVES = "heatingValves";
     public static final String CHANNEL_ACTUATORS = "actuators";
     public static final String CHANNEL_LOCAL_OFFSET = "localMode";
+    public static final String CHANNEL_CU_MODE = "modeCentralUnit";
+    public static final String CHANNEL_CU_REMOTE_CONTROL = "remoteControl";
+    public static final String CHANNEL_CU_BATTERY_STATUS = "batteryStatus";
 
     // energy management
     public static final String CHANNEL_POWER = "power";
