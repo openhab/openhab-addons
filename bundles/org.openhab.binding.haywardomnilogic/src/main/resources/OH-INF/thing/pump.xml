@@ -13,25 +13,87 @@
 		<description>Pump</description>
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
-			<channel id="pumpSpeed" typeId="pumpSpeed"/>
+			<channel id="pumpSpeedPercent" typeId="pumpSpeedPercent"/>
+			<channel id="pumpSpeedRpm" typeId="pumpSpeedRpm"/>
+			<channel id="pumpSpeedSelect" typeId="pumpSpeedSelect"/>
+			<channel id="pumpState" typeId="pumpState"/>
+			<channel id="pumpLastSpeed" typeId="pumpLastSpeed"/>
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
-			<property name="Min Pump Percent"></property>
-			<property name="Max Pump Percent"></property>
-			<property name="Min Pump RPM"></property>
-			<property name="Max Pump RPM"></property>
+			<property name="vendor">Hayward</property>
+			<property name="pumpType"></property>
+			<property name="pumpFunction"></property>
+			<property name="pumpPrimingEnabled"></property>
+			<property name="minPumpPercent"></property>
+			<property name="maxPumpPercent"></property>
+			<property name="minPumpRPM"></property>
+			<property name="maxPumpRPM"></property>
+			<property name="lowPumpSpeed"></property>
+			<property name="mediumPumpSpeed"></property>
+			<property name="highPumpSpeed"></property>
+			<property name="customPumpSpeed"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
 	</thing-type>
 
-	<channel-type id="pumpSpeed">
+	<channel-type id="pumpSpeedPercent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Pump Speed in %</label>
-		<description>Pump Speed</description>
-		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
+		<label>Pump Speed %</label>
+		<description>Pump Speed (%)</description>
+		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="pumpSpeedRpm">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Pump Speed RPM</label>
+		<description>Pump Speed (RPM)</description>
+		<state min="0" max="3600" step="200" pattern="%d" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="pumpSpeedSelect">
+		<item-type>String</item-type>
+		<label>Pump Speed States</label>
+		<description>Pump Speed States</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="33">Low</option>
+				<option value="66">Medium</option>
+				<option value="100">High</option>
+				<option value="100">Custom</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pumpState">
+		<item-type>String</item-type>
+		<label>Pump State</label>
+		<description>Pump State</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Running</option>
+				<option value="2">Priming</option>
+				<option value="3">Waiting to Turn Off</option>
+				<option value="4">Waiting to Turn Off Manual</option>
+				<option value="5">Heater Extend</option>
+				<option value="6">Heater Cool Down</option>
+				<option value="7">Suspended</option>
+				<option value="8">CSAD Extend</option>
+				<option value="9">Superchlorinate</option>
+				<option value="10">Force Priming</option>
+				<option value="11">Waiting for Pump to Turn Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pumpLastSpeed">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Last Speed</label>
+		<description>Last Speed (%)</description>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
