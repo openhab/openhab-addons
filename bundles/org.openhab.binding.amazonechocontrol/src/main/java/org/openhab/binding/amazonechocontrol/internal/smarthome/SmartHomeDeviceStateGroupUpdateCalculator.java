@@ -34,8 +34,8 @@ import org.slf4j.LoggerFactory;
 public class SmartHomeDeviceStateGroupUpdateCalculator {
     private final Logger logger = LoggerFactory.getLogger(SmartHomeDeviceStateGroupUpdateCalculator.class);
 
-    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS = 10;
-    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE = 600;
+    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS = 600;
+    private static final Integer UPDATE_INTERVAL_PRIVATE_SKILLS_IN_SECONDS_TRACE = 10;
     private static final Integer UPDATE_INTERVAL_ACOUSTIC_EVENTS_IN_SECONDS = 10;
     private Integer updateIntervalAmazonInSeconds;
     private Integer updateIntervalSkillsInSeconds;
