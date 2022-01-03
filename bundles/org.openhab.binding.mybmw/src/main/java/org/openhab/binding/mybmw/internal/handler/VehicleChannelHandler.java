@@ -59,8 +59,8 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.CommandOption;
 import org.openhab.core.types.State;
-import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,15 +87,15 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected List<ChargeSession> sessionList = new ArrayList<ChargeSession>();
     protected String selectedSession = Constants.UNDEF;
 
-    protected MyBMWOptionProvider optionProvider;
+    protected MyBMWCommandOptionProvider commandOptionProvider;
 
     // Data Caches
     protected Optional<String> vehicleStatusCache = Optional.empty();
     protected Optional<byte[]> imageCache = Optional.empty();
 
-    public VehicleChannelHandler(Thing thing, MyBMWOptionProvider op, String type, String langauge) {
+    public VehicleChannelHandler(Thing thing, MyBMWCommandOptionProvider cop, String type, String langauge) {
         super(thing);
-        optionProvider = op;
+        commandOptionProvider = cop;
         localeLanguage = langauge;
 
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
@@ -107,8 +107,8 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         setOptions(CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_COMMAND, RemoteServiceUtils.getOptions(isElectric));
     }
 
-    private void setOptions(final String group, final String id, List<StateOption> options) {
-        optionProvider.setStateOptions(new ChannelUID(thing.getUID(), group, id), options);
+    private void setOptions(final String group, final String id, List<CommandOption> options) {
+        commandOptionProvider.setCommandOptions(new ChannelUID(thing.getUID(), group, id), options);
     }
 
     protected void updateChannel(final String group, final String id, final State state) {
@@ -253,11 +253,11 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         checkControlList = ccl;
-        List<StateOption> ccmDescriptionOptions = new ArrayList<>();
+        List<CommandOption> ccmDescriptionOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
         for (CCMMessage ccEntry : checkControlList) {
-            ccmDescriptionOptions.add(new StateOption(Integer.toString(index), ccEntry.title));
+            ccmDescriptionOptions.add(new CommandOption(Integer.toString(index), ccEntry.title));
             if (selectedCC.equals(ccEntry.title)) {
                 isSelectedElementIn = true;
             }
@@ -291,12 +291,12 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         serviceList = sl;
-        List<StateOption> serviceNameOptions = new ArrayList<>();
+        List<CommandOption> serviceNameOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
         for (CBS serviceEntry : serviceList) {
             // create StateOption with "value = list index" and "label = human readable string"
-            serviceNameOptions.add(new StateOption(Integer.toString(index), serviceEntry.type));
+            serviceNameOptions.add(new CommandOption(Integer.toString(index), serviceEntry.type));
             if (selectedService.equals(serviceEntry.type)) {
                 isSelectedElementIn = true;
             }
@@ -346,12 +346,12 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // add all elements to options
         sessionList = sl;
-        List<StateOption> sessionNameOptions = new ArrayList<>();
+        List<CommandOption> sessionNameOptions = new ArrayList<>();
         boolean isSelectedElementIn = false;
         int index = 0;
         for (ChargeSession session : sessionList) {
             // create StateOption with "value = list index" and "label = human readable string"
-            sessionNameOptions.add(new StateOption(Integer.toString(index), session.title));
+            sessionNameOptions.add(new CommandOption(Integer.toString(index), session.title));
             if (selectedService.equals(session.title)) {
                 isSelectedElementIn = true;
             }

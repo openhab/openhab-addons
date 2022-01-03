@@ -77,8 +77,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
     private Optional<String> chargeProfileSent = Optional.empty();
 
-    public VehicleHandler(Thing thing, MyBMWOptionProvider op, String driveTrain, String language) {
-        super(thing, op, driveTrain, language);
+    public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, String driveTrain, String language) {
+        super(thing, cop, driveTrain, language);
     }
 
     @Override
@@ -242,13 +242,13 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     public void updateRemoteExecutionStatus(@Nullable String service, @Nullable String status) {
-        // [todo] not working yet
+        // [todo] CHARGING_CONTROL not working yet
         // if (RemoteService.CHARGING_CONTROL.toString().equals(service)
         // && ExecutionState.EXECUTED.name().equals(status)) {
         // saveChargeProfileSent();
         // }
-        updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE, StringType
-                .valueOf(Converter.toTitleCase((service == null ? "-" : service) + Constants.SPACE + status)));
+        updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE,
+                StringType.valueOf((service == null ? "-" : service) + Constants.SPACE + status.toLowerCase()));
     }
 
     public Optional<VehicleConfiguration> getConfiguration() {

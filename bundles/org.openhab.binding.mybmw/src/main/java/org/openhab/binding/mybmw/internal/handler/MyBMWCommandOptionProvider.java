@@ -14,25 +14,24 @@ package org.openhab.binding.mybmw.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.events.EventPublisher;
-import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
+import org.openhab.core.thing.binding.BaseDynamicCommandDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
-import org.openhab.core.thing.type.DynamicStateDescriptionProvider;
+import org.openhab.core.thing.type.DynamicCommandDescriptionProvider;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Dynamic provider of state options while leaving other state description fields as original.
+ * Dynamic provider of command options while leaving other state description fields as original.
  *
  * @author Bernd Weymann - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, MyBMWOptionProvider.class })
 @NonNullByDefault
-public class MyBMWOptionProvider extends BaseDynamicStateDescriptionProvider {
-
+@Component(service = { DynamicCommandDescriptionProvider.class, MyBMWCommandOptionProvider.class })
+public class MyBMWCommandOptionProvider extends BaseDynamicCommandDescriptionProvider {
     @Activate
-    public MyBMWOptionProvider(final @Reference EventPublisher eventPublisher, //
+    public MyBMWCommandOptionProvider(final @Reference EventPublisher eventPublisher, //
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.eventPublisher = eventPublisher;

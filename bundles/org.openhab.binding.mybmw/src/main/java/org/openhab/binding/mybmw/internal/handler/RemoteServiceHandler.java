@@ -120,7 +120,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 // only one service executing
                 return false;
             }
-            serviceExecuting = Optional.of(service.name());
+            serviceExecuting = Optional.of(service.getId());
         }
         final MultiMap<String> dataMap = new MultiMap<String>();
         if (data.length > 0) {
@@ -139,7 +139,8 @@ public class RemoteServiceHandler implements StringResponseCallback {
             serviceExecuting.ifPresentOrElse(service -> {
                 if (counter >= GIVEUP_COUNTER) {
                     logger.warn("Giving up updating state for {} after {} times", service, GIVEUP_COUNTER);
-                    handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), ExecutionState.TIMEOUT.name());
+                    handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+                            ExecutionState.TIMEOUT.name().toLowerCase());
                     reset();
                     // immediately refresh data
                     handler.getData();
@@ -169,13 +170,14 @@ public class RemoteServiceHandler implements StringResponseCallback {
                         // service initiated - store event id for further MyBMW updates
                         executingEventId = Optional.of(esc.eventId);
                         handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
-                                ExecutionState.INITIATED.name());
+                                ExecutionState.INITIATED.name().toLowerCase());
                     } else if (esc.eventStatus != null) {
                         // service status updated
                         synchronized (this) {
-                            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), esc.eventStatus);
-                            if (ExecutionState.EXECUTED.name().equals(esc.eventStatus)
-                                    || ExecutionState.ERROR.name().equals(esc.eventStatus)) {
+                            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
+                                    esc.eventStatus.toLowerCase());
+                            if (ExecutionState.EXECUTED.name().equalsIgnoreCase(esc.eventStatus)
+                                    || ExecutionState.ERROR.name().equalsIgnoreCase(esc.eventStatus)) {
                                 // refresh loop ends - update of status handled in the normal refreshInterval.
                                 // Earlier update doesn't show better results!
                                 reset();
@@ -203,7 +205,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
     public void onError(NetworkError error) {
         synchronized (this) {
             handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null),
-                    ExecutionState.ERROR.name() + Constants.SPACE + Integer.toString(error.status));
+                    ExecutionState.ERROR.name().toLowerCase() + Constants.SPACE + Integer.toString(error.status));
             reset();
         }
     }

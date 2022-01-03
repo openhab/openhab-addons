@@ -17,7 +17,7 @@ import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
-import org.openhab.binding.mybmw.internal.handler.MyBMWOptionProvider;
+import org.openhab.binding.mybmw.internal.handler.MyBMWCommandOptionProvider;
 import org.openhab.binding.mybmw.internal.handler.VehicleHandler;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.i18n.LocaleProvider;
@@ -44,14 +44,14 @@ import org.osgi.service.component.annotations.Reference;
 public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
-    private final MyBMWOptionProvider optionProvider;
+    private final MyBMWCommandOptionProvider commandOptionProvider;
     private String localeLanguage;
 
     @Activate
-    public MyBMWHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference MyBMWOptionProvider op,
+    public MyBMWHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference MyBMWCommandOptionProvider cop,
             final @Reference LocaleProvider lp, final @Reference TimeZoneProvider timeZoneProvider) {
         httpClientFactory = hcf;
-        optionProvider = op;
+        commandOptionProvider = cop;
         localeLanguage = lp.getLocale().getLanguage().toLowerCase();
         Converter.setTimeZoneProvider(timeZoneProvider);
     }
@@ -67,7 +67,7 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
             return new MyBMWBridgeHandler((Bridge) thing, httpClientFactory, localeLanguage);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            VehicleHandler vh = new VehicleHandler(thing, optionProvider, thingTypeUID.getId(), localeLanguage);
+            VehicleHandler vh = new VehicleHandler(thing, commandOptionProvider, thingTypeUID.getId(), localeLanguage);
             return vh;
         }
         return null;

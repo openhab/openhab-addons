@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mybmw.internal.handler.RemoteServiceHandler.RemoteService;
-import org.openhab.core.types.StateOption;
+import org.openhab.core.types.CommandOption;
 
 /**
  * Helper class for Remote Service Commands
@@ -35,7 +35,7 @@ public class RemoteServiceUtils {
     private static final Map<String, RemoteService> COMMAND_SERVICES = Stream.of(RemoteService.values())
             .collect(Collectors.toUnmodifiableMap(RemoteService::getId, service -> service));
 
-    // [tofdo] Not working yet
+    // [todo] Not working yet
     private static final Set<RemoteService> ELECTRIC_SERVICES = Collections.<RemoteService> emptySet();// =
     // EnumSet.of(RemoteService.CHARGE_NOW,RemoteService.CHARGING_CONTROL);
 
@@ -43,10 +43,10 @@ public class RemoteServiceUtils {
         return Optional.ofNullable(COMMAND_SERVICES.get(command));
     }
 
-    public static List<StateOption> getOptions(final boolean isElectric) {
+    public static List<CommandOption> getOptions(final boolean isElectric) {
         return Stream.of(RemoteService.values())
                 .filter(service -> isElectric ? true : !ELECTRIC_SERVICES.contains(service))
-                .map(service -> new StateOption(service.getId(), service.getLabel()))
+                .map(service -> new CommandOption(service.getId(), service.getLabel()))
                 .collect(Collectors.toUnmodifiableList());
     }
 }

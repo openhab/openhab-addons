@@ -22,7 +22,9 @@ import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
 import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.binding.mybmw.internal.utils.RemoteServiceUtils;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.CommandOption;
 
 /**
  * The {@link VehiclePropertiesTest} tests stored fingerprint responses from BMW API
@@ -50,5 +52,12 @@ public class VehiclePropertiesTest {
     public void testChannelUID() {
         ThingTypeUID thingTypePHEV = new ThingTypeUID("mybmw", "plugin-hybrid-vehicle");
         assertEquals("plugin-hybrid-vehicle", thingTypePHEV.getId(), "Vehicle Type");
+    }
+
+    @Test
+    public void testRemoteServiceOptions() {
+        String commandReference = "[CommandOption [command=light-flash, label=Flash Lights], CommandOption [command=vehicle-finder, label=Vehicle Finder], CommandOption [command=door-lock, label=Door Lock], CommandOption [command=door-unlock, label=Door Unlock], CommandOption [command=horn-blow, label=Horn Blow], CommandOption [command=climate-now-start, label=Start Climate], CommandOption [command=climate-now-stop, label=Stop Climate]]";
+        List<CommandOption> l = RemoteServiceUtils.getOptions(true);
+        assertEquals(commandReference, l.toString(), "Commad Options");
     }
 }

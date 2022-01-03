@@ -72,8 +72,8 @@ public class ChargeStatisticsTest {
         this.imperial = imperial;
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
-        MyBMWOptionProvider op = mock(MyBMWOptionProvider.class);
-        cch = new VehicleHandler(thing, op, type, "de");
+        MyBMWCommandOptionProvider cop = mock(MyBMWCommandOptionProvider.class);
+        cch = new VehicleHandler(thing, cop, type, "de");
         VehicleConfiguration vc = new VehicleConfiguration();
         vc.vin = Constants.ANONYMOUS;
         Optional<VehicleConfiguration> ovc = Optional.of(vc);
