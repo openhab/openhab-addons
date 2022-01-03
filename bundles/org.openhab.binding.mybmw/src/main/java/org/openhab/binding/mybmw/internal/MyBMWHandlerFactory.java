@@ -19,9 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.handler.MyBMWBridgeHandler;
 import org.openhab.binding.mybmw.internal.handler.MyBMWCommandOptionProvider;
 import org.openhab.binding.mybmw.internal.handler.VehicleHandler;
-import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -49,11 +47,10 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public MyBMWHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference MyBMWCommandOptionProvider cop,
-            final @Reference LocaleProvider lp, final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference LocaleProvider lp) {
         httpClientFactory = hcf;
         commandOptionProvider = cop;
         localeLanguage = lp.getLocale().getLanguage().toLowerCase();
-        Converter.setTimeZoneProvider(timeZoneProvider);
     }
 
     @Override

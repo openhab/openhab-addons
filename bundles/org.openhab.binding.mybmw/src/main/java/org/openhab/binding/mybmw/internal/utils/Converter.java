@@ -21,7 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -34,7 +33,6 @@ import org.openhab.binding.mybmw.internal.dto.properties.Location;
 import org.openhab.binding.mybmw.internal.dto.properties.Range;
 import org.openhab.binding.mybmw.internal.dto.status.Mileage;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
-import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -79,7 +77,6 @@ public class Converter {
     private static final String SPLIT_HYPHEN = "-";
     private static final String SPLIT_BRACKET = "\\(";
 
-    public static Optional<TimeZoneProvider> timeZoneProvider = Optional.empty();
     // https://www.baeldung.com/gson-list
     public static final Type VEHICLE_LIST_TYPE = new TypeToken<ArrayList<Vehicle>>() {
     }.getType();
@@ -105,10 +102,6 @@ public class Converter {
     public static String getZonedDateTime(String input) {
         ZonedDateTime d = ZonedDateTime.parse(input);
         return d.format(Converter.DATE_INPUT_PATTERN);
-    }
-
-    public static void setTimeZoneProvider(TimeZoneProvider tzp) {
-        timeZoneProvider = Optional.of(tzp);
     }
 
     public static String toTitleCase(@Nullable String input) {
