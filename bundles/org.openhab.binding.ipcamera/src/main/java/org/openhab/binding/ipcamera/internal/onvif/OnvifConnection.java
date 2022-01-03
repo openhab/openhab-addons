@@ -14,7 +14,6 @@ package org.openhab.binding.ipcamera.internal.onvif;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -503,10 +502,9 @@ public class OnvifConnection {
         try {
             msgDigest = MessageDigest.getInstance("SHA-1");
             msgDigest.reset();
-            msgDigest.update(beforeEncryption.getBytes("utf8"));
+            msgDigest.update(beforeEncryption.getBytes(StandardCharsets.UTF_8));
             encryptedRaw = msgDigest.digest();
         } catch (NoSuchAlgorithmException e) {
-        } catch (UnsupportedEncodingException e) {
         }
         return Base64.getEncoder().encodeToString(encryptedRaw);
     }

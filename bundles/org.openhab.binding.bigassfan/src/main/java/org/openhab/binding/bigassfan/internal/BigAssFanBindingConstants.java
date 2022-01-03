@@ -34,9 +34,6 @@ public class BigAssFanBindingConstants {
     // Fans communicate on this port using both UDP (discovery) and TCP (commands)
     public static final int BAF_PORT = 31415;
 
-    // Commands sent to/from fan are ASCII
-    public static final String CHARSET = "US-ASCII";
-
     // BigAssFan Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_FAN = new ThingTypeUID(BINDING_ID, "fan");
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
