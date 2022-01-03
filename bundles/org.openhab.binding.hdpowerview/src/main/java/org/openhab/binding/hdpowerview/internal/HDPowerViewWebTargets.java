@@ -33,6 +33,7 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
+import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ import com.google.gson.JsonParser;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * @author Jacob Laursen - Add support for scene groups and automations
+ * @author Jacob Laursen - Added support for scene groups and automations
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
@@ -323,6 +324,25 @@ public class HDPowerViewWebTargets {
         String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("refresh", Boolean.toString(true)), null);
         return gson.fromJson(json, Shade.class);
+    }
+
+    /**
+     * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
+     * a specific shade's survey data, which will also refresh signal strength;
+     * fetches a JSON package that describes that survey, and wraps it in a Survey
+     * class instance
+     *
+     * @param shadeId id of the shade to be surveyed
+     * @return Survey class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Survey getShadeSurvey(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
+                Query.of("survey", Boolean.toString(true)), null);
+        return gson.fromJson(json, Survey.class);
     }
 
     /**
