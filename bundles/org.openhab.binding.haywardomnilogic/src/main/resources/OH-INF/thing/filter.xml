@@ -14,17 +14,27 @@
 		<channels>
 			<channel id="filterEnable" typeId="system.power"/>
 			<channel id="filterValvePosition" typeId="valvePosition"/>
-			<channel id="filterSpeed" typeId="filterSpeed"/>
+			<channel id="filterSpeedPercent" typeId="filterSpeedPercent"/>
+			<channel id="filterSpeedRpm" typeId="filterSpeedRpm"/>
+			<channel id="filterSpeedSelect" typeId="filterSpeedSelect"/>
 			<channel id="filterState" typeId="filterState"/>
 			<channel id="filterLastSpeed" typeId="filterLastSpeed"/>
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
-			<property name="Min Pump Percent"></property>
-			<property name="Max Pump Percent"></property>
-			<property name="Min Pump RPM"></property>
-			<property name="Max Pump RPM"></property>
+			<property name="vendor">Hayward</property>
+			<property name="filterSharedType"></property>
+			<property name="filterType"></property>
+			<property name="primingEnabled"></property>
+			<property name="minFilterPercent"></property>
+			<property name="maxFilterPercent"></property>
+			<property name="minFilterRPM"></property>
+			<property name="maxFilterRPM"></property>
+			<property name="lowFilterSpeed"></property>
+			<property name="mediumFilterSpeed"></property>
+			<property name="highFilterSpeed"></property>
+			<property name="customFilterSpeed"></property>
+			<property name="freezeProtectOverrideInterval"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
@@ -44,11 +54,33 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="filterSpeed">
+	<channel-type id="filterSpeedPercent">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Filter Speed</label>
-		<description>Filter Speed in %</description>
-		<state min="0" max="100" step="1.0" pattern="%d %unit%" readOnly="false"/>
+		<label>Filter Speed %</label>
+		<description>Filter Speed (%)</description>
+		<state min="0" max="100" step="5" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filterSpeedRpm">
+		<item-type>Number</item-type>
+		<label>Filter Speed RPM</label>
+		<description>Filter Speed (RPM)</description>
+		<state min="0" max="3600" step="200" pattern="%d" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filterSpeedSelect">
+		<item-type>String</item-type>
+		<label>Filter Speed States</label>
+		<description>Filter Speed States</description>
+		<state readOnly="false">
+			<options>
+				<option value="0">Off</option>
+				<option value="33">Low</option>
+				<option value="66">Medium</option>
+				<option value="100">High</option>
+				<option value="100">Custom</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="filterState">
@@ -76,7 +108,7 @@
 	<channel-type id="filterLastSpeed">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Last Speed</label>
-		<description>Last Speed</description>
+		<description>Last Speed (%)</description>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
