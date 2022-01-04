@@ -54,6 +54,11 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNELTYPE_SCENE_GROUP_ACTIVATE = "scene-group-activate";
     public static final String CHANNELTYPE_AUTOMATION_ENABLED = "automation-enabled";
 
+    public static final String PROPERTY_SHADE_TYPE = "type";
+    public static final String PROPERTY_SHADE_CAPABILITIES = "capabilities";
+    public static final String PROPERTY_SECONDARY_RAIL_DETECTED = "secondaryRailDetected";
+    public static final String PROPERTY_TILT_ANYWHERE_DETECTED = "tiltAnywhereDetected";
+
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
