@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
  * The {@link AbstractRadoneyeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Pauli Anttila - Initial contribution
- * @author Kai Kreuzer - Added Radoneye Wave Mini support
+ * @author Peter Obel - Initial contribution
+ * @author the authors of the airthings bluetooth binding
  */
 @NonNullByDefault
 abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {

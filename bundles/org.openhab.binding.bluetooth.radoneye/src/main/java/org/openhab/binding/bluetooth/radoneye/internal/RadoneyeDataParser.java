@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link RadoneyeDataParser} is responsible for parsing data from Wave Plus device format.
  *
- * @author Pauli Anttila - Initial contribution
- * @author Kai Kreuzer - Added Radoneye Wave Mini support
+ * @author Peter Obel - Initial contribution
+ * @author the authors of the airthings bluetooth binding
  */
 @NonNullByDefault
 public class RadoneyeDataParser {

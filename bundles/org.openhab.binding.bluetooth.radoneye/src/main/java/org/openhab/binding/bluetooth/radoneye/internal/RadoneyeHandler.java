@@ -32,7 +32,8 @@ import org.slf4j.LoggerFactory;
  * The {@link RadoneyeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author Kai Kreuzer - Initial contribution
+ * @author Peter Obel - Initial contribution
+ * @author the authors of the airthings bluetooth binding
  */
 @NonNullByDefault
 public class RadoneyeHandler extends AbstractRadoneyeHandler {
