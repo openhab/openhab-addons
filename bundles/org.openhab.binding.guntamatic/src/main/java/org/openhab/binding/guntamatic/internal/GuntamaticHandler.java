@@ -24,6 +24,11 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+import javax.measure.quantity.Volume;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -31,8 +36,14 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.http.HttpStatus.Code;
+import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -66,9 +77,9 @@ public class GuntamaticHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(GuntamaticHandler.class);
     private final HttpClient httpClient;
 
-    private @Nullable GuntamaticConfiguration config;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
 
+    private GuntamaticConfiguration config = new GuntamaticConfiguration();
     private Boolean channelsInitialized = false;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
     private Map<Integer, String> channels = new HashMap<>();
@@ -139,15 +150,53 @@ public class GuntamaticHandler extends BaseThingHandler {
         for (Integer i : channels.keySet()) {
             String channel = channels.get(i);
             String unit = units.get(i);
-            if ((channel != null) && (unit != null)) {
+            if ((channel != null) && (unit != null) && (i < daqdata.length)) {
                 String value = daqdata[i].trim();
                 Channel chn = thing.getChannel(channel);
-                if ((chn != null) && ("Switch".equals(chn.getAcceptedItemType()))) {
-                    // Guntamatic uses German OnOff when configured to German and English OnOff for all other languages
-                    value = value.replace("AUS", "OFF").replace("EIN", "ON");
+                if (chn != null) {
+                    String typeName = chn.getAcceptedItemType();
+                    if ("Switch".equals(typeName)) {
+                        // Guntamatic uses German OnOff when configured to German and English OnOff for all other
+                        // languages
+                        if ("ON".equals(value) || "EIN".equals(value)) {
+                            updateState(channel, OnOffType.ON);
+                        } else if ("OFF".equals(value) || "AUS".equals(value)) {
+                            updateState(channel, OnOffType.OFF);
+                        }
+                    } else {
+                        State newState = null;
+                        if ("Number".equals(typeName)) {
+                            newState = new DecimalType(value);
+                        } else if ("Number:Dimensionless".equals(typeName)) {
+                            if ("%".equals(unit)) {
+                                newState = new QuantityType<Dimensionless>(Double.parseDouble(value), Units.PERCENT);
+                            }
+                        } else if ("Number:Temperature".equals(typeName)) {
+                            if ("°C".equals(unit)) {
+                                newState = new QuantityType<Temperature>(Double.parseDouble(value), SIUnits.CELSIUS);
+                            } else if ("°F".equals(unit)) {
+                                newState = new QuantityType<Temperature>(Double.parseDouble(value),
+                                        ImperialUnits.FAHRENHEIT);
+                            }
+                        } else if ("Number:Volume".equals(typeName)) {
+                            if ("m³".equals(unit)) {
+                                newState = new QuantityType<Volume>(Double.parseDouble(value), SIUnits.CUBIC_METRE);
+                            }
+                        } else if ("Number:Time".equals(typeName)) {
+                            if ("d".equals(unit)) {
+                                newState = new QuantityType<Time>(Double.parseDouble(value), Units.DAY);
+                            } else if ("h".equals(unit)) {
+                                newState = new QuantityType<Time>(Double.parseDouble(value), Units.HOUR);
+                            }
+                        } else if ("String".equals(typeName)) {
+                            newState = new StringType(value);
+                        }
+
+                        if (newState != null) {
+                            updateState(channel, newState);
+                        }
+                    }
                 }
-                State newState = new StringType(value + unit);
-                updateState(channel, newState);
             } else {
                 logger.warn("Data for not intialized ChannelId '{}' received", i);
             }
@@ -160,9 +209,13 @@ public class GuntamaticHandler extends BaseThingHandler {
             JsonArray json = JsonParser.parseString(html.replace(",,", ",")).getAsJsonArray();
             for (int i = 1; i < json.size(); i++) {
                 JsonObject points = json.get(i).getAsJsonObject();
-                int id = points.get("id").getAsInt();
-                String type = points.get("type").getAsString();
-                types.put(id, type);
+                if (points.has("id")) {
+                    int id = points.get("id").getAsInt();
+                    if (points.has("type")) {
+                        String type = points.get("type").getAsString();
+                        types.put(id, type);
+                    }
+                }
             }
         } catch (JsonParseException e) {
             logger.warn("Invalid JSON data will be ignored: '{}'", html.replace(",,", ","));
@@ -315,62 +368,57 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     private @Nullable String sendGetRequest(String url, String... params) {
         String errorReason = "";
-        if (config == null) {
-            errorReason = "Invalid Binding configuration";
-        } else {
-            String req = "http://" + config.hostname + url;
+        String req = "http://" + config.hostname + url;
 
-            if (!config.key.isBlank()) {
-                req += "?key=" + config.key;
+        if (!config.key.isBlank()) {
+            req += "?key=" + config.key;
+        }
+
+        for (int i = 0; i < params.length; i++) {
+            if ((i == 0) && config.key.isBlank()) {
+                req += "?";
+            } else {
+                req += "&";
             }
+            req += params[i];
+        }
 
-            for (int i = 0; i < params.length; i++) {
-                if ((i == 0) && config.key.isBlank()) {
-                    req += "?";
-                } else {
-                    req += "&";
+        Request request = httpClient.newRequest(req);
+        request.method(HttpMethod.GET).timeout(30, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
+
+        try {
+            ContentResponse contentResponse = request.send();
+            if (HttpStatus.OK_200 == contentResponse.getStatus()) {
+                if (!this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                    updateStatus(ThingStatus.ONLINE);
                 }
-                req += params[i];
-            }
-
-            Request request = httpClient.newRequest(req);
-            request.method(HttpMethod.GET).timeout(60, TimeUnit.SECONDS).header(HttpHeader.ACCEPT_ENCODING, "gzip");
-
-            try {
-                ContentResponse contentResponse = request.send();
-                if (Code.OK.equals(contentResponse.getStatus())) {
-                    if (!this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                        updateStatus(ThingStatus.ONLINE);
+                try {
+                    String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
+                    if (url.equals(DAQEXTDESC_URL)) {
+                        parseAndJsonInit(response);
+                    } else if (url.equals(DAQDATA_URL)) {
+                        parseAndUpdate(response);
+                    } else if (url.equals(DAQDESC_URL)) {
+                        parseAndInit(response);
+                    } else if (url.equals(PARSET_URL)) {
+                        // via return
                     }
-                    try {
-                        String response = new String(contentResponse.getContent(), Charset.forName(config.encoding));
-                        if (url.equals(DAQEXTDESC_URL)) {
-                            parseAndJsonInit(response);
-                        } else if (url.equals(DAQDATA_URL)) {
-                            parseAndUpdate(response);
-                        } else if (url.equals(DAQDESC_URL)) {
-                            parseAndInit(response);
-                        } else if (url.equals(PARSET_URL)) {
-                            // via return
-                        }
-                        return response;
-                    } catch (IllegalArgumentException e) {
-                        errorReason = String.format("IllegalArgumentException: %s",
-                                ((e.getMessage() != null) ? e.getMessage() : ""));
-                    }
-                } else {
-                    errorReason = String.format("Guntamatic request failed with %d: %s", contentResponse.getStatus(),
-                            ((contentResponse.getReason() != null) ? contentResponse.getReason() : ""));
+                    return response;
+                } catch (IllegalArgumentException e) {
+                    errorReason = String.format("IllegalArgumentException: %s",
+                            ((e.getMessage() != null) ? e.getMessage() : ""));
                 }
-            } catch (TimeoutException e) {
-                errorReason = "TimeoutException: Guntamatic was not reachable on your network";
-            } catch (ExecutionException e) {
-                errorReason = String.format("ExecutionException: %s", ((e.getMessage() != null) ? e.getMessage() : ""));
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                errorReason = String.format("InterruptedException: %s",
-                        ((e.getMessage() != null) ? e.getMessage() : ""));
+            } else {
+                errorReason = String.format("Guntamatic request failed with %d: %s", contentResponse.getStatus(),
+                        ((contentResponse.getReason() != null) ? contentResponse.getReason() : ""));
             }
+        } catch (TimeoutException e) {
+            errorReason = "TimeoutException: Guntamatic was not reachable on your network";
+        } catch (ExecutionException e) {
+            errorReason = String.format("ExecutionException: %s", ((e.getMessage() != null) ? e.getMessage() : ""));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            errorReason = String.format("InterruptedException: %s", ((e.getMessage() != null) ? e.getMessage() : ""));
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorReason);
         return null;
