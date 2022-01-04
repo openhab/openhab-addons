@@ -215,8 +215,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         logger.debug("Connected to connector {} at {}:{}", connectorId, addr, PORT);
 
         try {
-            // Start ELRO Connects listener. This listener will act on all messages coming from
-            // ELRO K1 Connector.
+            // Start ELRO Connects listener. This listener will act on all messages coming from ELRO K1 Connector.
             (new NamedThreadFactory(THREAD_NAME_PREFIX + thing.getUID().getAsString()).newThread(this::runElroEvents))
                     .start();
 
@@ -233,9 +232,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             updateState(SCENE, new StringType(String.valueOf(currentScene)));
         } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Error in communication getting initial data: " + e.getMessage());
-            restartCommunication();
+            restartCommunication("Error in communication getting initial data: " + e.getMessage());
             return;
         }
 
@@ -273,8 +270,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
             awaitResponse(true);
             send(socket, queryString, false);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error initiating communication.");
-            restartCommunication();
+            restartCommunication("Error in communication, no socket to send keep alive");
         }
     }
 
@@ -297,22 +293,31 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
         }
         this.socket = null;
 
-        restart = false;
-
         logger.debug("Communication stopped");
     }
 
     /**
-     * Close and restart communication with ELRO Connects system.
+     * Close and restart communication with ELRO Connects system, to be called after error in communication.
+     *
+     * @param offlineMessage message for thing status
      */
-    private synchronized void restartCommunication() {
+    private synchronized void restartCommunication(String offlineMessage) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, offlineMessage);
+
         stopCommunication();
 
         logger.debug("Restart communication");
 
         if (!restart) {
             restart = true;
-            scheduler.schedule(this::startCommunication, RESTART_DELAY_MS, TimeUnit.MILLISECONDS);
+            scheduler.schedule(this::startFromRestart, RESTART_DELAY_MS, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private synchronized void startFromRestart() {
+        restart = false;
+        if (ThingStatus.OFFLINE.equals(thing.getStatus())) {
+            startCommunication();
         }
     }
 
@@ -344,13 +349,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                     processMessage(socket, response);
                 }
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Communication error in listener: " + e.getMessage());
-                restartCommunication();
+                restartCommunication("Communication error in listener: " + e.getMessage());
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error initiating communication.");
-            restartCommunication();
+            restartCommunication("Error in communication, no socket to start listener");
         }
     }
 
@@ -365,9 +367,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 syncScenes();
                 getCurrentScene();
             } catch (IOException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error in communication refreshing device status: " + e.getMessage());
-                restartCommunication();
+                restartCommunication("Error in communication refreshing device status: " + e.getMessage());
             }
         }, refreshInterval, refreshInterval, TimeUnit.SECONDS);
     }
@@ -603,11 +603,10 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 : addr;
         if (address == null) {
             if (broadcast) {
-                logger.warn("No broadcast address, check network configuration");
+                restartCommunication("No broadcast address, check network configuration");
             } else {
-                logger.debug("Failed sending, hub address was not found");
+                restartCommunication("Failed sending, hub address was not set");
             }
-            restartCommunication();
             return;
         }
         logger.debug("Send: {}", query);
@@ -755,9 +754,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
                 try {
                     selectScene(((DecimalType) command).intValue());
                 } catch (IOException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Error in communication while setting scene: " + e.getMessage());
-                    restartCommunication();
+                    restartCommunication("Error in communication while setting scene: " + e.getMessage());
                     return;
                 }
             }
