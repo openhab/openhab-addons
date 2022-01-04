@@ -75,7 +75,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     ByteResponseCallback imageCallback = new ImageCallback();
 
     private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
-    private Optional<String> chargeProfileSent = Optional.empty();
 
     public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, String driveTrain) {
         super(thing, cop, driveTrain);
@@ -241,12 +240,21 @@ public class VehicleHandler extends VehicleChannelHandler {
         });
     }
 
-    public void updateRemoteExecutionStatus(@Nullable String service, @Nullable String status) {
+    public void updateRemoteExecutionStatus(@Nullable String service, String status) {
         // [todo] CHARGING_CONTROL not working yet
         // if (RemoteService.CHARGING_CONTROL.toString().equals(service)
         // && ExecutionState.EXECUTED.name().equals(status)) {
-        // saveChargeProfileSent();
-        // }
+        // editTimeout.ifPresent(timeout -> {
+        // timeout.cancel(true);
+        // editTimeout = Optional.empty();
+        // });
+        // chargeProfileSent.ifPresent(sent -> {
+        // // chargeProfileCache = Optional.of(sent);
+        // chargeProfileSent = Optional.empty();
+        // chargeProfileEdit = Optional.empty();
+        // // chargeProfileCache.ifPresent(this::updateChargeProfileFromContent);
+        // });
+        // // }
         updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE,
                 StringType.valueOf((service == null ? "-" : service) + Constants.SPACE + status.toLowerCase()));
     }
@@ -447,19 +455,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         });
     }
 
-    private void saveChargeProfileSent() {
-        editTimeout.ifPresent(timeout -> {
-            timeout.cancel(true);
-            editTimeout = Optional.empty();
-        });
-        chargeProfileSent.ifPresent(sent -> {
-            // chargeProfileCache = Optional.of(sent);
-            chargeProfileSent = Optional.empty();
-            chargeProfileEdit = Optional.empty();
-            // chargeProfileCache.ifPresent(this::updateChargeProfileFromContent);
-        });
-    }
-
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(MyBMWActions.class);
@@ -484,11 +479,11 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     public void sendChargeProfile(Optional<ChargeProfileWrapper> profile) {
-        profile.map(profil -> profil.getJson()).ifPresent(json -> {
-            logger.debug("sending charging profile: {}", json);
-            chargeProfileSent = Optional.of(json);
-            // [todo] Not working yet
-            // remote.ifPresent(rem -> rem.execute(RemoteService.CHARGING_CONTROL, json));
-        });
+        // profile.map(profil -> profil.getJson()).ifPresent(json -> {
+        // logger.debug("sending charging profile: {}", json);
+        // chargeProfileSent = Optional.of(json);
+        // [todo] Not working yet
+        // remote.ifPresent(rem -> rem.execute(RemoteService.CHARGING_CONTROL, json));
+        // });
     }
 }

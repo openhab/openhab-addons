@@ -328,4 +328,15 @@ public class Converter {
         }
         return Converter.getGson().toJson(vehicleList);
     }
+
+    public static int stringToInt(String intStr) {
+        int integer = Constants.INT_UNDEF;
+        try {
+            integer = Integer.parseInt(intStr);
+
+        } catch (Exception e) {
+            LOGGER.debug("Unable to convert range {} into int value", intStr);
+        }
+        return integer;
+    }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mybmw.internal.util;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -41,7 +41,7 @@ public class FileReader {
             return buf.toString();
         } catch (IOException e) {
             // fail if file cannot be read
-            assertTrue(false);
+            assertEquals(filename, Constants.EMPTY, "Read failute " + filename);
         }
         return Constants.UNDEF;
     }

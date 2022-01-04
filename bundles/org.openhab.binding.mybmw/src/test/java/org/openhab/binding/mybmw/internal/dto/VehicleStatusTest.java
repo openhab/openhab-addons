@@ -61,4 +61,49 @@ public class VehicleStatusTest {
         assertEquals(2, v.status.chargingProfile.getTimerId(2).id, "Timer ID");
         assertEquals("[sunday]", v.status.chargingProfile.getTimerId(2).timerWeekDays.toString(), "Timer Weekdays");
     }
+
+    @Test
+    public void testGuessRange() {
+        /**
+         * PHEV G01
+         * fuelIndicator electric unit = %
+         * fuelIndicator fuel unit = l
+         * fuelIndicator hybrid unit = null
+         */
+        String vehiclesJSON = FileReader.readFileInString("src/test/resources/responses/G01/vehicles_v2_bmw_0.json");
+        List<Vehicle> vehicleList = Converter.getVehicleList(vehiclesJSON);
+        assertEquals(1, vehicleList.size(), "Vehicles found");
+        Vehicle vehicle = vehicleList.get(0);
+        assertEquals(2, VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle), "Electric Range");
+        assertEquals(437, VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle), "Fuel Range");
+        assertEquals(439, VehicleStatusUtils.getRange(Constants.PHEV, vehicle), "Hybrid Range");
+
+        /**
+         * Electric REX I01
+         * fuelIndicator electric unit = %
+         * fuelIndicator fuel unit = null
+         * fuelIndicator hybrid unit = null
+         */
+        vehiclesJSON = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles_v2_bmw_0.json");
+        vehicleList = Converter.getVehicleList(vehiclesJSON);
+        assertEquals(1, vehicleList.size(), "Vehicles found");
+        vehicle = vehicleList.get(0);
+        assertEquals(164, VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle), "Electric Range");
+        assertEquals(64, VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle), "Fuel Range");
+        assertEquals(228, VehicleStatusUtils.getRange(Constants.PHEV, vehicle), "Hybrid Range");
+
+        /**
+         * PHEV G05
+         * fuelIndicator electric unit = %
+         * fuelIndicator fuel unit = %
+         * fuelIndicator hybrid unit = null
+         */
+        vehiclesJSON = FileReader.readFileInString("src/test/resources/responses/G05/vehicles_v2_bmw_0.json");
+        vehicleList = Converter.getVehicleList(vehiclesJSON);
+        assertEquals(1, vehicleList.size(), "Vehicles found");
+        vehicle = vehicleList.get(0);
+        assertEquals(48, VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle), "Electric Range");
+        assertEquals(418, VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle), "Fuel Range");
+        assertEquals(466, VehicleStatusUtils.getRange(Constants.PHEV, vehicle), "Hybrid Range");
+    }
 }

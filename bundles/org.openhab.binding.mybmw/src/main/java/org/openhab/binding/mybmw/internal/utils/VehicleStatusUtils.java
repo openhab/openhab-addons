@@ -138,7 +138,7 @@ public class VehicleStatusUtils {
     /**
      * The range values delivered by BMW are quite ambiguous!
      * - status fuel indicators are missing a unique identifier
-     * - properties ranges delivering wrong values for hybrid range
+     * - properties ranges delivering wrong values for hybrid and fuel range
      * - properties ranges are not reflecting mi / km - every time km
      *
      * So getRange will try
@@ -151,76 +151,46 @@ public class VehicleStatusUtils {
      * @return
      */
     public static int getRange(String unitJson, Vehicle vehicle) {
-        // First: fuel indicators based on unit
-        int range = getFuelIndicatorRange(unitJson, vehicle.status.fuelIndicators);
-
-        // if not successful try ranges in properties section
-        if (range == -1) {
-            if (unitJson.equals(Constants.UNIT_LITER_JSON)) {
-                if (vehicle.properties.combustionRange != null) {
-                    range = vehicle.properties.combustionRange.distance.value;
-                }
-            } else if (unitJson.equals(Constants.UNIT_PRECENT_JSON)) {
-                if (vehicle.properties.electricRange != null) {
-                    range = vehicle.properties.electricRange.distance.value;
-                }
-            }
+        if (vehicle.status.fuelIndicators.size() == 1) {
+            return Converter.stringToInt(vehicle.status.fuelIndicators.get(0).rangeValue);
+        } else {
+            return guessRange(unitJson, vehicle);
         }
-
-        // still not valid - take a guess
-        if (range == -1) {
-            range = VehicleStatusUtils.guessRange(unitJson, vehicle);
-        }
-        return range;
     }
 
-    public static int getFuelIndicatorRange(String unitJson, List<FuelIndicator> indicators) {
-        String rangeString = Constants.EMPTY;
-        for (FuelIndicator fuelIndicator : indicators) {
-            if (fuelIndicator.levelUnits == null) {
-                // combined range doesn't contain a valid unit
-                if (unitJson.equals(Constants.PHEV)) {
-                    rangeString = fuelIndicator.rangeValue;
-                    break;
-                }
-            } else if (fuelIndicator.levelUnits.equals(unitJson)) {
-                rangeString = fuelIndicator.rangeValue;
-            }
-        }
-        int range = Constants.INT_UNDEF;
-        try {
-            range = Integer.parseInt(rangeString);
-
-        } catch (Exception e) {
-            LOGGER.info("Unable to convert range {} into int value", rangeString);
-        }
-        return range;
-    }
-
+    /**
+     * Guesses the range from 3 fuelindicators
+     * - electric range calculation is correct
+     * - for the 2 other values:
+     * -- smaller one is assigned to fuel range
+     * -- bigger one is assigned to hybrid range
+     *
+     * @see VehicleStatusTest testGuessRange
+     *
+     * @param unitJson
+     * @param vehicle
+     * @return
+     */
     public static int guessRange(String unitJson, Vehicle vehicle) {
         int electricGuess = Constants.INT_UNDEF;
         int fuelGuess = Constants.INT_UNDEF;
         int hybridGuess = Constants.INT_UNDEF;
-        int undefinedGuess = Constants.INT_UNDEF;
         for (FuelIndicator fuelIndicator : vehicle.status.fuelIndicators) {
-            if (fuelIndicator.levelUnits == null) {
-                if (undefinedGuess == Constants.INT_UNDEF) {
-                    // found value - store!
-                    undefinedGuess = Integer.parseInt(fuelIndicator.rangeValue);
-                } else {
-                    // there's already a value! Compare and guess!
-                    int newGuess = Integer.parseInt(fuelIndicator.rangeValue);
-                    if (newGuess > undefinedGuess) {
-                        hybridGuess = newGuess;
-                        fuelGuess = undefinedGuess;
-                    } else {
-                        hybridGuess = undefinedGuess;
-                        fuelGuess = newGuess;
-                    }
-                }
-            } else if (fuelIndicator.levelUnits.equals(Constants.UNIT_PRECENT_JSON)) {
+            // electric range - this fits 100%
+            if (Constants.UNIT_PRECENT_JSON.equals(fuelIndicator.levelUnits)
+                    && fuelIndicator.chargingStatusType != null) {
                 // found electric
-                electricGuess = Integer.parseInt(fuelIndicator.rangeValue);
+                electricGuess = Converter.stringToInt(fuelIndicator.rangeValue);
+            } else {
+                if (fuelGuess == Constants.INT_UNDEF) {
+                    // fuel not set? then assume it's fuel
+                    fuelGuess = Converter.stringToInt(fuelIndicator.rangeValue);
+                } else {
+                    // fuel already guessed - take smaller value for fuel, bigger for hybrid
+                    int newGuess = Converter.stringToInt(fuelIndicator.rangeValue);
+                    hybridGuess = Math.max(fuelGuess, newGuess);
+                    fuelGuess = Math.min(fuelGuess, newGuess);
+                }
             }
         }
         switch (unitJson) {

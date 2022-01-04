@@ -1,6 +1,6 @@
 [
 	{
-		"vin": "WBY1Z81040V905639",
+		"vin": "anonymous",
 		"model": "i3 94 (+ REX)",
 		"year": 2017,
 		"brand": "BMW",
@@ -173,11 +173,11 @@
 			],
 			"vehicleLocation": {
 				"coordinates": {
-					"latitude": 51.486759,
-					"longitude": 9.385505
+					"latitude": 1.234,
+					"longitude": 9.876
 				},
 				"address": {
-					"formatted": "Kelzer Weg 15A, 34369 Hofgeismar"
+					"formatted": "anonymous"
 				},
 				"heading": 73
 			},
