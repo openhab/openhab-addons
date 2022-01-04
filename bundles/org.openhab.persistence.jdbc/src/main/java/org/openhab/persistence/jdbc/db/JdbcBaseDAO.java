@@ -342,10 +342,14 @@ public class JdbcBaseDAO {
         String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
+        if (m == null) {
+            logger.debug("JDBC::doGetHistItemFilterQuery Query failed. Returning an empty list.");
+            return List.of();
+        }
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
-        return m.stream().map(o -> new JdbcHistoricItem(itemName, getState(item, unit, o[1]), objectAsDate(o[0])))
+        return m.stream().map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsDate(o[0])))
                 .collect(Collectors.<HistoricItem> toList());
     }
 
@@ -489,7 +493,7 @@ public class JdbcBaseDAO {
     /*****************
      * H E L P E R S *
      *****************/
-    protected State getState(Item item, @Nullable Unit<? extends Quantity<?>> unit, Object v) {
+    protected State objectAsState(Item item, @Nullable Unit<? extends Quantity<?>> unit, Object v) {
         logger.debug(
                 "JDBC::ItemResultHandler::handleResult getState value = '{}', unit = '{}', getClass = '{}', clazz = '{}'",
                 v, unit, v.getClass(), v.getClass().getSimpleName());
