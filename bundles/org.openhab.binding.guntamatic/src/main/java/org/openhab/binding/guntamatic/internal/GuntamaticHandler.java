@@ -194,6 +194,8 @@ public class GuntamaticHandler extends BaseThingHandler {
 
                         if (newState != null) {
                             updateState(channel, newState);
+                        } else {
+                            logger.warn("Data for unknown typeName '{}' or unit '{}' received", typeName, unit);
                         }
                     }
                 }
