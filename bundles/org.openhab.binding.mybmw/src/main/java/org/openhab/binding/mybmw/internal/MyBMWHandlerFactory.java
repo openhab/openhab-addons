@@ -30,6 +30,8 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MyBMWHandlerFactory} is responsible for creating things and thing
@@ -40,6 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.mybmw", service = ThingHandlerFactory.class)
 public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
+    private final Logger logger = LoggerFactory.getLogger(MyBMWHandlerFactory.class);
 
     private final HttpClientFactory httpClientFactory;
     private final MyBMWCommandOptionProvider commandOptionProvider;
@@ -51,6 +54,7 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
         httpClientFactory = hcf;
         commandOptionProvider = cop;
         localeLanguage = lp.getLocale().getLanguage().toLowerCase();
+        logger.info("Locale Language Detection {}", localeLanguage);
     }
 
     @Override
@@ -64,7 +68,7 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
             return new MyBMWBridgeHandler((Bridge) thing, httpClientFactory, localeLanguage);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            VehicleHandler vh = new VehicleHandler(thing, commandOptionProvider, thingTypeUID.getId(), localeLanguage);
+            VehicleHandler vh = new VehicleHandler(thing, commandOptionProvider, thingTypeUID.getId());
             return vh;
         }
         return null;

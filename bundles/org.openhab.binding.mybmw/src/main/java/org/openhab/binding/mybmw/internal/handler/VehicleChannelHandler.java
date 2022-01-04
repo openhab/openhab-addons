@@ -77,7 +77,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected boolean hasFuel = false;
     protected boolean isElectric = false;
     protected boolean isHybrid = false;
-    protected String localeLanguage;
 
     // List Interfaces
     protected List<CBS> serviceList = new ArrayList<CBS>();
@@ -93,10 +92,9 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     protected Optional<String> vehicleStatusCache = Optional.empty();
     protected Optional<byte[]> imageCache = Optional.empty();
 
-    public VehicleChannelHandler(Thing thing, MyBMWCommandOptionProvider cop, String type, String langauge) {
+    public VehicleChannelHandler(Thing thing, MyBMWCommandOptionProvider cop, String type) {
         super(thing);
         commandOptionProvider = cop;
-        localeLanguage = langauge;
 
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
                 || type.equals(VehicleType.ELECTRIC_REX.toString());

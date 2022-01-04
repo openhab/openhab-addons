@@ -77,8 +77,8 @@ public class VehicleHandler extends VehicleChannelHandler {
     private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
     private Optional<String> chargeProfileSent = Optional.empty();
 
-    public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, String driveTrain, String language) {
-        super(thing, cop, driveTrain, language);
+    public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, String driveTrain) {
+        super(thing, cop, driveTrain);
     }
 
     @Override

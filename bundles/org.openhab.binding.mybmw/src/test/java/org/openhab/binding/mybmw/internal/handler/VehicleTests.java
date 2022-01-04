@@ -83,7 +83,7 @@ public class VehicleTests {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         MyBMWCommandOptionProvider cop = mock(MyBMWCommandOptionProvider.class);
-        cch = new VehicleHandler(thing, cop, type, "de");
+        cch = new VehicleHandler(thing, cop, type);
         VehicleConfiguration vc = new VehicleConfiguration();
         vc.vin = vin;
         Optional<VehicleConfiguration> ovc = Optional.of(vc);

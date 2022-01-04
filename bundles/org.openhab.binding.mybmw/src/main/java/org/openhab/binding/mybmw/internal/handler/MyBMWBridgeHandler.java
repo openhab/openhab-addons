@@ -76,6 +76,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
         if (config.language.equals(Constants.LANGUAGE_AUTODETECT)) {
             config.language = localeLanguage;
         }
+        logger.info("Language selection {}", config.language);
         if (!checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
