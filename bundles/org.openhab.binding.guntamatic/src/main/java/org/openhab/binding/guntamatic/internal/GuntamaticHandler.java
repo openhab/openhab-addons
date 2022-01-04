@@ -164,38 +164,46 @@ public class GuntamaticHandler extends BaseThingHandler {
                             updateState(channel, OnOffType.OFF);
                         }
                     } else {
-                        State newState = null;
-                        if ("Number".equals(typeName)) {
-                            newState = new DecimalType(value);
-                        } else if ("Number:Dimensionless".equals(typeName)) {
-                            if ("%".equals(unit)) {
-                                newState = new QuantityType<Dimensionless>(Double.parseDouble(value), Units.PERCENT);
+                        try {
+                            State newState = null;
+                            if ("Number".equals(typeName)) {
+                                newState = new DecimalType(value);
+                            } else if ("Number:Dimensionless".equals(typeName)) {
+                                if ("%".equals(unit)) {
+                                    newState = new QuantityType<Dimensionless>(Double.parseDouble(value),
+                                            Units.PERCENT);
+                                }
+                            } else if ("Number:Temperature".equals(typeName)) {
+                                if ("°C".equals(unit)) {
+                                    newState = new QuantityType<Temperature>(Double.parseDouble(value),
+                                            SIUnits.CELSIUS);
+                                } else if ("°F".equals(unit)) {
+                                    newState = new QuantityType<Temperature>(Double.parseDouble(value),
+                                            ImperialUnits.FAHRENHEIT);
+                                }
+                            } else if ("Number:Volume".equals(typeName)) {
+                                if ("m³".equals(unit)) {
+                                    newState = new QuantityType<Volume>(Double.parseDouble(value), SIUnits.CUBIC_METRE);
+                                }
+                            } else if ("Number:Time".equals(typeName)) {
+                                if ("d".equals(unit)) {
+                                    newState = new QuantityType<Time>(Double.parseDouble(value), Units.DAY);
+                                } else if ("h".equals(unit)) {
+                                    newState = new QuantityType<Time>(Double.parseDouble(value), Units.HOUR);
+                                }
+                            } else if ("String".equals(typeName)) {
+                                newState = new StringType(value);
                             }
-                        } else if ("Number:Temperature".equals(typeName)) {
-                            if ("°C".equals(unit)) {
-                                newState = new QuantityType<Temperature>(Double.parseDouble(value), SIUnits.CELSIUS);
-                            } else if ("°F".equals(unit)) {
-                                newState = new QuantityType<Temperature>(Double.parseDouble(value),
-                                        ImperialUnits.FAHRENHEIT);
-                            }
-                        } else if ("Number:Volume".equals(typeName)) {
-                            if ("m³".equals(unit)) {
-                                newState = new QuantityType<Volume>(Double.parseDouble(value), SIUnits.CUBIC_METRE);
-                            }
-                        } else if ("Number:Time".equals(typeName)) {
-                            if ("d".equals(unit)) {
-                                newState = new QuantityType<Time>(Double.parseDouble(value), Units.DAY);
-                            } else if ("h".equals(unit)) {
-                                newState = new QuantityType<Time>(Double.parseDouble(value), Units.HOUR);
-                            }
-                        } else if ("String".equals(typeName)) {
-                            newState = new StringType(value);
-                        }
 
-                        if (newState != null) {
-                            updateState(channel, newState);
-                        } else {
-                            logger.warn("Data for unknown typeName '{}' or unit '{}' received", typeName, unit);
+                            if (newState != null) {
+                                updateState(channel, newState);
+                            } else {
+                                logger.warn("Data for unknown typeName '{}' or unit '{}' received", typeName, unit);
+                            }
+                        } catch (NullPointerException e) {
+                            logger.warn("NullPointerException: {}", ((e.getMessage() != null) ? e.getMessage() : ""));
+                        } catch (NumberFormatException e) {
+                            logger.warn("NumberFormatException: {}", ((e.getMessage() != null) ? e.getMessage() : ""));
                         }
                     }
                 }
