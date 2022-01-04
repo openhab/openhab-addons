@@ -81,7 +81,7 @@ public class RadoneyeDiscoveryParticipant implements BluetoothDiscoveryParticipa
 
     private boolean isRadoneyeDevice(BluetoothDiscoveryDevice device) {
         String manufacturerMacId = device.getAddress().toString().toLowerCase().replace(":", "").substring(0, 6);
-        if (manufacturerMacId == RADONEYE_BLUETOOTH_COMPANY_ID.toLowerCase()) {
+        if (manufacturerMacId.equals(RADONEYE_BLUETOOTH_COMPANY_ID.toLowerCase())) {
             return true;
         }
         return false;
