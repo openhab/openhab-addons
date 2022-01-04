@@ -644,7 +644,7 @@ public class EpsonProjectorDevice {
      * Error Code Description
      */
     public String getErrorString() throws EpsonProjectorCommandException, EpsonProjectorException {
-        int err = queryInt("ERR?");
+        int err = queryHexInt("ERR?");
         return ErrorMessage.forCode(err);
     }
 }
