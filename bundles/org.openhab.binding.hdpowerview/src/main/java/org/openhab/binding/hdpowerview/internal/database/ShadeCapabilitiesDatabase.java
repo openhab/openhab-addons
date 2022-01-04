@@ -322,7 +322,7 @@ public class ShadeCapabilitiesDatabase {
     }
 
     /**
-     * Log a message indicating that a shade's secondary/vanes support, as observed via its actual JSON pay-load, does
+     * Log a message indicating that a shade's secondary/vanes support, as observed via its actual JSON payload, does
      * not match the expected value as declared in its 'type' and 'capabilities'.
      *
      * @param propertyKey

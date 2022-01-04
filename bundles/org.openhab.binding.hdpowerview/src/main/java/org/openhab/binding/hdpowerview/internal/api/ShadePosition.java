@@ -61,7 +61,7 @@ public class ShadePosition {
      */
     public State getState(Capabilities shadeCapabilities, CoordinateSystem posKindCoords) {
         State result = getPosition1(shadeCapabilities, posKindCoords);
-        if (UnDefType.UNDEF.equals(result)) {
+        if (result == UnDefType.UNDEF) {
             result = getPosition2(shadeCapabilities, posKindCoords);
         }
         logger.trace("getState(): capabilities={}, coords={} => result={}", shadeCapabilities, posKindCoords, result);

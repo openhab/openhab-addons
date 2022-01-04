@@ -95,20 +95,20 @@ And for horizontal shades, it maps the horizontal position of the "truck" to the
 
 Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
 
-| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent | Pebble Remote Button         |
-|--------------------------|-------------------|-----------------------|------------------|----------------|---------|------------------------------|
-| Single action<br>bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                            |
-|                             |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                            |
-| Single action<br>top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%      | ▲                            |
-|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%    | ▼                            |
-| Single action<br>right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      | ▲                            |
-|                             |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    | ▼                            |
-| Single action<br>left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      | ▲                            |
-|                             |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    | ▼                            |
-| Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      | ▲                            |
-|                             |                   | ▼                     | Down             | `CLOSED`       | 100%    | ▼                            |
-| Dual action<br>(upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%<sup>1)</sup>   | ![](doc/right.png) |
-|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%<sup>1)</sup> | ![](doc/left.png)  |
+| Type of Shade               | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent           | Pebble Remote Button |
+|-----------------------------|-------------------|-----------------------|------------------|----------------|-------------------|----------------------|
+| Single action<br>bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
+| Single action<br>top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%              | ▼                    |
+| Single action<br>right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | ***Right***      | `CLOSED`       | 100%              | ▼                    |
+| Single action<br>left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | ***Left***       | `CLOSED`       | 100%              | ▼                    |
+| Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
+| Dual action<br>(upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%<sup>1)</sup>   | ![](doc/right.png)   |
+|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%<sup>1)</sup> | ![](doc/left.png)    |
 
 ***<sup>1)</sup> BUG NOTE***: In openHAB versions v3.1.x and earlier, there was a bug in the handling of the position percent value of the `secondary` shade.
 Although the RollerShutter Up/Down commands functioned properly as described in the table above, the percent state values (e.g. displayed on a slider control), did not.

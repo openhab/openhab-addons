@@ -561,36 +561,4 @@ public class HDPowerViewJUnitTests {
         assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
         assertEquals(new PercentType(25), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
     }
-
-    /**
-     * Print out the positions JSON produced, and the respective output State values, for all possible combinations of
-     * shade position kinds (coordinate systems), shade capabilities, and for a variety of possible position values.
-     *
-     * Note: the code is commented out in order to prevent printing to System.out when the tests are being run in the
-     * automated build system.
-     */
-    @Test
-    public void printOutPositionsJson() {
-        /*
-         * final Gson gson = new Gson();
-         * int[] positions = { 0, 50, 100 };
-         * CoordinateSystem[] coordinates = { SECONDARY_ZERO_IS_OPEN, VANE_COORDS, PRIMARY_ZERO_IS_CLOSED };
-         * for (Capabilities capabilities : ShadeCapabilitiesDatabase.CAPABILITIES_DATABASE) {
-         * ShadePosition shade = new ShadePosition();
-         * if (capabilities.supportsPrimary()) {
-         * shade = shade.setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 0);
-         * for (CoordinateSystem coordinate : coordinates) {
-         * for (int position : positions) {
-         * shade.setPosition(capabilities, coordinate, position);
-         * for (CoordinateSystem coordinate2 : coordinates) {
-         * System.out.println(String.format("%s|%s|%d|%s|%s|%s", capabilities.toString(),
-         * coordinate.toString(), position, gson.toJson(shade), coordinate2.toString(),
-         * shade.getState(capabilities, coordinate2)));
-         * }
-         * }
-         * }
-         * }
-         * }
-         */
-    }
 }
