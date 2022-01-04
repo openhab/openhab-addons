@@ -55,8 +55,8 @@ public class RadoneyeHandler extends AbstractRadoneyeHandler {
             data = RadoneyeDataParser.parseRd200Data(is);
             logger.debug("Parsed data: {}", data);
             Number radon = data.get(RadoneyeDataParser.RADON);
+            logger.debug("Parsed data radon number: {}", radon);
             if (radon != null) {
-                logger.debug("Parsed data radon: {}", String.format("[radon=%d Bq/m3]", radon));
                 updateState(CHANNEL_ID_RADON, new QuantityType<Density>(radon, BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (RadoneyeParserException e) {
