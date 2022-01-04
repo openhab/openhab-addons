@@ -36,41 +36,25 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class Constants {
     // For Vehicle Status
-    public static final String OK = "Ok";
-    public static final String ACTIVE = "Active";
-    public static final String NOT_ACTIVE = "Not Active";
     public static final String NO_ENTRIES = "-";
     public static final String OPEN = "Open";
-    public static final String INVALID = "Invalid";
     public static final String CLOSED = "Closed";
     public static final String LOCKED = "Locked";
     public static final String UNLOCKED = "Unlocked";
     public static final String CONNECTED = "Connected";
     public static final String UNCONNECTED = "Not connected";
-    public static final String INTERMEDIATE = "Intermediate";
     public static final String UNDEF = UnDefType.UNDEF.toFullString();
-    public static final String NULL_DATE = "1900-01-01T00:00:00";
     public static final String NULL_TIME = "00:00";
-    public static final int INT_UNDEF = -1;
     public static final String KILOMETERS_JSON = "KILOMETERS";
     public static final String KM_JSON = "km";
     public static final String MI_JSON = "mi";
     public static final String UNIT_PRECENT_JSON = "%";
     public static final String UNIT_LITER_JSON = "l";
-    public static final String ACTION_START_JSON = "{\"action\" : \"START\"}";
-    public static final String ACTION_STOP_JSON = "{\"action\" : \"STOP\"}";
     public static final Unit<Length> KILOMETRE_UNIT = MetricPrefix.KILO(SIUnits.METRE);
-
-    // Services to query
-    public static final String SERVICES_SUPPORTED = "servicesSupported";
-    public static final String STATISTICS = "Statistics";
-    public static final String LAST_DESTINATIONS = "LastDestinations";
+    public static final int INT_UNDEF = -1;
 
     // Services in Discovery
-    public static final String ACTIVATED = "ACTIVATED";
     public static final String ENABLED = "ENABLED";
-    public static final String SUPPORTED = "SUPPORTED";
-    public static final String NOT_SUPPORTED = "NOT_SUPPORTED";
 
     // General Constants for String concatenation
     public static final String NULL = "null";
@@ -82,9 +66,9 @@ public class Constants {
     public static final String COMMA = ",";
     public static final String QUESTION = "?";
     public static final String COLON = ":";
+    public static final String TILDE = "~";
 
     public static final String ANONYMOUS = "anonymous";
-    public static final int MILES_TO_FEET_FACTOR = 5280;
     public static final String EMPTY_JSON = "{}";
     public static final String LANGUAGE_AUTODETECT = "AUTODETECT";
 

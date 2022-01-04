@@ -14,13 +14,14 @@ package org.openhab.binding.mybmw.internal.utils;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -51,29 +52,14 @@ import com.google.gson.reflect.TypeToken;
 public class Converter {
     public static final Logger LOGGER = LoggerFactory.getLogger(Converter.class);
 
-    public static final DateTimeFormatter SERVICE_DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public static final DateTimeFormatter SERVICE_DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("MMM yyyy");
-
-    public static final String LOCAL_DATE_INPUT_PATTERN_STRING = "dd.MM.yyyy HH:mm";
-    public static final DateTimeFormatter LOCAL_DATE_INPUT_PATTERN = DateTimeFormatter
-            .ofPattern(LOCAL_DATE_INPUT_PATTERN_STRING);
-
     public static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
     public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
-
-    public static final String DATE_INPUT_ZONE_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ssZ";
-    public static final DateTimeFormatter DATE_INPUT_ZONE_PATTERN = DateTimeFormatter
-            .ofPattern(DATE_INPUT_ZONE_PATTERN_STRING);
-
-    public static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-
+    public static final DateTimeFormatter LOCALE_ENGLISH_TIMEFORMATTER = DateTimeFormatter.ofPattern("hh:mm a",
+            Locale.ENGLISH);
     public static final SimpleDateFormat ISO_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS");
-
-    public static final double MILES_TO_KM_RATIO = 1.60934;
 
     private static final Gson GSON = new Gson();
     private static final Vehicle INVALID_VEHICLE = new Vehicle();
-    private static final double SCALE = 10;
     private static final String SPLIT_HYPHEN = "-";
     private static final String SPLIT_BRACKET = "\\(";
 
@@ -82,26 +68,14 @@ public class Converter {
     }.getType();
     public static int offsetMinutes = -1;
 
-    public static double round(double value) {
-        return Math.round(value * SCALE) / SCALE;
-    }
-
-    public static String getLocalDateTimeWithoutOffest(@Nullable String input) {
-        if (input == null) {
-            return Constants.NULL_DATE;
-        }
-        LocalDateTime ldt;
-        if (input.contains(Constants.PLUS)) {
-            ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_ZONE_PATTERN);
-        } else {
-            ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
-        }
-        return ldt.format(Converter.DATE_INPUT_PATTERN);
-    }
-
     public static String getZonedDateTime(String input) {
-        ZonedDateTime d = ZonedDateTime.parse(input);
-        return d.format(Converter.DATE_INPUT_PATTERN);
+        try {
+            ZonedDateTime d = ZonedDateTime.parse(input);
+            return d.format(Converter.DATE_INPUT_PATTERN);
+        } catch (Exception e) {
+            LOGGER.debug("Unable to parse date {} - {}", input, e.getMessage());
+        }
+        return input;
     }
 
     public static String toTitleCase(@Nullable String input) {
@@ -338,5 +312,14 @@ public class Converter {
             LOGGER.debug("Unable to convert range {} into int value", intStr);
         }
         return integer;
+    }
+
+    public static String getLocalTime(String chrageInfoLabel) {
+        String[] timeSplit = chrageInfoLabel.split(Constants.TILDE);
+        if (timeSplit.length == 2) {
+            LocalTime timeL = LocalTime.parse(timeSplit[1], LOCALE_ENGLISH_TIMEFORMATTER);
+            return timeSplit[0] + Constants.TILDE + timeL.toString();
+        }
+        return chrageInfoLabel;
     }
 }

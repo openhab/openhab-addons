@@ -49,7 +49,6 @@ import org.openhab.core.types.UnDefType;
 @SuppressWarnings("null")
 public class StatusWrapper {
     private static final Unit<Length> KILOMETRE = Constants.KILOMETRE_UNIT;
-    private static final double ALLOWED_CONVERSION_DEVIATION = 0.01;
 
     private Vehicle vehicle;
     private boolean isElectric;
@@ -154,8 +153,8 @@ public class StatusWrapper {
                 qt = ((QuantityType) state);
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
-                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle),
-                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Electric");
+                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle), qt.intValue(),
+                        "Range Electric");
                 break;
             case RANGE_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
@@ -163,8 +162,8 @@ public class StatusWrapper {
                 qt = ((QuantityType) state);
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
-                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle),
-                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Combustion");
+                assertEquals(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle), qt.intValue(),
+                        "Range Combustion");
                 break;
             case RANGE_HYBRID:
                 assertTrue(isHybrid, "Is Hybrid");
@@ -172,24 +171,21 @@ public class StatusWrapper {
                 qt = ((QuantityType) state);
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
-                assertEquals(VehicleStatusUtils.getRange(Constants.PHEV, vehicle), Converter.round(qt.floatValue()),
-                        ALLOWED_CONVERSION_DEVIATION, "Range Combined");
+                assertEquals(VehicleStatusUtils.getRange(Constants.PHEV, vehicle), qt.intValue(), "Range Combined");
                 break;
             case REMAINING_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals(Units.LITRE, qt.getUnit(), "Liter Unit");
-                assertEquals(Converter.round(vehicle.properties.fuelLevel.value), Converter.round(qt.floatValue()),
-                        0.01, "Fuel Level");
+                assertEquals(vehicle.properties.fuelLevel.value, qt.intValue(), "Fuel Level");
                 break;
             case SOC:
                 assertTrue(isElectric, "Is Eelctric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals(Units.PERCENT, qt.getUnit(), "Percent");
-                assertEquals(Converter.round(vehicle.properties.chargingState.chargePercentage),
-                        Converter.round(qt.floatValue()), 0.01, "Charge Level");
+                assertEquals(vehicle.properties.chargingState.chargePercentage, qt.intValue(), "Charge Level");
                 break;
             case LOCK:
                 assertTrue(state instanceof StringType);
@@ -224,7 +220,8 @@ public class StatusWrapper {
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals(VehicleStatusUtils.getChargeInfo(vehicle), st.toString(), "Charge Info");
+                assertEquals(Converter.getLocalTime(VehicleStatusUtils.getChargeInfo(vehicle)), st.toString(),
+                        "Charge Info");
                 break;
             case CHARGE_STATUS:
                 assertTrue(isElectric, "Is Electric");
@@ -270,7 +267,7 @@ public class StatusWrapper {
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(
                         Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_PRECENT_JSON, vehicle)),
-                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Radius Electric");
+                        qt.intValue(), "Range Radius Electric");
                 break;
             case RANGE_RADIUS_FUEL:
                 assertTrue(state instanceof QuantityType);
@@ -280,7 +277,7 @@ public class StatusWrapper {
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(
                         Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.UNIT_LITER_JSON, vehicle)),
-                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Radius Fuel");
+                        qt.intValue(), "Range Radius Fuel");
                 break;
             case RANGE_RADIUS_HYBRID:
                 assertTrue(state instanceof QuantityType);
@@ -289,7 +286,7 @@ public class StatusWrapper {
                 wantedUnit = VehicleStatusUtils.getLengthUnit(vehicle.status.fuelIndicators);
                 assertEquals(wantedUnit, qt.getUnit());
                 assertEquals(Converter.guessRangeRadius(VehicleStatusUtils.getRange(Constants.PHEV, vehicle)),
-                        Converter.round(qt.floatValue()), ALLOWED_CONVERSION_DEVIATION, "Range Radius Combined");
+                        qt.intValue(), "Range Radius Combined");
                 break;
             case DOOR_DRIVER_FRONT:
                 assertTrue(state instanceof StringType);
@@ -468,10 +465,7 @@ public class StatusWrapper {
                     dtt = (DateTimeType) state;
                     switch (gUid) {
                         case CHANNEL_GROUP_SERVICE:
-                            String dueDateString = Constants.NULL_DATE;
-                            if (!vehicle.properties.serviceRequired.isEmpty()) {
-                                dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
-                            }
+                            String dueDateString = vehicle.properties.serviceRequired.get(0).dateTime;
                             DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getZonedDateTime(dueDateString));
                             assertEquals(expectedDTT.toString(), dtt.toString(), "ServiceSate");
                             break;
