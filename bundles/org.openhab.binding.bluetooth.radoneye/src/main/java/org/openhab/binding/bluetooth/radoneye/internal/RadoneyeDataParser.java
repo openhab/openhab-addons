@@ -42,15 +42,15 @@ public class RadoneyeDataParser {
     public static Map<String, Number> parseRd200Data(int[] data) throws RadoneyeParserException {
         logger.debug("Parsed data length: {}", data.length);
         logger.debug("Parsed data: {}", data);
-        // if (data.length == EXPECTED_DATA_LEN) {
-        final Map<String, Number> result = new HashMap<>();
+        if (data.length == EXPECTED_DATA_LEN) {
+            final Map<String, Number> result = new HashMap<>();
 
-        int[] radonArray = subArray(data, 2, 6);
-        result.put(RADON, new BigDecimal(fromByteArrayLE(radonArray) * 37));
-        return result;
-        // } else {
-        // throw new RadoneyeParserException(String.format("Illegal data structure length '%d'", data.length));
-        // }
+            int[] radonArray = subArray(data, 2, 6);
+            result.put(RADON, new BigDecimal(readFloat(radonArray) * 37));
+            return result;
+        } else {
+            throw new RadoneyeParserException(String.format("Illegal data structure length '%d'", data.length));
+        }
     }
 
     private static int intFromBytes(int lowByte, int highByte) {
@@ -61,23 +61,16 @@ public class RadoneyeDataParser {
     private static int fromByteArrayLE(int[] bytes) {
         int result = 0;
         for (int i = 0; i < bytes.length; i++) {
-            if (i == 0) {
-                result |= bytes[i] << (8 * i);
-            } else {
-                result |= bytes[i] << (8 * i);
-            }
+            result |= (bytes[i] & 0xFF) << (8 * i);
         }
         return result;
     }
 
-    // Generic method to get subarray of a non-primitive array
-    // between specified indices
-    private static <T> T[] subArrayT(T[] array, int beg, int end) {
-        return Arrays.copyOfRange(array, beg, end + 1);
+    private static float readFloat(int[] bytes) {
+        int i = fromByteArrayLE(bytes);
+        return Float.intBitsToFloat(i);
     }
 
-    // Generic method to get subarray of a non-primitive array
-    // between specified indices
     private static int[] subArray(int[] array, int beg, int end) {
         return Arrays.copyOfRange(array, beg, end + 1);
     }
