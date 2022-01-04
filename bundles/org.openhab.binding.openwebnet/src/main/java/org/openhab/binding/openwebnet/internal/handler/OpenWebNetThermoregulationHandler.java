@@ -206,7 +206,8 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
                 try {
                     Thermoregulation.OperationMode mode = Thermoregulation.OperationMode.valueOf(command.toString());
                     // send(Thermoregulation.requestWriteMode(w.value(), mode, currentFunction, currentSetPointTemp,
-                    //         isStandAlone));                       
+                    //         isStandAlone));      
+                    
                     send(Thermoregulation.requestWriteMode(getWhere(w.value()), mode, currentFunction, currentSetPointTemp));
                 } catch (OWNException e) {
                     logger.warn("handleMode() {}", e.getMessage());
@@ -256,23 +257,21 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             logger.debug("handleMessage() CU --> msg={}", msg.toString());
             
             if (msg.isCommand()) {
-                updateCUMode((Thermoregulation) msg);
+                //updateCUMode((Thermoregulation) msg);
                 //updateModeAndFunction((Thermoregulation) msg);
-                //logger.debug("handleMessage() updateModeAndFunction!!!! --> {}", msg);
+                logger.debug("handleMessage() updateModeAndFunction!!!! --> {}", msg);
+                updateModeAndFunction((Thermoregulation) msg);
                 // handleMessage() updateModeAndFunction!!!! --> <*4*110#0205*#0##>
-
-            } else {
-                if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_DISABLED) {
-                    updateCURemoteControlStatus("DISABLED");
-                } else if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_ENABLED) {
-                    updateCURemoteControlStatus("ENABLED");
-                } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
-                    updateCUBatteryStatus("KO");
-                } else {
-                    logger.debug("handleMessage() Ignoring unsupported WHAT {} for Central Unit {}. Frame={}",
-                            msg.getWhat(), getThing().getUID(), msg);
-                }
+            }            
+            
+            if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_DISABLED) {
+                updateCURemoteControlStatus("DISABLED");
+            } else if (msg.getWhat() == Thermoregulation.WhatThermo.REMOTE_CONTROL_ENABLED) {
+                updateCURemoteControlStatus("ENABLED");
+            } else if (msg.getWhat() == Thermoregulation.WhatThermo.BATTERY_KO) {
+                updateCUBatteryStatus("KO");
             }
+            
             return;
         }
 
@@ -330,8 +329,18 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             function = Thermoregulation.Function.COOLING;
         }
 
-        updateState(CHANNEL_MODE, new StringType(mode.toString()));
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
+
+        if (isCentralUnit) {
+            logger.debug("updateModeAndFunction() mode: {} function: {}", w.mode(), w.function());
+            updateState(CHANNEL_CU_MODE, new StringType(mode.toString()));
+        }
+        else
+        {
+            logger.debug("updateModeAndFunction() mode: {} function: {}", w.mode(), w.function());
+
+            updateState(CHANNEL_MODE, new StringType(mode.toString()));
+        }
 
         // store current function
         currentFunction = function;
