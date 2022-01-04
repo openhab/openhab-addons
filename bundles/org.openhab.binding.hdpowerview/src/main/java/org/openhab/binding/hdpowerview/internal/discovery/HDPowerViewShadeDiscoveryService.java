@@ -26,9 +26,10 @@ import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
+import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -48,6 +49,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
     private final HDPowerViewHubHandler hub;
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
+    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     public HDPowerViewShadeDiscoveryService(HDPowerViewHubHandler hub) {
         super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE), 600, true);
@@ -96,12 +98,20 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                                 String id = Integer.toString(shadeData.id);
                                 ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
                                         bridgeUID, id);
-                                DiscoveryResult result = DiscoveryResultBuilder.create(thingUID)
+                                Integer caps = shadeData.capabilities;
+                                Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
+
+                                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID)
+                                        .withLabel(shadeData.getName()).withBridge(bridgeUID)
                                         .withProperty(HDPowerViewShadeConfiguration.ID, id)
-                                        .withRepresentationProperty(HDPowerViewShadeConfiguration.ID)
-                                        .withLabel(shadeData.getName()).withBridge(bridgeUID).build();
+                                        .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
+                                                db.getType(shadeData.type).toString())
+                                        .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
+                                                capabilities.toString())
+                                        .withRepresentationProperty(HDPowerViewShadeConfiguration.ID);
+
                                 logger.debug("Hub discovered shade '{}'", id);
-                                thingDiscovered(result);
+                                thingDiscovered(builder.build());
                             }
                         }
                     }
