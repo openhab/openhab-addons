@@ -13,13 +13,11 @@
 package org.openhab.binding.bluetooth.radoneye.internal;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +34,7 @@ public class RadoneyeDataParser {
     private static final int EXPECTED_DATA_LEN = 20;
     private static final int EXPECTED_VER_PLUS = 1;
 
-    private final Logger logger = LoggerFactory.getLogger(RadoneyeHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(RadoneyeDataParser.class);
 
     private RadoneyeDataParser() {
     }
@@ -44,23 +42,22 @@ public class RadoneyeDataParser {
     public static Map<String, Number> parseRd200Data(int[] data) throws RadoneyeParserException {
         logger.debug("Parsed data length: {}", data.length);
         logger.debug("Parsed data: {}", data);
-        //if (data.length == EXPECTED_DATA_LEN) {
-            final Map<String, Number> result = new HashMap<>();
+        // if (data.length == EXPECTED_DATA_LEN) {
+        final Map<String, Number> result = new HashMap<>();
 
-            int[] radonArray = subArray(data, 2, 6);
-            result.put(RADON, 
-                    new BigDecimal(fromByteArrayLE(radonArray) * 37));
-            return result;
-        //} else {
-        //    throw new RadoneyeParserException(String.format("Illegal data structure length '%d'", data.length));
-        //}
+        int[] radonArray = subArray(data, 2, 6);
+        result.put(RADON, new BigDecimal(fromByteArrayLE(radonArray) * 37));
+        return result;
+        // } else {
+        // throw new RadoneyeParserException(String.format("Illegal data structure length '%d'", data.length));
+        // }
     }
 
     private static int intFromBytes(int lowByte, int highByte) {
         return (highByte & 0xFF) << 8 | (lowByte & 0xFF);
     }
 
-    //Little endian
+    // Little endian
     private static int fromByteArrayLE(int[] bytes) {
         int result = 0;
         for (int i = 0; i < bytes.length; i++) {
@@ -75,7 +72,13 @@ public class RadoneyeDataParser {
 
     // Generic method to get subarray of a non-primitive array
     // between specified indices
-    private static<T> T[] subArray(T[] array, int beg, int end) {
+    private static <T> T[] subArrayT(T[] array, int beg, int end) {
+        return Arrays.copyOfRange(array, beg, end + 1);
+    }
+
+    // Generic method to get subarray of a non-primitive array
+    // between specified indices
+    private static int[] subArray(int[] array, int beg, int end) {
         return Arrays.copyOfRange(array, beg, end + 1);
     }
 }

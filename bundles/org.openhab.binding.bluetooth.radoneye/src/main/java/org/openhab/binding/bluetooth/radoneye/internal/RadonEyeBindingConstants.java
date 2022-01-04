@@ -41,8 +41,8 @@ import tech.units.indriya.unit.TransformedUnit;
 public class RadoneyeBindingConstants {
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_RADONEYE = new ThingTypeUID(
-            BluetoothBindingConstants.BINDING_ID, "radoneye_rd200");
+    public static final ThingTypeUID THING_TYPE_RADONEYE = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
+            "radoneye_rd200");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RADONEYE);
 

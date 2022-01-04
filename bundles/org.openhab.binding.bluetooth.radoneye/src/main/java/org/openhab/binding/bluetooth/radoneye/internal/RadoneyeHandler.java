@@ -17,13 +17,9 @@ import static org.openhab.binding.bluetooth.radoneye.internal.RadoneyeBindingCon
 import java.util.Map;
 import java.util.UUID;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +56,8 @@ public class RadoneyeHandler extends AbstractRadoneyeHandler {
             logger.debug("Parsed data: {}", data);
             Number radon = data.get(RadoneyeDataParser.RADON);
             if (radon != null) {
-                updateState(CHANNEL_ID_RADON, new QuantityType<Dimensionless>(radon, Units.BECQUEREL_PER_CUBIC_METRE));
+                logger.debug("Parsed data radon: {}", String.format("[radon=%d Bq/m3]", radon));
+                updateState(CHANNEL_ID_RADON, new QuantityType<Density>(radon, BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (RadoneyeParserException e) {
             logger.error("Failed to parse data received from Radoneye sensor: {}", e.getMessage());

@@ -189,7 +189,8 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
                             } else {
                                 errorWriteCounter++;
                                 if (errorWriteCounter < 6) {
-                                    logger.debug("Read/write data from device {} failed {} times", address, errorWriteCounter);
+                                    logger.debug("Read/write data from device {} failed {} times", address,
+                                            errorWriteCounter);
                                 } else {
                                     logger.debug(
                                             "ERROR:  Controller reset needed.  Read/write data from device {} failed {} times",
@@ -202,7 +203,6 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
                         } else {
                             readSensorData();
                         }
-                        
 
                         break;
                     default:
@@ -233,8 +233,7 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
             errorResolvingCounter = 0;
             device.readCharacteristic(characteristic).whenComplete((data, ex) -> {
                 try {
-                    logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(),
-                            address, data);
+                    logger.debug("Characteristic {} from device {}: {}", characteristic.getUuid(), address, data);
                     updateStatus(ThingStatus.ONLINE);
                     sinceLastReadSec.set(0);
                     updateChannels(BluetoothUtils.toIntArray(data));
@@ -248,9 +247,8 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
             if (errorReadCounter < 6) {
                 logger.debug("Read data from device {} failed {} times", address, errorReadCounter);
             } else {
-                logger.debug(
-                        "ERROR:  Controller reset needed.  Read data from device {} failed {} times",
-                        address, errorReadCounter);
+                logger.debug("ERROR:  Controller reset needed.  Read data from device {} failed {} times", address,
+                        errorReadCounter);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Read data from device failed");
             }
@@ -311,14 +309,14 @@ abstract public class AbstractRadoneyeHandler extends BeaconBluetoothHandler {
      *
      * @return the UUID of the data characteristic
      */
-    protected UUID getTriggerUUID() ;
+    protected abstract UUID getTriggerUUID();
 
     /**
      * Provides the data that sent to the trigger characteristic will update the sensor data
      *
      * @return the trigger data as an byte array
      */
-    protected byte[] getTriggerData();
+    protected abstract byte[] getTriggerData();
 
     /**
      * This method parses the content of the bluetooth characteristic and updates the Thing channels accordingly.

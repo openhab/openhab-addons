@@ -40,7 +40,7 @@ public class RadoneyeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(RadoneyeBindingConstants.THING_TYPE_RADONEYE)) {
-            return new RadoneyeRd200Handler(thing);
+            return new RadoneyeHandler(thing);
         }
         return null;
     }

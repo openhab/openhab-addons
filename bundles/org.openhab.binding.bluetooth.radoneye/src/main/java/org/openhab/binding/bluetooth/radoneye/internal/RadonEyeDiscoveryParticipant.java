@@ -28,7 +28,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
-
 /**
  * This discovery participant is able to recognize RadonEye devices and create discovery results for them.
  *
@@ -38,7 +37,7 @@ import org.osgi.service.component.annotations.Component;
  */
 @NonNullByDefault
 @Component
-public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticipant {
+public class RadoneyeDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private static final String RADONEYE_BLUETOOTH_COMPANY_ID = "f24be3";
 
@@ -53,8 +52,8 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
     public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         if (isRadoneyeDevice(device)) {
             if (RD200.equals(getModel(device))) {
-                return new ThingUID(RadoneyeBindingConstants.THING_TYPE_RADONEYE,
-                        device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
+                return new ThingUID(RadoneyeBindingConstants.THING_TYPE_RADONEYE, device.getAdapter().getUID(),
+                        device.getAddress().toString().toLowerCase().replace(":", ""));
             }
         }
         return null;
@@ -94,7 +93,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         if (parts.length == 3) {
             return parts[2];
         } else {
-            return null;
+            return "";
         }
     }
 
@@ -104,7 +103,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         if (parts.length == 3) {
             return parts[0];
         } else {
-            return null;
+            return "";
         }
     }
 
@@ -114,7 +113,7 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         if (parts.length == 3) {
             return parts[1];
         } else {
-            return null;
+            return "";
         }
     }
 
