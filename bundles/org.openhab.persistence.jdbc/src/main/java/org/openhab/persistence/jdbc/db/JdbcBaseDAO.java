@@ -480,6 +480,12 @@ public class JdbcBaseDAO {
                 logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
                 vo.setValue(d);
                 break;
+            case "IMAGEITEM":
+                vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
+                String encodedString = item.getState().toFullString();
+                logger.debug("JDBC::storeItemValueProvider: ImageItem: '{}'", encodedString);
+                vo.setValue(encodedString);
+                break;
             default:
                 // All other items should return the best format by default
                 vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
