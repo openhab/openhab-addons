@@ -54,7 +54,7 @@ public enum EpsonProjectorCommandType {
     VREVERSE("verticalreverse", SwitchItem.class),
     BACKGROUND("background", StringItem.class),
     ERR_CODE("errcode", NumberItem.class),
-    ERR_MESSAGE("errmessage", StringItem.class),;
+    ERR_MESSAGE("errmessage", StringItem.class);
 
     private final String text;
     private Class<? extends Item> itemClass;
