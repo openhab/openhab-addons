@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bluetooth.airthings.internal;
+package org.openhab.binding.bluetooth.radoneye.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,45 +29,31 @@ import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
 
 
-// Device information fetched from the device: BluetoothDevice [address=F2:4B:E3:DC:1A:E3, manufacturer=null, name=FR:R20:SN0037   , model=null, serialNumber=null, hardwareRevision=null, firmwareRevision=null, softwareRevision=null, rssi=-62]
-
 /**
- * This discovery participant is able to recognize Airthings devices and create discovery results for them.
+ * This discovery participant is able to recognize RadonEye devices and create discovery results for them.
  *
- * @author Pauli Anttila - Initial contribution
- * @author Kai Kreuzer - Added Airthings Wave Mini support
- * @author Davy Wong - Added Airthings Wave Gen 1 support
+ * @author Peter Obel - Initial contribution
+ * @author the authors of the Airthings bluetooth binding
  *
  */
 @NonNullByDefault
 @Component
 public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
-    private static final int AIRTHINGS_COMPANY_ID = 820; // Formerly Corentium AS
     private static final String RADONEYE_BLUETOOTH_COMPANY_ID = "f24be3";
 
-    private static final String WAVE_PLUS_MODEL = "2930";
-    private static final String WAVE_MINI_MODEL = "2920";
-    private static final String WAVE_GEN1_MODEL = "2900"; // Wave 1st Gen SN 2900xxxxxx
+    private static final String RD200 = "R20"; // RadonEye First Generation BLE
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return AirthingsBindingConstants.SUPPORTED_THING_TYPES_UIDS;
+        return RadoneyeBindingConstants.SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
     public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
-        if (isAirthingsDevice(device)) {
-            if (WAVE_PLUS_MODEL.equals(device.getModel())) {
-                return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_PLUS,
-                        device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
-            }
-            if (WAVE_MINI_MODEL.equals(device.getModel())) {
-                return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_MINI,
-                        device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
-            }
-            if (WAVE_GEN1_MODEL.equals(device.getModel())) {
-                return new ThingUID(AirthingsBindingConstants.THING_TYPE_AIRTHINGS_WAVE_GEN1,
+        if (isRadoneyeDevice(device)) {
+            if (RD200.equals(getModel(device))) {
+                return new ThingUID(RadoneyeBindingConstants.THING_TYPE_RADONEYE,
                         device.getAdapter().getUID(), device.getAddress().toString().toLowerCase().replace(":", ""));
             }
         }
@@ -76,31 +62,25 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
 
     @Override
     public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
-        if (!isAirthingsDevice(device)) {
+        if (!isRadoneyeDevice(device)) {
             return null;
         }
         ThingUID thingUID = getThingUID(device);
         if (thingUID == null) {
             return null;
         }
-        if (WAVE_PLUS_MODEL.equals(device.getModel())) {
-            return createResult(device, thingUID, "Airthings Wave Plus");
-        }
-        if (WAVE_MINI_MODEL.equals(device.getModel())) {
-            return createResult(device, thingUID, "Airthings Wave Mini");
-        }
-        if (WAVE_GEN1_MODEL.equals(device.getModel())) {
-            return createResult(device, thingUID, "Airthings Wave Gen 1");
+        if (RD200.equals(getModel(device))) {
+            return createResult(device, thingUID, "RadonEye (BLE)");
         }
         return null;
     }
 
     @Override
     public boolean requiresConnection(BluetoothDiscoveryDevice device) {
-        return isRadonEyeDevice(device);
+        return isRadoneyeDevice(device);
     }
 
-    private boolean isRadonEyeDevice(BluetoothDiscoveryDevice device) {
+    private boolean isRadoneyeDevice(BluetoothDiscoveryDevice device) {
         String manufacturerMacId = device.getAddress().toString().toLowerCase().replace(":", "").substring(0, 6);
         if (manufacturerMacId == RADONEYE_BLUETOOTH_COMPANY_ID.toLowerCase()) {
             return true;
@@ -108,11 +88,41 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         return false;
     }
 
+    private String getSerial(BluetoothDiscoveryDevice device) {
+        String name = device.getName();
+        String[] parts = name.split(":");
+        if (parts.length == 3) {
+            return parts[2];
+        } else {
+            return null;
+        }
+    }
+
+    private String getManufacturer(BluetoothDiscoveryDevice device) {
+        String name = device.getName();
+        String[] parts = name.split(":");
+        if (parts.length == 3) {
+            return parts[0];
+        } else {
+            return null;
+        }
+    }
+
+    private String getModel(BluetoothDiscoveryDevice device) {
+        String name = device.getName();
+        String[] parts = name.split(":");
+        if (parts.length == 3) {
+            return parts[1];
+        } else {
+            return null;
+        }
+    }
+
     private DiscoveryResult createResult(BluetoothDiscoveryDevice device, ThingUID thingUID, String label) {
         Map<String, Object> properties = new HashMap<>();
         properties.put(BluetoothBindingConstants.CONFIGURATION_ADDRESS, device.getAddress().toString());
         properties.put(Thing.PROPERTY_VENDOR, "RadonEye");
-        String name = device.getName()
+        String name = device.getName();
         String serialNumber = device.getSerialNumber();
         String firmwareRevision = device.getFirmwareRevision();
         String model = device.getModel();
@@ -120,12 +130,16 @@ public class AirthingsDiscoveryParticipant implements BluetoothDiscoveryParticip
         Integer txPower = device.getTxPower();
         if (serialNumber != null) {
             properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
+        } else {
+            properties.put(Thing.PROPERTY_MODEL_ID, getSerial(device));
         }
         if (firmwareRevision != null) {
             properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareRevision);
         }
         if (model != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, model);
+        } else {
+            properties.put(Thing.PROPERTY_MODEL_ID, getModel(device));
         }
         if (hardwareRevision != null) {
             properties.put(Thing.PROPERTY_HARDWARE_VERSION, hardwareRevision);
