@@ -18,8 +18,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-//import org.openhab.binding.bluetooth.radoneye.internal.RadoneyeDataParser;
-//import org.openhab.binding.bluetooth.radoneye.internal.RadoneyeParserException;
+import org.openhab.binding.bluetooth.radoneye.internal.RadoneyeDataParser;
+import org.openhab.binding.bluetooth.radoneye.internal.RadoneyeParserException;
 
 /**
  * Tests {@link RadoneyeParserTest}.
