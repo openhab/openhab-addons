@@ -66,10 +66,10 @@ public class DiscoveryTest {
     public void testProperties() {
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
         Vehicle vehicle = Converter.getVehicle(Constants.ANONYMOUS, content);
-        String servicesSuppoertedReference = "RemoteHistory ChargingHistory ScanAndCharge DCSContractManagement BmwCharging ChargeNowForBusiness ChargingPlan";
-        String servicesUnsuppoertedReference = "MiniCharging EvGoCharging CustomerEsim CarSharing EasyCharge";
-        String servicesEnabledReference = "FindCharging ";
-        String servicesDisabledReference = "DataPrivacy ChargingSettings ChargingHospitality ChargingPowerLimit ChargingTargetSoc ChargingLoudness";
+        String servicesSuppoertedReference = "RemoteHistory;ChargingHistory;ScanAndCharge;DCSContractManagement;BmwCharging;ChargeNowForBusiness;ChargingPlan";
+        String servicesUnsuppoertedReference = "MiniCharging;EvGoCharging;CustomerEsim;CarSharing;EasyCharge";
+        String servicesEnabledReference = "FindCharging;";
+        String servicesDisabledReference = "DataPrivacy;ChargingSettings;ChargingHospitality;ChargingPowerLimit;ChargingTargetSoc;ChargingLoudness";
         assertEquals(servicesSuppoertedReference,
                 VehicleDiscovery.getServices(vehicle, VehicleDiscovery.SUPPORTED_SUFFIX, true), "Services supported");
         assertEquals(servicesUnsuppoertedReference,
@@ -77,10 +77,10 @@ public class DiscoveryTest {
                 "Services unsupported");
 
         String servicesEnabled = VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLED_SUFFIX, true)
-                + Constants.SPACE + VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLE_SUFFIX, true);
+                + Constants.SEMICOLON + VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLE_SUFFIX, true);
         assertEquals(servicesEnabledReference, servicesEnabled, "Services enabled");
         String servicesDisabled = VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLED_SUFFIX, false)
-                + Constants.SPACE + VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLE_SUFFIX, false);
+                + Constants.SEMICOLON + VehicleDiscovery.getServices(vehicle, VehicleDiscovery.ENABLE_SUFFIX, false);
         assertEquals(servicesDisabledReference, servicesDisabled, "Services disabled");
     }
 

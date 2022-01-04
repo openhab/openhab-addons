@@ -227,7 +227,7 @@ public class StatusWrapper {
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals(Converter.toTitleCase(vehicle.properties.chargingState.state), st.toString(),
+                assertEquals(Converter.toTitleCase(VehicleStatusUtils.getChargStatus(vehicle)), st.toString(),
                         "Charge Status");
                 break;
             case PLUG_CONNECTION:

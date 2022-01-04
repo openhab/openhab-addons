@@ -1,7 +1,7 @@
-# BMW ConnectedDrive Binding
+# MyBMW Binding
 
-The binding provides a connection between [BMW's ConnectedDrive Portal](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) and openHAB.
-All vehicles connected to an account will be detected by the discovery with the correct type 
+The binding provides access like [MyBMW App](https://www.bmw.com/en/footer/mybmw-app.html) and openHAB.
+All vehicles connected to an account will be detected by the discovery with the correct type: 
 
 * Conventional Fuel Vehicle
 * Plugin-Hybrid Electrical Vehicle 
@@ -19,7 +19,7 @@ Check for each group if it's supported for this Vehicle.
 
 Please note **this isn't a real-time binding**. 
 If a door is opened the state isn't transmitted and changed immediately. 
-This isn't a flaw in the binding itself because the state in BMW's own ConnectedDrive App is also updated with some delay. 
+This isn't a flaw in the binding itself because the state in BMW's own MyBMW App is also updated with some delay. 
 
 ## Supported Things
 
@@ -27,9 +27,9 @@ This isn't a flaw in the binding itself because the state in BMW's own Connected
 
 The bridge establishes the connection between BMW's ConnectedDrive Portal and openHAB.
 
-| Name                       | Bridge Type ID | Description                                                |
-|----------------------------|----------------|------------------------------------------------------------|
-| BMW ConnectedDrive Account | `account`      | Access to BMW ConnectedDrive Portal for a specific user    |
+| Name                       | Bridge Type ID | Description                              |
+|----------------------------|----------------|------------------------------------------|
+| MyBMW Account              | `account`      | Access to BMW API for a specific user    |
 
 
 ### Things
@@ -39,12 +39,12 @@ They differ in the supported channel groups & channels.
 Conventional Fuel Vehicles have no _Charging Profile_, Electric Vehicles don't provide a _Fuel Range_. 
 For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ is shown.
  
-| Name                                | Thing Type ID | Supported Channel Groups                               |
-|-------------------------------------|---------------|--------------------------------------------------------|
-| BMW Electric Vehicle                | `bev`         | status, range, location, service, check, charge, image |
-| BMW Electric Vehicle with REX       | `bev_rex`     | status, range, location, service, check, charge, image |
-| BMW Plug-In-Hybrid Electric Vehicle | `phev`        | status, range, location, service, check, charge, image |
-| BMW Conventional Vehicle            | `conv`        | status, range, location, service, check, image         |
+| Name                                | Thing Type ID | Supported Channel Groups                                                                          |
+|-------------------------------------|---------------|---------------------------------------------------------------------------------------------------|
+| BMW Electric Vehicle                | `bev`         | status, range, charge, doors, check, service, location, remote, statistic, session, tires, image  |
+| BMW Electric Vehicle with REX       | `bev_rex`     | status, range, charge, doors, check, service, location, remote, statistic, session, tires, image  |
+| BMW Plug-In-Hybrid Electric Vehicle | `phev`        | status, range, charge, doors, check, service, location, remote, statistic, session, tires, image  |
+| BMW Conventional Vehicle            | `conv`        | status, range, doors, check, service, location, remote, tires, image                              |
 
  
 #### Properties
@@ -54,26 +54,24 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
 For each vehicle properties are available. 
 Basically 3 types of information are registered as properties
 
-* Informations regarding your dealer with address and phone number
+* Vehicle properties like model type, drive train and construction year
 * Which services are available / not available
-* Vehicle properties like color, model type, drive train and construction year
 
-In the right picture can see in *Services Activated* e.g. the *DoorLock* and *DoorUnlock* services are mentioned. 
+In the right picture can see in *remoteServicesEnabled* e.g. the *Door Lock* and *Door Unlock* services are mentioned. 
 This ensures channel group [Remote Services](#remote-services) is supporting door lock and unlock remote control.
 
-In *Services Supported* the entry *LastDestination* is mentioned.
-So it's valid to connect channel group [Last Destinations](#destinations) in order to display and select the last navigation destinations.
+In *Services Supported* the entry *ChargingHistory* is mentioned.
+So it's valid to connect channel group [Charging Sessions](#sessions) in order to display your last charging sessions.
 
-| Property Key       | Property Value      |  Supported Channel Groups    |
-|--------------------|---------------------|------------------------------|
-| servicesSupported  | Statistics          | last-trip, lifetime          |
-| servicesSupported  | LastDestinations    | destinations                 |
-| servicesActivated  | _list of services_  | remote                       |
+| Property Key           | Property Value      |  Supported Channel Groups    |
+|------------------------|---------------------|------------------------------|
+| servicesSupported      | ChargingHistory     | session                      |
+| remoteServicesEnabled  | _list of services_  | remote                       |
 
 
 ## Discovery
 
-Auto discovery is starting after the bridge towards BMW's ConnectedDrive is created. 
+Auto discovery is starting after the bridge is created. 
 A list of your registered vehicles is queried and all found things are added in the inbox.
 Unique identifier is the *Vehicle Identification Number* (VIN). 
 If a thing is already declared in a  _.things_ configuration, discovery won't highlight it again.
@@ -85,8 +83,8 @@ Properties will be attached to predefined vehicles if the VIN is matching.
 
 | Parameter       | Type    | Description                                                        |           
 |-----------------|---------|--------------------------------------------------------------------|
-| userName        | text    | BMW ConnectedDrive Username                                       |
-| password        | text    | BMW ConnectedDrive Password                                       |
+| userName        | text    | MyBMW Username                                                     |
+| password        | text    | MyBMW Password                                                     |
 | region          | text    | Select region in order to connect to the appropriate BMW server.   |
 
 The region Configuration has 3 different options
@@ -98,10 +96,14 @@ The region Configuration has 3 different options
 
 #### Advanced Configuration
 
-| Parameter       | Type    | Description                                                        |           
-|-----------------|---------|--------------------------------------------------------------------|
-| preferMyBmw     | boolean | Prefer *MyBMW* API instead of *BMW Connected Drive*                |
+| Parameter       | Type    | Description                                             |           
+|-----------------|---------|---------------------------------------------------------|
+| language        | text    | Channel data can be returned in the desired language    |
 
+Language is predefined as *AUTODETECT*.
+Some textual descriptions, date and times are delivered based on your local language.
+You can override this setting with lowercase 2-letter [language code reagrding ISO 691](https://www.oracle.com/java/technologies/javase/jdk8-jre8-suported-locales.html)
+So if want your UI in english language place *en* as desired language.
 
 ### Thing Configuration
 
@@ -111,24 +113,15 @@ Same configuration is needed for all things
 |-----------------|---------|---------------------------------------|
 | vin             | text    | Vehicle Identification Number (VIN)   |
 | refreshInterval | integer | Refresh Interval in Minutes           |
-| units           | text    | Unit Selection. See below.            |
-| imageSize       | integer | Image Size                            |
-| imageViewport   | text    | Image Viewport                        |
 
-The unit configuration has 3 options
 
-* _AUTODETECT_ selects miles for US & UK, kilometer otherwise
-* _METRIC_ selects directly kilometers
-* _IMPERIAL_ selects directly miles
+#### Advanced Configuration
 
-The _imageVieport_ allows to show the vehicle from different angels.
-Possible options are 
+| Parameter       | Type    | Description                       |           
+|-----------------|---------|-----------------------------------|
+| vehicleBrand    | text    | Vehicle Brand like BMW or Mini.   |
 
-* _FRONT_
-* _REAR_
-* _SIDE_
-* _DASHBOARD_
-* _DRIVERDOOR_
+Don't change if you don't know what you're doing!
 
 ## Channels
 
@@ -152,13 +145,13 @@ Reflects overall status of the vehicle.
 | Overall Door Status       | doors               | String        | Combined status for all doors                  |
 | Overall Window Status     | windows             | String        | Combined status for all windows                |
 | Doors Locked              | lock                | String        | Status if doors are locked or unlocked         |
-| Next Service Date         | service-date        | DateTime      | Date of upcoming service                       |
+| Next Service Date         | service-date        | DateTime      | Date of next upcoming service                  |
 | Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |
 | Check Control             | check-control       | String        | Presence of active warning messages            |
 | Plug Connection Status    | plug-connection     | String        | Only available for phev, bev_rex and bev       |
 | Charging Status           | charge              | String        | Only available for phev, bev_rex and bev       |
+| Charging Information      | charge-info         | String        | Information regarding current charging session |
 | Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |
-| Last Status Update Reason | last-update-reason  | DateTime      | Date and time of last status update            |
 
 Overall Door Status values
 
@@ -175,41 +168,32 @@ Overall Windows Status values
 
 Check Control values
 
-* _Active_ - at least one warning message is active
-* _Not Active_ - no warning message is active
-* _Undef_ - no data for warnings delivered
+Localized String of current active warnings.
+
+Examples:
+
+* No Issues
+* Multiple Issues
 
 Charging Status values
 
+* _Not Charging_
 * _Charging_
+* _Plugged In_
 * _Error_
 * _Finished Fully Charged_
 * _Finished Not Full_
 * _Invalid_
-* _Not Charging_
 * _Charging Goal reached_
 * _Waiting For Charging_
 
-Last update reasons
+Charging Information values
 
-* _CHARGING_DONE_
-* _CHARGING_INTERRUPED_
-* _CHARGING_PAUSED
-* _CHARGING_STARTED_
-* _CYCLIC_RECHARGING_
-* _DISCONNECTED_
-* _DOOR_STATE_CHANGED_
-* _NO_CYCLIC_RECHARGING_
-* _NO_LSC_TRIGGER_
-* _ON_DEMAND_
-* _PREDICTION_UPDATE_
-* _TEMPORARY_POWER_SUPPLY_FAILURE_
-* _UNKNOWN_
-* _VEHICLE_MOVING_
-* _VEHICLE_SECURED_
-* _VEHICLE_SHUTDOWN_
-* _VEHICLE_SHUTDOWN_SECURED_
-* _VEHICLE_UNSECURED_
+Localized String of current active charging session
+Examples
+
+* 100% at ~00:43
+* Starts at ~09:00
 
 #### Services
 

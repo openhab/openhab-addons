@@ -66,6 +66,7 @@ public class Constants {
     public static final String COMMA = ",";
     public static final String QUESTION = "?";
     public static final String COLON = ":";
+    public static final String SEMICOLON = ";";
     public static final String TILDE = "~";
 
     public static final String ANONYMOUS = "anonymous";
@@ -95,5 +96,10 @@ public class Constants {
     public static final String REX_EXTENSION = "(+ REX)";
     public static final String CONV = "COMBUSTION";
     public static final String PHEV = "PLUGIN_HYBRID";
+
+    // Carging States
+    public static final String DEFAULT = "DEFAULT";
+    public static final String NOT_CHARGING_STATE = "NOT_CHARGING";
     public static final String CHARGING_STATE = "CHARGING";
+    public static final String PLUGGED_STATE = "PLUGGED_IN";
 }

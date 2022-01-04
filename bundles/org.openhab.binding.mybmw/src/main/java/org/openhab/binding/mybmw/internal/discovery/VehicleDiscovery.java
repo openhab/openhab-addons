@@ -74,11 +74,11 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         properties.put("vehicleBodytype", vehicle.bodyType);
 
                         properties.put("servicesSupported", getServices(vehicle, SUPPORTED_SUFFIX, true));
-                        properties.put("servicesUnupported", getServices(vehicle, SUPPORTED_SUFFIX, false));
-                        String servicesEnabled = getServices(vehicle, ENABLED_SUFFIX, true) + Constants.SPACE
+                        properties.put("servicesUnsupported", getServices(vehicle, SUPPORTED_SUFFIX, false));
+                        String servicesEnabled = getServices(vehicle, ENABLED_SUFFIX, true) + Constants.SEMICOLON
                                 + getServices(vehicle, ENABLE_SUFFIX, true);
                         properties.put("servicesEnabled", servicesEnabled.trim());
-                        String servicesDisabled = getServices(vehicle, ENABLED_SUFFIX, false) + Constants.SPACE
+                        String servicesDisabled = getServices(vehicle, ENABLED_SUFFIX, false) + Constants.SEMICOLON
                                 + getServices(vehicle, ENABLE_SUFFIX, false);
                         properties.put("servicesDisabled", servicesDisabled.trim());
 
@@ -86,54 +86,55 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
                         StringBuffer remoteServicesEnabled = new StringBuffer();
                         StringBuffer remoteServicesDisabled = new StringBuffer();
                         if (vehicle.capabilities.lock.isEnabled) {
-                            remoteServicesEnabled
-                                    .append(RemoteServiceHandler.RemoteService.DOOR_LOCK.getLabel() + Constants.SPACE);
+                            remoteServicesEnabled.append(
+                                    RemoteServiceHandler.RemoteService.DOOR_LOCK.getLabel() + Constants.SEMICOLON);
                         } else {
-                            remoteServicesDisabled
-                                    .append(RemoteServiceHandler.RemoteService.DOOR_LOCK.getLabel() + Constants.SPACE);
+                            remoteServicesDisabled.append(
+                                    RemoteServiceHandler.RemoteService.DOOR_LOCK.getLabel() + Constants.SEMICOLON);
                         }
                         if (vehicle.capabilities.unlock.isEnabled) {
                             remoteServicesEnabled.append(
-                                    RemoteServiceHandler.RemoteService.DOOR_UNLOCK.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.DOOR_UNLOCK.getLabel() + Constants.SEMICOLON);
                         } else {
                             remoteServicesDisabled.append(
-                                    RemoteServiceHandler.RemoteService.DOOR_UNLOCK.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.DOOR_UNLOCK.getLabel() + Constants.SEMICOLON);
                         }
                         if (vehicle.capabilities.lights.isEnabled) {
                             remoteServicesEnabled.append(
-                                    RemoteServiceHandler.RemoteService.LIGHT_FLASH.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.LIGHT_FLASH.getLabel() + Constants.SEMICOLON);
                         } else {
                             remoteServicesDisabled.append(
-                                    RemoteServiceHandler.RemoteService.LIGHT_FLASH.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.LIGHT_FLASH.getLabel() + Constants.SEMICOLON);
                         }
                         if (vehicle.capabilities.horn.isEnabled) {
-                            remoteServicesEnabled
-                                    .append(RemoteServiceHandler.RemoteService.HORN_BLOW.getLabel() + Constants.SPACE);
+                            remoteServicesEnabled.append(
+                                    RemoteServiceHandler.RemoteService.HORN_BLOW.getLabel() + Constants.SEMICOLON);
                         } else {
-                            remoteServicesDisabled
-                                    .append(RemoteServiceHandler.RemoteService.HORN_BLOW.getLabel() + Constants.SPACE);
+                            remoteServicesDisabled.append(
+                                    RemoteServiceHandler.RemoteService.HORN_BLOW.getLabel() + Constants.SEMICOLON);
                         }
                         if (vehicle.capabilities.vehicleFinder.isEnabled) {
                             remoteServicesEnabled.append(
-                                    RemoteServiceHandler.RemoteService.VEHICLE_FINDER.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.VEHICLE_FINDER.getLabel() + Constants.SEMICOLON);
                         } else {
                             remoteServicesDisabled.append(
-                                    RemoteServiceHandler.RemoteService.VEHICLE_FINDER.getLabel() + Constants.SPACE);
+                                    RemoteServiceHandler.RemoteService.VEHICLE_FINDER.getLabel() + Constants.SEMICOLON);
                         }
                         // [todo] not working yet
                         // if (vehicle.capabilities.sendPoi.isEnabled) {
                         // remoteServicesEnabled
-                        // .append(RemoteServiceHandler.RemoteService.SEND_POI.getLabel() + Constants.SPACE);
+                        // .append(RemoteServiceHandler.RemoteService.SEND_POI.getLabel() + Constants.SEMICOLON);
                         // } else {
                         // remoteServicesDisabled
-                        // .append(RemoteServiceHandler.RemoteService.SEND_POI.getLabel() + Constants.SPACE);
+                        // .append(RemoteServiceHandler.RemoteService.SEND_POI.getLabel() + Constants.SEMICOLON);
                         // }
                         if (vehicle.capabilities.climateNow.isEnabled) {
-                            remoteServicesEnabled.append(
-                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW_START.getLabel() + Constants.SPACE);
+                            remoteServicesEnabled.append(RemoteServiceHandler.RemoteService.CLIMATE_NOW_START.getLabel()
+                                    + Constants.SEMICOLON);
                         } else {
-                            remoteServicesDisabled.append(
-                                    RemoteServiceHandler.RemoteService.CLIMATE_NOW_START.getLabel() + Constants.SPACE);
+                            remoteServicesDisabled
+                                    .append(RemoteServiceHandler.RemoteService.CLIMATE_NOW_START.getLabel()
+                                            + Constants.SEMICOLON);
                         }
                         properties.put("remoteServicesEnabled", remoteServicesEnabled.toString().trim());
                         properties.put("remoteServicesDisabled", remoteServicesDisabled.toString().trim());
@@ -197,7 +198,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService implements Discov
             String cut = capEntry.substring(2);
             if (cut.endsWith(suffix)) {
                 if (sb.length() > 0) {
-                    sb.append(Constants.SPACE);
+                    sb.append(Constants.SEMICOLON);
                 }
                 sb.append(cut.substring(0, cut.length() - suffix.length()));
             }

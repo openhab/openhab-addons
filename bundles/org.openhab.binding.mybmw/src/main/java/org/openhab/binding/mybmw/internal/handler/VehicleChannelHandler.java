@@ -188,7 +188,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION,
                     Converter.getConnectionState(v.properties.chargingState.isChargerConnected));
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,
-                    StringType.valueOf(Converter.toTitleCase(v.properties.chargingState.state)));
+                    StringType.valueOf(Converter.toTitleCase(VehicleStatusUtils.getChargStatus(v))));
             updateChannel(CHANNEL_GROUP_STATUS, CHARGE_INFO,
                     StringType.valueOf(Converter.getLocalTime(VehicleStatusUtils.getChargeInfo(v))));
         }

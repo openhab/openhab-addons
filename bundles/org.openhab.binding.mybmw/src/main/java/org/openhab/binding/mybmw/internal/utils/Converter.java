@@ -317,8 +317,12 @@ public class Converter {
     public static String getLocalTime(String chrageInfoLabel) {
         String[] timeSplit = chrageInfoLabel.split(Constants.TILDE);
         if (timeSplit.length == 2) {
-            LocalTime timeL = LocalTime.parse(timeSplit[1], LOCALE_ENGLISH_TIMEFORMATTER);
-            return timeSplit[0] + Constants.TILDE + timeL.toString();
+            try {
+                LocalTime timeL = LocalTime.parse(timeSplit[1].trim(), LOCALE_ENGLISH_TIMEFORMATTER);
+                return timeSplit[0] + Constants.TILDE + timeL.toString();
+            } catch (Exception e) {
+                LOGGER.info("Unable to parse date {} - {}", timeSplit[1], e.getMessage());
+            }
         }
         return chrageInfoLabel;
     }

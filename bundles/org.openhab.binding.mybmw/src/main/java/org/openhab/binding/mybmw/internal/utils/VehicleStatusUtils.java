@@ -205,17 +205,36 @@ public class VehicleStatusUtils {
         }
     }
 
+    public static String getChargStatus(Vehicle vehicle) {
+        FuelIndicator fi = getElectricFuelIndicator(vehicle);
+        if (fi.chargingStatusType != null) {
+            if (fi.chargingStatusType.equals(Constants.DEFAULT)) {
+                return Constants.NOT_CHARGING_STATE;
+            } else {
+                return fi.chargingStatusType;
+            }
+        }
+        return Constants.UNDEF;
+    }
+
     public static String getChargeInfo(Vehicle vehicle) {
-        for (FuelIndicator fuelIndicator : vehicle.status.fuelIndicators) {
-            // electric range - this fits 100%
-            if (Constants.UNIT_PRECENT_JSON.equals(fuelIndicator.levelUnits)
-                    && fuelIndicator.chargingStatusType != null) {
-                // found electric
-                if (fuelIndicator.chargingStatusType.equals(Constants.CHARGING_STATE)) {
-                    return fuelIndicator.infoLabel;
-                }
+        FuelIndicator fi = getElectricFuelIndicator(vehicle);
+        if (fi.chargingStatusType != null && fi.infoLabel != null) {
+            if (fi.chargingStatusType.equals(Constants.CHARGING_STATE)
+                    || fi.chargingStatusType.equals(Constants.PLUGGED_STATE)) {
+                return fi.infoLabel;
             }
         }
         return Constants.HYPHEN;
+    }
+
+    private static FuelIndicator getElectricFuelIndicator(Vehicle vehicle) {
+        for (FuelIndicator fuelIndicator : vehicle.status.fuelIndicators) {
+            if (Constants.UNIT_PRECENT_JSON.equals(fuelIndicator.levelUnits)
+                    && fuelIndicator.chargingStatusType != null) {
+                return fuelIndicator;
+            }
+        }
+        return new FuelIndicator();
     }
 }
