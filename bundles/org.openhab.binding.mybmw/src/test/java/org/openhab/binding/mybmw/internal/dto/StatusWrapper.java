@@ -220,12 +220,11 @@ public class StatusWrapper {
                     assertEquals(vehicle.status.checkControlMessagesGeneralState, st.toString(), "Check Control");
                 }
                 break;
-            case CHARGE_TYPE:
+            case CHARGE_INFO:
                 assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals(Converter.toTitleCase(vehicle.properties.chargingState.type), st.toString(),
-                        "Charge Type");
+                assertEquals(VehicleStatusUtils.getChargeInfo(vehicle), st.toString(), "Charge Info");
                 break;
             case CHARGE_STATUS:
                 assertTrue(isElectric, "Is Electric");

@@ -37,6 +37,11 @@
 		<label>Charging Status</label>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="charging-info-channel">
+		<item-type>String</item-type>
+		<label>Charging Information</label>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="plug-connection-channel">
 		<item-type>String</item-type>
 		<label>Plug Connection Status</label>

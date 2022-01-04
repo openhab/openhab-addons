@@ -15,6 +15,7 @@
 			<channel id="check-control" typeId="check-control-channel"/>
 			<channel id="plug-connection" typeId="plug-connection-channel"/>
 			<channel id="charge" typeId="charging-status-channel"/>
+			<channel id="charge-info" typeId="charging-info-channel"/>
 			<channel id="last-update" typeId="last-update-channel"/>
 		</channels>
 	</channel-group-type>

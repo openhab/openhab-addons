@@ -111,4 +111,5 @@ public class Constants {
     public static final String REX_EXTENSION = "(+ REX)";
     public static final String CONV = "COMBUSTION";
     public static final String PHEV = "PLUGIN_HYBRID";
+    public static final String CHARGING_STATE = "CHARGING";
 }

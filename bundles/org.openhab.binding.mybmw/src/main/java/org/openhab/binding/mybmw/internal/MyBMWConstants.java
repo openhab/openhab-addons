@@ -121,10 +121,9 @@ public class MyBMWConstants {
     public static final String SERVICE_MILEAGE = "service-mileage";
     public static final String CHECK_CONTROL = "check-control";
     public static final String PLUG_CONNECTION = "plug-connection";
-    public static final String LAST_UPDATE = "last-update";
-    public static final String LAST_UPDATE_REASON = "last-update-reason";
     public static final String CHARGE_STATUS = "charge";
-    public static final String CHARGE_TYPE = "charge-type";
+    public static final String CHARGE_INFO = "charge-info";
+    public static final String LAST_UPDATE = "last-update";
 
     // Door Details
     public static final String DOOR_DRIVER_FRONT = "driver-front";
@@ -164,14 +163,14 @@ public class MyBMWConstants {
     public static final String CHARGE_DAY_SUN = "-day-sun";
 
     // Range
-    public static final String RANGE_HYBRID = "hybrid";
     public static final String RANGE_ELECTRIC = "electric";
-    public static final String SOC = "soc";
-    public static final String RANGE_FUEL = "fuel";
-    public static final String REMAINING_FUEL = "remaining-fuel";
     public static final String RANGE_RADIUS_ELECTRIC = "radius-electric";
+    public static final String RANGE_FUEL = "fuel";
     public static final String RANGE_RADIUS_FUEL = "radius-fuel";
+    public static final String RANGE_HYBRID = "hybrid";
     public static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
+    public static final String REMAINING_FUEL = "remaining-fuel";
+    public static final String SOC = "soc";
 
     // Image
     public static final String IMAGE_FORMAT = "png";

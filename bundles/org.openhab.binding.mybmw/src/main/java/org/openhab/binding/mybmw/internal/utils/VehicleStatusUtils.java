@@ -204,4 +204,18 @@ public class VehicleStatusUtils {
                 return Constants.INT_UNDEF;
         }
     }
+
+    public static String getChargeInfo(Vehicle vehicle) {
+        for (FuelIndicator fuelIndicator : vehicle.status.fuelIndicators) {
+            // electric range - this fits 100%
+            if (Constants.UNIT_PRECENT_JSON.equals(fuelIndicator.levelUnits)
+                    && fuelIndicator.chargingStatusType != null) {
+                // found electric
+                if (fuelIndicator.chargingStatusType.equals(Constants.CHARGING_STATE)) {
+                    return fuelIndicator.infoLabel;
+                }
+            }
+        }
+        return Constants.HYPHEN;
+    }
 }
