@@ -14,8 +14,9 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiController;
 import org.openhab.binding.unifi.internal.api.model.UniFiUnknownClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiWiredClient;
 import org.openhab.binding.unifi.internal.api.model.UniFiWirelessClient;
@@ -30,22 +31,22 @@ import com.google.gson.InstanceCreator;
  */
 public class UniFiClientInstanceCreator implements InstanceCreator<UniFiClient> {
 
-    private final UniFiController controller;
+    private final UniFiControllerCache cache;
 
-    public UniFiClientInstanceCreator(UniFiController controller) {
-        this.controller = controller;
+    public UniFiClientInstanceCreator(final UniFiControllerCache cache) {
+        this.cache = cache;
     }
 
     @Override
-    public UniFiClient createInstance(Type type) {
+    public UniFiClient createInstance(final @Nullable Type type) {
         if (UniFiUnknownClient.class.equals(type)) {
-            return new UniFiUnknownClient(controller);
+            return new UniFiUnknownClient(cache);
         }
         if (UniFiWirelessClient.class.equals(type)) {
-            return new UniFiWirelessClient(controller);
+            return new UniFiWirelessClient(cache);
         }
         if (UniFiWiredClient.class.equals(type)) {
-            return new UniFiWiredClient(controller);
+            return new UniFiWiredClient(cache);
         }
         return null;
     }

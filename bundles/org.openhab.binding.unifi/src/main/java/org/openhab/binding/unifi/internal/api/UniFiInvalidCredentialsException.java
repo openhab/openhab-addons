@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.unifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UniFiInvalidCredentialsException} signals the credentials used to authenticate with the controller are
  * invalid.
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiInvalidCredentialsException extends UniFiException {
 
     private static final long serialVersionUID = -7159360851783088458L;
 
-    public UniFiInvalidCredentialsException(String message) {
+    public UniFiInvalidCredentialsException(final String message) {
         super(message);
     }
 }

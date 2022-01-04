@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifi.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiClientThingConfig {
 
     private String cid = "";
@@ -38,12 +40,6 @@ public class UniFiClientThingConfig {
 
     public int getConsiderHome() {
         return considerHome;
-    }
-
-    public UniFiClientThingConfig tidy() {
-        cid = cid.trim().toLowerCase();
-        site = site.trim().toLowerCase();
-        return this;
     }
 
     public boolean isValid() {

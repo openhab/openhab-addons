@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.unifi.internal.api.model;
 
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 
-import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
 import org.openhab.binding.unifi.internal.api.util.UniFiTimestampDeserializer;
 
@@ -27,9 +27,9 @@ import com.google.gson.annotations.SerializedName;
  * @author Matthew Bowman - Initial contribution
  * @author Patrik Wimnell - Blocking / Unblocking client support
  */
-public abstract class UniFiClient {
+public abstract class UniFiClient implements HasId {
 
-    protected final transient UniFiController controller;
+    protected final transient UniFiControllerCache cache;
 
     @SerializedName("_id")
     protected String id;
@@ -51,14 +51,21 @@ public abstract class UniFiClient {
     protected Integer uptime;
 
     @JsonAdapter(UniFiTimestampDeserializer.class)
-    protected Calendar lastSeen;
+    protected ZonedDateTime lastSeen;
 
     protected boolean blocked;
 
-    protected UniFiClient(UniFiController controller) {
-        this.controller = controller;
+    @SerializedName("is_guest")
+    protected boolean guest;
+
+    @SerializedName("fixed_ip")
+    protected String fixedIp;
+
+    protected UniFiClient(final UniFiControllerCache cache) {
+        this.cache = cache;
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -68,7 +75,7 @@ public abstract class UniFiClient {
     }
 
     public String getIp() {
-        return this.ip;
+        return this.ip == null || this.ip.isBlank() ? this.fixedIp : this.ip;
     }
 
     public String getHostname() {
@@ -83,7 +90,7 @@ public abstract class UniFiClient {
         return uptime;
     }
 
-    public Calendar getLastSeen() {
+    public ZonedDateTime getLastSeen() {
         return lastSeen;
     }
 
@@ -94,33 +101,27 @@ public abstract class UniFiClient {
     public abstract Boolean isWired();
 
     public final Boolean isWireless() {
-        return isWired() == null ? null : (isWired().booleanValue() ? Boolean.FALSE : Boolean.TRUE);
+        return isWired() == null ? null : Boolean.FALSE.equals(isWired());
     }
 
     protected abstract String getDeviceMac();
 
     public UniFiSite getSite() {
-        return controller.getSite(siteId);
+        return cache.getSite(siteId);
     }
 
     public UniFiDevice getDevice() {
-        return controller.getDevice(getDeviceMac());
+        return cache.getDevice(getDeviceMac());
     }
 
-    // Functional API
-
-    public void block(boolean blocked) throws UniFiException {
-        controller.block(this, blocked);
-    }
-
-    public void reconnect() throws UniFiException {
-        controller.reconnect(this);
+    public boolean isGuest() {
+        return guest;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, blocked: %b, device: %s}",
-                id, mac, ip, hostname, alias, isWired(), blocked, getDevice());
+                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, guest: %b, blocked: %b, device: %s}",
+                id, mac, getIp(), hostname, alias, isWired(), guest, blocked, getDevice());
     }
 }

@@ -14,6 +14,9 @@ package org.openhab.binding.unifi.internal.api.util;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -26,12 +29,13 @@ import com.google.gson.JsonParseException;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiTidyLowerCaseStringDeserializer implements JsonDeserializer<String> {
 
     @Override
-    public String deserialize(JsonElement json, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
-        String s = json.getAsJsonPrimitive().getAsString();
+    public @Nullable String deserialize(final JsonElement json, final Type type,
+            final JsonDeserializationContext context) throws JsonParseException {
+        final String s = json.getAsJsonPrimitive().getAsString();
         return s.trim().toLowerCase();
     }
 }

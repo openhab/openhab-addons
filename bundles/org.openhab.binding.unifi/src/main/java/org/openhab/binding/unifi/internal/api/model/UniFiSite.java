@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifi.internal.api.model;
 
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,12 +21,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiSite {
+public class UniFiSite implements HasId {
 
-    private final transient UniFiController controller;
+    private final transient UniFiControllerCache cache;
 
-    public UniFiSite(UniFiController controller) {
-        this.controller = controller;
+    public UniFiSite(final UniFiControllerCache cache) {
+        this.cache = cache;
     }
 
     @SerializedName("_id")
@@ -34,6 +36,7 @@ public class UniFiSite {
 
     private String desc;
 
+    @Override
     public String getId() {
         return id;
     }
@@ -46,7 +49,7 @@ public class UniFiSite {
         return desc;
     }
 
-    public boolean matchesName(String siteName) {
+    public boolean matchesName(final String siteName) {
         return siteName.equalsIgnoreCase(desc) || siteName.equalsIgnoreCase(name) || siteName.equalsIgnoreCase(id);
     }
 

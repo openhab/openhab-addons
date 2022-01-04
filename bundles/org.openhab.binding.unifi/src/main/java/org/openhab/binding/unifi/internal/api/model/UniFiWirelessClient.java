@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifi.internal.api.model;
 
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
 import org.openhab.binding.unifi.internal.api.util.UniFiTidyLowerCaseStringDeserializer;
 
 import com.google.gson.annotations.JsonAdapter;
@@ -32,8 +33,8 @@ public class UniFiWirelessClient extends UniFiClient {
 
     private Integer rssi;
 
-    public UniFiWirelessClient(UniFiController controller) {
-        super(controller);
+    public UniFiWirelessClient(final UniFiControllerCache cache) {
+        super(cache);
     }
 
     @Override

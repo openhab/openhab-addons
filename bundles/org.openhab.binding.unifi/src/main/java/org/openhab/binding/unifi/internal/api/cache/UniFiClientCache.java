@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 
 /**
@@ -23,14 +25,15 @@ import org.openhab.binding.unifi.internal.api.model.UniFiClient;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiClientCache extends UniFiCache<UniFiClient> {
+@NonNullByDefault
+class UniFiClientCache extends UniFiCache<UniFiClient> {
 
     public UniFiClientCache() {
-        super(PREFIX_ID, PREFIX_MAC, PREFIX_IP, PREFIX_HOSTNAME, PREFIX_ALIAS);
+        super("Client", PREFIX_ID, PREFIX_MAC, PREFIX_IP, PREFIX_HOSTNAME, PREFIX_ALIAS);
     }
 
     @Override
-    protected String getSuffix(UniFiClient client, String prefix) {
+    protected @Nullable String getSuffix(final UniFiClient client, final String prefix) {
         switch (prefix) {
             case PREFIX_ID:
                 return client.getId();

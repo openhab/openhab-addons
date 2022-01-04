@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifi.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiControllerThingConfig {
 
     private String host = "unifi";

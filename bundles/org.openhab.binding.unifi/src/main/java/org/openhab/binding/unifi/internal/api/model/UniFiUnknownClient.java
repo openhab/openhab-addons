@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifi.internal.api.model;
 
+import org.openhab.binding.unifi.internal.api.cache.UniFiControllerCache;
+
 /**
  * A {@link UniFiUnknownClient} represents an unknown {@link UniFiClient}.
  *
@@ -22,8 +24,8 @@ package org.openhab.binding.unifi.internal.api.model;
  */
 public class UniFiUnknownClient extends UniFiClient {
 
-    public UniFiUnknownClient(UniFiController controller) {
-        super(controller);
+    public UniFiUnknownClient(final UniFiControllerCache cache) {
+        super(cache);
     }
 
     @Override

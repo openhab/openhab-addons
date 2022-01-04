@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
 
 /**
@@ -22,14 +24,15 @@ import org.openhab.binding.unifi.internal.api.model.UniFiSite;
  *
  * @author Matthew Bowman - Initial contribution
  */
-public class UniFiSiteCache extends UniFiCache<UniFiSite> {
+@NonNullByDefault
+class UniFiSiteCache extends UniFiCache<UniFiSite> {
 
     public UniFiSiteCache() {
-        super(PREFIX_ID, PREFIX_NAME, PREFIX_DESC);
+        super("Site", PREFIX_ID, PREFIX_NAME, PREFIX_DESC);
     }
 
     @Override
-    protected String getSuffix(UniFiSite site, String prefix) {
+    protected @Nullable String getSuffix(final UniFiSite site, final String prefix) {
         switch (prefix) {
             case PREFIX_ID:
                 return site.getId();

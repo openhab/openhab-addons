@@ -12,24 +12,27 @@
  */
 package org.openhab.binding.unifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UniFiNotAuthorizedException} signals the controller denied a request due to non-admin credentials.
  *
  * @author Matthew Bowman - Initial contribution
  */
+@NonNullByDefault
 public class UniFiNotAuthorizedException extends UniFiException {
 
     private static final long serialVersionUID = 1379973398415636322L;
 
-    public UniFiNotAuthorizedException(String message) {
+    public UniFiNotAuthorizedException(final String message) {
         super(message);
     }
 
-    public UniFiNotAuthorizedException(String message, Throwable cause) {
+    public UniFiNotAuthorizedException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public UniFiNotAuthorizedException(Throwable cause) {
+    public UniFiNotAuthorizedException(final Throwable cause) {
         super(cause);
     }
 }

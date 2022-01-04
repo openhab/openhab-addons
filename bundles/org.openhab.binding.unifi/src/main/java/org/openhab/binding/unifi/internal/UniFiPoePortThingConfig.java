@@ -10,21 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.unifi.internal.api;
+package org.openhab.binding.unifi.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link UniFiCommunicationException} signals there was a problem communicating with the controller.
+ * Configuration for POE Port.
  *
- * @author Matthew Bowman - Initial contribution
+ * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class UniFiCommunicationException extends UniFiException {
+public class UniFiPoePortThingConfig {
 
-    private static final long serialVersionUID = -7261308872245069364L;
+    private int portIdx;
 
-    public UniFiCommunicationException(final Throwable cause) {
-        super(cause);
+    private String macAddress = "";
+
+    public int getPortIdx() {
+        return portIdx;
+    }
+
+    public String getMacAddress() {
+        return macAddress;
     }
 }

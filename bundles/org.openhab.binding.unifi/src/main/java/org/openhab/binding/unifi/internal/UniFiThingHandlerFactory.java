@@ -18,6 +18,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
+import org.openhab.binding.unifi.internal.handler.UniFiPoePortHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.HttpClientInitializationException;
 import org.openhab.core.thing.Bridge;
@@ -26,6 +27,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -49,24 +51,37 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
         httpClient = new HttpClient(new SslContextFactory.Client(true));
         try {
             httpClient.start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new HttpClientInitializationException("Could not start HttpClient", e);
         }
     }
 
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return UniFiControllerThingHandler.supportsThingType(thingTypeUID)
-                || UniFiClientThingHandler.supportsThingType(thingTypeUID);
+    protected void deactivate(final ComponentContext componentContext) {
+        try {
+            httpClient.stop();
+        } catch (final Exception e) {
+            // Eat http client stop exception.
+        } finally {
+            super.deactivate(componentContext);
+        }
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (UniFiControllerThingHandler.supportsThingType(thingTypeUID)) {
+    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
+        return UniFiBindingConstants.ALL_THING_TYPE_SUPPORTED.contains(thingTypeUID);
+    }
+
+    @Override
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (UniFiBindingConstants.THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
             return new UniFiControllerThingHandler((Bridge) thing, httpClient);
-        } else if (UniFiClientThingHandler.supportsThingType(thingTypeUID)) {
+        } else if (UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT.equals(thingTypeUID)
+                || UniFiBindingConstants.THING_TYPE_WIRED_CLIENT.equals(thingTypeUID)) {
             return new UniFiClientThingHandler(thing);
+        } else if (UniFiBindingConstants.THING_TYPE_POE_PORT.equals(thingTypeUID)) {
+            return new UniFiPoePortHandler(thing);
         }
         return null;
     }

@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.types.RefreshType.REFRESH;
 
 import java.lang.reflect.ParameterizedType;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
-import org.openhab.binding.unifi.internal.api.model.UniFiController;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -43,29 +43,32 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(UniFiBaseThingHandler.class);
 
-    public UniFiBaseThingHandler(Thing thing) {
+    public UniFiBaseThingHandler(final Thing thing) {
         super(thing);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public final void initialize() {
-        Bridge bridge = getBridge();
+        final Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null
                 || !(bridge.getHandler() instanceof UniFiControllerThingHandler)) {
             updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "You must choose a UniFi Controller for this thing.");
             return;
         }
-        if (bridge.getStatus() == OFFLINE) {
-            updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "The UniFi Controller is currently offline.");
-            return;
-        }
         // mgb: derive the config class from the generic type
-        Class<?> clazz = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass())
+        final Class<?> clazz = (Class<?>) (((ParameterizedType) getClass().getGenericSuperclass())
                 .getActualTypeArguments()[1]);
-        C config = (C) getConfigAs(clazz);
-        initialize(config);
+        final C config = (C) getConfigAs(clazz);
+        if (initialize(config)) {
+            if (bridge.getStatus() == OFFLINE) {
+                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "The UniFi Controller is currently offline.");
+                return;
+            } else {
+                updateStatus(ONLINE);
+            }
+        }
     }
 
     /**
@@ -75,7 +78,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
      */
     @SuppressWarnings("null")
     private final @Nullable UniFiController getController() {
-        Bridge bridge = getBridge();
+        final Bridge bridge = getBridge();
         if (bridge != null && bridge.getHandler() != null
                 && (bridge.getHandler() instanceof UniFiControllerThingHandler)) {
             return ((UniFiControllerThingHandler) bridge.getHandler()).getController();
@@ -83,26 +86,35 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
         return null;
     }
 
+    private @Nullable E getEntity() {
+        final UniFiController controller = getController();
+        return controller == null ? null : getEntity(controller);
+    }
+
     @Override
-    public final void handleCommand(ChannelUID channelUID, Command command) {
+    public final void handleCommand(final ChannelUID channelUID, final Command command) {
         logger.debug("Handling command = {} for channel = {}", command, channelUID);
         // mgb: only handle commands if we're ONLINE
         if (getThing().getStatus() == ONLINE) {
-            UniFiController controller = getController();
-            if (controller != null) {
-                E entity = getEntity(controller);
-                if (entity != null) {
-                    if (command == REFRESH) {
-                        refreshChannel(entity, channelUID);
-                    } else {
-                        try {
-                            handleCommand(entity, channelUID, command);
-                        } catch (UniFiException e) {
-                            logger.warn("Unexpected error handling command = {} for channel = {} : {}", command,
-                                    channelUID, e.getMessage());
+            final E entity = getEntity();
+            final UniFiController controller = getController();
+
+            if (entity != null && controller != null) {
+                if (command == REFRESH) {
+                    refreshChannel(entity, channelUID);
+                } else {
+                    try {
+                        if (!handleCommand(controller, entity, channelUID, command)) {
+                            logger.info("Ignoring unsupported command = {} for channel = {}", command, channelUID);
                         }
+                    } catch (final UniFiException e) {
+                        logger.warn("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
+                                e.getMessage());
                     }
                 }
+            } else {
+                // mgb: set the default state if we're online yet cannot find the respective entity
+                // updateState(channelUID, getDefaultState(channelUID)State);
             }
         }
     }
@@ -110,24 +122,30 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
     protected final void refresh() {
         // mgb: only refresh if we're ONLINE
         if (getThing().getStatus() == ONLINE) {
-            UniFiController controller = getController();
-            if (controller != null) {
-                E entity = getEntity(controller);
-                if (entity != null) {
-                    for (Channel channel : getThing().getChannels()) {
-                        ChannelUID channelUID = channel.getUID();
-                        refreshChannel(entity, channelUID);
-                    }
+            final E entity = getEntity();
+            if (entity != null) {
+                for (final Channel channel : getThing().getChannels()) {
+                    final ChannelUID channelUID = channel.getUID();
+                    refreshChannel(entity, channelUID);
                 }
             }
         }
     }
 
-    protected abstract void initialize(@NonNull C config);
+    /**
+     * Additional sub class specific initialization.
+     * If initialization is unsuccessful it should set the thing status and return false.
+     * if it was successful it should return true
+     *
+     * @param config
+     * @return true if initialization was successful
+     */
+    protected abstract boolean initialize(C config);
 
     protected abstract @Nullable E getEntity(UniFiController controller);
 
     protected abstract void refreshChannel(E entity, ChannelUID channelUID);
 
-    protected abstract void handleCommand(E entity, ChannelUID channelUID, Command command) throws UniFiException;
+    protected abstract boolean handleCommand(UniFiController controller, E entity, ChannelUID channelUID,
+            Command command) throws UniFiException;
 }

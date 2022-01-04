@@ -12,21 +12,31 @@
  */
 package org.openhab.binding.unifi.internal.handler;
 
-import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
-import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_AP;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_BLOCKED;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ESSID;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_GUEST;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_IP_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_LAST_SEEN;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_MAC_ADDRESS;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ONLINE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_RECONNECT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_RSSI;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_SITE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_UPTIME;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.unifi.internal.UniFiBindingConstants;
 import org.openhab.binding.unifi.internal.UniFiClientThingConfig;
+import org.openhab.binding.unifi.internal.api.UniFiController;
 import org.openhab.binding.unifi.internal.api.UniFiException;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
-import org.openhab.binding.unifi.internal.api.model.UniFiController;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 import org.openhab.binding.unifi.internal.api.model.UniFiSite;
 import org.openhab.binding.unifi.internal.api.model.UniFiWiredClient;
@@ -37,7 +47,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -54,35 +63,31 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, UniFiClientThingConfig> {
 
-    public static boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return UniFiBindingConstants.THING_TYPE_WIRELESS_CLIENT.equals(thingTypeUID);
-    }
-
     private final Logger logger = LoggerFactory.getLogger(UniFiClientThingHandler.class);
 
     private UniFiClientThingConfig config = new UniFiClientThingConfig();
 
-    public UniFiClientThingHandler(Thing thing) {
+    public UniFiClientThingHandler(final Thing thing) {
         super(thing);
     }
 
     @Override
-    protected synchronized void initialize(UniFiClientThingConfig config) {
+    protected boolean initialize(final UniFiClientThingConfig config) {
         // mgb: called when the config changes
         logger.debug("Initializing the UniFi Client Handler with config = {}", config);
         if (!config.isValid()) {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "You must define a MAC address, IP address, hostname or alias for this thing.");
-            return;
+            return false;
         }
         this.config = config;
-        updateStatus(ONLINE);
+        return true;
     }
 
-    private static boolean belongsToSite(UniFiClient client, String siteName) {
+    private static boolean belongsToSite(final UniFiClient client, final String siteName) {
         boolean result = true; // mgb: assume true = proof by contradiction
         if (!siteName.isEmpty()) {
-            UniFiSite site = client.getSite();
+            final UniFiSite site = client.getSite();
             // mgb: if the 'site' can't be found or the name doesn't match...
             if (site == null || !site.matchesName(siteName)) {
                 // mgb: ... then the client doesn't belong to this thing's configured 'site' and we 'filter' it
@@ -93,8 +98,8 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
     }
 
     @Override
-    protected synchronized @Nullable UniFiClient getEntity(UniFiController controller) {
-        UniFiClient client = controller.getClient(config.getClientID());
+    protected synchronized @Nullable UniFiClient getEntity(final UniFiController controller) {
+        final UniFiClient client = controller.getClient(config.getClientID());
         // mgb: short circuit
         if (client == null || !belongsToSite(client, config.getSite())) {
             return null;
@@ -102,10 +107,9 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
         return client;
     }
 
-    private State getDefaultState(String channelID, boolean clientHome) {
-        State state = UnDefType.NULL;
+    private State getDefaultState(final String channelID) {
+        final State state;
         switch (channelID) {
-            case CHANNEL_ONLINE:
             case CHANNEL_SITE:
             case CHANNEL_AP:
             case CHANNEL_ESSID:
@@ -113,11 +117,11 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             case CHANNEL_MAC_ADDRESS:
             case CHANNEL_IP_ADDRESS:
             case CHANNEL_BLOCKED:
-                state = (clientHome ? UnDefType.NULL : UnDefType.UNDEF); // skip the update if the client is home
+                state = UnDefType.UNDEF;
                 break;
             case CHANNEL_UPTIME:
                 // mgb: uptime should default to 0 seconds
-                state = (clientHome ? UnDefType.NULL : new DecimalType(0)); // skip the update if the client is home
+                state = DecimalType.ZERO;
                 break;
             case CHANNEL_LAST_SEEN:
                 // mgb: lastSeen should keep the last state no matter what
@@ -126,33 +130,34 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             case CHANNEL_RECONNECT:
                 state = OnOffType.OFF;
                 break;
+            default:
+                state = UnDefType.NULL;
+                break;
         }
         return state;
     }
 
-    private synchronized boolean isClientHome(UniFiClient client) {
-        boolean online = false;
-        if (client != null) {
-            Calendar lastSeen = client.getLastSeen();
-            if (lastSeen == null) {
-                logger.warn("Could not determine if client is online: cid = {}, lastSeen = null", config.getClientID());
-            } else {
-                Calendar considerHome = (Calendar) lastSeen.clone();
-                considerHome.add(Calendar.SECOND, config.getConsiderHome());
-                Calendar now = Calendar.getInstance();
-                online = (now.compareTo(considerHome) < 0);
-            }
+    private synchronized boolean isClientHome(final UniFiClient client) {
+        final boolean online;
+
+        final ZonedDateTime lastSeen = client.getLastSeen();
+        if (lastSeen == null) {
+            online = false;
+            logger.warn("Could not determine if client is online: cid = {}, lastSeen = null", config.getClientID());
+        } else {
+            final Instant considerHomeExpiry = lastSeen.toInstant().plusSeconds(config.getConsiderHome());
+            online = Instant.now().isBefore(considerHomeExpiry);
         }
         return online;
     }
 
     @Override
-    protected void refreshChannel(UniFiClient client, ChannelUID channelUID) {
-        boolean clientHome = isClientHome(client);
-        UniFiDevice device = client.getDevice();
-        UniFiSite site = (device == null ? null : device.getSite());
-        String channelID = channelUID.getIdWithoutGroup();
-        State state = getDefaultState(channelID, clientHome);
+    protected void refreshChannel(final UniFiClient client, final ChannelUID channelUID) {
+        final boolean clientHome = isClientHome(client);
+        final UniFiDevice device = client.getDevice();
+        final UniFiSite site = (device == null ? null : device.getSite());
+        final String channelID = channelUID.getIdWithoutGroup();
+        State state = getDefaultState(channelID);
         switch (channelID) {
             // mgb: common wired + wireless client channels
 
@@ -163,28 +168,28 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
 
             // :site
             case CHANNEL_SITE:
-                if (clientHome && site != null && site.getDescription() != null && !site.getDescription().isBlank()) {
+                if (site != null && site.getDescription() != null && !site.getDescription().isBlank()) {
                     state = StringType.valueOf(site.getDescription());
                 }
                 break;
 
             // :macAddress
             case CHANNEL_MAC_ADDRESS:
-                if (clientHome && client.getMac() != null && !client.getMac().isBlank()) {
+                if (client.getMac() != null && !client.getMac().isBlank()) {
                     state = StringType.valueOf(client.getMac());
                 }
                 break;
 
             // :ipAddress
             case CHANNEL_IP_ADDRESS:
-                if (clientHome && client.getIp() != null && !client.getIp().isBlank()) {
+                if (client.getIp() != null && !client.getIp().isBlank()) {
                     state = StringType.valueOf(client.getIp());
                 }
                 break;
 
             // :uptime
             case CHANNEL_UPTIME:
-                if (clientHome && client.getUptime() != null) {
+                if (client.getUptime() != null) {
                     state = new DecimalType(client.getUptime());
                 }
                 break;
@@ -203,15 +208,20 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                 state = OnOffType.from(client.isBlocked());
                 break;
 
+            // :guest
+            case CHANNEL_GUEST:
+                state = OnOffType.from(client.isGuest());
+                break;
+
             default:
                 // mgb: additional wired client channels
                 if (client.isWired() && (client instanceof UniFiWiredClient)) {
-                    state = getWiredChannelState((UniFiWiredClient) client, clientHome, channelID);
+                    state = getWiredChannelState((UniFiWiredClient) client, channelID, state);
                 }
 
                 // mgb: additional wireless client channels
                 else if (client.isWireless() && (client instanceof UniFiWirelessClient)) {
-                    state = getWirelessChannelState((UniFiWirelessClient) client, clientHome, channelID);
+                    state = getWirelessChannelState((UniFiWirelessClient) client, channelID, state);
                 }
                 break;
         }
@@ -221,78 +231,84 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
         }
     }
 
-    private State getWiredChannelState(UniFiWiredClient client, boolean clientHome, String channelID) {
-        State state = UnDefType.NULL;
-        return state;
+    private State getWiredChannelState(final UniFiWiredClient client, final String channelID,
+            final State defaultState) {
+        return defaultState;
     }
 
-    private State getWirelessChannelState(UniFiWirelessClient client, boolean clientHome, String channelID) {
-        State state = UnDefType.NULL;
+    private State getWirelessChannelState(final UniFiWirelessClient client, final String channelID,
+            final State defaultState) {
+        State state = defaultState;
         switch (channelID) {
             // :ap
             case CHANNEL_AP:
-                UniFiDevice device = client.getDevice();
-                if (clientHome && device != null && device.getName() != null && !device.getName().isBlank()) {
+                final UniFiDevice device = client.getDevice();
+                if (device != null && device.getName() != null && !device.getName().isBlank()) {
                     state = StringType.valueOf(device.getName());
                 }
                 break;
 
             // :essid
             case CHANNEL_ESSID:
-                if (clientHome && client.getEssid() != null && !client.getEssid().isBlank()) {
+                if (client.getEssid() != null && !client.getEssid().isBlank()) {
                     state = StringType.valueOf(client.getEssid());
                 }
                 break;
 
             // :rssi
             case CHANNEL_RSSI:
-                if (clientHome && client.getRssi() != null) {
+                if (client.getRssi() != null) {
                     state = new DecimalType(client.getRssi());
                 }
                 break;
 
             // :reconnect
             case CHANNEL_RECONNECT:
-                // nop - read-only channel
+                // nop - trigger channel so it's always OFF by default
+                state = OnOffType.OFF;
                 break;
         }
         return state;
     }
 
     @Override
-    protected void handleCommand(UniFiClient client, ChannelUID channelUID, Command command) throws UniFiException {
-        String channelID = channelUID.getIdWithoutGroup();
+    protected boolean handleCommand(final UniFiController controller, final UniFiClient client,
+            final ChannelUID channelUID, final Command command) throws UniFiException {
+        final String channelID = channelUID.getIdWithoutGroup();
         switch (channelID) {
             case CHANNEL_BLOCKED:
-                handleBlockedCommand(client, channelUID, command);
+                handleBlockedCommand(controller, client, channelUID, command);
                 break;
             case CHANNEL_RECONNECT:
-                handleReconnectCommand(client, channelUID, command);
+                handleReconnectCommand(controller, client, channelUID, command);
                 break;
             default:
-                logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
+                return false;
         }
+        return true;
     }
 
-    private void handleBlockedCommand(UniFiClient client, ChannelUID channelUID, Command command)
-            throws UniFiException {
+    private void handleBlockedCommand(final UniFiController controller, final UniFiClient client,
+            final ChannelUID channelUID, final Command command) throws UniFiException {
         if (command instanceof OnOffType) {
-            client.block(command == OnOffType.ON);
+            controller.block(client, command == OnOffType.ON);
+            refresh();
         } else {
-            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+            logger.info("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);
         }
     }
 
-    private void handleReconnectCommand(UniFiClient client, ChannelUID channelUID, Command command)
-            throws UniFiException {
+    private void handleReconnectCommand(final UniFiController controller, final UniFiClient client,
+            final ChannelUID channelUID, final Command command) throws UniFiException {
         if (command instanceof OnOffType) {
             if (command == OnOffType.ON) {
-                client.reconnect();
+                controller.reconnect(client);
                 updateState(channelUID, OnOffType.OFF);
+                refresh();
             }
         } else {
-            logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+            logger.info("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
                     command, channelUID);
         }
     }

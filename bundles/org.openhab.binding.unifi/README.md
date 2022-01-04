@@ -5,23 +5,24 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 
 ## Supported Things
 
-* `controller` - An instance of the UniFi controller software 
+* `controller` - An instance of the UniFi controller software
 * `wirelessClient` - Any wireless client connected to a UniFi wireless network
-
+* `wiredClient` - A wired client connected to the UniFi network
+* `poePort` - A POE (Power Over Ethernet) port on a Unifi switch
 
 ## Discovery
 
-Discovery is currently not supported.
-
+The binding supports manual discovery of things connected to a controller.
+To enable discovery configure the controller thing and manual start discovery.
 
 ## Binding Configuration
- 
+
 The binding has no configuration options, all configuration is done at the Bridge and Thing levels.
 
- 
 ## Bridge Configuration
 
-You need at least one UniFi Controller (Bridge) for this binding to work. It requires a network accessible instance of the [Ubiquiti Networks Controller Software](https://www.ubnt.com/download/unifi).    
+You need at least one UniFi Controller (Bridge) for this binding to work.
+It requires a network accessible instance of the [Ubiquiti Networks Controller Software](https://www.ubnt.com/download/unifi).
 
 The following table describes the Bridge configuration parameters:
 
@@ -39,7 +40,10 @@ The following table describes the Bridge configuration parameters:
 
 You must define a UniFi Controller (Bridge) before defining UniFi Clients (Things) for this binding to work.
 
-The following table describes the Thing configuration parameters:
+### `wirelessClient` & `wiredClient`
+
+The following table describes the `wirelessClient` & `wiredClient` configuration parameters:
+
 
 | Parameter    | Description                                                  | Config   | Default |
 | ------------ | -------------------------------------------------------------|--------- | ------- |
@@ -57,8 +61,10 @@ The `cid` parameter is a universal "client identifier". It accepts the following
   1. IP address
   1. Hostname (as show by the controller)
   1. Alias (as defined by you in the controller UI) [lowest priority]
-  
-The priority essentially means the binding attempts to lookup by MAC address, then by IP address, then by hostname and finally by alias. Once it finds a matching client, it short circuits and stops searching. Most of the time, you will simply use the  MAC address.   
+
+The priority essentially means the binding attempts to lookup by MAC address, then by IP address, then by hostname and finally by alias.
+Once it finds a matching client, it short circuits and stops searching.
+Most of the time, you will simply use the  MAC address.
 
 ##### `site`
 
@@ -70,19 +76,33 @@ Additionally, you may use friendly site names as they appear in the controller U
 
 ##### `considerHome`
 
-The `considerHome` parameter allows you to control how quickly the binding marks a client as away. For example, using the default of `180` (seconds), the binding will report a client away as soon as `lastSeen` + `180` (seconds) < `now`
+The `considerHome` parameter allows you to control how quickly the binding marks a client as away.
+For example, using the default of `180` (seconds), the binding will report a client away as soon as `lastSeen` + `180` (seconds) < `now`.
+
+### `poePort`
+
+The following table describes the `poePort` configuration parameters:
+
+
+| Parameter   | Description                                                 | Config   |
+| ------------|-------------------------------------------------------------|----------|
+| portIdx     | The port number as reported by the switch                   | Required |
+| macAddress  | The MAC address of the switch device the port is part of    | Required |
 
 
 ## Channels
 
-The Wireless Client information that is retrieved is available as these channels:
+### `wirelessClient`
+
+The `wirelessClient` information that is retrieved is available as these channels:
 
 | Channel ID | Item Type | Description                                                          | Permissions |
-|------------|-----------|--------------------------------------------------------------------- | ----------- |
+|------------|-----------|----------------------------------------------------------------------|-------------|
 | online     | Switch    | Online status of the client                                          | Read        |
 | site       | String    | Site name (from the controller web UI) the client is associated with | Read        |
 | macAddress | String    | MAC address of the client                                            | Read        |
 | ipAddress  | String    | IP address of the client                                             | Read        |
+| guest      | Switch    | On if this is a guest client                                         | Read        |
 | ap         | String    | Access point (AP) the client is connected to                         | Read        |
 | essid      | String    | Network name (ESSID) the client is connected to                      | Read        |
 | rssi       | Number    | Received signal strength indicator (RSSI) of the client              | Read        |
@@ -93,14 +113,44 @@ The Wireless Client information that is retrieved is available as these channels
 
 _Note: All channels with the Write permission require administrator credentials as defined in the controller._
 
+### `wiredClient`
+
+The `wiredClient` information that is retrieved is available as these channels:
+
+| Channel ID | Item Type | Description                                                          | Permissions |
+|------------|-----------|----------------------------------------------------------------------|-------------|
+| online     | Switch    | Online status of the client                                          | Read        |
+| site       | String    | Site name (from the controller web UI) the client is associated with | Read        |
+| macAddress | String    | MAC address of the client                                            | Read        |
+| ipAddress  | String    | IP address of the client                                             | Read        |
+| uptime     | Number    | Uptime of the wireless client (in seconds)                           | Read        |
+| lastSeen   | DateTime  | Date and Time the wireless client was last seen                      | Read        |
+| blocked    | Switch    | Blocked status of the client                                         | Read, Write |
+
 ##### `blocked`
 
 The `blocked` channel allows you to block / unblock a client via the controller.
 
 ##### `reconnect`
 
-The `reconnect` channel allows you to force a client to reconnect. Sending `ON` to this channel will trigger a reconnect via the controller.
+The `reconnect` channel allows you to force a client to reconnect.
+Sending `ON` to this channel will trigger a reconnect via the controller.
 
+### `poePort`
+
+The `poePort` information that is retrieved is available as these channels:
+
+| Channel ID | Item Type                | Description                                        | Permissions |
+|------------|--------------------------|----------------------------------------------------|-------------|
+| online     | Switch                   | Online status of the port                          | Read        |
+| mode       | Selection                | Select the POE mode: off, auto, 24v or passthrough | Read, Write |
+| enable     | Switch                   | Enable Power Over Ethernet                         | Read, Write |
+| power      | Number:Power             | Power consumption of the port in Watt              | Read        |
+| voltage    | Number:ElectricPotential | Voltage of the port in Volt                        | Read        |
+| current    | Number:ElectricCurrent   | Current used by the port in mA                     | Read        |
+
+The `enable` switch channel has a configuration parameter `mode` which is the value used to switch POE on when the channel is switched to ON.
+The default mode value is `auto`.
 
 ## Full Example
 
@@ -125,7 +175,7 @@ String   MatthewsPhoneAP         "Matthew's iPhone: AP [%s]"                    
 String   MatthewsPhoneESSID      "Matthew's iPhone: ESSID [%s]"                     { channel="unifi:wirelessClient:home:matthewsPhone:essid" }
 Number   MatthewsPhoneRSSI       "Matthew's iPhone: RSSI [%d]"                      { channel="unifi:wirelessClient:home:matthewsPhone:rssi" }
 Number   MatthewsPhoneUptime     "Matthew's iPhone: Uptime [%d]"                    { channel="unifi:wirelessClient:home:matthewsPhone:uptime" }
-DateTime MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" } 
+DateTime MatthewsPhoneLastSeen   "Matthew's iPhone: Last Seen [%1$tH:%1$tM:%1$tS]"  { channel="unifi:wirelessClient:home:matthewsPhone:lastSeen" }
 Switch   MatthewsPhoneBlocked    "Matthew's iPhone: Blocked"                        { channel="unifi:wirelessClient:home:matthewsPhone:blocked" }
 Switch   MatthewsPhoneReconnect  "Matthew's iPhone: Reconnect"                      { channel="unifi:wirelessClient:home:matthewsPhone:reconnect" }
 ```

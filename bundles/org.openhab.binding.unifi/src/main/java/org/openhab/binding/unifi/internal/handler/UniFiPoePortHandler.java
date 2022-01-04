@@ -1,0 +1,166 @@
+/**
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.unifi.internal.handler;
+
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE_PARAMETER_MODE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE_PARAMETER_MODE_AUTO;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ENABLE_PARAMETER_MODE_OFF;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_ONLINE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_PEO_CURRENT;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_PEO_ENABLE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_PEO_MODE;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_PEO_POWER;
+import static org.openhab.binding.unifi.internal.UniFiBindingConstants.CHANNEL_PORT_PEO_VOLTAGE;
+import static org.openhab.core.library.unit.MetricPrefix.MILLI;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Power;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.unifi.internal.UniFiPoePortThingConfig;
+import org.openhab.binding.unifi.internal.api.UniFiController;
+import org.openhab.binding.unifi.internal.api.UniFiException;
+import org.openhab.binding.unifi.internal.api.model.UnfiPortOverride;
+import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
+import org.openhab.binding.unifi.internal.api.model.UniFiPortTable;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * A Power Over Ethernet (POE) port on a UniFi switch.
+ *
+ * @author Hilbrand Bouwkamp - Initial contribution
+ */
+@NonNullByDefault
+public class UniFiPoePortHandler extends UniFiBaseThingHandler<Map<Integer, UniFiPortTable>, UniFiPoePortThingConfig> {
+
+    private final Logger logger = LoggerFactory.getLogger(UniFiPoePortHandler.class);
+
+    private UniFiPoePortThingConfig config = new UniFiPoePortThingConfig();
+    private String poeEnableMode = "";
+
+    public UniFiPoePortHandler(final Thing thing) {
+        super(thing);
+    }
+
+    @Override
+    protected boolean initialize(final UniFiPoePortThingConfig config) {
+        this.config = config;
+        final String channelConfigPoeEnableMode = (String) getThing().getChannel(CHANNEL_PORT_PEO_ENABLE)
+                .getConfiguration().get(CHANNEL_ENABLE_PARAMETER_MODE);
+        poeEnableMode = channelConfigPoeEnableMode.isBlank() ? CHANNEL_ENABLE_PARAMETER_MODE_AUTO
+                : channelConfigPoeEnableMode;
+        return true;
+    }
+
+    @Override
+    protected @Nullable Map<Integer, UniFiPortTable> getEntity(final UniFiController controller) {
+        return controller.getSwitchPorts(config.getMacAddress());
+    }
+
+    @Override
+    protected void refreshChannel(final Map<Integer, UniFiPortTable> ports, final ChannelUID channelUID) {
+        final UniFiPortTable port = getPort(ports);
+        if (port == null) {
+            return;
+        }
+        final String channelID = channelUID.getIdWithoutGroup();
+        final State state;
+
+        switch (channelID) {
+            case CHANNEL_ONLINE:
+                state = OnOffType.from(port.isUp());
+                break;
+            case CHANNEL_PORT_PEO_ENABLE:
+                state = OnOffType.from(port.isPoeEnable());
+                break;
+            case CHANNEL_PORT_PEO_MODE:
+                state = StringType.valueOf(port.getPoeMode());
+                break;
+            case CHANNEL_PORT_PEO_POWER:
+                state = new QuantityType<Power>(Double.valueOf(port.getPoePower()), Units.WATT);
+                break;
+            case CHANNEL_PORT_PEO_VOLTAGE:
+                state = new QuantityType<ElectricPotential>(Double.valueOf(port.getPoeVoltage()), Units.VOLT);
+                break;
+            case CHANNEL_PORT_PEO_CURRENT:
+                state = new QuantityType<ElectricCurrent>(Double.valueOf(port.getPoeCurrent()), MILLI(Units.AMPERE));
+                break;
+            default:
+                state = UnDefType.UNDEF;
+        }
+        updateState(channelUID, state);
+    }
+
+    private @Nullable UniFiPortTable getPort(final Map<Integer, UniFiPortTable> ports) {
+        return ports.get(config.getPortIdx());
+    }
+
+    @Override
+    protected boolean handleCommand(final UniFiController controller, final Map<Integer, UniFiPortTable> ports,
+            final ChannelUID channelUID, final Command command) throws UniFiException {
+        final String channelID = channelUID.getIdWithoutGroup();
+
+        switch (channelID) {
+            case CHANNEL_PORT_PEO_ENABLE:
+                if (command instanceof OnOffType) {
+                    handleModeCommand(controller, ports, getPort(ports),
+                            OnOffType.ON == command ? poeEnableMode : CHANNEL_ENABLE_PARAMETER_MODE_OFF);
+                }
+                break;
+            case CHANNEL_PORT_PEO_MODE:
+                if (command instanceof StringType) {
+                    handleModeCommand(controller, ports, getPort(ports), command.toFullString());
+                }
+                break;
+            default:
+                logger.warn("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
+                        command, channelUID);
+                return false;
+        }
+        return true;
+    }
+
+    private void handleModeCommand(final UniFiController controller, final Map<Integer, UniFiPortTable> ports,
+            final @Nullable UniFiPortTable portToUpdate, final String poeMode) throws UniFiException {
+        final UniFiDevice device = controller.getDevice(config.getMacAddress());
+
+        if (device == null || portToUpdate == null) {
+
+        } else {
+            final UnfiPortOverride override = new UnfiPortOverride();
+            override.setPortIdx(portToUpdate.getPortIdx());
+            override.setPortconfId(portToUpdate.getPortconfId());
+            override.setPoeMode(poeMode);
+            final Map<Integer, UnfiPortOverride> newMap = new HashMap<>(ports);
+
+            newMap.put(portToUpdate.getPortIdx(), override);
+            controller.poeMode(device, newMap);
+            refresh();
+        }
+    }
+}
