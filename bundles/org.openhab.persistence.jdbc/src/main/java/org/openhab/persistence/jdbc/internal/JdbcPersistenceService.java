@@ -154,8 +154,10 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         }
         long timerStart = System.currentTimeMillis();
         storeItemValue(item, state, date);
-        logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
-                new Date(), System.currentTimeMillis() - timerStart);
+        if (logger.isDebugEnabled()) {
+            logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
+                    new Date(), System.currentTimeMillis() - timerStart);
+        }
     }
 
     @Override
@@ -244,9 +246,6 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
     @Override
     public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
-        if (filter.getItemName() == null) {
-            throw new IllegalArgumentException("Item name must not be null");
-        }
         throw new UnsupportedOperationException("Not implemented yet");
     }
 }

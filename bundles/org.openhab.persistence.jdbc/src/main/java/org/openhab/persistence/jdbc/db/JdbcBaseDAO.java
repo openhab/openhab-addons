@@ -418,7 +418,7 @@ public class JdbcBaseDAO {
                 itemType, vo.getTableName(), itemState);
 
         // insertItemValue
-        logger.debug("JDBC::storeItemValueProvider: getState: '{}'", itemState);
+        logger.debug("JDBC::storeItemValueProvider: itemState: '{}'", itemState);
         /*
          * !!ATTENTION!!
          *
@@ -470,7 +470,7 @@ public class JdbcBaseDAO {
                     vo.setValue(value);
                 } else {// fall back to String
                     vo.setValueTypes(it, java.lang.String.class);
-                    logger.warn("JDBC::storeItemValueProvider: item.getState().toString(): '{}'", convertedState);
+                    logger.warn("JDBC::storeItemValueProvider: itemState: '{}'", convertedState);
                     vo.setValue(convertedState.toString());
                 }
                 break;
@@ -497,7 +497,7 @@ public class JdbcBaseDAO {
             default:
                 // All other items should return the best format by default
                 vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
-                logger.debug("JDBC::storeItemValueProvider: other: item.getState().toString(): '{}'", itemState);
+                logger.debug("JDBC::storeItemValueProvider: other: itemState: '{}'", itemState);
                 vo.setValue(itemState.toString());
                 break;
         }
