@@ -224,7 +224,12 @@ If more than one message is active the channel _name_ contains all active messag
 |---------------------------------|---------------------|----------------|------------|
 | CheckControl Description        | name                | String         | Read/Write |
 | CheckControl Details            | details             | String         | Read       |
-| Mileage Occurrence              | mileage             | Number:Length  | Read       |
+| Severity Level                  | severity            | String         | Read       |
+
+Severity Levels
+* Ok
+* Low
+* Medium
 
 #### Doors Details
 
@@ -272,16 +277,13 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 |---------------------------|-------------------------|----------------------|------|------|---------|-----|
 | Mileage                   | mileage                 | Number:Length        |  X   |  X   |    X    |  X  |
 | Fuel Range                | range-fuel              | Number:Length        |  X   |  X   |    X    |     |
-| Battery Range             | range-electric          | Number:Length        |      |  X   |    X    |  X  | 
-| Max Battery Range         | range-electric-max      | Number:Length        |      |  X   |    X    |  X  | 
+| Electric Range            | range-electric          | Number:Length        |      |  X   |    X    |  X  | 
 | Hybrid Range              | range-hybrid            | Number:Length        |      |  X   |    X    |     | 
 | Battery Charge Level      | soc                     | Number:Dimensionless |      |  X   |    X    |  X  |
-| Max Battery Capacity      | soc-max                 | Number:Power  |      |      |  X   |    X    |  X  |
 | Remaining Fuel            | remaining-fuel          | Number:Volume        |  X   |  X   |    X    |     | 
 | Fuel Range Radius         | range-radius-fuel       | Number:Length        |  X   |  X   |    X    |     | 
 | Electric Range Radius     | range-radius-electric   | Number:Length        |      |  X   |    X    |  X  | 
 | Hybrid Range Radius       | range-radius-hybrid     | Number:Length        |      |  X   |    X    |     | 
-| Max Hybrid Range Radius   | range-radius-hybrid-max | Number:Length        |      |  X   |    X    |     | 
 
 
 #### Charge Profile
@@ -290,9 +292,8 @@ Charging options with date and time for preferred time windows and charging mode
 
 * Channel Group ID is **charge**
 * Available for electric and hybrid vehicles
-* Read/Write access for UI. Use [Charge Profile Editing Action](#charge-profile-editing) in rules
-* There are 3 timers *T1, T2 and T3* available. Replace *X* with number 1,2 or 3 to target the correct timer
-* Additional override Timer *OT* defines a single departure besides the 3 predefined schedule timers  
+* Read access for UI. 
+* There are 4 timers *T1, T2, T3 and T4* available. Replace *X* with number 1,2 or 3 to target the correct timer
 
 | Channel Label              | Channel Group ID | Channel ID                | Type     | 
 |----------------------------|------------------|---------------------------|----------| 
@@ -337,43 +338,6 @@ GPS location and heading of the vehicle.
 | GPS Coordinates | gps                 | Location     | 
 | Heading         | heading             | Number:Angle | 
 
-#### Last Trip
-
-Statistic values of duration, distance and consumption of the last trip.
-
-* Channel Group ID is **last-trip**
-* Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
-* Read-only values
-* Depending on units configuration in [Thing Configuration](#thing-configuration) average values are given for 100 kilometers or miles
-
-| Channel Label                           | Channel ID                   | Type          |
-|-----------------------------------------|------------------------------|---------------|
-| Last Trip Date                          | date                         | DateTime      |
-| Last Trip Duration                      | duration                     | Number:Time   |
-| Last Trip Distance                      | distance                     | Number:Length |
-| Distance since Charge                   | distance-since-charging      | Number:Length |
-| Avg. Power Consumption                  | avg-consumption              | Number:Power  |
-| Avg. Power Recuperation                 | avg-recuperation             | Number:Power  |
-| Avg. Combined Consumption               | avg-combined-consumption     | Number:Volume |
-
-
-#### Lifetime Statistics
-
-Providing lifetime consumption values.
-
-* Channel Group ID is **lifetime**
-* Available if *Statistics* is present in *Services Supported*. See [Vehicle Properties](#properties) for further details
-* Read-only values
-* Depending on units configuration in [Thing Configuration](#thing-configuration) average values are given for 100 kilometers or miles
-
-| Channel Label                           | Channel ID                   | Type          | 
-|-----------------------------------------|------------------------------|---------------|
-| Total Electric Distance                 | total-driven-distance        | Number:Length |
-| Longest 1-Charge Distance               | single-longest-distance      | Number:Length |
-| Avg. Power Consumption                  | avg-consumption              | Number:Power  |
-| Avg. Power Recuperation                 | avg-recuperation             | Number:Power  |
-| Avg. Combined Consumption               | avg-combined-consumption     | Number:Volume |
-
 
 #### Remote Services
 
@@ -410,21 +374,6 @@ The channel _state_ shows the progress of the command execution in the following
 3) _Delivered_
 4) _Executed_
 
-#### Destinations
-
-Shows the last destinations stored in the navigation system.
-If several last destinations are stored in the navigation system the channel _name_ contains all addresses as options.
-
-* Channel Group ID is **destination**
-* Available if *LastDestinations* is present in *Services Supported*. Check [Vehicle Properties](#properties) for further details
-* Read/Write access
-
-
-| Channel Label        | Channel ID    | Type      | Access      |
-|----------------------|---------------|-----------|-------------|
-| Name                 | name          | String    | Read/Write  |
-| GPS Coordinates      | gps           | Location  | Read        |
-
 
 
 #### Image
@@ -441,53 +390,6 @@ The possible values are the same mentioned in [Thing Configuration](#thing-confi
 | Rendered Vehicle Image     | png                 | Image  | Read     |
 | Image Viewport             | view                | String | Write    |
 | Image Picture Size         | size                | Number | Write    |
-
-## Actions
-
-Get the _Actions_ object for your vehicle using the Thing ID
-
-* bmwconnecteddrive - Binding ID, don't change!
-* bev_rex - [Thing UID](#things) of your car
-* user - Thing ID of the [Bridge](#bridge)
-* i3 - Thing ID of your car
-
-```
-  val profile = getActions("bmwconnecteddrive", "bmwconnecteddrive:bev_rex:user:i3")
-```
-
-### Charge Profile Editing
-
-Like in the Charge Profile Channels 3 Timers are provided. Replace *X* with 1, 2 or 3 to address the right timer.
-
-| Function                              | Parameters       | Returns                   | Description                                                | 
-|---------------------------------------|------------------|---------------------------|------------------------------------------------------------| 
-| getClimatizationEnabled               | void             | Boolean                   | Returns the enabled state of climatization                 | 
-| setClimatizationEnabled               | Boolean          | void                      | Sets the enabled state of climatization                    | 
-| getChargingMode                       | void             | String                    | Gets the charging-mode, see valid options below            | 
-| setChargingMode                       | String           | void                      | Sets the charging-mode, see valid options below            | 
-| getPreferredWindowStart               | void             | LocalTime                 | Returns the preferred charging-window start time           | 
-| setPreferredWindowStart               | LocalTime        | void                      | Sets the preferred charging-window start time              | 
-| getPreferredWindowEnd                 | void             | LocalTime                 | Returns the preferred charging-window end time             | 
-| setPreferredWindowEnd                 | LocalTime        | void                      | Sets the preferred charging-window end time                | 
-| getTimer*X*Enabled                    | void             | Boolean                   | Returns the enabled state of timer*X*                      | 
-| setTimer*X*Enabled                    | Boolean          | void                      | Returns the enabled state of timer*X*                      | 
-| getTimer*X*Departure                  | void             | LocalTime                 | Returns the departure time of timer*X*                     | 
-| setTimer*X*Departure                  | LocalTime        | void                      | Sets the timer*X* departure time                           | 
-| getTimer*X*Days                       | void             | Set<DayOfWeek>            | Returns the days of week timer*X* is enabled for           | 
-| setTimer*X*Days                       | Set<DayOfWeek>   | void                      | sets the days of week timer*X* is enabled for              | 
-| getOverrideTimerEnabled               | void             | Boolean                   | Returns the enabled state of override timer                | 
-| setOverrideTimerEnabled               | Boolean          | void                      | Sets the enabled state of override timer                   | 
-| getOverrideTimerDeparture             | void             | LocalTime                 | Returns the departure time of override timer               | 
-| setOverrideTimerDeparture             | LocalTime        | void                      | Sets the override timer departure time                     | 
-| getOverrideTimerDays                  | void             | Set<DayOfWeek>            | Returns the days of week the overrideTimer is enabled for  | 
-| setOverrideTimerDays                  | Set<DayOfWeek>   | void                      | Sets the days of week the overrideTimer is enabled for     | 
-| cancelEditChargeProfile               | void             | void                      | Cancel current edit of charging profile                    | 
-| sendChargeProfile                     | void             | void                      | Sends the charging profile to the vehicle                  | 
-
-Values for valid charging mode get/set
-
-* *IMMEDIATE_CHARGING*
-* *DELAYED_CHARGING*
 
 
 ## Further Descriptions
