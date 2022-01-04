@@ -27,6 +27,8 @@ import org.openhab.core.types.Command;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.communication.Response;
 import org.openwebnet4j.message.Auxiliary;
+import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereAuxiliary;
 import org.openwebnet4j.message.Who;
@@ -58,7 +60,7 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Handles Auxiliary switch command for a channel
+     * Handles Auxiliary command for a channel
      *
      * @param channel the channel
      * @param command the Command
@@ -68,20 +70,25 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
         logger.debug("handleSwitchCommand() (command={} - channel={})", command, channel);
         Where w = deviceWhere;
         if (w != null) {
-            if (channel.getId().equals(CHANNEL_AUX)) {// modified channelId
+            if (channel.getId().equals(CHANNEL_AUX)) {
                 if (command instanceof StringType) {
+                    updateStatus(ThingStatus.ONLINE);
                     try {
-                        if (command.toString().equals("ON")) {
+                        if (command.toString().equals(Auxiliary.WhatAuxiliary.ON.name())) {
                             send(Auxiliary.requestTurnOn(w.value()));
-                        } else if (command.toString().equals("OFF")) {
+                            // TODO: Update state
+                        } else if (command.toString().equals(Auxiliary.WhatAuxiliary.OFF.name())) {
                             send(Auxiliary.requestTurnOff(w.value()));
                         }
                     } catch (OWNException e) {
                         logger.warn("Exception while processing command {}: {}", command, e.getMessage());
                     }
                 } else {
-                    logger.warn("Unsupported ChannelUID {}", channel);
+                    logger.warn("Unsupported Command {}", channel);
                 }
+            } else {
+                logger.warn("Unsupported ChannelUID {}", channel);
+                updateStatus(ThingStatus.OFFLINE);
             }
         }
     }
@@ -89,47 +96,28 @@ public class OpenWebNetAuxiliaryHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-        requestStatus();
-    }
-
-    // TODO: Thing always unknown
-    /** helper method to request auxiliary status based on channel */
-    private void requestStatus() {
-        Where w = deviceWhere;
-        if (w != null) {
-            try {
-                Response res = send(Auxiliary.requestStatus(w.value()));
-                if (res != null && res.isSuccess()) {
-                    ThingStatus ts = getThing().getStatus();
-                    if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                }
-            } catch (OWNException e) {
-                logger.warn("requestStatus() Exception while requesting auxiliary state: {}", e.getMessage());
-            }
-        } else {
-            logger.warn("Could not requestStatus(): deviceWhere is null");
-        }
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
-        OpenWebNetBridgeHandler brH = bridgeHandler;
-        if (brH != null) {
-            if (brH.isBusGateway() && refreshAll) {
-                long now = System.currentTimeMillis();
-                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
-                    try {
-                        send(Auxiliary.requestStatus(WhereAuxiliary.GENERAL.value()));
-                        lastAllDevicesRefreshTS = now;
-                    } catch (OWNException e) {
-                        logger.warn("Exception while requesting all AUX devices refresh: {}", e.getMessage());
-                    }
-                } else {
-                    logger.debug("Refresh all AUX devices just sent...");
+    }
+
+    @Override
+    protected void handleMessage(BaseOpenMessage msg) {
+        super.handleMessage(msg);
+        Where w = deviceWhere;
+        try {
+            if (w != null) {
+                Response res = send(Auxiliary.requestStatus(w.value()));
+                if (res != null) {
+                    msg = (BaseOpenMessage) res.getResponseMessages().get(0);
+                    logger.warn("OWN message:  {}", msg.toString());
                 }
+                What what = msg.getWhat();
+                updateState(CHANNEL_AUX, new StringType(what.toString()));
             }
+        } catch (OWNException e) {
+            logger.warn("Exception while processing command: {}", e.getMessage());
         }
     }
 
