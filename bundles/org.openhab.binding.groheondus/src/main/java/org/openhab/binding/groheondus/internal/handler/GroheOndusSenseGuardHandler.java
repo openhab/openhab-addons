@@ -12,7 +12,13 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_CONFIG_TIMEFRAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_PRESSURE;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE_GUARD;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_VALVE_OPEN;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -41,6 +47,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,19 +86,28 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     @Override
     protected void updateChannel(ChannelUID channelUID, Appliance appliance, Data dataPoint) {
         String channelId = channelUID.getIdWithoutGroup();
-        State newState;
+        State newState = UnDefType.UNDEF;
+        Measurement lastMeasurement = getLastMeasurement(dataPoint);
         switch (channelId) {
             case CHANNEL_NAME:
                 newState = new StringType(appliance.getName());
                 break;
             case CHANNEL_PRESSURE:
-                newState = new QuantityType<>(getLastMeasurement(dataPoint).getPressure(), Units.BAR);
+                if (lastMeasurement != null) {
+                    newState = new QuantityType<>(lastMeasurement.getPressure(), Units.BAR);
+                }
                 break;
             case CHANNEL_TEMPERATURE_GUARD:
-                newState = new QuantityType<>(getLastMeasurement(dataPoint).getTemperatureGuard(), SIUnits.CELSIUS);
+                if (lastMeasurement != null) {
+                    newState = new QuantityType<>(lastMeasurement.getTemperatureGuard(), SIUnits.CELSIUS);
+                }
                 break;
             case CHANNEL_VALVE_OPEN:
-                newState = getValveOpenType(appliance);
+
+                OnOffType valveOpenType = getValveOpenType(appliance);
+                if (valveOpenType != null) {
+                    newState = valveOpenType;
+                }
                 break;
             case CHANNEL_WATERCONSUMPTION:
                 newState = sumWaterCosumption(dataPoint);

@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.groheondus.internal.handler;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_BATTERY;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_HUMIDITY;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_NAME;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.CHANNEL_TEMPERATURE;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -37,6 +40,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,26 +76,31 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     @Override
     protected void updateChannel(ChannelUID channelUID, Appliance appliance, Measurement measurement) {
         String channelId = channelUID.getIdWithoutGroup();
-        State newState;
+        State newState = UnDefType.UNDEF;
         switch (channelId) {
             case CHANNEL_NAME:
                 newState = new StringType(appliance.getName());
                 break;
             case CHANNEL_TEMPERATURE:
-                newState = new QuantityType<>(measurement.getTemperature(), SIUnits.CELSIUS);
+                if (measurement.getTemperature() != null) {
+                    newState = new QuantityType<>(measurement.getTemperature(), SIUnits.CELSIUS);
+                }
                 break;
             case CHANNEL_HUMIDITY:
-                newState = new QuantityType<>(measurement.getHumidity(), Units.PERCENT);
+                if (measurement.getHumidity() != null) {
+                    newState = new QuantityType<>(measurement.getHumidity(), Units.PERCENT);
+                }
                 break;
             case CHANNEL_BATTERY:
-                newState = new DecimalType(getBatteryStatus(appliance));
+                Integer batteryStatus = getBatteryStatus(appliance);
+                if (batteryStatus != null) {
+                    newState = new DecimalType(batteryStatus);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
         }
-        if (newState != null) {
-            updateState(channelUID, newState);
-        }
+        updateState(channelUID, newState);
     }
 
     @Override
@@ -112,12 +121,12 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
         return measurementList.isEmpty() ? new Measurement() : measurementList.get(measurementList.size() - 1);
     }
 
-    private int getBatteryStatus(Appliance appliance) {
+    private @Nullable Integer getBatteryStatus(Appliance appliance) {
         OndusService ondusService = getOndusService();
         if (ondusService == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "No initialized OndusService available from bridge.");
-            return -1;
+            return null;
         }
 
         Optional<ApplianceStatus> applianceStatusOptional;
@@ -126,14 +135,14 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
             if (!applianceStatusOptional.isPresent()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not load data from API.");
-                return -1;
+                return null;
             }
 
             return applianceStatusOptional.get().getBatteryStatus();
         } catch (IOException e) {
             logger.debug("Could not load appliance status", e);
         }
-        return -1;
+        return null;
     }
 
     private @Nullable ApplianceData getApplianceData(Appliance appliance) {
