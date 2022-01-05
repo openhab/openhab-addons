@@ -15,17 +15,17 @@ The provided data depends on
 2. the [Properties](#properties) mentioned in Services
 
 Different channel groups are clustering all informations.
-Check for each group if it's supported for this Vehicle.
+Check for each group if it's supported by your vehicle.
 
 Please note **this isn't a real-time binding**. 
 If a door is opened the state isn't transmitted and changed immediately. 
-This isn't a flaw in the binding itself because the state in BMW's own MyBMW App is also updated with some delay. 
+It's not a flaw in the binding itself because the state in BMW's own MyBMW App is also updated with some delay. 
 
 ## Supported Things
 
 ### Bridge
 
-The bridge establishes the connection between BMW's ConnectedDrive Portal and openHAB.
+The bridge establishes the connection between BMW API and openHAB.
 
 | Name                       | Bridge Type ID | Description                              |
 |----------------------------|----------------|------------------------------------------|
@@ -36,15 +36,15 @@ The bridge establishes the connection between BMW's ConnectedDrive Portal and op
 
 Four different vehicle types are provided. 
 They differ in the supported channel groups & channels. 
-Conventional Fuel Vehicles have no _Charging Profile_, Electric Vehicles don't provide a _Fuel Range_. 
+Conventional Fuel Vehicles don't provide e.g. _Charging Profile_, Electric Vehicles don't provide a _Fuel Range_. 
 For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ is shown.
  
-| Name                                | Thing Type ID | Supported Channel Groups                                                                          |
-|-------------------------------------|---------------|---------------------------------------------------------------------------------------------------|
-| BMW Electric Vehicle                | `bev`         | status, range, charge, doors, check, service, location, remote, statistic, session, tires, image  |
-| BMW Electric Vehicle with REX       | `bev_rex`     | status, range, charge, doors, check, service, location, remote, statistic, session, tires, image  |
-| BMW Plug-In-Hybrid Electric Vehicle | `phev`        | status, range, charge, doors, check, service, location, remote, statistic, session, tires, image  |
-| BMW Conventional Vehicle            | `conv`        | status, range, doors, check, service, location, remote, tires, image                              |
+| Name                                | Thing Type ID | Supported Channel Groups                                            |
+|-------------------------------------|---------------|---------------------------------------------------------------------|
+| BMW Electric Vehicle                | `bev`         | Vehicle with electric drive train                                   |
+| BMW Electric Vehicle with REX       | `bev_rex`     | Vehicle with electric drive train plus fuel powered range extender  |
+| BMW Plug-In-Hybrid Electric Vehicle | `phev`        | Vehicle with combustion and electric drive train                    |
+| BMW Conventional Vehicle            | `conv`        | Vehicle with combustion drive train                                 |
 
  
 #### Properties
@@ -52,7 +52,7 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
 <img align="right" src="./doc/vehicle-properties.png" width="500" height="225"/>
 
 For each vehicle properties are available. 
-Basically 3 types of information are registered as properties
+Basic information is given regarding
 
 * Vehicle properties like model type, drive train and construction year
 * Which services are available / not available
@@ -61,7 +61,7 @@ In the right picture can see in *remoteServicesEnabled* e.g. the *Door Lock* and
 This ensures channel group [Remote Services](#remote-services) is supporting door lock and unlock remote control.
 
 In *Services Supported* the entry *ChargingHistory* is mentioned.
-So it's valid to connect channel group [Charging Sessions](#sessions) in order to display your last charging sessions.
+So it's valid to connect channel group [Charge Sessions](#charge-sessions) in order to display your last charging sessions.
 
 | Property Key           | Property Value      |  Supported Channel Groups    |
 |------------------------|---------------------|------------------------------|
@@ -102,7 +102,7 @@ The region Configuration has 3 different options
 
 Language is predefined as *AUTODETECT*.
 Some textual descriptions, date and times are delivered based on your local language.
-You can override this setting with lowercase 2-letter [language code reagrding ISO 691](https://www.oracle.com/java/technologies/javase/jdk8-jre8-suported-locales.html)
+You can overwrite this setting with lowercase 2-letter [language code reagrding ISO 639](https://www.oracle.com/java/technologies/javase/jdk8-jre8-suported-locales.html)
 So if want your UI in english language place *en* as desired language.
 
 ### Thing Configuration
@@ -119,7 +119,7 @@ Same configuration is needed for all things
 
 | Parameter       | Type    | Description                       |           
 |-----------------|---------|-----------------------------------|
-| vehicleBrand    | text    | Vehicle Brand like BMW or Mini.   |
+| vehicleBrand    | text    | Vehicle Brand like BMW or Mini    |
 
 The _vehicleBrand_ is automatically obtained by the discovery service and shall not be changed.
 If thing is defined manually via *.things file following brands are suppoerted
@@ -137,6 +137,22 @@ They differ for each vehicle type, build-in sensors and activated services.
 
 ### Thing Channel Groups 
 
+| Channel Group ID                 | Description                                       | conv | phev | bev_rex | bev |
+|----------------------------------|---------------------------------------------------|------|------|---------|-----|
+| [status](#vehicle-status)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
+| [range](#range-data)             | Provides mileage, range and charge / fuel levels  |  X   |  X   |    X    |  X  |
+| [doors](#doors-details)          | Detials of all doors and windows                  |  X   |  X   |    X    |  X  |
+| [check](#check-control)          | Shows current active CheckControl messages        |  X   |  X   |    X    |  X  |
+| [service](#services)             | Future vehicle service schedules                  |  X   |  X   |    X    |  X  |
+| [location](#location)            | Coordinates and heading of the vehicle            |  X   |  X   |    X    |  X  |
+| [remote](#remote-services)       | Remote control of the vehicle                     |      |  X   |    X    |  X  |
+| [profile](#charge-profile)       | Scheduled charging profiles of vehicle            |      |  X   |    X    |  X  |
+| [statistic](#charge-statistics)  | Charging statistics of current month              |      |  X   |    X    |  X  |
+| [session](#charge-sessions)      | Past charging sessions                            |  X   |  X   |    X    |  X  |
+| [tires](#tire-pressure)          | Current and wanted pressure for all tires         |  X   |  X   |    X    |  X  |
+| [image](#image)                  | Provides an image of your vehicle                 |  X   |  X   |    X    |  X  |
+
+
 #### Vehicle Status
 
 Reflects overall status of the vehicle.
@@ -145,18 +161,18 @@ Reflects overall status of the vehicle.
 * Available for all vehicles
 * Read-only values
 
-| Channel Label             | Channel ID          | Type          | Description                                    |
-|---------------------------|---------------------|---------------|------------------------------------------------|
-| Overall Door Status       | doors               | String        | Combined status for all doors                  |
-| Overall Window Status     | windows             | String        | Combined status for all windows                |
-| Doors Locked              | lock                | String        | Status if doors are locked or unlocked         |
-| Next Service Date         | service-date        | DateTime      | Date of next upcoming service                  |
-| Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |
-| Check Control             | check-control       | String        | Presence of active warning messages            |
-| Plug Connection Status    | plug-connection     | String        | Only available for phev, bev_rex and bev       |
-| Charging Status           | charge              | String        | Only available for phev, bev_rex and bev       |
-| Charging Information      | charge-info         | String        | Information regarding current charging session |
-| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |
+| Channel Label             | Channel ID          | Type          | Description                                    | conv | phev | bev_rex | bev |
+|---------------------------|---------------------|---------------|------------------------------------------------|------|------|---------|-----|
+| Overall Door Status       | doors               | String        | Combined status for all doors                  |  X   |  X   |    X    |  X  |
+| Overall Window Status     | windows             | String        | Combined status for all windows                |  X   |  X   |    X    |  X  |
+| Doors Locked              | lock                | String        | Status if vehicle is secured                   |  X   |  X   |    X    |  X  |
+| Next Service Date         | service-date        | DateTime      | Date of next upcoming service                  |  X   |  X   |    X    |  X  |
+| Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |  X   |  X   |    X    |  X  |
+| Check Control             | check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
+| Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
+| Charging Status           | charge              | String        | Current charging status if plug is connected   |      |  X   |    X    |  X  |
+| Charging Information      | charge-info         | String        | Information regarding current charging session |      |  X   |    X    |  X  |
+| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
 
 Overall Door Status values
 
@@ -174,7 +190,6 @@ Overall Windows Status values
 Check Control values
 
 Localized String of current active warnings.
-
 Examples:
 
 * No Issues
@@ -188,49 +203,36 @@ Charging Status values
 * _Fully Charged_
 
 Charging Information values
-
 Localized String of current active charging session
 Examples
 
 * 100% at ~00:43
 * Starts at ~09:00
 
-#### Services
 
-Group for all upcoming services with description, service date and/or service mileage.
-If more than one service is scheduled in the future the channel _name_ contains all future services as options.
+#### Range Data
 
-* Channel Group ID is **service**
-* Available for all vehicles
-* Read/Write access
+Based on vehicle type some channels are present or not. 
+Conventional fuel vehicles don't provide *Electric Range* and battery electric vehicles don't show *Fuel Range*.
+Hybrid vehicles have both and in addition *Hybrid Range*.
+See description [Range vs Range Radius](#range-vs-range-radius) to get more information.
 
-| Channel Label                  | Channel ID          | Type           | Access     |
-|--------------------------------|---------------------|----------------|------------|
-| Service Name                   | name                | String         | Read/Write |
-| Service Details                | details             | String         | Read       |
-| Service Date                   | date                | Number         | Read       |
-| Mileage till Service           | mileage             | Number:Length  | Read       |
+* Channel Group ID is **range**
+* Availability according to table
+* Read-only values
 
-#### Check Control
+| Channel Label             | Channel ID              | Type                 | conv | phev | bev_rex | bev |
+|---------------------------|-------------------------|----------------------|------|------|---------|-----|
+| Mileage                   | mileage                 | Number:Length        |  X   |  X   |    X    |  X  |
+| Fuel Range                | range-fuel              | Number:Length        |  X   |  X   |    X    |     |
+| Electric Range            | range-electric          | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range              | range-hybrid            | Number:Length        |      |  X   |    X    |     | 
+| Battery Charge Level      | soc                     | Number:Dimensionless |      |  X   |    X    |  X  |
+| Remaining Fuel            | remaining-fuel          | Number:Volume        |  X   |  X   |    X    |     | 
+| Fuel Range Radius         | range-radius-fuel       | Number:Length        |  X   |  X   |    X    |     | 
+| Electric Range Radius     | range-radius-electric   | Number:Length        |      |  X   |    X    |  X  | 
+| Hybrid Range Radius       | range-radius-hybrid     | Number:Length        |      |  X   |    X    |     | 
 
-Group for all current active CheckControl messages.
-If more than one message is active the channel _name_ contains all active messages as options.
-
-* Channel Group ID is **check**
-* Available for all vehicles
-* Read/Write access
-
-| Channel Label                   | Channel ID          | Type           | Access     |
-|---------------------------------|---------------------|----------------|------------|
-| CheckControl Description        | name                | String         | Read/Write |
-| CheckControl Details            | details             | String         | Read       |
-| Severity Level                  | severity            | String         | Read       |
-
-Severity Levels
-
-* Ok
-* Low
-* Medium
 
 #### Doors Details
 
@@ -263,120 +265,45 @@ Possible states
 * _Open_ - the door / window is open
 * _Intermediate_ - window in intermediate position, not applicable for doors
 
-#### Range Data
 
-Based on vehicle type some channels are present or not. 
-Conventional fuel vehicles don't provide *Electric Range* and battery electric vehicles don't show *Fuel Range*.
-Hybrid vehicles have both and in addition *Hybrid Range*.
-See description [Range vs Range Radius](#range-vs-range-radius) to get more information.
+#### Check Control
 
-* Channel Group ID is **range**
-* Availability according to table
-* Read-only values
-
-| Channel Label             | Channel ID              | Type                 | conv | phev | bev_rex | bev |
-|---------------------------|-------------------------|----------------------|------|------|---------|-----|
-| Mileage                   | mileage                 | Number:Length        |  X   |  X   |    X    |  X  |
-| Fuel Range                | range-fuel              | Number:Length        |  X   |  X   |    X    |     |
-| Electric Range            | range-electric          | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range              | range-hybrid            | Number:Length        |      |  X   |    X    |     | 
-| Battery Charge Level      | soc                     | Number:Dimensionless |      |  X   |    X    |  X  |
-| Remaining Fuel            | remaining-fuel          | Number:Volume        |  X   |  X   |    X    |     | 
-| Fuel Range Radius         | range-radius-fuel       | Number:Length        |  X   |  X   |    X    |     | 
-| Electric Range Radius     | range-radius-electric   | Number:Length        |      |  X   |    X    |  X  | 
-| Hybrid Range Radius       | range-radius-hybrid     | Number:Length        |      |  X   |    X    |     | 
-
-#### Tire Pressure
-
-Current and target tire pressure values
-
-* Channel Group ID is **tires**
-* Available for all vehicles if corresponding sensors are built-in 
-* Read-only values
- 
-| Channel Label              | Channel ID              | Type             | 
-|----------------------------|-------------------------|------------------|
-| Front Left                 | fl-current              | Number:Pressure  |
-| Front Left Target          | fl-target               | Number:Pressure  |
-| Front Right                | fr-current              | Number:Pressure  |
-| Front Right Target         | fr-target               | Number:Pressure  |
-| Rear Left                  | rl-current              | Number:Pressure  |
-| Rear Left Target           | rl-target               | Number:Pressure  |
-| Rear Right                 | rr-current              | Number:Pressure  |
-| Rear Right Target          | rr-target               | Number:Pressure  |
-
-
-#### Charge Statistics
-
-Shows charge statistics of the current month
-
-* Channel Group ID is **statistic**
-* Available for vehicles with an electric or hybrid drive train 
-* Read-only values
- 
-| Channel Label              | Channel ID              | Type           | 
-|----------------------------|-------------------------|----------------|
-| Charge Statistic Month     | title                   | String         |
-| Energy Charged             | energy                  | Number:Energy  |
-| Charge Sessions            | sessions                | Number         |
-
-
-#### Charge Sessions
-
-Group for past charging sessions.
+Group for all current active CheckControl messages.
 If more than one message is active the channel _name_ contains all active messages as options.
 
 * Channel Group ID is **check**
 * Available for all vehicles
 * Read/Write access
 
-| Channel Label                   | Channel ID   | Type           |
-|---------------------------------|--------------|----------------|
-| Session Title                   | title        | String         |
-| Session Details                 | subtitle     | String         |
-| Charged Energy in Session       | energy       | String         |
-| Issues during Session           | issue        | String         |
-| Session Status                  | status       | String         |
+| Channel Label                   | Channel ID          | Type           | Access     |
+|---------------------------------|---------------------|----------------|------------|
+| CheckControl Description        | name                | String         | Read/Write |
+| CheckControl Details            | details             | String         | Read       |
+| Severity Level                  | severity            | String         | Read       |
+
+Severity Levels
+
+* Ok
+* Low
+* Medium
 
 
-#### Charge Profile
+#### Services
 
-Charging options with date and time for preferred time windows and charging modes.
+Group for all upcoming services with description, service date and/or service mileage.
+If more than one service is scheduled in the future the channel _name_ contains all future services as options.
 
-* Channel Group ID is **charge**
-* Available for electric and hybrid vehicles
-* Read access for UI. 
-* There are 4 timers *T1, T2, T3 and T4* available. Replace *X* with number 1,2 or 3 to target the correct timer
+* Channel Group ID is **service**
+* Available for all vehicles
+* Read/Write access
 
-| Channel Label              | Channel ID                | Type     | 
-|----------------------------|---------------------------|----------| 
-| Charge Mode                | profile-mode              | String   | 
-| Charge Preferences         | profile-prefs             | String   | 
-| Window Start Time          | window-start              | DateTime | 
-| Window End Time            | window-end                | DateTime | 
-| A/C at Departure           | profile-climate           | Switch   | 
-| T*X* Enabled               | timer*X*-enabled          | Switch   | 
-| T*X* Departure Time        | timer*X*-departure        | DateTime | 
-| T*X* Days                  | timer*X*-days             | String   | 
-| T*X* Monday                | timer*X*-day-mon          | Switch   | 
-| T*X* Tuesday               | timer*X*-day-tue          | Switch   | 
-| T*X* Wednesday             | timer*X*-day-wed          | Switch   | 
-| T*X* Thursday              | timer*X*-day-thu          | Switch   | 
-| T*X* Friday                | timer*X*-day-fri          | Switch   | 
-| T*X* Saturday              | timer*X*-day-sat          | Switch   | 
-| T*X* Sunday                | timer*X*-day-sun          | Switch   | 
-| OT Enabled                 | override-enabled          | Switch   | 
-| OT Departure Time          | override-departure        | DateTime | 
+| Channel Label                  | Channel ID          | Type           | Access     |
+|--------------------------------|---------------------|----------------|------------|
+| Service Name                   | name                | String         | Read/Write |
+| Service Details                | details             | String         | Read       |
+| Service Date                   | date                | Number         | Read       |
+| Mileage till Service           | mileage             | Number:Length  | Read       |
 
-The channel _profile-mode_ supports
-
-* *IMMEDIATE_CHARGING*
-* *DELAYED_CHARGING*
-
-The channel _profile-prefs_ supports
-
-* *NO_PRESELECTION*
-* *CHARGING_WINDOW*
 
 #### Location
 
@@ -411,20 +338,113 @@ Parallel execution isn't supported.
 
 The channel _command_ provides options
 
-* _Flash Lights_
-* _Vehicle Finder_
-* _Door Lock_
-* _Door Unlock_
-* _Horn Blow_
-* _Climate Now Start_
-* _Climate Now Stop_
+* _flash-lights_
+* _vehicle-finder_
+* _door-lock_
+* _door-unlock_
+* _horn-low_
+* _climate-now-start_
+* _climate-now-stop_
 
 The channel _state_ shows the progress of the command execution in the following order
 
-1) _Initiated_ 
-2) _Pending_
-3) _Delivered_
-4) _Executed_
+1) _initiated_ 
+2) _pending_
+3) _delivered_
+4) _executed_
+
+
+#### Charge Profile
+
+Charging options with date and time for preferred time windows and charging modes.
+
+* Channel Group ID is **profile**
+* Available for electric and hybrid vehicles
+* Read access for UI. 
+* There are 4 timers *T1, T2, T3 and T4* available. Replace *X* with number 1,2 or 3 to target the correct timer
+
+| Channel Label              | Channel ID                | Type     | 
+|----------------------------|---------------------------|----------| 
+| Charge Mode                | mode                      | String   | 
+| Charge Preferences         | prefs                     | String   | 
+| Charging Plan              | control                   | String   | 
+| SoC Target                 | target                    | String   | 
+| Charging Energy Limited    | limit                     | Switch   | 
+| Window Start Time          | window-start              | DateTime | 
+| Window End Time            | window-end                | DateTime | 
+| A/C at Departure           | climate                   | Switch   | 
+| T*X* Enabled               | timer*X*-enabled          | Switch   | 
+| T*X* Departure Time        | timer*X*-departure        | DateTime | 
+| T*X* Monday                | timer*X*-day-mon          | Switch   | 
+| T*X* Tuesday               | timer*X*-day-tue          | Switch   | 
+| T*X* Wednesday             | timer*X*-day-wed          | Switch   | 
+| T*X* Thursday              | timer*X*-day-thu          | Switch   | 
+| T*X* Friday                | timer*X*-day-fri          | Switch   | 
+| T*X* Saturday              | timer*X*-day-sat          | Switch   | 
+| T*X* Sunday                | timer*X*-day-sun          | Switch   | 
+
+The channel _profile-mode_ supports
+
+* *immediateCharging*
+* *delayedCharging*
+
+The channel _profile-prefs_ supports
+
+* *noPreSelection*
+* *chargingWindow*
+
+
+#### Charge Statistics
+
+Shows charge statistics of the current month
+
+* Channel Group ID is **statistic**
+* Available for vehicles with an electric or hybrid drive train 
+* Read-only values
+ 
+| Channel Label              | Channel ID              | Type           | 
+|----------------------------|-------------------------|----------------|
+| Charge Statistic Month     | title                   | String         |
+| Energy Charged             | energy                  | Number:Energy  |
+| Charge Sessions            | sessions                | Number         |
+
+
+#### Charge Sessions
+
+Group for past charging sessions.
+If more than one message is active the channel _name_ contains all active messages as options.
+
+* Channel Group ID is **check**
+* Available for all vehicles
+* Read/Write access
+
+| Channel Label                   | Channel ID   | Type     |
+|---------------------------------|--------------|----------|
+| Session Title                   | title        | String   |
+| Session Details                 | subtitle     | String   |
+| Charged Energy in Session       | energy       | String   |
+| Issues during Session           | issue        | String   |
+| Session Status                  | status       | String   |
+
+
+#### Tire Pressure
+
+Current and target tire pressure values
+
+* Channel Group ID is **tires**
+* Available for all vehicles if corresponding sensors are built-in 
+* Read-only values
+ 
+| Channel Label              | Channel ID              | Type             | 
+|----------------------------|-------------------------|------------------|
+| Front Left                 | fl-current              | Number:Pressure  |
+| Front Left Target          | fl-target               | Number:Pressure  |
+| Front Right                | fr-current              | Number:Pressure  |
+| Front Right Target         | fr-target               | Number:Pressure  |
+| Rear Left                  | rl-current              | Number:Pressure  |
+| Rear Left Target           | rl-target               | Number:Pressure  |
+| Rear Right                 | rr-current              | Number:Pressure  |
+| Rear Right Target          | rr-target               | Number:Pressure  |
 
 
 #### Image
@@ -453,53 +473,55 @@ Possoble Viewports:
 
 ### Dynamic Data
 
-<img align="right" src="./doc/ServiceOptions.png" width="400" height="350"/>
+<img align="right" src="./doc/SessionOptions.png" width="400" height="250"/>
 
 There are 3 occurrences of dynamic data delivered
 
 * Upcoming Services delivered in group [Services](#services)
 * Check Control Messages delivered in group [Check Control](#check-control)
-* Last Destinations delivered in group [Destinations](#destinations)
+* Charging Session data delivered in group [Charge Sessions](#charge-sessions)
 
 The channel id _name_ shows the first element as default. 
 All other possibilities are attached as options. 
-The picture on the right shows the _Service Name_ item and all four possible options. 
-Select the desired service and the corresponding _Service Date & Milage_ will be shown.  
+The picture on the right shows the _Session Title_ item and 3 possible options. 
+Select the desired service and the corresponding Charge Session with _Energy Charged_, _Session Status_ and _Session Issues_ will be shown.  
 
 ### TroubleShooting
 
-BMW has a high range of vehicles supported by ConnectedDrive.
+BMW has a high range of vehicles supported by their API.
 In case of any issues with this binding help to resolve it! 
 Please perform the following steps:
 
-* Can you [log into ConnectedDrive](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your credentials? Please note this isn't the BMW Customer portal - it's the ConnectedDrive portal
-* Is the vehicle listed in your account? There's a one-to-one relation from user to vehicle
+* Can you [log into MyBMW App](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your credentials? 
+* Is the vehicle listed in your account? 
+* Is the [MyBMW Brige](#bridge) status _Online_?
 
-If the access to the portal is working and the vehicle is listed some debug data is needed in order to identify the issue. 
+If these pre-conditions are fulfilled proceed with the fingerprint generation. 
 
 #### Generate Debug Fingerprint
 
-If you checked the above pre-conditions you need to get the debug fingerprint from the logs.
+<img align="right" src="./doc/DiscoveryScan.png" width="400" height="350"/>
+
+
 First [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for the binding.
 
 ```
 log:set DEBUG org.openhab.binding.mybmw
 ```
 
-The debug fingerprint is generated immediately after the vehicle thing is initialized the first time, e.g. after openHAB startup. 
+The debug fingerprint is generated every time the discovery is executed.
 To force a new fingerprint disable the thing shortly and enable it again. 
 Personal data is eliminated from the log entries so it should be possible to share them in public.
 Data like
 
-* Dealer Properties
 * Vehicle Identification Number (VIN)
-* Location latitude / longitude 
+* Location data
 
 are anonymized.
 You'll find the fingerprint in the logs with the command
 
 ```
-grep "Troubleshoot Fingerprint Data" openhab.log
+grep "Discovery Fingerprint Data" openhab.log
 ```
 
 After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
@@ -514,8 +536,8 @@ You will observe differences in the vehicle range and range radius values.
 While range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the map.
 
 The right picture shows the distance between Kassel and Frankfurt in Germany. 
-While the air-line distance is ~145 kilometer the route distance is ~192 kilometer.
-So range value is the normal remaining range while the range radius values can be used e.g. on [Mapview](https://www.openhab.org/docs/configuration/sitemaps.html#element-type-mapview) to indicate the reachable range on map.
+While the air-line distance is 145 kilometers the route distance is 192 kilometers.
+So range value is the normal remaining range while the range radius values can be used e.g. on [Mapview](https://www.openhab.org/docs/ui/sitemaps.html#element-type-mapview) to indicate the reachable range on map.
 Please note this is just an indicator of the effective range.
 Especially for electric vehicles it depends on many factors like driving style and usage of electric consumers. 
 
@@ -559,20 +581,6 @@ String                  i3CheckControl            "Check Control [%s]"          
 String                  i3ChargingStatus          "Charging [%s]"                               <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:status#charge" } 
 DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:status#last-update"}
 
-DateTime                i3TripDateTime            "Trip Date [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]" <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#date"}
-Number:Time             i3TripDuration            "Trip Duration [%d %unit%]"                   <time>          (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#duration"}
-Number:Length           i3TripDistance            "Distance [%d %unit%]"                        <line>          (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#distance" }                                                                           
-Number:Length           i3TripDistanceSinceCharge "Distance since last Charge [%d %unit%]"      <line>          (i3,long)   {channel="mybmw:bev_rex:user:i3:last-trip#distance-since-charging" }                                                                           
-Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#avg-consumption" }                                                                           
-Number:Volume           i3AvgTripCombined         "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#avg-combined-consumption" }                                                                           
-Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#avg-recuperation" }                                                                           
-
-Number:Length           i3TotalElectric           "Electric Distance Driven [%d %unit%]"        <line>          (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#total-driven-distance" }                                                                           
-Number:Length           i3LongestEVTrip           "Longest Electric Trip [%d %unit%]"           <line>          (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#single-longest-distance" }                                                                           
-Number:Energy           i3AvgConsumption          "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#avg-consumption" }                                                                           
-Number:Volume           i3AvgCombined             "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#avg-combined-consumption" }                                                                           
-Number:Energy           i3AvgRecuperation         "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#avg-recuperation" }  
-
 Location                i3Location                "Location  [%s]"                              <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:location#gps" }                                                                           
 Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:location#heading" }  
 
@@ -600,9 +608,6 @@ DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"  
 String                  i3CCName                  "CheckControl Name [%s]"                      <text>          (i3)        {channel="mybmw:bev_rex:user:i3:check#name" }
 String                  i3CCDetails               "CheckControl Details [%s]"                   <text>          (i3)        {channel="mybmw:bev_rex:user:i3:check#details" }
 Number:Length           i3CCMileage               "CheckControl Mileage [%d %unit%]"            <line>          (i3)        {channel="mybmw:bev_rex:user:i3:check#mileage" }
-
-String                  i3DestName                "Destination [%s]"                            <house>         (i3)        {channel="mybmw:bev_rex:user:i3:destination#name" } 
-Location                i3DestLocation            "GPS [%s]"                                    <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:destination#gps" }                                                                           
  
 Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="mybmw:bev_rex:user:i3:charge#profile-climate" }  
 String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#profile-mode" } 
@@ -619,7 +624,6 @@ Switch                  i3Timer1DaySat            "Timer 1 Saturday"            
 Switch                  i3Timer1DaySun            "Timer 1 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-sun" } 
 Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-enabled" }  
 DateTime                i3Timer2Departure         "Timer 2 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-departure" } 
-String                  i3Timer2Days              "Timer 2 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-days" } 
 Switch                  i3Timer2DayMon            "Timer 2 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-mon" } 
 Switch                  i3Timer2DayTue            "Timer 2 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-tue" } 
 Switch                  i3Timer2DayWed            "Timer 2 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-wed" } 
@@ -629,7 +633,6 @@ Switch                  i3Timer2DaySat            "Timer 2 Saturday"            
 Switch                  i3Timer2DaySun            "Timer 2 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-sun" } 
 Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-enabled" }  
 DateTime                i3Timer3Departure         "Timer 3 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-departure" } 
-String                  i3Timer3Days              "Timer 3 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-days" } 
 Switch                  i3Timer3DayMon            "Timer 3 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-mon" } 
 Switch                  i3Timer3DayTue            "Timer 3 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-tue" } 
 Switch                  i3Timer3DayWed            "Timer 3 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-wed" } 
@@ -639,7 +642,6 @@ Switch                  i3Timer3DaySat            "Timer 3 Saturday"            
 Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-sun" } 
 Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-enabled" }
 DateTime                i3Timer4Departure         "Timer 4 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-departure" } 
-String                  i3Timer4Days              "Timer 4 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-days" } 
 Switch                  i3Timer4DayMon            "Timer 4 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-mon" } 
 Switch                  i3Timer4DayTue            "Timer 4 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-tue" } 
 Switch                  i3Timer4DayWed            "Timer 4 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-wed" } 
@@ -661,16 +663,6 @@ sitemap BMW label="BMW" {
     Image  item=i3Image  
                        
   } 
-  Frame label="Range" {
-    Text    item=i3Mileage           
-    Text    item=i3Range             
-    Text    item=i3RangeElectric     
-    Text    item=i3RangeFuel         
-    Text    item=i3BatterySoc        
-    Text    item=i3Fuel              
-    Text    item=i3RadiusElectric       
-    Text    item=i3RadiusHybrid         
-  }
   Frame label="Status" {
     Text    item=i3DoorStatus           
     Text    item=i3WindowStatus         
@@ -681,18 +673,19 @@ sitemap BMW label="BMW" {
     Text    item=i3ChargingStatus           
     Text    item=i3LastUpdate               
   }
+  Frame label="Range" {
+    Text    item=i3Mileage           
+    Text    item=i3Range             
+    Text    item=i3RangeElectric     
+    Text    item=i3RangeFuel         
+    Text    item=i3BatterySoc        
+    Text    item=i3Fuel              
+    Text    item=i3RadiusElectric       
+    Text    item=i3RadiusHybrid         
+  }
   Frame label="Remote Services" {
     Selection item=i3RemoteCommand              
     Text      item=i3RemoteState              
-  }
-  Frame label="Last Trip" {
-    Text    item=i3TripDateTime            
-    Text    item=i3TripDuration            
-    Text    item=i3TripDistance            
-    Text    item=i3TripDistanceSinceCharge 
-    Text    item=i3AvgTripConsumption      
-    Text    item=i3AvgTripRecuperation     
-    Text    item=i3AvgTripCombined     
   }
   Frame label="Lifetime" {
     Text    item=i3TotalElectric  
@@ -732,14 +725,8 @@ sitemap BMW label="BMW" {
     Switch    item=i3ChargeProfileClimate     
     Selection item=i3ChargeProfileMode        
     Text      item=i3ChargeWindowStart        
-    Setpoint  item=i3ChargeWindowStartHour maxValue=23 step=1 icon="time"
-    Setpoint  item=i3ChargeWindowStartMinute maxValue=55 step=5 icon="time"
     Text      item=i3ChargeWindowEnd          
-    Setpoint  item=i3ChargeWindowEndHour maxValue=23 step=1 icon="time"
-    Setpoint  item=i3ChargeWindowEndMinute maxValue=55 step=5 icon="time"
     Text      item=i3Timer1Departure          
-    Setpoint  item=i3Timer1DepartureHour maxValue=23 step=1 icon="time"
-    Setpoint  item=i3Timer1DepartureMinute maxValue=55 step=5 icon="time"
     Text      item=i3Timer1Days               
     Switch    item=i3Timer1DayMon            
     Switch    item=i3Timer1DayTue            
@@ -750,8 +737,6 @@ sitemap BMW label="BMW" {
     Switch    item=i3Timer1DaySun            
     Switch    item=i3Timer1Enabled            
     Text      item=i3Timer2Departure          
-    Setpoint  item=i3Timer2DepartureHour maxValue=23 step=1 icon="time"
-    Setpoint  item=i3Timer2DepartureMinute maxValue=55 step=5 icon="time"
     Text      item=i3Timer2Days               
     Switch    item=i3Timer2DayMon            
     Switch    item=i3Timer2DayTue            
@@ -762,8 +747,6 @@ sitemap BMW label="BMW" {
     Switch    item=i3Timer2DaySun            
     Switch    item=i3Timer2Enabled            
     Text      item=i3Timer3Departure          
-    Setpoint  item=i3Timer3DepartureHour maxValue=23 step=1 icon="time"
-    Setpoint  item=i3Timer3DepartureMinute maxValue=55 step=5 icon="time"
     Text      item=i3Timer3Days               
     Switch    item=i3Timer3DayMon            
     Switch    item=i3Timer3DayTue            
@@ -774,14 +757,7 @@ sitemap BMW label="BMW" {
     Switch    item=i3Timer3DaySun            
     Switch    item=i3Timer3Enabled            
     Switch    item=i3OverrideEnabled            
-    Text      item=i3OverrideDeparture          
-    Setpoint  item=i3OverrideDepartureHour maxValue=23 step=1 icon="time"
-    Setpoint  item=i3OverrideDepartureMinute maxValue=55 step=5 icon="time"
   } 
-  Frame label="Last Destinations" {    
-    Text  item=i3DestName                 
-    Text  item=i3DestLocation                                                                                   
-  }  
   Frame label="Image Properties" {
     Text    item=i3ImageViewport
     Text    item=i3ImageSize 

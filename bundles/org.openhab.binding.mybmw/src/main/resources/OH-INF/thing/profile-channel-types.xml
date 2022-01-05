@@ -46,7 +46,7 @@
 	</channel-type>
 	<channel-type id="profile-limit-channel">
 		<item-type>Switch</item-type>
-		<label>Charging Limit</label>
+		<label>Charging Energy Limited</label>
 		<description>Limited charging activated</description>
 	</channel-type>
 	<channel-type id="window-start-channel">
@@ -199,7 +199,6 @@
 		<label>T3 Enabled</label>
 		<description>Timer 3 enabled</description>
 	</channel-type>
-
 	<channel-type id="timer4-departure-channel">
 		<item-type>DateTime</item-type>
 		<label>T4 Departure Time</label>

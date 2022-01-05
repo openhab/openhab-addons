@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="check-control-values">
 		<label>Check Control Messages</label>
-		<description>Show the current active CheckControl Messages</description>
+		<description>Shows current active CheckControl messages</description>
 		<channels>
 			<channel id="name" typeId="checkcontrol-name-channel"/>
 			<channel id="details" typeId="checkcontrol-details-channel"/>

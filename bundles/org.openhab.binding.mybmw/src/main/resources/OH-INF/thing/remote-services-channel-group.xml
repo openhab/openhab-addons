@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="remote-services">
 		<label>Remote Services</label>
-		<description>Services can be executed via BMW Server like Door lock/unlock, Air Conditioning and more</description>
+		<description>Remote control of the vehicle</description>
 		<channels>
 			<channel id="command" typeId="remote-command-channel"/>
 			<channel id="state" typeId="remote-state-channel"/>

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="session-values">
 		<label>Electric Charging Sessions</label>
-		<description>List of past Charging Sessions</description>
+		<description>Past charging sessions</description>
 		<channels>
 			<channel id="title" typeId="session-title-channel"/>
 			<channel id="subtitle" typeId="session-subtitle-channel"/>

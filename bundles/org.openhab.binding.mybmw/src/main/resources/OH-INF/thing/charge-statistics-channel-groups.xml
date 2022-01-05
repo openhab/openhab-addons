@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="charge-statistic">
 		<label>Charging Statistics</label>
-		<description>Show some charging statistics for the current month</description>
+		<description>Charging statistics of current month</description>
 		<channels>
 			<channel id="title" typeId="statistic-title-channel"/>
 			<channel id="energy" typeId="statistic-energy-channel"/>
