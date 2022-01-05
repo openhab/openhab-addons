@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import org.openhab.core.types.State;
-
 import java.nio.ByteBuffer;
+
+import org.openhab.core.types.State;
 
 /**
  * @author Michael Barker - Initial contribution
  */
-public interface StateDecode
-{
+public interface StateDecode {
     State decodeState(final ByteBuffer edt);
+
     String itemType();
 }

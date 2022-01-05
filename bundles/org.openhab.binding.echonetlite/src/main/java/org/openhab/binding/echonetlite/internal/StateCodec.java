@@ -1,18 +1,33 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.echonetlite.internal;
 
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
+import static org.openhab.binding.echonetlite.internal.BufferUtil.hex;
+import static org.openhab.binding.echonetlite.internal.LangUtil.b;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.openhab.binding.echonetlite.internal.BufferUtil.hex;
-import static org.openhab.binding.echonetlite.internal.LangUtil.b;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
 
+/**
+ * @author Michael Barker - Initial contribution
+ */
 public interface StateCodec extends StateEncode, StateDecode {
 
     class OnOffCodec implements StateCodec {
@@ -270,7 +285,7 @@ public interface StateCodec extends StateEncode, StateDecode {
         }
 
         public void encodeState(final State state, final ByteBuffer edt) {
-            final Option option = optionByName.get(((StringType) state).toFullString());
+            final Option option = optionByName.get(state.toFullString());
             edt.put(b(option.value));
         }
     }
@@ -279,21 +294,17 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         INSTANCE;
 
-        public String itemType()
-        {
+        public String itemType() {
             return "Number";
         }
 
-        public State decodeState(final ByteBuffer edt)
-        {
+        public State decodeState(final ByteBuffer edt) {
             final int value = edt.get(); // Should expand to typed value (mask excluded)
             return new DecimalType(value);
         }
 
-        public void encodeState(final State state, final ByteBuffer edt)
-        {
-            edt.put((byte)(((DecimalType)state).intValue()));
+        public void encodeState(final State state, final ByteBuffer edt) {
+            edt.put((byte) (((DecimalType) state).intValue()));
         }
     }
-
 }

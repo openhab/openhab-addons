@@ -1,4 +1,20 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.echonetlite.internal;
+
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.THING_TYPE_ECHONET_DEVICE;
+
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -12,11 +28,9 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
-
-import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.THING_TYPE_ECHONET_DEVICE;
-
+/**
+ * @author Michael Barker - Initial contribution
+ */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.echonetlite")
 public class EchonetDiscoveryService extends AbstractDiscoveryService implements EchonetDiscoveryListener {
@@ -55,8 +69,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService implements
                 .withProperty("hostname", instanceKey.address.getAddress().getHostAddress())
                 .withProperty("port", instanceKey.address.getPort())
                 .withProperty("groupCode", instanceKey.klass.groupCode())
-                .withProperty("classCode", instanceKey.klass.classCode())
-                .withProperty("instance", instanceKey.instance)
+                .withProperty("classCode", instanceKey.klass.classCode()).withProperty("instance", instanceKey.instance)
                 .build();
         thingDiscovered(discoveryResult);
     }

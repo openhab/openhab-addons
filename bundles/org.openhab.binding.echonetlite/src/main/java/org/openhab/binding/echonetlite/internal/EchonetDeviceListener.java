@@ -12,19 +12,22 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.State;
-
-import java.util.Map;
 
 /**
  * @author Michael Barker - Initial contribution
  */
 @NonNullByDefault
 public interface EchonetDeviceListener {
-    default void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {}
+    default void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {
+    }
 
-    default void onUpdated(String channelId, State value) {}
+    default void onUpdated(String channelId, State value) {
+    }
 
-    default void onRemoved() {}
+    default void onRemoved() {
+    }
 }
