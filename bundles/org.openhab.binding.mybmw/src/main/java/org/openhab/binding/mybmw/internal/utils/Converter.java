@@ -15,6 +15,7 @@ package org.openhab.binding.mybmw.internal.utils;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -68,10 +69,10 @@ public class Converter {
     }.getType();
     public static int offsetMinutes = -1;
 
-    public static String getZonedDateTime(String input) {
+    public static String zonedToLocalDateTime(String input) {
         try {
-            ZonedDateTime d = ZonedDateTime.parse(input);
-            return d.format(Converter.DATE_INPUT_PATTERN);
+            ZonedDateTime d = ZonedDateTime.parse(input).withZoneSameInstant(ZoneId.systemDefault());
+            return d.toLocalDateTime().format(Converter.DATE_INPUT_PATTERN);
         } catch (Exception e) {
             LOGGER.debug("Unable to parse date {} - {}", input, e.getMessage());
         }

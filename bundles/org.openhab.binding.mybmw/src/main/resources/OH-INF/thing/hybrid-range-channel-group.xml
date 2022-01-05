@@ -8,14 +8,14 @@
 		<description>>Provides mileage, remaining fuel and range data for hybrid vehicles</description>
 		<channels>
 			<channel id="mileage" typeId="mileage-channel"/>
-            <channel id="electric" typeId="range-electric-channel"/>
-            <channel id="fuel" typeId="range-fuel-channel"/>
+			<channel id="electric" typeId="range-electric-channel"/>
+			<channel id="fuel" typeId="range-fuel-channel"/>
 			<channel id="hybrid" typeId="range-hybrid-channel"/>
 			<channel id="radius-electric" typeId="range-radius-electric-channel"/>
-            <channel id="radius-fuel" typeId="range-radius-fuel-channel"/>
+			<channel id="radius-fuel" typeId="range-radius-fuel-channel"/>
 			<channel id="radius-hybrid" typeId="range-radius-hybrid-channel"/>
-            <channel id="soc" typeId="soc-channel"/>
-            <channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
+			<channel id="soc" typeId="soc-channel"/>
+			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

@@ -178,7 +178,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // last update Time
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
-                DateTimeType.valueOf(Converter.getZonedDateTime(v.properties.lastUpdatedAt)));
+                DateTimeType.valueOf(Converter.zonedToLocalDateTime(v.properties.lastUpdatedAt)));
 
         updateChannel(CHANNEL_GROUP_STATUS, DOORS, Converter.getClosedState(v.properties.areDoorsClosed));
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS, Converter.getClosedState(v.properties.areWindowsClosed));
@@ -315,7 +315,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             updateChannel(CHANNEL_GROUP_SERVICE, NAME, StringType.valueOf(Converter.toTitleCase(serviceEntry.type)));
             if (serviceEntry.dateTime != null) {
                 updateChannel(CHANNEL_GROUP_SERVICE, DATE,
-                        DateTimeType.valueOf(Converter.getZonedDateTime(serviceEntry.dateTime)));
+                        DateTimeType.valueOf(Converter.zonedToLocalDateTime(serviceEntry.dateTime)));
             } else {
                 updateChannel(CHANNEL_GROUP_SERVICE, DATE, UnDefType.UNDEF);
             }

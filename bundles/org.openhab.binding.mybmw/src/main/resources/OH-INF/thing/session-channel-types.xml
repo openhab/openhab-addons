@@ -21,6 +21,6 @@
 	</channel-type>
 	<channel-type id="session-status-channel">
 		<item-type>String</item-type>
-		<label>Current Session Status</label>
+		<label>Session Status</label>
 	</channel-type>
 </thing:thing-descriptions>

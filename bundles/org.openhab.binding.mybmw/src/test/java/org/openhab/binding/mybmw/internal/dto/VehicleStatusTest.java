@@ -44,7 +44,8 @@ public class VehicleStatusTest {
                         .toLocalDateTime().toString(),
                 "Service Date");
 
-        assertEquals("2021-12-21T16:46:02", Converter.getZonedDateTime(v.properties.lastUpdatedAt), "Last update time");
+        assertEquals("2021-12-21T17:46:02", Converter.zonedToLocalDateTime(v.properties.lastUpdatedAt),
+                "Last update time");
     }
 
     @Test

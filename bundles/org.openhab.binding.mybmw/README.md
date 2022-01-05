@@ -1,6 +1,6 @@
 # MyBMW Binding
 
-The binding provides access like [MyBMW App](https://www.bmw.com/en/footer/mybmw-app.html) and openHAB.
+The binding provides access like [MyBMW App](https://www.bmw.com/en/footer/mybmw-app.html) to openHAB.
 All vehicles connected to an account will be detected by the discovery with the correct type: 
 
 * Conventional Fuel Vehicle
@@ -49,7 +49,7 @@ For hybrid vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
  
 #### Properties
 
-<img align="right" src="./doc/properties.png" width="500" height="225"/>
+<img align="right" src="./doc/vehicle-properties.png" width="500" height="225"/>
 
 For each vehicle properties are available. 
 Basically 3 types of information are registered as properties
@@ -121,7 +121,12 @@ Same configuration is needed for all things
 |-----------------|---------|-----------------------------------|
 | vehicleBrand    | text    | Vehicle Brand like BMW or Mini.   |
 
-Don't change if you don't know what you're doing!
+The _vehicleBrand_ is automatically obtained by the discovery service and shall not be changed.
+If thing is defined manually via *.things file following brands are suppoerted
+
+* BMW
+* MINI
+
 
 ## Channels
 
@@ -180,12 +185,7 @@ Charging Status values
 * _Not Charging_
 * _Charging_
 * _Plugged In_
-* _Error_
-* _Finished Fully Charged_
-* _Finished Not Full_
-* _Invalid_
-* _Charging Goal reached_
-* _Waiting For Charging_
+* _Fully Charged_
 
 Charging Information values
 
@@ -227,6 +227,7 @@ If more than one message is active the channel _name_ contains all active messag
 | Severity Level                  | severity            | String         | Read       |
 
 Severity Levels
+
 * Ok
 * Low
 * Medium
@@ -285,6 +286,58 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 | Electric Range Radius     | range-radius-electric   | Number:Length        |      |  X   |    X    |  X  | 
 | Hybrid Range Radius       | range-radius-hybrid     | Number:Length        |      |  X   |    X    |     | 
 
+#### Tire Pressure
+
+Current and target tire pressure values
+
+* Channel Group ID is **tires**
+* Available for all vehicles if corresponding sensors are built-in 
+* Read-only values
+ 
+| Channel Label              | Channel ID              | Type             | 
+|----------------------------|-------------------------|------------------|
+| Front Left                 | fl-current              | Number:Pressure  |
+| Front Left Target          | fl-target               | Number:Pressure  |
+| Front Right                | fr-current              | Number:Pressure  |
+| Front Right Target         | fr-target               | Number:Pressure  |
+| Rear Left                  | rl-current              | Number:Pressure  |
+| Rear Left Target           | rl-target               | Number:Pressure  |
+| Rear Right                 | rr-current              | Number:Pressure  |
+| Rear Right Target          | rr-target               | Number:Pressure  |
+
+
+#### Charge Statistics
+
+Shows charge statistics of the current month
+
+* Channel Group ID is **statistic**
+* Available for vehicles with an electric or hybrid drive train 
+* Read-only values
+ 
+| Channel Label              | Channel ID              | Type           | 
+|----------------------------|-------------------------|----------------|
+| Charge Statistic Month     | title                   | String         |
+| Energy Charged             | energy                  | Number:Energy  |
+| Charge Sessions            | sessions                | Number         |
+
+
+#### Charge Sessions
+
+Group for past charging sessions.
+If more than one message is active the channel _name_ contains all active messages as options.
+
+* Channel Group ID is **check**
+* Available for all vehicles
+* Read/Write access
+
+| Channel Label                   | Channel ID   | Type           |
+|---------------------------------|--------------|----------------|
+| Session Title                   | title        | String         |
+| Session Details                 | subtitle     | String         |
+| Charged Energy in Session       | energy       | String         |
+| Issues during Session           | issue        | String         |
+| Session Status                  | status       | String         |
+
 
 #### Charge Profile
 
@@ -295,25 +348,25 @@ Charging options with date and time for preferred time windows and charging mode
 * Read access for UI. 
 * There are 4 timers *T1, T2, T3 and T4* available. Replace *X* with number 1,2 or 3 to target the correct timer
 
-| Channel Label              | Channel Group ID | Channel ID                | Type     | 
-|----------------------------|------------------|---------------------------|----------| 
-| Charge Mode                | charge           | profile-mode              | String   | 
-| Charge Preferences         | charge           | profile-prefs             | String   | 
-| Window Start Time          | charge           | window-start              | DateTime | 
-| Window End Time            | charge           | window-end                | DateTime | 
-| A/C at Departure           | charge           | profile-climate           | Switch   | 
-| T*X* Enabled               | charge           | timer*X*-enabled          | Switch   | 
-| T*X* Departure Time        | charge           | timer*X*-departure        | DateTime | 
-| T*X* Days                  | charge           | timer*X*-days             | String   | 
-| T*X* Monday                | charge           | timer*X*-day-mon          | Switch   | 
-| T*X* Tuesday               | charge           | timer*X*-day-tue          | Switch   | 
-| T*X* Wednesday             | charge           | timer*X*-day-wed          | Switch   | 
-| T*X* Thursday              | charge           | timer*X*-day-thu          | Switch   | 
-| T*X* Friday                | charge           | timer*X*-day-fri          | Switch   | 
-| T*X* Saturday              | charge           | timer*X*-day-sat          | Switch   | 
-| T*X* Sunday                | charge           | timer*X*-day-sun          | Switch   | 
-| OT Enabled                 | charge           | override-enabled          | Switch   | 
-| OT Departure Time          | charge           | override-departure        | DateTime | 
+| Channel Label              | Channel ID                | Type     | 
+|----------------------------|---------------------------|----------| 
+| Charge Mode                | profile-mode              | String   | 
+| Charge Preferences         | profile-prefs             | String   | 
+| Window Start Time          | window-start              | DateTime | 
+| Window End Time            | window-end                | DateTime | 
+| A/C at Departure           | profile-climate           | Switch   | 
+| T*X* Enabled               | timer*X*-enabled          | Switch   | 
+| T*X* Departure Time        | timer*X*-departure        | DateTime | 
+| T*X* Days                  | timer*X*-days             | String   | 
+| T*X* Monday                | timer*X*-day-mon          | Switch   | 
+| T*X* Tuesday               | timer*X*-day-tue          | Switch   | 
+| T*X* Wednesday             | timer*X*-day-wed          | Switch   | 
+| T*X* Thursday              | timer*X*-day-thu          | Switch   | 
+| T*X* Friday                | timer*X*-day-fri          | Switch   | 
+| T*X* Saturday              | timer*X*-day-sat          | Switch   | 
+| T*X* Sunday                | timer*X*-day-sun          | Switch   | 
+| OT Enabled                 | override-enabled          | Switch   | 
+| OT Departure Time          | override-departure        | DateTime | 
 
 The channel _profile-mode_ supports
 
@@ -363,9 +416,8 @@ The channel _command_ provides options
 * _Door Lock_
 * _Door Unlock_
 * _Horn Blow_
-* _Climate Control_
-* _Start Charging_
-* _Send Charging Profile_
+* _Climate Now Start_
+* _Climate Now Stop_
 
 The channel _state_ shows the progress of the command execution in the following order
 
@@ -373,7 +425,6 @@ The channel _state_ shows the progress of the command execution in the following
 2) _Pending_
 3) _Delivered_
 4) _Executed_
-
 
 
 #### Image
@@ -389,7 +440,13 @@ The possible values are the same mentioned in [Thing Configuration](#thing-confi
 |----------------------------|---------------------|--------|----------|
 | Rendered Vehicle Image     | png                 | Image  | Read     |
 | Image Viewport             | view                | String | Write    |
-| Image Picture Size         | size                | Number | Write    |
+
+Possoble Viewports:
+
+* _VehicleStatus_ Front Side View
+* _VehicleInfo_ Front View
+* _ChargingHistory_ Side View
+* _Default_ Front Side View
 
 
 ## Further Descriptions
@@ -426,7 +483,7 @@ If you checked the above pre-conditions you need to get the debug fingerprint fr
 First [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for the binding.
 
 ```
-log:set DEBUG org.openhab.binding.bmwconnecteddrive
+log:set DEBUG org.openhab.binding.mybmw
 ```
 
 The debug fingerprint is generated immediately after the vehicle thing is initialized the first time, e.g. after openHAB startup. 
@@ -476,129 +533,124 @@ In addition search for all occurrences of *i3* and replace it with your Vehicle 
 ### Things File
 
 ```
-Bridge bmwconnecteddrive:account:user   "BMW ConnectedDrive Account" [userName="YOUR_USERNAME",password="YOUR_PASSWORD",region="ROW"] {
-         Thing bev_rex i3       "BMW i3 94h REX"                [ vin="VEHICLE_VIN",units="AUTODETECT",imageSize=600,imageViewport="FRONT",refreshInterval=5]
+Bridge mybmw:account:YOUR_ID   "MyBMW Account" [userName="YOUR_USERNAME",password="YOUR_PASSWORD",region="ROW"] {
+         Thing bev_rex i3       "BMW i3 94h REX"                [ vin="VEHICLE_VIN",refreshInterval=5,vehicleBrand="BMW"]
 }
 ```
 
 ### Items File
 
 ```
-Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:range#mileage" }                                                                           
-Number:Length           i3Range                   "Range [%d %unit%]"                           <motion>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:range#hybrid"}
-Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>        (i3,long)   {channel="bmwconnecteddrive:bev_rex:user:i3:range#electric"}   
-Number:Length           i3RangeFuel               "Fuel Range [%d %unit%]"                      <motion>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:range#fuel"}
-Number:Dimensionless    i3BatterySoc              "Battery Charge [%.1f %%]"                    <battery>       (i3,long)   {channel="bmwconnecteddrive:bev_rex:user:i3:range#soc"}
-Number:Volume           i3Fuel                    "Fuel [%.1f %unit%]"                          <oil>           (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:range#remaining-fuel"}
-Number:Length           i3RadiusElectric          "Electric Radius [%d %unit%]"                 <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:range#radius-electric" }
-Number:Length           i3RadiusHybrid            "Hybrid Radius [%d %unit%]"                   <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:range#radius-hybrid" }
+Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="mybmw:bev_rex:user:i3:range#mileage" }                                                                           
+Number:Length           i3Range                   "Range [%d %unit%]"                           <motion>        (i3)        {channel="mybmw:bev_rex:user:i3:range#hybrid"}
+Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>        (i3,long)   {channel="mybmw:bev_rex:user:i3:range#electric"}   
+Number:Length           i3RangeFuel               "Fuel Range [%d %unit%]"                      <motion>        (i3)        {channel="mybmw:bev_rex:user:i3:range#fuel"}
+Number:Dimensionless    i3BatterySoc              "Battery Charge [%.1f %%]"                    <battery>       (i3,long)   {channel="mybmw:bev_rex:user:i3:range#soc"}
+Number:Volume           i3Fuel                    "Fuel [%.1f %unit%]"                          <oil>           (i3)        {channel="mybmw:bev_rex:user:i3:range#remaining-fuel"}
+Number:Length           i3RadiusElectric          "Electric Radius [%d %unit%]"                 <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:range#radius-electric" }
+Number:Length           i3RadiusHybrid            "Hybrid Radius [%d %unit%]"                   <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:range#radius-hybrid" }
 
-String                  i3DoorStatus              "Door Status [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#doors" }
-String                  i3WindowStatus            "Window Status [%s]"                          <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#windows" }
-String                  i3LockStatus              "Lock Status [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#lock" }
-DateTime                i3NextServiceDate         "Next Service Date [%1$tb %1$tY]"             <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#service-date" }
-String                  i3NextServiceMileage      "Next Service Mileage [%d %unit%]"            <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#service-mileage" }
-String                  i3CheckControl            "Check Control [%s]"                          <error>         (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#check-control" }
-String                  i3ChargingStatus          "Charging [%s]"                               <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#charge" } 
-DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:status#last-update"}
+String                  i3DoorStatus              "Door Status [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:status#doors" }
+String                  i3WindowStatus            "Window Status [%s]"                          <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:status#windows" }
+String                  i3LockStatus              "Lock Status [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:status#lock" }
+DateTime                i3NextServiceDate         "Next Service Date [%1$tb %1$tY]"             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:status#service-date" }
+String                  i3NextServiceMileage      "Next Service Mileage [%d %unit%]"            <line>          (i3)        {channel="mybmw:bev_rex:user:i3:status#service-mileage" }
+String                  i3CheckControl            "Check Control [%s]"                          <error>         (i3)        {channel="mybmw:bev_rex:user:i3:status#check-control" }
+String                  i3ChargingStatus          "Charging [%s]"                               <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:status#charge" } 
+DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:status#last-update"}
 
-DateTime                i3TripDateTime            "Trip Date [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]" <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#date"}
-Number:Time             i3TripDuration            "Trip Duration [%d %unit%]"                   <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#duration"}
-Number:Length           i3TripDistance            "Distance [%d %unit%]"                        <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#distance" }                                                                           
-Number:Length           i3TripDistanceSinceCharge "Distance since last Charge [%d %unit%]"      <line>          (i3,long)   {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#distance-since-charging" }                                                                           
-Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#avg-consumption" }                                                                           
-Number:Volume           i3AvgTripCombined         "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#avg-combined-consumption" }                                                                           
-Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:last-trip#avg-recuperation" }                                                                           
+DateTime                i3TripDateTime            "Trip Date [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]" <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#date"}
+Number:Time             i3TripDuration            "Trip Duration [%d %unit%]"                   <time>          (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#duration"}
+Number:Length           i3TripDistance            "Distance [%d %unit%]"                        <line>          (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#distance" }                                                                           
+Number:Length           i3TripDistanceSinceCharge "Distance since last Charge [%d %unit%]"      <line>          (i3,long)   {channel="mybmw:bev_rex:user:i3:last-trip#distance-since-charging" }                                                                           
+Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#avg-consumption" }                                                                           
+Number:Volume           i3AvgTripCombined         "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#avg-combined-consumption" }                                                                           
+Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:last-trip#avg-recuperation" }                                                                           
 
-Number:Length           i3TotalElectric           "Electric Distance Driven [%d %unit%]"        <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#total-driven-distance" }                                                                           
-Number:Length           i3LongestEVTrip           "Longest Electric Trip [%d %unit%]"           <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#single-longest-distance" }                                                                           
-Number:Energy           i3AvgConsumption          "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#avg-consumption" }                                                                           
-Number:Volume           i3AvgCombined             "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#avg-combined-consumption" }                                                                           
-Number:Energy           i3AvgRecuperation         "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:lifetime#avg-recuperation" }  
+Number:Length           i3TotalElectric           "Electric Distance Driven [%d %unit%]"        <line>          (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#total-driven-distance" }                                                                           
+Number:Length           i3LongestEVTrip           "Longest Electric Trip [%d %unit%]"           <line>          (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#single-longest-distance" }                                                                           
+Number:Energy           i3AvgConsumption          "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#avg-consumption" }                                                                           
+Number:Volume           i3AvgCombined             "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#avg-combined-consumption" }                                                                           
+Number:Energy           i3AvgRecuperation         "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:lifetime#avg-recuperation" }  
 
-Location                i3Location                "Location  [%s]"                              <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:location#gps" }                                                                           
-Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:location#heading" }  
+Location                i3Location                "Location  [%s]"                              <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:location#gps" }                                                                           
+Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:location#heading" }  
 
-String                  i3RemoteCommand           "Command [%s]"                                <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:remote#command" } 
-String                  i3RemoteState             "Remote Execution State [%s]"                 <status>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:remote#state" } 
+String                  i3RemoteCommand           "Command [%s]"                                <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:remote#command" } 
+String                  i3RemoteState             "Remote Execution State [%s]"                 <status>        (i3)        {channel="mybmw:bev_rex:user:i3:remote#state" } 
 
-String                  i3DriverDoor              "Driver Door [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#driver-front" }
-String                  i3DriverDoorRear          "Driver Door Rear [%s]"                       <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#driver-rear" }
-String                  i3PassengerDoor           "Passenger Door [%s]"                         <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#passenger-front" }
-String                  i3PassengerDoorRear       "Passenger Door Rear [%s]"                    <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#passenger-rear" }
-String                  i3Hood                    "Hood [%s]"                                   <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#hood" }
-String                  i3Trunk                   "Trunk [%s]"                                  <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#trunk" }
-String                  i3DriverWindow            "Driver Window [%s]"                          <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#win-driver-front" }
-String                  i3DriverWindowRear        "Driver Window Rear [%s]"                     <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#win-driver-rear" }
-String                  i3PassengerWindow         "Passenger Window [%s]"                       <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#win-passenger-front" }
-String                  i3PassengerWindowRear     "Passenger Window Rear [%s]"                  <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#win-passenger-rear" }
-String                  i3RearWindow              "Rear Window [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#win-rear" }
-String                  i3Sunroof                 "Sunroof [%s]"                                <lock>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:doors#sunroof" }
+String                  i3DriverDoor              "Driver Door [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#driver-front" }
+String                  i3DriverDoorRear          "Driver Door Rear [%s]"                       <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#driver-rear" }
+String                  i3PassengerDoor           "Passenger Door [%s]"                         <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#passenger-front" }
+String                  i3PassengerDoorRear       "Passenger Door Rear [%s]"                    <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#passenger-rear" }
+String                  i3Hood                    "Hood [%s]"                                   <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#hood" }
+String                  i3Trunk                   "Trunk [%s]"                                  <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#trunk" }
+String                  i3DriverWindow            "Driver Window [%s]"                          <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-driver-front" }
+String                  i3DriverWindowRear        "Driver Window Rear [%s]"                     <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-driver-rear" }
+String                  i3PassengerWindow         "Passenger Window [%s]"                       <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-passenger-front" }
+String                  i3PassengerWindowRear     "Passenger Window Rear [%s]"                  <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-passenger-rear" }
+String                  i3RearWindow              "Rear Window [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-rear" }
+String                  i3Sunroof                 "Sunroof [%s]"                                <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#sunroof" }
 
-String                  i3ServiceName             "Service Name [%s]"                           <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#name" }
-String                  i3ServiceDetails          "Service Details [%s]"                        <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#details" }
-Number:Length           i3ServiceMileage          "Service Mileage [%d %unit%]"                 <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#mileage" }
-DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"                  <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:service#date" }
+String                  i3ServiceName             "Service Name [%s]"                           <text>          (i3)        {channel="mybmw:bev_rex:user:i3:service#name" }
+String                  i3ServiceDetails          "Service Details [%s]"                        <text>          (i3)        {channel="mybmw:bev_rex:user:i3:service#details" }
+Number:Length           i3ServiceMileage          "Service Mileage [%d %unit%]"                 <line>          (i3)        {channel="mybmw:bev_rex:user:i3:service#mileage" }
+DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"                  <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:service#date" }
 
-String                  i3CCName                  "CheckControl Name [%s]"                      <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:check#name" }
-String                  i3CCDetails               "CheckControl Details [%s]"                   <text>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:check#details" }
-Number:Length           i3CCMileage               "CheckControl Mileage [%d %unit%]"            <line>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:check#mileage" }
+String                  i3CCName                  "CheckControl Name [%s]"                      <text>          (i3)        {channel="mybmw:bev_rex:user:i3:check#name" }
+String                  i3CCDetails               "CheckControl Details [%s]"                   <text>          (i3)        {channel="mybmw:bev_rex:user:i3:check#details" }
+Number:Length           i3CCMileage               "CheckControl Mileage [%d %unit%]"            <line>          (i3)        {channel="mybmw:bev_rex:user:i3:check#mileage" }
 
-String                  i3DestName                "Destination [%s]"                            <house>         (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:destination#name" } 
-Location                i3DestLocation            "GPS [%s]"                                    <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:destination#gps" }                                                                           
+String                  i3DestName                "Destination [%s]"                            <house>         (i3)        {channel="mybmw:bev_rex:user:i3:destination#name" } 
+Location                i3DestLocation            "GPS [%s]"                                    <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:destination#gps" }                                                                           
  
-Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#profile-climate" }  
-String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#profile-mode" } 
-DateTime                i3ChargeWindowStart       "Charge Window Start [%1$tH:%1$tM]"           <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#window-start" } 
-Number                  i3ChargeWindowStartHour   "Charge Window Start Hour [%d]"               <time>          (i3)
-Number                  i3ChargeWindowStartMinute "Charge Window Start Minute [%d]"             <time>          (i3)
-DateTime                i3ChargeWindowEnd         "Charge Window End [%1$tH:%1$tM]"             <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#window-end" } 
-Number                  i3ChargeWindowEndHour     "Charge Window End Hour [%d]"                 <time>          (i3)
-Number                  i3ChargeWindowEndMinute   "Charge Window End Minute [%d]"               <time>          (i3)
-DateTime                i3Timer1Departure         "Timer 1 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-departure" } 
-Number                  i3Timer1DepartureHour     "Timer 1 Departure Hour [%d]"                 <time>          (i3)
-Number                  i3Timer1DepartureMinute   "Timer 1 Departure Minute [%d]"               <time>          (i3)
-String                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-days" } 
-Switch                  i3Timer1DayMon            "Timer 1 Monday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-day-mon" } 
-Switch                  i3Timer1DayTue            "Timer 1 Tuesday"                             <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-day-tue" } 
-Switch                  i3Timer1DayWed            "Timer 1 Wednesday"                           <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-day-wed" } 
-Switch                  i3Timer1DayThu            "Timer 1 Thursday"                            <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-day-thu" } 
-Switch                  i3Timer1DayFri            "Timer 1 Friday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-day-fri" } 
-Switch                  i3Timer1DaySat            "Timer 1 Saturday"                            <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-day-sat" } 
-Switch                  i3Timer1DaySun            "Timer 1 Sunday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-day-sun" } 
-Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer1-enabled" }  
-DateTime                i3Timer2Departure         "Timer 2 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-departure" } 
-Number                  i3Timer2DepartureHour     "Timer 2 Departure Hour [%d]"                 <time>          (i3)
-Number                  i3Timer2DepartureMinute   "Timer 2 Departure Minute [%d]"               <time>          (i3)
-String                  i3Timer2Days              "Timer 2 Days [%s]"                           <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-days" } 
-Switch                  i3Timer2DayMon            "Timer 2 Monday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-day-mon" } 
-Switch                  i3Timer2DayTue            "Timer 2 Tuesday"                             <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-day-tue" } 
-Switch                  i3Timer2DayWed            "Timer 2 Wednesday"                           <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-day-wed" } 
-Switch                  i3Timer2DayThu            "Timer 2 Thursday"                            <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-day-thu" } 
-Switch                  i3Timer2DayFri            "Timer 2 Friday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-day-fri" } 
-Switch                  i3Timer2DaySat            "Timer 2 Saturday"                            <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-day-sat" } 
-Switch                  i3Timer2DaySun            "Timer 2 Sunday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-day-sun" } 
-Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer2-enabled" }  
-DateTime                i3Timer3Departure         "Timer 3 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-departure" } 
-Number                  i3Timer3DepartureHour     "Timer 3 Departure Hour [%d]"                 <time>          (i3)
-Number                  i3Timer3DepartureMinute   "Timer 3 Departure Minute [%d]"               <time>          (i3)
-String                  i3Timer3Days              "Timer 3 Days [%s]"                           <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-days" } 
-Switch                  i3Timer3DayMon            "Timer 3 Monday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-mon" } 
-Switch                  i3Timer3DayTue            "Timer 3 Tuesday"                             <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-tue" } 
-Switch                  i3Timer3DayWed            "Timer 3 Wednesday"                           <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-wed" } 
-Switch                  i3Timer3DayThu            "Timer 3 Thursday"                            <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-thu" } 
-Switch                  i3Timer3DayFri            "Timer 3 Friday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-fri" } 
-Switch                  i3Timer3DaySat            "Timer 3 Saturday"                            <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-sat" } 
-Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-day-sun" } 
-Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#timer3-enabled" }
-Switch                  i3OverrideEnabled         "Override Timer Enabled"                      <switch>        (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#override-enabled"}
-DateTime                i3OverrideDeparture       "Override Timer Departure [%1$tH:%1$tM]"      <time>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:charge#override-departure" } 
-Number                  i3OverrideDepartureHour   "Override Timer Departure Hour [%d]"          <time>          (i3)
-Number                  i3OverrideDepartureMinute "Override Timer Departure Minute [%d]"        <time>          (i3)
+Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="mybmw:bev_rex:user:i3:charge#profile-climate" }  
+String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#profile-mode" } 
+DateTime                i3ChargeWindowStart       "Charge Window Start [%1$tH:%1$tM]"           <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#window-start" } 
+NateTime                i3ChargeWindowEnd         "Charge Window End [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#window-end" } 
+NateTime                i3Timer1Departure         "Timer 1 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-departure" } 
+Ntring                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-days" } 
+Switch                  i3Timer1DayMon            "Timer 1 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-mon" } 
+Switch                  i3Timer1DayTue            "Timer 1 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-tue" } 
+Switch                  i3Timer1DayWed            "Timer 1 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-wed" } 
+Switch                  i3Timer1DayThu            "Timer 1 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-thu" } 
+Switch                  i3Timer1DayFri            "Timer 1 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-fri" } 
+Switch                  i3Timer1DaySat            "Timer 1 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-sat" } 
+Switch                  i3Timer1DaySun            "Timer 1 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-sun" } 
+Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-enabled" }  
+DateTime                i3Timer2Departure         "Timer 2 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-departure" } 
+String                  i3Timer2Days              "Timer 2 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-days" } 
+Switch                  i3Timer2DayMon            "Timer 2 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-mon" } 
+Switch                  i3Timer2DayTue            "Timer 2 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-tue" } 
+Switch                  i3Timer2DayWed            "Timer 2 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-wed" } 
+Switch                  i3Timer2DayThu            "Timer 2 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-thu" } 
+Switch                  i3Timer2DayFri            "Timer 2 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-fri" } 
+Switch                  i3Timer2DaySat            "Timer 2 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-sat" } 
+Switch                  i3Timer2DaySun            "Timer 2 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-sun" } 
+Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-enabled" }  
+DateTime                i3Timer3Departure         "Timer 3 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-departure" } 
+String                  i3Timer3Days              "Timer 3 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-days" } 
+Switch                  i3Timer3DayMon            "Timer 3 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-mon" } 
+Switch                  i3Timer3DayTue            "Timer 3 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-tue" } 
+Switch                  i3Timer3DayWed            "Timer 3 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-wed" } 
+Switch                  i3Timer3DayThu            "Timer 3 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-thu" } 
+Switch                  i3Timer3DayFri            "Timer 3 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-fri" } 
+Switch                  i3Timer3DaySat            "Timer 3 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-sat" } 
+Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-sun" } 
+Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-enabled" }
+DateTime                i3Timer4Departure         "Timer 4 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-departure" } 
+String                  i3Timer4Days              "Timer 4 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-days" } 
+Switch                  i3Timer4DayMon            "Timer 4 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-mon" } 
+Switch                  i3Timer4DayTue            "Timer 4 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-tue" } 
+Switch                  i3Timer4DayWed            "Timer 4 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-wed" } 
+Switch                  i3Timer4DayThu            "Timer 4 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-thu" } 
+Switch                  i3Timer4DayFri            "Timer 4 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-fri" } 
+Switch                  i3Timer4DaySat            "Timer 4 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-sat" } 
+Switch                  i3Timer4DaySun            "Timer 4 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-sun" } 
+Switch                  i3Timer4Enabled           "Timer 4 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-enabled" }
 
-Image                   i3Image                   "Image"                                                       (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:image#png" }  
-String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:image#view" }  
-Number                  i3ImageSize               "Image Size [%d]"                             <zoom>          (i3)        {channel="bmwconnecteddrive:bev_rex:user:i3:image#size" }  
+Image                   i3Image                   "Image"                                                       (i3)        {channel="mybmw:bev_rex:user:i3:image#png" }  
+String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:image#view" }  
 ```
 
 ### Sitemap File
@@ -737,148 +789,7 @@ sitemap BMW label="BMW" {
 }
 ```
 
-### Rules File
-
-```
-rule "i3ChargeWindowStartSetpoint"
-when
-    Item i3ChargeWindowStartMinute changed or
-    Item i3ChargeWindowStartHour changed
-then
-    val hour = (i3ChargeWindowStartHour.state as Number).intValue
-    val minute = (i3ChargeWindowStartMinute.state as Number).intValue
-    val time = (i3ChargeWindowStart.state as DateTimeType).zonedDateTime
-    i3ChargeWindowStart.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
-end
-
-rule "i3ChargeWindowStart"
-when
-    Item i3ChargeWindowStart changed
-then
-    val time = (i3ChargeWindowStart.state as DateTimeType).zonedDateTime
-    i3ChargeWindowStartMinute.sendCommand(time.minute)
-    i3ChargeWindowStartHour.sendCommand(time.hour)
-end
-
-rule "i3ChargeWindowEndSetpoint"
-when
-    Item i3ChargeWindowEndMinute changed or
-    Item i3ChargeWindowEndHour changed
-then
-    val hour = (i3ChargeWindowEndHour.state as Number).intValue
-    val minute = (i3ChargeWindowEndMinute.state as Number).intValue
-    val time = (i3ChargeWindowEnd.state as DateTimeType).zonedDateTime
-    i3ChargeWindowEnd.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
-end
-
-rule "i3ChargeWindowEnd"
-when
-    Item i3ChargeWindowEnd changed
-then
-    val time = (i3ChargeWindowEnd.state as DateTimeType).zonedDateTime
-    i3ChargeWindowEndMinute.sendCommand(time.minute)
-    i3ChargeWindowEndHour.sendCommand(time.hour)
-end
-
-rule "i3Timer1DepartureSetpoint"
-when
-    Item i3Timer1DepartureMinute changed or
-    Item i3Timer1DepartureHour changed
-then
-    val hour = (i3Timer1DepartureHour.state as Number).intValue
-    val minute = (i3Timer1DepartureMinute.state as Number).intValue
-    val time = (i3Timer1Departure.state as DateTimeType).zonedDateTime
-    i3Timer1Departure.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
-end
-
-rule "i3Timer1Departure"
-when
-    Item i3Timer1Departure changed
-then
-    val time = (i3Timer1Departure.state as DateTimeType).zonedDateTime
-    i3Timer1DepartureMinute.sendCommand(time.minute)
-    i3Timer1DepartureHour.sendCommand(time.hour)
-end
-
-rule "i3Timer2DepartureSetpoint"
-when
-    Item i3Timer2DepartureMinute changed or
-    Item i3Timer2DepartureHour changed
-then
-    val hour = (i3Timer2DepartureHour.state as Number).intValue
-    val minute = (i3Timer2DepartureMinute.state as Number).intValue
-    val time = (i3Timer2Departure.state as DateTimeType).zonedDateTime
-    i3Timer2Departure.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
-end
-
-rule "i3Timer2Departure"
-when
-    Item i3Timer2Departure changed
-then
-    val time = (i3Timer2Departure.state as DateTimeType).zonedDateTime
-    i3Timer2DepartureMinute.sendCommand(time.minute)
-    i3Timer2DepartureHour.sendCommand(time.hour)
-end
-
-rule "i3Timer3DepartureSetpoint"
-when
-    Item i3Timer3DepartureMinute changed or
-    Item i3Timer3DepartureHour changed
-then
-    val hour = (i3Timer3DepartureHour.state as Number).intValue
-    val minute = (i3Timer3DepartureMinute.state as Number).intValue
-    val time = (i3Timer3Departure.state as DateTimeType).zonedDateTime
-    i3Timer3Departure.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
-end
-
-rule "i3Timer3Departure"
-when
-    Item i3Timer3Departure changed
-then
-    val time = (i3Timer3Departure.state as DateTimeType).zonedDateTime
-    i3Timer3DepartureMinute.sendCommand(time.minute)
-    i3Timer3DepartureHour.sendCommand(time.hour)
-end
-
-rule "i3OverrideDepartureSetpoint"
-when
-    Item i3OverrideDepartureMinute changed or
-    Item i3OverrideDepartureHour changed
-then
-    val hour = (i3OverrideDepartureHour.state as Number).intValue
-    val minute = (i3OverrideDepartureMinute.state as Number).intValue
-    val time = (i3OverrideDeparture.state as DateTimeType).zonedDateTime
-    i3OverrideDeparture.sendCommand(new DateTimeType(time.withHour(hour).withMinute(minute)))
-end
-
-rule "i3OverrideDeparture"
-when
-    Item i3OverrideDeparture changed
-then
-    val time = (i3OverrideDeparture.state as DateTimeType).zonedDateTime
-    i3OverrideDepartureMinute.sendCommand(time.minute)
-    i3OverrideDepartureHour.sendCommand(time.hour)
-end
-```
-
-### Action example
-
-```
-  val profile = getActions("bmwconnecteddrive", "bmwconnecteddrive:bev_rex:user:i3")
-  val now = ZonedDateTime.now.toLocalTime
-  profile.setChargingMode("DELAYED_CHARGING")
-  profile.setTimer1Departure(now.minusHours(2))
-  profile.setTimer1Days(java.util.Set())
-  profile.setTimer1Enabled(true)
-  profile.setTimer2Enabled(false)
-  profile.setTimer3Enabled(false)
-  profile.setPreferredWindowStart(now.minusHours(6))
-  profile.setPreferredWindowEnd(now.minusHours(2))
-  profile.sendChargeProfile()
-```
-
 ## Credits
 
 This work is based on the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected). 
-Also a [manual installation based on python](https://community.openhab.org/t/script-to-access-the-bmw-connecteddrive-portal-via-oh/37345) was already available for openHAB.
-This binding is basically a port to openHAB based on these concept works!  
+
