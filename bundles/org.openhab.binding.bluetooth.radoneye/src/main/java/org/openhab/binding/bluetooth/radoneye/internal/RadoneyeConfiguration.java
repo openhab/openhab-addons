@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Configuration class for {@link RadoneyeBinding} device.
  *
  * @author Peter Obel - Initial contribution
- * @author the authors of the Airthings bluetooth binding
  */
 @NonNullByDefault
 public class RadoneyeConfiguration {

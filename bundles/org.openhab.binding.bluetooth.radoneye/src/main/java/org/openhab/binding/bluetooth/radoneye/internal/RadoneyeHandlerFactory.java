@@ -25,7 +25,6 @@ import org.osgi.service.component.annotations.Component;
  * The {@link RadoneyeHandlerFactory} is responsible for creating things and thing handlers.
  *
  * @author Peter Obel - Initial contribution
- * @author the authors of the airthings bluetooth binding
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.radoneye")

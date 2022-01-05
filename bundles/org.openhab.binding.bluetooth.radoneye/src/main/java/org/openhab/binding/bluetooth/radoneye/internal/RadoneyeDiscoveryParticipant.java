@@ -32,7 +32,6 @@ import org.osgi.service.component.annotations.Component;
  * This discovery participant is able to recognize RadonEye devices and create discovery results for them.
  *
  * @author Peter Obel - Initial contribution
- * @author the authors of the Airthings bluetooth binding
  *
  */
 @NonNullByDefault

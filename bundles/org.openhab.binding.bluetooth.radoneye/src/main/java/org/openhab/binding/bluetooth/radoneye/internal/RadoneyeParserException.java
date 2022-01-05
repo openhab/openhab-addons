@@ -18,7 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Exception for data parsing errors.
  *
  * @author Peter Obel - Initial contribution
- * @author the authors of the Airthings bluetooth binding
  */
 @NonNullByDefault
 public class RadoneyeParserException extends Exception {

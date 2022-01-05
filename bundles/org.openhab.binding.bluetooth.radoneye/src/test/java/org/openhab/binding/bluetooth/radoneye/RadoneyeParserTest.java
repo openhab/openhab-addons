@@ -25,7 +25,6 @@ import org.openhab.binding.bluetooth.radoneye.internal.RadoneyeParserException;
  * Tests {@link RadoneyeParserTest}.
  *
  * @author Peter Obel - Initial contribution
- * @author the authors of the airthings bluetooth binding
  */
 @NonNullByDefault
 public class RadoneyeParserTest {

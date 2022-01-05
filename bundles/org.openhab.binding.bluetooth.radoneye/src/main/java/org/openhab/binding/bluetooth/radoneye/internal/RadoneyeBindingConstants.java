@@ -35,7 +35,6 @@ import tech.units.indriya.unit.TransformedUnit;
  * used across the whole binding.
  *
  * @author Peter Obel - Initial contribution
- * @author the authors of the Airthings bluetooth binding
  */
 @NonNullByDefault
 public class RadoneyeBindingConstants {

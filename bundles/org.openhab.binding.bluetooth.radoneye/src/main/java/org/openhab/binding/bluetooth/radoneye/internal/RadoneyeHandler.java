@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Peter Obel - Initial contribution
- * @author the authors of the airthings bluetooth binding
  */
 @NonNullByDefault
 public class RadoneyeHandler extends AbstractRadoneyeHandler {
