@@ -1,2 +1,4 @@
 *.java text=auto
 *.xml text=auto
+text eol=lf
+

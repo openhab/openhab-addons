@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="echonetlite"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="operationStatus">
+		<item-type>Switch</item-type>
+		<label>Operation Status</label>
+		<description>Operation Status</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="installationLocation">
+		<item-type>String</item-type>
+		<label>Installation Location</label>
+		<description>Installation Location</description>
+		<category>Text</category>
+	</channel-type>
+
+	<channel-type id="standardVersionInformation">
+		<item-type>String</item-type>
+		<label>Standard Version Information</label>
+		<description>Standard Version Information</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="identificationNumber">
+		<item-type>String</item-type>
+		<label>Identification Number</label>
+		<description>Identification Number</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manufacturerFaultCode">
+		<item-type>String</item-type>
+		<label>Manufacturer Fault Code</label>
+		<description>Manufacturer Fault Code</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="faultStatus">
+		<item-type>Switch</item-type>
+		<label>Fault Status</label>
+		<description>Fault Status</description>
+		<category>Alarm</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="faultDescription">
+		<item-type>String</item-type>
+		<label>Fault Description</label>
+		<description>Fault Description</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manufacturerCode">
+		<item-type>String</item-type>
+		<label>Manufacturer Code</label>
+		<description>Manufacturer Code</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="businessFacilityCode">
+		<item-type>String</item-type>
+		<label>Business Facility Code</label>
+		<description>Business Facility Code</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerSavingOperationSetting">
+		<item-type>Switch</item-type>
+		<label>Power Saving Operation Setting</label>
+		<description>Power Saving Operation Setting</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="cumulativeOperatingTime">
+		<item-type>Number</item-type>
+		<label>Cumulative Operating Time</label>
+		<description>Cumulative Operating Time</description>
+		<category>Number</category>
+	</channel-type>
+
+	<channel-type id="airFlowRate">
+		<item-type>String</item-type>
+		<label>Air Flow Rate</label>
+		<description>Air Flow Rate</description>
+		<category>Flow</category>
+		<state>
+			<options>
+				<option value="Auto">Auto</option>
+				<option value="Rate 1">Rate 1</option>
+				<option value="Rate 2">Rate 2</option>
+				<option value="Rate 3">Rate 3</option>
+				<option value="Rate 4">Rate 4</option>
+				<option value="Rate 5">Rate 5</option>
+				<option value="Rate 6">Rate 6</option>
+				<option value="Rate 7">Rate 7</option>
+				<option value="Rate 8">Rate 8</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="automaticControlOfAirFlowDirection">
+		<item-type>String</item-type>
+		<label>Automatic Control Of Air Flow Direction</label>
+		<description>Automatic Control Of Air Flow Direction</description>
+		<state>
+			<options>
+				<option value="Automatic">Automatic</option>
+				<option value="Non-automatic">Non-automatic</option>
+				<option value="Automatic (vertical)">Automatic (vertical)</option>
+				<option value="Automatic (horizontal)">Automatic (horizontal)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="automaticSwingOfAirFlow">
+		<item-type>String</item-type>
+		<label>Automatic Swing Of Air Flow</label>
+		<description>Automatic Swing Of Air Flow</description>
+		<state>
+			<options>
+				<option value="Not used">Not used</option>
+				<option value="Used (vertical)">Used (vertical)</option>
+				<option value="Used (horizontal)">Used (horizontal)</option>
+				<option value="Used (vertical and horizontal)">Used (vertical and horizontal)</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airFlowDirectionVertical">
+		<item-type>String</item-type>
+		<label>Air Flow Direction Vertical</label>
+		<description>Air Flow Direction Vertical</description>
+		<state>
+			<options>
+				<option value="Uppermost">Uppermost</option>
+				<option value="Lowermost">Lowermost</option>
+				<option value="Mid-uppermost">Mid-uppermost</option>
+				<option value="Mid-lowermost">Mid-lowermost</option>
+				<option value="Central">Central</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airFlowDirectionHorizontal">
+		<item-type>String</item-type>
+		<label>Air Flow Direction Horizontal</label>
+		<description>Air Flow Direction Horizontal</description>
+		<state>
+			<options>
+				<option value="XXXOO">XXXOO</option>
+				<option value="OOXXX">OOXXX</option>
+				<option value="XOOOX">XOOOX</option>
+				<option value="OOXOO">OOXOO</option>
+				<option value="XXXXO">XXXXO</option>
+				<option value="XXXOX">XXXOX</option>
+				<option value="XXOXX">XXOXX</option>
+				<option value="XXOXO">XXOXO</option>
+				<option value="XXOOX">XXOOX</option>
+				<option value="XXOOO">XXOOO</option>
+				<option value="XOXXX">XOXXX</option>
+				<option value="XOXXO">XOXXO</option>
+				<option value="XOXOX">XOXOX</option>
+				<option value="XOXOO">XOXOO</option>
+				<option value="XOOXX">XOOXX</option>
+				<option value="XOOXO">XOOXO</option>
+				<option value="XOOOO">XOOOO</option>
+				<option value="OXXXX">OXXXX</option>
+				<option value="OXXXO">OXXXO</option>
+				<option value="OXXOX">OXXOX</option>
+				<option value="OXXOO">OXXOO</option>
+				<option value="OXOXX">OXOXX</option>
+				<option value="OXOXO">OXOXO</option>
+				<option value="OXOOX">OXOOX</option>
+				<option value="OXOOO">OXOOO</option>
+				<option value="OOXXO">OOXXO</option>
+				<option value="OOXOX">OOXOX</option>
+				<option value="OOOXX">OOOXX</option>
+				<option value="OOOXO">OOOXO</option>
+				<option value="OOOOX">OOOOX</option>
+				<option value="OOOOO">OOOOO</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="operationMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Operation Mode</description>
+		<state>
+			<options>
+				<option value="Automatic">Automatic</option>
+				<option value="Cooling">Cooling</option>
+				<option value="Heating">Heating</option>
+				<option value="Dry">Dry</option>
+				<option value="Fan">Fan</option>
+				<option value="Other">Other</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="setTemperature">
+		<item-type>Number</item-type>
+		<label>Set Temperature</label>
+		<description>Set Temperature</description>
+		<category>Temperature</category>
+		<state min="0" max="50" pattern="%d °C" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="measuredRoomTemperature">
+		<item-type>Number</item-type>
+		<label>Measured Room Temperature</label>
+		<description>Measured Room Temperature</description>
+		<category>Temperature</category>
+		<state min="-127" max="125" pattern="%d °C" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="measuredOutdoorTemperature">
+		<item-type>Number</item-type>
+		<label>Measured Outdoor Temperature</label>
+		<description>Measured Outdoor Temperature</description>
+		<category>Temperature</category>
+		<state min="-127" max="125" pattern="%d °C" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>
