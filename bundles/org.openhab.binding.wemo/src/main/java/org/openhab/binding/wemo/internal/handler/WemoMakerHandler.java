@@ -143,7 +143,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                             + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
                             + "</s:Envelope>";
 
-                    URL descriptorURL = service.getDescriptorURL(this);
+                    URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
                     String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
                     if (wemoURL != null) {
@@ -196,7 +196,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {

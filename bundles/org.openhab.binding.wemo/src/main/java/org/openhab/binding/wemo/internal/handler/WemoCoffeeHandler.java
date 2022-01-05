@@ -162,7 +162,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                                 + "&lt;attribute&gt;&lt;name&gt;Cleaning&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;</attributeList>"
                                 + "</u:SetAttributes>" + "</s:Body>" + "</s:Envelope>";
 
-                        URL descriptorURL = service.getDescriptorURL(this);
+                        URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
                         String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
                         if (wemoURL != null) {
@@ -268,7 +268,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {

@@ -163,12 +163,13 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                             + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
                             + "</s:Envelope>";
 
-                    URL descriptorURL = service.getDescriptorURL(this);
+                    URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
                     String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
                     if (wemoURL != null) {
                         wemoCall.executeCall(wemoURL, soapHeader, content);
                     }
+
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
                             e.getMessage());
@@ -409,7 +410,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {

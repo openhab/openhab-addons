@@ -143,13 +143,13 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
 
-                URL descriptorURL = service.getDescriptorURL(this);
+                URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
                 String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
                 if (wemoURL != null) {
                     wemoCall.executeCall(wemoURL, soapHeader, content);
                 }
-            } catch (RuntimeException e) {
+            } catch (Exception e) {
                 logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -248,7 +248,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {
@@ -285,7 +285,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                     updateState(CHANNEL_COOKEDTIME, newCoockedTime);
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }

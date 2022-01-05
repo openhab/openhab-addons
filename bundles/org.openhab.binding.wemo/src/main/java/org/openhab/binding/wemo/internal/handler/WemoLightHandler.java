@@ -251,7 +251,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                         + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                         + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                URL descriptorURL = service.getDescriptorURL(this);
+                URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
                 String wemoURL = getWemoURL(descriptorURL, "bridge");
 
                 if (wemoURL != null && capability != null && value != null) {
@@ -293,7 +293,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, "bridge");
 
             if (wemoURL != null) {

@@ -237,13 +237,13 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
                     + "</s:Envelope>";
 
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, "deviceevent");
 
             if (wemoURL != null) {
                 wemoCall.executeCall(wemoURL, soapHeader, content);
             }
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
@@ -341,7 +341,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, actionService);
 
             if (wemoURL != null) {

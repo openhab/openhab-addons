@@ -137,7 +137,7 @@ public class WemoUtil {
         return port == null ? null : "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
     }
 
-    private static boolean servicePing(String host, int port) {
+    public static boolean servicePing(String host, int port) {
         try {
             HttpUtil.executeUrl("GET", "http://" + host + ":" + port, 250);
             return true;

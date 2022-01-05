@@ -13,7 +13,9 @@
 package org.openhab.binding.wemo.internal.discovery;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
+import static org.openhab.binding.wemo.internal.WemoUtil.substringBetween;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -59,21 +61,24 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
             String label = "WeMo Device";
             try {
                 label = device.getDetails().getFriendlyName();
-            } catch (Exception e) {
-                // ignore and use default label
+            } catch (Exception exception) {
             }
-            properties.put(UDN, device.getIdentity().getUdn().getIdentifierString());
-
+            properties.put("udn", device.getIdentity().getUdn().getIdentifierString());
+            URL descriptorURL = device.getIdentity().getDescriptorURL();
+            if (descriptorURL != null) {
+                properties.put("descriptorURL", descriptorURL);
+                String deviceURL = substringBetween(descriptorURL.toString(), "://", "/setup.xml");
+                String[] urlProperties = deviceURL.split(":");
+                properties.put("ipaddress", urlProperties[0]);
+                properties.put("port", urlProperties[1]);
+            }
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                    .withRepresentationProperty(UDN).build();
-
-            logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
+                    .withRepresentationProperty("udn").build();
+            this.logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
                     device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString());
-
             return result;
-        } else {
-            return null;
         }
+        return null;
     }
 
     @Override

@@ -483,7 +483,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
             if (wemoURL != null) {
@@ -518,7 +518,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
             if (wemoURL != null) {
@@ -575,7 +575,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                     + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument
                     + ">" + value + "</" + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
-            URL descriptorURL = service.getDescriptorURL(this);
+            URL descriptorURL = new URL(this.thing.getProperties().get("descriptorURL"));
             String wemoURL = getWemoURL(descriptorURL, "basicevent");
 
             if (wemoURL != null) {
