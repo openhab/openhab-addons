@@ -358,5 +358,5 @@ The Guntamatic Binding was developed and tested using Guntamatic Biostar 15kW Pe
 Please provide feedback (👍 as well as 👎) when using the Binding for other Guntamatic Heating Systems.
 
 Forum topic for feedback:
- - [openHAB community #128451](https://community.openhab.org/t/guntamatic-new-binding-for-guntamatic-heating-systems-biostar-powerchip-powercorn-biocom-pro-therm/128451 "openHAB community #128451")
 
+ - [openHAB community #128451](https://community.openhab.org/t/guntamatic-new-binding-for-guntamatic-heating-systems-biostar-powerchip-powercorn-biocom-pro-therm/128451 "openHAB community #128451")

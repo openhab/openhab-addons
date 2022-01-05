@@ -151,9 +151,10 @@ public class GuntamaticHandler extends BaseThingHandler {
             String channel = channels.get(i);
             String unit = units.get(i);
             if ((channel != null) && (unit != null) && (i < daqdata.length)) {
-                String value = daqdata[i].trim();
+                String value = daqdata[i];
                 Channel chn = thing.getChannel(channel);
-                if (chn != null) {
+                if ((chn != null) && (value != null)) {
+                    value = value.trim();
                     String typeName = chn.getAcceptedItemType();
                     if ("Switch".equals(typeName)) {
                         // Guntamatic uses German OnOff when configured to German and English OnOff for all other
@@ -167,7 +168,9 @@ public class GuntamaticHandler extends BaseThingHandler {
                         try {
                             State newState = null;
                             if ("Number".equals(typeName)) {
-                                newState = new DecimalType(value);
+                                if (unit.isBlank()) {
+                                    newState = new DecimalType(value);
+                                }
                             } else if ("Number:Dimensionless".equals(typeName)) {
                                 if ("%".equals(unit)) {
                                     newState = new QuantityType<Dimensionless>(Double.parseDouble(value),
@@ -192,7 +195,9 @@ public class GuntamaticHandler extends BaseThingHandler {
                                     newState = new QuantityType<Time>(Double.parseDouble(value), Units.HOUR);
                                 }
                             } else if ("String".equals(typeName)) {
-                                newState = new StringType(value);
+                                if (unit.isBlank()) {
+                                    newState = new StringType(value);
+                                }
                             }
 
                             if (newState != null) {
@@ -200,8 +205,6 @@ public class GuntamaticHandler extends BaseThingHandler {
                             } else {
                                 logger.warn("Data for unknown typeName '{}' or unit '{}' received", typeName, unit);
                             }
-                        } catch (NullPointerException e) {
-                            logger.warn("NullPointerException: {}", ((e.getMessage() != null) ? e.getMessage() : ""));
                         } catch (NumberFormatException e) {
                             logger.warn("NumberFormatException: {}", ((e.getMessage() != null) ? e.getMessage() : ""));
                         }
@@ -322,7 +325,7 @@ public class GuntamaticHandler extends BaseThingHandler {
         channelsInitialized = true;
     }
 
-    private static String guessQuantityType(String unit) {
+    private String guessQuantityType(String unit) {
         String quantityType = "Number";
 
         if ("%".equals(unit)) {
@@ -334,7 +337,7 @@ public class GuntamaticHandler extends BaseThingHandler {
         } else if ("d".equals(unit) || "h".equals(unit)) {
             quantityType += ":Time";
         } else {
-            // "Number"
+            logger.warn("Unsupported unit '{}' detected: using native '{}' type", unit, quantityType);
         }
 
         return quantityType;
