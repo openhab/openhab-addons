@@ -16,6 +16,7 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
@@ -79,6 +81,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private static final int REFRESH_ALL_DEVICES_DELAY_MSEC = 500; // Delay to wait before sending all devices refresh
                                                                    // request after a connect/reconnect
+
+    private int refreshAllDevicesDelay = REFRESH_ALL_DEVICES_DELAY_MSEC;
+    public static final String PROPERTY_REFRESH_DEVICE_DELAY = "refreshDelay";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
@@ -167,6 +172,21 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      */
     private @Nullable OpenGateway initBusGateway() {
         logger.debug("Initializing BUS gateway");
+
+        String prop = System.getProperty(PROPERTY_REFRESH_DEVICE_DELAY);
+        if (prop != null) {
+            try {
+                refreshAllDevicesDelay = Integer.parseInt(prop);
+                logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Property {}={}", PROPERTY_REFRESH_DEVICE_DELAY, prop);
+
+            } catch (NumberFormatException nfe) {
+                logger.warn("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Wrong property {}={}", PROPERTY_REFRESH_DEVICE_DELAY,
+                        refreshAllDevicesDelay);
+            }
+        } else {
+            logger.warn("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ property {} not set", PROPERTY_REFRESH_DEVICE_DELAY);
+        }
+
         OpenWebNetBusBridgeConfig busBridgeConfig = getConfigAs(OpenWebNetBusBridgeConfig.class);
         String host = busBridgeConfig.getHost();
         if (host == null || host.isEmpty()) {
@@ -393,13 +413,23 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     private void refreshAllDevices() {
-        logger.debug("Refreshing all devices for bridge {}", thing.getUID());
-        for (Thing ownThing : getThing().getThings()) {
+        logger.debug("--- --- REFRESHING all devices for bridge {}", thing.getUID());
+        int howMany = 0;
+        List<@NonNull Thing> things = getThing().getThings();
+        int total = things.size();
+        logger.debug("--- FOUND {} things by getThings()", total);
+        for (Thing ownThing : things) {
+            // for (Thing ownThing : getThing().getThings()) {
             OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
             if (hndlr != null) {
+                howMany++;
+                logger.debug("--- REFRESHING thing #{}/{}: {}", howMany, total, ownThing.getUID());
                 hndlr.refreshDevice(true);
+            } else {
+                logger.debug("--- no handler for thing {}", ownThing.getUID());
             }
         }
+        logger.debug("--- --- COMPLETED Refreshing all devices for bridge {}", thing.getUID());
     }
 
     @Override
@@ -476,8 +506,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         updateStatus(ThingStatus.ONLINE);
         // schedule a refresh for all devices
-        refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
-                TimeUnit.MILLISECONDS);
+        refreshSchedule = scheduler.schedule(this::refreshAllDevices, refreshAllDevicesDelay, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -552,7 +581,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             }
 
             // schedule a refresh for all devices
-            refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
+            refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC, // TODO also
+                                                                                                          // delay here?
                     TimeUnit.MILLISECONDS);
         }
     }
