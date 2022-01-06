@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.awattar.internal.handler;
 
 import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.*;
@@ -12,6 +24,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.awattar.internal.*;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -26,12 +40,20 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link aWATTarBestpriceHandler} is responsible for computing the best prices for a given configuration.
+ *
+ * @author Wolfgang Klimt - Initial contribution
+ */
+@NonNullByDefault
 public class aWATTarBestpriceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(aWATTarBestpriceHandler.class);
 
     private final int thingRefreshInterval = 60;
+    @Nullable
     private ScheduledFuture<?> thingRefresher;
+    @Nullable
     protected aWATTarBestpriceConfiguration config = null;
     private final TimeZoneProvider timeZoneProvider;
 

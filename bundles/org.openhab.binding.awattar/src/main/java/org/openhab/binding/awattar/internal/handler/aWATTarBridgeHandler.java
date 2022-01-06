@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.awattar.internal.handler;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
@@ -11,6 +23,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.awattar.internal.aWATTarBridgeConfiguration;
@@ -40,9 +54,11 @@ import com.google.gson.Gson;
  *
  * @author Wolfgang Klimt - Initial contribution
  */
+@NonNullByDefault
 public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(aWATTarBridgeHandler.class);
     private final HttpClient httpClient;
+    @Nullable
     private ScheduledFuture<?> dataRefresher;
 
     private final String URL_DE = "https://api.awattar.de/v1/marketdata";
@@ -50,9 +66,11 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private String URL;
 
     // This cache stores price data for up to two days
-    private SortedMap<Long, aWATTarPrice> priceMap = null;
+    @Nullable
+    private SortedMap<Long, aWATTarPrice> priceMap;
     private final int dataRefreshInterval = 60;
-    private aWATTarBridgeConfiguration config = null;
+    @Nullable
+    private aWATTarBridgeConfiguration config;
     private double vatFactor = 0;
 
     private long lastUpdated = 0;
@@ -60,13 +78,14 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     private double basePrice = 0;
     private long minTimestamp = 0;
     private long maxTimestamp = 0;
-    private ZoneId zone = null;
+    private ZoneId zone;
 
     public aWATTarBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
         logger.trace("Creating aWATTarBridgeHandler instance {}", this);
         this.httpClient = httpClient;
         URL = URL_DE;
+        zone = ZoneId.systemDefault();
     }
 
     @Override
@@ -210,6 +229,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         return zone;
     }
 
+    @Nullable
     public synchronized SortedMap<Long, aWATTarPrice> getPriceMap() {
         if (priceMap == null) {
             refresh();
@@ -217,6 +237,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         return priceMap;
     }
 
+    @Nullable
     public aWATTarPrice getPriceFor(long timestamp) {
         SortedMap<Long, aWATTarPrice> priceMap = getPriceMap();
         if (priceMap == null) {
