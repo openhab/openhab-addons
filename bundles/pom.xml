@@ -373,6 +373,7 @@
     <module>org.openhab.binding.wolfsmartset</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
+    <module>org.openhab.binding.yamahamusiccast</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.yioremote</module>
     <module>org.openhab.binding.yeelight</module>
