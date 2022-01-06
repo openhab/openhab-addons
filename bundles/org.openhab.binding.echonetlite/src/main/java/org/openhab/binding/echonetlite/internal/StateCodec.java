@@ -53,134 +53,6 @@ public interface StateCodec extends StateEncode, StateDecode {
         }
     }
 
-    enum InstallationLocationCodec implements StateCodec {
-
-        INSTANCE;
-
-        public State decodeState(final ByteBuffer edt) {
-            final int pdc = edt.remaining();
-            if (1 == pdc) {
-                final int b0 = edt.get(0) & 0xFF;
-                final int locationType = b0 & 0b11111_000;
-                switch (locationType) {
-                    case 0b00000_000:
-                        return new StringType("Not specified");
-                    case 0b00001_000:
-                        return new StringType("Living Room");
-                    case 0b00010_000:
-                        return new StringType("Dining Room");
-                    case 0b00011_000:
-                        return new StringType("Kitchen");
-                    case 0b00100_000:
-                        return new StringType("Lavatory");
-                    case 0b00101_000:
-                        return new StringType("Washroom/changing room");
-                    case 0b00111_000:
-                        return new StringType("Passageway");
-                    case 0b01000_000:
-                        return new StringType("Room");
-                    case 0b01001_000:
-                        return new StringType("Stairway");
-                    case 0b01010_000:
-                        return new StringType("Front door");
-                    case 0b01011_000:
-                        return new StringType("Storeroom");
-                    case 0b01100_000:
-                        return new StringType("Garden/perimeter");
-                    case 0b01101_000:
-                        return new StringType("Garage");
-                    case 0b01110_000:
-                        return new StringType("Veranda/balcony");
-                    case 0b01111_000:
-                        return new StringType("Others");
-                    default:
-                        if (0b10000_000 <= b0 && b0 <= 0b11111_110) {
-                            return new StringType("" + b0);
-                        } else if (b0 == 0b11111_111) {
-                            return new StringType("Indefinite");
-                        } else if (b0 == 0b00000_001) {
-                            return new StringType("Position information");
-                        } else {
-                            return new StringType("Reserved");
-                        }
-                }
-            } else if (17 == pdc) {
-                return new StringType("Position information");
-            } else {
-                return new StringType("Unknown");
-            }
-        }
-
-        public void encodeState(final State state, final ByteBuffer edt) {
-            StringType location = (StringType) state;
-            switch (location.toString()) {
-                case "Not specified":
-                    edt.put(b(0b00000_000));
-                    break;
-
-                case "Living Room":
-                    edt.put(b(0b00001_000));
-                    break;
-
-                case "Dining Room":
-                    edt.put(b(0b00010_000));
-                    break;
-
-                case "Kitchen":
-                    edt.put(b(0b00011_000));
-                    break;
-
-                case "Lavatory":
-                    edt.put(b(0b00100_000));
-                    break;
-
-                case "Washroom/changing room":
-                    edt.put(b(0b00101_000));
-                    break;
-
-                case "Passageway":
-                    edt.put(b(0b00111_000));
-                    break;
-
-                case "Room":
-                    edt.put(b(0b01000_000));
-                    break;
-
-                case "Stairway":
-                    edt.put(b(0b01001_000));
-                    break;
-
-                case "Front door":
-                    edt.put(b(0b01010_000));
-                    break;
-
-                case "Storeroom":
-                    edt.put(b(0b01011_000));
-                    break;
-
-                case "Garden/perimeter":
-                    edt.put(b(0b01100_000));
-                    break;
-
-                case "Garage":
-                    edt.put(b(0b01101_000));
-                    break;
-
-                case "Veranda/balcony":
-                    edt.put(b(0b01110_000));
-                    break;
-
-                case "Others":
-                    edt.put(b(0b01111_000));
-                    break;
-            }
-        }
-
-        public String itemType() {
-            return "String";
-        }
-    }
-
     enum StandardVersionInformationCodec implements StateDecode {
 
         INSTANCE;
@@ -267,6 +139,7 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         private final Map<String, Option> optionByName = new HashMap<>();
         private final Option[] optionByValue = new Option[256]; // All options values are single bytes on the wire
+        private final StringType unknown = new StringType("Unknown");
 
         public OptionCodec(Option... options) {
             for (Option option : options) {
@@ -281,7 +154,8 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         public State decodeState(final ByteBuffer edt) {
             final int value = edt.get() & 0xFF;
-            return optionByValue[value].state;
+            final Option option = optionByValue[value];
+            return null != option ? option.state : unknown;
         }
 
         public void encodeState(final State state, final ByteBuffer edt) {
