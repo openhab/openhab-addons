@@ -45,7 +45,8 @@ Defines a connection to a relational database through JDBC connection and allows
 | maxPoolSize  | No       | maximum number of connections             |
 | minimumIdle  | No       | minimum number of connections that the pool will maintain idle to serve queries|
 
-Currently, supported databases are:
+Currently, supported[^1] databases are:
+
 - *PostgreSQL*  (with driver version 42.2.18)
 - *Derby* (with driver version 10.12.1.1)
 - *H2* (with driver version 1.4.191)
@@ -53,6 +54,12 @@ Currently, supported databases are:
 - *MariaDB* (with driver version 1.3.5)
 - *MySQL* (with driver version 8.0.26)
 - *Sqlite* (with driver version 3.16.1)
+
+JDBC driver must be installed in your OpenHab server. For convenience, if you only need one driver the addon provides several features with JDBC driver included for each of the previous databases.
+If you need more than one driver you must install them manually from OpenHab console. 
+For example to install PostgreSQL driver you can use: `bundle:install https://repo1.maven.org/maven2/org/postgresql/postgresql/42.2.18/postgresql-42.2.18.jar`
+
+[^1]: Newer versions or other JDBC database drivers can work correctly but are not tested.
 
 ### query
 
@@ -83,9 +90,11 @@ The query the items represents in the native language of your database:
 
 If `hasParameters=true` you can use parameters in the query string that can be dynamically set with the `setQueryParameters` action.
  
- For InfluxDB use the `${paramName}` syntax for each parameter, and keep in mind that the values from that parameters must be from a trusted source as current
- parameter substitution is subject to query injection attacks.
- 
+For InfluxDB use the `${paramName}` syntax for each parameter, and keep in mind that the values from that parameters must be from a trusted source as current
+parameter substitution is subject to query injection attacks.
+
+For JDBC use `:parameterName` syntax.
+
 #### timeout
 
 A time-out in seconds to wait for the query result, if it's exceeded, the result will be discarded and the addon will do its best to cancel the query.
@@ -233,6 +242,7 @@ That executes the query every 15 seconds and puts the result in `myItem`.
 ### A query with parameters
 
 #### InfluxDB2
+
 Parameters are set using `${parameterName}`.
 Using the previous example (at simplest case) you change the `range(start:-1h)` for `range(start:${time})`. 
 
@@ -246,7 +256,8 @@ Create a rule that is fired
             dbquery.setQueryParameters(map)
 
 #### JDBC
-Parameters are set using `:parameterName`
+
+Parameters are set using `:parameterName`.
 Using the previous example (at simplest case) you change the `time >= current_date - 1` for `time >= current_date - :days`
 
 Create a rule that is fired
@@ -254,6 +265,6 @@ Create a rule that is fired
 - **When** `calculateParameters` is triggered in `myquery2`
 - **Then** executes the following script action (in that example Jython):
 
-           map = {"days" : "2"}   
+           map = {"days" : 2}   
            dbquery = actions.get("dbquery","dbquery:query:myquery2")   
            dbquery.setQueryParameters(map)
