@@ -33,6 +33,7 @@ import org.openhab.binding.deconz.internal.types.ResourceType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -248,6 +249,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
             return;
         }
         updateState(channelUID, OnOffType.from(value));
+    }
+
+    protected void updateStringChannel(ChannelUID channelUID, @Nullable String value) {
+        updateState(channelUID, new StringType(value));
     }
 
     protected void updateDecimalTypeChannel(ChannelUID channelUID, @Nullable Number value) {
