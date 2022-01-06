@@ -491,6 +491,41 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+
+	<thing-type id="airqualitysensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Air quality Sensor</label>
+		<description>An air quality sensor</description>
+		<channels>
+			<channel typeId="airquality" id="airquality"/>
+			<channel typeId="airqualityppb" id="airqualityppb"/>
+			<channel typeId="last_updated" id="last_updated"/>
+		</channels>
+
+		<representation-property>uid</representation-property>
+
+		<config-description-ref uri="thing-type:deconz:sensor"/>
+	</thing-type>
+
+	<channel-type id="airquality">
+		<item-type>String</item-type>
+		<label>Air quality level</label>
+		<description>Current air quality level based on volatile organic compounds (VOCs) measurement. Example: good or poor,
+			...</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+
+	<channel-type id="airqualityppb">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Air quality in ppb</label>
+		<description>Current air quality based on measurements of volatile organic compounds (VOCs). The measured value is
+			specified in ppb (parts per billion).</description>
+		<state readOnly="true" pattern="%d"></state>
+	</channel-type>
+
+
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
