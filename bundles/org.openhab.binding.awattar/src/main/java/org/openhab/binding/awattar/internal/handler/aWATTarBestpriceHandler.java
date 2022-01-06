@@ -4,7 +4,6 @@ import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.*;
 import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
 import static org.openhab.binding.awattar.internal.aWATTarUtil.getMillisToNextMinute;
 
-import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -55,19 +54,16 @@ public class aWATTarBestpriceHandler extends BaseThingHandler {
         boolean configValid = true;
 
         if (config.rangeStart < 0 || config.rangeStart > 23) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    MessageFormat.format("Invalid start value {}", config.rangeStart));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.start.value");
             configValid = false;
         }
         if (config.rangeDuration < 1 || config.rangeDuration > 24) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    MessageFormat.format("Invalid duration value {}", config.rangeDuration));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.duration.value");
             configValid = false;
         }
 
         if (config.length < 1 || config.length >= config.rangeDuration) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MessageFormat
-                    .format("length {} needs to be > 0 and < {} (duration).", config.length, config.rangeDuration));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.length.value");
             configValid = false;
         }
 

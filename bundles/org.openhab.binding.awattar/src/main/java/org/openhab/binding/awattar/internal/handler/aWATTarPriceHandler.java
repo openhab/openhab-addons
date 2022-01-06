@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 public class aWATTarPriceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(aWATTarPriceHandler.class);
-    private static final long INITIAL_DELAY_IN_SECONDS = 1;
 
     private int thingRefreshInterval = 60;
     private @Nullable ScheduledFuture<?> thingRefresher;

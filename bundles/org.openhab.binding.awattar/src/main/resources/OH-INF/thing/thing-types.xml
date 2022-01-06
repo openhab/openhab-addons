@@ -30,7 +30,7 @@
 			</parameter>
 			<parameter name="timeZone" type="text">
 				<label>Time zone</label>
-				<description>Time zone to apply to the hour definitions. Use CET to align to the aWATTar API</description>
+				<description>Time zone to apply to the hour definitions. Default CET aligns to the aWATTar API</description>
 				<default>CET</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -44,7 +44,7 @@
 		</supported-bridge-type-refs>
 
 		<label>aWATTar Hourly Price</label>
-		<description>Price for one Kilowatt-Hour at the given hour in Cent</description>
+		<description>Prices for one kilowatt-hour at the given hour in Cent</description>
 
 		<channel-groups>
 			<channel-group id="current" typeId="hourly-prices">
@@ -264,7 +264,7 @@
 			Best price
 		</label>
 
-		<description>Evaluates the best price period for the given settings</description>
+		<description>Evaluates the lowest price period for the given settings</description>
 		<channels>
 			<channel id="active" typeId="switch-type">
 				<label>Active</label>
@@ -300,35 +300,6 @@
 
 	</thing-type>
 
-	<thing-type id="bestnext">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="awattar-bridge"/>
-		</supported-bridge-type-refs>
-
-		<label>
-			Best next prices
-		</label>
-
-		<description>Dynamically evaluates the best price period for the next given hours</description>
-		<channels>
-			<channel id="active" typeId="switch-type">
-				<label>Active</label>
-			</channel>
-			<channel id="start" typeId="start-time-stamp"/>
-			<channel id="end" typeId="end-time-stamp"/>
-			<channel id="countdown" typeId="countdown-type"/>
-			<channel id="remaining" typeId="remaining-type"/>
-			<channel id="hours" typeId="hours-type"/>
-			<channel id="rangeDuration" typeId="input-duration"/>
-			<channel id="lookupHours" typeId="input-hours"/>
-			<channel id="consecutive" typeId="input-switch"/>
-		</channels>
-		<config-description>
-
-		</config-description>
-
-	</thing-type>
-
 	<channel-type id="price">
 		<item-type>Number</item-type>
 		<label>ct/kWh</label>
@@ -339,7 +310,7 @@
 	<channel-type id="input-duration">
 		<item-type>Number</item-type>
 		<label>Duration</label>
-		<description>Length of the bestprice period to search for</description>
+		<description>Length of the bestprice period to search for (hours)</description>
 		<state readOnly="false" pattern="%d"/>
 	</channel-type>
 

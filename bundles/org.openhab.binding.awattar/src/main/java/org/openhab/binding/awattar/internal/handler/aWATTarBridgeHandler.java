@@ -76,7 +76,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         config = getConfigAs(aWATTarBridgeConfiguration.class);
         if (config == null) {
             logger.error("No config provided!");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Config missing");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.config.missing");
             return;
         }
         vatFactor = 1 + (config.vatPercent / 100);
@@ -86,11 +86,11 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
             logger.trace("Using time zone {}", zone);
         } catch (ZoneRulesException ex) {
             logger.error("Zone ID not found: {}, {}", zone, ex.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unknown timezone");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.timezone");
             return;
         } catch (DateTimeException ex) {
             logger.error("Invalid Timezone format: {}, {}", config.timeZone, ex.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid timezone format");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.timezone.format");
             return;
         }
         switch (config.country) {
@@ -102,7 +102,8 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
                 break;
             default:
                 logger.error("Invalid country {}, only DE and AT are supported", config.country);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Unsupported country");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/error.unsupported.country");
                 return;
         }
 
@@ -162,20 +163,19 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
                     }
                     priceMap = result;
                     updateStatus(ThingStatus.ONLINE);
+                    lastUpdated = Instant.now().toEpochMilli();
                     break;
 
                 default:
                     logger.warn("aWATTar server responded with status code {}: {}", httpStatus, content);
-                    // TODO more infos
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/warn.awattar.statuscode");
             }
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             String errorMessage = e.getLocalizedMessage();
-            logger.trace("Exception occurred during execution: {}", errorMessage, e);
+            logger.warn("Exception occurred during execution: {}", errorMessage);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.receiving.prices");
             throw new aWATTarConnectionException(errorMessage, e.getCause());
-        } catch (InterruptedException | TimeoutException e) {
-            logger.info("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new aWATTarConnectionException(e.getLocalizedMessage(), e.getCause());
         }
     }
 
@@ -191,18 +191,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
 
     private void refresh() {
         logger.trace("Refreshing aWATTar data ...");
-        try {
-            getPrices();
-            lastUpdated = Instant.now().toEpochMilli();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (aWATTarConnectionException e) {
-            logger.error(e.getMessage());
-            updateStatus(ThingStatus.OFFLINE);
-        } catch (Exception e) {
-            logger.error("Unexpected Problem occured: {}", e.getMessage());
-            logger.error("Exception: ", e);
-            updateStatus(ThingStatus.OFFLINE);
-        }
+        getPrices();
     }
 
     public double getVatFactor() {
