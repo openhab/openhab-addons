@@ -28,6 +28,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
@@ -64,6 +65,7 @@ public class HDPowerViewWebTargets {
     private Instant maintenanceScheduledEnd = Instant.now().minusSeconds(2 * maintenancePeriod);
 
     private final String base;
+    private final String firmwareVersion;
     private final String shades;
     private final String sceneActivate;
     private final String scenes;
@@ -113,6 +115,7 @@ public class HDPowerViewWebTargets {
     public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress) {
         base = "http://" + ipAddress + "/api/";
         shades = base + "shades/";
+        firmwareVersion = base + "fwversion/";
         sceneActivate = base + "scenes";
         scenes = base + "scenes/";
 
@@ -122,6 +125,20 @@ public class HDPowerViewWebTargets {
 
         scheduledEvents = base + "scheduledevents";
         this.httpClient = httpClient;
+    }
+
+    /**
+     * Fetches a JSON package with firmware information for the hub.
+     *
+     * @return FirmwareVersion class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable FirmwareVersion getFirmwareVersion()
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, firmwareVersion, null, null);
+        return gson.fromJson(json, FirmwareVersion.class);
     }
 
     /**
