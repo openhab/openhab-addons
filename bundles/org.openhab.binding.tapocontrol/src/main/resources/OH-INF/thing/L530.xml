@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- L530 Series THING-TYPE (COLOR-LIGHT-BULB) -->
-	<thing-type id="L530_Series">
+	<!-- L530 THING-TYPE (COLOR-LIGHT-BULB) -->
+	<thing-type id="L530">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>

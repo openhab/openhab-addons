@@ -166,7 +166,7 @@ public class TapoDeviceInfo {
     }
 
     public String getModel() {
-        return model.replace(" ", "_");
+        return model.replace(" Series", "");
     }
 
     public String getNickname() {
