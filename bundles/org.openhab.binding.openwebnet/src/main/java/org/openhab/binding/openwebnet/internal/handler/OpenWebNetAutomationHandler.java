@@ -171,7 +171,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                     logger.debug("Refresh all devices just sent...");
                 }
             } else {
-                requestChannelState(new ChannelUID("any")); // channel here does not make any difference
+                requestChannelState(new ChannelUID("any:any:any:any"));
             }
         }
     }
