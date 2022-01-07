@@ -302,7 +302,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (mainProcessor.name != null) {
             properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_NAME, mainProcessor.name);
         }
-        properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_VERSION, mainProcessor.toString());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, mainProcessor.toString());
         Firmware radio = firmwareVersion.firmware.radio;
         if (radio != null) {
             logger.debug("Radio firmware version received: {}", radio.toString());
