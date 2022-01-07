@@ -68,6 +68,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final String PROPERTY_FANART = "fanart";
     private static final String PROPERTY_THUMBNAIL = "thumbnail";
     private static final String PROPERTY_VERSION = "version";
+    private static final String PROPERTY_SCREENSAVER = "System.ScreensaverActive";
     private static final String PROPERTY_VOLUME = "volume";
     private static final String PROPERTY_MUTED = "muted";
     private static final String PROPERTY_TOTALTIME = "totaltime";
@@ -984,7 +985,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
             } else if (method.startsWith("System.On")) {
                 processSystemStateChanged(method, params);
             } else if (method.startsWith("GUI.OnScreensaver")) {
-                processScreensaverStateChanged(method, params);
+                processScreenSaverStateChanged(method, params);
+            } else if (method.startsWith("Input.OnInput")) {
+                processInputRequestedStateChanged(method, params);
             } else if (method.startsWith("Playlist.On")) {
                 processPlaylistStateChanged(method, params);
             } else {
@@ -994,7 +997,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void processPlayerStateChanged(String method, JsonObject json) {
-        if ("Player.OnPlay".equals(method)) {
+        if ("Player.OnPlay".equals(method) || "Player.OnAVStart".equals(method)) {
             // get the player id and make a new request for the media details
 
             JsonObject data = json.get("data").getAsJsonObject();
@@ -1065,11 +1068,22 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    private void processScreensaverStateChanged(String method, JsonObject json) {
+    private void processScreenSaverStateChanged(String method, JsonObject json) {
         if ("GUI.OnScreensaverDeactivated".equals(method)) {
             listener.updateScreenSaverState(false);
         } else if ("GUI.OnScreensaverActivated".equals(method)) {
             listener.updateScreenSaverState(true);
+        } else {
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
+        }
+        listener.updateConnectionState(true);
+    }
+
+    private void processInputRequestedStateChanged(String method, JsonObject json) {
+        if ("Input.OnInputFinished".equals(method)) {
+            listener.updateInputRequestedState(false);
+        } else if ("Input.OnInputRequested".equals(method)) {
+            listener.updateInputRequestedState(true);
         } else {
             logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
@@ -1094,6 +1108,25 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public synchronized void close() {
         if (socket != null && socket.isConnected()) {
             socket.close();
+        }
+    }
+
+    public void updateScreenSaverState() {
+        if (socket.isConnected()) {
+            String[] props = { PROPERTY_SCREENSAVER };
+
+            JsonObject params = new JsonObject();
+            params.add("booleans", getJsonArray(props));
+            JsonElement response = socket.callMethod("XBMC.GetInfoBooleans", params);
+
+            if (response instanceof JsonObject) {
+                JsonObject data = response.getAsJsonObject();
+                if (data.has(PROPERTY_SCREENSAVER)) {
+                    listener.updateScreenSaverState(data.get(PROPERTY_SCREENSAVER).getAsBoolean());
+                }
+            }
+        } else {
+            listener.updateScreenSaverState(false);
         }
     }
 
