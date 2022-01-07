@@ -32,8 +32,11 @@ public class SonnenBindingConstants {
     // List of all Channel ids
     public static final String CHANNELBATTERYCHARGING = "BatteryCharging";
     public static final String CHANNELBATTERYDISCHARGING = "BatteryDischarging";
+    public static final String CHANNELBATTERYFEEDIN = "BatteryFeedIn";
+    public static final String CHANNELBATTERYDISPENSE = "BatteryDispense";
     public static final String CHANNELCONSUMPTION = "Consumption";
     public static final String CHANNELGRIDFEEDIN = "GridFeedIn";
+    public static final String CHANNELGRIDRECEIVE = "GridReceive";
     public static final String CHANNELSOLARPRODUCTION = "SolarProduction";
     public static final String CHANNELBATTERYLEVEL = "BatteryLevel";
     public static final String CHANNELFLOWCONSUMPTIONBATTERY = "FlowConsumptionBattery";

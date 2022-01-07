@@ -28,7 +28,7 @@ public class SonnenJsonDataDTO {
     @SerializedName("Consumption_W")
     int consumptionHouse;
     @SerializedName("GridFeedIn_W")
-    int gridFeedIn;
+    int gridValue;
     @SerializedName("Production_W")
     int solarProduction;
     @SerializedName("USOC")
@@ -45,6 +45,15 @@ public class SonnenJsonDataDTO {
     boolean flowProductionBattery;
     @SerializedName("FlowProductionGrid")
     boolean flowProductionGrid;
+    @SerializedName("Pac_total_W")
+    int batteryCurrent;
+
+    /**
+     * @return the batteryCurrent
+     */
+    public int getbatteryCurrent() {
+        return batteryCurrent;
+    }
 
     /**
      * @return the batteryCharging
@@ -68,10 +77,10 @@ public class SonnenJsonDataDTO {
     }
 
     /**
-     * @return the gridFeedIn
+     * @return the gridValue. Negative value indicates receiving from Grid. Positive value indicates feeding to Grid.
      */
-    public int getGridFeedIn() {
-        return gridFeedIn;
+    public int getGridValue() {
+        return gridValue;
     }
 
     /**

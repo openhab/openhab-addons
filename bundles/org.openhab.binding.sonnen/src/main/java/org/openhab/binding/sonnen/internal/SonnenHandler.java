@@ -202,8 +202,23 @@ public class SonnenHandler extends BaseThingHandler {
                         state = new QuantityType<Power>(data.getConsumptionHouse(), Units.WATT);
                         update(state, channelId);
                         break;
+                    case CHANNELBATTERYDISPENSE:
+                        state = new QuantityType<Power>(data.getbatteryCurrent() > 0 ? data.getbatteryCurrent() : 0,
+                                Units.WATT);
+                        update(state, channelId);
+                        break;
+                    case CHANNELBATTERYFEEDIN:
+                        state = new QuantityType<Power>(
+                                data.getbatteryCurrent() <= 0 ? (data.getbatteryCurrent() * -1) : 0, Units.WATT);
+                        update(state, channelId);
+                        break;
                     case CHANNELGRIDFEEDIN:
-                        state = new QuantityType<Power>(data.getGridFeedIn(), Units.WATT);
+                        state = new QuantityType<Power>(data.getGridValue() > 0 ? data.getGridValue() : 0, Units.WATT);
+                        update(state, channelId);
+                        break;
+                    case CHANNELGRIDRECEIVE:
+                        state = new QuantityType<Power>(data.getGridValue() <= 0 ? (data.getGridValue() * -1) : 0,
+                                Units.WATT);
                         update(state, channelId);
                         break;
                     case CHANNELSOLARPRODUCTION:

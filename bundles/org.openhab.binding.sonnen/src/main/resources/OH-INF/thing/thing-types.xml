@@ -12,8 +12,11 @@
 		<channels>
 			<channel id="BatteryCharging" typeId="batteryCharging"/>
 			<channel id="BatteryDischarging" typeId="batteryDischarging"/>
+			<channel id="BatteryFeedIn" typeId="batteryFeedIn"/>
+			<channel id="BatteryDispense" typeId="batteryDispense"/>
 			<channel id="Consumption" typeId="consumption"/>
 			<channel id="GridFeedIn" typeId="gridFeedIn"/>
+			<channel id="GridReceive" typeId="gridReceive"/>
 			<channel id="SolarProduction" typeId="solarProduction"/>
 			<channel id="BatteryLevel" typeId="batteryLevel"/>
 			<channel id="FlowConsumptionBattery" typeId="flowConsumptionBattery"/>
@@ -53,6 +56,18 @@
 		<description>Indicates if the Battery is discharging at that moment</description>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="batteryFeedIn">
+        <item-type>Number:Energy</item-type>
+        <label>Battery Feed In</label>
+        <description>Indicates the actual current feeding to the Battery in watt. Otherwise 0</description>
+        <state readOnly="true"/>
+    </channel-type>
+    <channel-type id="batteryDispense">
+        <item-type>Number:Energy</item-type>
+        <label>Battery Dispense</label>
+        <description>Indicates the actual current dispense from the Battery in watt. Otherwise 0</description>
+        <state readOnly="true"/>
+    </channel-type>
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Consumption</label>
@@ -62,9 +77,15 @@
 	<channel-type id="gridFeedIn">
 		<item-type>Number:Energy</item-type>
 		<label>Grid Feed In</label>
-		<description>Indicates the actual feeding to the Grid in watt</description>
+		<description>Indicates the actual feeding to the Grid in watt. Otherwise 0</description>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="gridReceive">
+        <item-type>Number:Energy</item-type>
+        <label>Grid Receive</label>
+        <description>Indicates the receiving from the the Grid in watt. Otherwise 0</description>
+        <state readOnly="true"/>
+    </channel-type>
 	<channel-type id="solarProduction">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Production</label>

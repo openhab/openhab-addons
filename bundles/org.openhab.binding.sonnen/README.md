@@ -24,10 +24,13 @@ The following channels are yet supported:
 
 | Channel | Type  | Access| Description|
 |---------|-------|-------|------------|
-|batteryCharging| Switch | read|Indicates if the Battery is charging at that moment|
+|batteryCharging|Switch|read|Indicates if the Battery is charging at that moment|
 |batteryDischarging|Switch|read|Indicates if the Battery is discharging at that moment|
+|batteryFeedIn|Number:Energy|read|Indicates the actual charging current of the Battery in watt|
+|batteryDispense|Number:Energy|read|Indicates the actual current dispense from the Battery in watt|
 |consumption|Number:Energy|read|Indicates the actual consumption of the consumer in watt|
-|gridFeedIn|Number:Energy|read|Indicates the actual feeding to the Grid in watt|
+|gridFeedIn|Number:Energy|read|Indicates the actual feeding to the Grid in watt.0 if nothing is feeded|
+|gridReceive|Number:Energy|read|Indicates the actual receiving from the Grid in watt.0 if nothing is received|
 |solarProduction|Number:Energy|read|Indicates the actual production of the Solar system in watt|
 |batteryLevel|Number|read|Indicates the actual Battery Level in % from 0 - 100|
 |flowConsumptionBattery|Switch|read|Indicates if there is a current flow from Battery towards Consumption|
