@@ -87,12 +87,15 @@ public class SonnenHandler extends BaseThingHandler {
         message.setStatusDescription(statusDescr);
         if (validConfig) {
             serviceCommunication.setConfig(config);
-            if (serviceCommunication.refreshBatteryConnection(message, this.getThing().getUID().toString())) {
-                updateStatus(ThingStatus.ONLINE);
-                updateLinkedChannels();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
-            }
+            scheduler.submit(() -> {
+                if (serviceCommunication.refreshBatteryConnection(message, this.getThing().getUID().toString())) {
+                    updateStatus(ThingStatus.ONLINE);
+                    updateLinkedChannels();
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            message.getStatusDesription());
+                }
+            });
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
         }
