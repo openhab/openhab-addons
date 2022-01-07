@@ -28,6 +28,7 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
+import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
@@ -180,6 +181,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
             updateSoftProperties(shadeData);
+            updateFirmwareProperties(shadeData);
             updateBindingStates(shadeData.positions);
             updateBatteryLevel(shadeData.batteryStatus);
             updateState(CHANNEL_SHADE_BATTERY_VOLTAGE,
@@ -240,6 +242,19 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 && (capabilitiesVal != db.getType(type).getCapabilities())) {
             db.logCapabilitiesMismatch(type, capabilitiesVal);
         }
+    }
+
+    private void updateFirmwareProperties(ShadeData shadeData) {
+        Map<String, String> properties = editProperties();
+        Firmware shadeFirmware = shadeData.firmware;
+        Firmware motorFirmware = shadeData.motor;
+        if (shadeFirmware != null) {
+            properties.put(PROPERTY_FIRMWARE_VERSION, shadeFirmware.toString());
+        }
+        if (motorFirmware != null) {
+            properties.put(PROPERTY_MOTOR_FIRMWARE_VERSION, motorFirmware.toString());
+        }
+        updateProperties(properties);
     }
 
     /**
