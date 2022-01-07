@@ -46,8 +46,6 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonSyntaxException;
-
 /**
  * The {@link MyBMWProxy} This class holds the important constants for the BMW Connected Drive Authorization.
  * They
@@ -267,10 +265,17 @@ public class MyBMWProxy {
     }
 
     /**
+     * Everything is catched by surroundig try catch
+     * - HTTP Exceptions
+     * - JSONSyntax Exceptions
+     * - potential NullPointer Exceptions
+     *
      * [todo] China Token
      *
      * @return
      */
+
+    @SuppressWarnings("null")
     public synchronized boolean updateToken() {
         try {
             /*
@@ -284,14 +289,8 @@ public class MyBMWProxy {
             oauthQueryRequest.header(X_USER_AGENT, BimmerConstants.USER_AGENT_BMW);
 
             ContentResponse firstResponse = oauthQueryRequest.send();
-            AuthQueryResponse aqr;
-            try {
-                aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(), AuthQueryResponse.class);
-            } catch (JsonSyntaxException jse) {
-                logger.error("Unable to parse initial authorization response: {} Problem: {}",
-                        firstResponse.getContentAsString(), jse.getMessage());
-                return false;
-            }
+            AuthQueryResponse aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(),
+                    AuthQueryResponse.class);
 
             String verfifierBytes = Converter.getRandomString(64);
             String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verfifierBytes.getBytes());
@@ -358,14 +357,7 @@ public class MyBMWProxy {
             codeRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
                     UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
             ContentResponse codeResponse = codeRequest.send();
-            AuthResponse ar;
-            try {
-                ar = Converter.getGson().fromJson(codeResponse.getContentAsString(), AuthResponse.class);
-            } catch (JsonSyntaxException jse) {
-                logger.error("Unable to parse token response: {} Problem: {}", codeResponse.getContentAsString(),
-                        jse.getMessage());
-                return false;
-            }
+            AuthResponse ar = Converter.getGson().fromJson(codeResponse.getContentAsString(), AuthResponse.class);
             token.setType(ar.tokenType);
             token.setToken(ar.accessToken);
             token.setExpiration(ar.expiresIn);

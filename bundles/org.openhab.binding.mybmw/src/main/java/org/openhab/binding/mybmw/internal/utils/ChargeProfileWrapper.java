@@ -19,7 +19,6 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +48,7 @@ public class ChargeProfileWrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChargeProfileWrapper.class);
 
     private static final String CHARGING_WINDOW = "chargingWindow";
+    private static final String WEEKLY_PLANNER = "weeklyPlanner";
     private static final String ACTIVATE = "activate"; // [todo check variable]
     private static final String DEACTIVATE = "deactivate"; // [todo check variable]
 
@@ -80,8 +80,10 @@ public class ChargeProfileWrapper {
 
         addTimer(TIMER1, profile.getTimerId(1));
         addTimer(TIMER2, profile.getTimerId(2));
-        addTimer(TIMER3, profile.getTimerId(3));
-        addTimer(TIMER4, profile.getTimerId(4));
+        if (profile.chargingControlType.equals(WEEKLY_PLANNER)) {
+            addTimer(TIMER3, profile.getTimerId(3));
+            addTimer(TIMER4, profile.getTimerId(4));
+        }
 
         if (CHARGING_WINDOW.equals(profile.chargingPreference)) {
             addTime(WINDOWSTART, profile.reductionOfChargeCurrent.start);
@@ -173,8 +175,14 @@ public class ChargeProfileWrapper {
         }
     }
 
-    public @Nullable LocalTime getTime(final ProfileKey key) {
-        return times.get(key);
+    public LocalTime getTime(final ProfileKey key) {
+        LocalTime t = times.get(key);
+        if (t != null) {
+            return t;
+        } else {
+            LOGGER.debug("Profile not valid - Key {} doesn't contain boolean value", key);
+            return Constants.NULL_LOCAL_TIME;
+        }
     }
 
     public void setTime(final ProfileKey key, @Nullable LocalTime time) {
@@ -190,13 +198,14 @@ public class ChargeProfileWrapper {
 
         preference.ifPresent(pref -> profile.chargingPreference = pref.name());
         profile.chargingControlType = controlType.get();
-        profile.climatisationOn = isEnabled(CLIMATE);
+        Boolean enabledBool = isEnabled(CLIMATE);
+        profile.climatisationOn = enabledBool == null ? false : enabledBool;
         preference.ifPresent(pref -> {
             if (ChargingPreference.chargingWindow.equals(pref)) {
                 profile.chargingMode = getMode();
                 final LocalTime start = getTime(WINDOWSTART);
                 final LocalTime end = getTime(WINDOWEND);
-                if (start != null || end != null) {
+                if (!start.equals(Constants.NULL_LOCAL_TIME) && !end.equals(Constants.NULL_LOCAL_TIME)) {
                     ChargingWindow cw = new ChargingWindow();
                     profile.reductionOfChargeCurrent = cw;
                     cw.start = new Time();
@@ -208,7 +217,14 @@ public class ChargeProfileWrapper {
                 }
             }
         });
-        profile.departureTimes = Arrays.asList(getTimer(TIMER1), getTimer(TIMER2), getTimer(TIMER3), getTimer(TIMER4));
+        profile.departureTimes = new ArrayList<Timer>();
+        profile.departureTimes.add(getTimer(TIMER1));
+        profile.departureTimes.add(getTimer(TIMER2));
+        if (profile.chargingControlType.equals(WEEKLY_PLANNER)) {
+            profile.departureTimes.add(getTimer(TIMER3));
+            profile.departureTimes.add(getTimer(TIMER4));
+        }
+
         profile.chargingSettings = chargeSettings.get();
         return Converter.getGson().toJson(profile);
     }
@@ -231,6 +247,7 @@ public class ChargeProfileWrapper {
             addTime(key, timer.timeStamp);
             final EnumSet<DayOfWeek> daySet = EnumSet.noneOf(DayOfWeek.class);
             if (timer.timerWeekDays != null) {
+                daysOfWeek.put(key, EnumSet.noneOf(DayOfWeek.class));
                 for (String day : timer.timerWeekDays) {
                     try {
                         daySet.add(DayOfWeek.valueOf(day.toUpperCase()));
@@ -262,15 +279,18 @@ public class ChargeProfileWrapper {
                 // timer id stays -1
                 break;
         }
-        if (enabled.get(key)) {
-            timer.action = ACTIVATE;
+        Boolean enabledBool = isEnabled(key);
+        if (enabledBool != null) {
+            timer.action = enabledBool ? ACTIVATE : DEACTIVATE;
         } else {
             timer.action = DEACTIVATE;
         }
-        final LocalTime time = times.get(key);
-        timer.timeStamp = new Time();
-        timer.timeStamp.hour = time.getHour();
-        timer.timeStamp.minute = time.getMinute();
+        final LocalTime time = getTime(key);
+        if (!time.equals(Constants.NULL_LOCAL_TIME)) {
+            timer.timeStamp = new Time();
+            timer.timeStamp.hour = time.getHour();
+            timer.timeStamp.minute = time.getMinute();
+        }
         final Set<DayOfWeek> days = daysOfWeek.get(key);
         if (days != null) {
             timer.timerWeekDays = new ArrayList<>();
@@ -278,7 +298,6 @@ public class ChargeProfileWrapper {
                 timer.timerWeekDays.add(day.name().toLowerCase());
             }
         }
-        // return timer.timerEnabled == null && timer.departureTime == null && timer.weekdays == null ? null : timer;
         return timer;
     }
 }

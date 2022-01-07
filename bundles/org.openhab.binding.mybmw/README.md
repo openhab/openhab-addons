@@ -145,10 +145,10 @@ They differ for each vehicle type, build-in sensors and activated services.
 | [check](#check-control)          | Shows current active CheckControl messages        |  X   |  X   |    X    |  X  |
 | [service](#services)             | Future vehicle service schedules                  |  X   |  X   |    X    |  X  |
 | [location](#location)            | Coordinates and heading of the vehicle            |  X   |  X   |    X    |  X  |
-| [remote](#remote-services)       | Remote control of the vehicle                     |      |  X   |    X    |  X  |
+| [remote](#remote-services)       | Remote control of the vehicle                     |  X   |  X   |    X    |  X  |
 | [profile](#charge-profile)       | Scheduled charging profiles of vehicle            |      |  X   |    X    |  X  |
 | [statistic](#charge-statistics)  | Charging statistics of current month              |      |  X   |    X    |  X  |
-| [session](#charge-sessions)      | Past charging sessions                            |  X   |  X   |    X    |  X  |
+| [session](#charge-sessions)      | Past charging sessions                            |      |  X   |    X    |  X  |
 | [tires](#tire-pressure)          | Current and wanted pressure for all tires         |  X   |  X   |    X    |  X  |
 | [image](#image)                  | Provides an image of your vehicle                 |  X   |  X   |    X    |  X  |
 
@@ -163,6 +163,7 @@ Reflects overall status of the vehicle.
 
 | Channel Label             | Channel ID          | Type          | Description                                    | conv | phev | bev_rex | bev |
 |---------------------------|---------------------|---------------|------------------------------------------------|------|------|---------|-----|
+| Motion Status             | motion              | String        | Driving state                                  |  X   |  X   |    X    |  X  |
 | Overall Door Status       | doors               | String        | Combined status for all doors                  |  X   |  X   |    X    |  X  |
 | Overall Window Status     | windows             | String        | Combined status for all windows                |  X   |  X   |    X    |  X  |
 | Doors Locked              | lock                | String        | Status if vehicle is secured                   |  X   |  X   |    X    |  X  |
@@ -170,9 +171,14 @@ Reflects overall status of the vehicle.
 | Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |  X   |  X   |    X    |  X  |
 | Check Control             | check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
 | Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
-| Charging Status           | charge              | String        | Current charging status if plug is connected   |      |  X   |    X    |  X  |
+| Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
 | Charging Information      | charge-info         | String        | Information regarding current charging session |      |  X   |    X    |  X  |
 | Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
+
+Motion Status values
+
+* _Driving_ - Vehicle is moving
+* _Stationary_ - Vehicle is standing still
 
 Overall Door Status values
 
@@ -449,8 +455,7 @@ Current and target tire pressure values
 
 #### Image
 
-Image representation of the vehicle. Size and viewport are writable and can be 
-The possible values are the same mentioned in [Thing Configuration](#thing-configuration).
+Image representation of the vehicle. 
 
 * Channel Group ID is **image**
 * Available for all vehicles
@@ -461,7 +466,7 @@ The possible values are the same mentioned in [Thing Configuration](#thing-confi
 | Rendered Vehicle Image     | png                 | Image  | Read     |
 | Image Viewport             | view                | String | Write    |
 
-Possoble Viewports:
+Possible Viewports:
 
 * _VehicleStatus_ Front Side View
 * _VehicleInfo_ Front View
@@ -510,7 +515,14 @@ log:set DEBUG org.openhab.binding.mybmw
 ```
 
 The debug fingerprint is generated every time the discovery is executed.
-To force a new fingerprint disable the thing shortly and enable it again. 
+To force a new fingerprint perform the following steps in the UI
+
+1) Go to settings
+2) Select Things entry
+3) Press "+" sign bottom right
+4) Choose the _MyBMW_ binding
+5) Press the _Scan_ button on top
+
 Personal data is eliminated from the log entries so it should be possible to share them in public.
 Data like
 

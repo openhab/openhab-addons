@@ -32,8 +32,19 @@ import org.openhab.binding.mybmw.internal.utils.Converter;
 public class ChargeProfileTest {
 
     @Test
-    public void testProfileConversion() {
-        String json = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
+    public void testWeeklyPlanner() {
+        String json = FileReader
+                .readFileInString("src/test/resources/responses/chargingprofile/weekly-planner-t2-active.json");
+        Vehicle v = Converter.getVehicle(Constants.ANONYMOUS, json);
+        ChargeProfile cp = v.status.chargingProfile;
+        String cpJson = Converter.getGson().toJson(cp);
+        ChargeProfileWrapper cpw = new ChargeProfileWrapper(v.status.chargingProfile);
+        assertEquals(cpJson, cpw.getJson(), "JSON comparison");
+    }
+
+    @Test
+    public void testTwoWeeksPlanner() {
+        String json = FileReader.readFileInString("src/test/resources/responses/chargingprofile/two-weeks-timer.json");
         Vehicle v = Converter.getVehicle(Constants.ANONYMOUS, json);
         ChargeProfile cp = v.status.chargingProfile;
         String cpJson = Converter.getGson().toJson(cp);

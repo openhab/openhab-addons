@@ -28,17 +28,6 @@ public class Timer {
     public Time timeStamp;
     public List<String> timerWeekDays;
 
-    /**
-     * "monday",
-     * "tuesday",
-     * "wednesday",
-     * "thursday",
-     * "friday",
-     * "saturday",
-     * "sunday"
-     * ]
-     */
-
     @Override
     public String toString() {
         return id + Constants.COLON + action + Constants.COLON + timeStamp + Constants.COLON + timerWeekDays;

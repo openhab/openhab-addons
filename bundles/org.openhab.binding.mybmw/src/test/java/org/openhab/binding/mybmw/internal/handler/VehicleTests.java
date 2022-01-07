@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int STATUS_ELECTRIC = 10;
-    private static final int STATUS_CONV = 7;
+    private static final int STATUS_ELECTRIC = 11;
+    private static final int STATUS_CONV = 8;
     private static final int RANGE_HYBRID = 9;
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 4;
@@ -247,10 +247,10 @@ public class VehicleTests {
     @Test
     public void testF45() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), "some_vin_F45");
+        setup(VehicleType.PLUGIN_HYBRID.toString(), "some_vin_F45");
         String content = FileReader.readFileInString("src/test/resources/responses/F45/vehicles_v2_bmw_0.json");
-        assertTrue(testVehicle(content,
-                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_EMPTY + CHECK_EMPTY + POSITION + TIRES, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
+                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 
     @Test
@@ -314,6 +314,15 @@ public class VehicleTests {
         setup(VehicleType.ELECTRIC.toString(), "some_vin_I01_NOREX");
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/vehicles_v2_bmw_0.json");
         assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY
+                + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
+    }
+
+    @Test
+    public void test530e() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.PLUGIN_HYBRID.toString(), "anonymous");
+        String content = FileReader.readFileInString("src/test/resources/responses/530e/vehicles.json");
+        assertTrue(testVehicle(content, STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY
                 + POSITION + CHARGE_PROFILE + TIRES, Optional.empty()));
     }
 }

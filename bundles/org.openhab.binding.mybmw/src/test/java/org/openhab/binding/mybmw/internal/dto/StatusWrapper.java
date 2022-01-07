@@ -556,6 +556,15 @@ public class StatusWrapper {
                     assertTrue(state.equals(UnDefType.UNDEF));
                 }
                 break;
+            case MOTION:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                if (vehicle.properties.inMotion) {
+                    assertEquals(Constants.DRIVING, st.toFullString(), "Vehicle Driving");
+                } else {
+                    assertEquals(Constants.STATIONARY, st.toFullString(), "Vehicle Stationary");
+                }
+                break;
             default:
                 if (!gUid.equals(CHANNEL_GROUP_CHARGE_PROFILE)) {
                     // fail in case of unknown update

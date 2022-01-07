@@ -163,27 +163,20 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateVehicleStatus(Vehicle v) {
-        // Vehicle Status
+        updateChannel(CHANNEL_GROUP_STATUS, MOTION, v.properties.inMotion ? StringType.valueOf(Constants.DRIVING)
+                : StringType.valueOf(Constants.STATIONARY));
         updateChannel(CHANNEL_GROUP_STATUS, LOCK, Converter.getLockState(v.properties.areDoorsLocked));
-
-        // Service Updates
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE,
                 VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired));
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_MILEAGE,
                 VehicleStatusUtils.getNextServiceMileage(v.properties.serviceRequired));
-
-        // CheckControl Active?
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
                 StringType.valueOf(v.status.checkControlMessagesGeneralState));
-
-        // last update Time
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
                 DateTimeType.valueOf(Converter.zonedToLocalDateTime(v.properties.lastUpdatedAt)));
-
         updateChannel(CHANNEL_GROUP_STATUS, DOORS, Converter.getClosedState(v.properties.areDoorsClosed));
         updateChannel(CHANNEL_GROUP_STATUS, WINDOWS, Converter.getClosedState(v.properties.areWindowsClosed));
 
-        // Charge Values
         if (isElectric) {
             updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION,
                     Converter.getConnectionState(v.properties.chargingState.isChargerConnected));
@@ -411,8 +404,9 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         final TimedChannel timed = ChargeProfileUtils.getTimedChannel(key);
         if (timed != null) {
             final LocalTime time = profile.getTime(key);
-            updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.time, time == null ? UnDefType.UNDEF
-                    : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
+            updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.time,
+                    time.equals(Constants.NULL_LOCAL_TIME) ? UnDefType.UNDEF
+                            : new DateTimeType(ZonedDateTime.of(Constants.EPOCH_DAY, time, ZoneId.systemDefault())));
             if (timed.timer != null) {
                 final Boolean enabled = profile.isEnabled(key);
                 updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, timed.timer + CHARGE_ENABLED,

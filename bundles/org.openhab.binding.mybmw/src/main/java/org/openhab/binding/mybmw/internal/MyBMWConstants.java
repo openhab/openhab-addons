@@ -114,6 +114,7 @@ public class MyBMWConstants {
     public static final String HEADING = "heading";
 
     // Status
+    public static final String MOTION = "motion";
     public static final String DOORS = "doors";
     public static final String WINDOWS = "windows";
     public static final String LOCK = "lock";
