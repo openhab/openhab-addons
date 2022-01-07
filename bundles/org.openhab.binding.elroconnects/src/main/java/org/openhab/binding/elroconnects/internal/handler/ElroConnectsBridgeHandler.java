@@ -306,9 +306,9 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
         stopCommunication();
 
-        logger.debug("Restart communication");
-
         if (!restart) {
+            logger.debug("Restart communication");
+
             restart = true;
             scheduler.schedule(this::startFromRestart, RESTART_DELAY_MS, TimeUnit.MILLISECONDS);
         }

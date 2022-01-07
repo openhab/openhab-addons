@@ -45,18 +45,22 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
 
     private @Nullable ElroConnectsBridgeHandler bridgeHandler;
 
-    private static final int TIMEOUT = 5;
-    private static final int REFRESH_INTERVAL = 60;
+    private static final int TIMEOUT_SECONDS = 5;
+    private static final int REFRESH_INTERVAL_SECONDS = 60;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     public ElroConnectsDiscoveryService() {
-        super(ElroConnectsBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
+        super(ElroConnectsBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT_SECONDS);
         logger.debug("Bridge discovery service started");
     }
 
     @Override
     protected void startScan() {
+        discoverDevices();
+    }
+
+    private void discoverDevices() {
         logger.debug("Starting device discovery scan");
         ElroConnectsBridgeHandler bridge = bridgeHandler;
         if (bridge != null) {
@@ -93,7 +97,8 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
         logger.debug("Start device background discovery");
         ScheduledFuture<?> job = discoveryJob;
         if (job == null || job.isCancelled()) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, REFRESH_INTERVAL, TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::discoverDevices, 0, REFRESH_INTERVAL_SECONDS,
+                    TimeUnit.SECONDS);
         }
     }
 
