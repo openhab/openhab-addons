@@ -53,13 +53,10 @@ public class SonnenJSONCommunication {
      * @return true if no error occurred, false otherwise.
      */
     public boolean refreshBatteryConnection(Helper message, String thingUID) {
-        if (config.hostIP == null) {
-            message.setStatusDescription("Error in configuration. Please recreate Thing.");
-            return false;
-        }
+
         SonnenJsonDataDTO result = null;
         boolean resultOk = false;
-        String error = "", errorDetail = "", statusDescr = "";
+        String errorDetail = "", statusDescr = "";
         String urlStr = "http://" + config.hostIP + "/api/v1/status";
 
         String response = null;
@@ -70,19 +67,14 @@ public class SonnenJSONCommunication {
             resultOk = true;
         } catch (IOException e) {
             logger.debug("Error processiong Get request {}", urlStr);
-            statusDescr = "Timeout error with" + config.hostIP
-                    + ". Cannot find service on give IP. Please verify the IP-Address!";
-            errorDetail = e.getMessage();
-            resultOk = false;
-        } catch (Exception e) {
-            logger.debug("Unknwon Error: {}", e.getMessage());
+            statusDescr = "Cannot find service on given IP" + config.hostIP + " Please verify the IP-Address!";
             errorDetail = e.getMessage();
             resultOk = false;
         }
         if (resultOk) {
             batteryData = result;
         } else {
-            logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, error, errorDetail);
+            logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, errorDetail);
             batteryData = new SonnenJsonDataDTO();
         }
         message.setStatusDescription(statusDescr);
@@ -103,7 +95,7 @@ public class SonnenJSONCommunication {
     /**
      * Returns the actual stored Battery Data
      *
-     * @return
+     * @return JSON Data from the Battery
      */
     @Nullable
     public SonnenJsonDataDTO getBatteryData() {

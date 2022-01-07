@@ -57,13 +57,11 @@ public class SonnenHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    boolean resultOk = false;
-
     private SonnenJSONCommunication serviceCommunication;
 
     private boolean automaticRefreshing = false;
 
-    private Map<String, Boolean> linkedChannels = new HashMap<String, Boolean>();
+    private Map<String, Boolean> linkedChannels = new HashMap<>();
 
     public SonnenHandler(Thing thing) {
         super(thing);
@@ -75,19 +73,16 @@ public class SonnenHandler extends BaseThingHandler {
         logger.debug("Initializing sonnen handler for thing {}", getThing().getUID());
         config = getConfigAs(SonnenConfiguration.class);
         boolean validConfig = true;
-        String errors = "";
         String statusDescr = null;
-        if (config.refreshInterval < 0 && config.refreshInterval > 999) {
-            errors += " Parameter 'refresh Rate' greater then 0 and less then 1000.";
-            statusDescr = "Parameter 'refresh Rate' greater then 0 and less then 1000.";
+        if (config.refreshInterval < 0 && config.refreshInterval > 1000) {
+            statusDescr = "Parameter 'refresh Rate' greater then 0 and less then 1001.";
             validConfig = false;
         }
         if (config.hostIP == null) {
-            errors += " Parameter 'hostIP' must be configured.";
             statusDescr = "IP Address must be configured!";
             validConfig = false;
         }
-        errors = errors.trim();
+
         Helper message = new Helper();
         message.setStatusDescription(statusDescr);
         if (validConfig) {
@@ -106,9 +101,8 @@ public class SonnenHandler extends BaseThingHandler {
     /**
      * Calls the service to update the battery data
      *
-     * @param postdata
      */
-    private boolean updatebatteryData(@Nullable String postdata) {
+    private boolean updatebatteryData() {
         Helper message = new Helper();
         if (serviceCommunication.refreshBatteryConnection(message, this.getThing().getUID().toString())) {
             updateStatus(ThingStatus.ONLINE);
@@ -121,24 +115,13 @@ public class SonnenHandler extends BaseThingHandler {
     }
 
     private void updateLinkedChannels() {
-        verifyLinkedChannel(CHANNELBATTERYCHARGING);
-        verifyLinkedChannel(CHANNELBATTERYDISCHARGING);
-        verifyLinkedChannel(CHANNELGRIDFEEDIN);
-        verifyLinkedChannel(CHANNELCONSUMPTION);
-        verifyLinkedChannel(CHANNELSOLARPRODUCTION);
-        verifyLinkedChannel(CHANNELBATTERYLEVEL);
-        verifyLinkedChannel(CHANNELFLOWCONSUMPTIONBATTERY);
-        verifyLinkedChannel(CHANNELFLOWCONSUMPTIONGRID);
-        verifyLinkedChannel(CHANNELFLOWCONSUMPTIONPRODUCTION);
-        verifyLinkedChannel(CHANNELFLOWGRIDBATTERY);
-        verifyLinkedChannel(CHANNELFLOWPRODUCTIONBATTERY);
-        verifyLinkedChannel(CHANNELFLOWPRODUCTIONGRID);
+
+        for (Channel channel : getThing().getChannels()) {
+            verifyLinkedChannel(channel.getUID().getId());
+        }
 
         if (!linkedChannels.isEmpty()) {
-            updatebatteryData(null);
-            for (Channel channel : getThing().getChannels()) {
-                updateChannel(channel.getUID().getId());
-            }
+            updatebatteryData();
             startAutomaticRefresh();
             automaticRefreshing = true;
         }
@@ -152,10 +135,11 @@ public class SonnenHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        stopScheduler();
+        stopAutomaticRefresh();
+        linkedChannels.clear();
     }
 
-    private void stopScheduler() {
+    private void stopAutomaticRefresh() {
         ScheduledFuture<?> job = refreshJob;
         if (job != null) {
             job.cancel(true);
@@ -170,12 +154,12 @@ public class SonnenHandler extends BaseThingHandler {
         ScheduledFuture<?> job = refreshJob;
         if (job == null || job.isCancelled()) {
             int period = config.refreshInterval;
-            refreshJob = scheduler.scheduleWithFixedDelay(this::run, 0, period, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshChannels, 0, period, TimeUnit.SECONDS);
         }
     }
 
-    private void run() {
-        updatebatteryData(null);
+    private void refreshChannels() {
+        updatebatteryData();
         for (Channel channel : getThing().getChannels()) {
             updateChannel(channel.getUID().getId());
         }
@@ -197,7 +181,7 @@ public class SonnenHandler extends BaseThingHandler {
         linkedChannels.remove(channelUID.getId());
         if (linkedChannels.isEmpty()) {
             automaticRefreshing = false;
-            stopScheduler();
+            stopAutomaticRefresh();
             logger.debug("Stop automatic refreshing");
         }
     }
@@ -256,8 +240,8 @@ public class SonnenHandler extends BaseThingHandler {
     /**
      * Updates the State of the given channel
      *
-     * @param state
-     * @param channelId
+     * @param state Given state
+     * @param channelId the refereed channelID
      */
     private void update(@Nullable State state, String channelId) {
         logger.debug("Update channel {} with state {}", channelId, (state == null) ? "null" : state.toString());
@@ -266,7 +250,7 @@ public class SonnenHandler extends BaseThingHandler {
             updateState(channelId, state);
 
         } else {
-            updateState(channelId, UnDefType.NULL);
+            updateState(channelId, UnDefType.UNDEF);
         }
     }
 

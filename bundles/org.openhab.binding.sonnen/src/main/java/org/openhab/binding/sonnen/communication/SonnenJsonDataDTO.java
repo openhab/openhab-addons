@@ -129,13 +129,4 @@ public class SonnenJsonDataDTO {
     public boolean isFlowProductionGrid() {
         return flowProductionGrid;
     }
-
-    /***
-     * JSON response
-     *
-     * @return JSON response as object
-     */
-    public SonnenJsonDataDTO getResponse() {
-        return this;
-    }
 }

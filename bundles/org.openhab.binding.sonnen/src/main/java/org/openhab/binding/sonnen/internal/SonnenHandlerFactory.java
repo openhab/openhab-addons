@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.sonnen", service = ThingHandlerFactory.class)
 public class SonnenHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SONNEN);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BATTERY);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,7 +46,7 @@ public class SonnenHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_SONNEN.equals(thingTypeUID)) {
+        if (THING_TYPE_BATTERY.equals(thingTypeUID)) {
             return new SonnenHandler(thing);
         }
 
