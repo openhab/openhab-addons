@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -143,8 +143,9 @@ public class ElroConnectsDeviceHandler extends BaseThingHandler {
 
     /**
      * Method to be called when an alarm event is received from the K1 hub. This should trigger a trigger channel. The
-     * method needs to be implemented in subclasses for the appropriate trigger channel.
+     * method should be implemented in subclasses for the appropriate trigger channel if it applies.
      */
     public void triggerAlarm() {
+        // nothing by default
     }
 }

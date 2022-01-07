@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.elroconnects.internal.discovery;
 import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.*;
 
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,6 +46,9 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     private @Nullable ElroConnectsBridgeHandler bridgeHandler;
 
     private static final int TIMEOUT = 5;
+    private static final int REFRESH_INTERVAL = 60;
+
+    private @Nullable ScheduledFuture<?> discoveryJob;
 
     public ElroConnectsDiscoveryService() {
         super(ElroConnectsBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
@@ -81,6 +86,25 @@ public class ElroConnectsDiscoveryService extends AbstractDiscoveryService imple
     protected synchronized void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
+    }
+
+    @Override
+    protected void startBackgroundDiscovery() {
+        logger.debug("Start device background discovery");
+        ScheduledFuture<?> job = discoveryJob;
+        if (job == null || job.isCancelled()) {
+            discoveryJob = scheduler.scheduleWithFixedDelay(this::startScan, 0, REFRESH_INTERVAL, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        logger.debug("Stop device background discovery");
+        ScheduledFuture<?> job = discoveryJob;
+        if (job != null) {
+            job.cancel(true);
+            discoveryJob = null;
+        }
     }
 
     @Override

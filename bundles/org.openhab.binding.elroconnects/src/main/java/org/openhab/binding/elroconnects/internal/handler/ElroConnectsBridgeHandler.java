@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -555,7 +555,7 @@ public class ElroConnectsBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Just before sending message, this method should be called to make sure we wait for all responses that are still
-     * expected to be received. The last response will indicated by a token in the last response message.
+     * expected to be received. The last response will be indicated by a token in the last response message.
      *
      * @param waitResponse true if we want to wait for response for next message to be sent before allowing subsequent
      *            message

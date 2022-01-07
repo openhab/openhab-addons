@@ -33,6 +33,7 @@
 		</supported-bridge-type-refs>
 		<label>Smoke Alarm</label>
 		<description>ELRO Connects smoke alarm</description>
+		<category>SmokeDetector</category>
 		<channels>
 			<channel id="smokeAlarm" typeId="smokealarm"/>
 			<channel id="muteAlarm" typeId="mutealarm"/>
@@ -117,6 +118,7 @@
 		</supported-bridge-type-refs>
 		<label>Door/Window Sensor</label>
 		<description>ELRO Connects door/window contact sensor</description>
+		<category>Door</category>
 		<channels>
 			<channel id="entryAlarm" typeId="entryalarm"/>
 			<channel id="entry" typeId="entry"/>
@@ -137,6 +139,7 @@
 		</supported-bridge-type-refs>
 		<label>Motion Sensor</label>
 		<description>ELRO Connects motion sensor</description>
+		<category>MotionDetector</category>
 		<channels>
 			<channel id="motionAlarm" typeId="motionalarm"/>
 			<channel id="motion" typeId="system.motion"/>
@@ -157,6 +160,7 @@
 		</supported-bridge-type-refs>
 		<label>Temperature Sensor</label>
 		<description>ELRO Connects motion sensor</description>
+		<category>Sensor</category>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="system.atmospheric-humidity"/>
@@ -177,6 +181,7 @@
 		</supported-bridge-type-refs>
 		<label>Power Socket</label>
 		<description>ELRO Connects power socket</description>
+		<category>PowerOutlet</category>
 		<channels>
 			<channel id="powerState" typeId="system.power"/>
 		</channels>
@@ -199,7 +204,7 @@
 		<kind>trigger</kind>
 		<label>Smoke Alarm</label>
 		<description>Smoke alarm triggered</description>
-		<category>alarm</category>
+		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Smoke</tag>
@@ -209,7 +214,7 @@
 		<kind>trigger</kind>
 		<label>CO Alarm</label>
 		<description>CO alarm triggered</description>
-		<category>alarm</category>
+		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>CO</tag>
@@ -219,7 +224,7 @@
 		<kind>trigger</kind>
 		<label>Heat Alarm</label>
 		<description>Heat alarm triggered</description>
-		<category>alarm</category>
+		<category>Fire</category>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Temperature</tag>
@@ -229,7 +234,7 @@
 		<kind>trigger</kind>
 		<label>Water Alarm</label>
 		<description>Water alarm triggered</description>
-		<category>alarm</category>
+		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Water</tag>
@@ -239,7 +244,7 @@
 		<kind>trigger</kind>
 		<label>Entry Alarm</label>
 		<description>Entry alarm triggered</description>
-		<category>alarm</category>
+		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>OpenState</tag>
@@ -249,7 +254,7 @@
 		<kind>trigger</kind>
 		<label>Motion Alarm</label>
 		<description>Motion alarm triggered</description>
-		<category>alarm</category>
+		<category>Alarm</category>
 		<tags>
 			<tag>Alarm</tag>
 			<tag>Presence</tag>
@@ -269,7 +274,6 @@
 		<item-type>Switch</item-type>
 		<label>Mute Alarm</label>
 		<description>Mute</description>
-		<category>soundvolume_mute</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="testalarm">
@@ -282,7 +286,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current temperature</description>
-		<category>temperature</category>
+		<category>Temperature</category>
 		<tags>
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>

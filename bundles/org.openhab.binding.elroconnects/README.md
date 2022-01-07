@@ -51,23 +51,11 @@ It will not be possible to receive alarms and control them from openHAB in this 
 | `connectorId` | Required parameter, should be set to ST_xxxxxxxxxxxx with xxxxxxxxxxxx the lowercase MAC address of the connector. This parameter can also be found in the ELRO Connects mobile application. |
 | `refreshInterval` | This parameter controls the connection refresh heartbeat interval. The default is 60s. |
 
-The syntax for configuration in a `.things` file is:
-
-```
-Thing elroconnects:connector:<connectorId> [connectorId="ST_<MAC address of connector>", refreshInterval=<heartbeat interval>]
-```
-
 ### Devices connected to K1 connected hub
 
 | Parameter         | Description            |
 |--------------------|----------------------|
 | `deviceId` | Required parameter, set by discovery and cannot easily be found manually. It should be a number. |
-
-The syntax for configuration in a `.things` file is:
-
-```
-Thing elroconnects:<thingtype>:<deviceId> [deviceId="<numeric device id>"]
-```
 
 ## Channels
 

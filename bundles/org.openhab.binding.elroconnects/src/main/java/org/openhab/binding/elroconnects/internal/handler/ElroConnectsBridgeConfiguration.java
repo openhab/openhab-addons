@@ -12,25 +12,16 @@
  */
 package org.openhab.binding.elroconnects.internal.handler;
 
-import static org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants.MOTION_ALARM;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.Thing;
 
 /**
- * The {@link ElroConnectsMotionSensorHandler} represents the thing handler for an ELRO Connects motion sensor device.
+ * The {@link ElroConnectsBridgeConfiguration} class contains fields mapping bridge configuration parameters.
  *
  * @author Mark Herwege - Initial contribution
  */
 @NonNullByDefault
-public class ElroConnectsMotionSensorHandler extends ElroConnectsDeviceHandler {
+public class ElroConnectsBridgeConfiguration {
 
-    public ElroConnectsMotionSensorHandler(Thing thing) {
-        super(thing);
-    }
-
-    @Override
-    public void triggerAlarm() {
-        triggerChannel(MOTION_ALARM);
-    }
+    public String connectorId = "";
+    public int refreshInterval = 60;
 }

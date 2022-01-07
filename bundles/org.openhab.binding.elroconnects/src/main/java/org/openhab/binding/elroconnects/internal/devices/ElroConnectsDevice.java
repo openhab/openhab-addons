@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,20 +107,17 @@ public abstract class ElroConnectsDevice {
      * Send alarm test message to the device. This method is called from the {@link ElroConnectsDeviceHandler}. The
      * method needs to be implemented in the concrete subclass when test alarms are supported.
      */
-    public void testAlarm() {
-    }
+    public abstract void testAlarm();
 
     /**
      * Send alarm mute message to the device. This method is called from the {@link ElroConnectsDeviceHandler}. The
      * method needs to be implemented in the concrete subclass when alarm muting is supported.
      */
-    public void muteAlarm() {
-    }
+    public abstract void muteAlarm();
 
     /**
      * Send state switch message to the device. This method is called from the {@link ElroConnectsDeviceHandler}. The
      * method needs to be implemented in the concrete subclass when switching the state on/off is supported.
      */
-    public void switchState(boolean state) {
-    }
+    public abstract void switchState(boolean state);
 }
