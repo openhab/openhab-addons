@@ -36,6 +36,9 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.HubProcessingException;
+import org.openhab.binding.hdpowerview.internal.api.Firmware;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
@@ -95,6 +98,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
+    private @Nullable FirmwareVersions firmwareVersions;
     private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -254,6 +258,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private synchronized void poll() {
         try {
             logger.debug("Polling for state");
+            updateFirmwareProperties();
             pollShades();
 
             List<Scene> scenes = updateSceneChannels();
@@ -271,6 +276,39 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
         }
+    }
+
+    private void updateFirmwareProperties() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        if (firmwareVersions != null) {
+            return;
+        }
+        HDPowerViewWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            throw new ProcessingException("Web targets not initialized");
+        }
+        FirmwareVersion firmwareVersion = webTargets.getFirmwareVersion();
+        if (firmwareVersion == null || firmwareVersion.firmware == null) {
+            logger.warn("Unable to get firmware version.");
+            return;
+        }
+        this.firmwareVersions = firmwareVersion.firmware;
+        Firmware mainProcessor = firmwareVersion.firmware.mainProcessor;
+        if (mainProcessor == null) {
+            logger.warn("Main processor firmware version missing in response.");
+            return;
+        }
+        logger.debug("Main processor firmware version received: {}, {}", mainProcessor.name, mainProcessor.toString());
+        Map<String, String> properties = editProperties();
+        if (mainProcessor.name != null) {
+            properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_NAME, mainProcessor.name);
+        }
+        properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_VERSION, mainProcessor.toString());
+        Firmware radio = firmwareVersion.firmware.radio;
+        if (radio != null) {
+            logger.debug("Radio firmware version received: {}", radio.toString());
+            properties.put(HDPowerViewBindingConstants.PROPERTY_RADIO_FIRMWARE_VERSION, radio.toString());
+        }
+        updateProperties(properties);
     }
 
     private void pollShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {
