@@ -163,8 +163,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateVehicleStatus(Vehicle v) {
-        updateChannel(CHANNEL_GROUP_STATUS, MOTION, v.properties.inMotion ? StringType.valueOf(Constants.DRIVING)
-                : StringType.valueOf(Constants.STATIONARY));
         updateChannel(CHANNEL_GROUP_STATUS, LOCK, Converter.getLockState(v.properties.areDoorsLocked));
         updateChannel(CHANNEL_GROUP_STATUS, SERVICE_DATE,
                 VehicleStatusUtils.getNextServiceDate(v.properties.serviceRequired));

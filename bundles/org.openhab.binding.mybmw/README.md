@@ -163,7 +163,6 @@ Reflects overall status of the vehicle.
 
 | Channel Label             | Channel ID          | Type          | Description                                    | conv | phev | bev_rex | bev |
 |---------------------------|---------------------|---------------|------------------------------------------------|------|------|---------|-----|
-| Motion Status             | motion              | String        | Driving state                                  |  X   |  X   |    X    |  X  |
 | Overall Door Status       | doors               | String        | Combined status for all doors                  |  X   |  X   |    X    |  X  |
 | Overall Window Status     | windows             | String        | Combined status for all windows                |  X   |  X   |    X    |  X  |
 | Doors Locked              | lock                | String        | Status if vehicle is secured                   |  X   |  X   |    X    |  X  |
@@ -174,11 +173,6 @@ Reflects overall status of the vehicle.
 | Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
 | Charging Information      | charge-info         | String        | Information regarding current charging session |      |  X   |    X    |  X  |
 | Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
-
-Motion Status values
-
-* _Driving_ - Vehicle is moving
-* _Stationary_ - Vehicle is standing still
 
 Overall Door Status values
 
