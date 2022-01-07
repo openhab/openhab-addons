@@ -131,7 +131,7 @@ public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringRespo
             updateStatus(ThingStatus.ONLINE);
             List<Vehicle> vehicleList = Converter.getVehicleList(response);
             discoveryService.get().onResponse(vehicleList);
-            troubleshootFingerprint = Optional.of(Converter.getAnonymousFingerprint(vehicleList));
+            troubleshootFingerprint = Optional.of(Converter.anonymousFingerprint(response));
             logFingerPrint();
         }
     }

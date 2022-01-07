@@ -1,6 +1,6 @@
  [
 	{
-		"vin": "anonymous",
+		"vin": "ABC45678",
 		"model": "i3 94 (+ REX)",
 		"year": 2017,
 		"brand": "BMW",
@@ -177,7 +177,7 @@
 					"longitude": 5.678
 				},
 				"address": {
-					"formatted": "anonymous"
+					"formatted": "Street@Home"
 				},
 				"heading": 39
 			},

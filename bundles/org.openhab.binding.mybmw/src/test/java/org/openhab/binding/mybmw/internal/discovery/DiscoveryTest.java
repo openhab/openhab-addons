@@ -85,13 +85,15 @@ public class DiscoveryTest {
     }
 
     @Test
-    public void testFingerPrint() {
-        String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/vehicles.json");
-        List<Vehicle> vehicleList = Converter.getVehicleList(content);
-        String anonymousFingerprint = Converter.getAnonymousFingerprint(vehicleList);
-        assertTrue(anonymousFingerprint.contains("\"vin\":\"anonymous\""), "VIN check");
-        assertTrue(anonymousFingerprint.contains("\"formatted\":\"anonymous\""), "Address check");
-        assertTrue(anonymousFingerprint.contains("\"latitude\":1.234"), "Latitude check");
-        assertTrue(anonymousFingerprint.contains("\"longitude\":9.876"), "Longitude check");
+    public void testAnonymousFingerPrint() {
+        String content = FileReader.readFileInString("src/test/resources/responses/fingerprint-raw.json");
+        String anonymous = Converter.anonymousFingerprint(content);
+        assertFalse(anonymous.contains("ABC45678"), "VIN deleted");
+
+        anonymous = Converter.anonymousFingerprint(Constants.EMPTY);
+        assertEquals(Constants.EMPTY, anonymous, "Equal Fingerprint if Empty");
+
+        anonymous = Converter.anonymousFingerprint(Constants.EMPTY_JSON);
+        assertEquals(Constants.EMPTY_JSON, anonymous, "Equal Fingerprint if Empty JSon");
     }
 }

@@ -63,6 +63,11 @@ public class Converter {
     private static final Vehicle INVALID_VEHICLE = new Vehicle();
     private static final String SPLIT_HYPHEN = "-";
     private static final String SPLIT_BRACKET = "\\(";
+    private static final String VIN_PATTERN = "\"vin\":";
+    private static final String VEHICLE_LOCATION_PATTERN = "\"vehicleLocation\":";
+    private static final String VEHICLE_LOCATION_REPLACEMENT = "\"vehicleLocation\": {\"coordinates\": {\"latitude\": 1.1,\"longitude\": 2.2},\"address\": {\"formatted\": \"anonymous\"},\"heading\": -1}";
+    private static final char OPEN_BRACKET = "{".charAt(0);
+    private static final char CLOSING_BRACKET = "}".charAt(0);
 
     // https://www.baeldung.com/gson-list
     public static final Type VEHICLE_LIST_TYPE = new TypeToken<ArrayList<Vehicle>>() {
@@ -288,22 +293,6 @@ public class Converter {
         return offsetMinutes;
     }
 
-    public static String getAnonymousFingerprint(List<Vehicle> vehicleList) {
-        for (Vehicle vehicle : vehicleList) {
-            vehicle.vin = Constants.ANONYMOUS;
-            if (vehicle.properties.vehicleLocation != null) {
-                if (vehicle.properties.vehicleLocation.address != null) {
-                    vehicle.properties.vehicleLocation.address.formatted = Constants.ANONYMOUS;
-                }
-                if (vehicle.properties.vehicleLocation.coordinates != null) {
-                    vehicle.properties.vehicleLocation.coordinates.latitude = 1.234;
-                    vehicle.properties.vehicleLocation.coordinates.longitude = 9.876;
-                }
-            }
-        }
-        return Converter.getGson().toJson(vehicleList);
-    }
-
     public static int stringToInt(String intStr) {
         int integer = Constants.INT_UNDEF;
         try {
@@ -326,5 +315,38 @@ public class Converter {
             }
         }
         return chrageInfoLabel;
+    }
+
+    public static String anonymousFingerprint(String raw) {
+        String anonymousFingerprintString = raw;
+        int vinStartIndex = raw.indexOf(VIN_PATTERN);
+        if (vinStartIndex != -1) {
+            String[] arr = raw.substring(vinStartIndex + VIN_PATTERN.length()).trim().split("\"");
+            String vin = arr[1].trim();
+            anonymousFingerprintString = raw.replace(vin, "anonymous");
+        }
+
+        int locationStartIndex = raw.indexOf(VEHICLE_LOCATION_PATTERN);
+        int bracketCounter = -1;
+        if (locationStartIndex != -1) {
+            int endLocationIndex = 0;
+            for (int i = locationStartIndex; i < raw.length() && bracketCounter != 0; i++) {
+                endLocationIndex = i;
+                if (raw.charAt(i) == OPEN_BRACKET) {
+                    if (bracketCounter == -1) {
+                        // start point
+                        bracketCounter = 1;
+                    } else {
+                        bracketCounter++;
+                    }
+                } else if (raw.charAt(i) == CLOSING_BRACKET) {
+                    bracketCounter--;
+                }
+            }
+            String locationReplacement = raw.substring(locationStartIndex, endLocationIndex + 1);
+            anonymousFingerprintString = anonymousFingerprintString.replace(locationReplacement,
+                    VEHICLE_LOCATION_REPLACEMENT);
+        }
+        return anonymousFingerprintString;
     }
 }
