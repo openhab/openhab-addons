@@ -57,17 +57,17 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryFeedIn">
-        <item-type>Number:Energy</item-type>
-        <label>Battery Feed In</label>
-        <description>Indicates the actual current feeding to the Battery in watt. Otherwise 0</description>
-        <state readOnly="true"/>
-    </channel-type>
-    <channel-type id="batteryDispense">
-        <item-type>Number:Energy</item-type>
-        <label>Battery Dispense</label>
-        <description>Indicates the actual current dispense from the Battery in watt. Otherwise 0</description>
-        <state readOnly="true"/>
-    </channel-type>
+		<item-type>Number:Energy</item-type>
+		<label>Battery Feed In</label>
+		<description>Indicates the actual current feeding to the Battery in watt. Otherwise 0</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="batteryDispense">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Dispense</label>
+		<description>Indicates the actual current dispense from the Battery in watt. Otherwise 0</description>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Consumption</label>
@@ -81,11 +81,11 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="gridReceive">
-        <item-type>Number:Energy</item-type>
-        <label>Grid Receive</label>
-        <description>Indicates the receiving from the the Grid in watt. Otherwise 0</description>
-        <state readOnly="true"/>
-    </channel-type>
+		<item-type>Number:Energy</item-type>
+		<label>Grid Receive</label>
+		<description>Indicates the receiving from the the Grid in watt. Otherwise 0</description>
+		<state readOnly="true"/>
+	</channel-type>
 	<channel-type id="solarProduction">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Production</label>
