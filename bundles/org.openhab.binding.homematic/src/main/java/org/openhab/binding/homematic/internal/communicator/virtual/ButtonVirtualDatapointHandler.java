@@ -36,6 +36,8 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
     private static final String LONG_REPEATED_EVENT = "LONG_REPEATED";
     private static final String LONG_RELEASED_EVENT = "LONG_RELEASED";
 
+    private boolean usesLongStartEvent;
+
     @Override
     public String getName() {
         return VIRTUAL_DATAPOINT_NAME_BUTTON;
@@ -74,12 +76,19 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                     break;
                 }
                 case "LONG":
-                    if (LONG_REPEATED_EVENT.equals(vdp.getValue())) {
-                        // Suppress long press events during an ongoing long press
+                    if (isLongPressActive) {
+                        // HM-IP devices do long press repetitions via LONG instead of CONT events,
+                        // so clear previous value to force re-triggering of event
+                        vdp.setValue(null);
                         vdp.setValue(LONG_REPEATED_EVENT);
                     } else {
+                        // HM devices start long press via LONG events
                         vdp.setValue(CommonTriggerEvents.LONG_PRESSED);
                     }
+                    break;
+                case "LONG_START":
+                    vdp.setValue(CommonTriggerEvents.LONG_PRESSED);
+                    usesLongStartEvent = true;
                     break;
                 case "LONG_RELEASE":
                     // Only send release events if we sent a pressed event before
@@ -99,7 +108,8 @@ public class ButtonVirtualDatapointHandler extends AbstractVirtualDatapointHandl
                     logger.warn("Unexpected vaule '{}' for PRESS virtual datapoint", pressType);
             }
         } else {
-            if ("LONG".equals(pressType) && LONG_REPEATED_EVENT.equals(vdp.getValue())) {
+            String usedStartEveent = usesLongStartEvent ? "LONG_START" : "LONG";
+            if (usedStartEveent.equals(pressType) && LONG_REPEATED_EVENT.equals(vdp.getValue())) {
                 // If we're currently processing a repeated long-press event, don't let the initial LONG
                 // event time out the repetitions, the CONT delay handler will take care of it
                 vdp.setValue(LONG_REPEATED_EVENT);
