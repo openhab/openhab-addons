@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.openweathermap.internal.dto;
 
+import org.openhab.binding.openweathermap.internal.dto.airpollution.List;
 import org.openhab.binding.openweathermap.internal.dto.base.Coord;
 
 /**
@@ -22,5 +23,5 @@ import org.openhab.binding.openweathermap.internal.dto.base.Coord;
  */
 public class OpenWeatherMapJsonAirPollutionData {
     public Coord coord;
-    public java.util.List<org.openhab.binding.openweathermap.internal.dto.airpollution.List> list;
+    public java.util.List<List> list;
 }

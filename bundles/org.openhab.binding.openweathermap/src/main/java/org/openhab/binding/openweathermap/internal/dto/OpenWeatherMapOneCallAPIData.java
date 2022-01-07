@@ -10,11 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.openweathermap.internal.dto.onecallhist;
+package org.openhab.binding.openweathermap.internal.dto;
 
 import java.util.List;
 
-import com.google.gson.annotations.Expose;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.openweathermap.internal.dto.onecall.Alert;
+import org.openhab.binding.openweathermap.internal.dto.onecall.Current;
+import org.openhab.binding.openweathermap.internal.dto.onecall.Daily;
+import org.openhab.binding.openweathermap.internal.dto.onecall.Hourly;
+import org.openhab.binding.openweathermap.internal.dto.onecall.Minutely;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -26,27 +32,20 @@ import com.google.gson.annotations.SerializedName;
  * allow additional properties
  *
  * @author Wolfgang Klimt - Initial contribution
+ * @author Christoph Weitkamp - Added weather alerts
  */
-public class OpenWeatherMapOneCallHistAPIData {
-
-    @SerializedName("lat")
-    @Expose
+public class OpenWeatherMapOneCallAPIData {
     private double lat;
-    @SerializedName("lon")
-    @Expose
     private double lon;
-    @SerializedName("timezone")
-    @Expose
     private String timezone;
     @SerializedName("timezone_offset")
-    @Expose
     private int timezoneOffset;
-    @SerializedName("current")
-    @Expose
     private Current current;
-    @SerializedName("hourly")
-    @Expose
-    private List<Hourly> hourly = null;
+    private List<Minutely> minutely;
+    private List<Hourly> hourly;
+    private List<Daily> daily;
+
+    public @Nullable List<Alert> alerts;
 
     public double getLat() {
         return lat;
@@ -88,11 +87,27 @@ public class OpenWeatherMapOneCallHistAPIData {
         this.current = current;
     }
 
+    public List<Minutely> getMinutely() {
+        return minutely;
+    }
+
+    public void setMinutely(List<Minutely> minutely) {
+        this.minutely = minutely;
+    }
+
     public List<Hourly> getHourly() {
         return hourly;
     }
 
     public void setHourly(List<Hourly> hourly) {
         this.hourly = hourly;
+    }
+
+    public List<Daily> getDaily() {
+        return daily;
+    }
+
+    public void setDaily(List<Daily> daily) {
+        this.daily = daily;
     }
 }

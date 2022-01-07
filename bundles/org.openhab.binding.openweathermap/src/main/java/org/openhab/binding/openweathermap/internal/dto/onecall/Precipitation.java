@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.openweathermap.internal.dto.onecall;
 
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -25,17 +24,15 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Wolfgang Klimt - Initial contribution
  */
-public class Rain {
-
+public class Precipitation {
     @SerializedName("1h")
-    @Expose
-    private double _1h;
+    private double oneHour;
 
     public double get1h() {
-        return _1h;
+        return oneHour;
     }
 
-    public void set1h(double _1h) {
-        this._1h = _1h;
+    public void set1h(double oneHour) {
+        this.oneHour = oneHour;
     }
 }

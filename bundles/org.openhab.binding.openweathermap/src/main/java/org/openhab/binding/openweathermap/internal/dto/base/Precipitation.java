@@ -17,11 +17,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Generated Plain Old Java Objects class for {@link Rain} from JSON.
+ * Generated Plain Old Java Objects class for {@link Precipitation} from JSON.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
-public class Rain {
+public class Precipitation {
     @SerializedName("1h")
     private @Nullable Double oneHour;
     @SerializedName("3h")
