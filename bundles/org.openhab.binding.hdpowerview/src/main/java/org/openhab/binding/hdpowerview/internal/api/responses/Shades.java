@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 
 /**
@@ -52,6 +53,8 @@ public class Shades {
         public @Nullable Boolean timedOut;
         public int signalStrength;
         public @Nullable Integer capabilities;
+        public @Nullable Firmware firmware;
+        public @Nullable Firmware motor;
 
         public String getName() {
             return new String(Base64.getDecoder().decode(name));
