@@ -53,7 +53,6 @@ public class SonnenJSONCommunication {
      * @return true if no error occurred, false otherwise.
      */
     public boolean refreshBatteryConnection(Helper message, String thingUID) {
-
         SonnenJsonDataDTO result = null;
         boolean resultOk = false;
         String errorDetail = "", statusDescr = "";
@@ -74,7 +73,7 @@ public class SonnenJSONCommunication {
         if (resultOk) {
             batteryData = result;
         } else {
-            logger.debug("Setting thing '{}' to OFFLINE: Error '{}': {}", thingUID, errorDetail);
+            logger.debug("Setting thing '{}' to OFFLINE: Error '{}'", thingUID, errorDetail);
             batteryData = new SonnenJsonDataDTO();
         }
         message.setStatusDescription(statusDescr);
