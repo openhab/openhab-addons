@@ -249,7 +249,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         Firmware shadeFirmware = shadeData.firmware;
         Firmware motorFirmware = shadeData.motor;
         if (shadeFirmware != null) {
-            properties.put(PROPERTY_FIRMWARE_VERSION, shadeFirmware.toString());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, shadeFirmware.toString());
         }
         if (motorFirmware != null) {
             properties.put(PROPERTY_MOTOR_FIRMWARE_VERSION, motorFirmware.toString());
