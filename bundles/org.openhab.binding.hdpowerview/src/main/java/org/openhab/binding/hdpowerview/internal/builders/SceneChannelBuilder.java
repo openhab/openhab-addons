@@ -15,7 +15,9 @@ package org.openhab.binding.hdpowerview.internal.builders;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
@@ -40,14 +42,14 @@ public class SceneChannelBuilder {
     private final ChannelTypeUID channelTypeUid = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
+    @Nullable
     private List<Channel> channels;
+    @Nullable
     private List<Scene> scenes;
 
     public SceneChannelBuilder(HDPowerViewTranslationProvider translationProvider, ChannelGroupUID channelGroupUid) {
         this.translationProvider = translationProvider;
         this.channelGroupUid = channelGroupUid;
-        this.channels = new ArrayList<>(0);
-        this.scenes = new ArrayList<>(0);
     }
 
     /**
@@ -91,8 +93,17 @@ public class SceneChannelBuilder {
      * @return the {@link Channel} list
      */
     public List<Channel> build() {
+        if (scenes == null) {
+            return this.getChannelList(0);
+        }
+        List<Scene> scenes = (@NonNull List<Scene>) this.scenes;
+        List<Channel> channels = this.getChannelList(scenes.size());
         scenes.stream().sorted().forEach(scene -> channels.add(createChannel(scene)));
         return channels;
+    }
+
+    private List<Channel> getChannelList(int initialCapacity) {
+        return this.channels != null ? (@NonNull List<Channel>) this.channels : new ArrayList<>(initialCapacity);
     }
 
     private Channel createChannel(Scene scene) {

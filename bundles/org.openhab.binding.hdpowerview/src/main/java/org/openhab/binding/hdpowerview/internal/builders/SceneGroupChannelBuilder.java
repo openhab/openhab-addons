@@ -15,7 +15,9 @@ package org.openhab.binding.hdpowerview.internal.builders;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
@@ -40,15 +42,15 @@ public class SceneGroupChannelBuilder {
     private final ChannelTypeUID channelTypeUid = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_GROUP_ACTIVATE);
 
+    @Nullable
     private List<Channel> channels;
+    @Nullable
     private List<SceneCollection> sceneCollections;
 
     public SceneGroupChannelBuilder(HDPowerViewTranslationProvider translationProvider,
             ChannelGroupUID channelGroupUid) {
         this.translationProvider = translationProvider;
         this.channelGroupUid = channelGroupUid;
-        this.channels = new ArrayList<>(0);
-        this.sceneCollections = new ArrayList<>(0);
     }
 
     /**
@@ -92,8 +94,17 @@ public class SceneGroupChannelBuilder {
      * @return the {@link Channel} list
      */
     public List<Channel> build() {
+        if (sceneCollections == null) {
+            return this.getChannelList(0);
+        }
+        List<SceneCollection> sceneCollections = (@NonNull List<SceneCollection>) this.sceneCollections;
+        List<Channel> channels = this.getChannelList(sceneCollections.size());
         sceneCollections.stream().sorted().forEach(sceneCollection -> channels.add(createChannel(sceneCollection)));
         return channels;
+    }
+
+    private List<Channel> getChannelList(int initialCapacity) {
+        return this.channels != null ? (@NonNull List<Channel>) this.channels : new ArrayList<>(initialCapacity);
     }
 
     private Channel createChannel(SceneCollection sceneCollection) {

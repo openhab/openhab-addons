@@ -17,12 +17,12 @@ import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
@@ -55,19 +55,19 @@ public class AutomationChannelBuilder {
     private final ChannelTypeUID channelTypeUid = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
 
+    @Nullable
     private List<Channel> channels;
+    @Nullable
     private Map<Integer, Scene> scenes;
+    @Nullable
     private Map<Integer, SceneCollection> sceneCollections;
+    @Nullable
     private List<ScheduledEvent> scheduledEvents;
 
     public AutomationChannelBuilder(HDPowerViewTranslationProvider translationProvider,
             ChannelGroupUID channelGroupUid) {
         this.translationProvider = translationProvider;
         this.channelGroupUid = channelGroupUid;
-        this.channels = new ArrayList<>(0);
-        this.scheduledEvents = new ArrayList<>(0);
-        this.scenes = new HashMap<>(0);
-        this.sceneCollections = new HashMap<>(0);
     }
 
     /**
@@ -134,6 +134,11 @@ public class AutomationChannelBuilder {
      * @return the {@link Channel} list
      */
     public List<Channel> build() {
+        if (scheduledEvents == null || (scenes == null && sceneCollections == null)) {
+            return this.getChannelList(0);
+        }
+        List<ScheduledEvent> scheduledEvents = (@NonNull List<ScheduledEvent>) this.scheduledEvents;
+        List<Channel> channels = this.getChannelList(scheduledEvents.size());
         scheduledEvents.stream().forEach(scheduledEvent -> {
             Channel channel = createChannel(scheduledEvent);
             if (channel != null) {
@@ -142,6 +147,10 @@ public class AutomationChannelBuilder {
         });
 
         return channels;
+    }
+
+    private List<Channel> getChannelList(int initialCapacity) {
+        return this.channels != null ? (@NonNull List<Channel>) this.channels : new ArrayList<>(initialCapacity);
     }
 
     private @Nullable Channel createChannel(ScheduledEvent scheduledEvent) {
@@ -161,14 +170,26 @@ public class AutomationChannelBuilder {
 
     private @Nullable String getReferencedSceneOrSceneCollectionName(ScheduledEvent scheduledEvent) {
         if (scheduledEvent.sceneId > 0) {
-            Scene scene = scenes.get(scheduledEvent.sceneId);
+            if (scenes == null) {
+                logger.warn("Scheduled event '{}' references scene '{}', but no scenes are loaded", scheduledEvent.id,
+                        scheduledEvent.sceneId);
+                return null;
+            }
+            Scene scene = ((@NonNull Map<Integer, Scene>) scenes).get(scheduledEvent.sceneId);
             if (scene != null) {
                 return scene.getName();
             }
             logger.warn("Scene '{}' was not found for scheduled event '{}'", scheduledEvent.sceneId, scheduledEvent.id);
             return null;
         } else if (scheduledEvent.sceneCollectionId > 0) {
-            SceneCollection sceneCollection = sceneCollections.get(scheduledEvent.sceneCollectionId);
+            if (sceneCollections == null) {
+                logger.warn(
+                        "Scheduled event '{}' references scene collection '{}', but no scene collections are loaded",
+                        scheduledEvent.id, scheduledEvent.sceneCollectionId);
+                return null;
+            }
+            SceneCollection sceneCollection = ((@NonNull Map<Integer, SceneCollection>) sceneCollections)
+                    .get(scheduledEvent.sceneCollectionId);
             if (sceneCollection != null) {
                 return sceneCollection.getName();
             }
