@@ -18,6 +18,8 @@ package org.openhab.binding.awattar.internal.connection;
  * @author Wolfgang Klimt - initial contribution
  */
 public class aWATTarConnectionException extends RuntimeException {
+    private static final long serialVersionUID = 8682558332358643704L;
+
     /**
      * Constructs a new runtime exception with the specified detail message.
      * The cause is not initialized, and may subsequently be initialized by a

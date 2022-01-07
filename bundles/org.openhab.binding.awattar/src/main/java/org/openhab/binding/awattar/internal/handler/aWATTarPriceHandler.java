@@ -12,8 +12,14 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.*;
-import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.BINDING_ID;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_GROUP_CURRENT;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_MARKET_GROSS;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_MARKET_NET;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_TOTAL_GROSS;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.CHANNEL_TOTAL_NET;
+import static org.openhab.binding.awattar.internal.aWATTarUtil.getCalendarForHour;
+import static org.openhab.binding.awattar.internal.aWATTarUtil.getMillisToNextMinute;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,7 +31,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.awattar.internal.aWATTarPrice;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.types.Command;
@@ -73,8 +83,8 @@ public class aWATTarPriceHandler extends BaseThingHandler {
         logger.trace("Initializing aWATTar price handler {}", this);
 
         synchronized (this) {
-
-            if (thingRefresher == null || thingRefresher.isCancelled()) {
+            ScheduledFuture<?> localRefresher = thingRefresher;
+            if (localRefresher == null || localRefresher.isCancelled()) {
                 logger.trace("Start Thing refresh job at interval {} seconds.", thingRefreshInterval);
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels, getMillisToNextMinute(1),
                         thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
@@ -86,13 +96,15 @@ public class aWATTarPriceHandler extends BaseThingHandler {
 
     public void dispose() {
         logger.trace("Diposing aWATTar price handler {}", this);
-        thingRefresher.cancel(true);
-        thingRefresher = null;
+        ScheduledFuture<?> localRefresher = thingRefresher;
+        if (localRefresher != null) {
+            localRefresher.cancel(true);
+            thingRefresher = null;
+        }
     }
 
     public void refreshChannels() {
         logger.trace("Refreshing channels for {}", getThing().getUID());
-        aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) getBridge().getHandler();
         updateStatus(ThingStatus.ONLINE);
         for (Channel channel : getThing().getChannels()) {
             ChannelUID channelUID = channel.getUID();
@@ -107,9 +119,21 @@ public class aWATTarPriceHandler extends BaseThingHandler {
     public void refreshChannel(ChannelUID channelUID) {
         logger.trace("refreshing channel {}", channelUID);
         State state = UnDefType.UNDEF;
-        aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) getBridge().getHandler();
-
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            logger.error("No Bridge available. This should not happen.");
+            return;
+        }
+        aWATTarBridgeHandler bridgeHandler = (aWATTarBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            logger.error("No BridgeHandler available. This should not happen!");
+            return;
+        }
         String group = channelUID.getGroupId();
+        if (group == null) {
+            logger.error("Group for channel {} is null, this should not happen.", channelUID);
+            return;
+        }
 
         ZonedDateTime target;
 

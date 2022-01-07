@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.awattar.internal;
 
-import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
+import static org.openhab.binding.awattar.internal.aWATTarUtil.formatDate;
+import static org.openhab.binding.awattar.internal.aWATTarUtil.getHourFrom;
 
 import java.time.Instant;
 import java.time.ZoneId;

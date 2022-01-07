@@ -13,15 +13,20 @@
 package org.openhab.binding.awattar.internal.handler;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
-import static org.eclipse.jetty.http.HttpStatus.*;
+import static org.eclipse.jetty.http.HttpStatus.OK_200;
 import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.BINDING_ID;
 import static org.openhab.binding.awattar.internal.aWATTarUtil.*;
 
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.zone.ZoneRulesException;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,12 +74,8 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     @Nullable
     private SortedMap<Long, aWATTarPrice> priceMap;
     private final int dataRefreshInterval = 60;
-    @Nullable
-    private aWATTarBridgeConfiguration config;
     private double vatFactor = 0;
-
     private long lastUpdated = 0;
-
     private double basePrice = 0;
     private long minTimestamp = 0;
     private long maxTimestamp = 0;
@@ -92,12 +93,7 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.trace("Initializing aWATTar bridge {}", this);
         updateStatus(ThingStatus.UNKNOWN);
-        config = getConfigAs(aWATTarBridgeConfiguration.class);
-        if (config == null) {
-            logger.error("No config provided!");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.config.missing");
-            return;
-        }
+        aWATTarBridgeConfiguration config = getConfigAs(aWATTarBridgeConfiguration.class);
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
         try {
@@ -134,7 +130,10 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.trace("Disposing aWATTar bridge {}", this);
-        dataRefresher.cancel(true);
+        ScheduledFuture<?> localRefresher = dataRefresher;
+        if (localRefresher != null) {
+            localRefresher.cancel(true);
+        }
         dataRefresher = null;
         priceMap = null;
         lastUpdated = 0;
@@ -174,15 +173,19 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
                     minTimestamp = 0;
                     maxTimestamp = 0;
                     AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
-                    for (Datum d : apiData.data) {
-                        result.put(d.startTimestamp,
-                                new aWATTarPrice(d.marketprice / 10.0, d.startTimestamp, d.endTimestamp, zone));
-                        updateMin(d.startTimestamp);
-                        updateMax(d.endTimestamp);
+                    if (apiData != null) {
+                        for (Datum d : apiData.data) {
+                            result.put(d.startTimestamp,
+                                    new aWATTarPrice(d.marketprice / 10.0, d.startTimestamp, d.endTimestamp, zone));
+                            updateMin(d.startTimestamp);
+                            updateMax(d.endTimestamp);
+                        }
+                        priceMap = result;
+                        updateStatus(ThingStatus.ONLINE);
+                        lastUpdated = Instant.now().toEpochMilli();
+                    } else {
+                        logger.warn("No/Invalid data received from aWATTar Server");
                     }
-                    priceMap = result;
-                    updateStatus(ThingStatus.ONLINE);
-                    lastUpdated = Instant.now().toEpochMilli();
                     break;
 
                 default:
@@ -202,10 +205,11 @@ public class aWATTarBridgeHandler extends BaseBridgeHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return true;
         }
-        if (priceMap == null) {
+        SortedMap<Long, aWATTarPrice> localMap = priceMap;
+        if (localMap == null) {
             return true;
         }
-        return priceMap.lastKey() < Instant.now().toEpochMilli() + 9 * 3600 * 1000;
+        return localMap.lastKey() < Instant.now().toEpochMilli() + 9 * 3600 * 1000;
     }
 
     private void refresh() {

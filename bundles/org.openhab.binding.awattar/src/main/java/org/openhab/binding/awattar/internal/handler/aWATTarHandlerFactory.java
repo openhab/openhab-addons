@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
-import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.*;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.THING_TYPE_BESTPRICE;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.awattar.internal.aWATTarBindingConstants.THING_TYPE_PRICE;
 
 import java.util.Set;
 
@@ -49,8 +51,6 @@ public class aWATTarHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRICE, THING_TYPE_BESTPRICE,
             THING_TYPE_BRIDGE);
     private final HttpClient httpClient;
-    private final LocaleProvider localeProvider;
-    private final TranslationProvider i18nProvider;
     private final TimeZoneProvider timeZoneProvider;
 
     @Activate
@@ -58,8 +58,6 @@ public class aWATTarHandlerFactory extends BaseThingHandlerFactory {
             final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
             final @Reference TimeZoneProvider timeZoneProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.localeProvider = localeProvider;
-        this.i18nProvider = i18nProvider;
         this.timeZoneProvider = timeZoneProvider;
     }
 

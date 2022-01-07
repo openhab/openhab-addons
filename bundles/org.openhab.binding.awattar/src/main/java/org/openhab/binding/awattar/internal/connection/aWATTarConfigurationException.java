@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.awattar.internal.connection;
 
-import java.security.PrivilegedActionException;
-
 /**
  * @author Wolfgang Klimt - initial contribution
  */
 public class aWATTarConfigurationException extends IllegalArgumentException {
+    private static final long serialVersionUID = 3185466982127108082L;
+
     /**
      * Constructs an <code>aWATTarConfigurationException</code> with no
      * detail message.
