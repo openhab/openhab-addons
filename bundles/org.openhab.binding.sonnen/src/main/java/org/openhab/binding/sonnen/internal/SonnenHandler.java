@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonnen.internal.communication.SonnenJSONCommunication;
 import org.openhab.binding.sonnen.internal.communication.SonnenJsonDataDTO;
+import org.openhab.binding.sonnen.internal.utilities.Helper;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;

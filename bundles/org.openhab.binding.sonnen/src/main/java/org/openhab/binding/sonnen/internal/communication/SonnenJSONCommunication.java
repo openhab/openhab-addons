@@ -16,8 +16,8 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sonnen.internal.Helper;
 import org.openhab.binding.sonnen.internal.SonnenConfiguration;
+import org.openhab.binding.sonnen.internal.utilities.Helper;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
