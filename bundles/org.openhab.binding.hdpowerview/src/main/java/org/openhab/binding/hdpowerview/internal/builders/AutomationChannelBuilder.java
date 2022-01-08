@@ -15,7 +15,6 @@ package org.openhab.binding.hdpowerview.internal.builders;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,16 +45,10 @@ import org.slf4j.LoggerFactory;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class AutomationChannelBuilder {
+public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     private final Logger logger = LoggerFactory.getLogger(AutomationChannelBuilder.class);
-    private final HDPowerViewTranslationProvider translationProvider;
-    private final ChannelGroupUID channelGroupUid;
-    private final ChannelTypeUID channelTypeUid = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
-            HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
 
-    @Nullable
-    private List<Channel> channels;
     @Nullable
     private Map<Integer, Scene> scenes;
     @Nullable
@@ -66,8 +58,7 @@ public class AutomationChannelBuilder {
 
     public AutomationChannelBuilder(HDPowerViewTranslationProvider translationProvider,
             ChannelGroupUID channelGroupUid) {
-        this.translationProvider = translationProvider;
-        this.channelGroupUid = channelGroupUid;
+        super(translationProvider, channelGroupUid, HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
     }
 
     /**
@@ -147,10 +138,6 @@ public class AutomationChannelBuilder {
         });
 
         return channels;
-    }
-
-    private List<Channel> getChannelList(int initialCapacity) {
-        return this.channels != null ? (@NonNull List<Channel>) this.channels : new ArrayList<>(initialCapacity);
     }
 
     private @Nullable Channel createChannel(ScheduledEvent scheduledEvent) {

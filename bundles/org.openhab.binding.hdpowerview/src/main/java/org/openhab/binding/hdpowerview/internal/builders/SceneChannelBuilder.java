@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hdpowerview.internal.builders;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -26,7 +25,6 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link SceneChannelBuilder} class creates scene channels
@@ -35,21 +33,13 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class SceneChannelBuilder {
+public class SceneChannelBuilder extends BaseChannelBuilder {
 
-    private final HDPowerViewTranslationProvider translationProvider;
-    private final ChannelGroupUID channelGroupUid;
-    private final ChannelTypeUID channelTypeUid = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
-            HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
-
-    @Nullable
-    private List<Channel> channels;
     @Nullable
     private List<Scene> scenes;
 
     public SceneChannelBuilder(HDPowerViewTranslationProvider translationProvider, ChannelGroupUID channelGroupUid) {
-        this.translationProvider = translationProvider;
-        this.channelGroupUid = channelGroupUid;
+        super(translationProvider, channelGroupUid, HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
     }
 
     /**
@@ -100,10 +90,6 @@ public class SceneChannelBuilder {
         List<Channel> channels = this.getChannelList(scenes.size());
         scenes.stream().sorted().forEach(scene -> channels.add(createChannel(scene)));
         return channels;
-    }
-
-    private List<Channel> getChannelList(int initialCapacity) {
-        return this.channels != null ? (@NonNull List<Channel>) this.channels : new ArrayList<>(initialCapacity);
     }
 
     private Channel createChannel(Scene scene) {
