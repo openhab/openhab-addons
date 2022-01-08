@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * This class handles the JSON communication with the sonnen battery
@@ -41,7 +42,6 @@ public class SonnenJSONCommunication {
 
     public SonnenJSONCommunication() {
         gson = new Gson();
-        batteryData = new SonnenJsonDataDTO();
         config = new SonnenConfiguration();
     }
 
@@ -53,28 +53,24 @@ public class SonnenJSONCommunication {
      * @return true if no error occurred, false otherwise.
      */
     public boolean refreshBatteryConnection(Helper message, String thingUID) {
-        SonnenJsonDataDTO result = null;
         boolean resultOk = false;
-        String errorDetail = "", statusDescr = "";
+        String statusDescr = "";
         String urlStr = "http://" + config.hostIP + "/api/v1/status";
 
-        String response = null;
         try {
-            response = HttpUtil.executeUrl("GET", urlStr, 10000);
+            String response = HttpUtil.executeUrl("GET", urlStr, 10000);
             logger.debug("BatteryData = {}", response);
-            result = gson.fromJson(response, SonnenJsonDataDTO.class);
+            if (response == null) {
+                throw new IOException("HttpUtil.executeUrl returned null");
+            }
+            batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
             resultOk = true;
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error processiong Get request {}", urlStr);
-            statusDescr = "Cannot find service on given IP" + config.hostIP + " Please verify the IP-Address!";
-            errorDetail = e.getMessage();
+            batteryData = null;
+            statusDescr = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
             resultOk = false;
-        }
-        if (resultOk) {
-            batteryData = result;
-        } else {
-            logger.debug("Setting thing '{}' to OFFLINE: Error '{}'", thingUID, errorDetail);
-            batteryData = new SonnenJsonDataDTO();
+            logger.debug("Setting thing '{}' to OFFLINE: Error '{}'", thingUID, e.getMessage());
         }
         message.setStatusDescription(statusDescr);
         return resultOk;
@@ -94,10 +90,9 @@ public class SonnenJSONCommunication {
     /**
      * Returns the actual stored Battery Data
      *
-     * @return JSON Data from the Battery
+     * @return JSON Data from the Battery or null if request failed
      */
-    @Nullable
-    public SonnenJsonDataDTO getBatteryData() {
+    public @Nullable SonnenJsonDataDTO getBatteryData() {
         return this.batteryData;
     }
 }
