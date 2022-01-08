@@ -61,7 +61,7 @@ public class HttpResponseListener extends BufferingResponseListener {
         Request request = result.getRequest();
         if (result.isFailed()) {
             logger.warn("Requesting '{}' (method='{}', content='{}') failed: {}", request.getURI(), request.getMethod(),
-                    request.getContent(), result.getFailure().getMessage());
+                    request.getContent(), result.getFailure().toString());
             future.complete(null);
         } else {
             switch (response.getStatus()) {
