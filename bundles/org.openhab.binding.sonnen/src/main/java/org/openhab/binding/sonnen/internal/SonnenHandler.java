@@ -191,22 +191,22 @@ public class SonnenHandler extends BaseThingHandler {
             SonnenJsonDataDTO data = serviceCommunication.getBatteryData();
             if (data != null) {
                 switch (channelId) {
-                    case CHANNELBATTERYDISCHARGING:
+                    case CHANNELBATTERYDISCHARGINGSTATE:
                         update(OnOffType.from(data.isBatteryDischarging()), channelId);
                         break;
-                    case CHANNELBATTERYCHARGING:
+                    case CHANNELBATTERYCHARGINGSTATE:
                         update(OnOffType.from(data.isBatteryCharging()), channelId);
                         break;
                     case CHANNELCONSUMPTION:
                         state = new QuantityType<Power>(data.getConsumptionHouse(), Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELBATTERYDISPENSE:
+                    case CHANNELBATTERYDISCHARGING:
                         state = new QuantityType<Power>(data.getbatteryCurrent() > 0 ? data.getbatteryCurrent() : 0,
                                 Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELBATTERYFEEDIN:
+                    case CHANNELBATTERYCHARGING:
                         state = new QuantityType<Power>(
                                 data.getbatteryCurrent() <= 0 ? (data.getbatteryCurrent() * -1) : 0, Units.WATT);
                         update(state, channelId);
@@ -215,7 +215,7 @@ public class SonnenHandler extends BaseThingHandler {
                         state = new QuantityType<Power>(data.getGridValue() > 0 ? data.getGridValue() : 0, Units.WATT);
                         update(state, channelId);
                         break;
-                    case CHANNELGRIDRECEIVE:
+                    case CHANNELGRIDCONSUMPTION:
                         state = new QuantityType<Power>(data.getGridValue() <= 0 ? (data.getGridValue() * -1) : 0,
                                 Units.WATT);
                         update(state, channelId);
@@ -228,22 +228,22 @@ public class SonnenHandler extends BaseThingHandler {
                         state = new QuantityType<Dimensionless>(data.getBatteryChargingLevel(), Units.PERCENT);
                         update(state, channelId);
                         break;
-                    case CHANNELFLOWCONSUMPTIONBATTERY:
+                    case CHANNELFLOWCONSUMPTIONBATTERYSTATE:
                         update(OnOffType.from(data.isFlowConsumptionBattery()), channelId);
                         break;
-                    case CHANNELFLOWCONSUMPTIONGRID:
+                    case CHANNELFLOWCONSUMPTIONGRIDSTATE:
                         update(OnOffType.from(data.isFlowConsumptionGrid()), channelId);
                         break;
-                    case CHANNELFLOWCONSUMPTIONPRODUCTION:
+                    case CHANNELFLOWCONSUMPTIONPRODUCTIONSTATE:
                         update(OnOffType.from(data.isFlowConsumptionProduction()), channelId);
                         break;
-                    case CHANNELFLOWGRIDBATTERY:
+                    case CHANNELFLOWGRIDBATTERYSTATE:
                         update(OnOffType.from(data.isFlowGridBattery()), channelId);
                         break;
-                    case CHANNELFLOWPRODUCTIONBATTERY:
+                    case CHANNELFLOWPRODUCTIONBATTERYSTATE:
                         update(OnOffType.from(data.isFlowProductionBattery()), channelId);
                         break;
-                    case CHANNELFLOWPRODUCTIONGRID:
+                    case CHANNELFLOWPRODUCTIONGRIDSTATE:
                         update(OnOffType.from(data.isFlowProductionGrid()), channelId);
                         break;
                 }
