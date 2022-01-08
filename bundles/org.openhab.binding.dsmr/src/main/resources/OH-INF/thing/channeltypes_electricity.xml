@@ -90,25 +90,49 @@
 	<channel-type id="totalImportedEnergyRegisterPType">
 		<item-type>Number:Energy</item-type>
 		<label>Total Imported Energy (P+)</label>
-		<description>The Total imported energy register (P+).</description>
+		<description>The total imported energy register (P+).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterPType">
 		<item-type>Number:Energy</item-type>
 		<label>Total Exported Energy (P+)</label>
-		<description>The Total exported energy register (P-).</description>
+		<description>The total exported energy register (P-).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalImportedEnergyRegisterQType">
 		<item-type>Number:Energy</item-type>
 		<label>Total Imported Energy (Q+)</label>
-		<description>The Total imported energy register (Q+).</description>
+		<description>The total imported energy register (Q+).</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="totalExportedEnergyRegisterQType">
 		<item-type>Number:Energy</item-type>
 		<label>Total Exported Energy (Q-)</label>
-		<description>The Total exported energy register (Q-).</description>
+		<description>The total exported energy register (Q-).</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalExportedEnergyRegisterRRate1Type" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total Exported Energy R1</label>
+		<description>The total exported energy register R Rate1.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalExportedEnergyRegisterRRate2Type" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total Exported Energy R</label>
+		<description>The total exported energy register R Rate2.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalImportedEnergyRegisterRRate1Type" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy R1</label>
+		<description>The total imported energy register R Rate1.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="totalImportedEnergyRegisterRRate2Type" advanced="true">
+		<item-type>Number:Energy</item-type>
+		<label>Total Imported Energy R2</label>
+		<description>The total imported energy register R Rate2.</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="tariffIndicatorType" advanced="true">

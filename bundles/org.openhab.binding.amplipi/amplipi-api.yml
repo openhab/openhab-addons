@@ -15,26 +15,43 @@ info:
 
       1. Go to an API request
       1. Pick one of the examples
-      2. Edit it
-      3. Press try button, it will send an API command/request to the AmpliPi
+      1. Edit it
+      1. Press the try button, it will send an API command/request to the AmpliPi
 
-    __Try using the get status:__
+    __Try getting the status:__
 
-      1. Go to [Status -> Get Status](#get-/api/)
-      2. Click the Try button, you will see a response below with the full status/config of the AmpliPi controller
+      1. Go to [Status -> Get Status](#get-/api)
+      1. Click the Try button, you will see a response below with the full status/config of the AmpliPi controller
+
+    __Try changing a zone's name:__
+
+      1. Go to [Zone -> Update Zone](#patch-/api/zones/-zid-)
+      1. Next to **PATH PARAMETERS** click Zone 2 to fill in Zone 2's id
+      1. Under **REQUEST BODY** click Example and select "Change Name"
+      1. Edit the name to what you want to call the zone
+      1. Click the Try button, you will see a response below with the full status/config of the AmpliPi controller
+
+    __Try changing a group's name and zones:__
+
+      1. Go to [Group -> Update Group](#patch-/api/groups/-gid-)
+      1. Next to **PATH PARAMETERS** click Group 1 to fill in Group 1's id
+      1. Under **REQUEST BODY** click Example and select "Rezone Group"
+      1. Edit the name to what you want to call the group
+      1. Edit the zones that belong to the group
+      1. Click the Try button, you will see a response below with the full status/config of the AmpliPi controller
 
     __Try creating a new group:__
 
       1. Go to [Group -> Create Group](#post-/api/group)
-      2. Click Example
-      3. Edit the zones and group name
-      4. Click the try button, you will see a response with the newly created group
+      1. Under **REQUEST BODY** click Example and select "Upstairs Group"
+      1. Edit the group name or zones array
+      1. Click the Try button, you will see a response below with the new group
 
     __Here are some other things that you might want to change:__
 
       - [Stream -> Create new stream](#post-/api/stream)
-      - [Zone -> Update Zone](#patch-/api/zones/-zid-) (to change the zone name)
       - [Preset -> Create preset](#post-/api/preset) (Have a look at the model to see what can be added here)
+      - [Source -> Set source](#patch-/api/sources/-sid-) (Try updating Source 1's name to "TV")
 
     # More Info
 
@@ -58,7 +75,7 @@ info:
     url: http://micro-nova.com
   license:
     name: GPL
-    url: /license
+    url: https://github.com/micro-nova/AmpliPi/blob/master/COPYING
 servers:
 - url: ''
   description: AmpliPi Controller
@@ -257,13 +274,402 @@ paths:
                       name: Living Room
                       source_id: 0
                       vol: -46
-  /api/:
-    get:
+  /api/load:
+    post:
       tags:
       - status
-      summary: Get Status
-      description: 'Get the system status and configuration '
-      operationId: get_status_api__get
+      summary: Load Config
+      description: 'Load a new configuration (and return the configuration loaded).
+        This will overwrite the current configuration so it is advised to save the
+        previous config from. '
+      operationId: load_config_api_load_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Status'
+            examples:
+              Status of Jason's AmpliPi:
+                value:
+                  groups:
+                  - id: 0
+                    mute: false
+                    name: Whole House
+                    source_id: null
+                    vol_delta: -44
+                    zones:
+                    - 0
+                    - 1
+                    - 2
+                    - 3
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                    - 9
+                    - 10
+                    - 11
+                  - id: 1
+                    mute: true
+                    name: KitchLivDining
+                    source_id: 0
+                    vol_delta: -49
+                    zones:
+                    - 3
+                    - 9
+                    - 10
+                    - 11
+                  presets:
+                  - id: 10000
+                    name: Mute All
+                    state:
+                      zones:
+                      - id: 0
+                        mute: true
+                      - id: 1
+                        mute: true
+                      - id: 2
+                        mute: true
+                      - id: 3
+                        mute: true
+                      - id: 4
+                        mute: true
+                      - id: 5
+                        mute: true
+                  sources:
+                  - id: 0
+                    input: stream=90890
+                    name: J1
+                  - id: 1
+                    input: stream=44590
+                    name: J2
+                  - id: 2
+                    input: local
+                    name: Marc
+                  - id: 3
+                    input: local
+                    name: Source 4
+                  streams:
+                  - id: 90890
+                    info:
+                      album: Far (Deluxe Version)
+                      artist: Regina Spektor
+                      img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+                      station: Regina Spektor Radio
+                      track: Eet
+                    name: Regina Spektor Radio
+                    password: ''
+                    station: '4473713754798410236'
+                    status: playing
+                    type: pandora
+                    user: example1@micro-nova.com
+                  - id: 90891
+                    info:
+                      details: No info available
+                    name: Matt and Kim Radio
+                    password: ''
+                    station: '4610303469018478727'
+                    status: disconnected
+                    type: pandora
+                    user: example2@micro-nova.com
+                  - id: 90892
+                    info:
+                      details: No info available
+                    name: Pink Radio
+                    password: ''
+                    station: '4326539910057675260'
+                    status: disconnected
+                    type: pandora
+                    user: example3@micro-nova.com
+                  - id: 44590
+                    info:
+                      details: No info available
+                    name: Jason's iPhone
+                    status: connected
+                    type: shairport
+                  - id: 4894
+                    info:
+                      details: No info available
+                    name: Rnay
+                    status: disconnected
+                    type: shairport
+                  info:
+                    version: 0.0.1
+                  zones:
+                  - disabled: false
+                    id: 0
+                    mute: false
+                    name: Local
+                    source_id: 1
+                    vol: -35
+                  - disabled: false
+                    id: 1
+                    mute: false
+                    name: Office
+                    source_id: 0
+                    vol: -41
+                  - disabled: false
+                    id: 2
+                    mute: true
+                    name: Laundry Room
+                    source_id: 0
+                    vol: -48
+                  - disabled: false
+                    id: 3
+                    mute: true
+                    name: Dining Room
+                    source_id: 0
+                    vol: -44
+                  - disabled: true
+                    id: 4
+                    mute: true
+                    name: BROKEN
+                    source_id: 0
+                    vol: -50
+                  - disabled: false
+                    id: 5
+                    mute: true
+                    name: Guest Bedroom
+                    source_id: 0
+                    vol: -48
+                  - disabled: false
+                    id: 6
+                    mute: true
+                    name: Main Bedroom
+                    source_id: 0
+                    vol: -40
+                  - disabled: false
+                    id: 7
+                    mute: true
+                    name: Main Bathroom
+                    source_id: 0
+                    vol: -44
+                  - disabled: false
+                    id: 8
+                    mute: true
+                    name: Master Bathroom
+                    source_id: 0
+                    vol: -41
+                  - disabled: false
+                    id: 9
+                    mute: true
+                    name: Kitchen High
+                    source_id: 0
+                    vol: -53
+                  - disabled: false
+                    id: 10
+                    mute: true
+                    name: kitchen Low
+                    source_id: 0
+                    vol: -52
+                  - disabled: false
+                    id: 11
+                    mute: true
+                    name: Living Room
+                    source_id: 0
+                    vol: -46
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+              examples:
+                Status of Jason's AmpliPi:
+                  value:
+                    groups:
+                    - id: 0
+                      mute: false
+                      name: Whole House
+                      source_id: null
+                      vol_delta: -44
+                      zones:
+                      - 0
+                      - 1
+                      - 2
+                      - 3
+                      - 5
+                      - 6
+                      - 7
+                      - 8
+                      - 9
+                      - 10
+                      - 11
+                    - id: 1
+                      mute: true
+                      name: KitchLivDining
+                      source_id: 0
+                      vol_delta: -49
+                      zones:
+                      - 3
+                      - 9
+                      - 10
+                      - 11
+                    presets:
+                    - id: 10000
+                      name: Mute All
+                      state:
+                        zones:
+                        - id: 0
+                          mute: true
+                        - id: 1
+                          mute: true
+                        - id: 2
+                          mute: true
+                        - id: 3
+                          mute: true
+                        - id: 4
+                          mute: true
+                        - id: 5
+                          mute: true
+                    sources:
+                    - id: 0
+                      input: stream=90890
+                      name: J1
+                    - id: 1
+                      input: stream=44590
+                      name: J2
+                    - id: 2
+                      input: local
+                      name: Marc
+                    - id: 3
+                      input: local
+                      name: Source 4
+                    streams:
+                    - id: 90890
+                      info:
+                        album: Far (Deluxe Version)
+                        artist: Regina Spektor
+                        img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+                        station: Regina Spektor Radio
+                        track: Eet
+                      name: Regina Spektor Radio
+                      password: ''
+                      station: '4473713754798410236'
+                      status: playing
+                      type: pandora
+                      user: example1@micro-nova.com
+                    - id: 90891
+                      info:
+                        details: No info available
+                      name: Matt and Kim Radio
+                      password: ''
+                      station: '4610303469018478727'
+                      status: disconnected
+                      type: pandora
+                      user: example2@micro-nova.com
+                    - id: 90892
+                      info:
+                        details: No info available
+                      name: Pink Radio
+                      password: ''
+                      station: '4326539910057675260'
+                      status: disconnected
+                      type: pandora
+                      user: example3@micro-nova.com
+                    - id: 44590
+                      info:
+                        details: No info available
+                      name: Jason's iPhone
+                      status: connected
+                      type: shairport
+                    - id: 4894
+                      info:
+                        details: No info available
+                      name: Rnay
+                      status: disconnected
+                      type: shairport
+                    info:
+                      version: 0.0.1
+                    zones:
+                    - disabled: false
+                      id: 0
+                      mute: false
+                      name: Local
+                      source_id: 1
+                      vol: -35
+                    - disabled: false
+                      id: 1
+                      mute: false
+                      name: Office
+                      source_id: 0
+                      vol: -41
+                    - disabled: false
+                      id: 2
+                      mute: true
+                      name: Laundry Room
+                      source_id: 0
+                      vol: -48
+                    - disabled: false
+                      id: 3
+                      mute: true
+                      name: Dining Room
+                      source_id: 0
+                      vol: -44
+                    - disabled: true
+                      id: 4
+                      mute: true
+                      name: BROKEN
+                      source_id: 0
+                      vol: -50
+                    - disabled: false
+                      id: 5
+                      mute: true
+                      name: Guest Bedroom
+                      source_id: 0
+                      vol: -48
+                    - disabled: false
+                      id: 6
+                      mute: true
+                      name: Main Bedroom
+                      source_id: 0
+                      vol: -40
+                    - disabled: false
+                      id: 7
+                      mute: true
+                      name: Main Bathroom
+                      source_id: 0
+                      vol: -44
+                    - disabled: false
+                      id: 8
+                      mute: true
+                      name: Master Bathroom
+                      source_id: 0
+                      vol: -41
+                    - disabled: false
+                      id: 9
+                      mute: true
+                      name: Kitchen High
+                      source_id: 0
+                      vol: -53
+                    - disabled: false
+                      id: 10
+                      mute: true
+                      name: kitchen Low
+                      source_id: 0
+                      vol: -52
+                    - disabled: false
+                      id: 11
+                      mute: true
+                      name: Living Room
+                      source_id: 0
+                      vol: -46
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/reset:
+    post:
+      tags:
+      - status
+      summary: Reset
+      description: 'Reload the current configuration, resetting the firmware in the
+        process. '
+      operationId: reset_api_reset_post
       responses:
         '200':
           description: Successful Response
@@ -470,6 +876,20 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Source'
+              example:
+                sources:
+                - id: 0
+                  input: stream=90890
+                  name: J1
+                - id: 1
+                  input: stream=44590
+                  name: J2
+                - id: 2
+                  input: local
+                  name: Marc
+                - id: 3
+                  input: local
+                  name: Source 4
   /api/sources/{sid}:
     get:
       tags:
@@ -489,18 +909,18 @@ paths:
         name: sid
         in: path
         examples:
-          '1':
+          openHAB:
             value: 0
-            summary: '1'
-          '2':
+            summary: openHAB
+          Chromecast Audio:
             value: 1
-            summary: '2'
-          '3':
+            summary: Chromecast Audio
+          Input 3:
             value: 2
-            summary: '3'
-          '4':
+            summary: Input 3
+          Input 4:
             value: 3
-            summary: '4'
+            summary: Input 4
       responses:
         '200':
           description: Successful Response
@@ -514,16 +934,29 @@ paths:
                     id: 1
                     name: '1'
                     input: stream=1009
+                    info:
+                      album: Far (Deluxe Version)
+                      artist: Regina Spektor
+                      img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+                      station: Regina Spektor Radio
+                      track: Eet
+                      state: playing
                 nothing connected:
                   value:
                     id: 2
                     name: '2'
                     input: ''
+                    info:
+                      img_url: static/imgs/disconnected.png
+                      state: stopped
                 rca connected:
                   value:
                     id: 3
                     name: '3'
                     input: local
+                    info:
+                      img_url: static/imgs/rca_inputs.svg
+                      state: unknown
         '422':
           description: Validation Error
           content:
@@ -548,18 +981,18 @@ paths:
         name: sid
         in: path
         examples:
-          '1':
+          openHAB:
             value: 0
-            summary: '1'
-          '2':
+            summary: openHAB
+          Chromecast Audio:
             value: 1
-            summary: '2'
-          '3':
+            summary: Chromecast Audio
+          Input 3:
             value: 2
-            summary: '3'
-          '4':
+            summary: Input 3
+          Input 4:
             value: 3
-            summary: '4'
+            summary: Input 4
       requestBody:
         content:
           application/json:
@@ -575,6 +1008,7 @@ paths:
               Update Input to Matt and Kim Radio:
                 value:
                   input: stream=10001
+        required: true
       responses:
         '200':
           description: Successful Response
@@ -768,6 +1202,62 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /api/sources/{sid}/image/{height}:
+    get:
+      tags:
+      - source
+      summary: Get Image
+      description: 'Get a square jpeg image representing the current media playing
+        on source @sid
+
+
+        This was added to support low power touch panels '
+      operationId: get_image_api_sources__sid__image__height__get
+      parameters:
+      - description: Source ID
+        required: true
+        schema:
+          title: Sid
+          maximum: 3.0
+          minimum: 0.0
+          type: integer
+          description: Source ID
+        name: sid
+        in: path
+        examples:
+          openHAB:
+            value: 0
+            summary: openHAB
+          Chromecast Audio:
+            value: 1
+            summary: Chromecast Audio
+          Input 3:
+            value: 2
+            summary: Input 3
+          Input 4:
+            value: 3
+            summary: Input 4
+      - description: Image Height in pixels
+        required: true
+        schema:
+          title: Height
+          maximum: 500.0
+          minimum: 1.0
+          type: integer
+          description: Image Height in pixels
+        name: height
+        in: path
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            image/jpg: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/zones:
     get:
       tags:
@@ -787,6 +1277,298 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Zone'
+              example:
+                zones:
+                - disabled: false
+                  id: 0
+                  mute: false
+                  name: Local
+                  source_id: 1
+                  vol: -35
+                - disabled: false
+                  id: 1
+                  mute: false
+                  name: Office
+                  source_id: 0
+                  vol: -41
+                - disabled: false
+                  id: 2
+                  mute: true
+                  name: Laundry Room
+                  source_id: 0
+                  vol: -48
+                - disabled: false
+                  id: 3
+                  mute: true
+                  name: Dining Room
+                  source_id: 0
+                  vol: -44
+                - disabled: true
+                  id: 4
+                  mute: true
+                  name: BROKEN
+                  source_id: 0
+                  vol: -50
+                - disabled: false
+                  id: 5
+                  mute: true
+                  name: Guest Bedroom
+                  source_id: 0
+                  vol: -48
+                - disabled: false
+                  id: 6
+                  mute: true
+                  name: Main Bedroom
+                  source_id: 0
+                  vol: -40
+                - disabled: false
+                  id: 7
+                  mute: true
+                  name: Main Bathroom
+                  source_id: 0
+                  vol: -44
+                - disabled: false
+                  id: 8
+                  mute: true
+                  name: Master Bathroom
+                  source_id: 0
+                  vol: -41
+                - disabled: false
+                  id: 9
+                  mute: true
+                  name: Kitchen High
+                  source_id: 0
+                  vol: -53
+                - disabled: false
+                  id: 10
+                  mute: true
+                  name: kitchen Low
+                  source_id: 0
+                  vol: -52
+                - disabled: false
+                  id: 11
+                  mute: true
+                  name: Living Room
+                  source_id: 0
+                  vol: -46
+    patch:
+      tags:
+      - zone
+      summary: Set Zones
+      description: 'Update a bunch of zones (and groups) with the same configuration
+        changes '
+      operationId: set_zones_api_zones_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultiZoneUpdate'
+            examples:
+              Connect all zones to source 1:
+                value:
+                  zones:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  update:
+                    source_id: 0
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+              examples:
+                Status of Jason's AmpliPi:
+                  value:
+                    groups:
+                    - id: 0
+                      mute: false
+                      name: Whole House
+                      source_id: null
+                      vol_delta: -44
+                      zones:
+                      - 0
+                      - 1
+                      - 2
+                      - 3
+                      - 5
+                      - 6
+                      - 7
+                      - 8
+                      - 9
+                      - 10
+                      - 11
+                    - id: 1
+                      mute: true
+                      name: KitchLivDining
+                      source_id: 0
+                      vol_delta: -49
+                      zones:
+                      - 3
+                      - 9
+                      - 10
+                      - 11
+                    presets:
+                    - id: 10000
+                      name: Mute All
+                      state:
+                        zones:
+                        - id: 0
+                          mute: true
+                        - id: 1
+                          mute: true
+                        - id: 2
+                          mute: true
+                        - id: 3
+                          mute: true
+                        - id: 4
+                          mute: true
+                        - id: 5
+                          mute: true
+                    sources:
+                    - id: 0
+                      input: stream=90890
+                      name: J1
+                    - id: 1
+                      input: stream=44590
+                      name: J2
+                    - id: 2
+                      input: local
+                      name: Marc
+                    - id: 3
+                      input: local
+                      name: Source 4
+                    streams:
+                    - id: 90890
+                      info:
+                        album: Far (Deluxe Version)
+                        artist: Regina Spektor
+                        img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+                        station: Regina Spektor Radio
+                        track: Eet
+                      name: Regina Spektor Radio
+                      password: ''
+                      station: '4473713754798410236'
+                      status: playing
+                      type: pandora
+                      user: example1@micro-nova.com
+                    - id: 90891
+                      info:
+                        details: No info available
+                      name: Matt and Kim Radio
+                      password: ''
+                      station: '4610303469018478727'
+                      status: disconnected
+                      type: pandora
+                      user: example2@micro-nova.com
+                    - id: 90892
+                      info:
+                        details: No info available
+                      name: Pink Radio
+                      password: ''
+                      station: '4326539910057675260'
+                      status: disconnected
+                      type: pandora
+                      user: example3@micro-nova.com
+                    - id: 44590
+                      info:
+                        details: No info available
+                      name: Jason's iPhone
+                      status: connected
+                      type: shairport
+                    - id: 4894
+                      info:
+                        details: No info available
+                      name: Rnay
+                      status: disconnected
+                      type: shairport
+                    info:
+                      version: 0.0.1
+                    zones:
+                    - disabled: false
+                      id: 0
+                      mute: false
+                      name: Local
+                      source_id: 1
+                      vol: -35
+                    - disabled: false
+                      id: 1
+                      mute: false
+                      name: Office
+                      source_id: 0
+                      vol: -41
+                    - disabled: false
+                      id: 2
+                      mute: true
+                      name: Laundry Room
+                      source_id: 0
+                      vol: -48
+                    - disabled: false
+                      id: 3
+                      mute: true
+                      name: Dining Room
+                      source_id: 0
+                      vol: -44
+                    - disabled: true
+                      id: 4
+                      mute: true
+                      name: BROKEN
+                      source_id: 0
+                      vol: -50
+                    - disabled: false
+                      id: 5
+                      mute: true
+                      name: Guest Bedroom
+                      source_id: 0
+                      vol: -48
+                    - disabled: false
+                      id: 6
+                      mute: true
+                      name: Main Bedroom
+                      source_id: 0
+                      vol: -40
+                    - disabled: false
+                      id: 7
+                      mute: true
+                      name: Main Bathroom
+                      source_id: 0
+                      vol: -44
+                    - disabled: false
+                      id: 8
+                      mute: true
+                      name: Master Bathroom
+                      source_id: 0
+                      vol: -41
+                    - disabled: false
+                      id: 9
+                      mute: true
+                      name: Kitchen High
+                      source_id: 0
+                      vol: -53
+                    - disabled: false
+                      id: 10
+                      mute: true
+                      name: kitchen Low
+                      source_id: 0
+                      vol: -52
+                    - disabled: false
+                      id: 11
+                      mute: true
+                      name: Living Room
+                      source_id: 0
+                      vol: -46
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /api/zones/{zid}:
     get:
       tags:
@@ -806,24 +1588,24 @@ paths:
         name: zid
         in: path
         examples:
-          Local:
+          Flur/Küche/Bad:
             value: 0
-            summary: Local
-          Office:
+            summary: Flur/Küche/Bad
+          Wohnzimmer:
             value: 1
-            summary: Office
-          Laundry Room:
+            summary: Wohnzimmer
+          Schlafzimmer:
             value: 2
-            summary: Laundry Room
-          Dining Room:
+            summary: Schlafzimmer
+          Tino:
             value: 3
-            summary: Dining Room
-          BROKEN:
+            summary: Tino
+          Stella:
             value: 4
-            summary: BROKEN
-          Guest Bedroom:
+            summary: Stella
+          Enzo:
             value: 5
-            summary: Guest Bedroom
+            summary: Enzo
       responses:
         '200':
           description: Successful Response
@@ -870,24 +1652,24 @@ paths:
         name: zid
         in: path
         examples:
-          Local:
+          Flur/Küche/Bad:
             value: 0
-            summary: Local
-          Office:
+            summary: Flur/Küche/Bad
+          Wohnzimmer:
             value: 1
-            summary: Office
-          Laundry Room:
+            summary: Wohnzimmer
+          Schlafzimmer:
             value: 2
-            summary: Laundry Room
-          Dining Room:
+            summary: Schlafzimmer
+          Tino:
             value: 3
-            summary: Dining Room
-          BROKEN:
+            summary: Tino
+          Stella:
             value: 4
-            summary: BROKEN
-          Guest Bedroom:
+            summary: Stella
+          Enzo:
             value: 5
-            summary: Guest Bedroom
+            summary: Enzo
       requestBody:
         content:
           application/json:
@@ -906,6 +1688,7 @@ paths:
               Mute:
                 value:
                   mute: true
+        required: true
       responses:
         '200':
           description: Successful Response
@@ -1184,6 +1967,35 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Group'
+              example:
+                groups:
+                - id: 0
+                  mute: false
+                  name: Whole House
+                  source_id: null
+                  vol_delta: -44
+                  zones:
+                  - 0
+                  - 1
+                  - 2
+                  - 3
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  - 10
+                  - 11
+                - id: 1
+                  mute: true
+                  name: KitchLivDining
+                  source_id: 0
+                  vol_delta: -49
+                  zones:
+                  - 3
+                  - 9
+                  - 10
+                  - 11
   /api/groups/{gid}:
     get:
       tags:
@@ -1201,10 +2013,7 @@ paths:
           description: Stream ID
         name: gid
         in: path
-        examples:
-          Whole House:
-            value: 0
-            summary: Whole House
+        examples: {}
       responses:
         '200':
           description: Successful Response
@@ -1256,10 +2065,7 @@ paths:
           description: Stream ID
         name: gid
         in: path
-        examples:
-          Whole House:
-            value: 0
-            summary: Whole House
+        examples: {}
       responses:
         '200':
           description: Successful Response
@@ -1469,16 +2275,20 @@ paths:
           description: Stream ID
         name: gid
         in: path
-        examples:
-          Whole House:
-            value: 0
-            summary: Whole House
+        examples: {}
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/GroupUpdate'
             examples:
+              Rezone Group:
+                value:
+                  name: Upstairs
+                  zones:
+                  - 3
+                  - 4
+                  - 5
               Change Name:
                 value:
                   name: Upstairs
@@ -1491,6 +2301,7 @@ paths:
               Mute:
                 value:
                   mute: true
+        required: true
       responses:
         '200':
           description: Successful Response
@@ -1689,7 +2500,11 @@ paths:
       tags:
       - stream
       summary: Create Stream
-      description: 'Create a new audio stream '
+      description: 'Create a new audio stream
+
+        - For Pandora the station is the number at the end of the Pandora URL for
+        a ''station'', e.g. 4610303469018478727 from https://www.pandora.com/station/play/4610303469018478727.
+        ''user'' and ''password'' are the account username and password'
       operationId: create_stream_api_stream_post
       requestBody:
         content:
@@ -1740,6 +2555,16 @@ paths:
                 value:
                   name: Micronova AP
                   type: shairport
+              Play single file or announcement:
+                value:
+                  name: Play NASA Announcement
+                  url: https://www.nasa.gov/mp3/640149main_Computers%20are%20in%20Control.mp3
+              Add FM Radio Station:
+                value:
+                  name: WXYZ
+                  type: fmradio
+                  freq: '100.1'
+                  logo: static/imgs/fmradio.png
         required: true
       responses:
         '200':
@@ -1749,21 +2574,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Stream'
               examples:
-                Regina Spektor Radio (playing):
+                Regina Spektor Radio:
                   value:
                     id: 90890
                     name: Regina Spektor Radio
                     password: ''
                     station: '4473713754798410236'
-                    status: playing
+                    status: connected
                     type: pandora
                     user: example1@micro-nova.com
-                    info:
-                      album: Far (Deluxe Version)
-                      artist: Regina Spektor
-                      img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
-                      station: Regina Spektor Radio
-                      track: Eet
                 Matt and Kim Radio (disconnected):
                   value:
                     id: 90891
@@ -1816,6 +2635,51 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Stream'
+              example:
+                streams:
+                - id: 90890
+                  info:
+                    album: Far (Deluxe Version)
+                    artist: Regina Spektor
+                    img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+                    station: Regina Spektor Radio
+                    track: Eet
+                  name: Regina Spektor Radio
+                  password: ''
+                  station: '4473713754798410236'
+                  status: playing
+                  type: pandora
+                  user: example1@micro-nova.com
+                - id: 90891
+                  info:
+                    details: No info available
+                  name: Matt and Kim Radio
+                  password: ''
+                  station: '4610303469018478727'
+                  status: disconnected
+                  type: pandora
+                  user: example2@micro-nova.com
+                - id: 90892
+                  info:
+                    details: No info available
+                  name: Pink Radio
+                  password: ''
+                  station: '4326539910057675260'
+                  status: disconnected
+                  type: pandora
+                  user: example3@micro-nova.com
+                - id: 44590
+                  info:
+                    details: No info available
+                  name: Jason's iPhone
+                  status: connected
+                  type: shairport
+                - id: 4894
+                  info:
+                    details: No info available
+                  name: Rnay
+                  status: disconnected
+                  type: shairport
   /api/streams/{sid}:
     get:
       tags:
@@ -1834,54 +2698,15 @@ paths:
         name: sid
         in: path
         examples:
-          Regina Spektor Radio:
-            value: 90890
-            summary: Regina Spektor Radio
-          Matt and Kim Radio:
-            value: 90891
-            summary: Matt and Kim Radio
-          Pink Radio:
-            value: 90892
-            summary: Pink Radio
-          Jason's iPhone:
-            value: 44590
-            summary: Jason's iPhone
-          Marc's iPhone:
-            value: 4893
-            summary: Marc's iPhone
-          Rnay:
-            value: 4894
-            summary: Rnay
-          Jeremy's Spotify:
-            value: 4895
-            summary: Jeremy's Spotify
-          Lincoln's Spotify:
-            value: 4896
-            summary: Lincoln's Spotify
-          Indie Pop Rocks:
-            value: 90893
-            summary: Indie Pop Rocks
+          AmpliPi:
+            value: 1004
+            summary: AmpliPi - dlna
+          Radio Station, needs user/pass/station-id:
+            value: 1001
+            summary: Radio Station, needs user/pass/station-id - pandora
           Groove Salad:
-            value: 90894
-            summary: Groove Salad
-          SP_TEST:
-            value: 90895
-            summary: SP_TEST
-          Trial_DLNA:
-            value: 90896
-            summary: Trial_DLNA
-          T2:
-            value: 90897
-            summary: T2
-          T3:
-            value: 90898
-            summary: T3
-          T2.5:
-            value: 90899
-            summary: T2.5
-          Jeremy's DLNA:
-            value: 90900
-            summary: Jeremy's DLNA
+            value: 1003
+            summary: Groove Salad - internetradio
       responses:
         '200':
           description: Successful Response
@@ -1890,21 +2715,15 @@ paths:
               schema:
                 $ref: '#/components/schemas/Stream'
               examples:
-                Regina Spektor Radio (playing):
+                Regina Spektor Radio:
                   value:
                     id: 90890
                     name: Regina Spektor Radio
                     password: ''
                     station: '4473713754798410236'
-                    status: playing
+                    status: connected
                     type: pandora
                     user: example1@micro-nova.com
-                    info:
-                      album: Far (Deluxe Version)
-                      artist: Regina Spektor
-                      img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
-                      station: Regina Spektor Radio
-                      track: Eet
                 Matt and Kim Radio (disconnected):
                   value:
                     id: 90891
@@ -1955,54 +2774,15 @@ paths:
         name: sid
         in: path
         examples:
-          Regina Spektor Radio:
-            value: 90890
-            summary: Regina Spektor Radio
-          Matt and Kim Radio:
-            value: 90891
-            summary: Matt and Kim Radio
-          Pink Radio:
-            value: 90892
-            summary: Pink Radio
-          Jason's iPhone:
-            value: 44590
-            summary: Jason's iPhone
-          Marc's iPhone:
-            value: 4893
-            summary: Marc's iPhone
-          Rnay:
-            value: 4894
-            summary: Rnay
-          Jeremy's Spotify:
-            value: 4895
-            summary: Jeremy's Spotify
-          Lincoln's Spotify:
-            value: 4896
-            summary: Lincoln's Spotify
-          Indie Pop Rocks:
-            value: 90893
-            summary: Indie Pop Rocks
+          AmpliPi:
+            value: 1004
+            summary: AmpliPi - dlna
+          Radio Station, needs user/pass/station-id:
+            value: 1001
+            summary: Radio Station, needs user/pass/station-id - pandora
           Groove Salad:
-            value: 90894
-            summary: Groove Salad
-          SP_TEST:
-            value: 90895
-            summary: SP_TEST
-          Trial_DLNA:
-            value: 90896
-            summary: Trial_DLNA
-          T2:
-            value: 90897
-            summary: T2
-          T3:
-            value: 90898
-            summary: T3
-          T2.5:
-            value: 90899
-            summary: T2.5
-          Jeremy's DLNA:
-            value: 90900
-            summary: Jeremy's DLNA
+            value: 1003
+            summary: Groove Salad - internetradio
       responses:
         '200':
           description: Successful Response
@@ -2213,54 +2993,15 @@ paths:
         name: sid
         in: path
         examples:
-          Regina Spektor Radio:
-            value: 90890
-            summary: Regina Spektor Radio
-          Matt and Kim Radio:
-            value: 90891
-            summary: Matt and Kim Radio
-          Pink Radio:
-            value: 90892
-            summary: Pink Radio
-          Jason's iPhone:
-            value: 44590
-            summary: Jason's iPhone
-          Marc's iPhone:
-            value: 4893
-            summary: Marc's iPhone
-          Rnay:
-            value: 4894
-            summary: Rnay
-          Jeremy's Spotify:
-            value: 4895
-            summary: Jeremy's Spotify
-          Lincoln's Spotify:
-            value: 4896
-            summary: Lincoln's Spotify
-          Indie Pop Rocks:
-            value: 90893
-            summary: Indie Pop Rocks
+          AmpliPi:
+            value: 1004
+            summary: AmpliPi - dlna
+          Radio Station, needs user/pass/station-id:
+            value: 1001
+            summary: Radio Station, needs user/pass/station-id - pandora
           Groove Salad:
-            value: 90894
-            summary: Groove Salad
-          SP_TEST:
-            value: 90895
-            summary: SP_TEST
-          Trial_DLNA:
-            value: 90896
-            summary: Trial_DLNA
-          T2:
-            value: 90897
-            summary: T2
-          T3:
-            value: 90898
-            summary: T3
-          T2.5:
-            value: 90899
-            summary: T2.5
-          Jeremy's DLNA:
-            value: 90900
-            summary: Jeremy's DLNA
+            value: 1003
+            summary: Groove Salad - internetradio
       requestBody:
         content:
           application/json:
@@ -2490,6 +3231,16 @@ paths:
           description: Stream ID
         name: sid
         in: path
+        examples:
+          AmpliPi:
+            value: 1004
+            summary: AmpliPi - dlna
+          Radio Station, needs user/pass/station-id:
+            value: 1001
+            summary: Radio Station, needs user/pass/station-id - pandora
+          Groove Salad:
+            value: 1003
+            summary: Groove Salad - internetradio
       - description: Number found on the end of a pandora url while playing the station,
           ie 4610303469018478727 in https://www.pandora.com/station/play/4610303469018478727
         required: true
@@ -2501,55 +3252,6 @@ paths:
             station, ie 4610303469018478727 in https://www.pandora.com/station/play/4610303469018478727
         name: station
         in: path
-        examples:
-          Regina Spektor Radio:
-            value: 90890
-            summary: Regina Spektor Radio
-          Matt and Kim Radio:
-            value: 90891
-            summary: Matt and Kim Radio
-          Pink Radio:
-            value: 90892
-            summary: Pink Radio
-          Jason's iPhone:
-            value: 44590
-            summary: Jason's iPhone
-          Marc's iPhone:
-            value: 4893
-            summary: Marc's iPhone
-          Rnay:
-            value: 4894
-            summary: Rnay
-          Jeremy's Spotify:
-            value: 4895
-            summary: Jeremy's Spotify
-          Lincoln's Spotify:
-            value: 4896
-            summary: Lincoln's Spotify
-          Indie Pop Rocks:
-            value: 90893
-            summary: Indie Pop Rocks
-          Groove Salad:
-            value: 90894
-            summary: Groove Salad
-          SP_TEST:
-            value: 90895
-            summary: SP_TEST
-          Trial_DLNA:
-            value: 90896
-            summary: Trial_DLNA
-          T2:
-            value: 90897
-            summary: T2
-          T3:
-            value: 90898
-            summary: T3
-          T2.5:
-            value: 90899
-            summary: T2.5
-          Jeremy's DLNA:
-            value: 90900
-            summary: Jeremy's DLNA
       responses:
         '200':
           description: Successful Response
@@ -2748,7 +3450,7 @@ paths:
       tags:
       - stream
       summary: Exec Command
-      description: "Execute a comamnds on a stream (stream=**sid**).\n\n  Command\
+      description: "Executes a comamnd on a stream (stream=**sid**).\n\n  Command\
         \ options:\n  * Play Stream: **play**\n  * Pause Stream: **pause**\n  * Skip\
         \ to next song: **next**\n  * Stop Stream: **stop**\n  * Like/Love Current\
         \ Song: **love**\n  * Ban Current Song (pandora only): **ban**\n  * Shelve\
@@ -2765,60 +3467,21 @@ paths:
           description: Stream ID
         name: sid
         in: path
+        examples:
+          AmpliPi:
+            value: 1004
+            summary: AmpliPi - dlna
+          Radio Station, needs user/pass/station-id:
+            value: 1001
+            summary: Radio Station, needs user/pass/station-id - pandora
+          Groove Salad:
+            value: 1003
+            summary: Groove Salad - internetradio
       - required: true
         schema:
           $ref: '#/components/schemas/StreamCommand'
         name: cmd
         in: path
-        examples:
-          Regina Spektor Radio:
-            value: 90890
-            summary: Regina Spektor Radio
-          Matt and Kim Radio:
-            value: 90891
-            summary: Matt and Kim Radio
-          Pink Radio:
-            value: 90892
-            summary: Pink Radio
-          Jason's iPhone:
-            value: 44590
-            summary: Jason's iPhone
-          Marc's iPhone:
-            value: 4893
-            summary: Marc's iPhone
-          Rnay:
-            value: 4894
-            summary: Rnay
-          Jeremy's Spotify:
-            value: 4895
-            summary: Jeremy's Spotify
-          Lincoln's Spotify:
-            value: 4896
-            summary: Lincoln's Spotify
-          Indie Pop Rocks:
-            value: 90893
-            summary: Indie Pop Rocks
-          Groove Salad:
-            value: 90894
-            summary: Groove Salad
-          SP_TEST:
-            value: 90895
-            summary: SP_TEST
-          Trial_DLNA:
-            value: 90896
-            summary: Trial_DLNA
-          T2:
-            value: 90897
-            summary: T2
-          T3:
-            value: 90898
-            summary: T3
-          T2.5:
-            value: 90899
-            summary: T2.5
-          Jeremy's DLNA:
-            value: 90900
-            summary: Jeremy's DLNA
       responses:
         '200':
           description: Successful Response
@@ -3094,6 +3757,24 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Preset'
+              example:
+                presets:
+                - id: 10000
+                  name: Mute All
+                  state:
+                    zones:
+                    - id: 0
+                      mute: true
+                    - id: 1
+                      mute: true
+                    - id: 2
+                      mute: true
+                    - id: 3
+                      mute: true
+                    - id: 4
+                      mute: true
+                    - id: 5
+                      mute: true
   /api/presets/{pid}:
     get:
       tags:
@@ -3115,9 +3796,9 @@ paths:
           Mute All:
             value: 10000
             summary: Mute All
-          Restore last config:
-            value: 9999
-            summary: Restore last config
+          Play Pandora:
+            value: 10001
+            summary: Play Pandora
       responses:
         '200':
           description: Successful Response
@@ -3170,9 +3851,9 @@ paths:
           Mute All:
             value: 10000
             summary: Mute All
-          Restore last config:
-            value: 9999
-            summary: Restore last config
+          Play Pandora:
+            value: 10001
+            summary: Play Pandora
       responses:
         '200':
           description: Successful Response
@@ -3386,9 +4067,9 @@ paths:
           Mute All:
             value: 10000
             summary: Mute All
-          Restore last config:
-            value: 9999
-            summary: Restore last config
+          Play Pandora:
+            value: 10001
+            summary: Play Pandora
       requestBody:
         content:
           application/json:
@@ -3622,9 +4303,219 @@ paths:
           Mute All:
             value: 10000
             summary: Mute All
-          Restore last config:
-            value: 9999
-            summary: Restore last config
+          Play Pandora:
+            value: 10001
+            summary: Play Pandora
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+              examples:
+                Status of Jason's AmpliPi:
+                  value:
+                    groups:
+                    - id: 0
+                      mute: false
+                      name: Whole House
+                      source_id: null
+                      vol_delta: -44
+                      zones:
+                      - 0
+                      - 1
+                      - 2
+                      - 3
+                      - 5
+                      - 6
+                      - 7
+                      - 8
+                      - 9
+                      - 10
+                      - 11
+                    - id: 1
+                      mute: true
+                      name: KitchLivDining
+                      source_id: 0
+                      vol_delta: -49
+                      zones:
+                      - 3
+                      - 9
+                      - 10
+                      - 11
+                    presets:
+                    - id: 10000
+                      name: Mute All
+                      state:
+                        zones:
+                        - id: 0
+                          mute: true
+                        - id: 1
+                          mute: true
+                        - id: 2
+                          mute: true
+                        - id: 3
+                          mute: true
+                        - id: 4
+                          mute: true
+                        - id: 5
+                          mute: true
+                    sources:
+                    - id: 0
+                      input: stream=90890
+                      name: J1
+                    - id: 1
+                      input: stream=44590
+                      name: J2
+                    - id: 2
+                      input: local
+                      name: Marc
+                    - id: 3
+                      input: local
+                      name: Source 4
+                    streams:
+                    - id: 90890
+                      info:
+                        album: Far (Deluxe Version)
+                        artist: Regina Spektor
+                        img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+                        station: Regina Spektor Radio
+                        track: Eet
+                      name: Regina Spektor Radio
+                      password: ''
+                      station: '4473713754798410236'
+                      status: playing
+                      type: pandora
+                      user: example1@micro-nova.com
+                    - id: 90891
+                      info:
+                        details: No info available
+                      name: Matt and Kim Radio
+                      password: ''
+                      station: '4610303469018478727'
+                      status: disconnected
+                      type: pandora
+                      user: example2@micro-nova.com
+                    - id: 90892
+                      info:
+                        details: No info available
+                      name: Pink Radio
+                      password: ''
+                      station: '4326539910057675260'
+                      status: disconnected
+                      type: pandora
+                      user: example3@micro-nova.com
+                    - id: 44590
+                      info:
+                        details: No info available
+                      name: Jason's iPhone
+                      status: connected
+                      type: shairport
+                    - id: 4894
+                      info:
+                        details: No info available
+                      name: Rnay
+                      status: disconnected
+                      type: shairport
+                    info:
+                      version: 0.0.1
+                    zones:
+                    - disabled: false
+                      id: 0
+                      mute: false
+                      name: Local
+                      source_id: 1
+                      vol: -35
+                    - disabled: false
+                      id: 1
+                      mute: false
+                      name: Office
+                      source_id: 0
+                      vol: -41
+                    - disabled: false
+                      id: 2
+                      mute: true
+                      name: Laundry Room
+                      source_id: 0
+                      vol: -48
+                    - disabled: false
+                      id: 3
+                      mute: true
+                      name: Dining Room
+                      source_id: 0
+                      vol: -44
+                    - disabled: true
+                      id: 4
+                      mute: true
+                      name: BROKEN
+                      source_id: 0
+                      vol: -50
+                    - disabled: false
+                      id: 5
+                      mute: true
+                      name: Guest Bedroom
+                      source_id: 0
+                      vol: -48
+                    - disabled: false
+                      id: 6
+                      mute: true
+                      name: Main Bedroom
+                      source_id: 0
+                      vol: -40
+                    - disabled: false
+                      id: 7
+                      mute: true
+                      name: Main Bathroom
+                      source_id: 0
+                      vol: -44
+                    - disabled: false
+                      id: 8
+                      mute: true
+                      name: Master Bathroom
+                      source_id: 0
+                      vol: -41
+                    - disabled: false
+                      id: 9
+                      mute: true
+                      name: Kitchen High
+                      source_id: 0
+                      vol: -53
+                    - disabled: false
+                      id: 10
+                      mute: true
+                      name: kitchen Low
+                      source_id: 0
+                      vol: -52
+                    - disabled: false
+                      id: 11
+                      mute: true
+                      name: Living Room
+                      source_id: 0
+                      vol: -46
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /api/announce:
+    post:
+      tags:
+      - announce
+      summary: Announce
+      description: 'Make an announcement '
+      operationId: announce_api_announce_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Announcement'
+            examples:
+              Make NASA Announcement:
+                value:
+                  media: https://www.nasa.gov/mp3/640149main_Computers%20are%20in%20Control.mp3
+        required: true
       responses:
         '200':
           description: Successful Response
@@ -3820,6 +4711,49 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
+    Announcement:
+      title: Announcement
+      required:
+      - media
+      type: object
+      properties:
+        media:
+          title: Media
+          type: string
+          description: URL to media to play as the announcement
+        vol:
+          title: Vol
+          maximum: 0.0
+          minimum: -79.0
+          type: integer
+          description: Output volume in dB
+          default: -40
+        source_id:
+          title: Source Id
+          maximum: 3.0
+          minimum: 0.0
+          type: integer
+          description: Source to announce with
+          default: 3
+        zones:
+          title: Zones
+          type: array
+          items:
+            type: integer
+          description: Set of zone ids belonging to a group
+        groups:
+          title: Groups
+          type: array
+          items:
+            type: integer
+          description: List of group ids
+      description: 'A PA-like Announcement
+
+        IF no zones or groups are specified, all available zones are used'
+      examples:
+        Make NASA Announcement:
+          value:
+            media: https://www.nasa.gov/mp3/640149main_Computers%20are%20in%20Control.mp3
     Command:
       title: Command
       required:
@@ -3857,31 +4791,67 @@ components:
           minimum: 0.0
           type: integer
           description: id of the connected source
-          default: 0
         zones:
           title: Zones
-          uniqueItems: true
           type: array
           items:
             type: integer
-          description: Set of zones belonging to a group
+          description: Set of zone ids belonging to a group
         mute:
           title: Mute
           type: boolean
           description: Set to true if output is all zones muted
-          default: true
         vol_delta:
           title: Vol Delta
           maximum: 0.0
           minimum: -79.0
           type: integer
-          description: Average utput volume in dB
-          default: -79
+          description: Average input volume in dB
       description: 'A group of zones that can share the same audio input and be controlled
         as a group ie. Updstairs.
 
 
         Volume, mute, and source_id fields are aggregates of the member zones.'
+      examples:
+        Upstairs Group:
+          value:
+            id: 101
+            name: Upstairs
+            zones:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            vol_delta: -65
+        Downstairs Group:
+          value:
+            id: 102
+            name: Downstairs
+            zones:
+            - 6
+            - 7
+            - 8
+            - 9
+            vol_delta: -30
+      creation_examples:
+        Upstairs Group:
+          value:
+            name: Upstairs
+            zones:
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+        Downstairs Group:
+          value:
+            name: Downstairs
+            zones:
+            - 6
+            - 7
+            - 8
+            - 9
     GroupUpdate:
       title: GroupUpdate
       type: object
@@ -3896,28 +4866,45 @@ components:
           minimum: 0.0
           type: integer
           description: id of the connected source
-          default: 0
         zones:
           title: Zones
           type: array
           items:
             type: integer
-          description: Set of zones belonging to a group
+          description: Set of zone ids belonging to a group
         mute:
           title: Mute
           type: boolean
           description: Set to true if output is all zones muted
-          default: true
         vol_delta:
           title: Vol Delta
           maximum: 0.0
           minimum: -79.0
           type: integer
-          description: Average utput volume in dB
-          default: -79
+          description: Average input volume in dB
       description: 'Reconfiguration of a Group '
-    GroupUpdate2:
-      title: GroupUpdate2
+      examples:
+        Rezone Group:
+          value:
+            name: Upstairs
+            zones:
+            - 3
+            - 4
+            - 5
+        Change Name:
+          value:
+            name: Upstairs
+        Change audio source:
+          value:
+            source-id: 3
+        Increase Volume:
+          value:
+            vol_delta: -45
+        Mute:
+          value:
+            mute: true
+    GroupUpdateWithId:
+      title: GroupUpdateWithId
       required:
       - id
       type: object
@@ -3932,29 +4919,46 @@ components:
           minimum: 0.0
           type: integer
           description: id of the connected source
-          default: 0
         zones:
           title: Zones
           type: array
           items:
             type: integer
-          description: Set of zones belonging to a group
+          description: Set of zone ids belonging to a group
         mute:
           title: Mute
           type: boolean
           description: Set to true if output is all zones muted
-          default: true
         vol_delta:
           title: Vol Delta
           maximum: 0.0
           minimum: -79.0
           type: integer
-          description: Average utput volume in dB
-          default: -79
+          description: Average input volume in dB
         id:
           title: Id
           type: integer
       description: 'Reconfiguration of a specific Group '
+      examples:
+        Rezone Group:
+          value:
+            name: Upstairs
+            zones:
+            - 3
+            - 4
+            - 5
+        Change Name:
+          value:
+            name: Upstairs
+        Change audio source:
+          value:
+            source-id: 3
+        Increase Volume:
+          value:
+            vol_delta: -45
+        Mute:
+          value:
+            mute: true
     HTTPValidationError:
       title: HTTPValidationError
       type: object
@@ -3985,11 +4989,43 @@ components:
           type: boolean
           default: false
       description: 'Information about the settings used by the controller '
+    MultiZoneUpdate:
+      title: MultiZoneUpdate
+      required:
+      - update
+      type: object
+      properties:
+        zones:
+          title: Zones
+          type: array
+          items:
+            type: integer
+          description: Set of zone ids belonging to a group
+        groups:
+          title: Groups
+          type: array
+          items:
+            type: integer
+          description: List of group ids
+        update:
+          $ref: '#/components/schemas/ZoneUpdate'
+      description: 'Reconfiguration of multiple zones specified by zone_ids and group_ids '
+      examples:
+        Connect all zones to source 1:
+          value:
+            zones:
+            - 0
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
+            update:
+              source_id: 0
     Preset:
       title: Preset
       required:
       - name
-      - state
       type: object
       properties:
         id:
@@ -4007,7 +5043,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Command'
-          default: []
         last_used:
           title: Last Used
           type: integer
@@ -4015,6 +5050,43 @@ components:
 
         In addition to most of the configuration found in Status, this can contain
         commands as well that configure the state of different streaming services.'
+      examples:
+        Mute All:
+          value:
+            id: 10000
+            name: Mute All
+            state:
+              zones:
+              - id: 0
+                mute: true
+              - id: 1
+                mute: true
+              - id: 2
+                mute: true
+              - id: 3
+                mute: true
+              - id: 4
+                mute: true
+              - id: 5
+                mute: true
+      creation_examples:
+        Add Mute All:
+          value:
+            name: Mute All
+            state:
+              zones:
+              - id: 0
+                mute: true
+              - id: 1
+                mute: true
+              - id: 2
+                mute: true
+              - id: 3
+                mute: true
+              - id: 4
+                mute: true
+              - id: 5
+                mute: true
     PresetState:
       title: PresetState
       type: object
@@ -4023,17 +5095,17 @@ components:
           title: Sources
           type: array
           items:
-            $ref: '#/components/schemas/SourceUpdate2'
+            $ref: '#/components/schemas/SourceUpdateWithId'
         zones:
           title: Zones
           type: array
           items:
-            $ref: '#/components/schemas/ZoneUpdate2'
+            $ref: '#/components/schemas/ZoneUpdateWithId'
         groups:
           title: Groups
           type: array
           items:
-            $ref: '#/components/schemas/GroupUpdate2'
+            $ref: '#/components/schemas/GroupUpdateWithId'
       description: 'A set of partial configuration changes to make to sources, zones,
         and groups '
     PresetUpdate:
@@ -4057,6 +5129,20 @@ components:
         The contents of state and commands will be completely replaced if populated.
 
         Merging old and new updates seems too complicated and error prone.'
+      examples:
+        Only mute some:
+          value:
+            name: Mute Some
+            state:
+              zones:
+              - id: 0
+                mute: true
+              - id: 1
+                mute: true
+              - id: 2
+                mute: true
+              - id: 5
+                mute: true
     Source:
       title: Source
       required:
@@ -4079,7 +5165,70 @@ components:
             \ connects to the RCA inputs associated\n  * Nothing ('') behind the scenes\
             \ this is muxed to a digital output\n  "
           default: ''
+        info:
+          title: Info
+          allOf:
+          - $ref: '#/components/schemas/SourceInfo'
+          description: Additional info about the current audio playing from the stream
+            (generated during playback
       description: 'An audio source '
+      examples:
+        stream connected:
+          value:
+            id: 1
+            name: '1'
+            input: stream=1009
+            info:
+              album: Far (Deluxe Version)
+              artist: Regina Spektor
+              img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+              station: Regina Spektor Radio
+              track: Eet
+              state: playing
+        nothing connected:
+          value:
+            id: 2
+            name: '2'
+            input: ''
+            info:
+              img_url: static/imgs/disconnected.png
+              state: stopped
+        rca connected:
+          value:
+            id: 3
+            name: '3'
+            input: local
+            info:
+              img_url: static/imgs/rca_inputs.svg
+              state: unknown
+    SourceInfo:
+      title: SourceInfo
+      required:
+      - name
+      - state
+      type: object
+      properties:
+        name:
+          title: Name
+          type: string
+        state:
+          title: State
+          type: string
+        artist:
+          title: Artist
+          type: string
+        track:
+          title: Track
+          type: string
+        album:
+          title: Album
+          type: string
+        station:
+          title: Station
+          type: string
+        img_url:
+          title: Img Url
+          type: string
     SourceUpdate:
       title: SourceUpdate
       type: object
@@ -4092,8 +5241,18 @@ components:
           title: Input
           type: string
       description: 'Partial reconfiguration of an audio Source '
-    SourceUpdate2:
-      title: SourceUpdate2
+      examples:
+        Update Input to RCA input:
+          value:
+            input: local
+        Update name:
+          value:
+            name: J2
+        Update Input to Matt and Kim Radio:
+          value:
+            input: stream=10001
+    SourceUpdateWithId:
+      title: SourceUpdateWithId
       required:
       - id
       type: object
@@ -4111,6 +5270,16 @@ components:
           minimum: 0.0
           type: integer
       description: 'Partial reconfiguration of a specific audio Source '
+      examples:
+        Update Input to RCA input:
+          value:
+            input: local
+        Update name:
+          value:
+            name: J2
+        Update Input to Matt and Kim Radio:
+          value:
+            input: stream=10001
     Status:
       title: Status
       type: object
@@ -4140,37 +5309,37 @@ components:
             $ref: '#/components/schemas/Zone'
           default:
           - id: 0
-            name: Zone 0
-            source_id: 0
-            mute: true
-            vol: -79
-            disabled: false
-          - id: 1
             name: Zone 1
             source_id: 0
             mute: true
             vol: -79
             disabled: false
-          - id: 2
+          - id: 1
             name: Zone 2
             source_id: 0
             mute: true
             vol: -79
             disabled: false
-          - id: 3
+          - id: 2
             name: Zone 3
             source_id: 0
             mute: true
             vol: -79
             disabled: false
-          - id: 4
+          - id: 3
             name: Zone 4
             source_id: 0
             mute: true
             vol: -79
             disabled: false
-          - id: 5
+          - id: 4
             name: Zone 5
+            source_id: 0
+            mute: true
+            vol: -79
+            disabled: false
+          - id: 5
+            name: Zone 6
             source_id: 0
             mute: true
             vol: -79
@@ -4196,6 +5365,185 @@ components:
         info:
           $ref: '#/components/schemas/Info'
       description: 'Full Controller Configuration and Status '
+      examples:
+        Status of Jason's AmpliPi:
+          value:
+            groups:
+            - id: 0
+              mute: false
+              name: Whole House
+              vol_delta: -44
+              zones:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 5
+              - 6
+              - 7
+              - 8
+              - 9
+              - 10
+              - 11
+            - id: 1
+              mute: true
+              name: KitchLivDining
+              source_id: 0
+              vol_delta: -49
+              zones:
+              - 3
+              - 9
+              - 10
+              - 11
+            presets:
+            - id: 10000
+              name: Mute All
+              state:
+                zones:
+                - id: 0
+                  mute: true
+                - id: 1
+                  mute: true
+                - id: 2
+                  mute: true
+                - id: 3
+                  mute: true
+                - id: 4
+                  mute: true
+                - id: 5
+                  mute: true
+            sources:
+            - id: 0
+              input: stream=90890
+              name: J1
+            - id: 1
+              input: stream=44590
+              name: J2
+            - id: 2
+              input: local
+              name: Marc
+            - id: 3
+              input: local
+              name: Source 4
+            streams:
+            - id: 90890
+              info:
+                album: Far (Deluxe Version)
+                artist: Regina Spektor
+                img_url: http://mediaserver-cont-dc6-1-v4v6.pandora.com/images/public/int/2/1/5/4/093624974512_500W_500H.jpg
+                station: Regina Spektor Radio
+                track: Eet
+              name: Regina Spektor Radio
+              password: ''
+              station: '4473713754798410236'
+              status: playing
+              type: pandora
+              user: example1@micro-nova.com
+            - id: 90891
+              info:
+                details: No info available
+              name: Matt and Kim Radio
+              password: ''
+              station: '4610303469018478727'
+              status: disconnected
+              type: pandora
+              user: example2@micro-nova.com
+            - id: 90892
+              info:
+                details: No info available
+              name: Pink Radio
+              password: ''
+              station: '4326539910057675260'
+              status: disconnected
+              type: pandora
+              user: example3@micro-nova.com
+            - id: 44590
+              info:
+                details: No info available
+              name: Jason's iPhone
+              status: connected
+              type: shairport
+            - id: 4894
+              info:
+                details: No info available
+              name: Rnay
+              status: disconnected
+              type: shairport
+            info:
+              version: 0.0.1
+            zones:
+            - disabled: false
+              id: 0
+              mute: false
+              name: Local
+              source_id: 1
+              vol: -35
+            - disabled: false
+              id: 1
+              mute: false
+              name: Office
+              source_id: 0
+              vol: -41
+            - disabled: false
+              id: 2
+              mute: true
+              name: Laundry Room
+              source_id: 0
+              vol: -48
+            - disabled: false
+              id: 3
+              mute: true
+              name: Dining Room
+              source_id: 0
+              vol: -44
+            - disabled: true
+              id: 4
+              mute: true
+              name: BROKEN
+              source_id: 0
+              vol: -50
+            - disabled: false
+              id: 5
+              mute: true
+              name: Guest Bedroom
+              source_id: 0
+              vol: -48
+            - disabled: false
+              id: 6
+              mute: true
+              name: Main Bedroom
+              source_id: 0
+              vol: -40
+            - disabled: false
+              id: 7
+              mute: true
+              name: Main Bathroom
+              source_id: 0
+              vol: -44
+            - disabled: false
+              id: 8
+              mute: true
+              name: Master Bathroom
+              source_id: 0
+              vol: -41
+            - disabled: false
+              id: 9
+              mute: true
+              name: Kitchen High
+              source_id: 0
+              vol: -53
+            - disabled: false
+              id: 10
+              mute: true
+              name: kitchen Low
+              source_id: 0
+              vol: -52
+            - disabled: false
+              id: 11
+              mute: true
+              name: Living Room
+              source_id: 0
+              vol: -46
     Stream:
       title: Stream
       required:
@@ -4215,7 +5563,7 @@ components:
           title: Type
           type: string
           description: "stream type\n\n  * pandora\n  * shairport\n  * dlna\n  * internetradio\n\
-            \  * spotify\n  "
+            \  * spotify\n  * plexamp\n  * file\n  * fmradio\n  "
         user:
           title: User
           type: string
@@ -4231,29 +5579,124 @@ components:
         url:
           title: Url
           type: string
-          description: Stream url, used for internetradio
+          description: Stream url, used for internetradio and file
         logo:
           title: Logo
           type: string
           description: Icon/Logo url, used for internetradio
-        info:
-          title: Info
-          type: object
-          description: Additional info about the current audio playing from the stream
-            (generated during playback
-        status:
-          title: Status
+        freq:
+          title: Freq
           type: string
-          description: State of the stream
+          description: FM Frequency (MHz), used for fmradio
+        client_id:
+          title: Client Id
+          type: string
+          description: Plexamp client_id, becomes "identifier" in server.json
+        token:
+          title: Token
+          type: string
+          description: Plexamp token for server.json
       description: 'Digital stream such as Pandora, Airplay or Spotify '
+      examples:
+        Regina Spektor Radio:
+          value:
+            id: 90890
+            name: Regina Spektor Radio
+            password: ''
+            station: '4473713754798410236'
+            status: connected
+            type: pandora
+            user: example1@micro-nova.com
+        Matt and Kim Radio (disconnected):
+          value:
+            id: 90891
+            info:
+              details: No info available
+            name: Matt and Kim Radio
+            password: ''
+            station: '4610303469018478727'
+            status: disconnected
+            type: pandora
+            user: example2@micro-nova.com
+        Shairport (connected):
+          value:
+            id: 44590
+            info:
+              details: No info available
+            name: Jason's iPhone
+            status: connected
+            type: shairport
+        Shairport (disconnected):
+          value:
+            id: 4894
+            info:
+              details: No info available
+            name: Rnay
+            status: disconnected
+            type: shairport
+      creation_examples:
+        Add Beatles Internet Radio Station:
+          value:
+            logo: http://www.beatlesradio.com/content/images/thumbs/0000587.gif
+            name: Beatles Radio
+            type: internetradio
+            url: http://www.beatlesradio.com:8000/stream/1/
+        Add Classical KING Internet Radio Station:
+          value:
+            logo: https://i.iheart.com/v3/re/assets/images/7bcfd87a-de3e-47d0-b896-be0ed38c9d74.png
+            name: Classical KING FM 98.1
+            type: internetradio
+            url: http://classicalking.streamguys1.com/king-fm-aac-iheart
+        Add Generic DLNA:
+          value:
+            name: Replace this text with a name you like!
+            type: dlna
+        Add Groove Salad Internet Radio Station:
+          value:
+            logo: https://somafm.com/img3/groovesalad-200.jpg
+            name: Groove Salad
+            type: internetradio
+            url: http://ice2.somafm.com/groovesalad-16-aac
+        Add KEXP Internet Radio Station:
+          value:
+            logo: https://i.iheart.com/v3/re/new_assets/cc4e0a17-5233-4e4b-9b6b-7799904f78ea
+            name: KEXP 90.3
+            type: internetradio
+            url: http://live-aacplus-64.kexp.org/kexp64.aac
+        Add Matt and Kim Pandora Station:
+          value:
+            name: Matt and Kim Radio
+            password: s79sDDkjf
+            station: '4473713754798410236'
+            type: pandora
+            user: test@micro-nova.com
+        Add MicroNova Spotify:
+          value:
+            name: MicroNova Spotify
+            type: spotify
+        Add Micronova Airplay:
+          value:
+            name: Micronova AP
+            type: shairport
+        Play single file or announcement:
+          value:
+            name: Play NASA Announcement
+            url: https://www.nasa.gov/mp3/640149main_Computers%20are%20in%20Control.mp3
+        Add FM Radio Station:
+          value:
+            name: WXYZ
+            type: fmradio
+            freq: '100.1'
+            logo: static/imgs/fmradio.png
     StreamCommand:
       title: StreamCommand
       enum:
       - play
       - pause
       - next
+      - prev
       - stop
-      - like
+      - love
       - ban
       - shelve
       type: string
@@ -4281,7 +5724,24 @@ components:
         logo:
           title: Logo
           type: string
+        freq:
+          title: Freq
+          type: string
       description: 'Reconfiguration of a Stream '
+      examples:
+        Change account info:
+          value:
+            password: sd9sk3k30
+            user: test@micro-nova.com
+        Change name:
+          value:
+            name: Matt and Kim Radio
+        Change pandora radio station:
+          value:
+            station: 0982034049300
+        Upgrade groove salad stream quality:
+          value:
+            url: http://ice2.somafm.com/groovesalad-64-aac
     ValidationError:
       title: ValidationError
       required:
@@ -4341,6 +5801,21 @@ components:
           default: false
       description: 'Audio output to a stereo pair of speakers, typically belonging
         to a room '
+      examples:
+        Living Room:
+          value:
+            name: Living Room
+            source_id: 1
+            mute: false
+            vol: -25
+            disabled: false
+        Dining Room:
+          value:
+            name: Dining Room
+            source_id: 2
+            mute: true
+            vol: -65
+            disabled: false
     ZoneUpdate:
       title: ZoneUpdate
       type: object
@@ -4355,27 +5830,36 @@ components:
           minimum: 0.0
           type: integer
           description: id of the connected source
-          default: 0
         mute:
           title: Mute
           type: boolean
           description: Set to true if output is muted
-          default: true
         vol:
           title: Vol
           maximum: 0.0
           minimum: -79.0
           type: integer
           description: Output volume in dB
-          default: -79
         disabled:
           title: Disabled
           type: boolean
           description: Set to true if not connected to a speaker
-          default: false
       description: 'Reconfiguration of a Zone '
-    ZoneUpdate2:
-      title: ZoneUpdate2
+      examples:
+        Change Name:
+          value:
+            name: Bedroom
+        Change audio source:
+          value:
+            source-id: 3
+        Increase Volume:
+          value:
+            vol: -45
+        Mute:
+          value:
+            mute: true
+    ZoneUpdateWithId:
+      title: ZoneUpdateWithId
       required:
       - id
       type: object
@@ -4390,36 +5874,45 @@ components:
           minimum: 0.0
           type: integer
           description: id of the connected source
-          default: 0
         mute:
           title: Mute
           type: boolean
           description: Set to true if output is muted
-          default: true
         vol:
           title: Vol
           maximum: 0.0
           minimum: -79.0
           type: integer
           description: Output volume in dB
-          default: -79
         disabled:
           title: Disabled
           type: boolean
           description: Set to true if not connected to a speaker
-          default: false
         id:
           title: Id
           maximum: 35.0
           minimum: 0.0
           type: integer
       description: 'Reconfiguration of a specific Zone '
+      examples:
+        Change Name:
+          value:
+            name: Bedroom
+        Change audio source:
+          value:
+            source-id: 3
+        Increase Volume:
+          value:
+            vol: -45
+        Mute:
+          value:
+            mute: true
 tags:
 - name: status
-  description: The status and configuration of the entire system, including source,
+  description: The status and configuration of the entire system, including sources,
     zones, groups, and streams.
 - name: source
-  description: Audio source. Can accept sudio input from a local (RCA) connection
+  description: Audio source. Can accept audio input from a local (RCA) connection
     or any stream. Sources can be connected to one or multiple zones, or connected
     to nothing at all.
 - name: zone
@@ -4429,9 +5922,9 @@ tags:
 - name: group
   description: Group of zones. Grouping allows a set of zones to be controlled together.
     A zone can belong to multiple groups, allowing for different levels of abstraction,
-    ie. Guest Bedroom can belong to both the 'Upstairs' and 'Whole House' groups.,
+    e.g. Guest Bedroom can belong to both the 'Upstairs' and 'Whole House' groups.
 - name: stream
-  description: Digital stream that can be connected to a source, ie. Pandora, Airplay,
+  description: Digital stream that can be connected to a source, e.g. Pandora, Airplay,
     Spotify, Internet Radio, DLNA.
 - name: preset
   description: A partial system configuration. Used to load specific configurations,

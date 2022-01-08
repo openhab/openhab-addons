@@ -25,6 +25,7 @@
 			"yeelink.light.ceiling10.ambi",
 			"yeelink.light.ceiling19.ambi",
 			"yeelink.light.ceiling20.ambi",
+			"yeelink.light.ceil26",
 			"yilai.light.ceiling1",
 			"yilai.light.ceiling2",
 			"yilai.light.ceiling3"
@@ -229,7 +230,6 @@
 				"property": "",
 				"friendlyName": "Set Scene",
 				"channel": "customScene",
-				"channelType": "customScene",
 				"type": "String",
 				"refresh": false,
 				"ChannelGroup": "actions",
@@ -244,7 +244,6 @@
 				"property": "nl_br",
 				"friendlyName": "Nightlight Brightness",
 				"channel": "nightlightBrightness",
-				"channelType": "nightlightBrightness",
 				"type": "Number",
 				"refresh": true,
 				"actions": [],

@@ -47,18 +47,12 @@
 		<item-type>Switch</item-type>
 		<label>PlayStation 3 Power</label>
 		<description>Shows if PlayStation 3 is On or Off.</description>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
 		<label>PlayStation 4 Power</label>
 		<description>Shows if PlayStation 4 is On or in Standby/Off.</description>
-		<tags>
-			<tag>Switchable</tag>
-		</tags>
 	</channel-type>
 	<channel-type id="application-channel">
 		<item-type>String</item-type>

@@ -16,6 +16,8 @@
 			<channel id="used" typeId="used"/>
 			<channel id="availablePercent" typeId="availablePercent"/>
 			<channel id="usedPercent" typeId="usedPercent"/>
+			<channel id="availableHeap" typeId="availableHeap"/>
+			<channel id="usedHeapPercent" typeId="usedHeapPercent"/>
 		</channels>
 	</channel-group-type>
 
@@ -124,6 +126,22 @@
 			<channel id="path" typeId="path_process"/>
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="availableHeap" advanced="true">
+		<item-type>Number:DataAmount</item-type>
+		<label>Available Heap</label>
+		<description>How much data is available in the Java heap.</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
+	</channel-type>
+
+	<channel-type id="usedHeapPercent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Used Heap Percent</label>
+		<description>How much data in percent has been used from the max size the Java heap can grow to.</description>
+		<state pattern="%.1f %%" readOnly="true"/>
+		<config-description-ref uri="channel-type:systeminfo:mediumpriority"/>
+	</channel-type>
 
 	<channel-type id="path_process">
 		<item-type>String</item-type>

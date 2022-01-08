@@ -217,7 +217,8 @@
 		<description>Temperature from the sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -228,7 +229,8 @@
 		<description>Temperature from the external sensor</description>
 		<category>Temperature</category>
 		<tags>
-			<tag>CurrentTemperature</tag>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -239,7 +241,8 @@
 		<description>Relative humidity in % (0..100%) from external sensor</description>
 		<category>Humidity</category>
 		<tags>
-			<tag>CurrentHumidity</tag>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%">
 		</state>
@@ -249,7 +252,8 @@
 		<label>Humidity</label>
 		<description>Relative humidity in % (0..100%)</description>
 		<tags>
-			<tag>CurrentHumidity</tag>
+			<tag>Measurement</tag>
+			<tag>Humidity</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

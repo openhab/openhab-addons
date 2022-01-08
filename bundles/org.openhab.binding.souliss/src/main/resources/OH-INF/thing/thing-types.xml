@@ -1,0 +1,1286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="souliss"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<bridge-type id="gateway">
+		<label>Gateway</label>
+		<description>Represents a Souliss Gateway.</description>
+
+		<representation-property>gatewayLanAddress</representation-property>
+
+		<config-description>
+			<parameter name="gatewayLanAddress" type="text" required="true" pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
+				<label>IPV4 Address</label>
+				<description>LAN Ip address (mandatory)
+				</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="gatewayWanAddress" type="text" required="false"
+				pattern="^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)+([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$">
+				<label>IPV4 WAN Address</label>
+				<description>WAN Hostname or Ip in case of external network access
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="gatewayPortNumber" type="integer" required="true">
+				<label>Gateway Port</label>
+				<description>Default is 230 UDP.
+				</description>
+				<advanced>true</advanced>
+				<default>230</default>
+				<required>true</required>
+			</parameter>
+			<parameter name="preferredLocalPortNumber" type="integer" required="true">
+				<label>Local Port Number</label>
+				<description>Default port is 23000
+				</description>
+				<default>23000</default>
+				<advanced>true</advanced>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="pingInterval" type="integer" min="1" max="300" unit="s">
+				<label>Ping Interval</label>
+				<description>Interval in seconds to check for device presence.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+				<required>true</required>
+			</parameter>
+			<parameter name="subscriptionInterval" type="integer" min="2" max="240">
+				<label>Subscription Interval</label>
+				<description>Interval in seconds to subscribe Souliss Gateway.
+				</description>
+				<default>30</default>
+				<advanced>true</advanced>
+				<required>true</required>
+			</parameter>
+			<parameter name="healthyInterval" type="integer" min="1" max="240">
+				<label>Healthy Interval</label>
+				<description>Interval in seconds to send nodes healthy.
+				</description>
+				<default>60</default>
+				<advanced>true</advanced>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="sendInterval" type="integer" min="5" max="5000">
+				<label>Send Interval</label>
+				<description>Interval in milliseconds to get packet from binding queue and send it to Souliss. First packet is sent
+					immediately.
+				</description>
+				<default>30</default>
+				<advanced>true</advanced>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="timeoutToRequeue" type="integer" min="0" max="10000">
+				<label>Timeout to Requeue</label>
+				<description>Interval in milliseconds to requeue packet in queue if not yet executed</description>
+				<required>true</required>
+				<default>5000</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="timeoutToRemovePacket" type="integer" min="0" max="60000">
+				<label>Timeout to Remove Packet</label>
+				<description>Interval in milliseconds to remove packet from queue if not yet executed </description>
+				<required>true</required>
+				<default>20000</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="userIndex" type="integer" required="true">
+				<label>User Index</label>
+				<description>User Index</description>
+				<default>70</default>
+				<required>true</required>
+			</parameter>
+			<parameter name="nodeIndex" type="integer" required="true">
+				<label>Node Index</label>
+				<description>Node Index</description>
+				<default>120</default>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="t11">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T11</label>
+		<description>Simple Light</description>
+
+		<channels>
+			<channel id="onOff" typeId="onoff"/>
+			<channel id="sleep" typeId="sleep"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="sleep" type="integer" min="1" max="1000">
+				<label>Sleep</label>
+				<description>Set sleep timer in cycles (conf.parameter: "sleep")</description>
+				<required>false</required>
+				<default>5</default>
+			</parameter>
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description> (conf.parameter: "secureSend") </description>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t12">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T12</label>
+		<description>Simple Light with Auto Mode</description>
+		<channels>
+			<channel id="onOff" typeId="onoff"/>
+			<channel id="autoMode" typeId="autoMode"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="sleep" type="integer" min="1" max="1000">
+				<label>Sleep</label>
+				<description>Set sleep timer in cycles</description>
+				<required>false</required>
+				<default>5</default>
+			</parameter>
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description/>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t13">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T13</label>
+		<description>Digital Input</description>
+
+		<channels>
+			<channel id="stateOnOff" typeId="stateOnOff"/>
+			<channel id="stateOpenClose" typeId="stateOpenClose"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t14">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T14</label>
+		<description>Pulse Digital Output</description>
+		<channels>
+			<channel id="pulse" typeId="pulse"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t16">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T16</label>
+		<description>RGB LED Strip</description>
+
+		<channels>
+			<channel id="onOff" typeId="onoff"/>
+			<channel id="whiteMode" typeId="whiteMode"/>
+			<channel id="rollerBrightness" typeId="rollerBrightness"/>
+			<channel id="dimmerBrightness" typeId="dimmerBrightness"/>
+			<channel id="ledColor" typeId="ledColor"/>
+			<channel id="sleep" typeId="sleep"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="sleep" type="integer" min="1" max="1000">
+				<label>Sleep</label>
+				<description>Set sleep timer in cycles</description>
+				<required>false</required>
+				<default>5</default>
+			</parameter>
+
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description/>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t18">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T18</label>
+		<description>Simple Light with feedback </description>
+
+		<channels>
+			<channel id="onOff" typeId="onoff"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="sleep" type="integer" min="1" max="1000">
+				<label>Sleep</label>
+				<description>Set sleep timer in cycles</description>
+				<required>false</required>
+				<default>5</default>
+			</parameter>
+
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description/>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t19">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T19</label>
+		<description>Single Color LED Strip</description>
+
+		<channels>
+			<channel id="onOff" typeId="onoff"/>
+			<channel id="rollerBrightness" typeId="rollerBrightness"/>
+			<channel id="dimmerBrightness" typeId="dimmerBrightness"/>
+			<channel id="sleep" typeId="sleep"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="sleep" type="integer" min="1" max="1000">
+				<label>Sleep</label>
+				<description>Set sleep timer in cycles</description>
+				<required>false</required>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t1a">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T1A</label>
+		<description>Digital input pass through</description>
+
+		<channels>
+			<channel id="one" typeId="stateOpenClose">
+				<label>1</label>
+			</channel>
+			<channel id="two" typeId="stateOpenClose">
+				<label>2</label>
+			</channel>
+			<channel id="three" typeId="stateOpenClose">
+				<label>3</label>
+			</channel>
+			<channel id="four" typeId="stateOpenClose">
+				<label>4</label>
+			</channel>
+			<channel id="five" typeId="stateOpenClose">
+				<label>5</label>
+			</channel>
+			<channel id="six" typeId="stateOpenClose">
+				<label>6</label>
+			</channel>
+			<channel id="seven" typeId="stateOpenClose">
+				<label>7</label>
+			</channel>
+			<channel id="eight" typeId="stateOpenClose">
+				<label>8</label>
+			</channel>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t21">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T21</label>
+		<description>Motorized devices with limit switches</description>
+		<channels>
+			<channel id="rollerShutter" typeId="rollerShutter"/>
+			<channel id="rollerShutterState" typeId="rollerShutterState"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description/>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t22">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T22</label>
+		<description>Motorized devices with limit switches and middle position</description>
+		<channels>
+			<channel id="rollerShutter" typeId="rollerShutter"/>
+			<channel id="rollerShutterState" typeId="rollerShutterState"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description/>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t31">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T31</label>
+		<description>Temperature control with cooling and heating mode</description>
+		<channels>
+			<channel id="fan" typeId="fan-channel"/>
+			<channel id="mode" typeId="mode-channel">
+				<label>Mode</label>
+			</channel>
+			<channel id="system" typeId="onoff">
+				<label>System</label>
+			</channel>
+			<channel id="fire" typeId="buttonReadOnly">
+				<label>Fire</label>
+			</channel>
+			<channel id="setPoint" typeId="setpointTemperature"/>
+			<channel id="setAsMeasured" typeId="button">
+				<label>As Measured</label>
+			</channel>
+			<channel id="measured" typeId="temperature"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t41">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T41</label>
+		<description>Anti-theft integration (Main)</description>
+		<channels>
+			<channel id="statusAlarm" typeId="buttonReadOnly">
+				<label>Alarm Status</label>
+			</channel>
+			<channel id="onOffAlarm" typeId="onoff">
+				<label>Alarm ON/OFF</label>
+			</channel>
+			<channel id="rearmAlarm" typeId="button">
+				<label>Rearm</label>
+			</channel>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description/>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t42">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T42</label>
+		<description>Anti-theft integration (Peer)</description>
+		<channels>
+			<channel id="statusAlarm" typeId="buttonReadOnly">
+				<label>Alarm Status</label>
+			</channel>
+			<channel id="onOffAlarm" typeId="onoff">
+				<label>Alarm ON/OFF</label>
+			</channel>
+			<channel id="rearmAlarm" typeId="button">
+				<label>Rearm</label>
+			</channel>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="secureSend" type="boolean">
+				<label>Secure Send</label>
+				<description/>
+				<required>false</required>
+				<default>true</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<thing-type id="t51">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T51</label>
+		<description>Floating Point Input</description>
+
+		<channels>
+			<channel id="value" typeId="float"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t52">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T52</label>
+		<description>Temperature measure (-20, +50) °C</description>
+
+		<channels>
+			<channel id="value" typeId="temperature"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t53">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T53</label>
+		<description>Humidity measure (0, 100) %</description>
+		<channels>
+			<channel id="value" typeId="humidity"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t54">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T54</label>
+		<description>Light Sensor (0, 40) kLux</description>
+		<channels>
+			<channel id="value" typeId="lux"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t55">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T55</label>
+		<description>Voltage (0, 400) V</description>
+		<channels>
+			<channel id="value" typeId="voltage"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t56">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T56</label>
+		<description>Current (0, 25) A</description>
+		<channels>
+			<channel id="value" typeId="ampere"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t57">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T57</label>
+		<description>Power (0, 6500) W</description>
+		<channels>
+			<channel id="value" typeId="power"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t58">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T58</label>
+		<description>Pressure measure (0, 1500) hPa</description>
+		<channels>
+			<channel id="value" typeId="power"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t61">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T61</label>
+		<description>Analog setpoint</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t62">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T62</label>
+		<description>Temperature measure (-20, +50) °C</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t63">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T63</label>
+		<description>Humidity measure (0, 100) %</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t64">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T64</label>
+		<description>Light Sensor (0, 40) kLux</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t65">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T65</label>
+		<description>Voltage (0, 400) V</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t66">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T66</label>
+		<description>Current (0, 25) A</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t67">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T67</label>
+		<description>Power (0, 6500) W</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="t68">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>T68</label>
+		<description>Pressure measure (0, 1500) hPa</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+			<channel id="healthy" typeId="healthy"/>
+		</channels>
+		<config-description>
+			<parameter name="node" type="integer" min="0" max="256">
+				<label>Node</label>
+				<description>Node</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="slot" type="integer" min="0" max="256">
+				<label>Slot</label>
+				<description>Slot</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="topic">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+		<label>Action Message</label>
+		<description>Look at: Souliss Wiki, Peer 2 Peer Communication. These are messages published in broadcast from souliss
+			nodes in channels defined by two value: number and variant.</description>
+		<channels>
+			<channel id="value" typeId="float6n"/>
+			<channel id="lastStatusStored" typeId="lastStatusStored"/>
+		</channels>
+		<representation-property>number</representation-property>
+		<config-description>
+			<parameter name="number" type="text">
+				<label>Number</label>
+				<description>Topic Number</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="variant" type="text">
+				<label>Variant</label>
+				<description>Topic Variant</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- CHANNELS -->
+
+	<channel-type id="fan-channel">
+		<item-type>String</item-type>
+		<label>Fan</label>
+		<state readOnly="false">
+			<options>
+				<option value="AUTO">Auto</option>
+				<option value="HIGH">High</option>
+				<option value="MEDIUM">Medium</option>
+				<option value="LOW">Low</option>
+				<option value="FANOFF">Powered off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="mode-channel">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<state readOnly="false">
+			<options>
+				<option value="COOLING_MODE">Cool</option>
+				<option value="HEATING_MODE">Heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="button">
+		<kind>trigger</kind>
+		<label>Button</label>
+		<description>Button to trigger something</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="buttonReadOnly">
+		<kind>trigger</kind>
+		<label>Button</label>
+		<description>Button to trigger something</description>
+		<category>Switch</category>
+	</channel-type>
+
+
+	<channel-type id="pulse">
+		<item-type>Switch</item-type>
+		<label>Pulse</label>
+		<description>Set</description>
+		<category>Switch</category>
+	</channel-type>
+
+	<channel-type id="onoff">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<description>Switch on/off</description>
+	</channel-type>
+
+	<channel-type id="sleep">
+		<item-type>Switch</item-type>
+		<label>Set Timer</label>
+		<description>The output will be timed for nCYCLES of the Node associated timer</description>
+	</channel-type>
+
+	<channel-type id="autoMode">
+		<item-type>Switch</item-type>
+		<label>On/Off Auto Mode</label>
+		<description>Switch on/off</description>
+	</channel-type>
+
+	<channel-type id="stateOnOff">
+		<item-type>Contact</item-type>
+		<label>State On/Off</label>
+		<description>Light on/off</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="stateOpenClose">
+		<item-type>Contact</item-type>
+		<label>State Open/Closed</label>
+		<description>Contact Open/Closed</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rollerShutter">
+		<item-type>RollerShutter</item-type>
+		<label>Rollershutter</label>
+		<description>Rollershutter Up/Down</description>
+		<category>Blinds</category>
+		<state min="0" max="100" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="rollerShutterState">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>State of rollershutter/windows</description>
+		<state readOnly="true">
+			<options>
+				<option value="opening">Opening</option>
+				<option value="stop">Stop</option>
+				<option value="closing">Closing</option>
+				<option value="limSwitchOpen">Limit Switch Open</option>
+				<option value="limSwitchClose">Limit Switch Close</option>
+				<option value="stateOpen">Opened</option>
+				<option value="stateClose">Closed</option>
+				<option value="NoLimSwitch">No Limit Switch</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lastMessage" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Message</label>
+		<description>Last Message emitted by the module</description>
+		<category>QualityOfService</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastStatusStored" advanced="false">
+		<item-type>DateTime</item-type>
+		<label>Last Status Stored</label>
+		<description>Last Status Store</description>
+		<category>QualityOfService</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="healthy">
+		<item-type>Number</item-type>
+		<label>Healthy</label>
+		<description>Souliss Healthy</description>
+		<tags>
+			<tag>QualityOfService</tag>
+		</tags>
+		<state readOnly="true" pattern="%.0f"/>
+	</channel-type>
+
+	<channel-type id="float">
+		<item-type>Number</item-type>
+		<label>Value</label>
+		<description>Floating Point Input</description>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f "/>
+	</channel-type>
+
+	<channel-type id="float6n">
+		<item-type>Number</item-type>
+		<kind>trigger</kind>
+		<label>Setpoint</label>
+		<description>Floating Point Input</description>
+		<category>Temperature</category>
+		<state pattern="%.1f"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number</item-type>
+		<label>Humidity</label>
+		<description>Current humidity in %</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%d %%"/>
+	</channel-type>
+
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="setpointTemperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint Temperature</label>
+		<description>Setpoint temperature</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state min="12" max="30" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="lux">
+		<item-type>Number</item-type>
+		<label>Illuminance</label>
+		<description>Lux</description>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f kLux"/>
+	</channel-type>
+
+	<channel-type id="voltage">
+		<item-type>Number</item-type>
+		<label>Voltage</label>
+		<description>Current Voltage</description>
+		<category>Energy</category>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f V"/>
+	</channel-type>
+	<channel-type id="ampere">
+		<item-type>Number</item-type>
+		<label>Current</label>
+		<description>Current Ampere</description>
+		<category>Energy</category>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f A"/>
+	</channel-type>
+
+	<channel-type id="power">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<description>Current Power</description>
+		<category>Energy</category>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%d W"/>
+	</channel-type>
+
+	<channel-type id="pressure">
+		<item-type>Number</item-type>
+		<label>Pressure</label>
+		<description>Pressure</description>
+		<tags>
+			<tag>sensors</tag>
+		</tags>
+		<state readOnly="true" pattern="%.1f hPa"/>
+	</channel-type>
+
+	<channel-type id="ledColor">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Color of the LED. Bound to a Dimmer to just set the brightness, bind to a Color chooser for the full
+			control and bind to a Switch for turning the led on or off.</description>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="dimmerBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Dimmer Brightness</label>
+		<description>The brightness can be set in 16 steps for RGBW/White leds and in 64 steps for RGBWW leds</description>
+		<category>DimmableLight</category>
+		<state min="0" max="100" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="whiteMode">
+		<item-type>Switch</item-type>
+		<label>White Mode</label>
+		<description>Switch lamp to white mode</description>
+		<category>DimmableLight</category>
+	</channel-type>
+
+	<channel-type id="rollerBrightness">
+		<item-type>RollerShutter</item-type>
+		<label>Roller Brightness</label>
+		<description>Brightness Up/Down</description>
+		<category>DimmableLight</category>
+		<state readOnly="false"/>
+	</channel-type>
+</thing:thing-descriptions>

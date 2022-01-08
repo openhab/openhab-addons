@@ -22,6 +22,7 @@
 			<channel id="input" typeId="input"/>
 			<channel id="inputtext" typeId="inputtext"/>
 			<channel id="inputaction" typeId="inputaction"/>
+			<channel id="inputbuttonevent" typeId="inputbuttonevent"/>
 			<channel id="systemcommand" typeId="systemcommand"/>
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="originaltitle" typeId="system.media-title"/>
@@ -394,6 +395,11 @@
 				<option value="noop">noop</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="inputbuttonevent" advanced="true">
+		<item-type>String</item-type>
+		<label>Sends a button press event as Input</label>
+		<description>Sends a generic button press event to Kodi</description>
 	</channel-type>
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>

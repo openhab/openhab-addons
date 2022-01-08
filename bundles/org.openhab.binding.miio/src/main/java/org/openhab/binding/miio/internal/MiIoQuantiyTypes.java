@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.openhab.core.library.unit.MetricPrefix.MILLI;
+import static org.openhab.core.library.unit.MetricPrefix.*;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,7 +39,8 @@ public enum MiIoQuantiyTypes {
     CELSIUS(SIUnits.CELSIUS, "C", "celcius"),
     FAHRENHEIT(ImperialUnits.FAHRENHEIT),
     KELVIN(Units.KELVIN, "K"),
-    PASCAL(SIUnits.PASCAL),
+    PASCAL(SIUnits.PASCAL, "pa"),
+    HPA(HECTO(SIUnits.PASCAL)),
     SECOND(Units.SECOND, "seconds"),
     MINUTE(Units.MINUTE, "minutes"),
     HOUR(Units.HOUR, "hours"),
@@ -48,7 +49,7 @@ public enum MiIoQuantiyTypes {
     MILLI_AMPERE(MILLI(Units.AMPERE), "mA"),
     VOLT(Units.VOLT),
     MILLI_VOLT(MILLI(Units.VOLT), "mV"),
-    WATT(Units.WATT),
+    WATT(Units.WATT, "W", "w"),
     LITRE(Units.LITRE, "liter"),
     LUX(Units.LUX),
     RADIANS(Units.RADIAN, "radians"),

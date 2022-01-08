@@ -34,6 +34,7 @@ The complete channel identifier is the channel group id (`hour_<offset>` or `day
 or the number of hours/days from now) + the channel id, concatenated with a `#`.
 
 Examples:
+
 * Temperature for the current hour: `hour_0#t`
 * Total precipitation 3 days from now: `day_3#ptotal`
 

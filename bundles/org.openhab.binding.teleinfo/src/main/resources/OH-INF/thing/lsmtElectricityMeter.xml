@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="lsmt_electricitymeter" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialcontroller"/>
+		</supported-bridge-type-refs>
+
+		<label>Linky Three-phase</label>
+		<description>Three-phase Linky Electricity meter in standard mode</description>
+
+		<channel-groups>
+			<channel-group id="commonLSMGroup" typeId="commonLSMGroupType"/>
+			<channel-group id="threePhasedLSMGroup" typeId="threePhasedLSMGroupType"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:teleinfo:adco"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -62,39 +62,17 @@ public class RRMapDraw {
     private static final int MAP_WALL = 0x01;
     private static final int MAP_INSIDE = 0xFF;
     private static final int MAP_SCAN = 0x07;
-    private static final Color COLOR_MAP_INSIDE = new Color(32, 115, 185);
-    private static final Color COLOR_MAP_OUTSIDE = new Color(19, 87, 148);
-    private static final Color COLOR_MAP_WALL = new Color(100, 196, 254);
-    private static final Color COLOR_GREY_WALL = new Color(93, 109, 126);
-    private static final Color COLOR_PATH = new Color(147, 194, 238);
-    private static final Color COLOR_ZONES = new Color(0xAD, 0xD8, 0xFF, 0x8F);
-    private static final Color COLOR_NO_GO_ZONES = new Color(255, 33, 55, 127);
-    private static final Color COLOR_CHARGER_HALO = new Color(0x66, 0xfe, 0xda, 0x7f);
-    private static final Color COLOR_ROBO = new Color(75, 235, 149);
-    private static final Color COLOR_SCAN = new Color(0xDF, 0xDF, 0xDF);
-    private static final Color ROOM1 = new Color(240, 178, 122);
-    private static final Color ROOM2 = new Color(133, 193, 233);
-    private static final Color ROOM3 = new Color(217, 136, 128);
-    private static final Color ROOM4 = new Color(52, 152, 219);
-    private static final Color ROOM5 = new Color(205, 97, 85);
-    private static final Color ROOM6 = new Color(243, 156, 18);
-    private static final Color ROOM7 = new Color(88, 214, 141);
-    private static final Color ROOM8 = new Color(245, 176, 65);
-    private static final Color ROOM9 = new Color(0xFc, 0xD4, 0x51);
-    private static final Color ROOM10 = new Color(72, 201, 176);
-    private static final Color ROOM11 = new Color(84, 153, 199);
-    private static final Color ROOM12 = new Color(255, 213, 209);
-    private static final Color ROOM13 = new Color(228, 228, 215);
-    private static final Color ROOM14 = new Color(82, 190, 128);
-    private static final Color ROOM15 = new Color(72, 201, 176);
-    private static final Color ROOM16 = new Color(165, 105, 189);
-    private static final Color[] ROOM_COLORS = { ROOM1, ROOM2, ROOM3, ROOM4, ROOM5, ROOM6, ROOM7, ROOM8, ROOM9, ROOM10,
-            ROOM11, ROOM12, ROOM13, ROOM14, ROOM15, ROOM16 };
-    private final @Nullable Bundle bundle = FrameworkUtil.getBundle(getClass());
-    private boolean multicolor = false;
-    private final RRMapFileParser rmfp;
 
+    private final @Nullable Bundle bundle = FrameworkUtil.getBundle(getClass());
+    private final RRMapFileParser rmfp;
     private final Logger logger = LoggerFactory.getLogger(RRMapDraw.class);
+
+    private RRMapDrawOptions drawOptions = new RRMapDrawOptions();
+    private boolean multicolor = false;
+    private int firstX = 0;
+    private int lastX = 0;
+    private int firstY = 0;
+    private int lastY = 0;
 
     public RRMapDraw(RRMapFileParser rmfp) {
         this.rmfp = rmfp;
@@ -106,6 +84,14 @@ public class RRMapDraw {
 
     public int getHeight() {
         return rmfp.getImgHeight();
+    }
+
+    public void setDrawOptions(RRMapDrawOptions options) {
+        this.drawOptions = options;
+    }
+
+    public RRMapDrawOptions getDrawOptions() {
+        return drawOptions;
     }
 
     public RRMapFileParser getMapParseDetails() {
@@ -144,29 +130,29 @@ public class RRMapDraw {
                 byte walltype = rmfp.getImage()[x + rmfp.getImgWidth() * y];
                 switch (walltype & 0xFF) {
                     case MAP_OUTSIDE:
-                        g2d.setColor(COLOR_MAP_OUTSIDE);
+                        g2d.setColor(drawOptions.getColorMapOutside());
                         break;
                     case MAP_WALL:
-                        g2d.setColor(COLOR_MAP_WALL);
+                        g2d.setColor(drawOptions.getColorMapWall());
                         break;
                     case MAP_INSIDE:
-                        g2d.setColor(COLOR_MAP_INSIDE);
+                        g2d.setColor(drawOptions.getColorMapInside());
                         break;
                     case MAP_SCAN:
-                        g2d.setColor(COLOR_SCAN);
+                        g2d.setColor(drawOptions.getColorScan());
                         break;
                     default:
                         int obstacle = (walltype & 0x07);
                         int mapId = (walltype & 0xFF) >>> 3;
                         switch (obstacle) {
                             case 0:
-                                g2d.setColor(COLOR_GREY_WALL);
+                                g2d.setColor(drawOptions.getColorGreyWall());
                                 break;
                             case 1:
                                 g2d.setColor(Color.BLACK);
                                 break;
                             case 7:
-                                g2d.setColor(ROOM_COLORS[mapId % 15]);
+                                g2d.setColor(drawOptions.getRoomColors()[mapId % 15]);
                                 roomIds.add(mapId);
                                 multicolor = true;
                                 break;
@@ -190,6 +176,33 @@ public class RRMapDraw {
     }
 
     /**
+     * draws the carpet map
+     */
+    private void drawCarpetMap(Graphics2D g2d, float scale) {
+        if (rmfp.getCarpetMap().length == 0) {
+            return;
+        }
+        Stroke stroke = new BasicStroke(1.1f * scale);
+        g2d.setStroke(stroke);
+        for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
+            for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
+                int carpetType = rmfp.getCarpetMap()[x + rmfp.getImgWidth() * y];
+                switch (carpetType) {
+                    case 0:
+                        // ignore
+                        break;
+                    default:
+                        g2d.setColor(drawOptions.getColorCarpet());
+                        float xPos = scale * (rmfp.getImgWidth() - x);
+                        float yP = scale * y;
+                        g2d.draw(new Line2D.Float(xPos, yP, xPos, yP));
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
      * draws the vacuum path
      *
      * @param scale
@@ -202,7 +215,7 @@ public class RRMapDraw {
             switch (pathType) {
                 case RRMapFileParser.PATH:
                     if (!multicolor) {
-                        g2d.setColor(COLOR_PATH);
+                        g2d.setColor(drawOptions.getColorPath());
                     } else {
                         g2d.setColor(Color.WHITE);
                     }
@@ -240,7 +253,7 @@ public class RRMapDraw {
             float w = Math.max(x, x1) - sx;
             float sy = Math.min(y, y1);
             float h = Math.max(y, y1) - sy;
-            g2d.setColor(COLOR_ZONES);
+            g2d.setColor(drawOptions.getColorZones());
             g2d.fill(new Rectangle2D.Float(sx, sy, w, h));
         }
     }
@@ -262,7 +275,7 @@ public class RRMapDraw {
                 noGo.lineTo(x2, y2);
                 noGo.lineTo(x3, y3);
                 noGo.lineTo(x, y);
-                g2d.setColor(COLOR_NO_GO_ZONES);
+                g2d.setColor(drawOptions.getColorNoGoZones());
                 g2d.fill(noGo);
                 g2d.setColor(area.getKey() == 9 ? Color.RED : Color.WHITE);
                 g2d.draw(noGo);
@@ -288,13 +301,13 @@ public class RRMapDraw {
         float radius = 3 * scale;
         Stroke stroke = new BasicStroke(2 * scale);
         g2d.setStroke(stroke);
-        g2d.setColor(COLOR_CHARGER_HALO);
+        g2d.setColor(drawOptions.getColorChargerHalo());
         final float chargerX = toXCoord(rmfp.getChargerX()) * scale;
         final float chargerY = toYCoord(rmfp.getChargerY()) * scale;
         drawCircle(g2d, chargerX, chargerY, radius, false);
         drawCenteredImg(g2d, scale / 8, "charger.png", chargerX, chargerY);
         radius = 3 * scale;
-        g2d.setColor(COLOR_ROBO);
+        g2d.setColor(drawOptions.getColorRobo());
         final float roboX = toXCoord(rmfp.getRoboX()) * scale;
         final float roboY = toYCoord(rmfp.getRoboY()) * scale;
         drawCircle(g2d, roboX, roboY, radius, false);
@@ -382,18 +395,22 @@ public class RRMapDraw {
         } catch (IOException e) {
             logger.debug("Error loading image ohlogo.png:: {}", e.getMessage());
         }
+        if (drawOptions.getText().isBlank()) {
+            return;
+        }
         String fontName = getAvailableFont("Helvetica,Arial,Roboto,Verdana,Times,Serif,Dialog".split(","));
         if (fontName == null) {
             return; // no available fonts to draw text
         }
-        Font font = new Font(fontName, Font.BOLD, 14);
+        int fz = (int) (drawOptions.getTextFontSize() * scale);
+        Font font = new Font(fontName, Font.BOLD, fz);
         g2d.setFont(font);
-        String message = "Openhab rocks your Xiaomi vacuum!";
+        String message = drawOptions.getText();
         FontMetrics fontMetrics = g2d.getFontMetrics();
         int stringWidth = fontMetrics.stringWidth(message);
-        if ((stringWidth + textPos) > rmfp.getImgWidth() * scale) {
-            font = new Font(fontName, Font.BOLD,
-                    (int) Math.floor(14 * (rmfp.getImgWidth() * scale - textPos - offset * scale) / stringWidth));
+        if ((stringWidth + textPos) > width) {
+            int fzn = (int) Math.floor(((float) (width - textPos) / stringWidth) * fz);
+            font = new Font(fontName, Font.BOLD, fzn > 0 ? fzn : 1);
             g2d.setFont(font);
         }
         int stringHeight = fontMetrics.getAscent();
@@ -421,6 +438,39 @@ public class RRMapDraw {
         return fonts[0];
     }
 
+    /**
+     * Finds the perimeter of the used area in the map
+     */
+    private void getMapArea(Graphics2D g2d, float scale) {
+        int firstX = rmfp.getImgWidth();
+        int lastX = 0;
+        int firstY = rmfp.getImgHeight();
+        int lastY = 0;
+        for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
+            for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
+                int walltype = rmfp.getImage()[x + rmfp.getImgWidth() * y] & 0xFF;
+                if (walltype > MAP_OUTSIDE) {
+                    if (y < firstY) {
+                        firstY = y;
+                    }
+                    if (y > lastY) {
+                        lastY = y;
+                    }
+                    if (x < firstX) {
+                        firstX = x;
+                    }
+                    if (x > lastX) {
+                        lastX = x;
+                    }
+                }
+            }
+        }
+        this.firstX = firstX;
+        this.lastX = lastX;
+        this.firstY = rmfp.getImgHeight() - lastY;
+        this.lastY = rmfp.getImgHeight() - firstY;
+    }
+
     private @Nullable URL getImageUrl(String image) {
         final Bundle bundle = this.bundle;
         if (bundle != null) {
@@ -436,6 +486,10 @@ public class RRMapDraw {
         }
     }
 
+    public BufferedImage getImage() {
+        return getImage(drawOptions.getScale());
+    }
+
     public BufferedImage getImage(float scale) {
         int width = (int) Math.floor(rmfp.getImgWidth() * scale);
         int height = (int) Math.floor(rmfp.getImgHeight() * scale);
@@ -445,6 +499,7 @@ public class RRMapDraw {
         tx.translate(-width, -height);
         g2d.setTransform(tx);
         drawMap(g2d, scale);
+        drawCarpetMap(g2d, scale);
         drawZones(g2d, scale);
         drawNoGo(g2d, scale);
         drawWalls(g2d, scale);
@@ -452,9 +507,34 @@ public class RRMapDraw {
         drawRobo(g2d, scale);
         drawGoTo(g2d, scale);
         drawObstacles(g2d, scale);
-        g2d = bi.createGraphics();
-        drawOpenHabRocks(g2d, width, height, scale);
-        return bi;
+        if (drawOptions.getCropBorder() < 0) {
+            g2d = bi.createGraphics();
+            if (drawOptions.isShowLogo()) {
+                drawOpenHabRocks(g2d, width, height, scale);
+            }
+            return bi;
+        }
+        // crop the image to the used perimeter
+        getMapArea(g2d, scale);
+        int firstX = (this.firstX - drawOptions.getCropBorder()) > 0 ? this.firstX - drawOptions.getCropBorder() : 0;
+        int lastX = (this.lastX + drawOptions.getCropBorder()) < rmfp.getImgWidth()
+                ? this.lastX + drawOptions.getCropBorder()
+                : rmfp.getImgWidth();
+        int firstY = (this.firstY - drawOptions.getCropBorder()) > 0 ? this.firstY - drawOptions.getCropBorder() : 0;
+        int lastY = (this.lastY + drawOptions.getCropBorder() + (int) (8 * scale)) < rmfp.getImgHeight()
+                ? this.lastY + drawOptions.getCropBorder() + (int) (8 * scale)
+                : rmfp.getImgHeight();
+        int nwidth = (int) Math.floor((lastX - firstX) * scale);
+        int nheight = (int) Math.floor((lastY - firstY) * scale);
+        BufferedImage bo = new BufferedImage(nwidth, nheight, BufferedImage.TYPE_3BYTE_BGR);
+        Graphics2D crop = bo.createGraphics();
+        crop.transform(AffineTransform.getTranslateInstance(-firstX * scale, -firstY * scale));
+        crop.drawImage(bi, 0, 0, null);
+        if (drawOptions.isShowLogo()) {
+            crop = bo.createGraphics();
+            drawOpenHabRocks(crop, nwidth, nheight, scale * .75f);
+        }
+        return bo;
     }
 
     public boolean writePic(String filename, String formatName, float scale) throws IOException {

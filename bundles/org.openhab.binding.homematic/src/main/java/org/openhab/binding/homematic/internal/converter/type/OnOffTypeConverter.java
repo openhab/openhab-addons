@@ -42,7 +42,7 @@ public class OnOffTypeConverter extends AbstractTypeConverter<OnOffType> {
 
     @Override
     protected OnOffType fromBinding(HmDatapoint dp) throws ConverterException {
-        return (((Boolean) dp.getValue()) == Boolean.FALSE) != isInvert(dp) ? OnOffType.OFF : OnOffType.ON;
+        return Boolean.FALSE.equals(dp.getValue()) != isInvert(dp) ? OnOffType.OFF : OnOffType.ON;
     }
 
     /**

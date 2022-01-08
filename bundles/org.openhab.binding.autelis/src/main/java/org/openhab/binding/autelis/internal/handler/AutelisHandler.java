@@ -554,6 +554,6 @@ public class AutelisHandler extends BaseThingHandler {
     }
 
     private boolean isJandy() {
-        return getThing().getThingTypeUID() == AutelisBindingConstants.JANDY_THING_TYPE_UID;
+        return AutelisBindingConstants.JANDY_THING_TYPE_UID.equals(getThing().getThingTypeUID());
     }
 }

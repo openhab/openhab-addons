@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.dsmr.internal.device.connector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Error events from a connector.
  *
  * @author M. Volaart - Initial contribution
  * @author Hilbrand Bouwkamp - Reduced number of event to only errors
  */
+@NonNullByDefault
 public enum DSMRConnectorErrorEvent {
     DONT_EXISTS,
     IN_USE,

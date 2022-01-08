@@ -309,6 +309,7 @@ public class HeliosVentilationDataPoint {
      *
      * @param next is the sister datapoint
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void append(HeliosVentilationDataPoint next) {
         HeliosVentilationDataPoint existing = this.next;
         if (this == next) {

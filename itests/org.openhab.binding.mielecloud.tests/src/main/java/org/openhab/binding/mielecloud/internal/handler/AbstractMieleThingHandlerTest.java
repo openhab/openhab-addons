@@ -129,6 +129,12 @@ public abstract class AbstractMieleThingHandlerTest extends JavaOSGiTest {
         return Objects.requireNonNull(itemRegistry);
     }
 
+    @Override
+    protected void waitForAssert(Runnable assertion) {
+        // Use a larger timeout to avoid test failures in the CI build.
+        waitForAssert(assertion, 2 * DFL_TIMEOUT, 2 * DFL_SLEEP_TIME);
+    }
+
     private void setUpThingRegistry() {
         thingRegistry = getService(ThingRegistry.class, ThingRegistry.class);
         assertNotNull(thingRegistry, "Thing registry is missing");

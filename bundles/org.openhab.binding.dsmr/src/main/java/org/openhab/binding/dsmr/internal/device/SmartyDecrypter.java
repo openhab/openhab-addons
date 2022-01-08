@@ -79,7 +79,7 @@ public class SmartyDecrypter implements TelegramParser {
     private int ivLength;
     private int dataLength;
     private boolean lenientMode;
-    private P1TelegramListener telegramListener;
+    private final P1TelegramListener telegramListener;
 
     /**
      * Constructor.
@@ -140,7 +140,7 @@ public class SmartyDecrypter implements TelegramParser {
                 break;
             case READ_PAYLOAD_LENGTH:
                 dataLength <<= 8;
-                dataLength |= rawInput;
+                dataLength |= rawInput & 0xFF;
                 if (currentBytePosition >= changeToNextStateAt) {
                     state = State.READ_SEPARATOR_30;
                     changeToNextStateAt++;

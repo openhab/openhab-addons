@@ -127,3 +127,23 @@ val List<String> attachmentUrlList = newArrayList(
 val mailActions = getActions("mail","mail:smtp:sampleserver")
 mailActions.sendHtmlMail("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachmentUrlList)
 ```
+
+## Mail Headers
+
+The binding allows one to add custom e-mail headers to messages that it sends.
+For example if you want e-mails sent by this binding to be grouped into a "threaded view" in your email client, you must provide an e-mail "Reference" header, which acts as the key for grouping messages together.
+Headers can be added inside a rule by calling the `mailActions.addHeader()` method before calling the respective `mailActions.sendMail()` method.
+See the example below.
+
+```
+rule "Send Mail with a 'Reference' header; for threaded view in e-mail client"
+when
+    ...
+then
+    val mailActions = getActions("mail","mail:smtp:sampleserver")
+    mailActions.addHeader("Reference", "<unique-thread-identifier>")
+    mailActions.sendMail("mail@example.com", "Test subject", "Test message text")
+end
+```
+
+Note: in the case of the "Reference" header, the `<unique-thread-identifier>` has to be an ASCII string enclosed in angle brackets.

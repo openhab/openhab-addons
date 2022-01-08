@@ -30,7 +30,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
 /**
- * Handler for a shutter control device
+ * Control of your shutter to take any position you desire.
  * 
  * @author Christian Oeing - Initial contribution
  */

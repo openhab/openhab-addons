@@ -70,7 +70,7 @@ Please see the example below.
 | roller shutter, screen, venetian blind, garage door, awning, pergola, curtain | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                                |
 | window                                                                        | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                                   |
 | silent roller shutter                                                         | silent_control               | similar to control channel but in silent mode                                                                               |
-| venetian blind, adjustable slats roller shutter, bioclimatic pergola           | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
+| venetian blind, adjustable slats roller shutter, bioclimatic pergola          | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
 | venetian blind, adjustable slats roller shutter                               | closure_orientation          | percentual closure and orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS) |
 | adjustable slats roller shutter                                               | rocker                       | used for setting the rocker position of the roller shutter, the only position allowing the slats control                    |
 | bioclimatic pergola                                                           | slats                        | slats state (open/closed)                                                                                                   |
@@ -129,7 +129,7 @@ You can list all the scenarios IDs with the following console command: `somfytah
 
 ### Remarks
 
-All things which have a RSSI (relative received signal) state, expose a channel "rssi".
+All things which have a RSSI (received signal strength indication) state, expose a channel "rssi".
 
 When a roller shutter-like thing receives STOP command, there are two possible behaviours
 

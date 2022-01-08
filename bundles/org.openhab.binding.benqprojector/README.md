@@ -3,7 +3,7 @@
 This binding is compatible with BenQ projectors that support the control protocol via the built-in ethernet port, serial port or USB to serial adapter.
 If your projector does not have built-in networking, you can connect to your projector's serial port via a TCP connection using a serial over IP device or by using`ser2net`.  
 
-The control protocol can be found here: https://business-display.benq.com/content/dam/bb/en/product/projector/corporate/lx770/quick-start-guide/lx770-rs232-control-guide-0-windows7-windows8-winxp.pdf
+The manufacturer's guide for connecting to the projector and the control protocol can be found in this document: [LX9215_RS232 Control Guide_0_Windows7_Windows8_WinXP.pdf](https://esupportdownload.benq.com/esupport/Projector/Control%20Protocols/LX9215/LX9215_RS232%20Control%20Guide_0_Windows7_Windows8_WinXP.pdf)
 
 ## Supported Things
 
@@ -70,10 +70,10 @@ Some notes:
 things/benq.things:
 
 ```
-//serial port connection
+// serial port connection
 benqprojector:projector-serial:hometheater "Projector" [ serialPort="COM5", pollingInterval=10 ]
 
-// serial over IP connection
+// direct IP or serial over IP connection
 benqprojector:projector-tcp:hometheater "Projector" [ host="192.168.0.10", port=8000, pollingInterval=10 ]
 
 ```
@@ -94,7 +94,7 @@ Number benqLampTime     "Lamp Time [%d h]"   <switch> { channel="benqprojector:p
 sitemaps/benq.sitemap
 
 ```
-sitemap benq label="BenQ Projector Demo" {
+sitemap benq label="BenQ Projector" {
     Frame label="Controls" {
         Switch     item=benqPower  label="Power"
         Selection  item=benqSource label="Source" mappings=["hdmi"="HDMI", "hdmi2"="HDMI2", "ypbr"="Component", "RGB"="Computer", "vid"="Video", "svid"="S-Video"]

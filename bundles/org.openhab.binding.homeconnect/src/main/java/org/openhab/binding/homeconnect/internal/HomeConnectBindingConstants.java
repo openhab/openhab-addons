@@ -128,7 +128,9 @@ public class HomeConnectBindingConstants {
     public static final String CHANNEL_WASHER_LESS_IRONING = "laundry_care_washer_less_ironing";
     public static final String CHANNEL_WASHER_PRE_WASH = "laundry_care_washer_pre_wash";
     public static final String CHANNEL_WASHER_RINSE_PLUS = "laundry_care_washer_rinse_plus";
+    public static final String CHANNEL_WASHER_RINSE_HOLD = "laundry_care_washer_rinse_hold";
     public static final String CHANNEL_WASHER_SOAK = "laundry_care_washer_soak";
+    public static final String CHANNEL_WASHER_LOAD_RECOMMENDATION = "laundry_care_washer_load_recommendation";
     public static final String CHANNEL_PROGRAM_ENERGY = "program_energy";
     public static final String CHANNEL_PROGRAM_WATER = "program_water";
     public static final String CHANNEL_REFRIGERATOR_SETPOINT_TEMPERATURE = "setpoint_temperature_refrigerator";
@@ -188,7 +190,9 @@ public class HomeConnectBindingConstants {
     public static final String OPTION_WASHER_LESS_IRONING = "LaundryCare.Washer.Option.LessIroning";
     public static final String OPTION_WASHER_PRE_WASH = "LaundryCare.Washer.Option.Prewash";
     public static final String OPTION_WASHER_RINSE_PLUS = "LaundryCare.Washer.Option.RinsePlus";
+    public static final String OPTION_WASHER_RINSE_HOLD = "LaundryCare.Washer.Option.RinseHold";
     public static final String OPTION_WASHER_SOAK = "LaundryCare.Washer.Option.Soak";
+    public static final String OPTION_WASHER_LOAD_RECOMMENDATION = "LaundryCare.Common.Option.LoadRecommendation";
     public static final String OPTION_WASHER_ENERGY_FORECAST = "BSH.Common.Option.EnergyForecast";
     public static final String OPTION_WASHER_WATER_FORECAST = "BSH.Common.Option.WaterForecast";
     public static final String OPTION_DRYER_DRYING_TARGET = "LaundryCare.Dryer.Option.DryingTarget";
@@ -237,7 +241,7 @@ public class HomeConnectBindingConstants {
     public static final String API_SIMULATOR_BASE_URL = "https://simulator.home-connect.com";
     public static final String OAUTH_TOKEN_PATH = "/security/oauth/token";
     public static final String OAUTH_AUTHORIZE_PATH = "/security/oauth/authorize";
-    public static final String OAUTH_SCOPE = "IdentifyAppliance Monitor Settings Dishwasher-Control Washer-Control Dryer-Control WasherDryer-Control CoffeeMaker-Control Hood-Control CleaningRobot-Control";
+    public static final String OAUTH_SCOPE = "IdentifyAppliance Monitor Settings Dishwasher-Control Washer-Control Dryer-Control WasherDryer-Control CoffeeMaker-Control Hood-Control Oven-Control CleaningRobot-Control";
 
     // Operation states
     public static final String OPERATION_STATE_INACTIVE = "BSH.Common.EnumType.OperationState.Inactive";
