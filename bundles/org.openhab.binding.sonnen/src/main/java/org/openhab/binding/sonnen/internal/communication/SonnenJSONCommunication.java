@@ -10,14 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonnen.communication;
+package org.openhab.binding.sonnen.internal.communication;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sonnen.internal.Helper;
 import org.openhab.binding.sonnen.internal.SonnenConfiguration;
-import org.openhab.binding.sonnen.utilities.Helper;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

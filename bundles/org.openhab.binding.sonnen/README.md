@@ -14,7 +14,7 @@ The binding for sonnen communicates with a sonnen battery. More information abou
 Only one parameter is required. The IP-Address of the sonnen battery in your local network.
 
 ```
-Thing sonnen:battery:myBattery "sonnenBattery"  [ hostIP="192.168.0.10"]
+Thing sonnen:sonnenbattery:myBattery "Sonnen Battery"  [ hostIP="192.168.0.10"]
 ```
 
 ## Channels

@@ -24,9 +24,8 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sonnen.communication.SonnenJSONCommunication;
-import org.openhab.binding.sonnen.communication.SonnenJsonDataDTO;
-import org.openhab.binding.sonnen.utilities.Helper;
+import org.openhab.binding.sonnen.internal.communication.SonnenJSONCommunication;
+import org.openhab.binding.sonnen.internal.communication.SonnenJsonDataDTO;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -89,12 +88,8 @@ public class SonnenHandler extends BaseThingHandler {
         if (validConfig) {
             serviceCommunication.setConfig(config);
             scheduler.submit(() -> {
-                if (serviceCommunication.refreshBatteryConnection(message, this.getThing().getUID().toString())) {
-                    updateStatus(ThingStatus.ONLINE);
+                if (updateBatteryData()) {
                     updateLinkedChannels();
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            message.getStatusDesription());
                 }
             });
         } else {
@@ -106,7 +101,7 @@ public class SonnenHandler extends BaseThingHandler {
      * Calls the service to update the battery data
      *
      */
-    private boolean updatebatteryData() {
+    private boolean updateBatteryData() {
         Helper message = new Helper();
         if (serviceCommunication.refreshBatteryConnection(message, this.getThing().getUID().toString())) {
             updateStatus(ThingStatus.ONLINE);
@@ -125,7 +120,7 @@ public class SonnenHandler extends BaseThingHandler {
         }
 
         if (!linkedChannels.isEmpty()) {
-            updatebatteryData();
+            updateBatteryData();
             startAutomaticRefresh();
             automaticRefreshing = true;
         }
@@ -163,7 +158,7 @@ public class SonnenHandler extends BaseThingHandler {
     }
 
     private void refreshChannels() {
-        updatebatteryData();
+        updateBatteryData();
         for (Channel channel : getThing().getChannels()) {
             updateChannel(channel.getUID().getId());
         }

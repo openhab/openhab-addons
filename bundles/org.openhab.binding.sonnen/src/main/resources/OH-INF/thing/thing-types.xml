@@ -100,37 +100,37 @@
 	</channel-type>
 	<channel-type id="flowConsumptionBattery">
 		<item-type>Switch</item-type>
-		<label>Flow Battery -> Consumption</label>
+		<label>Flow Battery towards Consumption</label>
 		<description>Indicates if there is a current flow from Battery towards Consumption.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowConsumptionGrid">
 		<item-type>Switch</item-type>
-		<label>Flow Grid -> Consumption</label>
+		<label>Flow Grid towards Consumption</label>
 		<description>Indicates if there is a current flow from Grid towards Consumption.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowConsumptionProduction">
 		<item-type>Switch</item-type>
-		<label>Flow Production -> Consumption</label>
+		<label>Flow Production towards Consumption</label>
 		<description>Indicates if there is a current flow from Solar Production towards Consumption.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowGridBattery">
 		<item-type>Switch</item-type>
-		<label>Flow Grid -> Battery</label>
+		<label>Flow Grid towards Battery</label>
 		<description>Indicates if there is a current flow from Grid towards Battery.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowProductionBattery">
 		<item-type>Switch</item-type>
-		<label>Flow Production -> Battery</label>
+		<label>Flow Production towards Battery</label>
 		<description>Indicates if there is a current flow from Production towards Battery.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowProductionGrid">
 		<item-type>Switch</item-type>
-		<label>Flow Production -> Grid</label>
+		<label>Flow Production towards Grid</label>
 		<description>Indicates if there is a current flow from Production towards Grid.</description>
 		<state readOnly="true"/>
 	</channel-type>

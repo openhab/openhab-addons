@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sonnen.communication;
+package org.openhab.binding.sonnen.internal.communication;
 
 import com.google.gson.annotations.SerializedName;
 
