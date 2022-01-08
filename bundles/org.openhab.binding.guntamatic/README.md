@@ -1,6 +1,6 @@
 # Guntamatic Binding
 
-The Guntamatic Binding can be used to monitor and control Guntamatic Heating Systems (https://www.guntamatic.com/en/).
+The Guntamatic Binding can be used to monitor and control [Guntamatic Heating Systems](https://www.guntamatic.com/en/).
 
 ## Supported Things
 
@@ -22,22 +22,22 @@ Guntamatic Heating Systems supported as Thing Types:
 
 ### Thing Configuration
 
-| Parameter        | Description                                                               | Default         |
-|------------------|---------------------------------------------------------------------------|-----------------|
-| Hostname         | Hostname or IP address of the Guntamatic Heating System                   |                 |
-| Key              | Optional, but required to read protected parameters and to control the Guntamatic Heating System.<br/>The key needs to be requested from Guntamatic support, e.g. via https://www.guntamatic.com/en/contact/.                                      |                 |
-| Refresh Interval | Interval the Guntamatic Heating System is polled in seconds               | `60`            |
-| Encoding         | Code page used by the Guntamatic Heating System                           | `windows-1252`  |
+| Parameter        | Description                                                                 | Default         |
+|------------------|-----------------------------------------------------------------------------|-----------------|
+| `hostname`         | Hostname or IP address of the Guntamatic Heating System                   |                 |
+| `key`              | Optional, but required to read protected parameters and to control the Guntamatic Heating System.<br/>The key needs to be requested from Guntamatic support, e.g. via https://www.guntamatic.com/en/contact/.                                        |                 |
+| `refreshInterval` | Interval the Guntamatic Heating System is polled in seconds                | `60`            |
+| `encoding`         | Code page used by the Guntamatic Heating System                           | `windows-1252`  |
 
 ### Properties
 
-| Property          | Description                                                   |
-|-------------------|---------------------------------------------------------------|
-| extraWwHeat       | Parameter used by `controlExtraWwHeat` channels               |
-| boilerApproval    | Parameter used by `controlBoilerApproval` channel             |
-| heatCircProgram   | Parameter used by `controlHeatCircProgram` channels           |
-| program           | Parameter used by `controlProgram` channel                    |
-| wwHeat            | Parameter used by `controlWwHeat` channels                    |
+| Property            | Description                                                   |
+|---------------------|---------------------------------------------------------------|
+| `extraWwHeat`       | Parameter used by `controlExtraWwHeat` channels               |
+| `boilerApproval`    | Parameter used by `controlBoilerApproval` channel             |
+| `heatCircProgram`   | Parameter used by `controlHeatCircProgram` channels           |
+| `program`           | Parameter used by `controlProgram` channel                    |
+| `wwHeat`            | Parameter used by `controlWwHeat` channels                    |
 
 ## Channels
 
