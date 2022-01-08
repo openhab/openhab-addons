@@ -30,19 +30,19 @@ public class SonnenBindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "sonnenbattery");
 
     // List of all Channel ids
+    public static final String CHANNELBATTERYCHARGINGSTATE = "batteryChargingState";
+    public static final String CHANNELBATTERYDISCHARGINGSTATE = "batteryDischargingState";
     public static final String CHANNELBATTERYCHARGING = "batteryCharging";
     public static final String CHANNELBATTERYDISCHARGING = "batteryDischarging";
-    public static final String CHANNELBATTERYFEEDIN = "batteryFeedIn";
-    public static final String CHANNELBATTERYDISPENSE = "batteryDispense";
     public static final String CHANNELCONSUMPTION = "consumption";
     public static final String CHANNELGRIDFEEDIN = "gridFeedIn";
-    public static final String CHANNELGRIDRECEIVE = "gridReceive";
+    public static final String CHANNELGRIDCONSUMPTION = "gridConsupmtion";
     public static final String CHANNELSOLARPRODUCTION = "solarProduction";
     public static final String CHANNELBATTERYLEVEL = "batteryLevel";
-    public static final String CHANNELFLOWCONSUMPTIONBATTERY = "flowConsumptionBattery";
-    public static final String CHANNELFLOWCONSUMPTIONGRID = "flowConsumptionGrid";
-    public static final String CHANNELFLOWCONSUMPTIONPRODUCTION = "flowConsumptionProduction";
-    public static final String CHANNELFLOWGRIDBATTERY = "flowGridBattery";
-    public static final String CHANNELFLOWPRODUCTIONBATTERY = "flowProductionBattery";
-    public static final String CHANNELFLOWPRODUCTIONGRID = "flowProductionGrid";
+    public static final String CHANNELFLOWCONSUMPTIONBATTERYSTATE = "flowConsumptionBatteryState";
+    public static final String CHANNELFLOWCONSUMPTIONGRIDSTATE = "flowConsumptionGridState";
+    public static final String CHANNELFLOWCONSUMPTIONPRODUCTIONSTATE = "flowConsumptionProductionState";
+    public static final String CHANNELFLOWGRIDBATTERYSTATE = "flowGridBatteryState";
+    public static final String CHANNELFLOWPRODUCTIONBATTERYSTATE = "flowProductionBatteryState";
+    public static final String CHANNELFLOWPRODUCTIONGRIDSTATE = "flowProductionGridState";
 }

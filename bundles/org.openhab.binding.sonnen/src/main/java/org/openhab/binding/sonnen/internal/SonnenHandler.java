@@ -121,7 +121,6 @@ public class SonnenHandler extends BaseThingHandler {
         }
 
         if (!linkedChannels.isEmpty()) {
-            updateBatteryData();
             startAutomaticRefresh();
             automaticRefreshing = true;
         }
