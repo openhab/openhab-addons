@@ -14,9 +14,7 @@ package org.openhab.binding.mybmw.internal.handler;
 
 import static org.openhab.binding.mybmw.internal.MyBMWConstants.*;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,22 +22,15 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.VehicleConfiguration;
-import org.openhab.binding.mybmw.internal.action.MyBMWActions;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeSessionsContainer;
 import org.openhab.binding.mybmw.internal.dto.charge.ChargeStatisticsContainer;
 import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
 import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileUtils.ChargeKeyDay;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper;
-import org.openhab.binding.mybmw.internal.utils.ChargeProfileWrapper.ProfileKey;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.ImageProperties;
 import org.openhab.binding.mybmw.internal.utils.RemoteServiceUtils;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -48,7 +39,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -73,8 +63,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     ChargeStatisticsCallback chargeStatisticsCallback = new ChargeStatisticsCallback();
     ChargeSessionsCallback chargeSessionCallback = new ChargeSessionsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
-
-    private Optional<ChargeProfileWrapper> chargeProfileEdit = Optional.empty();
 
     public VehicleHandler(Thing thing, MyBMWCommandOptionProvider cop, String driveTrain) {
         super(thing, cop, driveTrain);
@@ -119,9 +107,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                                     .ifPresentOrElse(service -> remot.execute(service), () -> {
                                         logger.debug("Remote service execution {} unknown", serviceCommand);
                                     });
-                            break;
-                        case REMOTE_SERVICE_CHARGING_CONTROL:
-                            sendChargeProfile(chargeProfileEdit);
                             break;
                         default:
                             logger.debug("Remote service execution {} unknown", serviceCommand);
@@ -173,8 +158,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                     logger.debug("Cannot select Session index {}", command.toFullString());
                 }
             }
-        } else if (CHANNEL_GROUP_CHARGE_PROFILE.equals(group)) {
-            handleChargeProfileCommand(channelUID, command);
         }
     }
 
@@ -241,20 +224,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     }
 
     public void updateRemoteExecutionStatus(@Nullable String service, String status) {
-        // [todo] CHARGING_CONTROL not working yet
-        // if (RemoteService.CHARGING_CONTROL.toString().equals(service)
-        // && ExecutionState.EXECUTED.name().equals(status)) {
-        // editTimeout.ifPresent(timeout -> {
-        // timeout.cancel(true);
-        // editTimeout = Optional.empty();
-        // });
-        // chargeProfileSent.ifPresent(sent -> {
-        // // chargeProfileCache = Optional.of(sent);
-        // chargeProfileSent = Optional.empty();
-        // chargeProfileEdit = Optional.empty();
-        // // chargeProfileCache.ifPresent(this::updateChargeProfileFromContent);
-        // });
-        // // }
         updateChannel(CHANNEL_GROUP_REMOTE, REMOTE_STATE,
                 StringType.valueOf((service == null ? "-" : service) + Constants.SPACE + status.toLowerCase()));
     }
@@ -375,115 +344,5 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
         }
-    }
-
-    /**
-     * ###### Charging Profile handling
-     */
-
-    /**
-     *
-     * @param channelUID
-     * @param command
-     */
-    private void handleChargeProfileCommand(ChannelUID channelUID, Command command) {
-        if (chargeProfileEdit.isEmpty()) {
-            chargeProfileEdit = getChargeProfileWrapper();
-        }
-
-        chargeProfileEdit.ifPresent(profile -> {
-
-            boolean processed = false;
-
-            final String id = channelUID.getIdWithoutGroup();
-
-            if (command instanceof StringType) {
-                final String stringCommand = ((StringType) command).toFullString();
-                switch (id) {
-                    case CHARGE_PROFILE_PREFERENCE:
-                        profile.setPreference(stringCommand);
-                        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_PREFERENCE,
-                                StringType.valueOf(Converter.toTitleCase(profile.getPreference())));
-                        processed = true;
-                        break;
-                    case CHARGE_PROFILE_MODE:
-                        profile.setMode(stringCommand);
-                        updateChannel(CHANNEL_GROUP_CHARGE_PROFILE, CHARGE_PROFILE_MODE,
-                                StringType.valueOf(Converter.toTitleCase(profile.getMode())));
-                        processed = true;
-                        break;
-                    default:
-                        break;
-                }
-            } else if (command instanceof OnOffType) {
-                final ProfileKey enableKey = ChargeProfileUtils.getEnableKey(id);
-                if (enableKey != null) {
-                    profile.setEnabled(enableKey, OnOffType.ON.equals(command));
-                    updateTimedState(profile, enableKey);
-                    processed = true;
-                } else {
-                    final ChargeKeyDay chargeKeyDay = ChargeProfileUtils.getKeyDay(id);
-                    if (chargeKeyDay != null) {
-                        profile.setDayEnabled(chargeKeyDay.key, chargeKeyDay.day, OnOffType.ON.equals(command));
-                        updateTimedState(profile, chargeKeyDay.key);
-                        processed = true;
-                    }
-                }
-            } else if (command instanceof DateTimeType) {
-                DateTimeType dtt = (DateTimeType) command;
-                logger.debug("Accept {} for ID {}", dtt.toFullString(), id);
-                final ProfileKey key = ChargeProfileUtils.getTimeKey(id);
-                if (key != null) {
-                    profile.setTime(key, dtt.getZonedDateTime().toLocalTime());
-                    updateTimedState(profile, key);
-                    processed = true;
-                }
-            }
-
-            if (processed) {
-                // cancel current timer and add another 5 mins - valid for each edit
-                editTimeout.ifPresent(timeout -> timeout.cancel(true));
-                // start edit timer with 5 min timeout
-                editTimeout = Optional.of(scheduler.schedule(() -> {
-                    editTimeout = Optional.empty();
-                    chargeProfileEdit = Optional.empty();
-                    // chargeProfileCache.ifPresent(this::updateChargeProfileFromContent);
-                }, 5, TimeUnit.MINUTES));
-            } else {
-                logger.debug("unexpected command {} not processed", command.toFullString());
-            }
-        });
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(MyBMWActions.class);
-    }
-
-    public Optional<ChargeProfileWrapper> getChargeProfileWrapper() {
-        /*
-         * [todo]
-         * return chargeProfileCache.flatMap(cache -> {
-         * return ChargeProfileWrapper.fromJson(cache).map(wrapper -> {
-         * return wrapper;
-         * }).or(() -> {
-         * logger.debug("cannot parse charging profile: {}", cache);
-         * return Optional.empty();
-         * });
-         * }).or(() -> {
-         * logger.debug("No ChargeProfile recieved so far - cannot start editing");
-         * return Optional.empty();
-         * });
-         */
-        return Optional.empty();
-    }
-
-    public void sendChargeProfile(Optional<ChargeProfileWrapper> profile) {
-        // profile.map(profil -> profil.getJson()).ifPresent(json -> {
-        // logger.debug("sending charging profile: {}", json);
-        // chargeProfileSent = Optional.of(json);
-        // [todo] Not working yet
-        // remote.ifPresent(rem -> rem.execute(RemoteService.CHARGING_CONTROL, json));
-        // });
     }
 }

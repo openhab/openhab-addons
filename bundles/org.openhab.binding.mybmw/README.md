@@ -399,7 +399,7 @@ The channel _profile-prefs_ supports
 Shows charge statistics of the current month
 
 * Channel Group ID is **statistic**
-* Available for vehicles with an electric or hybrid drive train 
+* Available for electric and hybrid vehicles 
 * Read-only values
  
 | Channel Label              | Channel ID              | Type           | 
@@ -414,9 +414,9 @@ Shows charge statistics of the current month
 Group for past charging sessions.
 If more than one message is active the channel _name_ contains all active messages as options.
 
-* Channel Group ID is **check**
-* Available for all vehicles
-* Read/Write access
+* Channel Group ID is **session**
+* Available for electric and hybrid vehicles
+* Read-only values
 
 | Channel Label                   | Channel ID   | Type     |
 |---------------------------------|--------------|----------|

@@ -274,7 +274,6 @@ public class MyBMWProxy {
      *
      * @return
      */
-
     @SuppressWarnings("null")
     public synchronized boolean updateToken() {
         try {
@@ -394,5 +393,99 @@ public class MyBMWProxy {
             }
         });
         return codeFound.toString();
+    }
+
+    // @SuppressWarnings("null")
+    public synchronized boolean updateTokenChina() {
+        try {
+            /*
+             * Step 1) Query OAuth parameters
+             */
+            Request oauthQueryRequest = httpClient
+                    .newRequest("https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_ROW)
+                            + BimmerConstants.API_OAUTH_CONFIG);
+            oauthQueryRequest.header(ACP_SUBSCRIPTION_KEY,
+                    BimmerConstants.OCP_APIM_KEYS.get(BimmerConstants.REGION_ROW));
+            oauthQueryRequest.header(X_USER_AGENT, BimmerConstants.USER_AGENT_BMW);
+
+            ContentResponse firstResponse = oauthQueryRequest.send();
+            AuthQueryResponse aqr = Converter.getGson().fromJson(firstResponse.getContentAsString(),
+                    AuthQueryResponse.class);
+
+            String verfifierBytes = Converter.getRandomString(64);
+            String codeVerifier = Base64.getUrlEncoder().withoutPadding().encodeToString(verfifierBytes.getBytes());
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(codeVerifier.getBytes(StandardCharsets.UTF_8));
+            String codeChallange = Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+
+            String stateBytes = Converter.getRandomString(16);
+            String state = Base64.getUrlEncoder().withoutPadding().encodeToString(stateBytes.getBytes());
+
+            MultiMap<String> baseParams = new MultiMap<String>();
+            baseParams.put(CLIENT_ID, aqr.clientId);
+            baseParams.put(RESPONSE_TYPE, CODE);
+            baseParams.put(REDIRECT_URI, aqr.returnUrl);
+            baseParams.put(STATE, state);
+            baseParams.put(NONCE, BimmerConstants.LOGIN_NONCE);
+            baseParams.put(SCOPE, String.join(Constants.SPACE, aqr.scopes));
+            baseParams.put(CODE_CHALLENGE, codeChallange);
+            baseParams.put(CODE_CHALLENGE_METHOD, "S256");
+
+            /**
+             * Step 2) Authorization with username and password
+             */
+            String authUrl = aqr.gcdmBaseUrl + BimmerConstants.OAUTH_ENDPOINT;
+            Request loginRequest = httpClient.POST(authUrl);
+            loginRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+
+            MultiMap<String> loginParams = new MultiMap<String>(baseParams);
+            loginParams.put(GRANT_TYPE, BimmerConstants.AUTHORIZATION_CODE);
+            loginParams.put(USERNAME, configuration.userName);
+            loginParams.put(PASSWORD, configuration.password);
+            loginRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
+                    UrlEncoded.encode(loginParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
+            ContentResponse secondResponse = loginRequest.send();
+            String authCode = getAuthCode(secondResponse.getContentAsString());
+
+            /**
+             * Step 3) Authorize with code
+             */
+            Request authRequest = httpClient.POST(authUrl).followRedirects(false);
+            MultiMap<String> authParams = new MultiMap<String>(baseParams);
+            authParams.put(AUTHORIZATION, authCode);
+            authRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+            authRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
+                    UrlEncoded.encode(authParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
+            ContentResponse authResponse = authRequest.send();
+            String code = MyBMWProxy.codeFromUrl(authResponse.getHeaders().get(HttpHeader.LOCATION));
+
+            /**
+             * Step 4) Request token
+             */
+            Request codeRequest = httpClient.POST(aqr.tokenEndpoint);
+            String basicAuth = "Basic "
+                    + Base64.getUrlEncoder().encodeToString((aqr.clientId + ":" + aqr.clientSecret).getBytes());
+            codeRequest.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+            codeRequest.header(AUTHORIZATION, basicAuth);
+
+            MultiMap<String> codeParams = new MultiMap<String>();
+            codeParams.put(CODE, code);
+            codeParams.put(CODE_VERIFIER, codeVerifier);
+            codeParams.put(REDIRECT_URI, aqr.returnUrl);
+            codeParams.put(GRANT_TYPE, BimmerConstants.AUTHORIZATION_CODE);
+            codeRequest.content(new StringContentProvider(CONTENT_TYPE_URL_ENCODED,
+                    UrlEncoded.encode(codeParams, StandardCharsets.UTF_8, false), StandardCharsets.UTF_8));
+            ContentResponse codeResponse = codeRequest.send();
+            AuthResponse ar = Converter.getGson().fromJson(codeResponse.getContentAsString(), AuthResponse.class);
+            token.setType(ar.tokenType);
+            token.setToken(ar.accessToken);
+            token.setExpiration(ar.expiresIn);
+            logger.info("Token valid {}", token.isValid());
+            return true;
+        } catch (Exception e) {
+            logger.warn("Authorization Exception: {}", e.getMessage());
+        }
+        return false;
     }
 }

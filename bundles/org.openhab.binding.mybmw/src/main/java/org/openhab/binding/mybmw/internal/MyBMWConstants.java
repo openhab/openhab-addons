@@ -184,7 +184,6 @@ public class MyBMWConstants {
     public static final String REMOTE_SERVICE_HORN = "horn-blow";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now-start";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now-stop";
-    public static final String REMOTE_SERVICE_CHARGING_CONTROL = "charge-control"; // [todo] check correctness
 
     public static final String REMOTE_SERVICE_COMMAND = "command";
     public static final String REMOTE_STATE = "state";

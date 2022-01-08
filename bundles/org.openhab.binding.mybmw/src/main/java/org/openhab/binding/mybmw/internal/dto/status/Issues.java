@@ -18,5 +18,5 @@ package org.openhab.binding.mybmw.internal.dto.status;
  * @author Bernd Weymann - Initial contribution
  */
 public class Issues {
-    // [todo] defiition missing
+    // [todo] definition currently unknown
 }

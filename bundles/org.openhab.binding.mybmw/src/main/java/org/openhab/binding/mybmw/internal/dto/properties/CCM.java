@@ -18,5 +18,5 @@ package org.openhab.binding.mybmw.internal.dto.properties;
  * @author Bernd Weymann - Initial contribution
  */
 public class CCM {
-    // [todo] defiition missing
+    // [todo] [todo] definition currently unknown
 }
