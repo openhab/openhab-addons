@@ -20,12 +20,12 @@ import org.openhab.core.types.State;
 /**
  * @author Michael Barker - Initial contribution
  */
-public abstract class EchonetItem {
+public abstract class EchonetObject {
 
     protected final InstanceKey instanceKey;
     protected final HashSet<Epc> pendingGets = new HashSet<>();
 
-    public EchonetItem(final InstanceKey instanceKey, final Epc initialProperty) {
+    public EchonetObject(final InstanceKey instanceKey, final Epc initialProperty) {
         this.instanceKey = instanceKey;
         pendingGets.add(initialProperty);
     }

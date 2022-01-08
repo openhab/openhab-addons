@@ -66,7 +66,7 @@ public class EchonetChannel {
                 channel.close();
             }
         } catch (IOException e) {
-            logger.error("Failed to close channel", e);
+            logger.error("Failed to close selector/channel", e);
         }
     }
 

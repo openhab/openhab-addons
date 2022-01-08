@@ -13,7 +13,7 @@
 package org.openhab.binding.echonetlite.internal;
 
 import static java.util.Objects.requireNonNull;
-import static org.openhab.binding.echonetlite.internal.BufferUtil.hex;
+import static org.openhab.binding.echonetlite.internal.HexUtil.hex;
 
 import java.net.InetSocketAddress;
 import java.util.Objects;

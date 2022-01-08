@@ -37,7 +37,7 @@ public class EchonetMessenger implements EchonetMessengerService {
 
     private final Logger logger = LoggerFactory.getLogger(EchonetMessenger.class);
     private final ArrayBlockingQueue<Message> requests = new ArrayBlockingQueue<>(1024);
-    private final Map<InstanceKey, EchonetItem> devicesByKey = new HashMap<>();
+    private final Map<InstanceKey, EchonetObject> devicesByKey = new HashMap<>();
     private final EchonetMessageBuilder messageBuilder = new EchonetMessageBuilder();
     private final Thread networkingThread = new Thread(this::poll);
     private final EchonetMessage echonetMessage = new EchonetMessage();
@@ -74,11 +74,11 @@ public class EchonetMessenger implements EchonetMessengerService {
 
     private void newDeviceInternal(final NewDeviceMessage message) {
 
-        final EchonetItem echonetItem = devicesByKey.get(message.instanceKey);
-        if (null != echonetItem) {
-            if (echonetItem instanceof EchonetDevice) {
+        final EchonetObject echonetObject = devicesByKey.get(message.instanceKey);
+        if (null != echonetObject) {
+            if (echonetObject instanceof EchonetDevice) {
                 logger.debug("Update item: {} already discovered", message.instanceKey);
-                EchonetDevice device = (EchonetDevice) echonetItem;
+                EchonetDevice device = (EchonetDevice) echonetObject;
                 device.setListener(message.echonetDeviceListener);
             } else {
                 logger.debug("Item: {} already discovered, but was not a device", message.instanceKey);
@@ -96,7 +96,7 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     private void refreshDeviceInternal(final RefreshMessage refreshMessage, long nowMs) {
-        final EchonetItem item = devicesByKey.get(refreshMessage.instanceKey);
+        final EchonetObject item = devicesByKey.get(refreshMessage.instanceKey);
         item.refresh(refreshMessage.channelId);
     }
 
@@ -106,7 +106,7 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     private void removeDeviceInternal(final RemoveDevice removeDevice) {
-        final EchonetItem remove = devicesByKey.remove(removeDevice.instanceKey);
+        final EchonetObject remove = devicesByKey.remove(removeDevice.instanceKey);
 
         logger.info("Removing device: {}, {}", removeDevice.instanceKey, remove);
         if (null != remove) {
@@ -120,14 +120,14 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     public void updateDeviceInternal(UpdateDevice updateDevice) {
-        final EchonetItem echonetItem = devicesByKey.get(updateDevice.instanceKey);
+        final EchonetObject echonetObject = devicesByKey.get(updateDevice.instanceKey);
 
-        if (null == echonetItem) {
+        if (null == echonetObject) {
             logger.warn("Device not found for update: {}", updateDevice);
             return;
         }
 
-        echonetItem.update(updateDevice.channelId, updateDevice.state);
+        echonetObject.update(updateDevice.channelId, updateDevice.state);
     }
 
     @Override
@@ -156,8 +156,8 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     private void pollDevices(long nowMs) {
-        for (EchonetItem echonetItem : devicesByKey.values()) {
-            if (echonetItem.buildUpdateMessage(messageBuilder, echonetChannel::nextTid, nowMs)) {
+        for (EchonetObject echonetObject : devicesByKey.values()) {
+            if (echonetObject.buildUpdateMessage(messageBuilder, echonetChannel::nextTid, nowMs)) {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
@@ -165,9 +165,9 @@ public class EchonetMessenger implements EchonetMessengerService {
                 }
             }
 
-            echonetItem.refreshAll(nowMs);
+            echonetObject.refreshAll(nowMs);
 
-            if (echonetItem.buildPollMessage(messageBuilder, echonetChannel::nextTid, nowMs)) {
+            if (echonetObject.buildPollMessage(messageBuilder, echonetChannel::nextTid, nowMs)) {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
@@ -215,18 +215,18 @@ public class EchonetMessenger implements EchonetMessengerService {
                 echonetClass, echonetMessage.instance());
         final Esv esv = echonetMessage.esv();
 
-        EchonetItem echonetItem = devicesByKey.get(instanceKey);
-        if (null == echonetItem) {
-            echonetItem = devicesByKey.get(DISCOVERY_KEY);
+        EchonetObject echonetObject = devicesByKey.get(instanceKey);
+        if (null == echonetObject) {
+            echonetObject = devicesByKey.get(DISCOVERY_KEY);
         }
 
-        logger.debug("Message {} for: {}", esv, echonetItem);
-        if (null != echonetItem) {
+        logger.debug("Message {} for: {}", esv, echonetObject);
+        if (null != echonetObject) {
             while (echonetMessage.moveNext()) {
                 final int epc = echonetMessage.currentEpc();
                 final int pdc = echonetMessage.currentPdc();
                 ByteBuffer edt = echonetMessage.currentEdt();
-                echonetItem.applyResponse(instanceKey, esv, epc, pdc, edt);
+                echonetObject.applyResponse(instanceKey, esv, epc, pdc, edt);
             }
         }
     }

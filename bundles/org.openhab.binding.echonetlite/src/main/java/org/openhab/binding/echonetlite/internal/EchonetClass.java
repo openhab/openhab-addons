@@ -17,7 +17,6 @@ package org.openhab.binding.echonetlite.internal;
  */
 public enum EchonetClass {
     AIRCON_HOMEAC(0x01, 0x30),
-    AIRCON_COMMERCIAL(0x01, 0x52),
     MANAGEMENT_CONTROLLER(0x05, 0xFF),
     NODE_PROFILE(0x0e, 0xf0);
 

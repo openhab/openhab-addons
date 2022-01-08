@@ -66,13 +66,13 @@
 				<option value="Washroom/changing room 7">Washroom/changing room 7</option>
 
 				<option value="Passageway">"Passageway"</option>
-				<option value="Passageway  1">Passageway  1</option>
-				<option value="Passageway  2">Passageway  2</option>
-				<option value="Passageway  3">Passageway  3</option>
-				<option value="Passageway  4">Passageway  4</option>
-				<option value="Passageway  5">Passageway  5</option>
-				<option value="Passageway  6">Passageway  6</option>
-				<option value="Passageway  7">Passageway  7</option>
+				<option value="Passageway 1">Passageway 1</option>
+				<option value="Passageway 2">Passageway 2</option>
+				<option value="Passageway 3">Passageway 3</option>
+				<option value="Passageway 4">Passageway 4</option>
+				<option value="Passageway 5">Passageway 5</option>
+				<option value="Passageway 6">Passageway 6</option>
+				<option value="Passageway 7">Passageway 7</option>
 
 				<option value="Room">"Room"</option>
 				<option value="Room 1">Room 1</option>

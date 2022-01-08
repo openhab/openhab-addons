@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import static org.openhab.binding.echonetlite.internal.BufferUtil.hex;
+import static org.openhab.binding.echonetlite.internal.HexUtil.hex;
 import static org.openhab.binding.echonetlite.internal.LangUtil.b;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -90,10 +91,10 @@ public interface StateCodec extends StateEncode, StateDecode {
         public State decodeState(final ByteBuffer edt) {
             final int b0 = edt.get() & 0xFF;
             long time = 0;
-            time |= (edt.get() & 0xFFL) << 24;
-            time |= (edt.get() & 0xFFL) << 16;
-            time |= (edt.get() & 0xFFL) << 8;
-            time |= (edt.get() & 0xFFL);
+
+            // Specification isn't explicit about byte order, but seems to be work with testing.
+            edt.order(ByteOrder.BIG_ENDIAN);
+            time = edt.getInt() & 0xFFFFFFFFL;
 
             final TimeUnit timeUnit;
             switch (b0) {
@@ -164,7 +165,7 @@ public interface StateCodec extends StateEncode, StateDecode {
         }
     }
 
-    enum TemperatureCodec implements StateCodec {
+    enum Decimal8bitCodec implements StateCodec {
 
         INSTANCE;
 

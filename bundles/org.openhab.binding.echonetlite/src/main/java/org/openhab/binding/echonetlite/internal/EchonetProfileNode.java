@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * @author Michael Barker - Initial contribution
  */
-public class EchonetProfileNode extends EchonetItem implements EchonetDeviceListener {
+public class EchonetProfileNode extends EchonetObject implements EchonetDeviceListener {
 
     private final Consumer<EchonetDevice> newDeviceListener;
     private final EchonetDiscoveryListener echonetDiscoveryListener;

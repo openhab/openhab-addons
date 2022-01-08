@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import static org.openhab.binding.echonetlite.internal.BufferUtil.hex;
 import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.POLL_INTERVAL_MS;
+import static org.openhab.binding.echonetlite.internal.HexUtil.hex;
 
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Michael Barker - Initial contribution
  */
-public class EchonetDevice extends EchonetItem {
+public class EchonetDevice extends EchonetObject {
     private static final long UPDATE_RESEND_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(1);
 
     private final LinkedHashMap<Epc, State> pendingSets = new LinkedHashMap<>();

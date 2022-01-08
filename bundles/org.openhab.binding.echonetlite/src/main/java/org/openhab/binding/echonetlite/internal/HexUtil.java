@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 /**
  * @author Michael Barker - Initial contribution
  */
-public class BufferUtil {
+public class HexUtil {
     public static String hex(ByteBuffer buffer) {
         return hex(buffer, "[", "]", "0x", ",");
     }
@@ -31,7 +31,7 @@ public class BufferUtil {
             final String prefix = b < 0x10 ? "0" : "";
             sb.append(bytePrefix).append(prefix).append(Integer.toHexString(b)).append(delimiter);
         }
-        sb.setLength(sb.length() - 1);
+        sb.setLength(sb.length() - delimiter.length());
         sb.append(stringSuffix);
 
         return sb.toString();

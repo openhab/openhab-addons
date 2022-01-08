@@ -22,12 +22,6 @@ import org.openhab.binding.echonetlite.internal.StateCodec.OptionCodec;
  * @author Michael Barker - Initial contribution
  */
 public interface Epc {
-    int AC_DEVICE_CLASS_GROUP = 0x01;
-    int PROFILE_GROUP = 0x0E;
-
-    int HOME_AC_CLASS = 0x30;
-    int NODE_PROFILE_CLASS = 0xF0;
-
     int code();
 
     String name();
@@ -46,6 +40,10 @@ public interface Epc {
 
     default StateEncode encoder() {
         return null;
+    }
+
+    static Epc lookup(int groupCode, int classCode, int epcCode) {
+        return EpcLookupTable.INSTANCE.resolve(groupCode, classCode, epcCode);
     }
 
     // ECHONET SPECIFICATION
@@ -318,7 +316,7 @@ public interface Epc {
 
         AUTOMATIC_TEMPERATURE_CONTROL(0xB1),
         NORMAL_HIGH_SPEED_SILENT_OPERATION(0xB2),
-        SET_TEMPERATURE(0xB3, StateCodec.TemperatureCodec.INSTANCE),
+        SET_TEMPERATURE(0xB3, StateCodec.Decimal8bitCodec.INSTANCE),
         SET_RELATIVE_HUMIDITY(0xB4),
         SET_TEMPERATURE_COOLING_MODE(0xB5),
         SET_TEMPERATURE_HEATING_MODE(0xB6),
@@ -326,10 +324,10 @@ public interface Epc {
         RATED_POWER_CONSUMPTION(0xB8),
         MEASURED_CURRENT_CONSUMPTION(0xB9),
         MEASURED_ROOM_RELATIVE_HUMIDITY(0xBA),
-        MEASURED_ROOM_TEMPERATURE(0xBB, StateCodec.TemperatureCodec.INSTANCE, null),
+        MEASURED_ROOM_TEMPERATURE(0xBB, StateCodec.Decimal8bitCodec.INSTANCE, null),
         SET_TEMPERATURE_USER_REMOTE_CONTROL(0xBC),
         MEASURED_COOLED_AIR_TEMPERATURE(0xBD),
-        MEASURED_OUTDOOR_TEMPERATURE(0xBE, StateCodec.TemperatureCodec.INSTANCE, null),
+        MEASURED_OUTDOOR_TEMPERATURE(0xBE, StateCodec.Decimal8bitCodec.INSTANCE, null),
         RELATIVE_TEMPERATURE(0xBF);
         // @formatter:on
 
@@ -428,61 +426,5 @@ public interface Epc {
         public int code() {
             return code;
         }
-    }
-
-    static Epc lookup(int groupCode, int classCode, int epcCode) {
-        Epc result = null;
-        // TODO: Build an efficient lookup table.
-        if (0x80 <= epcCode && epcCode <= 0x9F) {
-            if (isDeviceGroup(groupCode)) {
-                result = find(Device.values(), epcCode);
-            } else if (isProfileGroup(groupCode)) {
-                result = find(Device.values(), epcCode);
-            }
-        } else if (0xA0 <= epcCode && epcCode <= 0xBF) {
-            switch (groupCode) {
-                case AC_DEVICE_CLASS_GROUP:
-                    result = find(AcGroup.values(), epcCode);
-                    break;
-                case PROFILE_GROUP:
-                    result = find(ProfileGroup.values(), epcCode);
-                    break;
-            }
-        } else if (0xC0 <= epcCode && epcCode <= 0xEF) {
-            switch (classCode) {
-                case HOME_AC_CLASS:
-                    result = find(HomeAc.values(), epcCode);
-                    break;
-
-                case NODE_PROFILE_CLASS:
-                    result = find(NodeProfile.values(), epcCode);
-                    break;
-            }
-        }
-
-        if (null == result) {
-            throw new RuntimeException("Unable to find common EPC for: " + BufferUtil.hex(groupCode) + "/"
-                    + BufferUtil.hex(classCode) + "/" + BufferUtil.hex(epcCode));
-        }
-
-        return result;
-    }
-
-    private static Epc find(Epc[] values, int epcCode) {
-        for (Epc epc : values) {
-            if (epc.code() == epcCode) {
-                return epc;
-            }
-        }
-
-        return null;
-    }
-
-    static boolean isProfileGroup(int groupCode) {
-        return 0x0E == groupCode;
-    }
-
-    static boolean isDeviceGroup(int groupCode) {
-        return 0x00 <= groupCode && groupCode <= 0x06;
     }
 }
