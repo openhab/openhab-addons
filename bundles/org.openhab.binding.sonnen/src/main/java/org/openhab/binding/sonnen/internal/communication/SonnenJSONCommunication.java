@@ -17,7 +17,6 @@ import java.io.IOException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonnen.internal.SonnenConfiguration;
-import org.openhab.binding.sonnen.internal.utilities.Helper;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,13 +47,10 @@ public class SonnenJSONCommunication {
     /**
      * Refreshes the battery connection.
      *
-     * @param message Message object to pass errors to the calling method.
-     * @param thingUID Thing UID for logging purposes
-     * @return true if no error occurred, false otherwise.
+     * @return an empty string if no error occurred, the error message otherwise.
      */
-    public boolean refreshBatteryConnection(Helper message, String thingUID) {
-        boolean resultOk = false;
-        String statusDescr = "";
+    public String refreshBatteryConnection() {
+        String result = "";
         String urlStr = "http://" + config.hostIP + "/api/v1/status";
 
         try {
@@ -64,17 +60,12 @@ public class SonnenJSONCommunication {
                 throw new IOException("HttpUtil.executeUrl returned null");
             }
             batteryData = gson.fromJson(response, SonnenJsonDataDTO.class);
-            resultOk = true;
         } catch (IOException | JsonSyntaxException e) {
-            logger.debug("Error processiong Get request {}", urlStr);
+            logger.debug("Error processiong Get request {}:  {}", urlStr, e.getMessage());
+            result = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
             batteryData = null;
-            statusDescr = "Cannot find service on given IP " + config.hostIP + ". Please verify the IP address!";
-
-            resultOk = false;
-            logger.debug("Setting thing '{}' to OFFLINE: Error '{}'", thingUID, e.getMessage());
         }
-        message.setStatusDescription(statusDescr);
-        return resultOk;
+        return result;
     }
 
     /**

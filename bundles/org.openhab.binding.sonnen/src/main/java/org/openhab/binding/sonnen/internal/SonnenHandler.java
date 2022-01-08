@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonnen.internal.communication.SonnenJSONCommunication;
 import org.openhab.binding.sonnen.internal.communication.SonnenJsonDataDTO;
-import org.openhab.binding.sonnen.internal.utilities.Helper;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -37,6 +36,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
@@ -72,58 +72,44 @@ public class SonnenHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing sonnen handler for thing {}", getThing().getUID());
         config = getConfigAs(SonnenConfiguration.class);
-        boolean validConfig = true;
-        String statusDescr = null;
-        if (config.refreshInterval < 0 && config.refreshInterval > 1000) {
-            statusDescr = "Parameter 'refresh Rate' greater then 0 and less then 1001.";
-            validConfig = false;
+        if (config.refreshInterval < 0 || config.refreshInterval > 1000) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Parameter 'refresh Rate' msut be in the range 0-1000!");
+            return;
         }
         if (config.hostIP == null) {
-            statusDescr = "IP Address must be configured!";
-            validConfig = false;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP Address must be configured!");
+            return;
         }
-        updateStatus(ThingStatus.UNKNOWN);
 
-        Helper message = new Helper();
-        message.setStatusDescription(statusDescr);
-        if (validConfig) {
-            serviceCommunication.setConfig(config);
-            scheduler.submit(() -> {
-                if (updateBatteryData()) {
-                    updateLinkedChannels();
+        serviceCommunication.setConfig(config);
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.submit(() -> {
+            if (updateBatteryData()) {
+                for (Channel channel : getThing().getChannels()) {
+                    if (isLinked(channel.getUID().getId())) {
+                        channelLinked(channel.getUID());
+                    }
                 }
-            });
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message.getStatusDesription());
-        }
+            }
+        });
     }
 
     /**
      * Calls the service to update the battery data
      *
+     * @return true if the update succeeded, false otherwise
      */
     private boolean updateBatteryData() {
-        Helper message = new Helper();
-        if (serviceCommunication.refreshBatteryConnection(message, this.getThing().getUID().toString())) {
-            updateStatus(ThingStatus.ONLINE);
-            return true;
+        String error = serviceCommunication.refreshBatteryConnection();
+        if (error.isEmpty()) {
+            if (!ThingStatus.ONLINE.equals(getThing().getStatus())) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    message.getStatusDesription());
-            return false;
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
         }
-    }
-
-    private void updateLinkedChannels() {
-
-        for (Channel channel : getThing().getChannels()) {
-            verifyLinkedChannel(channel.getUID().getId());
-        }
-
-        if (!linkedChannels.isEmpty()) {
-            startAutomaticRefresh();
-            automaticRefreshing = true;
-        }
+        return error.isEmpty();
     }
 
     private void verifyLinkedChannel(String channelID) {
@@ -136,6 +122,7 @@ public class SonnenHandler extends BaseThingHandler {
     public void dispose() {
         stopAutomaticRefresh();
         linkedChannels.clear();
+        automaticRefreshing = false;
     }
 
     private void stopAutomaticRefresh() {
@@ -152,8 +139,8 @@ public class SonnenHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         ScheduledFuture<?> job = refreshJob;
         if (job == null || job.isCancelled()) {
-            int period = config.refreshInterval;
-            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshChannels, 0, period, TimeUnit.SECONDS);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refreshChannels, 0, config.refreshInterval,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -247,6 +234,8 @@ public class SonnenHandler extends BaseThingHandler {
                         update(OnOffType.from(data.isFlowProductionGrid()), channelId);
                         break;
                 }
+            } else {
+                update(null, channelId);
             }
         }
     }
@@ -259,16 +248,14 @@ public class SonnenHandler extends BaseThingHandler {
      */
     private void update(@Nullable State state, String channelId) {
         logger.debug("Update channel {} with state {}", channelId, (state == null) ? "null" : state.toString());
-
-        if (state != null) {
-            updateState(channelId, state);
-
-        } else {
-            updateState(channelId, UnDefType.UNDEF);
-        }
+        updateState(channelId, state != null ? state : UnDefType.UNDEF);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command == RefreshType.REFRESH) {
+            updateBatteryData();
+            updateChannel(channelUID.getId());
+        }
     }
 }
