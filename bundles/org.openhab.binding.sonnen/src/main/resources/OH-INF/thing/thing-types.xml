@@ -4,10 +4,10 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sonnen Thing Type -->
+	<!-- Sonnen battery Thing Type -->
 	<thing-type id="sonnenbattery">
-		<label>sonnen Binding Thing</label>
-		<description>Thing for sonnen battery connection</description>
+		<label>Sonnen Battery</label>
+		<description>Monitoring of a sonnen battery.</description>
 
 		<channels>
 			<channel id="batteryCharging" typeId="batteryCharging"/>
@@ -31,12 +31,12 @@
 			<parameter name="hostIP" type="text" required="true">
 				<context>network-address</context>
 				<label>IP Address</label>
-				<description>Please add the IP Address of your sonnen battery</description>
+				<description>Please add the IP Address of your sonnen battery.</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" unit="s" min="0" max="1000">
 				<label>Refresh Interval</label>
 				<description>How often in seconds the sonnen battery should schedule a refresh after a channel is linked to an item.
-					Valid input is 0 - 1000</description>
+					Valid input is 0 - 1000.</description>
 				<advanced>true</advanced>
 				<default>30</default>
 			</parameter>
@@ -47,91 +47,85 @@
 	<channel-type id="batteryCharging">
 		<item-type>Switch</item-type>
 		<label>Battery Charging</label>
-		<description>Indicates if the Battery is charging at that moment</description>
+		<description>Indicates if the Battery is charging at that moment.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryDischarging">
 		<item-type>Switch</item-type>
 		<label>Battery Discharging</label>
-		<description>Indicates if the Battery is discharging at that moment</description>
+		<description>Indicates if the Battery is discharging at that moment.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryFeedIn">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Feed In</label>
-		<description>Indicates the actual current feeding to the Battery in watt. Otherwise 0</description>
-		<state readOnly="true"/>
+		<description>Indicates the actual current feeding to the Battery. Otherwise 0.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryDispense">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Dispense</label>
-		<description>Indicates the actual current dispense from the Battery in watt. Otherwise 0</description>
-		<state readOnly="true"/>
+		<description>Indicates the actual current dispense from the Battery. Otherwise 0.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Consumption</label>
-		<description>Indicates the actual consumption of the consumer in watt</description>
-		<state readOnly="true"/>
+		<description>Indicates the actual consumption of the consumer.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="gridFeedIn">
 		<item-type>Number:Energy</item-type>
 		<label>Grid Feed In</label>
-		<description>Indicates the actual feeding to the Grid in watt. Otherwise 0</description>
-		<state readOnly="true"/>
+		<description>Indicates the actual feeding to the Grid. Otherwise 0.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="gridReceive">
 		<item-type>Number:Energy</item-type>
 		<label>Grid Receive</label>
-		<description>Indicates the receiving from the the Grid in watt. Otherwise 0</description>
-		<state readOnly="true"/>
+		<description>Indicates the receiving from the the Grid. Otherwise 0.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="solarProduction">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Production</label>
-		<description>Indicates the actual production of the Solar system in watt</description>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="batteryType">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Battery Level</label>
-		<description>Indicates the actual Battery Level in % from 0 - 100</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<description>Indicates the actual production of the Solar system.</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="flowConsumptionBattery">
 		<item-type>Switch</item-type>
-		<label>Flow Battery towards Consumption</label>
-		<description>Indicates if there is a current flow from Battery towards Consumption.</description>
+		<label>Flow Battery Towards Consumption</label>
+		<description>Indicates if there is a current flow from battery towards consumption.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowConsumptionGrid">
 		<item-type>Switch</item-type>
-		<label>Flow Grid towards Consumption</label>
-		<description>Indicates if there is a current flow from Grid towards Consumption.</description>
+		<label>Flow Grid Towards Consumption</label>
+		<description>Indicates if there is a current flow from grid towards consumption.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowConsumptionProduction">
 		<item-type>Switch</item-type>
-		<label>Flow Production towards Consumption</label>
-		<description>Indicates if there is a current flow from Solar Production towards Consumption.</description>
+		<label>Flow Production Towards Consumption</label>
+		<description>Indicates if there is a current flow from solar production towards consumption.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowGridBattery">
 		<item-type>Switch</item-type>
-		<label>Flow Grid towards Battery</label>
-		<description>Indicates if there is a current flow from Grid towards Battery.</description>
+		<label>Flow Grid Towards Battery</label>
+		<description>Indicates if there is a current flow from grid towards battery.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowProductionBattery">
 		<item-type>Switch</item-type>
-		<label>Flow Production towards Battery</label>
-		<description>Indicates if there is a current flow from Production towards Battery.</description>
+		<label>Flow Production Towards Battery</label>
+		<description>Indicates if there is a current flow from production towards battery.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="flowProductionGrid">
 		<item-type>Switch</item-type>
-		<label>Flow Production towards Grid</label>
-		<description>Indicates if there is a current flow from Production towards Grid.</description>
+		<label>Flow Production Towards Grid</label>
+		<description>Indicates if there is a current flow from production towards grid.</description>
 		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
