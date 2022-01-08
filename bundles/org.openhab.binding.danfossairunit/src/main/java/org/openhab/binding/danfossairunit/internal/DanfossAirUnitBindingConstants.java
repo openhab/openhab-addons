@@ -35,8 +35,4 @@ public class DanfossAirUnitBindingConstants {
 
     // The thing type as a set
     public static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AIRUNIT);
-
-    // Properties
-    public static String PROPERTY_UNIT_NAME = "Unit Name";
-    public static String PROPERTY_SERIAL = "Serial Number";
 }
