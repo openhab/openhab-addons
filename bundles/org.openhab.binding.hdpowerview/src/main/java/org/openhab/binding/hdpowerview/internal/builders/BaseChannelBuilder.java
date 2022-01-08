@@ -40,7 +40,7 @@ public class BaseChannelBuilder {
     @Nullable
     protected List<Channel> channels;
 
-    public BaseChannelBuilder(HDPowerViewTranslationProvider translationProvider, ChannelGroupUID channelGroupUid,
+    protected BaseChannelBuilder(HDPowerViewTranslationProvider translationProvider, ChannelGroupUID channelGroupUid,
             String channelTypeId) {
         this.translationProvider = translationProvider;
         this.channelGroupUid = channelGroupUid;

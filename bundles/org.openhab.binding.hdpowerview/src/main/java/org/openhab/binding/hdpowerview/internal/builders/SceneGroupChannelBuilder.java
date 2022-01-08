@@ -38,7 +38,7 @@ public class SceneGroupChannelBuilder extends BaseChannelBuilder {
     @Nullable
     private List<SceneCollection> sceneCollections;
 
-    public SceneGroupChannelBuilder(HDPowerViewTranslationProvider translationProvider,
+    private SceneGroupChannelBuilder(HDPowerViewTranslationProvider translationProvider,
             ChannelGroupUID channelGroupUid) {
         super(translationProvider, channelGroupUid, HDPowerViewBindingConstants.CHANNELTYPE_SCENE_GROUP_ACTIVATE);
     }

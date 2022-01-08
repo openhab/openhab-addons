@@ -56,7 +56,7 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
     @Nullable
     private List<ScheduledEvent> scheduledEvents;
 
-    public AutomationChannelBuilder(HDPowerViewTranslationProvider translationProvider,
+    private AutomationChannelBuilder(HDPowerViewTranslationProvider translationProvider,
             ChannelGroupUID channelGroupUid) {
         super(translationProvider, channelGroupUid, HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
     }
