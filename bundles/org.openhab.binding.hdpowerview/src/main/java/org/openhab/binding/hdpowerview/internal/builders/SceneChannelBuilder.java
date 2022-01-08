@@ -43,7 +43,7 @@ public class SceneChannelBuilder extends BaseChannelBuilder {
     }
 
     /**
-     * Creates an {@link SceneChannelBuilder} for the given {@link HDPowerViewTranslationProvider} and
+     * Creates a {@link SceneChannelBuilder} for the given {@link HDPowerViewTranslationProvider} and
      * {@link ChannelGroupUID}.
      * 
      * @param translationProvider the {@link HDPowerViewTranslationProvider}
