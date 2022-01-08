@@ -216,6 +216,49 @@ public class AutomationChannelBuilderTest {
     }
 
     @Test
+    public void emptyListWhenNoScheduledEvents() {
+        @NonNull
+        List<@NonNull Channel> channels = builder.build();
+
+        assertEquals(0, channels.size());
+    }
+
+    @Test
+    public void emptyListWhenNoScenesOrSceneCollections() {
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
+
+        @NonNull
+        List<@NonNull Channel> channels = builder.withScheduledEvents(scheduledEvents).build();
+
+        assertEquals(0, channels.size());
+    }
+
+    @Test
+    public void emptyListWhenNoSceneForScheduledEvent() {
+        ScheduledEvent scheduledEvent = createScheduledEventWithSceneCollection(
+                ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
+
+        @NonNull
+        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+
+        assertEquals(0, channels.size());
+    }
+
+    @Test
+    public void emptyListWhenNoSceneCollectionForScheduledEvent() {
+        ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
+        List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
+
+        @NonNull
+        List<@NonNull Channel> channels = builder.withSceneCollections(sceneCollections)
+                .withScheduledEvents(scheduledEvents).build();
+
+        assertEquals(0, channels.size());
+    }
+
+    @Test
     public void groupAndIdAreCorrect() {
         ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
         scheduledEvent.id = 42;

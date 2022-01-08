@@ -97,6 +97,14 @@ public class SceneChannelBuilderTest {
         assertEquals(existingChannels, channels);
     }
 
+    @Test
+    public void emptyListWhenNoScenes() {
+        @NonNull
+        List<@NonNull Channel> channels = builder.build();
+
+        assertEquals(0, channels.size());
+    }
+
     private List<Scene> createScenes() {
         Scene scene = new Scene();
         scene.id = 1;

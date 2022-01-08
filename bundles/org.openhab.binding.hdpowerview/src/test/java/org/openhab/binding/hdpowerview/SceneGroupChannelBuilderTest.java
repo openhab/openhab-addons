@@ -98,6 +98,14 @@ public class SceneGroupChannelBuilderTest {
         assertEquals(existingChannels, channels);
     }
 
+    @Test
+    public void emptyListWhenNoSceneCollections() {
+        @NonNull
+        List<@NonNull Channel> channels = builder.build();
+
+        assertEquals(0, channels.size());
+    }
+
     private List<SceneCollection> createSceneCollections() {
         SceneCollection sceneCollection = new SceneCollection();
         sceneCollection.id = 1;
