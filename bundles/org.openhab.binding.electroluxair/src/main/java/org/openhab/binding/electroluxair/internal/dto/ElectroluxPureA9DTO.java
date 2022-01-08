@@ -71,7 +71,7 @@ public class ElectroluxPureA9DTO {
         @SerializedName("$lastUpdated")
         public String lastUpdated2 = "";
         @SerializedName("FrmVer_NIU")
-        public FrmVerNIU_ frmVerNIU = new FrmVerNIU_();
+        public FrmVerNIU frmVerNIU = new FrmVerNIU();
         @SerializedName("Workmode")
         public Workmode workmode = new Workmode();
         @SerializedName("FilterRFID")
@@ -256,10 +256,10 @@ public class ElectroluxPureA9DTO {
         public int lastUpdatedVersion;
     }
 
-    public class FrmVerNIU_ {
-        @SerializedName("$lastUpdated")
-        public String lastUpdated = "";
-    }
+    // public class FrmVerNIU_ {
+    // @SerializedName("$lastUpdated")
+    // public String lastUpdated = "";
+    // }
 
     public class Humidity {
         @SerializedName("$lastUpdated")

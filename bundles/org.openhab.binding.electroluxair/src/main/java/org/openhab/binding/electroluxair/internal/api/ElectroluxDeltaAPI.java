@@ -49,6 +49,7 @@ public class ElectroluxDeltaAPI {
     private static final String CLIENT_URL = "https://electrolux-wellbeing-client.vercel.app/api/mu52m5PR9X";
     private static final String SERVICE_URL = "https://api.delta.electrolux.com/api/";
     private static final String JSON_CONTENT_TYPE = "application/json";
+    private static final String LOGIN = "Users/Login";
     private static final int MAX_RETRIES = 3;
 
     private final Logger logger = LoggerFactory.getLogger(ElectroluxDeltaAPI.class);
@@ -147,8 +148,6 @@ public class ElectroluxDeltaAPI {
     }
 
     private void login() throws ElectroluxAirException {
-        String LOGIN = "Users/Login";
-
         // Fetch ClientToken
         Request request = httpClient.newRequest(CLIENT_URL).method(HttpMethod.GET);
 
@@ -184,7 +183,6 @@ public class ElectroluxDeltaAPI {
             json = httpResponse.getContentAsString();
             jsonObject = JsonParser.parseString(json).getAsJsonObject();
             this.authToken = jsonObject.get("accessToken").getAsString();
-
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new ElectroluxAirException(e);
         }
@@ -209,7 +207,6 @@ public class ElectroluxDeltaAPI {
                     } else {
                         return content;
                     }
-
                 } catch (TimeoutException e) {
                     logger.debug("TimeoutException error in get: {}", e.getMessage());
                 }
@@ -247,7 +244,6 @@ public class ElectroluxDeltaAPI {
         } catch (ElectroluxAirException | InterruptedException e) {
             throw new ElectroluxAirException(e);
         }
-
         return gson.fromJson(json, dto);
     }
 
@@ -284,7 +280,6 @@ public class ElectroluxDeltaAPI {
                             return false;
                         }
                     }
-
                 } catch (TimeoutException | InterruptedException e) {
                     logger.warn("TimeoutException error in get");
                 }
@@ -292,7 +287,6 @@ public class ElectroluxDeltaAPI {
         } catch (JsonSyntaxException | ElectroluxAirException | ExecutionException e) {
             throw new ElectroluxAirException(e);
         }
-
         return false;
     }
 

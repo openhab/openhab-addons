@@ -51,7 +51,7 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
-    private int REFRESH_SEC = 300;
+    private int refreshTimeInSeconds = 300;
 
     private final Gson gson;
     private final HttpClient httpClient;
@@ -71,12 +71,12 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
         ElectroluxAirBridgeConfiguration config = getConfigAs(ElectroluxAirBridgeConfiguration.class);
 
         ElectroluxDeltaAPI electroluxDeltaAPI = new ElectroluxDeltaAPI(config, gson, httpClient);
-        REFRESH_SEC = config.refresh;
+        refreshTimeInSeconds = config.refresh;
 
         if (config.username == null || config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username, password is mandatory");
-        } else if (REFRESH_SEC < 0) {
+        } else if (refreshTimeInSeconds < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh time cannot be negative!");
         } else {
@@ -132,7 +132,7 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
     private void startAutomaticRefresh() {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
-            this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, REFRESH_SEC,
+            this.refreshJob = scheduler.scheduleWithFixedDelay(this::refreshAndUpdateStatus, 0, refreshTimeInSeconds,
                     TimeUnit.SECONDS);
         }
     }
