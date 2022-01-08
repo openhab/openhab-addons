@@ -4,18 +4,15 @@ The binding for sonnen communicates with a sonnen battery. More information abou
 
 ## Supported Things
 
-| Things | Description  | Thing Type |
-|--------|--------------|------------|
-| sonnen | Control of a sonnen battery | battery|
+| Thing Type    | Description                    |
+|---------------|--------------------------------|
+| sonnenbattery | Monitoring of a sonnen battery |
 
 
 ## Thing Configuration
 
-Only one parameter is required. The IP-Address of the sonnen battery in your local network.
+Only the parameter `hostIP` is required; this is the IP address of the sonnen battery in your local network.
 
-```
-Thing sonnen:sonnenbattery:myBattery "Sonnen Battery"  [ hostIP="192.168.0.10"]
-```
 
 ## Channels
 
@@ -42,13 +39,19 @@ The following channels are yet supported:
 
 ## Full Example
 
-demo.items:
+example.things:
 
 ```
-Number:Energy Consumption { channel="battery:consumption" }
-Number:Energy GridFeeding { channel="battery:gridFeedIn" }
-Number BatteryLevel { channel="battery:batteryLevel" }
-Switch FlowConsumptionBattery { channel="oven:flowConsumptionBattery" }
+Thing sonnen:sonnenbattery:myBattery "Sonnen Battery"  [ hostIP="192.168.0.10"]
+```
+
+example.items:
+
+```
+Number:Energy Consumption { channel="sonnen:sonnenbattery:myBattery:consumption" }
+Number:Energy GridFeeding { channel="sonnen:sonnenbattery:myBattery:gridFeedIn" }
+Number BatteryLevel { channel="sonnen:sonnenbattery:myBattery:batteryLevel" }
+Switch FlowConsumptionBattery { channel="sonnen:sonnenbattery:myBattery:flowConsumptionBattery" }
 ```
 
 ## Tested Hardware
