@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="meater"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>MEATER Cloud REST API</label>
+		<description>This bridge represents the cloud REST API connector.</description>
+
+		<properties>
+			<property name="vendor">Meater</property>
+		</properties>
+
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>The username used to login to Meater app.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>The password used to login to Meater app.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="10" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>30</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="meaterprobe">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Meater Probe</label>
+		<description>This thing represents a Meater probe.</description>
+
+		<channels>
+			<channel id="internalTemperature" typeId="temperature"/>
+			<channel id="ambientTemperature" typeId="temperature"/>
+			<channel id="cookId" typeId="cookId"/>
+			<channel id="cookName" typeId="cookName"/>
+			<channel id="cookState" typeId="cookState"/>
+			<channel id="cookTargetTemperature" typeId="temperature"/>
+			<channel id="cookPeakTemperature" typeId="temperature"/>
+			<channel id="cookElapsedTime" typeId="time"/>
+			<channel id="cookRemainingTime" typeId="time"/>
+			<channel id="status" typeId="status"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Meater</property>
+		</properties>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device Id</label>
+				<description>Unique Id.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Current Status</label>
+		<description>Information on current status.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>TimeStamp</label>
+		<description>Date and time of last event change.</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="time">
+		<item-type>Number:Time</item-type>
+		<label>Time</label>
+		<description>Time in seconds.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookId">
+		<item-type>String</item-type>
+		<label>Cook ID</label>
+		<description>Cook ID</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="cookName">
+		<item-type>String</item-type>
+		<label>Cook Name</label>
+		<description>Cook Name</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="cookState">
+		<item-type>String</item-type>
+		<label>Cook State</label>
+		<description>Cook State</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+</thing:thing-descriptions>
