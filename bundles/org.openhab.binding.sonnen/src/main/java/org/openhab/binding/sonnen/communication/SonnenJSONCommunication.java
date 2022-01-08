@@ -85,10 +85,8 @@ public class SonnenJSONCommunication {
      *
      * @param config2
      */
-    public void setConfig(@Nullable SonnenConfiguration config2) {
-        if (config2 != null) {
-            this.config = config2;
-        }
+    public void setConfig(SonnenConfiguration config2) {
+        this.config = config2;
     }
 
     /**
