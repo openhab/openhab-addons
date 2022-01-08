@@ -10,21 +10,21 @@
 		<description>Thing for sonnen battery connection</description>
 
 		<channels>
-			<channel id="BatteryCharging" typeId="batteryCharging"/>
-			<channel id="BatteryDischarging" typeId="batteryDischarging"/>
-			<channel id="BatteryFeedIn" typeId="batteryFeedIn"/>
-			<channel id="BatteryDispense" typeId="batteryDispense"/>
-			<channel id="Consumption" typeId="consumption"/>
-			<channel id="GridFeedIn" typeId="gridFeedIn"/>
-			<channel id="GridReceive" typeId="gridReceive"/>
-			<channel id="SolarProduction" typeId="solarProduction"/>
-			<channel id="BatteryLevel" typeId="batteryLevel"/>
-			<channel id="FlowConsumptionBattery" typeId="flowConsumptionBattery"/>
-			<channel id="FlowConsumptionGrid" typeId="flowConsumptionGrid"/>
-			<channel id="FlowConsumptionProduction" typeId="flowConsumptionProduction"/>
-			<channel id="FlowGridBattery" typeId="flowGridBattery"/>
-			<channel id="FlowProductionBattery" typeId="flowProductionBattery"/>
-			<channel id="FlowProductionGrid" typeId="flowProductionGrid"/>
+			<channel id="batteryCharging" typeId="batteryCharging"/>
+			<channel id="batteryDischarging" typeId="batteryDischarging"/>
+			<channel id="batteryFeedIn" typeId="batteryFeedIn"/>
+			<channel id="batteryDispense" typeId="batteryDispense"/>
+			<channel id="consumption" typeId="consumption"/>
+			<channel id="gridFeedIn" typeId="gridFeedIn"/>
+			<channel id="gridReceive" typeId="gridReceive"/>
+			<channel id="solarProduction" typeId="solarProduction"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="flowConsumptionBattery" typeId="flowConsumptionBattery"/>
+			<channel id="flowConsumptionGrid" typeId="flowConsumptionGrid"/>
+			<channel id="flowConsumptionProduction" typeId="flowConsumptionProduction"/>
+			<channel id="flowGridBattery" typeId="flowGridBattery"/>
+			<channel id="flowProductionBattery" typeId="flowProductionBattery"/>
+			<channel id="flowProductionGrid" typeId="flowProductionGrid"/>
 		</channels>
 
 		<config-description>
@@ -92,11 +92,11 @@
 		<description>Indicates the actual production of the Solar system in watt</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="batteryLevel">
-		<item-type>Number</item-type>
+	<channel-type id="batteryType">
+		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<description>Indicates the actual Battery Level in % from 0 - 100</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 	<channel-type id="flowConsumptionBattery">
 		<item-type>Switch</item-type>

@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * This class handles the JSON communication with the sonnen battery
@@ -66,7 +68,11 @@ public class SonnenJSONCommunication {
             resultOk = true;
         } catch (IOException e) {
             logger.debug("Error processiong Get request {}", urlStr);
-            statusDescr = "Cannot find service on given IP" + config.hostIP + " Please verify the IP-Address!";
+            statusDescr = "Cannot find service on given IP " + config.hostIP + " Please verify the IP-Address!";
+            errorDetail = e.getMessage();
+            resultOk = false;
+        } catch (IllegalArgumentException | JsonIOException | JsonSyntaxException e) {
+            logger.debug("An exception occured by calling the url with Gson", urlStr);
             errorDetail = e.getMessage();
             resultOk = false;
         }

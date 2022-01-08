@@ -82,6 +82,7 @@ public class SonnenHandler extends BaseThingHandler {
             statusDescr = "IP Address must be configured!";
             validConfig = false;
         }
+        updateStatus(ThingStatus.UNKNOWN);
 
         Helper message = new Helper();
         message.setStatusDescription(statusDescr);

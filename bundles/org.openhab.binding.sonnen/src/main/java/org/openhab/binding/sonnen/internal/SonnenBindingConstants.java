@@ -30,19 +30,19 @@ public class SonnenBindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY = new ThingTypeUID(BINDING_ID, "sonnenbattery");
 
     // List of all Channel ids
-    public static final String CHANNELBATTERYCHARGING = "BatteryCharging";
-    public static final String CHANNELBATTERYDISCHARGING = "BatteryDischarging";
-    public static final String CHANNELBATTERYFEEDIN = "BatteryFeedIn";
-    public static final String CHANNELBATTERYDISPENSE = "BatteryDispense";
-    public static final String CHANNELCONSUMPTION = "Consumption";
-    public static final String CHANNELGRIDFEEDIN = "GridFeedIn";
-    public static final String CHANNELGRIDRECEIVE = "GridReceive";
-    public static final String CHANNELSOLARPRODUCTION = "SolarProduction";
-    public static final String CHANNELBATTERYLEVEL = "BatteryLevel";
-    public static final String CHANNELFLOWCONSUMPTIONBATTERY = "FlowConsumptionBattery";
-    public static final String CHANNELFLOWCONSUMPTIONGRID = "FlowConsumptionGrid";
-    public static final String CHANNELFLOWCONSUMPTIONPRODUCTION = "FlowConsumptionProduction";
-    public static final String CHANNELFLOWGRIDBATTERY = "FlowGridBattery";
-    public static final String CHANNELFLOWPRODUCTIONBATTERY = "FlowProductionBattery";
-    public static final String CHANNELFLOWPRODUCTIONGRID = "FlowProductionGrid";
+    public static final String CHANNELBATTERYCHARGING = "batteryCharging";
+    public static final String CHANNELBATTERYDISCHARGING = "batteryDischarging";
+    public static final String CHANNELBATTERYFEEDIN = "batteryFeedIn";
+    public static final String CHANNELBATTERYDISPENSE = "batteryDispense";
+    public static final String CHANNELCONSUMPTION = "consumption";
+    public static final String CHANNELGRIDFEEDIN = "gridFeedIn";
+    public static final String CHANNELGRIDRECEIVE = "gridReceive";
+    public static final String CHANNELSOLARPRODUCTION = "solarProduction";
+    public static final String CHANNELBATTERYLEVEL = "batteryLevel";
+    public static final String CHANNELFLOWCONSUMPTIONBATTERY = "flowConsumptionBattery";
+    public static final String CHANNELFLOWCONSUMPTIONGRID = "flowConsumptionGrid";
+    public static final String CHANNELFLOWCONSUMPTIONPRODUCTION = "flowConsumptionProduction";
+    public static final String CHANNELFLOWGRIDBATTERY = "flowGridBattery";
+    public static final String CHANNELFLOWPRODUCTIONBATTERY = "flowProductionBattery";
+    public static final String CHANNELFLOWPRODUCTIONGRID = "flowProductionGrid";
 }
