@@ -136,6 +136,7 @@
 		<label>Station State</label>
 		<description>Controls a station on the OpenSprinkler device.</description>
 		<category>Switch</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="ignoreRain">
@@ -180,7 +181,25 @@
 		<label>Next Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
 		<category>Time</category>
-		<state readOnly="false" pattern="%.0f min"/>
+		<state>
+			<options>
+				<option value="15s">15 Seconds</option>
+				<option value="1min">1 Minute</option>
+				<option value="5min">5 Minutes</option>
+				<option value="10min">10 Minutes</option>
+				<option value="15min">15 Minutes</option>
+				<option value="20min">20 Minutes</option>
+				<option value="25min">25 Minutes</option>
+				<option value="30min">30 Minutes</option>
+				<option value="40min">40 Minutes</option>
+				<option value="50min">50 Minutes</option>
+				<option value="60min">1 Hour</option>
+				<option value="90min">1.5 Hours</option>
+				<option value="2h">2 Hours</option>
+				<option value="3h">3 Hours</option>
+				<option value="4h">4 Hours</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="rainDelay">
@@ -188,7 +207,22 @@
 		<label>Rain Delay</label>
 		<description>The amount of time in hours to delay the running of any program.</description>
 		<category>Time</category>
-		<state readOnly="false" pattern="%.0f h"/>
+		<state readOnly="false" pattern="%.0f h">
+			<options>
+				<option value="0s">Off</option>
+				<option value="6h">6 Hours</option>
+				<option value="12h">12 Hours</option>
+				<option value="1d">1 Day</option>
+				<option value="2d">2 Days</option>
+				<option value="3d">3 Days</option>
+				<option value="4d">4 Days</option>
+				<option value="5d">5 Days</option>
+				<option value="6d">6 Days</option>
+				<option value="7d">1 Week</option>
+				<option value="14d">2 Weeks</option>
+				<option value="28d">4 Weeks</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="programs">
