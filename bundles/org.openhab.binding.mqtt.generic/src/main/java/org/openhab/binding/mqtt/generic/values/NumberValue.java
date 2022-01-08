@@ -112,7 +112,7 @@ public class NumberValue extends Value {
         }
         // items with units specified in the label in the UI but no unit on mqtt are stored as
         // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
-        if (!unit.equals(Units.ONE)) {
+        if (!Units.ONE.equals(unit)) {
             state = new QuantityType<>(newValue, unit);
         } else {
             state = new DecimalType(newValue);
