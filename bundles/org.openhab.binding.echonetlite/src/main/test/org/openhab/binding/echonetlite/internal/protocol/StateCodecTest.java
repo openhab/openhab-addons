@@ -1,21 +1,26 @@
 package org.openhab.binding.echonetlite.internal.protocol;
 
-import org.junit.jupiter.api.Test;
-import org.openhab.binding.echonetlite.internal.StateCodec;
-import org.openhab.binding.echonetlite.internal.StateCodec.*;
-import org.openhab.binding.echonetlite.internal.StateDecode;
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.StringType;
-import org.openhab.core.types.State;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.openhab.binding.echonetlite.internal.LangUtil.b;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.openhab.binding.echonetlite.internal.LangUtil.b;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.echonetlite.internal.StateCodec;
+import org.openhab.binding.echonetlite.internal.StateCodec.Decimal8bitCodec;
+import org.openhab.binding.echonetlite.internal.StateCodec.HexStringCodec;
+import org.openhab.binding.echonetlite.internal.StateCodec.OperatingTimeDecode;
+import org.openhab.binding.echonetlite.internal.StateCodec.Option;
+import org.openhab.binding.echonetlite.internal.StateCodec.OptionCodec;
+import org.openhab.binding.echonetlite.internal.StateCodec.StandardVersionInformationCodec;
+import org.openhab.binding.echonetlite.internal.StateDecode;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.State;
 
 class StateCodecTest {
     private void assertEncodeDecode(StateCodec stateCodec, State state, byte[] expectedOutput) {

@@ -1,9 +1,9 @@
 package org.openhab.binding.echonetlite.internal.protocol;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.echonetlite.internal.EchonetChannel;
-
-import java.io.IOException;
 
 class EchonetChannelTest
 {
