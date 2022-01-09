@@ -380,14 +380,10 @@ public interface Epc {
     }
 
     enum Profile implements Epc {
-        OPERATING_STATUS(0x80, new OptionCodec(
-                new Option("Booting", 0x30),
-                new Option("Not booting", 0x31)
-        )),
+        OPERATING_STATUS(0x80, new OptionCodec(new Option("Booting", 0x30), new Option("Not booting", 0x31))),
         VERSION_INFORMATION(0x82),
         NODE_IDENTIFICATION_NUMBER(0x83),
-        FAULT_CONTENT(0x89)
-        ;
+        FAULT_CONTENT(0x89);
 
         public final int code;
 
