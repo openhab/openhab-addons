@@ -425,8 +425,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shade != null) {
             updateShadePositions(shade);
         }
-        // Positions in response are often not the final positions, so we request hard refresh.
-        requestRefreshShadePosition();
     }
 
     private void stopShade(HDPowerViewWebTargets webTargets, int shadeId)
@@ -435,7 +433,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shade != null) {
             updateShadePositions(shade);
         }
-        // Positions in response are often not the final positions, so we request hard refresh.
+        // Positions in response from stop motion is not updated to to actual positions yet,
+        // so we need to request hard refresh.
         requestRefreshShadePosition();
     }
 
@@ -445,8 +444,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shade != null) {
             updateShadePositions(shade);
         }
-        // Positions in response are often not the final positions, so we request hard refresh.
-        requestRefreshShadePosition();
     }
 
     private void updateShadePositions(Shade shade) {
