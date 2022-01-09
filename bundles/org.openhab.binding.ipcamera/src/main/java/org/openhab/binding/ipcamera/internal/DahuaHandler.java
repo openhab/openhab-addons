@@ -212,7 +212,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
         }
         try {
             String content = msg.toString();
-            if (content.startsWith("--myboundary")) {
+            if (content.startsWith("--myboundary") || content.startsWith("-- myboundary")) {
                 processEvent(content);
                 return;
             }
