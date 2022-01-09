@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,8 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.danfossairunit.internal.handler;
-
-import static org.openhab.binding.danfossairunit.internal.DanfossAirUnitBindingConstants.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -184,8 +182,8 @@ public class DanfossAirUnitHandler extends BaseThingHandler {
 
         try {
             Map<String, String> properties = new HashMap<>(2);
-            properties.put(PROPERTY_UNIT_NAME, localAirUnit.getUnitName());
-            properties.put(PROPERTY_SERIAL, localAirUnit.getUnitSerialNumber());
+            properties.put(Thing.PROPERTY_MODEL_ID, localAirUnit.getUnitName());
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, localAirUnit.getUnitSerialNumber());
             updateProperties(properties);
             propertiesInitializedSuccessfully = true;
             updateStatus(ThingStatus.ONLINE);

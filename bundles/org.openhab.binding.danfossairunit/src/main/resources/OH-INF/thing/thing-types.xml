@@ -17,8 +17,7 @@
 			<channel-group id="service" typeId="service"/>
 		</channel-groups>
 		<properties>
-			<property name="Unit Name">unknown</property>
-			<property name="Serial Number">unknown</property>
+			<property name="vendor">Danfoss</property>
 		</properties>
 		<config-description>
 			<parameter name="host" type="text" required="true">

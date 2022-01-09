@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.haassohnpelletstove.internal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -115,16 +115,12 @@ public class HaasSohnpelletstoveJSONCommunication {
 
         if (postData != null) {
             try {
-                InputStream targetStream = new ByteArrayInputStream(postData.getBytes("UTF-8"));
+                InputStream targetStream = new ByteArrayInputStream(postData.getBytes(StandardCharsets.UTF_8));
                 refreshOvenConnection(helper, thingUID);
                 httpHeader = createHeader(postData);
                 response = HttpUtil.executeUrl("POST", urlStr, httpHeader, targetStream, "application/json", 10000);
                 resultOk = true;
                 logger.debug("Execute POST request with content to {} with header: {}", urlStr, httpHeader.toString());
-            } catch (UnsupportedEncodingException e1) {
-                logger.debug("Wrong encoding found. Only UTF-8 is supported.");
-                statusDescr = "Encoding of oven is not supported. Only UTF-8 is supported.";
-                resultOk = false;
             } catch (IOException e) {
                 logger.debug("Error processiong POST request {}", urlStr);
                 statusDescr = "Cannot execute command on Stove. Please verify connection and Thing Status";
@@ -161,9 +157,8 @@ public class HaasSohnpelletstoveJSONCommunication {
      * Creates the header for the Post Request
      *
      * @return The created Header Properties
-     * @throws UnsupportedEncodingException
      */
-    private Properties createHeader(@Nullable String postData) throws UnsupportedEncodingException {
+    private Properties createHeader(@Nullable String postData) {
         Properties httpHeader = new Properties();
         httpHeader.setProperty("Host", config.hostIP);
         httpHeader.setProperty("Accept", "*/*");
@@ -174,7 +169,7 @@ public class HaasSohnpelletstoveJSONCommunication {
         httpHeader.setProperty("token", "32 bytes");
         httpHeader.setProperty("Content-Type", "application/json");
         if (postData != null) {
-            int a = postData.getBytes("UTF-8").length;
+            int a = postData.getBytes(StandardCharsets.UTF_8).length;
             httpHeader.setProperty(xhspin, Integer.toString(a));
         }
         httpHeader.setProperty("User-Agent", "ios");

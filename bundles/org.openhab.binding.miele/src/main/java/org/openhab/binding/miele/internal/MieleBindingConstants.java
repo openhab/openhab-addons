@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,13 +28,14 @@ public class MieleBindingConstants {
 
     public static final String BINDING_ID = "miele";
     public static final String APPLIANCE_ID = "uid";
-    public static final String DEVICE_CLASS = "deviceClass";
-    public static final String MODEL_PROPERTY_NAME = "model";
-    public static final String PROTOCOL_ADAPTER_PROPERTY_NAME = "protocolAdapter";
-    public static final String CONNECTION_TYPE_PROPERTY_NAME = "connectionType";
+
+    // Properties
+    public static final String PROPERTY_DEVICE_CLASS = "deviceClass";
+    public static final String PROPERTY_PROTOCOL_ADAPTER = "protocolAdapter";
+    public static final String PROPERTY_CONNECTION_TYPE = "connectionType";
+    public static final String PROPERTY_CONNECTION_BAUD_RATE = "connectionBaudRate";
 
     // JSON-RPC property names
-    public static final String SERIAL_NUMBER_PROPERTY_NAME = "serialNumber";
     public static final String EXTENDED_DEVICE_STATE_PROPERTY_NAME = "extendedDeviceState";
     public static final String STATE_PROPERTY_NAME = "state";
     public static final String PROGRAM_ID_PROPERTY_NAME = "programId";

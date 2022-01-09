@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.venstarthermostat.internal.discovery;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -22,6 +21,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledFuture;
@@ -114,10 +114,9 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
      * @throws UnknownHostException
      * @throws IOException
      * @throws SocketException
-     * @throws UnsupportedEncodingException
      */
     private @Nullable MulticastSocket sendDiscoveryBroacast(NetworkInterface ni)
-            throws UnknownHostException, SocketException, UnsupportedEncodingException {
+            throws UnknownHostException, SocketException {
         InetAddress m = InetAddress.getByName("239.255.255.250");
         final int port = 1900;
 
@@ -154,7 +153,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
             socket.joinGroup(m);
 
             logger.trace("Joined UPnP Multicast group on Interface: {}", ni.getName());
-            byte[] requestMessage = COLOR_TOUCH_DISCOVERY_MESSAGE.getBytes("UTF-8");
+            byte[] requestMessage = COLOR_TOUCH_DISCOVERY_MESSAGE.getBytes(StandardCharsets.UTF_8);
             DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, m, port);
             socket.send(datagramPacket);
             return socket;

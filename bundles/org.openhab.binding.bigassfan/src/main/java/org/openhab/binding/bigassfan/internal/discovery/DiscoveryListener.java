@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.bigassfan.internal.discovery;
 
-import static org.openhab.binding.bigassfan.internal.BigAssFanBindingConstants.*;
+import static org.openhab.binding.bigassfan.internal.BigAssFanBindingConstants.BAF_PORT;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,12 +60,10 @@ public class DiscoveryListener {
             rcvBuffer = new byte[256];
             rcvPacket = new DatagramPacket(rcvBuffer, rcvBuffer.length);
             bcastAddress = InetAddress.getByName(BCAST_ADDRESS);
-            bcastBuffer = POLL_MESSAGE.getBytes(CHARSET);
+            bcastBuffer = POLL_MESSAGE.getBytes(StandardCharsets.US_ASCII);
             bcastPacket = new DatagramPacket(bcastBuffer, bcastBuffer.length, bcastAddress, BAF_PORT);
         } catch (UnknownHostException uhe) {
             logger.warn("UnknownHostException sending poll request for fans: {}", uhe.getMessage(), uhe);
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Unable to convert buffer to string using {} charset", CHARSET, e);
         }
     }
 

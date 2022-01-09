@@ -6,13 +6,13 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported
 
-### P100/P105 SmartPlug (WiFi)
+### P100/P105/P110 SmartPlug (WiFi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### L510_Series dimmable SmartBulb (WiFi)
+### L510(Series) dimmable SmartBulb (WiFi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -20,7 +20,7 @@ The following Tapo-Devices are supported
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### L530_Series MultiColor SmartBulb (WiFi)
+### L530(Series) MultiColor SmartBulb (WiFi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -29,7 +29,7 @@ The following Tapo-Devices are supported
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
 
-### L900 MultiColor LightStrip (WiFi)
+### L900/L920 LED-LightStrip (WiFi)
 
 * Light On/Off
 * Brightnes (Dimmer)  0-100 %
@@ -79,14 +79,14 @@ The thing has the following configuration parameters:
 
 All devices support some of the following channels:
 
-| group     | channel          |type                    | description                  | things supporting this channel  |
-|-----------|----------------- |------------------------|------------------------------|---------------------------------|
-| actuator  | output           | Switch                 | Power device on or off       | P100, P105,L510, L530, L900     |
-|           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L900                |
-|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L900                |
-|           | color            | Color                  | Color                        | L530, L900                      |
-| device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, L510, L530, L900    |
-|           | onTime           | Number:Time            | seconds output is on         | P100, P105, L510, L530, L900    |
+| group     | channel          |type                    | description                  | things supporting this channel              |
+|-----------|----------------- |------------------------|------------------------------|---------------------------------------------|
+| actuator  | output           | Switch                 | Power device on or off       | P100, P105, P110, L510, L530, L900, L920    |
+|           | brightness       | Dimmer                 | Brightness 0-100%            | L510, L530, L900                            |
+|           | colorTemperature | Number                 | White-Color-Temp 2500-6500K  | L510, L530, L900                            |
+|           | color            | Color                  | Color                        | L530, L900                                  |
+| device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, P110, L510, L530, L900, L920    |
+|           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, L510, L530, L900, L920    |
 
 
 ## Channel Refresh
@@ -102,8 +102,8 @@ To minimize network traffic the default refresh-rate is set to 30 seconds. This 
 ```
 tapocontrol:bridge:myTapoBridge                     "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
 tapocontrol:P100:myTapoBridge:mySocket              "My-Socket"                 [ ipAddress="192.168.178.150", pollingInterval=30 ]
-tapocontrol:L510_Series:myTapoBridge:whiteBulb      "white-light"               [ ipAddress="192.168.178.151", pollingInterval=30 ]
-tapocontrol:L530_Series:myTapoBridge:colorBulb      "color-light"               [ ipAddress="192.168.178.152", pollingInterval=30 ]
+tapocontrol:L510:myTapoBridge:whiteBulb      		"white-light"               [ ipAddress="192.168.178.151", pollingInterval=30 ]
+tapocontrol:L530:myTapoBridge:colorBulb      		"color-light"               [ ipAddress="192.168.178.152", pollingInterval=30 ]
 tapocontrol:L900:myTapoBridge:myLightStrip          "light-strip"               [ ipAddress="192.168.178.153", pollingInterval=30 ]
 ``` 
 

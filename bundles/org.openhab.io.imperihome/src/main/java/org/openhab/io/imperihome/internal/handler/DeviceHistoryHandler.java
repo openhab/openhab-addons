@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.io.imperihome.internal.handler;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -45,8 +45,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceHistoryHandler {
 
-    private static final String CHARSET = "UTF-8";
-
     private final Logger logger = LoggerFactory.getLogger(DeviceHistoryHandler.class);
 
     private final DeviceRegistry deviceRegistry;
@@ -61,11 +59,11 @@ public class DeviceHistoryHandler {
         String deviceId, field;
         long start, end;
         try {
-            deviceId = URLDecoder.decode(urlMatcher.group(1), CHARSET);
-            field = URLDecoder.decode(urlMatcher.group(2), CHARSET);
+            deviceId = URLDecoder.decode(urlMatcher.group(1), StandardCharsets.UTF_8);
+            field = URLDecoder.decode(urlMatcher.group(2), StandardCharsets.UTF_8);
             start = Long.parseLong(urlMatcher.group(3));
             end = Long.parseLong(urlMatcher.group(4));
-        } catch (UnsupportedEncodingException | NumberFormatException e) {
+        } catch (NumberFormatException e) {
             throw new RuntimeException("Could not decode request params", e);
         }
 
