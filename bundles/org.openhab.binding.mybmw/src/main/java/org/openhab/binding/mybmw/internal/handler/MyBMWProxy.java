@@ -458,7 +458,8 @@ public class MyBMWProxy {
             // https://www.baeldung.com/java-read-pem-file-keys
             String publicKeyStr = pkr.data.value;
             String publicKeyPEM = publicKeyStr.replace("-----BEGIN PUBLIC KEY-----", "")
-                    .replaceAll(System.lineSeparator(), "").replace("-----END PUBLIC KEY-----", "");
+                    .replaceAll(System.lineSeparator(), "").replace("-----END PUBLIC KEY-----", "").replace("\\r", "")
+                    .replace("\\n", "").trim();
             byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
             X509EncodedKeySpec spec = new X509EncodedKeySpec(encoded);
             KeyFactory kf = KeyFactory.getInstance("RSA");
