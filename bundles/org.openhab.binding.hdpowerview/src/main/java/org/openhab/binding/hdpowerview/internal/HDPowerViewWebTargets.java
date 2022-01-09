@@ -26,6 +26,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
@@ -172,9 +173,37 @@ public class HDPowerViewWebTargets {
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public void moveShade(int shadeId, ShadePosition position) throws HubProcessingException, HubMaintenanceException {
-        String json = gson.toJson(new ShadeMove(shadeId, position));
-        invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, json);
+    public @Nullable Shade moveShade(int shadeId, ShadePosition position)
+            throws HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new ShadeMove(position));
+        String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
+        return gson.fromJson(jsonResponse, Shade.class);
+    }
+
+    /**
+     * Instructs the hub to stop movement of a specific shade
+     *
+     * @param shadeId id of the shade to be stopped
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Shade stopShade(int shadeId) throws HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new ShadeStop());
+        String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
+        return gson.fromJson(jsonResponse, Shade.class);
+    }
+
+    /**
+     * Instructs the hub to calibrate a specific shade
+     *
+     * @param shadeId id of the shade to be calibrated
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Shade calibrateShade(int shadeId) throws HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new ShadeCalibrate());
+        String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
+        return gson.fromJson(jsonResponse, Shade.class);
     }
 
     /**
@@ -396,17 +425,5 @@ public class HDPowerViewWebTargets {
         String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("updateBatteryLevel", Boolean.toString(true)), null);
         return gson.fromJson(json, Shade.class);
-    }
-
-    /**
-     * Tells the hub to stop movement of a specific shade
-     *
-     * @param shadeId id of the shade to be stopped
-     * @throws HubProcessingException if there is any processing error
-     * @throws HubMaintenanceException if the hub is down for maintenance
-     */
-    public void stopShade(int shadeId) throws HubProcessingException, HubMaintenanceException {
-        String json = gson.toJson(new ShadeStop(shadeId));
-        invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, json);
     }
 }
