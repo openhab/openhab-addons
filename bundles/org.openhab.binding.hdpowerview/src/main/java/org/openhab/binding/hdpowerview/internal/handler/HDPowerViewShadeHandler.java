@@ -549,7 +549,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     }
                 }
             }
-        } catch (HubProcessingException | NumberFormatException e) {
+        } catch (HubProcessingException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
