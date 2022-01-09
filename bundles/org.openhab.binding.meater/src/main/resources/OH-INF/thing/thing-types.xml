@@ -5,12 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="meaterapi">
-		<label>MEATER Cloud REST API</label>
+		<label>Meater Cloud REST API</label>
 		<description>This bridge represents the Meater cloud REST API connector</description>
 
 		<config-description>
 			<parameter name="email" type="text" required="true">
-				<label>Username</label>
+				<label>Email</label>
 				<description>The email used to login to Meater cloud account</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
@@ -44,6 +44,7 @@
 			<channel id="cookPeakTemperature" typeId="cookPeakTemperature"/>
 			<channel id="cookElapsedTime" typeId="cookElapsedTime"/>
 			<channel id="cookRemainingTime" typeId="cookRemainingTime"/>
+			<channel id="cookEstimatedEndTime" typeId="cookEstimatedEndTime"/>
 			<channel id="status" typeId="status"/>
 			<channel id="lastConnection" typeId="lastConnection"/>
 		</channels>
@@ -90,6 +91,13 @@
 		<label>Cook Remaining Time</label>
 		<description>Remaining time in seconds for current cook</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookEstimatedEndTime">
+		<item-type>DateTime</item-type>
+		<label>Cook Estimated End Time</label>
+		<description>Date and time of estimated end time for current cook</description>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 
 	<channel-type id="internalTemperature">

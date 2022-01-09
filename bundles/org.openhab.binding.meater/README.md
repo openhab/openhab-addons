@@ -17,7 +17,7 @@ This binding supports the following thing types:
 
 ## Discovery
 
-The preferred way of adding MEater probe(s) since the IDs are not easily found.
+The preferred way of adding Meater probe(s) since the probe IDs are not easily found.
 
 **NOTE**: You need to have your Meater probe(s) connected to the cloud before you start the discovery.
 
@@ -36,18 +36,19 @@ After the configuration of the Bridge, your Meater probe(s) will be automaticall
 
 ## Channels
 
-| Channel Type ID       | Item Type          | Description                                   | 
-|-----------------------|--------------------|-----------------------------------------------|
-| internalTemperature   | Number:Temperature | Internal temperature reading of Meater probe  |
-| ambientTemperature    | Number:Temperature | Ambient temperature reading of Meater probe   |
-| cookTargetTemperature | Number:Temperature | Internal temperature reading of Meater probe  |
-| cookPeakTemperature   | Number:Temperature | Peak temperature of current cook              |
-| lastConnection        | DateTime           | Date and time of last probe connection        |
-| cookId                | String             | ID of current cook                            |
-| cookName              | String             | Name of current cook                          |
-| cookState             | String             | State of current cook                         |
-| cookElapsedTime       | Number:Time        | Elapsed time in seconds for current cook      |
-| cookRemainingTime     | Number:Time        | Remaining time in seconds for current cook    |
+| Channel Type ID       | Item Type          | Description                                          | 
+|-----------------------|--------------------|------------------------------------------------------|
+| internalTemperature   | Number:Temperature | Internal temperature reading of Meater probe         |
+| ambientTemperature    | Number:Temperature | Ambient temperature reading of Meater probe          |
+| cookTargetTemperature | Number:Temperature | Internal temperature reading of Meater probe         |
+| cookPeakTemperature   | Number:Temperature | Peak temperature of current cook                     |
+| lastConnection        | DateTime           | Date and time of last probe connection               |
+| cookId                | String             | ID of current cook                                   |
+| cookName              | String             | Name of current cook                                 |
+| cookState             | String             | State of current cook                                |
+| cookElapsedTime       | Number:Time        | Elapsed time in seconds for current cook             |
+| cookRemainingTime     | Number:Time        | Remaining time in seconds for current cook           |
+| cookEstimatedEndTime  | DateTime           | Date and time of estimated end time for current cook |
 
 
 

@@ -76,9 +76,8 @@ public class MeaterRestAPI {
                     meaterProbeThings.put(meaterProbe.id, meaterProbe);
                 }
             }
-
             return true;
-        } catch (MeaterException e) {
+        } catch (MeaterException | JsonSyntaxException e) {
             logger.warn("Failed to refresh! {}", e.getMessage());
         }
         return false;

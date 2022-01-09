@@ -14,6 +14,8 @@ package org.openhab.binding.meater.internal.handler;
 
 import static org.openhab.binding.meater.internal.MeaterBindingConstants.*;
 
+import java.time.ZonedDateTime;
+
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -21,6 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meater.internal.MeaterConfiguration;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Cook;
 import org.openhab.binding.meater.internal.dto.MeaterProbeDTO.Device;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -145,6 +148,17 @@ public class MeaterHandler extends BaseThingHandler {
                     return new StringType(cook.state);
                 }
                 break;
+            case CHANNEL_LAST_CONNECTION:
+                ZonedDateTime zdt = meaterProbe.getLastConnection();
+                if (zdt != null) {
+                    return new DateTimeType(zdt);
+                }
+            case CHANNEL_COOK_ESTIMATED_END_TIME:
+                if (cook != null) {
+                    if (cook.time.remaining > -1) {
+                        return new DateTimeType(ZonedDateTime.now().plusSeconds(cook.time.remaining));
+                    }
+                }
         }
         return UnDefType.UNDEF;
     }

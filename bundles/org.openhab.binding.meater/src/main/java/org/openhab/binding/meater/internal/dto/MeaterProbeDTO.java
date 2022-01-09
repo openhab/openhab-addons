@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.meater.internal.dto;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link MeaterProbeDTO} class defines the DTO for the Meater probe.
@@ -62,7 +67,16 @@ public class MeaterProbeDTO {
         public String id = "";
         public Temperature temperature = new Temperature();
         public @Nullable Cook cook = new Cook();
-        public long updatedAt;
+        @SerializedName("updated_at")
+        private long lastConnection;
+
+        public @Nullable ZonedDateTime getLastConnection() {
+            if (lastConnection > 0) {
+                Instant instant = Instant.ofEpochSecond(lastConnection);
+                return ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId());
+            }
+            return null;
+        }
     }
 
     public class Cook {

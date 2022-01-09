@@ -75,7 +75,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
 
         if (config.email == null || config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Configuration of username, password is mandatory");
+                    "Configuration of username and password is mandatory");
         } else if (refreshTimeInSeconds < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh time cannot be negative!");
@@ -105,10 +105,6 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         stopAutomaticRefresh();
-    }
-
-    public @Nullable MeaterRestAPI getElectroluxDeltaAPI() {
-        return api;
     }
 
     private boolean refreshAndUpdateStatus() {

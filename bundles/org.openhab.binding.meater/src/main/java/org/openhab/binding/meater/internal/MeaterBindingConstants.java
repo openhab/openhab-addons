@@ -34,6 +34,7 @@ public class MeaterBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_LAST_CONNECTION = "lastConnection";
     public static final String CHANNEL_INTERNAL_TEMPERATURE = "internalTemperature";
     public static final String CHANNEL_AMBIENT_TEMPERATURE = "ambientTemperature";
     public static final String CHANNEL_COOK_ID = "cookId";
@@ -43,6 +44,7 @@ public class MeaterBindingConstants {
     public static final String CHANNEL_COOK_PEAK_TEMPERATURE = "cookPeakTemperature";
     public static final String CHANNEL_COOK_ELAPSED_TIME = "cookElapsedTime";
     public static final String CHANNEL_COOK_REMAINING_TIME = "cookRemainingTime";
+    public static final String CHANNEL_COOK_ESTIMATED_END_TIME = "cookEstimatedEndTime";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_MEATER_PROBE);
