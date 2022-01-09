@@ -29,13 +29,13 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
 
     public EchonetProfileNode(final InstanceKey instanceKey, Consumer<EchonetDevice> newDeviceListener,
             EchonetDiscoveryListener echonetDiscoveryListener) {
-        super(instanceKey, Epc.NodeProfile.SELF_NODE_INSTANCE_LIST_S);
+        super(instanceKey, EchonetLiteBindingConstants.POLL_INTERVAL_MS, Epc.NodeProfile.SELF_NODE_INSTANCE_LIST_S);
         this.newDeviceListener = newDeviceListener;
         this.echonetDiscoveryListener = echonetDiscoveryListener;
     }
 
     @Override
-    public void applyResponse(InstanceKey sourceInstanceKey, Esv esv, int epcCode, int pdc, ByteBuffer edt) {
+    public void applyProperty(InstanceKey sourceInstanceKey, Esv esv, int epcCode, int pdc, ByteBuffer edt) {
         final Epc epc = Epc.lookup(instanceKey().klass.groupCode(), instanceKey().klass.classCode(), epcCode);
 
         if (EchonetClass.NODE_PROFILE == sourceInstanceKey.klass && Epc.NodeProfile.SELF_NODE_INSTANCE_LIST_S == epc) {
@@ -48,17 +48,18 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
                 final EchonetClass itemClass = EchonetClassIndex.INSTANCE.lookup(groupCode, classCode);
 
                 final InstanceKey newItemKey = new InstanceKey(sourceInstanceKey.address, itemClass, instance);
-                final EchonetDevice discoveredDevice = new EchonetDevice(newItemKey, this);
+                final EchonetDevice discoveredDevice = new EchonetDevice(newItemKey,
+                        EchonetLiteBindingConstants.POLL_INTERVAL_MS, this);
                 newDeviceListener.accept(discoveredDevice);
             }
         }
     }
 
     @Override
-    public boolean buildPollMessage(EchonetMessageBuilder messageBuilder, ShortSupplier tid, long nowMs) {
+    public boolean buildPollMessage(EchonetMessageBuilder messageBuilder, ShortSupplier tidSupplier, long nowMs) {
         boolean result = false;
-        if (lastPollMs + EchonetLiteBindingConstants.POLL_INTERVAL_MS <= nowMs) {
-            result = super.buildPollMessage(messageBuilder, tid, nowMs);
+        if (lastPollMs + pollIntervalMs <= nowMs) {
+            result = super.buildPollMessage(messageBuilder, tidSupplier, nowMs);
 
             if (result) {
                 lastPollMs = nowMs;

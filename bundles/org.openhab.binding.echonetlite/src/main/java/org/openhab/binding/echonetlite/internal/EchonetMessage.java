@@ -14,11 +14,13 @@ package org.openhab.binding.echonetlite.internal;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * @author Michael Barker - Initial contribution
  */
 public class EchonetMessage {
+    public static final int TID_OFFSET = 2;
     public static final int GROUP_OFFSET = 4;
     public static final int CLASS_OFFSET = 5;
     public static final int INSTANCE_OFFSET = 6;
@@ -40,6 +42,7 @@ public class EchonetMessage {
 
     private void reset() {
         messageData.clear();
+        messageData.order(ByteOrder.BIG_ENDIAN);
         propertyCursor = 0;
         currentProperty = -1;
     }
@@ -95,6 +98,10 @@ public class EchonetMessage {
         propertyData.clear();
         propertyData.position(currentProperty + 2).limit(currentProperty + 2 + currentPdc());
         return propertyData;
+    }
+
+    public short tid() {
+        return messageData.getShort(TID_OFFSET);
     }
 
     public String toDebug() {

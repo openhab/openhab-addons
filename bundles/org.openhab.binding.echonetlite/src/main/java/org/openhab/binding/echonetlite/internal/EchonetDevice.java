@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.POLL_INTERVAL_MS;
 import static org.openhab.binding.echonetlite.internal.HexUtil.hex;
 
 import java.nio.ByteBuffer;
@@ -33,19 +32,20 @@ public class EchonetDevice extends EchonetObject {
     private final HashMap<Epc, State> stateFields = new HashMap<>();
     private final HashMap<String, Epc> epcByChannelId = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(EchonetDevice.class);
+    private final long pollIntervalMs;
     private EchonetPropertyMap getPropertyMap = null;
     private EchonetDeviceListener listener;
     private boolean initialised = false;
 
-    private long lastUpdateMs = 0;
     private long lastPollMs = 0;
 
-    public EchonetDevice(final InstanceKey instanceKey, EchonetDeviceListener listener) {
-        super(instanceKey, Epc.Device.GET_PROPERTY_MAP);
+    public EchonetDevice(final InstanceKey instanceKey, long pollIntervalMs, EchonetDeviceListener listener) {
+        super(instanceKey, pollIntervalMs, Epc.Device.GET_PROPERTY_MAP);
+        this.pollIntervalMs = pollIntervalMs;
         this.listener = listener;
     }
 
-    public void applyResponse(InstanceKey sourceInstanceKey, Esv esv, final int epcCode, final int pdc,
+    public void applyProperty(InstanceKey sourceInstanceKey, Esv esv, final int epcCode, final int pdc,
             final ByteBuffer edt) {
         final Epc epc = Epc.lookup(instanceKey().klass.groupCode(), instanceKey().klass.classCode(), epcCode);
 
@@ -93,10 +93,11 @@ public class EchonetDevice extends EchonetObject {
                 logger.debug("Applying: {}({},{}) {} {}", epc, hex(epc.code()), pdc, value, hex(edt));
             }
         } else if (esv == Esv.Set_Res) {
-            if (pendingSets.containsKey(epc)) {
-                logger.debug("Set value {} received, getting latest from device", epc);
-                pendingGets.add(epc);
-            }
+            pendingSets.remove(epc);
+            // if (pendingSets.containsKey(epc)) {
+            // logger.debug("Set value {} received, getting latest from device", epc);
+            // pendingGets.add(epc);
+            // }
         }
     }
 
@@ -104,18 +105,18 @@ public class EchonetDevice extends EchonetObject {
         return stateFields.get(Epc.Device.IDENTIFICATION_NUMBER).toString();
     }
 
-    public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid,
+    public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tidSupplier,
             final long nowMs) {
         if (pendingSets.isEmpty()) {
             return false;
         }
 
-        if (nowMs < lastUpdateMs + UPDATE_RESEND_TIMEOUT_MS) {
+        if (hasInflight(nowMs, inflightSetRequest)) {
             return false;
         }
 
-        messageBuilder.start(tid.getAsShort(), EchonetLiteBindingConstants.MANAGEMENT_CONTROLLER_KEY, instanceKey,
-                Esv.SetC);
+        final short tid = tidSupplier.getAsShort();
+        messageBuilder.start(tid, EchonetLiteBindingConstants.MANAGEMENT_CONTROLLER_KEY, instanceKey, Esv.SetC);
 
         pendingSets.forEach((k, v) -> {
             if (null != k.encoder()) {
@@ -125,7 +126,7 @@ public class EchonetDevice extends EchonetObject {
             }
         });
 
-        lastUpdateMs = nowMs;
+        inflightSetRequest.requestSent(tid, nowMs);
 
         return true;
     }
@@ -146,7 +147,7 @@ public class EchonetDevice extends EchonetObject {
     }
 
     public void refreshAll(long nowMs) {
-        if (lastPollMs + POLL_INTERVAL_MS <= nowMs && null != getPropertyMap) {
+        if (lastPollMs + pollIntervalMs <= nowMs && null != getPropertyMap) {
             getPropertyMap.getProperties(instanceKey().klass.groupCode(), instanceKey().klass.classCode(),
                     Set.of(Epc.Device.GET_PROPERTY_MAP), pendingGets);
             lastPollMs = nowMs;

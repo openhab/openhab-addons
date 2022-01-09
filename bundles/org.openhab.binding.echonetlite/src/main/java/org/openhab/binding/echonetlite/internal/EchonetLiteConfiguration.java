@@ -27,9 +27,12 @@ public class EchonetLiteConfiguration {
     public int groupCode;
     public int classCode;
     public int instance;
+    public int pollInterval;
 
+    @Override
     public String toString() {
         return "EchonetLiteConfiguration{" + "hostname='" + hostname + '\'' + ", port=" + port + ", groupCode="
-                + groupCode + ", classCode=" + classCode + ", instance=" + instance + '}';
+                + groupCode + ", classCode=" + classCode + ", instance=" + instance + ", pollInterval=" + pollInterval
+                + '}';
     }
 }

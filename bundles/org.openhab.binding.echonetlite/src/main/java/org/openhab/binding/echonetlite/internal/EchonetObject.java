@@ -13,44 +13,75 @@
 package org.openhab.binding.echonetlite.internal;
 
 import java.nio.ByteBuffer;
+import java.time.Clock;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Michael Barker - Initial contribution
  */
 public abstract class EchonetObject {
 
-    protected final InstanceKey instanceKey;
-    protected final HashSet<Epc> pendingGets = new HashSet<>();
+    private final Logger logger = LoggerFactory.getLogger(EchonetObject.class);
 
-    public EchonetObject(final InstanceKey instanceKey, final Epc initialProperty) {
+    protected final InstanceKey instanceKey;
+    protected final long pollIntervalMs;
+    protected final HashSet<Epc> pendingGets = new HashSet<>();
+    protected final InflightRequest inflightGetRequest;
+    protected final InflightRequest inflightSetRequest;
+
+    public EchonetObject(final InstanceKey instanceKey, long pollIntervalMs, final Epc initialProperty) {
         this.instanceKey = instanceKey;
+        this.pollIntervalMs = pollIntervalMs;
         pendingGets.add(initialProperty);
+        this.inflightGetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
+        this.inflightSetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
     }
 
     public InstanceKey instanceKey() {
         return instanceKey;
     }
 
-    public void applyResponse(InstanceKey sourceInstanceKey, Esv esv, final int epcCode, final int pdc,
+    public void applyProperty(InstanceKey sourceInstanceKey, Esv esv, final int epcCode, final int pdc,
             final ByteBuffer edt) {
     }
 
-    public boolean buildPollMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid, long nowMs) {
+    public boolean buildPollMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tidSupplier,
+            long nowMs) {
         if (pendingGets.isEmpty()) {
             return false;
         }
 
-        messageBuilder.start(tid.getAsShort(), EchonetLiteBindingConstants.MANAGEMENT_CONTROLLER_KEY, instanceKey(),
-                Esv.Get);
+        final InflightRequest inflightGetRequest = this.inflightGetRequest;
+        if (hasInflight(nowMs, inflightGetRequest)) {
+            return false;
+        }
+
+        final short tid = tidSupplier.getAsShort();
+        messageBuilder.start(tid, EchonetLiteBindingConstants.MANAGEMENT_CONTROLLER_KEY, instanceKey(), Esv.Get);
 
         for (Epc pendingProperty : pendingGets) {
             messageBuilder.appendEpcRequest(pendingProperty.code());
         }
 
+        inflightGetRequest.requestSent(tid, nowMs);
+
         return true;
+    }
+
+    protected boolean hasInflight(long nowMs, InflightRequest inflightGetRequest) {
+        if (inflightGetRequest.isInflight()) {
+            if (inflightGetRequest.hasTimedOut(nowMs)) {
+                logger.warn("Timed out previous request, retrying");
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid,
@@ -72,5 +103,59 @@ public abstract class EchonetObject {
     }
 
     public void refresh(String channelId) {
+    }
+
+    public void applyHeader(Esv esv, short tid) {
+        if (esv == Esv.Get_Res || esv == Esv.Get_SNA) {
+            final long sentTimestampMs = inflightGetRequest.timestampMs;
+            if (inflightGetRequest.responseReceived(tid)) {
+                logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
+            } else {
+                logger.warn("Unexpected GET response: {}", tid);
+            }
+        } else if (esv == Esv.Set_Res || esv == Esv.SetC_SNA) {
+            final long sentTimestampMs = inflightSetRequest.timestampMs;
+            if (inflightSetRequest.responseReceived(tid)) {
+                logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
+            } else {
+                logger.warn("Unexpected GET response: {}", tid);
+            }
+        }
+    }
+
+    protected static class InflightRequest {
+        private static final long NULL_TIMESTAMP = -1;
+        private final long timeoutMs;
+        private short tid;
+        private long timestampMs;
+        private int timeoutCount = 0;
+
+        InflightRequest(long timeoutMs) {
+            this.timeoutMs = timeoutMs;
+        }
+
+        void requestSent(short tid, long timestampMs) {
+            this.tid = tid;
+            this.timestampMs = timestampMs;
+        }
+
+        boolean responseReceived(short tid) {
+            timestampMs = NULL_TIMESTAMP;
+            timeoutCount = 0;
+
+            return this.tid == tid;
+        }
+
+        boolean hasTimedOut(long nowMs) {
+            final boolean timedOut = timestampMs + timeoutMs <= nowMs;
+            if (timedOut) {
+                timeoutCount++;
+            }
+            return timedOut;
+        }
+
+        public boolean isInflight() {
+            return NULL_TIMESTAMP != timestampMs;
+        }
     }
 }

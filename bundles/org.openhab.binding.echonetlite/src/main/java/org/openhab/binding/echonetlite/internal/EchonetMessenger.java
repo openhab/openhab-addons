@@ -68,8 +68,9 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     @Override
-    public void newDevice(final InstanceKey instanceKey, final EchonetDeviceListener echonetDeviceListener) {
-        requests.add(new NewDeviceMessage(instanceKey, echonetDeviceListener));
+    public void newDevice(final InstanceKey instanceKey, int pollIntervalS,
+            final EchonetDeviceListener echonetDeviceListener) {
+        requests.add(new NewDeviceMessage(instanceKey, pollIntervalS, echonetDeviceListener));
     }
 
     private void newDeviceInternal(final NewDeviceMessage message) {
@@ -85,8 +86,8 @@ public class EchonetMessenger implements EchonetMessengerService {
             }
         } else {
             logger.debug("New Device: {}", message.instanceKey);
-            devicesByKey.put(message.instanceKey,
-                    new EchonetDevice(message.instanceKey, message.echonetDeviceListener));
+            devicesByKey.put(message.instanceKey, new EchonetDevice(message.instanceKey,
+                    TimeUnit.SECONDS.toMillis(message.pollIntervalS), message.echonetDeviceListener));
         }
     }
 
@@ -222,11 +223,12 @@ public class EchonetMessenger implements EchonetMessengerService {
 
         logger.debug("Message {} for: {}", esv, echonetObject);
         if (null != echonetObject) {
+            echonetObject.applyHeader(esv, echonetMessage.tid());
             while (echonetMessage.moveNext()) {
                 final int epc = echonetMessage.currentEpc();
                 final int pdc = echonetMessage.currentPdc();
                 ByteBuffer edt = echonetMessage.currentEdt();
-                echonetObject.applyResponse(instanceKey, esv, epc, pdc, edt);
+                echonetObject.applyProperty(instanceKey, esv, epc, pdc, edt);
             }
         }
     }
@@ -263,10 +265,13 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     private static final class NewDeviceMessage extends Message {
+        final int pollIntervalS;
         final EchonetDeviceListener echonetDeviceListener;
 
-        public NewDeviceMessage(final InstanceKey instanceKey, final EchonetDeviceListener echonetDeviceListener) {
+        public NewDeviceMessage(final InstanceKey instanceKey, int pollIntervalS,
+                final EchonetDeviceListener echonetDeviceListener) {
             super(instanceKey);
+            this.pollIntervalS = pollIntervalS;
             this.echonetDeviceListener = echonetDeviceListener;
         }
     }
