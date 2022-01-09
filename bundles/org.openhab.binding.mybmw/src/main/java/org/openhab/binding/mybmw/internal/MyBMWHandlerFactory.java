@@ -54,7 +54,6 @@ public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
         httpClientFactory = hcf;
         commandOptionProvider = cop;
         localeLanguage = lp.getLocale().getLanguage().toLowerCase();
-        logger.info("Locale Language Detection {}", localeLanguage);
     }
 
     @Override

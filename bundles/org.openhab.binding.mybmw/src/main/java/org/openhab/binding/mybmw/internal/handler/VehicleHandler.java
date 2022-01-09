@@ -279,13 +279,13 @@ public class VehicleHandler extends VehicleChannelHandler {
                             updateChargeProfile(v.status.chargingProfile);
                         }
                     } else {
-                        logger.info("Vehicle {} not valid", configuration.get().vin);
+                        logger.debug("Vehicle {} not valid", configuration.get().vin);
                     }
                 } else {
-                    logger.info("configuration not present");
+                    logger.debug("configuration not present");
                 }
             } else {
-                logger.info("Content not valid");
+                logger.debug("Content not valid");
             }
         }
 
