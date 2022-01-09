@@ -15,7 +15,6 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.math.BigDecimal;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -62,11 +61,20 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
 
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
-    private Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
+    private final UpnpIOService service;
 
-    private UpnpIOService service;
+    private final Object upnpLock = new Object();
+    private final Object jobLock = new Object();
+
+    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
+
     private WemoHttpCall wemoCall;
+
+    private String host = "";
+
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
+
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private int currentBrightness;
     private int currentNightModeBrightness;
@@ -75,23 +83,6 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
      * Set dimming stepsize to 5%
      */
     private static final int DIM_STEPSIZE = 5;
-
-    private @Nullable ScheduledFuture<?> refreshJob;
-    private Runnable refreshRunnable = new Runnable() {
-
-        @Override
-        public void run() {
-            try {
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("WeMo UPnP device {} not yet registered", getUDN());
-                }
-                updateWemoState();
-                onSubscription();
-            } catch (Exception e) {
-                logger.debug("Exception during poll : {}", e.getMessage(), e);
-            }
-        }
-    };
 
     public WemoDimmerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, wemoHttpCaller);
@@ -108,8 +99,10 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         if (configuration.get("udn") != null) {
             logger.debug("Initializing WemoDimmerHandler for UDN '{}'", configuration.get("udn"));
             service.registerParticipant(this);
-            onSubscription();
-            onUpdate();
+
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
+                    TimeUnit.SECONDS);
+
         } else {
             logger.debug("Cannot initalize WemoDimmerHandler. UDN not set.");
         }
@@ -119,13 +112,48 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     public void dispose() {
         logger.debug("WeMoDimmerHandler disposed.");
 
-        ScheduledFuture<?> job = refreshJob;
+        ScheduledFuture<?> job = this.pollingJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }
-        refreshJob = null;
+        this.pollingJob = null;
 
         removeSubscription();
+        service.unregisterParticipant(this);
+    }
+
+    private void poll() {
+        synchronized (jobLock) {
+            if (pollingJob == null) {
+                return;
+            }
+            try {
+                logger.debug("Polling job");
+
+                // First check if the Wemo device is set in the UPnP service registry
+                // If not, set the thing state to OFFLINE and wait for the next poll
+                if (!isUpnpDeviceRegistered()) {
+                    logger.debug("UPnP device {} not yet registered", getUDN());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "upnp device not registered [\"" + getUDN() + "\"]");
+                    synchronized (upnpLock) {
+                        subscriptionState = new HashMap<>();
+                    }
+                    return;
+                }
+                if (host.isEmpty()) {
+                    URL descriptorURL = service.getDescriptorURL(this);
+                    if (descriptorURL != null) {
+                        host = substringBetween(descriptorURL.toString(), "://", ":");
+                    }
+                }
+                updateWemoState();
+                addSubscription();
+
+            } catch (Exception e) {
+                logger.debug("Exception during poll: {}", e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -161,7 +189,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                         value = String.valueOf(newBrightness);
                         currentBrightness = newBrightness;
                         argument = "brightness";
-                        if (value.equals("0")) {
+                        if ("0".equals(value)) {
                             value = "1";
                             argument = "brightness";
                             setBinaryState(action, argument, "1");
@@ -195,7 +223,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                                 break;
                         }
                         argument = "brightness";
-                        if (value.equals("0")) {
+                        if ("0".equals(value)) {
                             value = "1";
                             argument = "brightness";
                             setBinaryState(action, argument, "1");
@@ -338,7 +366,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             switch (variable) {
                 case "BinaryState":
                     if (oldBinaryState == null || !oldBinaryState.equals(value)) {
-                        State state = value.equals("0") ? OnOffType.OFF : OnOffType.ON;
+                        State state = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
                         logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
                         updateState(CHANNEL_BRIGHTNESS, state);
                         if (state.equals(OnOffType.OFF)) {
@@ -352,7 +380,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                     State newBrightnessState = new PercentType(newBrightnessValue);
                     String binaryState = this.stateMap.get("BinaryState");
                     if (binaryState != null) {
-                        if (binaryState.equals("1")) {
+                        if ("1".equals(binaryState)) {
                             updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
                         }
                     }
@@ -385,7 +413,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                     }
                     break;
                 case "nightMode":
-                    State nightModeState = value.equals("0") ? OnOffType.OFF : OnOffType.ON;
+                    State nightModeState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
                     currentNightModeState = value;
                     logger.debug("nightModeState '{}' for device '{}' received", nightModeState, getThing().getUID());
                     updateState(CHANNEL_NIGHTMODE, nightModeState);
@@ -417,7 +445,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         }
     }
 
-    private synchronized void onSubscription() {
+    private synchronized void addSubscription() {
         if (service.isRegistered(this)) {
             logger.debug("Checking WeMo GENA subscription for '{}'", this);
             String subscription = "basicevent1";
@@ -442,19 +470,6 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             }
             subscriptionState = new HashMap<>();
             service.unregisterParticipant(this);
-        }
-    }
-
-    private synchronized void onUpdate() {
-        ScheduledFuture<?> job = refreshJob;
-        if (job == null || job.isCancelled()) {
-            Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVALL_SECONDS;
-            Object refreshConfig = config.get("refresh");
-            if (refreshConfig != null) {
-                refreshInterval = ((BigDecimal) refreshConfig).intValue();
-            }
-            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 10, refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -483,25 +498,27 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
-            String wemoURL = getWemoURL(descriptorURL, "basicevent");
+            if (!host.isEmpty()) {
+                String wemoURL = getWemoURL(host, "basicevent");
 
-            if (wemoURL != null) {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
-                    value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                    variable = "BinaryState";
-                    logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<brightness>", "</brightness>");
-                    variable = "brightness";
-                    logger.trace("New brightness '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<fader>", "</fader>");
-                    variable = "fader";
-                    logger.trace("New fader value '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
+                if (wemoURL != null) {
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
+                                getThing().getUID());
+                        value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
+                        variable = "BinaryState";
+                        logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                        this.onValueReceived(variable, value, actionService + "1");
+                        value = substringBetween(wemoCallResponse, "<brightness>", "</brightness>");
+                        variable = "brightness";
+                        logger.trace("New brightness '{}' for device '{}' received", value, getThing().getUID());
+                        this.onValueReceived(variable, value, actionService + "1");
+                        value = substringBetween(wemoCallResponse, "<fader>", "</fader>");
+                        variable = "fader";
+                        logger.trace("New fader value '{}' for device '{}' received", value, getThing().getUID());
+                        this.onValueReceived(variable, value, actionService + "1");
+                    }
                 }
             }
         } catch (Exception e) {
@@ -518,30 +535,32 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
-            String wemoURL = getWemoURL(descriptorURL, "basicevent");
+            if (!host.isEmpty()) {
+                String wemoURL = getWemoURL(host, "basicevent");
 
-            if (wemoURL != null) {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("GetNightModeConfiguration response '{}' for device '{}' received", wemoCallResponse,
-                            getThing().getUID());
-                    value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
-                    variable = "startTime";
-                    logger.trace("New startTime '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<endTime>", "</endTime>");
-                    variable = "endTime";
-                    logger.trace("New endTime '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<nightMode>", "</nightMode>");
-                    variable = "nightMode";
-                    logger.trace("New nightMode state '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<nightModeBrightness>", "</nightModeBrightness>");
-                    variable = "nightModeBrightness";
-                    logger.trace("New nightModeBrightness  '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
+                if (wemoURL != null) {
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        logger.trace("GetNightModeConfiguration response '{}' for device '{}' received",
+                                wemoCallResponse, getThing().getUID());
+                        value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
+                        variable = "startTime";
+                        logger.trace("New startTime '{}' for device '{}' received", value, getThing().getUID());
+                        this.onValueReceived(variable, value, actionService + "1");
+                        value = substringBetween(wemoCallResponse, "<endTime>", "</endTime>");
+                        variable = "endTime";
+                        logger.trace("New endTime '{}' for device '{}' received", value, getThing().getUID());
+                        this.onValueReceived(variable, value, actionService + "1");
+                        value = substringBetween(wemoCallResponse, "<nightMode>", "</nightMode>");
+                        variable = "nightMode";
+                        logger.trace("New nightMode state '{}' for device '{}' received", value, getThing().getUID());
+                        this.onValueReceived(variable, value, actionService + "1");
+                        value = substringBetween(wemoCallResponse, "<nightModeBrightness>", "</nightModeBrightness>");
+                        variable = "nightModeBrightness";
+                        logger.trace("New nightModeBrightness  '{}' for device '{}' received", value,
+                                getThing().getUID());
+                        this.onValueReceived(variable, value, actionService + "1");
+                    }
                 }
             }
         } catch (Exception e) {
@@ -575,11 +594,12 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                     + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument
                     + ">" + value + "</" + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
-            URL descriptorURL = service.getDescriptorURL(this);
-            String wemoURL = getWemoURL(descriptorURL, "basicevent");
+            if (!host.isEmpty()) {
+                String wemoURL = getWemoURL(host, "basicevent");
 
-            if (wemoURL != null) {
-                wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoURL != null) {
+                    wemoCall.executeCall(wemoURL, soapHeader, content);
+                }
             }
         } catch (Exception e) {
             logger.debug("Failed to set binaryState '{}' for device '{}': {}", value, getThing().getUID(),
@@ -596,11 +616,12 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                     + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + value
                     + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
 
-            URL descriptorURL = service.getDescriptorURL(this);
-            String wemoURL = getWemoURL(descriptorURL, "basicevent");
+            if (!host.isEmpty()) {
+                String wemoURL = getWemoURL(host, "basicevent");
 
-            if (wemoURL != null) {
-                wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoURL != null) {
+                    wemoCall.executeCall(wemoURL, soapHeader, content);
+                }
             }
         } catch (Exception e) {
             logger.debug("Failed to set binaryState '{}' for device '{}': {}", value, getThing().getUID(),

@@ -71,32 +71,20 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
             .collect(Collectors.toSet());
 
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
+    private final UpnpIOService service;
+
+    private final Object upnpLock = new Object();
+    private final Object jobLock = new Object();
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
-    protected UpnpIOService service;
     private WemoHttpCall wemoCall;
 
-    private @Nullable ScheduledFuture<?> refreshJob;
+    private String host = "";
 
-    private final Runnable refreshRunnable = new Runnable() {
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
-        @Override
-        public void run() {
-            try {
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("WeMo UPnP device {} not yet registered", getUDN());
-                }
-
-                updateWemoState();
-                onSubscription();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }
-    };
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, wemoHttpCaller);
@@ -110,28 +98,67 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
+        String udn = (String) configuration.get("udn");
 
-        if (configuration.get("udn") != null) {
-            logger.debug("Initializing WemoHandler for UDN '{}'", configuration.get("udn"));
+        if (udn != null && !udn.isEmpty()) {
+            logger.debug("Initializing WemoHandler for UDN '{}'", udn);
             service.registerParticipant(this);
-            onSubscription();
-            onUpdate();
-            updateStatus(ThingStatus.ONLINE);
+
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
+                    TimeUnit.SECONDS);
+
         } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing UDN");
             logger.debug("Cannot initalize WemoHandler. UDN not set.");
         }
     }
 
     @Override
     public void dispose() {
-        logger.debug("WeMoHandler disposed.");
+        logger.debug("WemoHandler disposed for thing {}", getThing().getUID());
 
-        ScheduledFuture<?> job = refreshJob;
-        if (job != null && !job.isCancelled()) {
+        ScheduledFuture<?> job = this.pollingJob;
+        if (job != null) {
             job.cancel(true);
         }
-        refreshJob = null;
+        this.pollingJob = null;
+
         removeSubscription();
+        service.unregisterParticipant(this);
+    }
+
+    private void poll() {
+        synchronized (jobLock) {
+            if (pollingJob == null) {
+                return;
+            }
+            try {
+                logger.debug("Polling job");
+
+                // First check if the Wemo device is set in the UPnP service registry
+                // If not, set the thing state to OFFLINE and wait for the next poll
+                if (!isUpnpDeviceRegistered()) {
+                    logger.debug("UPnP device {} not yet registered", getUDN());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "upnp device not registered [\"" + getUDN() + "\"]");
+                    synchronized (upnpLock) {
+                        subscriptionState = new HashMap<>();
+                    }
+                    return;
+                }
+                if (host.isEmpty()) {
+                    URL descriptorURL = service.getDescriptorURL(this);
+                    if (descriptorURL != null) {
+                        host = substringBetween(descriptorURL.toString(), "://", ":");
+                    }
+                }
+                updateWemoState();
+                addSubscription();
+
+            } catch (Exception e) {
+                logger.debug("Exception during poll: {}", e.getMessage(), e);
+            }
+        }
     }
 
     @Override
@@ -163,11 +190,11 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                             + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
                             + "</s:Envelope>";
 
-                    URL descriptorURL = service.getDescriptorURL(this);
-                    String wemoURL = getWemoURL(descriptorURL, "basicevent");
-
-                    if (wemoURL != null) {
-                        wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (!host.isEmpty()) {
+                        String wemoURL = getWemoURL(host, "basicevent");
+                        if (wemoURL != null) {
+                            wemoCall.executeCall(wemoURL, soapHeader, content);
+                        }
                     }
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
@@ -296,7 +323,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         } else {
             String binaryState = stateMap.get("BinaryState");
             if (binaryState != null) {
-                State state = binaryState.equals("0") ? OnOffType.OFF : OnOffType.ON;
+                State state = "0".equals(binaryState) ? OnOffType.OFF : OnOffType.ON;
                 logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
                 if (getThing().getThingTypeUID().getId().equals("motion")) {
                     updateState(CHANNEL_MOTIONDETECTION, state);
@@ -311,68 +338,59 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         }
     }
 
-    private synchronized void onSubscription() {
-        if (service.isRegistered(this)) {
-            logger.debug("Checking WeMo GENA subscription for '{}'", this);
+    private synchronized void addSubscription() {
+        synchronized (upnpLock) {
+            if (service.isRegistered(this)) {
+                logger.debug("Checking WeMo GENA subscription for '{}'", this);
 
-            ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-            String subscription = "basicevent1";
+                ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+                String subscription = "basicevent1";
 
-            if (subscriptionState.get(subscription) == null) {
-                logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(), subscription);
-                service.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
-                subscriptionState.put(subscription, true);
-            }
-
-            if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
-                subscription = "insight1";
                 if (subscriptionState.get(subscription) == null) {
                     logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
                             subscription);
                     service.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
                     subscriptionState.put(subscription, true);
                 }
+
+                if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
+                    subscription = "insight1";
+                    if (subscriptionState.get(subscription) == null) {
+                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
+                                subscription);
+                        service.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
+                        subscriptionState.put(subscription, true);
+                    }
+                }
+            } else {
+                logger.debug("Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
+                        this);
             }
-        } else {
-            logger.debug("Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                    this);
         }
     }
 
     private synchronized void removeSubscription() {
-        logger.debug("Removing WeMo GENA subscription for '{}'", this);
+        synchronized (upnpLock) {
+            if (service.isRegistered(this)) {
+                logger.debug("Removing WeMo GENA subscription for '{}'", this);
+                ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+                String subscription = "basicevent1";
 
-        if (service.isRegistered(this)) {
-            ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-            String subscription = "basicevent1";
-
-            if (subscriptionState.get(subscription) != null) {
-                logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                service.removeSubscription(this, subscription);
-            }
-
-            if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
-                subscription = "insight1";
                 if (subscriptionState.get(subscription) != null) {
                     logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
                     service.removeSubscription(this, subscription);
                 }
-            }
-            subscriptionState = new HashMap<>();
-            service.unregisterParticipant(this);
-        }
-    }
 
-    private synchronized void onUpdate() {
-        ScheduledFuture<?> job = refreshJob;
-        if (job == null || job.isCancelled()) {
-            Configuration config = getThing().getConfiguration();
-            int refreshInterval = DEFAULT_REFRESH_INTERVALL_SECONDS;
-            Object refreshConfig = config.get("refresh");
-            if (refreshConfig != null) {
-                refreshInterval = ((BigDecimal) refreshConfig).intValue();
+                if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
+                    subscription = "insight1";
+                    if (subscriptionState.get(subscription) != null) {
+                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
+                        service.removeSubscription(this, subscription);
+                    }
+                }
+                subscriptionState = new HashMap<>();
+                service.unregisterParticipant(this);
             }
-            refreshJob = scheduler.scheduleWithFixedDelay(refreshRunnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
     }
 
@@ -409,21 +427,23 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            URL descriptorURL = service.getDescriptorURL(this);
-            String wemoURL = getWemoURL(descriptorURL, actionService);
+            if (!host.isEmpty()) {
+                String wemoURL = getWemoURL(host, actionService);
 
-            if (wemoURL != null) {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
-                    if (variable.equals("InsightParams")) {
-                        value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
-                    } else {
-                        value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                    }
-                    if (value.length() != 0) {
-                        logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                        this.onValueReceived(variable, value, actionService + "1");
+                if (wemoURL != null) {
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
+                                getThing().getUID());
+                        if ("InsightParams".equals(variable)) {
+                            value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
+                        } else {
+                            value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
+                        }
+                        if (value.length() != 0) {
+                            logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                            this.onValueReceived(variable, value, actionService + "1");
+                        }
                     }
                 }
             }
