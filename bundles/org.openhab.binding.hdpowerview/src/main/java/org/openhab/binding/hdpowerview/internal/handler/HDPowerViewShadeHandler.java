@@ -84,6 +84,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
+        logger.debug("Initializing shade handler");
         try {
             shadeId = getShadeId();
         } catch (NumberFormatException e) {
@@ -107,6 +108,27 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing shade handler for shade {}", shadeId);
+        ScheduledFuture<?> future = refreshPositionFuture;
+        if (future != null) {
+            future.cancel(true);
+        }
+        refreshPositionFuture = null;
+        future = refreshSignalFuture;
+        if (future != null) {
+            future.cancel(true);
+        }
+        refreshSignalFuture = null;
+        future = refreshBatteryLevelFuture;
+        if (future != null) {
+            future.cancel(true);
+        }
+        refreshBatteryLevelFuture = null;
+        capabilities = null;
     }
 
     @Override
