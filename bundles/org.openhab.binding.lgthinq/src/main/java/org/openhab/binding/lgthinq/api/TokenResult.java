@@ -1,30 +1,34 @@
-package org.openhab.binding.lgthinq.handler;
+package org.openhab.binding.lgthinq.api;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class TokenResult {
-    /**
-     * "access_token" -> "8f3a2c5ac198e97be32341498c2ca1ec81d6559ce6e92a50fd19d8189c9ad4f4ac18ab6aef9fe0b7926b630351ba1573"
-     * "refresh_token" -> "cab8233536317dc82ef35f1772d83ce6d48c4a660a319e0687aaf528ba947e5d6a31e2bd544c556e659ce331a7256560"
-     * "expires_in" -> "3600"
-     * "status" -> {Integer@5127} 1
-     * "oauth2_backend_url" -> "https://us.lgeapi.com/"
-     */
+public class TokenResult implements Serializable {
     private String accessToken;
     private String refreshToken;
     private int expiresIn;
     private Date generatedTime;
-    private String ouathBackendUrl;
+    private String oauthBackendUrl;
+    private UserInfo userInfo;
+    private Gateway gatewayInfo;
 
     public TokenResult(String accessToken, String refreshToken, int expiresIn, Date generatedTime, String ouathBackendUrl) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
         this.expiresIn = expiresIn;
         this.generatedTime = generatedTime;
-        this.ouathBackendUrl = ouathBackendUrl;
+        this.oauthBackendUrl = ouathBackendUrl;
     }
 
     public TokenResult(){};
+
+    public Gateway getGatewayInfo() {
+        return gatewayInfo;
+    }
+
+    public void setGatewayInfo(Gateway gatewayInfo) {
+        this.gatewayInfo = gatewayInfo;
+    }
 
     public String getAccessToken() {
         return accessToken;
@@ -42,8 +46,8 @@ public class TokenResult {
         return generatedTime;
     }
 
-    public String getOuathBackendUrl() {
-        return ouathBackendUrl;
+    public String getOauthBackendUrl() {
+        return oauthBackendUrl;
     }
 
     public void setAccessToken(String accessToken) {
@@ -62,7 +66,15 @@ public class TokenResult {
         this.generatedTime = generatedTime;
     }
 
-    public void setOuathBackendUrl(String ouathBackendUrl) {
-        this.ouathBackendUrl = ouathBackendUrl;
+    public void setOauthBackendUrl(String ouathBackendUrl) {
+        this.oauthBackendUrl = ouathBackendUrl;
+    }
+
+    public UserInfo getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 }

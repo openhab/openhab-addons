@@ -1,4 +1,4 @@
-package org.openhab.binding.lgthinq.handler;
+package org.openhab.binding.lgthinq.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openhab.binding.lgthinq.errors.*;
@@ -37,7 +37,9 @@ public class TokenManager {
 
     public TokenResult refreshToken(TokenResult currentToken) throws RefreshTokenException {
         try {
-            return oAuthAuthenticator.doRefreshToken(currentToken.getOuathBackendUrl(), currentToken.getRefreshToken());
+            TokenResult token = oAuthAuthenticator.doRefreshToken(currentToken);
+            new ObjectMapper().writeValue(new File(THINQ_CONNECTION_DATA_FILE), token);
+            return token;
         } catch (IOException e) {
             throw new RefreshTokenException("Error refreshing LGThinq token", e);
         }
@@ -55,6 +57,7 @@ public class TokenManager {
         OauthLgEmpAuthenticator.PreLoginResult preLogin;
         OauthLgEmpAuthenticator.LoginAccountResult accountLogin;
         TokenResult token;
+        UserInfo userInfo;
         try {
             gw = oAuthAuthenticator.discoverGatewayConfiguration(GATEWAY_URL, language, country);
         } catch (Exception ex) {
@@ -74,6 +77,13 @@ public class TokenManager {
             token = oAuthAuthenticator.getToken(gw,accountLogin);
         } catch (Exception ex) {
             throw new TokenException("Error getting Token", ex);
+        }
+        try {
+            userInfo = oAuthAuthenticator.getUserInfo(token);
+            token.setUserInfo(userInfo);
+            token.setGatewayInfo(gw);
+        } catch (Exception ex) {
+            throw new TokenException("Error getting UserInfo from Token", ex);
         }
 
         // persist the token information generated in file

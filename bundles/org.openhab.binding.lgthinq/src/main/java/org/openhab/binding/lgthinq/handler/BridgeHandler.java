@@ -1,8 +1,11 @@
 package org.openhab.binding.lgthinq.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openhab.binding.lgthinq.errors.*;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
+import org.openhab.binding.lgthinq.api.TokenManager;
+import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
+import org.openhab.binding.lgthinq.lgapi.LGApiClientServiceImpl;
+import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -133,6 +136,13 @@ public class BridgeHandler extends ConfigStatusBridgeHandler {
                     e.printStackTrace();
                 }
             }
+            LGApiClientService client = LGApiClientServiceImpl.getInstance();
+            try {
+                List<LGDevice> devices = client.listAccountDevices();
+                devices.forEach((d) -> {System.out.println(d);});
+            } catch (LGApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -140,4 +150,5 @@ public class BridgeHandler extends ConfigStatusBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
 
     }
+
 }

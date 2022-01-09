@@ -1,8 +1,9 @@
-package org.openhab.binding.lgthinq.handler;
+package org.openhab.binding.lgthinq.api;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class Gateway {
+public class Gateway implements Serializable {
     private String empBaseUri;
     private String loginBaseUri;
     private String apiRootV1;
@@ -13,6 +14,7 @@ public class Gateway {
     private String username;
     private String password;
 
+    public Gateway(){}
     public Gateway(Map<String,String> params, String language, String country) {
         this.apiRootV2 = params.get("thinq2Uri");
         this.apiRootV1 = params.get("thinq1Uri");
@@ -49,5 +51,49 @@ public class Gateway {
 
     public String getApiRootV1() {
         return apiRootV1;
+    }
+
+    public void setEmpBaseUri(String empBaseUri) {
+        this.empBaseUri = empBaseUri;
+    }
+
+    public void setLoginBaseUri(String loginBaseUri) {
+        this.loginBaseUri = loginBaseUri;
+    }
+
+    public void setApiRootV1(String apiRootV1) {
+        this.apiRootV1 = apiRootV1;
+    }
+
+    public void setApiRootV2(String apiRootV2) {
+        this.apiRootV2 = apiRootV2;
+    }
+
+    public void setAuthBase(String authBase) {
+        this.authBase = authBase;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

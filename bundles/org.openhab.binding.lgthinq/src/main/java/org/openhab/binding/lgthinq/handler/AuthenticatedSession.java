@@ -1,5 +1,7 @@
 package org.openhab.binding.lgthinq.handler;
 
+import org.openhab.binding.lgthinq.api.Gateway;
+
 public class AuthenticatedSession {
     private Gateway gateway;
     private String refreshToken;

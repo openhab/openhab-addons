@@ -1,17 +1,10 @@
-package org.openhab.binding.lgthinq.handler;
+package org.openhab.binding.lgthinq.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import org.apache.commons.lang3.SerializationUtils;
+import org.openhab.binding.lgthinq.handler.BridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +12,6 @@ import javax.ws.rs.core.UriBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -41,33 +33,9 @@ public class OauthLgEmpAuthenticator {
         return instance;
     }
 
-    public static byte[] getOauth2Sig(String messageSign, String secret) {
-        byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
-        byte[] messageCrypt = new HmacUtils(HmacAlgorithms.HMAC_SHA_1, secretBytes).hmac(messageSign.getBytes(StandardCharsets.UTF_8));
-        return Base64.getEncoder().encode(messageCrypt);
-    }
-
     private OauthLgEmpAuthenticator() {}
 
 
-    // used to compose the result from post/get rest calls to LG EMP API
-    private class RestResult {
-        private String jsonResponse;
-        private int resultCode;
-
-        public RestResult(String jsonResponse, int resultCode) {
-            this.jsonResponse = jsonResponse;
-            this.resultCode = resultCode;
-        }
-
-        public String getJsonResponse() {
-            return jsonResponse;
-        }
-
-        public int getStatusCode() {
-            return resultCode;
-        }
-    }
 
     class PreLoginResult {
         private String username;
@@ -127,14 +95,6 @@ public class OauthLgEmpAuthenticator {
         public String getLoginSessionId() {
             return loginSessionId;
         }
-    }
-
-    public static URL buildUrl(String urlBase, Map<String, String> params) throws MalformedURLException {
-        UriBuilder builder = UriBuilder.fromUri(urlBase);
-        params.forEach((k, v) -> {
-            builder.queryParam(k, v);
-        });
-        return builder.build().toURL();
     }
 
     private Map<String, String> getGatewayRestHeader(String language, String country) {
@@ -217,44 +177,6 @@ public class OauthLgEmpAuthenticator {
         return null;
     }
 
-    private RestResult getCall(String encodedUrl, Map<String, String> headers, Map<String, String> params) throws IOException {
-        UriBuilder builder = UriBuilder.fromUri(encodedUrl);
-        params.forEach((k, v) -> {
-            builder.queryParam(k, v);
-        });
-        URI encodedUri = builder.build();
-
-        CloseableHttpClient client = HttpClientBuilder.create().build();
-        HttpGet request = new HttpGet(encodedUri);
-        if (headers != null) headers.forEach((k, v) -> {
-            request.setHeader(k, v);
-        });
-
-        HttpResponse resp = client.execute(request);
-        return new RestResult(EntityUtils.toString(resp.getEntity(), "UTF-8"),
-                resp.getStatusLine().getStatusCode());
-    }
-
-    private RestResult postCall(String encodedUrl, Map<String, String> headers, Map<String, String> formParams) throws IOException {
-        CloseableHttpClient client = HttpClientBuilder.create().build();
-        HttpPost request = new HttpPost(encodedUrl);
-        List<NameValuePair> pairs = new ArrayList<>();
-        if (formParams != null) formParams.forEach((k, v) -> {
-            pairs.add(new BasicNameValuePair(k, v));
-        });
-        if (headers != null) headers.forEach((k, v) -> {
-            request.setHeader(k, v);
-        });
-        try {
-            request.setEntity(new UrlEncodedFormEntity(pairs));
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Definitively, it is unexpected.", e);
-            return null;
-        }
-        HttpResponse resp = client.execute(request);
-        return new RestResult(EntityUtils.toString(resp.getEntity(), "UTF-8"),
-                resp.getStatusLine().getStatusCode());
-    }
 
     public PreLoginResult preLoginUser(Gateway gw, String username, String password) throws IOException {
         MessageDigest digest = null;
@@ -276,7 +198,7 @@ public class OauthLgEmpAuthenticator {
         Map<String, String> formData = Map.of("user_auth2", encPwd,
                 "log_param", String.format("login request / user_id : %s / " +
                         "third_party : null / svc_list : SVC202,SVC710 / 3rd_service : ", username));
-        RestResult resp = postCall(preLoginUrl, headers, formData);
+        RestResult resp = RestUtils.postCall(preLoginUrl, headers, formData);
         if (resp.getStatusCode() != 200) {
             logger.error("Error preLogin into account. The reason is:{}", resp.getJsonResponse());
             // TODO - fazer o correto tratamento de erro aqui. Talvez subir uma exceção de validação custom
@@ -299,7 +221,7 @@ public class OauthLgEmpAuthenticator {
                 "password_hash_prameter_flag", "Y",
                 "svc_list", "SVC202,SVC710"); // SVC202=LG SmartHome, SVC710=EMP OAuth
         String loginUrl = gw.getEmpBaseUri() + "/emp/v2.0/account/session/" + URLEncoder.encode(preLoginResult.getUsername(), StandardCharsets.UTF_8);
-        RestResult resp = postCall(loginUrl, headers, formData);
+        RestResult resp = RestUtils.postCall(loginUrl, headers, formData);
         if (resp.getStatusCode() != 200) {
             logger.error("Error login into account. The reason is:{}", resp.getJsonResponse());
             // TODO - fazer o correto tratamento de erro aqui. Talvez subir uma exceção de validação custom
@@ -325,7 +247,7 @@ public class OauthLgEmpAuthenticator {
     public TokenResult getToken(Gateway gw, LoginAccountResult accountResult) throws IOException {
         // 3 - get secret key from emp signature
         String empSearchKeyUrl = gw.getLoginBaseUri() + "/searchKey";
-        RestResult resp = getCall(empSearchKeyUrl, null, Map.of("key_name", "OAUTH_SECRETKEY",
+        RestResult resp = RestUtils.getCall(empSearchKeyUrl, null, Map.of("key_name", "OAUTH_SECRETKEY",
                 "sever_type", "OP"));
         if (resp.getStatusCode() != 200) {
             logger.error("Error login into account. The reason is:{}", resp.getJsonResponse());
@@ -344,7 +266,7 @@ public class OauthLgEmpAuthenticator {
         empData.put("username", "" + accountResult.getUserId());
         String timestamp = getCurrentTimestamp();
 
-        byte[] oauthSig = getTokenSignature(V2_EMP_SESS_URL, secretKey, empData, timestamp);
+        byte[] oauthSig = RestUtils.getTokenSignature(V2_EMP_SESS_URL, secretKey, empData, timestamp);
 
         Map<String, String> oauthEmpHeaders = new HashMap<>();
         oauthEmpHeaders.put("lgemp-x-app-key", OAUTH_CLIENT_KEY);
@@ -360,40 +282,64 @@ public class OauthLgEmpAuthenticator {
         oauthEmpHeaders.put("Accept-Language", "en-US,en;q=0.9");
         oauthEmpHeaders.put("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36 Edg/93.0.961.44");
 
-        resp = postCall(V2_EMP_SESS_URL, oauthEmpHeaders, empData);
+        resp = RestUtils.postCall(V2_EMP_SESS_URL, oauthEmpHeaders, empData);
         return handleTokenResult(resp);
     }
 
-    private byte[] getTokenSignature(String authUrl, String secretKey, Map<String, String> empData, String timestamp) {
-        UriBuilder builder = UriBuilder.fromUri(authUrl);
-        empData.forEach((k, v) -> {
-            builder.queryParam(k, v);
-        });
+    public UserInfo getUserInfo(TokenResult token) throws IOException {
+        UriBuilder builder = UriBuilder.fromUri(token.getOauthBackendUrl()).path(V2_USER_INFO);
+        String oauthUrl = builder.build().toURL().toString();
+        String timestamp = getCurrentTimestamp();
+        byte[] oauthSig = RestUtils.getTokenSignature(oauthUrl, OAUTH_SECRET_KEY, null, timestamp);
+        Map<String,String> headers = Map.of(
+                "Accept", "application/json",
+                "Authorization", String.format("Bearer %s",token.getAccessToken()),
+                "X-Lge-Svccode", SVC_CODE,
+                "X-Application-Key", APPLICATION_KEY,
+                "lgemp-x-app-key", CLIENT_ID,
+                "X-Device-Type", "M01",
+                "X-Device-Platform", "ADR",
+                "x-lge-oauth-date", timestamp,
+                "x-lge-oauth-signature", new String(oauthSig));
+        RestResult resp = RestUtils.getCall(oauthUrl, headers, null);
 
-        URI reqUri = builder.build();
-        String signUrl = reqUri.getPath() + "?" + reqUri.getRawQuery();
-        String messageToSign = String.format("%s\n%s", signUrl, timestamp);
-        byte[] oauthSig = getOauth2Sig(messageToSign, secretKey);
-        return oauthSig;
+        return handleAccountInfoResult(resp);
     }
 
-    public TokenResult doRefreshToken(String oauthUrlBase, String refreshToken) throws IOException {
-        String oauthUrl = oauthUrlBase+V2_AUTH_PATH;
+    private UserInfo handleAccountInfoResult(RestResult resp) throws IOException {
+        Map<String, Object> result = new ObjectMapper().readValue(resp.getJsonResponse(), HashMap.class);
+        if (resp.getStatusCode() != 200) {
+            logger.error("LG API returned error when trying to get user account information. The reason is:{}", resp.getJsonResponse());
+            // TODO - fazer o correto tratamento de erro aqui. Talvez subir uma exceção de validação custom
+            throw new IllegalStateException(String.format("LG API returned error when trying to get user account information. The reason is:%s", resp.getJsonResponse()));
+        } else if (result.get("account") == null || ((Map)result.get("account")).get("userNo") ==null) {
+            throw new IllegalStateException(String.format("Error retrieving the account user information from access token"));
+        }
+        Map<String, String> accountInfo = ((Map) result.get("account"));
+        return new UserInfo(accountInfo.get("userNo"),
+                accountInfo.get("userID"),
+                accountInfo.get("userIDType"),
+                accountInfo.get("displayUserID"));
+    }
+
+    public TokenResult doRefreshToken(TokenResult currentToken) throws IOException {
+        UriBuilder builder = UriBuilder.fromUri(currentToken.getOauthBackendUrl()).path(V2_AUTH_PATH);
+        String oauthUrl = builder.build().toURL().toString();
         String timestamp = getCurrentTimestamp();
 
         Map<String,String> formData = new LinkedHashMap<>();
         formData.put("grant_type","refresh_token");
-        formData.put("refresh_token", refreshToken);
+        formData.put("refresh_token", currentToken.getRefreshToken());
 
-        byte[] oauthSig = getTokenSignature(oauthUrl, OAUTH_SECRET_KEY, formData, timestamp);
+        byte[] oauthSig = RestUtils.getTokenSignature(oauthUrl, OAUTH_SECRET_KEY, formData, timestamp);
 
         Map<String,String> headers = Map.of("x-lge-appkey", CLIENT_ID,
                 "x-lge-oauth-signature", new String(oauthSig),
                 "x-lge-oauth-date", timestamp,
                 "Accept", "application/json");
 
-        RestResult resp = postCall(oauthUrl, headers, formData);
-        return handleTokenResult(resp);
+        RestResult resp = RestUtils.postCall(oauthUrl, headers, formData);
+        return handleRefreshTokenResult(resp, currentToken);
     }
 
     private TokenResult handleTokenResult(RestResult resp) throws IOException {
@@ -414,6 +360,25 @@ public class OauthLgEmpAuthenticator {
                 Integer.valueOf("" + tokenResult.get("expires_in")),
                 new Date(),
                 tokenResult.get("oauth2_backend_url"));
+    }
+
+    private TokenResult handleRefreshTokenResult(RestResult resp, TokenResult currentToken) throws IOException {
+        Map<String, String> tokenResult;
+        if (resp.getStatusCode() != 200) {
+            logger.error("Error getting oauth token. The reason is:{}", resp.getJsonResponse());
+            // TODO - fazer o correto tratamento de erro aqui. Talvez subir uma exceção de validação custom
+            throw new IllegalStateException(String.format("Error getting oauth token:%s", resp.getJsonResponse()));
+        } else {
+            tokenResult = new ObjectMapper().readValue(resp.getJsonResponse(), HashMap.class);
+            if (tokenResult.get("access_token") == null || tokenResult.get("expires_in") == null) {
+                throw new IllegalStateException(String.format("Status error get refresh token info:%s", tokenResult));
+            }
+        }
+        TokenResult refreshedToken = SerializationUtils.clone(currentToken);
+        refreshedToken.setAccessToken(tokenResult.get("access_token"));
+        refreshedToken.setGeneratedTime(new Date());
+        refreshedToken.setExpiresIn(Integer.valueOf("" + tokenResult.get("expires_in")));
+        return refreshedToken;
     }
 }
 
