@@ -1,23 +1,22 @@
 # HomeAssistant MQTT Components Binding
 
-HomeAssistant MQTT Components are recognized as well. The base topic needs to be **homeassistant**. 
+HomeAssistant MQTT Components are recognized as well. The base topic needs to be **homeassistant**.
 The mapping is structured like this:
 
-
-| HA MQTT               | Framework     | Example MQTT topic                 |
-|-----------------------|---------------|------------------------------------|
-| Object                | Thing         | homeassistant/../../object         |
-| Component+Node        | Channel Group | homeassistant/component/node/object|
-| -> Component Features | Channel       | state/topic/defined/in/comp/config |
+| HA MQTT                   | Framework     | Example MQTT topic                    |
+| ------------------------- | ------------- | ------------------------------------- |
+| Object                    | Thing         | `homeassistant/../../object`          |
+| Component+Node            | Channel Group | `homeassistant/component/node/object` |
+| &rarr; Component Features | Channel       | `state/topic/defined/in/comp/config`  |
 
 ## Requirements
 
 The HomeAssistant MQTT requires two transformations to be installed:
 
-* JINJA-Transformations 
+* JINJA-Transformations
 * JSONPath-Transformations
 
-These can be installed under Settings->Addons->Transformations
+These can be installed under `Settings` &rarr; `Addon` &rarr; `Transformations`
 
 ## Limitations
 
