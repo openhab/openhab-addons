@@ -13,6 +13,7 @@
 package org.openhab.persistence.influxdb.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.persistence.influxdb.internal.influx1.Influx1FilterCriteriaQueryCreatorImpl;
 import org.openhab.persistence.influxdb.internal.influx1.InfluxDB1RepositoryImpl;
@@ -41,12 +42,12 @@ public class RepositoryFactory {
     }
 
     public static FilterCriteriaQueryCreator createQueryCreator(InfluxDBConfiguration influxDBConfiguration,
-            MetadataRegistry metadataRegistry) {
+            MetadataRegistry metadataRegistry, ItemRegistry itemRegistry) {
         switch (influxDBConfiguration.getVersion()) {
             case V1:
-                return new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
+                return new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry, itemRegistry);
             case V2:
-                return new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
+                return new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry, itemRegistry);
             default:
                 throw new UnnexpectedConditionException("Not expected version " + influxDBConfiguration.getVersion());
         }

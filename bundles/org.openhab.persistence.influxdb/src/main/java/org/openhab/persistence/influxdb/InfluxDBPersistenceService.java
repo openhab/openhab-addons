@@ -225,8 +225,8 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
                     filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
 
-            String query = RepositoryFactory.createQueryCreator(configuration, metadataRegistry).createQuery(filter,
-                    configuration.getRetentionPolicy());
+            String query = RepositoryFactory.createQueryCreator(configuration, metadataRegistry, itemRegistry)
+                    .createQuery(filter, configuration.getRetentionPolicy());
             logger.trace("Query {}", query);
             List<InfluxRow> results = influxDBRepository.query(query);
             return results.stream().map(this::mapRow2HistoricItem).collect(Collectors.toList());

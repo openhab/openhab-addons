@@ -15,7 +15,12 @@ package org.openhab.persistence.influxdb.internal;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.TimeZone;
+
+import javax.measure.Quantity;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,10 +64,11 @@ public class InfluxDBStateConvertUtils {
      * Converts {@link State} to objects fitting into influxdb values.
      *
      * @param state to be converted
+     * @param desiredUnit desired unit type
      * @return integer or double value for DecimalType, 0 or 1 for OnOffType and OpenClosedType,
      *         integer for DateTimeType, String for all others
      */
-    public static Object stateToObject(State state) {
+    public static Object stateToObject(State state, @Nullable Unit<?> desiredUnit) {
         Object value;
         if (state instanceof HSBType) {
             value = state.toString();
@@ -71,7 +77,13 @@ public class InfluxDBStateConvertUtils {
         } else if (state instanceof DecimalType) {
             value = ((DecimalType) state).toBigDecimal();
         } else if (state instanceof QuantityType<?>) {
-            value = ((QuantityType<?>) state).toBigDecimal();
+            var stateQt = (QuantityType<?>) state;
+            if (desiredUnit != null && !Objects.equals(desiredUnit, stateQt.getUnit())) {
+                value = Optional.ofNullable(stateQt.toUnit(desiredUnit)).map(QuantityType::toBigDecimal)
+                        .orElse(stateQt.toBigDecimal());
+            } else {
+                value = stateQt.toBigDecimal();
+            }
         } else if (state instanceof OnOffType) {
             value = state == OnOffType.ON ? DIGITAL_VALUE_ON : DIGITAL_VALUE_OFF;
         } else if (state instanceof OpenClosedType) {
@@ -124,7 +136,9 @@ public class InfluxDBStateConvertUtils {
         } else if (item instanceof LocationItem) {
             return new PointType(valueStr);
         } else if (item instanceof NumberItem) {
-            return new DecimalType(valueStr);
+            Unit<? extends Quantity<?>> unit = ((NumberItem) item).getUnit();
+            var decimalState = new DecimalType(valueStr);
+            return unit == null ? decimalState : new QuantityType<>(decimalState.toBigDecimal(), unit);
         } else if (item instanceof DimmerItem) {
             return new PercentType(valueStr);
         } else if (item instanceof SwitchItem) {

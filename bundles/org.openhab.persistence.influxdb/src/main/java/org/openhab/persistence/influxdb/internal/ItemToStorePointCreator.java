@@ -23,6 +23,7 @@ import org.openhab.core.items.Item;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
@@ -51,7 +52,8 @@ public class ItemToStorePointCreator {
         String itemName = item.getName();
         State state = getItemState(item);
 
-        Object value = InfluxDBStateConvertUtils.stateToObject(state);
+        var desiredUnit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
+        Object value = InfluxDBStateConvertUtils.stateToObject(state, desiredUnit);
 
         InfluxPoint.Builder point = InfluxPoint.newBuilder(measurementName).withTime(Instant.now()).withValue(value)
                 .withTag(TAG_ITEM_NAME, itemName);

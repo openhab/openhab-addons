@@ -32,7 +32,6 @@ public class InfluxDBMetadataUtils {
 
     public static String calculateMeasurementNameFromMetadataIfPresent(
             final @Nullable MetadataRegistry currentMetadataRegistry, String name, @Nullable String itemName) {
-
         if (itemName == null || currentMetadataRegistry == null) {
             return name;
         }

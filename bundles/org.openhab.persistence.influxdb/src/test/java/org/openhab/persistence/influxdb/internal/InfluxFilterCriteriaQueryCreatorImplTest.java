@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
@@ -53,14 +54,15 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
 
     private @Mock InfluxDBConfiguration influxDBConfiguration;
     private @Mock MetadataRegistry metadataRegistry;
+    private @Mock ItemRegistry itemRegistry;
 
     private Influx1FilterCriteriaQueryCreatorImpl instanceV1;
     private Influx2FilterCriteriaQueryCreatorImpl instanceV2;
 
     @BeforeEach
     public void before() {
-        instanceV1 = new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
-        instanceV2 = new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry);
+        instanceV1 = new Influx1FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry, itemRegistry);
+        instanceV2 = new Influx2FilterCriteriaQueryCreatorImpl(influxDBConfiguration, metadataRegistry, itemRegistry);
     }
 
     @AfterEach

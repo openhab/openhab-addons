@@ -16,6 +16,8 @@ import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.dto.Query;
@@ -24,12 +26,18 @@ import org.influxdb.querybuilder.BuiltQuery;
 import org.influxdb.querybuilder.Select;
 import org.influxdb.querybuilder.Where;
 import org.influxdb.querybuilder.clauses.SimpleClause;
+import org.openhab.core.items.Item;
+import org.openhab.core.items.ItemNotFoundException;
+import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBMetadataUtils;
 import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link FilterCriteriaQueryCreator} for InfluxDB 1.0
@@ -38,14 +46,17 @@ import org.openhab.persistence.influxdb.internal.InfluxDBVersion;
  */
 @NonNullByDefault
 public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQueryCreator {
+    private Logger logger = LoggerFactory.getLogger(Influx1FilterCriteriaQueryCreatorImpl.class);
 
     private InfluxDBConfiguration configuration;
     private MetadataRegistry metadataRegistry;
+    private ItemRegistry itemRegistry;
 
-    public Influx1FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration,
-            MetadataRegistry metadataRegistry) {
+    public Influx1FilterCriteriaQueryCreatorImpl(InfluxDBConfiguration configuration, MetadataRegistry metadataRegistry,
+            ItemRegistry itemRegistry) {
         this.configuration = configuration;
         this.metadataRegistry = metadataRegistry;
+        this.itemRegistry = itemRegistry;
     }
 
     @Override
@@ -53,6 +64,7 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         final String tableName;
         final String itemName = criteria.getItemName();
         boolean hasCriteriaName = itemName != null;
+        Optional<Item> item = Optional.ofNullable(itemName).map(this::safeGetItem);
 
         tableName = calculateTableName(itemName);
 
@@ -76,9 +88,10 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
         }
 
         if (criteria.getState() != null && criteria.getOperator() != null) {
+            var desiredUnit = item.filter(i -> i instanceof NumberItem).map(i -> ((NumberItem) i).getUnit());
             where = where.and(new SimpleClause(COLUMN_VALUE_NAME_V1,
                     getOperationSymbol(criteria.getOperator(), InfluxDBVersion.V1),
-                    stateToObject(criteria.getState())));
+                    stateToObject(criteria.getState(), desiredUnit.orElse(null))));
         }
 
         if (criteria.getOrdering() == FilterCriteria.Ordering.DESCENDING) {
@@ -125,5 +138,14 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
             sb.append(tableName);
         }
         return sb.toString();
+    }
+
+    private @Nullable Item safeGetItem(String itemName) {
+        try {
+            return itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            logger.warn("No item found with name {}", itemName, e);
+            return null;
+        }
     }
 }
