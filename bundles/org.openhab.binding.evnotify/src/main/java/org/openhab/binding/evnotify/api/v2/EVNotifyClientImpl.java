@@ -42,10 +42,13 @@ public class EVNotifyClientImpl implements EVNotifyClient {
 
     private final String token;
 
+    private Gson gson;
+
     public EVNotifyClientImpl(String akey, String token, HttpClient client) {
         this.akey = akey;
         this.token = token;
         this.client = client;
+        this.gson = new Gson();
     }
 
     @Override
@@ -63,12 +66,12 @@ public class EVNotifyClientImpl implements EVNotifyClient {
             // use the client to send the requests
             HttpResponse<String> basicResponse = client.send(basicRequest, HttpResponse.BodyHandlers.ofString());
             validateResponse(basicResponse);
-            BasicChargingDataDTO basicChargingDataDTO = new Gson().fromJson(basicResponse.body(),
+            BasicChargingDataDTO basicChargingDataDTO = gson.fromJson(basicResponse.body(),
                     BasicChargingDataDTO.class);
 
             HttpResponse<String> extendedResponse = client.send(extendedRequest, HttpResponse.BodyHandlers.ofString());
             validateResponse(extendedResponse);
-            ExtendedChargingDataDTO extendedChargingData = new Gson().fromJson(extendedResponse.body(),
+            ExtendedChargingDataDTO extendedChargingData = gson.fromJson(extendedResponse.body(),
                     ExtendedChargingDataDTO.class);
 
             return new ChargingDataDTO(basicChargingDataDTO, extendedChargingData);
@@ -98,7 +101,7 @@ public class EVNotifyClientImpl implements EVNotifyClient {
 
         if (httpResponse.body() != null) {
             try {
-                ErrorDTO errorDTO = new Gson().fromJson(httpResponse.body(), ErrorDTO.class);
+                ErrorDTO errorDTO = gson.fromJson(httpResponse.body(), ErrorDTO.class);
 
                 errorMessage += String.format(" with error code %d and message '%s'", errorDTO.getCode(),
                         errorDTO.getMessage());
