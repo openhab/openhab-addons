@@ -60,7 +60,7 @@ The binding has no configuration options, all configuration is done at `vehicle`
 
 ### evnotify.things
 
-```properties
+```
 # Thing evnotify:vehicle:YOUR_VEHICLE_ID "YOUR_VEHICLE_LABEL" @ "YOUR_VEHICLE_LOCATION" [akey="YOUR_AKEY",token="YOUR_TOKEN",refreshInterval=120]
 Thing evnotify:vehicle:ioniq "Ioniq" @ "Carport" [akey="YOUR_AKEY",token="YOUR_TOKEN",refreshInterval=120]
 ```
@@ -69,7 +69,7 @@ Thing evnotify:vehicle:ioniq "Ioniq" @ "Carport" [akey="YOUR_AKEY",token="YOUR_T
 
 ### evnotify.items
 
-```properties
+```
 // Equipment representing thing:
 // evnotify:vehicle:ioniq
 // (Ioniq)
