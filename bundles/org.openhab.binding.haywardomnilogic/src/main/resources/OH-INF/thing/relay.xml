@@ -16,7 +16,9 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="relayType"></property>
+			<property name="relayFunction"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 

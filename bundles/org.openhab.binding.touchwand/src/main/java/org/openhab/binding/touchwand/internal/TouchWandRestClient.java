@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -104,18 +103,11 @@ public class TouchWandRestClient {
     }
 
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
-        String encodedUser;
-        String encodedPass;
+        String encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8);
+        String encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8);
         String response = "";
-
-        try {
-            encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8.toString());
-            encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8.toString());
-            String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
-            response = sendCommand(command, METHOD_GET, "");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Error url encoding username or password : {}", e.getMessage());
-        }
+        String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
+        response = sendCommand(command, METHOD_GET, "");
 
         return !response.equals("Unauthorized");
     }

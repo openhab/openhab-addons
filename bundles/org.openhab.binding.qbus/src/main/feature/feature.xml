@@ -1,18 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-	Copyright (c) 2010-2020 Contributors to the openHAB project
-
-	See the NOTICE file(s) distributed with this work for additional
-	information.
-
-	This program and the accompanying materials are made available under the
-	terms of the Eclipse Public License 2.0 which is available at
-	http://www.eclipse.org/legal/epl-2.0
-
-	SPDX-License-Identifier: EPL-2.0
-
--->
 <features name="org.openhab.binding.qbus-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
 	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
