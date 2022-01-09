@@ -59,7 +59,7 @@ In order to assist you with this process the binding expose a simple login form 
 | play-last-by-terms  | String | Add to playback queue as last by terms, works for series, episodes and movies; terms search is explained bellow |
 | browse-by-terms  | String | Browse media by terms, works for series, episodes and movies; terms search is explained bellow |
 
-#### Available Play State Commands:
+### Available Play State Commands:
 
 * STOP
 * PAUSE
@@ -70,7 +70,7 @@ In order to assist you with this process the binding expose a simple login form 
 * FAST_FORWARD
 * PLAY_PAUSE
 
-#### Terms search:
+### Terms search:
 
 The terms search has a default behavior that can be modified sending some predefined prefixes.
 
@@ -79,3 +79,52 @@ The default behavior will look for movies, series, or episodes whose name start 
 You can prefix your search with '\<type:movie\>', '\<type:episode\>', '\<type:series\>' to restrict your search to a given type.
 
 Also, you can target a specific series episode by season and episode numbers prefixing your search with '\<season:1\>\<episode:1\>' with the desired values. So '\<season:3\>\<episode:10\>Something' will try to play the episode 10 for the season 3 of the series named 'Something'.
+
+## Full Example
+
+### Example Server (Bridge) - jellyfin.bridge.things
+
+```
+Bridge jellyfin:server:exampleServerId "Jellyfin Server" [
+	clientActiveWithInSeconds=0,
+	hostname="192.168.1.177",
+	port=8096,
+	refreshSeconds=30,
+	ssl="false"
+    token=XXXXX # Optional, read bellow
+    userId=XXXXX # Optional, read bellow
+]
+```
+
+ * token and userId could be retrieved using the login form at http://YOUROPENHABIP:PORT/jellyfin/exampleServerId
+
+### Example Client - jellyfin.clients.things
+
+```
+Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Web client" (jellyfin:server:exampleServerId)
+Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Android client" (jellyfin:server:exampleServerId)
+```
+
+* I recommend creating the clients using the discovery. For getting the device ids manually I recommend to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX). 
+
+### Example Items - jellyfin.items
+
+```
+String strJellyfinAndroidPlayStateCommand { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-state-command", stateDescription=""[options="STOP=Stop, PAUSE=Pause, UNPAUSE=Unpause, NEXT_TRACK=Next track, PREVIOUS_TRACK=Previous track, REWIND=Rewind, FAST_FORWARD=Fast forward, PLAY_PAUSE=Play Pause"]}
+String strJellyfinAndroidSendNotification { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:send-notification " }
+Player plJellyfinAndroidMediaControl { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:media-control" }
+String strJellyfinAndroidPlayingItemName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-name" }
+String strJellyfinAndroidPlayingItemSeriesName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-series-name" }
+String strJellyfinAndroidPlayingItemSeasonName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-season-name" }
+Number nJellyfinAndroidPlayingItemSeason { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-season" }
+Number nJellyfinAndroidPlpayingItemEpisode { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-episode" }
+String strJellyfinAndroidPlayingItemGenders { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-genders" }
+String strJellyfinAndroidPlayingItemType { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-type" }
+Dimmer dJellyfinAndroidPlayingItemPercentage { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-percentage" }
+Number nJellyfinAndroidPlayingItemSecond { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-second" }
+Number nJellyfinAndroidPlayingItemTotalSeconds { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-total-seconds" }
+String strJellyfinAndroidPlayByTerms { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-by-terms" }
+String strJellyfinAndroidPlayByNextTerms { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-next-by-terms" }
+String strJellyfinAndroidPlayByLastTerms { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-last-by-terms" }
+String strJellyfinAndroidBrowseByTerms { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:browse-by-terms" }
+```
