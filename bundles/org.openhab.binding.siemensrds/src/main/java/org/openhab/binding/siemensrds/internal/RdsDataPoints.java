@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -129,8 +128,7 @@ public class RdsDataPoints {
      * private method: execute an HTTP PUT on the server to set a data point value
      */
     private void httpSetPointValueJson(String apiKey, String token, String pointUrl, String json)
-            throws RdsCloudException, UnsupportedEncodingException, ProtocolException, MalformedURLException,
-            IOException {
+            throws RdsCloudException, ProtocolException, MalformedURLException, IOException {
         /*
          * NOTE: this class uses JAVAX HttpsURLConnection library instead of the
          * preferred JETTY library; the reason is that JETTY does not allow sending the

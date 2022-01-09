@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class HttpResponseListener extends BufferingResponseListener {
         Request request = result.getRequest();
         if (result.isFailed()) {
             logger.warn("Requesting '{}' (method='{}', content='{}') failed: {}", request.getURI(), request.getMethod(),
-                    request.getContent(), result.getFailure().getMessage());
+                    request.getContent(), result.getFailure().toString());
             future.complete(null);
         } else {
             switch (response.getStatus()) {

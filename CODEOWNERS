@@ -341,6 +341,7 @@
 /bundles/org.openhab.binding.wolfsmartset/ @BoBiene
 /bundles/org.openhab.binding.xmltv/ @clinique
 /bundles/org.openhab.binding.xmppclient/ @pavel-gololobov
+/bundles/org.openhab.binding.yamahamusiccast/ @coop-git
 /bundles/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
 /bundles/org.openhab.binding.yeelight/ @claell
 /bundles/org.openhab.binding.yioremote/ @miloit

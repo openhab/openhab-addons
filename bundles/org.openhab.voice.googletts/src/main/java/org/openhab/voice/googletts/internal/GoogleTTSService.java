@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,10 @@ package org.openhab.voice.googletts.internal;
 
 import static org.openhab.voice.googletts.internal.GoogleTTSService.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Locale;
@@ -27,12 +30,13 @@ import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.ByteArrayAudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
 import org.openhab.core.voice.Voice;
-import org.openhab.voice.googletts.internal.protocol.AudioEncoding;
+import org.openhab.voice.googletts.internal.dto.AudioEncoding;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
@@ -330,8 +334,23 @@ public class GoogleTTSService implements TTSService {
         // create the audio byte array for given text, locale, format
         byte[] audio = apiImpl.synthesizeSpeech(trimmedText, (GoogleTTSVoice) voice, requestedFormat.getCodec());
         if (audio == null) {
-            throw new TTSException("Could not read from Google Cloud TTS Service");
+            throw new TTSException("Could not synthesize text via Google Cloud TTS Service");
         }
-        return new ByteArrayAudioStream(audio, requestedFormat);
+
+        // compute the real format returned by google if wave file
+        AudioFormat finalFormat = requestedFormat;
+        if (AudioFormat.CONTAINER_WAVE.equals(requestedFormat.getContainer())) {
+            finalFormat = parseAudioFormat(audio);
+        }
+
+        return new ByteArrayAudioStream(audio, finalFormat);
+    }
+
+    private AudioFormat parseAudioFormat(byte[] audio) throws TTSException {
+        try (InputStream inputStream = new ByteArrayInputStream(audio)) {
+            return AudioWaveUtils.parseWavFormat(inputStream);
+        } catch (IOException e) {
+            throw new TTSException("Cannot parse WAV format", e);
+        }
     }
 }

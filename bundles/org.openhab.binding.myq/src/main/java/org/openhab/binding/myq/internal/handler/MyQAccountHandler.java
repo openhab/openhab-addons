@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,11 @@ package org.openhab.binding.myq.internal.handler;
 import static org.openhab.binding.myq.internal.MyQBindingConstants.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -485,7 +485,7 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
             ContentResponse response = request.send();
             logger.debug("Login Code {} Response {}", response.getStatus(), response.getContentAsString());
             return response;
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             throw new ExecutionException(e.getCause());
         }
     }
@@ -613,16 +613,15 @@ public class MyQAccountHandler extends BaseBridgeHandler implements AccessTokenR
         return sb.toString();
     }
 
-    private String generateCodeVerifier() throws UnsupportedEncodingException {
+    private String generateCodeVerifier() {
         SecureRandom secureRandom = new SecureRandom();
         byte[] codeVerifier = new byte[32];
         secureRandom.nextBytes(codeVerifier);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(codeVerifier);
     }
 
-    private String generateCodeChallange(String codeVerifier)
-            throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        byte[] bytes = codeVerifier.getBytes("US-ASCII");
+    private String generateCodeChallange(String codeVerifier) throws NoSuchAlgorithmException {
+        byte[] bytes = codeVerifier.getBytes(StandardCharsets.US_ASCII);
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
         messageDigest.update(bytes, 0, bytes.length);
         byte[] digest = messageDigest.digest();

@@ -234,7 +234,7 @@
 		</parameter>
 		<parameter name="inputLabelTape" type="text" required="false">
 			<label>@text/config.inputLabelTape.label</label>
-			<description>>@text/config.inputLabelTape.description</description>
+			<description>@text/config.inputLabelTape.description</description>
 		</parameter>
 		<parameter name="inputLabelVideo1" type="text" required="false">
 			<label>@text/config.inputLabelVideo1.label</label>
@@ -312,7 +312,7 @@
 		</parameter>
 		<parameter name="inputLabelVideo6" type="text" required="false">
 			<label>@text/config.inputLabelVideo6.label</label>
-			<description>config.inputLabelVideo6.description</description>
+			<description>@text/config.inputLabelVideo6.description</description>
 		</parameter>
 		<parameter name="inputLabelMulti" type="text" required="false">
 			<label>@text/config.inputLabelMulti.label</label>

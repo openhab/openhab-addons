@@ -95,7 +95,7 @@ Modify the policy accordingly if needed.
 <!-- markdownlint-disable ol-prefix -->
   4. Click _Next: Tags_
   5. Click _Next: Review_
-  6. Enter `openhab-dynamodb-policy` as the _Name_ol-prefix -->
+  6. Enter `openhab-dynamodb-policy` as the _Name_
   7. Click _Create policy_ to finish policy creation
 <!-- markdownlint-enable ol-prefix -->
 
@@ -224,10 +224,10 @@ Similar caveat applies for DynamoDB Time to Live (TTL) setting `expireDays`.
 
 ### Updating Amazon SDK
 
-1. Clean `lib/*`
-2. Update SDK version in `scripts/fetch_sdk_pom.xml`. You can use the [maven online repository browser](https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-dynamodb) to find the latest version available online.
-3. `scripts/fetch_sdk.sh`
-4. Copy printed dependencies to `pom.xml`
+1. Update SDK version and `netty-nio-client` version in `scripts/fetch_sdk_pom.xml`. You can use the [maven online repository browser](https://mvnrepository.com/artifact/software.amazon.awssdk/dynamodb-enhanced) to find the latest version available online.
+2. `scripts/fetch_sdk.sh`
+3. Copy printed dependencies to `pom.xml`. If necessary, adjust feature.xml, bnd.importpackage and dep.noembedding as well (probably rarely needed but [it happens](https://aws.amazon.com/blogs/developer/the-aws-sdk-for-java-2-17-removes-its-external-dependency-on-jackson/)).
+4. Check & update `NOTICE` file with all the updated, new and removed dependencies.
 
 After these changes, it's good practice to run integration tests (against live AWS DynamoDB) in `org.openhab.persistence.dynamodb.test` bundle.
 See README.md in the test bundle for more information how to execute the tests.

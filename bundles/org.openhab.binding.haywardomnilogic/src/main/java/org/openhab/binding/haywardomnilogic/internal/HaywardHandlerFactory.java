@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,8 +29,8 @@ import org.openhab.binding.haywardomnilogic.internal.handler.HaywardChlorinatorH
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardColorLogicHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardFilterHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardHeaterHandler;
+import org.openhab.binding.haywardomnilogic.internal.handler.HaywardPumpHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardRelayHandler;
-import org.openhab.binding.haywardomnilogic.internal.handler.HaywardSensorHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardVirtualHeaterHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -56,6 +56,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.concat(BRIDGE_THING_TYPES_UIDS.stream(), THING_TYPES_UIDS.stream()).collect(Collectors.toSet()));
+    private final HaywardDynamicStateDescriptionProvider stateDescriptionProvider;
     private final HttpClient httpClient;
 
     @Override
@@ -64,7 +65,9 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Activate
-    public HaywardHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public HaywardHandlerFactory(final @Reference HaywardDynamicStateDescriptionProvider stateDescriptionProvider,
+            @Reference HttpClientFactory httpClientFactory) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
@@ -76,7 +79,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_BRIDGE)) {
-            return new HaywardBridgeHandler((Bridge) thing, httpClient);
+            return new HaywardBridgeHandler(stateDescriptionProvider, (Bridge) thing, httpClient);
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_BACKYARD)) {
             return new HaywardBackyardHandler(thing);
@@ -96,11 +99,12 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_HEATER)) {
             return new HaywardHeaterHandler(thing);
         }
+        if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_PUMP)) {
+            return new HaywardPumpHandler(thing);
+        }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_RELAY)) {
             return new HaywardRelayHandler(thing);
-        }
-        if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_SENSOR)) {
-            return new HaywardSensorHandler(thing);
+
         }
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER)) {
             return new HaywardVirtualHeaterHandler(thing);
