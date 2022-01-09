@@ -76,6 +76,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private @Nullable ScheduledFuture<?> refreshSignalFuture = null;
     private @Nullable ScheduledFuture<?> refreshBatteryLevelFuture = null;
     private @Nullable Capabilities capabilities;
+    private int shadeId;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -84,7 +85,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void initialize() {
         try {
-            getShadeId();
+            shadeId = getShadeId();
         } catch (NumberFormatException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.invalid-id");
@@ -142,8 +143,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             return;
         }
         try {
-            handleShadeCommand(channelId, command, webTargets, getShadeId());
-        } catch (HubProcessingException | NumberFormatException e) {
+            handleShadeCommand(channelId, command, webTargets, shadeId);
+        } catch (HubProcessingException e) {
             logger.warn("Unexpected error: {}", e.getMessage());
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
@@ -226,12 +227,21 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (capabilities == null) {
             Integer value = shade.capabilities;
             if (value != null) {
-                logger.debug("Caching capabilities {} for shade {}", value, shade.id);
-                capabilities = db.getCapabilities(value);
+                int valueAsInt = value.intValue();
+                logger.debug("Caching capabilities {} for shade {}", valueAsInt, shade.id);
+                capabilities = db.getCapabilities(valueAsInt);
             } else {
                 logger.debug("Capabilities not included in shade response");
             }
         }
+    }
+
+    private Capabilities getCapabilitiesOrDefault() {
+        Capabilities capabilities = this.capabilities;
+        if (capabilities == null) {
+            return new Capabilities();
+        }
+        return capabilities;
     }
 
     /**
@@ -304,35 +314,33 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
      */
     private void updateHardProperties(ShadeData shadeData) {
         final ShadePosition positions = shadeData.positions;
-        if (positions != null) {
-            final Map<String, String> properties = getThing().getProperties();
+        if (positions == null) {
+            return;
+        }
+        Capabilities capabilities = getCapabilitiesOrDefault();
+        final Map<String, String> properties = getThing().getProperties();
 
-            // update 'jsonHasSecondary' property
-            String propKey = HDPowerViewBindingConstants.PROPERTY_SECONDARY_RAIL_DETECTED;
-            String propOldVal = properties.getOrDefault(propKey, "");
-            boolean propNewBool = positions.secondaryRailDetected();
-            String propNewVal = String.valueOf(propNewBool);
-            if (!propNewVal.equals(propOldVal)) {
-                getThing().setProperty(propKey, propNewVal);
-                final Integer temp = shadeData.capabilities;
-                final int capabilities = temp != null ? temp.intValue() : -1;
-                if (propNewBool != db.getCapabilities(capabilities).supportsSecondary()) {
-                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propNewBool);
-                }
+        // update 'secondary rail detected' property
+        String propKey = HDPowerViewBindingConstants.PROPERTY_SECONDARY_RAIL_DETECTED;
+        String propOldVal = properties.getOrDefault(propKey, "");
+        boolean propNewBool = positions.secondaryRailDetected();
+        String propNewVal = String.valueOf(propNewBool);
+        if (!propNewVal.equals(propOldVal)) {
+            getThing().setProperty(propKey, propNewVal);
+            if (propNewBool != capabilities.supportsSecondary()) {
+                db.logPropertyMismatch(propKey, shadeData.type, capabilities.getValue(), propNewBool);
             }
+        }
 
-            // update 'jsonTiltAnywhere' property
-            propKey = HDPowerViewBindingConstants.PROPERTY_TILT_ANYWHERE_DETECTED;
-            propOldVal = properties.getOrDefault(propKey, "");
-            propNewBool = positions.tiltAnywhereDetected();
-            propNewVal = String.valueOf(propNewBool);
-            if (!propNewVal.equals(propOldVal)) {
-                getThing().setProperty(propKey, propNewVal);
-                final Integer temp = shadeData.capabilities;
-                final int capabilities = temp != null ? temp.intValue() : -1;
-                if (propNewBool != db.getCapabilities(capabilities).supportsTiltAnywhere()) {
-                    db.logPropertyMismatch(propKey, shadeData.type, capabilities, propNewBool);
-                }
+        // update 'tilt anywhere detected' property
+        propKey = HDPowerViewBindingConstants.PROPERTY_TILT_ANYWHERE_DETECTED;
+        propOldVal = properties.getOrDefault(propKey, "");
+        propNewBool = positions.tiltAnywhereDetected();
+        propNewVal = String.valueOf(propNewBool);
+        if (!propNewVal.equals(propOldVal)) {
+            getThing().setProperty(propKey, propNewVal);
+            if (propNewBool != capabilities.supportsTiltAnywhere()) {
+                db.logPropertyMismatch(propKey, shadeData.type, capabilities.getValue(), propNewBool);
             }
         }
     }
@@ -389,10 +397,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (newPosition == null) {
             newPosition = new ShadePosition();
         }
-        Capabilities capabilities = this.capabilities;
-        if (capabilities == null) {
-            capabilities = new Capabilities();
-        }
+        Capabilities capabilities = getCapabilitiesOrDefault();
         // set the new position value, and write the positions to the hub
         shade = webTargets.moveShade(shadeId, newPosition.setPosition(capabilities, coordSys, newPercent));
         if (shade != null) {
@@ -495,7 +500,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if (webTargets == null) {
                 throw new HubProcessingException("Web targets not initialized");
             }
-            int shadeId = getShadeId();
             Shade shade;
             switch (kind) {
                 case POSITION:
