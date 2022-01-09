@@ -344,7 +344,6 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private static String replaceUmlaut(String input) {
-
         // replace all lower Umlauts
         String output = input.replace("ü", "ue").replace("ö", "oe").replace("ä", "ae").replace("ß", "ss");
 
@@ -413,9 +412,8 @@ public class GuntamaticHandler extends BaseThingHandler {
                         parseAndUpdate(response);
                     } else if (url.equals(DAQDESC_URL)) {
                         parseAndInit(response);
-                    } else if (url.equals(PARSET_URL)) {
-                        // via return
                     }
+                    // PARSET_URL via return
                     return response;
                 } catch (IllegalArgumentException e) {
                     errorReason = String.format("IllegalArgumentException: %s",
@@ -438,7 +436,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     }
 
     private void pollGuntamatic() {
-        if (channelsInitialized == false) {
+        if (!channelsInitialized) {
             if (!config.key.isBlank()) {
                 sendGetRequest(DAQEXTDESC_URL);
             }
