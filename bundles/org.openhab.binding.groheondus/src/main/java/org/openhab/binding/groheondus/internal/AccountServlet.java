@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.groheondus.internal;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -55,8 +54,8 @@ public class AccountServlet extends HttpServlet {
         }
     }
 
-    private String servletUrl() throws UnsupportedEncodingException {
-        return "/groheondus/" + URLEncoder.encode(bridgeId, StandardCharsets.UTF_8.name());
+    private String servletUrl() {
+        return "/groheondus/" + URLEncoder.encode(bridgeId, StandardCharsets.UTF_8);
     }
 
     @Override
@@ -130,10 +129,6 @@ public class AccountServlet extends HttpServlet {
     }
 
     public void dispose() {
-        try {
-            httpService.unregister(servletUrl());
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Unregistration of servlet failed", e);
-        }
+        httpService.unregister(servletUrl());
     }
 }

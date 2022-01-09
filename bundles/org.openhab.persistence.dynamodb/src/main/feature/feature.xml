@@ -4,7 +4,6 @@
 
 	<feature name="openhab-persistence-dynamodb" description="DynamoDB Persistence" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature dependency="true">openhab.tp-jackson</feature>
 		<feature dependency="true">openhab.tp-netty</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.dynamodb/${project.version}</bundle>
 		<configfile finalname="${openhab.conf}/services/dynamodb.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/dynamodb</configfile>

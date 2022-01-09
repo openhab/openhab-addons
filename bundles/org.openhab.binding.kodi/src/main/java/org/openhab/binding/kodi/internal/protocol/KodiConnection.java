@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.kodi.internal.protocol;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -857,16 +856,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private @Nullable String stripImageUrl(String url) {
-        try {
-            // we have to strip ending "/" here because Kodi returns a not valid path and filename
-            // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
-            // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
-            String encodedURL = URLEncoder.encode(stripEnd(url, '/'), StandardCharsets.UTF_8.name());
-            return imageUri.resolve(encodedURL).toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("exception during encoding {}", url, e);
-            return null;
-        }
+        // we have to strip ending "/" here because Kodi returns a not valid path and filename
+        // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
+        // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
+        String encodedURL = URLEncoder.encode(stripEnd(url, '/'), StandardCharsets.UTF_8);
+        return imageUri.resolve(encodedURL).toString();
     }
 
     private String stripEnd(final String str, final char suffix) {

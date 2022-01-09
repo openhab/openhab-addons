@@ -80,6 +80,7 @@
 /bundles/org.openhab.binding.ecobee/ @mhilbush
 /bundles/org.openhab.binding.ecotouch/ @sibbi77
 /bundles/org.openhab.binding.ekey/ @hmerk
+/bundles/org.openhab.binding.electroluxair/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.energenie/ @hmerk
 /bundles/org.openhab.binding.enigma2/ @gdolfen
@@ -289,6 +290,7 @@
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.somfymylink/ @loungeflyz
 /bundles/org.openhab.binding.somfytahoma/ @octa22
+/bundles/org.openhab.binding.sonnen/ @chingon007
 /bundles/org.openhab.binding.sonos/ @kgoderis @lolodomo
 /bundles/org.openhab.binding.sonyaudio/ @freke
 /bundles/org.openhab.binding.sonyprojector/ @lolodomo
@@ -341,6 +343,7 @@
 /bundles/org.openhab.binding.wolfsmartset/ @BoBiene
 /bundles/org.openhab.binding.xmltv/ @clinique
 /bundles/org.openhab.binding.xmppclient/ @pavel-gololobov
+/bundles/org.openhab.binding.yamahamusiccast/ @coop-git
 /bundles/org.openhab.binding.yamahareceiver/ @davidgraeff @zarusz
 /bundles/org.openhab.binding.yeelight/ @claell
 /bundles/org.openhab.binding.yioremote/ @miloit

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.robonect.internal.model.cmd;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -22,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The command allows to set or retrieve the mower name.
- * 
+ *
  * @author Marco Meyer - Initial contribution
  */
 public class NameCommand implements Command {
@@ -33,7 +32,7 @@ public class NameCommand implements Command {
 
     /**
      * sets the mower name.
-     * 
+     *
      * @param newName - the mower name.
      * @return - the command instance.
      */
@@ -52,13 +51,7 @@ public class NameCommand implements Command {
         if (newName == null) {
             return baseURL + "?cmd=name";
         } else {
-            try {
-                return baseURL + "?cmd=name&name="
-                        + URLEncoder.encode(newName, StandardCharsets.ISO_8859_1.displayName());
-            } catch (UnsupportedEncodingException e) {
-                logger.error("Could not encode name {} ", newName, e);
-                return baseURL + "?cmd=name";
-            }
+            return baseURL + "?cmd=name&name=" + URLEncoder.encode(newName, StandardCharsets.ISO_8859_1);
         }
     }
 }
