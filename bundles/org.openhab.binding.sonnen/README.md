@@ -1,6 +1,7 @@
 # Sonnen Binding
 
-The binding for sonnen communicates with a sonnen battery. More information about the sonnen battery can be found [here](https://sonnen.de/)
+The binding for sonnen communicates with a sonnen battery.
+More information about the sonnen battery can be found [here](https://sonnen.de/).
 
 ## Supported Things
 
@@ -22,7 +23,9 @@ The following channels are yet supported:
 | Channel | Type  | Access| Description|
 |---------|-------|-------|------------|
 |batteryChargingState|Switch|read|Indicates if the Battery is charging at that moment|
+|batteryCharging|Number:Energy|read|Indicates the actual current charging the Battery. Otherwise 0.|
 |batteryDischargingState|Switch|read|Indicates if the Battery is discharging at that moment|
+|batteryDischarging|Number:Energy|read|Indicates the actual current discharging the Battery. Otherwise 0.|
 |batteryFeedIn|Number:Energy|read|Indicates the actual charging current of the Battery in watt|
 |batteryDischarging|Number:Energy|read|Indicates the actual current discharging the Battery in watt|
 |consumption|Number:Energy|read|Indicates the actual consumption of the consumer in watt|
