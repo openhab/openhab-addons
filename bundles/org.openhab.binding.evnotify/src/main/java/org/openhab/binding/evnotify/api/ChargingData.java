@@ -14,11 +14,14 @@ package org.openhab.binding.evnotify.api;
 
 import java.time.OffsetDateTime;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for the data from the API of the evnotify online service.
  *
  * @author Michael Schmidt - Initial contribution
  */
+@NonNullByDefault
 public interface ChargingData {
 
     Float getStateOfChargeDisplay();
