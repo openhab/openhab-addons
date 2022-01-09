@@ -30,8 +30,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link MyBMWHandlerFactory} is responsible for creating things and thing
@@ -42,8 +40,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.mybmw", service = ThingHandlerFactory.class)
 public class MyBMWHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(MyBMWHandlerFactory.class);
-
     private final HttpClientFactory httpClientFactory;
     private final MyBMWCommandOptionProvider commandOptionProvider;
     private String localeLanguage;

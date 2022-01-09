@@ -8,7 +8,7 @@
 		<label>Tire Pressure Front Left</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="front-left-wanted-channel">
+	<channel-type id="front-left-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Left Target</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -18,7 +18,7 @@
 		<label>Tire Pressure Front Right</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="front-right-wanted-channel">
+	<channel-type id="front-right-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Front Right Target</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -28,7 +28,7 @@
 		<label>Tire Pressure Rear Left</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="rear-left-wanted-channel">
+	<channel-type id="rear-left-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Left Target</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
@@ -38,7 +38,7 @@
 		<label>Tire Pressure Rear Right</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="rear-right-wanted-channel">
+	<channel-type id="rear-right-target-channel">
 		<item-type>Number:Pressure</item-type>
 		<label>Tire Pressure Rear Right Target</label>
 		<state pattern="%.1f %unit%" readOnly="true"/>

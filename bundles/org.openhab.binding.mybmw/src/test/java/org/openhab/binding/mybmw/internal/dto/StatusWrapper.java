@@ -486,7 +486,7 @@ public class StatusWrapper {
                     assertTrue(state.equals(UnDefType.UNDEF));
                 }
                 break;
-            case FRONT_LEFT_WANTED:
+            case FRONT_LEFT_TARGET:
                 if (vehicle.properties.tires != null) {
                     assertTrue(state instanceof QuantityType);
                     qt = (QuantityType) state;
@@ -506,7 +506,7 @@ public class StatusWrapper {
                     assertTrue(state.equals(UnDefType.UNDEF));
                 }
                 break;
-            case FRONT_RIGHT_WANTED:
+            case FRONT_RIGHT_TARGET:
                 if (vehicle.properties.tires != null) {
                     assertTrue(state instanceof QuantityType);
                     qt = (QuantityType) state;
@@ -526,7 +526,7 @@ public class StatusWrapper {
                     assertTrue(state.equals(UnDefType.UNDEF));
                 }
                 break;
-            case REAR_LEFT_WANTED:
+            case REAR_LEFT_TARGET:
                 if (vehicle.properties.tires != null) {
                     assertTrue(state instanceof QuantityType);
                     qt = (QuantityType) state;
@@ -546,7 +546,7 @@ public class StatusWrapper {
                     assertTrue(state.equals(UnDefType.UNDEF));
                 }
                 break;
-            case REAR_RIGHT_WANTED:
+            case REAR_RIGHT_TARGET:
                 if (vehicle.properties.tires != null) {
                     assertTrue(state instanceof QuantityType);
                     qt = (QuantityType) state;

@@ -190,11 +190,11 @@ public class MyBMWConstants {
 
     // TIRES
     public static final String FRONT_LEFT_CURRENT = "fl-current";
-    public static final String FRONT_LEFT_WANTED = "fl-wanted";
+    public static final String FRONT_LEFT_TARGET = "fl-target";
     public static final String FRONT_RIGHT_CURRENT = "fr-current";
-    public static final String FRONT_RIGHT_WANTED = "fr-wanted";
+    public static final String FRONT_RIGHT_TARGET = "fr-target";
     public static final String REAR_LEFT_CURRENT = "rl-current";
-    public static final String REAR_LEFT_WANTED = "rl-wanted";
+    public static final String REAR_LEFT_TARGET = "rl-target";
     public static final String REAR_RIGHT_CURRENT = "rr-current";
-    public static final String REAR_RIGHT_WANTED = "rr-wanted";
+    public static final String REAR_RIGHT_TARGET = "rr-target";
 }

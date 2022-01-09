@@ -550,8 +550,9 @@ Especially for electric vehicles it depends on many factors like driving style a
 ## Full Example
 
 The example is based on a BMW i3 with range extender (REX). 
-Exchange the three configuration parameters in the Things section
+Exchange configuration parameters in the Things section
 
+* 4711 - any id you want
 * YOUR_USERNAME - with your MyBMW login username
 * YOUR_PASSWORD - with your MyBMW password credentials
 * VEHICLE_VIN - the vehicle identification number
@@ -561,7 +562,7 @@ In addition search for all occurrences of *i3* and replace it with your Vehicle 
 ### Things File
 
 ```
-Bridge mybmw:account:YOUR_ID   "MyBMW Account" [userName="YOUR_USERNAME",password="YOUR_PASSWORD",region="ROW"] {
+Bridge mybmw:account:4711   "MyBMW Account" [userName="YOUR_USERNAME",password="YOUR_PASSWORD",region="ROW"] {
          Thing bev_rex i3       "BMW i3 94h REX"                [ vin="VEHICLE_VIN",refreshInterval=5,vehicleBrand="BMW"]
 }
 ```
@@ -569,96 +570,122 @@ Bridge mybmw:account:YOUR_ID   "MyBMW Account" [userName="YOUR_USERNAME",passwor
 ### Items File
 
 ```
-Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="mybmw:bev_rex:user:i3:range#mileage" }                                                                           
-Number:Length           i3Range                   "Range [%d %unit%]"                           <motion>        (i3)        {channel="mybmw:bev_rex:user:i3:range#hybrid"}
-Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>        (i3,long)   {channel="mybmw:bev_rex:user:i3:range#electric"}   
-Number:Length           i3RangeFuel               "Fuel Range [%d %unit%]"                      <motion>        (i3)        {channel="mybmw:bev_rex:user:i3:range#fuel"}
-Number:Dimensionless    i3BatterySoc              "Battery Charge [%.1f %%]"                    <battery>       (i3,long)   {channel="mybmw:bev_rex:user:i3:range#soc"}
-Number:Volume           i3Fuel                    "Fuel [%.1f %unit%]"                          <oil>           (i3)        {channel="mybmw:bev_rex:user:i3:range#remaining-fuel"}
-Number:Length           i3RadiusElectric          "Electric Radius [%d %unit%]"                 <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:range#radius-electric" }
-Number:Length           i3RadiusHybrid            "Hybrid Radius [%d %unit%]"                   <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:range#radius-hybrid" }
+Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:range#mileage" }                                                                           
+Number:Length           i3Range                   "Range [%d %unit%]"                           <motion>        (i3)        {channel="mybmw:bev_rex:4711:i3:range#hybrid"}
+Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>        (i3,long)   {channel="mybmw:bev_rex:4711:i3:range#electric"}   
+Number:Length           i3RangeFuel               "Fuel Range [%d %unit%]"                      <motion>        (i3)        {channel="mybmw:bev_rex:4711:i3:range#fuel"}
+Number:Dimensionless    i3BatterySoc              "Battery Charge [%.1f %%]"                    <battery>       (i3,long)   {channel="mybmw:bev_rex:4711:i3:range#soc"}
+Number:Volume           i3Fuel                    "Fuel [%.1f %unit%]"                          <oil>           (i3)        {channel="mybmw:bev_rex:4711:i3:range#remaining-fuel"}
+Number:Length           i3RadiusElectric          "Electric Radius [%d %unit%]"                 <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:range#radius-electric" }
+Number:Length           i3RadiusFuel              "Fuel Radius [%d %unit%]"                     <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:range#radius-fuel" }
+Number:Length           i3RadiusHybrid            "Hybrid Radius [%d %unit%]"                   <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:range#radius-hybrid" }
 
-String                  i3DoorStatus              "Door Status [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:status#doors" }
-String                  i3WindowStatus            "Window Status [%s]"                          <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:status#windows" }
-String                  i3LockStatus              "Lock Status [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:status#lock" }
-DateTime                i3NextServiceDate         "Next Service Date [%1$tb %1$tY]"             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:status#service-date" }
-String                  i3NextServiceMileage      "Next Service Mileage [%d %unit%]"            <line>          (i3)        {channel="mybmw:bev_rex:user:i3:status#service-mileage" }
-String                  i3CheckControl            "Check Control [%s]"                          <error>         (i3)        {channel="mybmw:bev_rex:user:i3:status#check-control" }
-String                  i3ChargingStatus          "Charging [%s]"                               <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:status#charge" } 
-DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:status#last-update"}
+String                  i3DoorStatus              "Door Status [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:status#doors" }
+String                  i3WindowStatus            "Window Status [%s]"                          <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:status#windows" }
+String                  i3LockStatus              "Lock Status [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:status#lock" }
+DateTime                i3NextServiceDate         "Next Service Date [%1$tb %1$tY]"             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:status#service-date" }
+String                  i3NextServiceMileage      "Next Service Mileage [%d %unit%]"            <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:status#service-mileage" }
+String                  i3CheckControl            "Check Control [%s]"                          <error>         (i3)        {channel="mybmw:bev_rex:4711:i3:status#check-control" }
+String                  i3PlugConnection          "Plug [%s]"                                   <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#plug-connection" } 
+String                  i3ChargingStatus          "[%s]"                                        <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#charge" } 
+String                  i3ChargingInfo            "[%s]"                                        <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:status#charge-info" } 
+DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:status#last-update"}
 
-Location                i3Location                "Location  [%s]"                              <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:location#gps" }                                                                           
-Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:location#heading" }  
+Location                i3Location                "Location  [%s]"                              <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:location#gps" }                                                                           
+Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:location#heading" }  
 
-String                  i3RemoteCommand           "Command [%s]"                                <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:remote#command" } 
-String                  i3RemoteState             "Remote Execution State [%s]"                 <status>        (i3)        {channel="mybmw:bev_rex:user:i3:remote#state" } 
+String                  i3RemoteCommand           "Command [%s]"                                <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:remote#command" } 
+String                  i3RemoteState             "Remote Execution State [%s]"                 <status>        (i3)        {channel="mybmw:bev_rex:4711:i3:remote#state" } 
 
-String                  i3DriverDoor              "Driver Door [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#driver-front" }
-String                  i3DriverDoorRear          "Driver Door Rear [%s]"                       <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#driver-rear" }
-String                  i3PassengerDoor           "Passenger Door [%s]"                         <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#passenger-front" }
-String                  i3PassengerDoorRear       "Passenger Door Rear [%s]"                    <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#passenger-rear" }
-String                  i3Hood                    "Hood [%s]"                                   <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#hood" }
-String                  i3Trunk                   "Trunk [%s]"                                  <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#trunk" }
-String                  i3DriverWindow            "Driver Window [%s]"                          <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-driver-front" }
-String                  i3DriverWindowRear        "Driver Window Rear [%s]"                     <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-driver-rear" }
-String                  i3PassengerWindow         "Passenger Window [%s]"                       <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-passenger-front" }
-String                  i3PassengerWindowRear     "Passenger Window Rear [%s]"                  <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-passenger-rear" }
-String                  i3RearWindow              "Rear Window [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#win-rear" }
-String                  i3Sunroof                 "Sunroof [%s]"                                <lock>          (i3)        {channel="mybmw:bev_rex:user:i3:doors#sunroof" }
+String                  i3DriverDoor              "Driver Door [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#driver-front" }
+String                  i3DriverDoorRear          "Driver Door Rear [%s]"                       <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#driver-rear" }
+String                  i3PassengerDoor           "Passenger Door [%s]"                         <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#passenger-front" }
+String                  i3PassengerDoorRear       "Passenger Door Rear [%s]"                    <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#passenger-rear" }
+String                  i3Hood                    "Hood [%s]"                                   <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#hood" }
+String                  i3Trunk                   "Trunk [%s]"                                  <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#trunk" }
+String                  i3DriverWindow            "Driver Window [%s]"                          <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#win-driver-front" }
+String                  i3DriverWindowRear        "Driver Window Rear [%s]"                     <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#win-driver-rear" }
+String                  i3PassengerWindow         "Passenger Window [%s]"                       <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#win-passenger-front" }
+String                  i3PassengerWindowRear     "Passenger Window Rear [%s]"                  <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#win-passenger-rear" }
+String                  i3RearWindow              "Rear Window [%s]"                            <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#win-rear" }
+String                  i3Sunroof                 "Sunroof [%s]"                                <lock>          (i3)        {channel="mybmw:bev_rex:4711:i3:doors#sunroof" }
 
-String                  i3ServiceName             "Service Name [%s]"                           <text>          (i3)        {channel="mybmw:bev_rex:user:i3:service#name" }
-String                  i3ServiceDetails          "Service Details [%s]"                        <text>          (i3)        {channel="mybmw:bev_rex:user:i3:service#details" }
-Number:Length           i3ServiceMileage          "Service Mileage [%d %unit%]"                 <line>          (i3)        {channel="mybmw:bev_rex:user:i3:service#mileage" }
-DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"                  <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:service#date" }
+String                  i3ServiceName             "Service Name [%s]"                           <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:service#name" }
+String                  i3ServiceDetails          "Service Details [%s]"                        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:service#details" }
+Number:Length           i3ServiceMileage          "Service Mileage [%d %unit%]"                 <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:service#mileage" }
+DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"                  <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:service#date" }
 
-String                  i3CCName                  "CheckControl Name [%s]"                      <text>          (i3)        {channel="mybmw:bev_rex:user:i3:check#name" }
-String                  i3CCDetails               "CheckControl Details [%s]"                   <text>          (i3)        {channel="mybmw:bev_rex:user:i3:check#details" }
-Number:Length           i3CCMileage               "CheckControl Mileage [%d %unit%]"            <line>          (i3)        {channel="mybmw:bev_rex:user:i3:check#mileage" }
+String                  i3CCName                  "CheckControl Name [%s]"                      <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:check#name" }
+String                  i3CCDetails               "CheckControl Details [%s]"                   <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:check#details" }
+String                  i3CCSeverity              "CheckControl Severity [%s]"                  <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:check#severity" }
  
-Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="mybmw:bev_rex:user:i3:charge#profile-climate" }  
-String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#profile-mode" } 
-DateTime                i3ChargeWindowStart       "Charge Window Start [%1$tH:%1$tM]"           <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#window-start" } 
-NateTime                i3ChargeWindowEnd         "Charge Window End [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#window-end" } 
-NateTime                i3Timer1Departure         "Timer 1 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-departure" } 
-Ntring                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-days" } 
-Switch                  i3Timer1DayMon            "Timer 1 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-mon" } 
-Switch                  i3Timer1DayTue            "Timer 1 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-tue" } 
-Switch                  i3Timer1DayWed            "Timer 1 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-wed" } 
-Switch                  i3Timer1DayThu            "Timer 1 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-thu" } 
-Switch                  i3Timer1DayFri            "Timer 1 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-fri" } 
-Switch                  i3Timer1DaySat            "Timer 1 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-sat" } 
-Switch                  i3Timer1DaySun            "Timer 1 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-day-sun" } 
-Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer1-enabled" }  
-DateTime                i3Timer2Departure         "Timer 2 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-departure" } 
-Switch                  i3Timer2DayMon            "Timer 2 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-mon" } 
-Switch                  i3Timer2DayTue            "Timer 2 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-tue" } 
-Switch                  i3Timer2DayWed            "Timer 2 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-wed" } 
-Switch                  i3Timer2DayThu            "Timer 2 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-thu" } 
-Switch                  i3Timer2DayFri            "Timer 2 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-fri" } 
-Switch                  i3Timer2DaySat            "Timer 2 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-sat" } 
-Switch                  i3Timer2DaySun            "Timer 2 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-day-sun" } 
-Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer2-enabled" }  
-DateTime                i3Timer3Departure         "Timer 3 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-departure" } 
-Switch                  i3Timer3DayMon            "Timer 3 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-mon" } 
-Switch                  i3Timer3DayTue            "Timer 3 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-tue" } 
-Switch                  i3Timer3DayWed            "Timer 3 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-wed" } 
-Switch                  i3Timer3DayThu            "Timer 3 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-thu" } 
-Switch                  i3Timer3DayFri            "Timer 3 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-fri" } 
-Switch                  i3Timer3DaySat            "Timer 3 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-sat" } 
-Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-day-sun" } 
-Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer3-enabled" }
-DateTime                i3Timer4Departure         "Timer 4 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-departure" } 
-Switch                  i3Timer4DayMon            "Timer 4 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-mon" } 
-Switch                  i3Timer4DayTue            "Timer 4 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-tue" } 
-Switch                  i3Timer4DayWed            "Timer 4 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-wed" } 
-Switch                  i3Timer4DayThu            "Timer 4 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-thu" } 
-Switch                  i3Timer4DayFri            "Timer 4 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-fri" } 
-Switch                  i3Timer4DaySat            "Timer 4 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-sat" } 
-Switch                  i3Timer4DaySun            "Timer 4 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-day-sun" } 
-Switch                  i3Timer4Enabled           "Timer 4 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:user:i3:charge#timer4-enabled" }
+Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="mybmw:bev_rex:4711:i3:profile#climate" }  
+String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#mode" } 
+String                  i3ChargeProfilePrefs      "Charge Profile Preference [%s]"              <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#prefs" } 
+String                  i3ChargeProfileCtrl       "Charge Profile Control [%s]"                 <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#control" } 
+Number                  i3ChargeProfileTarget     "Charge Profile SoC Target [%s]"              <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#target" } 
+Switch                  i3ChargeProfileLimit      "Charge Profile limited"                      <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#limit" } 
+DateTime                i3ChargeWindowStart       "Charge Window Start [%1$tH:%1$tM]"           <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#window-start" } 
+DateTime                i3ChargeWindowEnd         "Charge Window End [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#window-end" } 
+DateTime                i3Timer1Departure         "Timer 1 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-departure" } 
+String                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-days" } 
+Switch                  i3Timer1DayMon            "Timer 1 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-mon" } 
+Switch                  i3Timer1DayTue            "Timer 1 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-tue" } 
+Switch                  i3Timer1DayWed            "Timer 1 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-wed" } 
+Switch                  i3Timer1DayThu            "Timer 1 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-thu" } 
+Switch                  i3Timer1DayFri            "Timer 1 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-fri" } 
+Switch                  i3Timer1DaySat            "Timer 1 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-sat" } 
+Switch                  i3Timer1DaySun            "Timer 1 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-day-sun" } 
+Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer1-enabled" }  
+DateTime                i3Timer2Departure         "Timer 2 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-departure" } 
+Switch                  i3Timer2DayMon            "Timer 2 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-mon" } 
+Switch                  i3Timer2DayTue            "Timer 2 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-tue" } 
+Switch                  i3Timer2DayWed            "Timer 2 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-wed" } 
+Switch                  i3Timer2DayThu            "Timer 2 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-thu" } 
+Switch                  i3Timer2DayFri            "Timer 2 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-fri" } 
+Switch                  i3Timer2DaySat            "Timer 2 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-sat" } 
+Switch                  i3Timer2DaySun            "Timer 2 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-day-sun" } 
+Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer2-enabled" }  
+DateTime                i3Timer3Departure         "Timer 3 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-departure" } 
+Switch                  i3Timer3DayMon            "Timer 3 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-mon" } 
+Switch                  i3Timer3DayTue            "Timer 3 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-tue" } 
+Switch                  i3Timer3DayWed            "Timer 3 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-wed" } 
+Switch                  i3Timer3DayThu            "Timer 3 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-thu" } 
+Switch                  i3Timer3DayFri            "Timer 3 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-fri" } 
+Switch                  i3Timer3DaySat            "Timer 3 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-sat" } 
+Switch                  i3Timer3DaySun            "Timer 3 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-day-sun" } 
+Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer3-enabled" }
+DateTime                i3Timer4Departure         "Timer 4 Departure [%1$tH:%1$tM]"             <time>          (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-departure" } 
+Switch                  i3Timer4DayMon            "Timer 4 Monday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-mon" } 
+Switch                  i3Timer4DayTue            "Timer 4 Tuesday"                             <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-tue" } 
+Switch                  i3Timer4DayWed            "Timer 4 Wednesday"                           <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-wed" } 
+Switch                  i3Timer4DayThu            "Timer 4 Thursday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-thu" } 
+Switch                  i3Timer4DayFri            "Timer 4 Friday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-fri" } 
+Switch                  i3Timer4DaySat            "Timer 4 Saturday"                            <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-sat" } 
+Switch                  i3Timer4DaySun            "Timer 4 Sunday"                              <calendar>      (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-day-sun" } 
+Switch                  i3Timer4Enabled           "Timer 4 Enabled"                             <switch>        (i3)        {channel="mybmw:bev_rex:4711:i3:profile#timer4-enabled" }
 
-Image                   i3Image                   "Image"                                                       (i3)        {channel="mybmw:bev_rex:user:i3:image#png" }  
-String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)        {channel="mybmw:bev_rex:user:i3:image#view" }  
+String                  i3StatisticsTitle         "[%s]"                                        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:statistic#title" }
+Number:Energy           i3StatisticsEnergy        "Charged [%d %unit%]"                         <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:statistic#energy" }
+Number                  i3StatisticsSessions      "Sessions [%d]"                               <line>          (i3)        {channel="mybmw:bev_rex:4711:i3:statistic#sessions" }
+
+String                  i3SessionTitle            "[%s]"                                        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:session#title" }
+String                  i3SessionDetails          "[%s]"                                        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:session#subtitle" }
+String                  i3SessionCharged          "Energy Charged [%s]"                         <energy>        (i3)        {channel="mybmw:bev_rex:4711:i3:session#energy" }
+String                  i3SessionProblems         "Problems [%s]"                               <error>         (i3)        {channel="mybmw:bev_rex:4711:i3:session#issue" }
+String                  i3SessionStatus           "Session status [%s]"                         <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:session#status" }
+
+Number:Pressure         i3TireFLCurrent           "Tire Front Left [%.1f %unit%]"               <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#fl-current" }
+Number:Pressure         i3TireFLTarget            "Tire Front Left Target [%.1f %unit%]"        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#fl-target" }
+Number:Pressure         i3TireFRCurrent           "Tire Front Right [%.1f %unit%]"              <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#fr-current" }
+Number:Pressure         i3TireFRTarget            "Tire Front Right Target [%.1f %unit%]"       <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#fr-target" }
+Number:Pressure         i3TireRLCurrent           "Tire Rear Left [%.1f %unit%]"                <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#rl-current" }
+Number:Pressure         i3TireRLTarget            "Tire Rear Left Target [%.1f %unit%]"         <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#rl-target" }
+Number:Pressure         i3TireRRCurrent           "Tire Rear Right [%.1f %unit%]"               <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#rr-current" }
+Number:Pressure         i3TireRRTarget            "Tire Rear Right Target [%.1f %unit%]"        <text>          (i3)        {channel="mybmw:bev_rex:4711:i3:tires#rr-target" }
+
+Image                   i3Image                   "Image"                                                       (i3)        {channel="mybmw:bev_rex:4711:i3:image#png" }  
+String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)        {channel="mybmw:bev_rex:4711:i3:image#view" }  
 ```
 
 ### Sitemap File
@@ -693,21 +720,16 @@ sitemap BMW label="BMW" {
     Selection item=i3RemoteCommand              
     Text      item=i3RemoteState              
   }
-  Frame label="Lifetime" {
-    Text    item=i3TotalElectric  
-    Text    item=i3LongestEVTrip      
-    Text    item=i3AvgConsumption     
-    Text    item=i3AvgRecuperation          
-    Text    item=i3AvgCombined          
-  }
   Frame label="Services" {
-    Text    item=i3ServiceName          
-    Text    item=i3ServiceMileage          
-    Text    item=i3ServiceDate          
+    Selection    item=i3ServiceName          
+    Text         item=i3ServiceDetails          
+    Text         item=i3ServiceMileage          
+    Text         item=i3ServiceDate          
   }
   Frame label="CheckControl" {
-    Text    item=i3CCName          
-    Text    item=i3CCMileage          
+    Selection    item=i3CCName          
+    Text         item=i3CCDetails          
+    Text         item=i3CCSeverity          
   }
   Frame label="Door Details" {
     Text    item=i3DriverDoor visibility=[i3DriverDoor!="INVALID"]
@@ -733,7 +755,6 @@ sitemap BMW label="BMW" {
     Text      item=i3ChargeWindowStart        
     Text      item=i3ChargeWindowEnd          
     Text      item=i3Timer1Departure          
-    Text      item=i3Timer1Days               
     Switch    item=i3Timer1DayMon            
     Switch    item=i3Timer1DayTue            
     Switch    item=i3Timer1DayWed            
@@ -743,7 +764,6 @@ sitemap BMW label="BMW" {
     Switch    item=i3Timer1DaySun            
     Switch    item=i3Timer1Enabled            
     Text      item=i3Timer2Departure          
-    Text      item=i3Timer2Days               
     Switch    item=i3Timer2DayMon            
     Switch    item=i3Timer2DayTue            
     Switch    item=i3Timer2DayWed            
@@ -753,7 +773,6 @@ sitemap BMW label="BMW" {
     Switch    item=i3Timer2DaySun            
     Switch    item=i3Timer2Enabled            
     Text      item=i3Timer3Departure          
-    Text      item=i3Timer3Days               
     Switch    item=i3Timer3DayMon            
     Switch    item=i3Timer3DayTue            
     Switch    item=i3Timer3DayWed            
@@ -762,11 +781,41 @@ sitemap BMW label="BMW" {
     Switch    item=i3Timer3DaySat            
     Switch    item=i3Timer3DaySun            
     Switch    item=i3Timer3Enabled            
-    Switch    item=i3OverrideEnabled            
+    Text      item=i3Timer4Departure          
+    Switch    item=i3Timer4DayMon            
+    Switch    item=i3Timer4DayTue            
+    Switch    item=i3Timer4DayWed            
+    Switch    item=i3Timer4DayThu            
+    Switch    item=i3Timer4DayFri            
+    Switch    item=i3Timer4DaySat            
+    Switch    item=i3Timer4DaySun            
+    Switch    item=i3Timer4Enabled            
   } 
+  Frame label="Charge Statistics" {
+    Text    item=i3StatisticsTitle          
+    Text    item=i3StatisticsEnergy             
+    Text    item=i3StatisticsSessions          
+  }
+
+  Frame label="Charge Sessions" {
+    Selection    item=i3SessionTitle          
+    Text         item=i3SessionDetails             
+    Text         item=i3SessionCharged          
+    Text         item=i3SessionProblems             
+    Text         item=i3SessionStatus          
+  }
+  Frame label="Tires" {
+    Text    item=i3TireFLCurrent          
+    Text    item=i3TireFLTarget             
+    Text    item=i3TireFRCurrent          
+    Text    item=i3TireFRTarget             
+    Text    item=i3TireRLCurrent          
+    Text    item=i3TireRLTarget             
+    Text    item=i3TireRRCurrent          
+    Text    item=i3TireRRTarget             
+  }
   Frame label="Image Properties" {
-    Text    item=i3ImageViewport
-    Text    item=i3ImageSize 
+    Selection    item=i3ImageViewport
   } 
 }
 ```

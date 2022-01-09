@@ -294,8 +294,6 @@ public class MyBMWProxy {
      * - JSONSyntax Exceptions
      * - potential NullPointer Exceptions
      *
-     * [todo] China Token
-     *
      * @return
      */
     @SuppressWarnings("null")

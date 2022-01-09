@@ -135,29 +135,29 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     private void updateTires(@Nullable Tires tires) {
         if (tires == null) {
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_CURRENT, UnDefType.UNDEF);
-            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_WANTED, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_TARGET, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_CURRENT, UnDefType.UNDEF);
-            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_WANTED, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_TARGET, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_CURRENT, UnDefType.UNDEF);
-            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_WANTED, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_TARGET, UnDefType.UNDEF);
             updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_CURRENT, UnDefType.UNDEF);
-            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_WANTED, UnDefType.UNDEF);
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_TARGET, UnDefType.UNDEF);
         } else {
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_CURRENT,
                     QuantityType.valueOf(tires.frontLeft.status.currentPressure / 100, Units.BAR));
-            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_WANTED,
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_LEFT_TARGET,
                     QuantityType.valueOf(tires.frontLeft.status.targetPressure / 100, Units.BAR));
             updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_CURRENT,
                     QuantityType.valueOf(tires.frontRight.status.currentPressure / 100, Units.BAR));
-            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_WANTED,
+            updateChannel(CHANNEL_GROUP_TIRES, FRONT_RIGHT_TARGET,
                     QuantityType.valueOf(tires.frontRight.status.targetPressure / 100, Units.BAR));
             updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_CURRENT,
                     QuantityType.valueOf(tires.rearLeft.status.currentPressure / 100, Units.BAR));
-            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_WANTED,
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_LEFT_TARGET,
                     QuantityType.valueOf(tires.rearLeft.status.targetPressure / 100, Units.BAR));
             updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_CURRENT,
                     QuantityType.valueOf(tires.rearRight.status.currentPressure / 100, Units.BAR));
-            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_WANTED,
+            updateChannel(CHANNEL_GROUP_TIRES, REAR_RIGHT_TARGET,
                     QuantityType.valueOf(tires.rearRight.status.targetPressure / 100, Units.BAR));
         }
     }

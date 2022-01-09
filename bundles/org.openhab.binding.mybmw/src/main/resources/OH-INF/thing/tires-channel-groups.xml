@@ -8,13 +8,13 @@
 		<description>Current and wanted pressure for all tires</description>
 		<channels>
 			<channel id="fl-current" typeId="front-left-current-channel"/>
-			<channel id="fl-wanted" typeId="front-left-wanted-channel"/>
+			<channel id="fl-target" typeId="front-left-target-channel"/>
 			<channel id="fr-current" typeId="front-right-current-channel"/>
-			<channel id="fr-wanted" typeId="front-right-wanted-channel"/>
+			<channel id="fr-target" typeId="front-right-target-channel"/>
 			<channel id="rl-current" typeId="rear-left-current-channel"/>
-			<channel id="rl-wanted" typeId="rear-left-wanted-channel"/>
+			<channel id="rl-target" typeId="rear-left-target-channel"/>
 			<channel id="rr-current" typeId="rear-right-current-channel"/>
-			<channel id="rr-wanted" typeId="rear-right-wanted-channel"/>
+			<channel id="rr-target" typeId="rear-right-target-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
