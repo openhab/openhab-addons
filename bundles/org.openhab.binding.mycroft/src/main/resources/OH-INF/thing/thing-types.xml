@@ -13,7 +13,7 @@
 			<channel id="speak" typeId="speak-channel"/>
 			<channel id="utterance" typeId="utterance-channel"/>
 			<channel id="player" typeId="system.media-control"/>
-			<!-- channel id="volume" typeId="system.volume"/> -->
+			<channel id="volume" typeId="system.volume"/>
 			<channel id="volume_mute" typeId="system.mute"/>
 			<channel id="full_message" typeId="full-message-channel"/>
 		</channels>

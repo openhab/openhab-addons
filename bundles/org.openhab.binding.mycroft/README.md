@@ -56,6 +56,7 @@ A Mycroft thing has the following channels:
 | utterance                    | String    | The last utterance Mycroft receive                                                             |
 | player                       | Player    | The music player Mycroft is currently controlling                                              |
 | volume_mute                  | Switch    | Mute the Mycroft speaker                                                                       |
+| volume                       | Dimmer    | The volume of the Mycroft speaker. (Note : Value unreliable until a volume change occured)     |
 | full_message                 | String    | The last message (full json) seen on the Mycroft Bus. Filtered by the messageTypes properties  |
 
 
@@ -85,6 +86,7 @@ The `mycroft.item` file:
 
 ```java
 Switch myMycroft_mute                  "Mute"                      { channel="mycroft:mycroft:myMycroft:volume_mute" }
+Dimmer myMycroft_volume                "Volume [%d]"               { channel="mycroft:mycroft:myMycroft:volume" }
 Player myMycroft_player                "Control"                   { channel="mycroft:mycroft:myMycroft:player" }
 Switch myMycroft_listen                "Wake and listen"           { channel="mycroft:mycroft:myMycroft:listen" }
 String myMycroft_speak                 "Speak STT"                 { channel="mycroft:mycroft:myMycroft:speak" }
@@ -101,6 +103,7 @@ sitemap demo label="myMycroft"
 {
     Frame label="myMycroft" {
         Switch    item=myMycroft_mute
+        Slider    item=myMycroft_volume
         Default   item=myMycroft_player
         Switch    item=myMycroft_listen
         Text      item=myMycroft_speak
