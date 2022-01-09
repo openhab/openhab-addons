@@ -14,6 +14,9 @@ package org.openhab.binding.mybmw.internal.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,8 +47,10 @@ public class VehicleStatusTest {
                         .toLocalDateTime().toString(),
                 "Service Date");
 
-        assertEquals("2021-12-21T17:46:02", Converter.zonedToLocalDateTime(v.properties.lastUpdatedAt),
-                "Last update time");
+        ZonedDateTime zdt = ZonedDateTime.parse("2021-12-21T16:46:02Z").withZoneSameInstant(ZoneId.systemDefault());
+        LocalDateTime ldt = zdt.toLocalDateTime();
+        assertEquals(ldt.format(Converter.DATE_INPUT_PATTERN),
+                Converter.zonedToLocalDateTime(v.properties.lastUpdatedAt), "Last update time");
     }
 
     @Test
