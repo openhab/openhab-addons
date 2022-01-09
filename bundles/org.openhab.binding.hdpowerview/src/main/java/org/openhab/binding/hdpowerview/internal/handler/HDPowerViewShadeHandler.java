@@ -70,13 +70,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
+    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
     private @Nullable ScheduledFuture<?> refreshPositionFuture = null;
     private @Nullable ScheduledFuture<?> refreshSignalFuture = null;
     private @Nullable ScheduledFuture<?> refreshBatteryLevelFuture = null;
-
-    private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
-    private int shadeCapabilities = -1;
+    private @Nullable Capabilities capabilities;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -206,19 +205,32 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     protected void onReceiveUpdate(@Nullable ShadeData shadeData) {
         if (shadeData != null) {
             updateStatus(ThingStatus.ONLINE);
+            updateCapabilities(shadeData);
             updateSoftProperties(shadeData);
             updateFirmwareProperties(shadeData);
             ShadePosition shadePosition = shadeData.positions;
             if (shadePosition != null) {
-                updateBindingStates(shadePosition);
+                updatePositionStates(shadePosition);
             }
-            updateBatteryLevel(shadeData.batteryStatus);
+            updateBatteryLevelStates(shadeData.batteryStatus);
             updateState(CHANNEL_SHADE_BATTERY_VOLTAGE,
                     shadeData.batteryStrength > 0 ? new QuantityType<>(shadeData.batteryStrength / 10, Units.VOLT)
                             : UnDefType.UNDEF);
             updateState(CHANNEL_SHADE_SIGNAL_STRENGTH, new DecimalType(shadeData.signalStrength));
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        }
+    }
+
+    private void updateCapabilities(ShadeData shade) {
+        if (capabilities == null) {
+            Integer value = shade.capabilities;
+            if (value != null) {
+                logger.debug("Caching capabilities {} for shade {}", value, shade.id);
+                capabilities = db.getCapabilities(value);
+            } else {
+                logger.debug("Capabilities not included in shade response");
+            }
         }
     }
 
@@ -260,11 +272,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if ((capabilitiesVal >= 0) && !db.isCapabilitiesInDatabase(capabilitiesVal)) {
                 db.logCapabilitiesNotInDatabase(type, capabilitiesVal);
             }
-        }
-
-        // update shadeCapabilities field
-        if (capabilitiesVal >= 0) {
-            shadeCapabilities = capabilitiesVal;
         }
 
         if (propChanged && db.isCapabilitiesInDatabase(capabilitiesVal) && db.isTypeInDatabase(type)
@@ -330,22 +337,21 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private void updateBindingStates(ShadePosition shadePos) {
-        if (shadeCapabilities < 0) {
+    private void updatePositionStates(ShadePosition shadePos) {
+        Capabilities capabilities = this.capabilities;
+        if (capabilities == null) {
             logger.debug("The 'shadeCapabilities' field has not yet been initialized");
-        } else {
-            Capabilities caps = db.getCapabilities(shadeCapabilities);
-            updateState(CHANNEL_SHADE_POSITION, shadePos.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-            updateState(CHANNEL_SHADE_VANE, shadePos.getState(caps, VANE_TILT_COORDS));
-            updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(caps, SECONDARY_ZERO_IS_OPEN));
+            updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
+            updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
+            updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
             return;
         }
-        updateState(CHANNEL_SHADE_POSITION, UnDefType.UNDEF);
-        updateState(CHANNEL_SHADE_VANE, UnDefType.UNDEF);
-        updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
+        updateState(CHANNEL_SHADE_POSITION, shadePos.getState(capabilities, PRIMARY_ZERO_IS_CLOSED));
+        updateState(CHANNEL_SHADE_VANE, shadePos.getState(capabilities, VANE_TILT_COORDS));
+        updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(capabilities, SECONDARY_ZERO_IS_OPEN));
     }
 
-    private void updateBatteryLevel(int batteryStatus) {
+    private void updateBatteryLevelStates(int batteryStatus) {
         int mappedValue;
         switch (batteryStatus) {
             case 1: // Low
@@ -375,6 +381,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shade != null) {
             ShadeData shadeData = shade.shade;
             if (shadeData != null) {
+                updateCapabilities(shadeData);
                 newPosition = shadeData.positions;
             }
         }
@@ -382,11 +389,14 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (newPosition == null) {
             newPosition = new ShadePosition();
         }
+        Capabilities capabilities = this.capabilities;
+        if (capabilities == null) {
+            capabilities = new Capabilities();
+        }
         // set the new position value, and write the positions to the hub
-        shade = webTargets.moveShade(shadeId,
-                newPosition.setPosition(db.getCapabilities(shadeCapabilities), coordSys, newPercent));
+        shade = webTargets.moveShade(shadeId, newPosition.setPosition(capabilities, coordSys, newPercent));
         if (shade != null) {
-            updateShadePosition(shade);
+            updateShadePositions(shade);
         }
         // Positions in response are often not the final positions, so we request hard refresh.
         requestRefreshShadePosition();
@@ -396,7 +406,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             throws HubProcessingException, HubMaintenanceException {
         Shade shade = webTargets.stopShade(shadeId);
         if (shade != null) {
-            updateShadePosition(shade);
+            updateShadePositions(shade);
         }
         // Positions in response are often not the final positions, so we request hard refresh.
         requestRefreshShadePosition();
@@ -406,13 +416,13 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             throws HubProcessingException, HubMaintenanceException {
         Shade shade = webTargets.calibrateShade(shadeId);
         if (shade != null) {
-            updateShadePosition(shade);
+            updateShadePositions(shade);
         }
         // Positions in response are often not the final positions, so we request hard refresh.
         requestRefreshShadePosition();
     }
 
-    private void updateShadePosition(Shade shade) {
+    private void updateShadePositions(Shade shade) {
         ShadeData shadeData = shade.shade;
         if (shadeData == null) {
             return;
@@ -421,7 +431,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         if (shadePosition == null) {
             return;
         }
-        updateBindingStates(shadePosition);
+        updateCapabilities(shadeData);
+        updatePositionStates(shadePosition);
     }
 
     private int getShadeId() throws NumberFormatException {
@@ -510,7 +521,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     if (Boolean.TRUE.equals(shadeData.timedOut)) {
                         logger.warn("Shade {} wireless refresh time out", shadeId);
                     } else if (kind == RefreshKind.POSITION) {
-                        updateShadePosition(shade);
+                        updateShadePositions(shade);
                         updateHardProperties(shadeData);
                     }
                 }
