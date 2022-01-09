@@ -48,6 +48,7 @@ import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.UIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,7 +217,7 @@ public class Property implements AttributeChanged {
                 if (attributes.unit.contains("%") && attributes.settable) {
                     value = new PercentageValue(min, max, step, null, null);
                 } else {
-                    value = new NumberValue(min, max, step, attributes.unit);
+                    value = new NumberValue(min, max, step, UnitUtils.parseUnit(attributes.unit));
                 }
                 break;
             case datetime_:
