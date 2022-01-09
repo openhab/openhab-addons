@@ -68,26 +68,27 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     @Override
-    public void newDevice(final InstanceKey instanceKey, int pollIntervalS,
+    public void newDevice(final InstanceKey instanceKey, long pollIntervalMs, long retryTimeoutMs,
             final EchonetDeviceListener echonetDeviceListener) {
-        requests.add(new NewDeviceMessage(instanceKey, pollIntervalS, echonetDeviceListener));
+        requests.add(new NewDeviceMessage(instanceKey, pollIntervalMs, retryTimeoutMs, echonetDeviceListener));
     }
 
     private void newDeviceInternal(final NewDeviceMessage message) {
-
         final EchonetObject echonetObject = devicesByKey.get(message.instanceKey);
         if (null != echonetObject) {
             if (echonetObject instanceof EchonetDevice) {
                 logger.debug("Update item: {} already discovered", message.instanceKey);
                 EchonetDevice device = (EchonetDevice) echonetObject;
                 device.setListener(message.echonetDeviceListener);
+                device.setTimeouts(message.pollIntervalMs, message.retryTimeoutMs);
             } else {
                 logger.debug("Item: {} already discovered, but was not a device", message.instanceKey);
             }
         } else {
             logger.debug("New Device: {}", message.instanceKey);
-            devicesByKey.put(message.instanceKey, new EchonetDevice(message.instanceKey,
-                    TimeUnit.SECONDS.toMillis(message.pollIntervalS), message.echonetDeviceListener));
+            final EchonetDevice device = new EchonetDevice(message.instanceKey, message.echonetDeviceListener);
+            device.setTimeouts(message.pollIntervalMs, message.retryTimeoutMs);
+            devicesByKey.put(message.instanceKey, device);
         }
     }
 
@@ -265,13 +266,15 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     private static final class NewDeviceMessage extends Message {
-        final int pollIntervalS;
+        final long pollIntervalMs;
+        final long retryTimeoutMs;
         final EchonetDeviceListener echonetDeviceListener;
 
-        public NewDeviceMessage(final InstanceKey instanceKey, int pollIntervalS,
+        public NewDeviceMessage(final InstanceKey instanceKey, long pollIntervalMs, long retryTimeoutMs,
                 final EchonetDeviceListener echonetDeviceListener) {
             super(instanceKey);
-            this.pollIntervalS = pollIntervalS;
+            this.pollIntervalMs = pollIntervalMs;
+            this.retryTimeoutMs = retryTimeoutMs;
             this.echonetDeviceListener = echonetDeviceListener;
         }
     }

@@ -18,7 +18,8 @@ import org.openhab.core.types.State;
  * @author Michael Barker - Initial contribution
  */
 public interface EchonetMessengerService {
-    void newDevice(InstanceKey instanceKey, int pollIntervalS, EchonetDeviceListener echonetDeviceListener);
+    void newDevice(InstanceKey instanceKey, long pollIntervalMs, long retryTimeoutMs,
+            EchonetDeviceListener echonetDeviceListener);
 
     void refreshDevice(InstanceKey instanceKey, String channelId);
 

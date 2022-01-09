@@ -29,17 +29,16 @@ public abstract class EchonetObject {
     private final Logger logger = LoggerFactory.getLogger(EchonetObject.class);
 
     protected final InstanceKey instanceKey;
-    protected final long pollIntervalMs;
     protected final HashSet<Epc> pendingGets = new HashSet<>();
-    protected final InflightRequest inflightGetRequest;
-    protected final InflightRequest inflightSetRequest;
 
-    public EchonetObject(final InstanceKey instanceKey, long pollIntervalMs, final Epc initialProperty) {
+    protected InflightRequest inflightGetRequest;
+    protected InflightRequest inflightSetRequest;
+    protected long pollIntervalMs;
+    protected long retryTimeoutMs;
+
+    public EchonetObject(final InstanceKey instanceKey, final Epc initialProperty) {
         this.instanceKey = instanceKey;
-        this.pollIntervalMs = pollIntervalMs;
         pendingGets.add(initialProperty);
-        this.inflightGetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
-        this.inflightSetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
     }
 
     public InstanceKey instanceKey() {
@@ -84,6 +83,13 @@ public abstract class EchonetObject {
         return false;
     }
 
+    protected void setTimeouts(long pollIntervalMs, long retryTimeoutMs) {
+        this.pollIntervalMs = pollIntervalMs;
+        this.retryTimeoutMs = retryTimeoutMs;
+        this.inflightGetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
+        this.inflightSetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
+    }
+
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid,
             final long nowMs) {
         return false;
@@ -111,14 +117,14 @@ public abstract class EchonetObject {
             if (inflightGetRequest.responseReceived(tid)) {
                 logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
             } else {
-                logger.warn("Unexpected GET response: {}", tid);
+                logger.warn("Unexpected {} response: {}", esv, tid);
             }
         } else if (esv == Esv.Set_Res || esv == Esv.SetC_SNA) {
             final long sentTimestampMs = inflightSetRequest.timestampMs;
             if (inflightSetRequest.responseReceived(tid)) {
                 logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
             } else {
-                logger.warn("Unexpected GET response: {}", tid);
+                logger.warn("Unexpected {} response: {}", esv, tid);
             }
         }
     }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.DEFAULT_POLL_INTERVAL_MS;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.DEFAULT_RETRY_TIMEOUT_MS;
+
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -29,9 +32,10 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
 
     public EchonetProfileNode(final InstanceKey instanceKey, Consumer<EchonetDevice> newDeviceListener,
             EchonetDiscoveryListener echonetDiscoveryListener) {
-        super(instanceKey, EchonetLiteBindingConstants.POLL_INTERVAL_MS, Epc.NodeProfile.SELF_NODE_INSTANCE_LIST_S);
+        super(instanceKey, Epc.NodeProfile.SELF_NODE_INSTANCE_LIST_S);
         this.newDeviceListener = newDeviceListener;
         this.echonetDiscoveryListener = echonetDiscoveryListener;
+        setTimeouts(DEFAULT_POLL_INTERVAL_MS, DEFAULT_RETRY_TIMEOUT_MS);
     }
 
     @Override
@@ -48,8 +52,7 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
                 final EchonetClass itemClass = EchonetClassIndex.INSTANCE.lookup(groupCode, classCode);
 
                 final InstanceKey newItemKey = new InstanceKey(sourceInstanceKey.address, itemClass, instance);
-                final EchonetDevice discoveredDevice = new EchonetDevice(newItemKey,
-                        EchonetLiteBindingConstants.POLL_INTERVAL_MS, this);
+                final EchonetDevice discoveredDevice = new EchonetDevice(newItemKey, this);
                 newDeviceListener.accept(discoveredDevice);
             }
         }

@@ -33,7 +33,8 @@ public class EchonetLiteBindingConstants {
     public static final InstanceKey DISCOVERY_KEY = new InstanceKey(
             new InetSocketAddress(DISCOVERY_ADDRESS, ECHONET_PORT), EchonetClass.NODE_PROFILE, (byte) 0x01);
     private static final String BINDING_ID = "echonetlite";
-    public static final long POLL_INTERVAL_MS = 30_000;
+    public static final long DEFAULT_POLL_INTERVAL_MS = 30_000;
+    public static final long DEFAULT_RETRY_TIMEOUT_MS = 1_000;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_ECHONET_DEVICE = new ThingTypeUID(BINDING_ID, "device");

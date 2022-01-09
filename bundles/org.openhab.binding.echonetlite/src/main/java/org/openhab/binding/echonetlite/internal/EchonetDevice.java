@@ -32,16 +32,14 @@ public class EchonetDevice extends EchonetObject {
     private final HashMap<Epc, State> stateFields = new HashMap<>();
     private final HashMap<String, Epc> epcByChannelId = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(EchonetDevice.class);
-    private final long pollIntervalMs;
     private EchonetPropertyMap getPropertyMap = null;
     private EchonetDeviceListener listener;
     private boolean initialised = false;
 
     private long lastPollMs = 0;
 
-    public EchonetDevice(final InstanceKey instanceKey, long pollIntervalMs, EchonetDeviceListener listener) {
-        super(instanceKey, pollIntervalMs, Epc.Device.GET_PROPERTY_MAP);
-        this.pollIntervalMs = pollIntervalMs;
+    public EchonetDevice(final InstanceKey instanceKey, EchonetDeviceListener listener) {
+        super(instanceKey, Epc.Device.GET_PROPERTY_MAP);
         this.listener = listener;
     }
 

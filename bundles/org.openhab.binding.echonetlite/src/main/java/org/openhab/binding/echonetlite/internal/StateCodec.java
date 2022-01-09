@@ -25,6 +25,8 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Michael Barker - Initial contribution
@@ -138,6 +140,7 @@ public interface StateCodec extends StateEncode, StateDecode {
 
     class OptionCodec implements StateCodec {
 
+        private final Logger logger = LoggerFactory.getLogger(OptionCodec.class);
         private final Map<String, Option> optionByName = new HashMap<>();
         private final Option[] optionByValue = new Option[256]; // All options values are single bytes on the wire
         private final StringType unknown = new StringType("Unknown");
@@ -161,7 +164,11 @@ public interface StateCodec extends StateEncode, StateDecode {
 
         public void encodeState(final State state, final ByteBuffer edt) {
             final Option option = optionByName.get(state.toFullString());
-            edt.put(b(option.value));
+            if (null != option) {
+                edt.put(b(option.value));
+            } else {
+                logger.warn("No option specified for: {}", state);
+            }
         }
     }
 

@@ -79,7 +79,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
             final InetSocketAddress address = new InetSocketAddress(config.hostname, config.port);
             instanceKey = new InstanceKey(address, EchonetClass.resolve(config.groupCode, config.classCode),
                     config.instance);
-            echonetMessenger.newDevice(instanceKey, config.pollInterval, this);
+            echonetMessenger.newDevice(instanceKey, config.pollIntervalMs, config.pollIntervalMs, this);
 
             // scheduler.scheduleAtFixedRate(() -> echonetMessenger.refreshDevice(instanceKey,
             // CHANNEL_OPERATION_STATUS),

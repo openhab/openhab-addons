@@ -17,6 +17,7 @@
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<context>network-port</context>
+				<default>3610</default>
 				<label>Port</label>
 				<description>Port of the device (usually 3610)</description>
 			</parameter>
@@ -35,17 +36,17 @@
 				<label>instance</label>
 				<description>Echonet Instance</description>
 			</parameter>
-			<parameter name="pollInterval" type="integer" required="true">
-				<context>poll-interval</context>
-				<default>30</default>
-				<label>Poll Interval</label>
-				<description>Interval in seconds between each poll of the device</description>
+			<parameter name="pollIntervalMs" type="integer" required="true">
+				<context>poll-interval-ms</context>
+				<default>30000</default>
+				<label>Poll Interval (ms)</label>
+				<description>Interval in ms between each poll of the device</description>
 			</parameter>
-			<parameter name="updateTimeout" type="integer" required="true">
-				<context>update-timeout</context>
-				<default>5</default>
-				<label>Update Timeout</label>
-				<description>Timeout in seconds before an update is resent to apply changes to a device</description>
+			<parameter name="updateTimeoutMs" type="integer" required="true">
+				<context>update-timeout-ms</context>
+				<default>1000</default>
+				<label>Retry Timeout (ms)</label>
+				<description>Timeout in ms before an update is resent to apply changes to a device</description>
 			</parameter>
 		</config-description>
 	</thing-type>
