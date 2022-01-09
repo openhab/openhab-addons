@@ -16,16 +16,23 @@ package org.openhab.binding.echonetlite.internal;
  * @author Michael Barker - Initial contribution
  */
 public enum EchonetClass {
-    AIRCON_HOMEAC(0x01, 0x30),
-    MANAGEMENT_CONTROLLER(0x05, 0xFF),
-    NODE_PROFILE(0x0e, 0xf0);
+    AIRCON_HOMEAC(0x01, 0x30, Epc.Device.values(), Epc.AcGroup.values(), Epc.HomeAc.values()),
+    MANAGEMENT_CONTROLLER(0x05, 0xFF, new Epc[0], new Epc[0], new Epc[0]),
+    NODE_PROFILE(0x0e, 0xf0, Epc.Profile.values(), Epc.ProfileGroup.values(), Epc.NodeProfile.values());
 
     private final int groupCode;
     private final int classCode;
+    private final Epc[] deviceProperties;
+    private final Epc[] groupProperties;
+    private final Epc[] classProperties;
 
-    EchonetClass(final int groupCode, final int classCode) {
+    EchonetClass(final int groupCode, final int classCode, Epc[] deviceProperties, Epc[] groupProperties,
+            Epc[] classProperties) {
         this.groupCode = groupCode;
         this.classCode = classCode;
+        this.deviceProperties = deviceProperties;
+        this.groupProperties = groupProperties;
+        this.classProperties = classProperties;
     }
 
     public static EchonetClass resolve(final int groupCode, final int classCode) {
@@ -45,6 +52,18 @@ public enum EchonetClass {
 
     public int classCode() {
         return classCode;
+    }
+
+    Epc[] deviceProperties() {
+        return deviceProperties;
+    }
+
+    Epc[] groupProperties() {
+        return groupProperties;
+    }
+
+    Epc[] classProperties() {
+        return classProperties;
     }
 
     public String toString() {

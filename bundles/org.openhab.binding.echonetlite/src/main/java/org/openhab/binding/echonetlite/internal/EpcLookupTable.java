@@ -24,9 +24,9 @@ enum EpcLookupTable {
     private final Epc[][][] lookupTable = new Epc[MAX_ENTRIES][0][0];
 
     EpcLookupTable() {
-        final EchonetClass echonetClass = EchonetClass.AIRCON_HOMEAC;
-        addLookupTableEntries(lookupTable, echonetClass, Epc.Device.values(), Epc.AcGroup.values(),
-                Epc.HomeAc.values());
+        addLookupTableEntries(lookupTable, EchonetClass.AIRCON_HOMEAC);
+        addLookupTableEntries(lookupTable, EchonetClass.MANAGEMENT_CONTROLLER);
+        addLookupTableEntries(lookupTable, EchonetClass.NODE_PROFILE);
     }
 
     public Epc resolve(int groupCode, int classCode, int epcCode) {
@@ -58,8 +58,7 @@ enum EpcLookupTable {
         return lookupTable[groupCode][classCode][epcCode];
     }
 
-    private static void addLookupTableEntries(Epc[][][] lookupTable, EchonetClass echonetClass, Epc[] objectEpcs,
-            Epc[] groupEpcs, Epc[] classEpcs) {
+    private static void addLookupTableEntries(Epc[][][] lookupTable, EchonetClass echonetClass) {
         final int groupCode = echonetClass.groupCode();
         final int classCode = echonetClass.classCode();
 
@@ -70,15 +69,15 @@ enum EpcLookupTable {
             lookupTable[groupCode][classCode] = new Epc[MAX_ENTRIES];
         }
 
-        for (Epc value : objectEpcs) {
+        for (Epc value : echonetClass.deviceProperties()) {
             lookupTable[groupCode][classCode][value.code()] = value;
         }
 
-        for (Epc value : groupEpcs) {
+        for (Epc value : echonetClass.groupProperties()) {
             lookupTable[groupCode][classCode][value.code()] = value;
         }
 
-        for (Epc value : classEpcs) {
+        for (Epc value : echonetClass.classProperties()) {
             lookupTable[groupCode][classCode][value.code()] = value;
         }
     }

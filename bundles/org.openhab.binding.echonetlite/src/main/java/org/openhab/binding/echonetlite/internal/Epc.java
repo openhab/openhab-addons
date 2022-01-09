@@ -379,6 +379,48 @@ public interface Epc {
         }
     }
 
+    enum Profile implements Epc {
+        OPERATING_STATUS(0x80, new OptionCodec(
+                new Option("Booting", 0x30),
+                new Option("Not booting", 0x31)
+        )),
+        VERSION_INFORMATION(0x82),
+        NODE_IDENTIFICATION_NUMBER(0x83),
+        FAULT_CONTENT(0x89)
+        ;
+
+        public final int code;
+
+        public final StateDecode stateDecode;
+        public final StateEncode stateEncode;
+
+        Profile(int code) {
+            this(code, null, null);
+        }
+
+        Profile(int code, StateDecode stateDecode, StateEncode stateEncode) {
+            this.code = code;
+            this.stateDecode = stateDecode;
+            this.stateEncode = stateEncode;
+        }
+
+        Profile(int code, StateCodec stateCodec) {
+            this(code, stateCodec, stateCodec);
+        }
+
+        public int code() {
+            return code;
+        }
+
+        public StateDecode decoder() {
+            return stateDecode;
+        }
+
+        public StateEncode encoder() {
+            return stateEncode;
+        }
+    }
+
     enum ProfileGroup implements Epc {
         UNIQUE_IDENTIFIER_CODE(0xBF);
 
