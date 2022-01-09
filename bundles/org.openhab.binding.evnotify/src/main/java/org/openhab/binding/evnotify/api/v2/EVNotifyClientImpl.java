@@ -52,20 +52,21 @@ public class EVNotifyClientImpl implements EVNotifyClient {
     public ChargingData getCarChargingData() throws IOException, InterruptedException, ApiException {
 
         // create the requests
-        var basicRequest = HttpRequest.newBuilder(URI.create(String.format(BASIC_API_URL_PATTERN, akey, token)))
+        HttpRequest basicRequest = HttpRequest.newBuilder(URI.create(String.format(BASIC_API_URL_PATTERN, akey, token)))
                 .header("accept", "application/json").build();
 
-        var extendedRequest = HttpRequest.newBuilder(URI.create(String.format(EXTENDED_API_URL_PATTERN, akey, token)))
+        HttpRequest extendedRequest = HttpRequest
+                .newBuilder(URI.create(String.format(EXTENDED_API_URL_PATTERN, akey, token)))
                 .header("accept", "application/json").build();
 
         try {
             // use the client to send the requests
-            var basicResponse = client.send(basicRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> basicResponse = client.send(basicRequest, HttpResponse.BodyHandlers.ofString());
             validateResponse(basicResponse);
             BasicChargingDataDTO basicChargingDataDTO = new Gson().fromJson(basicResponse.body(),
                     BasicChargingDataDTO.class);
 
-            var extendedResponse = client.send(extendedRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> extendedResponse = client.send(extendedRequest, HttpResponse.BodyHandlers.ofString());
             validateResponse(extendedResponse);
             ExtendedChargingDataDTO extendedChargingData = new Gson().fromJson(extendedResponse.body(),
                     ExtendedChargingDataDTO.class);
