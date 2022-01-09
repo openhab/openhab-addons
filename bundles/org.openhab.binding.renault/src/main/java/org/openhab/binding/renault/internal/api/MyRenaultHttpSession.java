@@ -98,6 +98,10 @@ public class MyRenaultHttpSession {
             } catch (JsonParseException | ClassCastException | IllegalStateException e) {
                 throw new RenaultException("Login Error: cookie value not found in JSON response");
             }
+            if (cookieValue == null) {
+                logger.warn("Login Error: cookie value not found! Response: [{}] {}\n{}", response.getStatus(),
+                        response.getReason(), response.getContentAsString());
+            }
         } else {
             logger.warn("Response: [{}] {}\n{}", response.getStatus(), response.getReason(),
                     response.getContentAsString());

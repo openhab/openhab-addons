@@ -35,4 +35,8 @@ public class RenaultBindingConstants {
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_ODOMETER = "odometer";
+    public static final String CHANNEL_ESTIMATED_RANGE = "estimatedRange";
+    public static final String CHANNEL_EXTERNAL_TEMPERATURE = "externalTemperature";
+    public static final String CHANNEL_PLUG_STATUS = "plugStatus";
+    public static final String CHANNEL_CHARGING_STATUS = "chargingStatus";
 }

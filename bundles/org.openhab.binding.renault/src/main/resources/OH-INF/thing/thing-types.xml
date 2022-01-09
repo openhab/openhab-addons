@@ -90,5 +90,30 @@
 		<description>Total distance travelled</description>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="estimatedRange">
+		<item-type>Number:Length</item-type>
+		<label>Estimated Range</label>
+		<description>Estimated range of the car.</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="externalTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>External Temperature</label>
+		<description>Temperature outside of the car</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="plugStatus">
+		<item-type>String</item-type>
+		<label>Plug Status</label>
+		<description>Status of charging plug.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="chargingStatus">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+		<description>Charging status</description>
+		<state readOnly="true"></state>
+	</channel-type>
 
 </thing:thing-descriptions>

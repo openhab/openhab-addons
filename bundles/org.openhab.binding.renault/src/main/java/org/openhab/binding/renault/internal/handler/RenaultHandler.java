@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Length;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,6 +36,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -151,6 +153,11 @@ public class RenaultHandler extends BaseThingHandler {
                 if (hvacstatus != null) {
                     updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
                 }
+                Double externalTemperature = car.getExternalTemperature();
+                if (externalTemperature != null) {
+                    updateState(CHANNEL_EXTERNAL_TEMPERATURE,
+                            new QuantityType<Temperature>(externalTemperature.doubleValue(), SIUnits.CELSIUS));
+                }
             } catch (RenaultNotImplementedException e) {
                 car.setDisableHvac(true);
             } catch (RenaultForbiddenException | RenaultUpdateException e) {
@@ -197,6 +204,19 @@ public class RenaultHandler extends BaseThingHandler {
                 Double batteryLevel = car.getBatteryLevel();
                 if (batteryLevel != null) {
                     updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
+                }
+                Double estimatedRange = car.getEstimatedRange();
+                if (estimatedRange != null) {
+                    updateState(CHANNEL_ESTIMATED_RANGE,
+                            new QuantityType<Length>(estimatedRange.doubleValue(), KILO(METRE)));
+                }
+                String plugStatus = car.getPlugStatus();
+                if (plugStatus != null) {
+                    updateState(CHANNEL_PLUG_STATUS, new StringType(plugStatus));
+                }
+                String chargingStatus = car.getChargingStatus();
+                if (chargingStatus != null) {
+                    updateState(CHANNEL_CHARGING_STATUS, new StringType(chargingStatus));
                 }
             } catch (RenaultNotImplementedException e) {
                 car.setDisableBattery(true);

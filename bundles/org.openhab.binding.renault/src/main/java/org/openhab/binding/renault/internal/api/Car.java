@@ -40,15 +40,30 @@ public class Car {
     private @Nullable Double batteryLevel;
     private @Nullable Boolean hvacstatus;
     private @Nullable Double odometer;
+    private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
     private @Nullable Double gpsLatitude;
     private @Nullable Double gpsLongitude;
+    private @Nullable Double externalTemperature;
+    private @Nullable String plugStatus;
+    private @Nullable String chargingStatus;
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
             JsonObject attributes = getAttributes(responseJson);
-            if (attributes != null && attributes.get("batteryLevel") != null) {
-                batteryLevel = attributes.get("batteryLevel").getAsDouble();
+            if (attributes != null) {
+                if (attributes.get("batteryLevel") != null) {
+                    batteryLevel = attributes.get("batteryLevel").getAsDouble();
+                }
+                if (attributes.get("batteryAutonomy") != null) {
+                    estimatedRange = attributes.get("batteryAutonomy").getAsDouble();
+                }
+                if (attributes.get("plugStatus") != null) {
+                    plugStatus = attributes.get("plugStatus").getAsString();
+                }
+                if (attributes.get("chargingStatus") != null) {
+                    chargingStatus = attributes.get("chargingStatus").getAsString();
+                }
             }
         } catch (IllegalStateException | ClassCastException e) {
             logger.warn("Error {} parsing Battery Status: {}", e.getMessage(), responseJson);
@@ -58,8 +73,13 @@ public class Car {
     public void setHVACStatus(JsonObject responseJson) {
         try {
             JsonObject attributes = getAttributes(responseJson);
-            if (attributes != null && attributes.get("hvacStatus") != null) {
-                hvacstatus = attributes.get("hvacStatus").getAsString().equals("on");
+            if (attributes != null) {
+                if (attributes.get("hvacStatus") != null) {
+                    hvacstatus = attributes.get("hvacStatus").getAsString().equals("on");
+                }
+                if (attributes.get("externalTemperature") != null) {
+                    externalTemperature = attributes.get("externalTemperature").getAsDouble();
+                }
             }
         } catch (IllegalStateException | ClassCastException e) {
             logger.warn("Error {} parsing HVAC Status: {}", e.getMessage(), responseJson);
@@ -202,6 +222,38 @@ public class Car {
 
     public void setGpsLongitude(Double gpsLongitude) {
         this.gpsLongitude = gpsLongitude;
+    }
+
+    public @Nullable Double getExternalTemperature() {
+        return externalTemperature;
+    }
+
+    public void setExternalTemperature(Double externalTemperature) {
+        this.externalTemperature = externalTemperature;
+    }
+
+    public @Nullable Double getEstimatedRange() {
+        return estimatedRange;
+    }
+
+    public void setEstimatedRange(Double estimatedRange) {
+        this.estimatedRange = estimatedRange;
+    }
+
+    public @Nullable String getPlugStatus() {
+        return plugStatus;
+    }
+
+    public void setPlugStatus(String plugStatus) {
+        this.plugStatus = plugStatus;
+    }
+
+    public @Nullable String getChargingStatus() {
+        return chargingStatus;
+    }
+
+    public void setChargingStatus(String chargingStatus) {
+        this.chargingStatus = chargingStatus;
     }
 
     private @Nullable JsonObject getAttributes(JsonObject responseJson)
