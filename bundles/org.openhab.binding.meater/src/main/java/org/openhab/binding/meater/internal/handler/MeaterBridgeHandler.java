@@ -73,7 +73,7 @@ public class MeaterBridgeHandler extends BaseBridgeHandler {
         MeaterRestAPI meaterRestAPI = new MeaterRestAPI(config, gson, httpClient);
         refreshTimeInSeconds = config.refresh;
 
-        if (config.username == null || config.password == null) {
+        if (config.email == null || config.password == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Configuration of username, password is mandatory");
         } else if (refreshTimeInSeconds < 0) {

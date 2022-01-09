@@ -74,13 +74,13 @@ public class MeaterProbeDTO {
     }
 
     public class TemperatureCook {
-        public long target;
-        public long peak;
+        public double target;
+        public double peak;
     }
 
     public class Temperature {
-        public long internal;
-        public long ambient;
+        public double internal;
+        public double ambient;
     }
 
     public class Time {

@@ -87,7 +87,7 @@ public class MeaterRestAPI {
     private void login() throws MeaterException {
         try {
             // Login
-            String json = "{ \"email\": \"" + configuration.username + "\",  \"password\": \"" + configuration.password
+            String json = "{ \"email\": \"" + configuration.email + "\",  \"password\": \"" + configuration.password
                     + "\" }";
             Request request = httpClient.newRequest(API_ENDPOINT + LOGIN).method(HttpMethod.POST);
             request.header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE);

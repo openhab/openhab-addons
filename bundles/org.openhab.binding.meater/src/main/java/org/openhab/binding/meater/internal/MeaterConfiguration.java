@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.meater.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link MeaterConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jan Gustafsson - Initial contribution
  */
+@NonNullByDefault
 public class MeaterConfiguration {
 
     public static final String DEVICE_ID_LABEL = "deviceId";

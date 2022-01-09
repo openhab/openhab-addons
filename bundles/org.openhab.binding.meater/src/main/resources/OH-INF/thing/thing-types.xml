@@ -4,27 +4,23 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="api">
+	<bridge-type id="meaterapi">
 		<label>MEATER Cloud REST API</label>
-		<description>This bridge represents the cloud REST API connector.</description>
-
-		<properties>
-			<property name="vendor">Meater</property>
-		</properties>
+		<description>This bridge represents the Meater cloud REST API connector</description>
 
 		<config-description>
-			<parameter name="username" type="text" required="true">
+			<parameter name="email" type="text" required="true">
 				<label>Username</label>
-				<description>The username used to login to Meater app.</description>
+				<description>The email used to login to Meater cloud account</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
 				<context>password</context>
-				<description>The password used to login to Meater app.</description>
+				<description>The password used to login to Meater cloud account</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="10" unit="s">
 				<label>Refresh Interval</label>
-				<description>Specifies the refresh interval in seconds.</description>
+				<description>Specifies the refresh interval in seconds</description>
 				<default>30</default>
 			</parameter>
 		</config-description>
@@ -32,27 +28,29 @@
 
 	<thing-type id="meaterprobe">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="api"/>
+			<bridge-type-ref id="meaterapi"/>
 		</supported-bridge-type-refs>
 
 		<label>Meater Probe</label>
-		<description>This thing represents a Meater probe.</description>
+		<description>This thing represents a Meater probe</description>
 
 		<channels>
-			<channel id="internalTemperature" typeId="temperature"/>
-			<channel id="ambientTemperature" typeId="temperature"/>
+			<channel id="internalTemperature" typeId="internalTemperature"/>
+			<channel id="ambientTemperature" typeId="ambientTemperature"/>
 			<channel id="cookId" typeId="cookId"/>
 			<channel id="cookName" typeId="cookName"/>
 			<channel id="cookState" typeId="cookState"/>
-			<channel id="cookTargetTemperature" typeId="temperature"/>
-			<channel id="cookPeakTemperature" typeId="temperature"/>
-			<channel id="cookElapsedTime" typeId="time"/>
-			<channel id="cookRemainingTime" typeId="time"/>
+			<channel id="cookTargetTemperature" typeId="cookTargetTemperature"/>
+			<channel id="cookPeakTemperature" typeId="cookPeakTemperature"/>
+			<channel id="cookElapsedTime" typeId="cookElapsedTime"/>
+			<channel id="cookRemainingTime" typeId="cookRemainingTime"/>
 			<channel id="status" typeId="status"/>
+			<channel id="lastConnection" typeId="lastConnection"/>
 		</channels>
 
 		<properties>
-			<property name="vendor">Meater</property>
+			<property name="vendor">Apption Labs</property>
+			<property name="model">Meater</property>
 		</properties>
 
 		<representation-property>deviceId</representation-property>
@@ -60,7 +58,7 @@
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
 				<label>Device Id</label>
-				<description>Unique Id.</description>
+				<description>Unique id for your Meater probe</description>
 			</parameter>
 		</config-description>
 
@@ -69,51 +67,81 @@
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Current Status</label>
-		<description>Information on current status.</description>
+		<description>Information on current status</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
-	<channel-type id="timestamp">
+	<channel-type id="lastConnection">
 		<item-type>DateTime</item-type>
-		<label>TimeStamp</label>
-		<description>Date and time of last event change.</description>
+		<label>Last Probe Connection</label>
+		<description>Date and time of last probe connection</description>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM"/>
 	</channel-type>
 
-	<channel-type id="time">
+	<channel-type id="cookElapsedTime">
 		<item-type>Number:Time</item-type>
-		<label>Time</label>
-		<description>Time in seconds.</description>
+		<label>Cook Elapsed Time</label>
+		<description>Elapsed time in seconds for current cook</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
+	<channel-type id="cookRemainingTime">
+		<item-type>Number:Time</item-type>
+		<label>Cook Remaining Time</label>
+		<description>Remaining time in seconds for current cook</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
 
-	<channel-type id="temperature">
+	<channel-type id="internalTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<description>Temperature</description>
+		<label>Probe Internal Temperature</label>
+		<description>Internal temperature reading of Meater probe</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ambientTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Probe Ambient Temperature</label>
+		<description>Ambient temperature reading of Meater probe</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookTargetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Cook Target Temperature</label>
+		<description>Target temperature of current cook</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookPeakTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Cook Peak Temperature</label>
+		<description>Peak temperature of current cook</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="cookId">
 		<item-type>String</item-type>
-		<label>Cook ID</label>
-		<description>Cook ID</description>
+		<label>Current Cook ID</label>
+		<description>ID of current cook</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="cookName">
 		<item-type>String</item-type>
-		<label>Cook Name</label>
-		<description>Cook Name</description>
+		<label>Current Cook Name</label>
+		<description>Name of current cook</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="cookState">
 		<item-type>String</item-type>
-		<label>Cook State</label>
-		<description>Cook State</description>
+		<label>Current Cook State</label>
+		<description>State of current cook</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 

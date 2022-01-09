@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class MeaterBridgeConfiguration {
-    public @Nullable String username;
+    public @Nullable String email;
     public @Nullable String password;
     public int refresh;
 }

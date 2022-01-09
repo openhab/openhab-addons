@@ -1,56 +1,55 @@
-# meater Binding
+# Meater Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This is an openHAB binding for the Meater probe, by Apption Labs.
 
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding uses the Meater cloud REST API.
+
+![Meater+ Probe](doc/meater-plus-side.png)
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+This binding supports the following thing types:
+
+- meaterapi: Bridge - Communicates with the Meater cloud REST API.
+
+
+- meaterprobe: The Meater probe - Only support for cloud connected Meater probes (Meater+) 
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+The preferred way of adding MEater probe(s) since the IDs are not easily found.
 
-## Binding Configuration
+**NOTE**: You need to have your Meater probe(s) connected to the cloud before you start the discovery.
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+After the configuration of the Bridge, your Meater probe(s) will be automatically discovered and placed as a thing(s) in the inbox.
 
-```
-# Configuration for the meater Binding
-#
-# Default secret key for the pairing of the meater Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+#### Bridge
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| Parameter | Description                                                  | Type   | Default  | Required | 
+|-----------|--------------------------------------------------------------|--------|----------|----------|
+| email     | The email used to connect to your Meater cloud account       | String | NA       | yes      |
+| password  | The password used to connect to your Meater cloud account    | String | NA       | yes      |
+| refresh   | Specifies the refresh interval in second                     | Number | 30       | yes      |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+| Channel Type ID       | Item Type          | Description                                   | 
+|-----------------------|--------------------|-----------------------------------------------|
+| internalTemperature   | Number:Temperature | Internal temperature reading of Meater probe  |
+| ambientTemperature    | Number:Temperature | Ambient temperature reading of Meater probe   |
+| cookTargetTemperature | Number:Temperature | Internal temperature reading of Meater probe  |
+| cookPeakTemperature   | Number:Temperature | Peak temperature of current cook              |
+| lastConnection        | DateTime           | Date and time of last probe connection        |
+| cookId                | String             | ID of current cook                            |
+| cookName              | String             | Name of current cook                          |
+| cookState             | String             | State of current cook                         |
+| cookElapsedTime       | Number:Time        | Elapsed time in seconds for current cook      |
+| cookRemainingTime     | Number:Time        | Remaining time in seconds for current cook    |
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
 
-## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
 
-## Any custom content here!
-
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_

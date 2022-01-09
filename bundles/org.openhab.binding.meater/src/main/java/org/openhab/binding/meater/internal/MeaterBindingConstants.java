@@ -30,7 +30,7 @@ public class MeaterBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MEATER_PROBE = new ThingTypeUID(BINDING_ID, "meaterprobe");
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "api");
+    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "meaterapi");
 
     // List of all Channel ids
     public static final String CHANNEL_STATUS = "status";
