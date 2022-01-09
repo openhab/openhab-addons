@@ -16,7 +16,7 @@
 			<channel id="batteryDischarging" typeId="batteryDischarging"/>
 			<channel id="consumption" typeId="consumption"/>
 			<channel id="gridFeedIn" typeId="gridFeedIn"/>
-			<channel id="gridConsumption" typeId="gridConsupmtion"/>
+			<channel id="gridConsumption" typeId="gridConsumption"/>
 			<channel id="solarProduction" typeId="solarProduction"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="flowConsumptionBatteryState" typeId="flowConsumptionBatteryState"/>

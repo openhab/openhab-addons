@@ -36,7 +36,7 @@ public class SonnenBindingConstants {
     public static final String CHANNELBATTERYDISCHARGING = "batteryDischarging";
     public static final String CHANNELCONSUMPTION = "consumption";
     public static final String CHANNELGRIDFEEDIN = "gridFeedIn";
-    public static final String CHANNELGRIDCONSUMPTION = "gridConsupmtion";
+    public static final String CHANNELGRIDCONSUMPTION = "gridConsumption";
     public static final String CHANNELSOLARPRODUCTION = "solarProduction";
     public static final String CHANNELBATTERYLEVEL = "batteryLevel";
     public static final String CHANNELFLOWCONSUMPTIONBATTERYSTATE = "flowConsumptionBatteryState";
