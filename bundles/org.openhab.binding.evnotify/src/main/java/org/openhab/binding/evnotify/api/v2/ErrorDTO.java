@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.evnotify.api.v2;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,24 +26,30 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Michael Schmidt - Initial contribution
  */
+@NonNullByDefault
 public class ErrorDTO {
 
     @SerializedName("error")
+    @Nullable
     public Error error;
 
+    @Nullable
     public Integer getCode() {
         return error.code;
     }
 
+    @Nullable
     public String getMessage() {
         return error.message;
     }
 
     private class Error {
 
+        @Nullable
         @SerializedName("code")
         public Integer code;
 
+        @Nullable
         @SerializedName("message")
         public String message;
     }

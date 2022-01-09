@@ -14,11 +14,14 @@ package org.openhab.binding.evnotify.api;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for the client to get data from the API of the evnotify online service.
  *
  * @author Michael Schmidt - Initial contribution
  */
+@NonNullByDefault
 public interface EVNotifyClient {
 
     /**

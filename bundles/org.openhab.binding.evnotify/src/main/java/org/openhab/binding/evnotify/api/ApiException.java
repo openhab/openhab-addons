@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.evnotify.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Class for API error.
  *
  * @author Michael Schmidt - Initial contribution
  */
+@NonNullByDefault
 public class ApiException extends Exception {
 
     public ApiException(String message) {
