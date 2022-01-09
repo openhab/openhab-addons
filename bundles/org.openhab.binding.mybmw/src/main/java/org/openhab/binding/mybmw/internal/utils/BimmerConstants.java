@@ -47,9 +47,11 @@ public class BimmerConstants {
 
     public static final String OCP_APIM_KEY_NORTH_AMERICA = "31e102f5-6f7e-7ef3-9044-ddce63891362";
     public static final String OCP_APIM_KEY_ROW = "4f1c85a3-758f-a37d-bbb6-f8704494acfa";
-    public static final String OCP_APIM_KEY_CHINA = Constants.EMPTY;
     public static final Map<String, String> OCP_APIM_KEYS = Map.of(REGION_NORTH_AMERICA, OCP_APIM_KEY_NORTH_AMERICA,
-            REGION_ROW, OCP_APIM_KEY_ROW, REGION_CHINA, OCP_APIM_KEY_CHINA);
+            REGION_ROW, OCP_APIM_KEY_ROW);
+
+    public static final String CHINA_PUBLIC_KEY = "/eadrax-coas/v1/cop/publickey";
+    public static final String CHINA_LOGIN = "/eadrax-coas/v1/login/pwd";
 
     // Http variables
     public static final String USER_AGENT_BMW = "android(v1.07_20200330);bmw;1.7.0(11152)";

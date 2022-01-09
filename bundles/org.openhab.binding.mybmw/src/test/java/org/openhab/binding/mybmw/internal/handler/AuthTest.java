@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.mybmw.internal.handler;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.mybmw.internal.utils.HTTPConstants.*;
 
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
 import java.security.MessageDigest;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+
+import javax.crypto.Cipher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -27,11 +34,18 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.mybmw.internal.MyBMWConfiguration;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthQueryResponse;
 import org.openhab.binding.mybmw.internal.dto.auth.AuthResponse;
+import org.openhab.binding.mybmw.internal.dto.auth.ChinaPublicKeyResponse;
+import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenExpiration;
+import org.openhab.binding.mybmw.internal.dto.auth.ChinaTokenResponse;
+import org.openhab.binding.mybmw.internal.util.FileReader;
 import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
 import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -307,5 +321,102 @@ class AuthTest {
             }
         });
         return codeFound.toString();
+    }
+
+    @Test
+    public void testJWTDeserialze() {
+        String accessTokenResponseStr = FileReader
+                .readFileInString("src/test/resources/responses/auth/auth_cn_login_pwd.json");
+        ChinaTokenResponse cat = Converter.getGson().fromJson(accessTokenResponseStr, ChinaTokenResponse.class);
+
+        // https://www.baeldung.com/java-jwt-token-decode
+        String token = cat.data.accessToken;
+        String[] chunks = token.split("\\.");
+        String tokenJwtDecodeStr = new String(Base64.getUrlDecoder().decode(chunks[1]));
+        ChinaTokenExpiration cte = Converter.getGson().fromJson(tokenJwtDecodeStr, ChinaTokenExpiration.class);
+        Token t = new Token();
+        t.setToken(token);
+        t.setType(cat.data.tokenType);
+        t.setExpirationTotal(cte.exp);
+        assertEquals(
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJEVU1NWSQxJEEkMTYzNzcwNzkxNjc4MiIsIm5iZiI6MTYzNzcwNzkxNiwiZXhwIjoxNjM3NzExMjE2LCJpYXQiOjE2Mzc3MDc5MTZ9.hpi-P97W68g7avGwu9dcBRapIsaG4F8MwOdPHe6PuTA",
+                t.getBearerToken(), "Token");
+    }
+
+    public void testChina() {
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        HttpClient authHttpClient = new HttpClient(sslContextFactory);
+        try {
+            authHttpClient.start();
+            HttpClientFactory mockHCF = mock(HttpClientFactory.class);
+            when(mockHCF.getCommonHttpClient()).thenReturn(authHttpClient);
+            MyBMWConfiguration config = new MyBMWConfiguration();
+            config.region = BimmerConstants.REGION_CHINA;
+            config.userName = "Hello User";
+            config.password = "Hello Password";
+            MyBMWProxy bmwProxy = new MyBMWProxy(mockHCF, config);
+            bmwProxy.updateTokenChina();
+        } catch (Exception e) {
+            logger.warn("Exception: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testPublicKey() {
+        String publicKeyResponseStr = FileReader.readFileInString("src/test/resources/responses/auth/china-key.json");
+        ChinaPublicKeyResponse pkr = Converter.getGson().fromJson(publicKeyResponseStr, ChinaPublicKeyResponse.class);
+        String publicKeyStr = pkr.data.value;
+        String publicKeyPEM = publicKeyStr.replace("-----BEGIN PUBLIC KEY-----", "")
+                .replaceAll(System.lineSeparator(), "").replace("-----END PUBLIC KEY-----", "");
+        byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
+        X509EncodedKeySpec spec = new X509EncodedKeySpec(encoded);
+        KeyFactory kf;
+        try {
+            kf = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = kf.generatePublic(spec);
+            // https://www.thexcoders.net/java-ciphers-rsa/
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            byte[] encryptedBytes = cipher.doFinal("Hello World".getBytes());
+            String encodedPassword = Base64.getEncoder().encodeToString(encryptedBytes);
+            logger.info(encodedPassword);
+        } catch (Exception e) {
+            assertTrue(false, "Excpetion: " + e.getMessage());
+        }
+    }
+
+    public void testChinaToken() {
+        SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+        HttpClient authHttpClient = new HttpClient(sslContextFactory);
+        try {
+            authHttpClient.start();
+            String url = "https://" + BimmerConstants.EADRAX_SERVER_MAP.get(BimmerConstants.REGION_CHINA)
+                    + BimmerConstants.CHINA_PUBLIC_KEY;
+            Request oauthQueryRequest = authHttpClient.newRequest(url);
+            oauthQueryRequest.header(X_USER_AGENT, BimmerConstants.USER_AGENT_BMW);
+
+            ContentResponse publicKeyResponse = oauthQueryRequest.send();
+            ChinaPublicKeyResponse pkr = Converter.getGson().fromJson(publicKeyResponse.getContentAsString(),
+                    ChinaPublicKeyResponse.class);
+            // https://stackoverflow.com/questions/11410770/load-rsa-public-key-from-file
+
+            String publicKeyStr = pkr.data.value;
+            // String cleanPublicKeyStr = pkr.data.value.replaceAll("(\r\n|\n)", Constants.EMPTY);
+            String publicKeyPEM = publicKeyStr.replace("-----BEGIN PUBLIC KEY-----", "")
+                    .replaceAll(System.lineSeparator(), "").replace("-----END PUBLIC KEY-----", "");
+            byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
+            X509EncodedKeySpec spec = new X509EncodedKeySpec(encoded);
+
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PublicKey publicKey = kf.generatePublic(spec);
+            // https://www.thexcoders.net/java-ciphers-rsa/
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            byte[] encryptedBytes = cipher.doFinal("Hello World".getBytes());
+            String encodedPassword = Base64.getEncoder().encodeToString(encryptedBytes);
+            logger.info(encodedPassword);
+        } catch (Exception e) {
+            assertTrue(false, "Excpetion: " + e.getMessage());
+        }
     }
 }

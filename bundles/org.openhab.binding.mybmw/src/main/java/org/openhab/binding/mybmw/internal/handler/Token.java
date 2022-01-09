@@ -38,6 +38,10 @@ public class Token {
         this.expiration = System.currentTimeMillis() / 1000 + expiration;
     }
 
+    public void setExpirationTotal(long expiration) {
+        this.expiration = expiration;
+    }
+
     public void setType(String type) {
         tokenType = type;
     }
@@ -49,6 +53,6 @@ public class Token {
 
     @Override
     public String toString() {
-        return tokenType + token;
+        return tokenType + Constants.COLON + token + Constants.COLON + isValid();
     }
 }
