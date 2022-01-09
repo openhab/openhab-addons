@@ -66,8 +66,7 @@ public class EVNotifyClientImpl implements EVNotifyClient {
             // use the client to send the requests
             HttpResponse<String> basicResponse = client.send(basicRequest, HttpResponse.BodyHandlers.ofString());
             validateResponse(basicResponse);
-            BasicChargingDataDTO basicChargingDataDTO = gson.fromJson(basicResponse.body(),
-                    BasicChargingDataDTO.class);
+            BasicChargingDataDTO basicChargingDataDTO = gson.fromJson(basicResponse.body(), BasicChargingDataDTO.class);
 
             HttpResponse<String> extendedResponse = client.send(extendedRequest, HttpResponse.BodyHandlers.ofString());
             validateResponse(extendedResponse);

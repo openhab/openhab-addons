@@ -121,7 +121,7 @@ public class ExtendedChargingDataDTO {
 
     public OffsetDateTime getLastExtended() {
         return lastExtended == null ? null
-                : OffsetDateTime.from(Instant.ofEpochSecond(lastExtended).atZone(ZoneId.of("Europe/Berlin")));
+                : OffsetDateTime.from(Instant.ofEpochSecond(lastExtended).atZone(ZoneId.systemDefault()));
     }
 
     public Float getAuxBatteryVoltage() {
