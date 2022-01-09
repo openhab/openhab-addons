@@ -104,7 +104,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         ThingStatus bridgeStatus = bridge.getStatus();
         if (bridgeStatus == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
+            updateStatus(ThingStatus.UNKNOWN);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
