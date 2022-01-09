@@ -85,10 +85,10 @@ public class SceneGroupChannelBuilder extends BaseChannelBuilder {
      */
     public List<Channel> build() {
         if (sceneCollections == null) {
-            return this.getChannelList(0);
+            return getChannelList(0);
         }
         List<SceneCollection> sceneCollections = (@NonNull List<SceneCollection>) this.sceneCollections;
-        List<Channel> channels = this.getChannelList(sceneCollections.size());
+        List<Channel> channels = getChannelList(sceneCollections.size());
         sceneCollections.stream().sorted().forEach(sceneCollection -> channels.add(createChannel(sceneCollection)));
         return channels;
     }

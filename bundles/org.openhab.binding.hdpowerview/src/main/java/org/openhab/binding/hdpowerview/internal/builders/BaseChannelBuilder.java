@@ -48,6 +48,6 @@ public class BaseChannelBuilder {
     }
 
     protected List<Channel> getChannelList(int initialCapacity) {
-        return this.channels != null ? (@NonNull List<Channel>) this.channels : new ArrayList<>(initialCapacity);
+        return channels != null ? (@NonNull List<Channel>) channels : new ArrayList<>(initialCapacity);
     }
 }

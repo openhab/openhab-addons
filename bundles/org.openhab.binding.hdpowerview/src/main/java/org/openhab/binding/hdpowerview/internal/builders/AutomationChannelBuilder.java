@@ -126,10 +126,10 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
      */
     public List<Channel> build() {
         if (scheduledEvents == null || (scenes == null && sceneCollections == null)) {
-            return this.getChannelList(0);
+            return getChannelList(0);
         }
         List<ScheduledEvent> scheduledEvents = (@NonNull List<ScheduledEvent>) this.scheduledEvents;
-        List<Channel> channels = this.getChannelList(scheduledEvents.size());
+        List<Channel> channels = getChannelList(scheduledEvents.size());
         scheduledEvents.stream().forEach(scheduledEvent -> {
             Channel channel = createChannel(scheduledEvent);
             if (channel != null) {
