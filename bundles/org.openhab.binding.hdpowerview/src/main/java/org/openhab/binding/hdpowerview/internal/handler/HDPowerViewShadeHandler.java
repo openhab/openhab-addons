@@ -77,6 +77,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     private @Nullable ScheduledFuture<?> refreshBatteryLevelFuture = null;
     private @Nullable Capabilities capabilities;
     private int shadeId;
+    private boolean isDisposing;
 
     public HDPowerViewShadeHandler(Thing thing) {
         super(thing);
@@ -85,6 +86,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing shade handler");
+        isDisposing = false;
         try {
             shadeId = getShadeId();
         } catch (NumberFormatException e) {
@@ -113,6 +115,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing shade handler for shade {}", shadeId);
+        isDisposing = true;
         ScheduledFuture<?> future = refreshPositionFuture;
         if (future != null) {
             future.cancel(true);
@@ -167,7 +170,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         try {
             handleShadeCommand(channelId, command, webTargets, shadeId);
         } catch (HubProcessingException e) {
-            logger.warn("Unexpected error: {}", e.getMessage());
+            // ScheduledFutures will be cancelled by dispose(), naturally causing InterruptedException in invoke()
+            // for any ongoing requests. Logging this would only cause confusion.
+            if (!isDisposing) {
+                logger.warn("Unexpected error: {}", e.getMessage());
+            }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
         }
@@ -550,7 +557,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 }
             }
         } catch (HubProcessingException e) {
-            logger.warn("Unexpected error: {}", e.getMessage());
+            // ScheduledFutures will be cancelled by dispose(), naturally causing InterruptedException in invoke()
+            // for any ongoing requests. Logging this would only cause confusion.
+            if (!isDisposing) {
+                logger.warn("Unexpected error: {}", e.getMessage());
+            }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
         }
