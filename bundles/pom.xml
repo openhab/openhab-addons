@@ -184,9 +184,9 @@
     <module>org.openhab.binding.ecobee</module>
 
     <module>org.openhab.binding.ecotouch</module>
-    
+
     <module>org.openhab.binding.ekey</module>
-    
+
     <module>org.openhab.binding.electroluxair</module>
 
     <module>org.openhab.binding.elerotransmitterstick</module>
@@ -496,7 +496,7 @@
     <module>org.openhab.binding.powermax</module>
 
     <module>org.openhab.binding.proteusecometer</module>
-    
+
     <module>org.openhab.binding.publictransportswitzerland</module>
 
     <module>org.openhab.binding.pulseaudio</module>
