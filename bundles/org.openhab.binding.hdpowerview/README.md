@@ -206,6 +206,8 @@ Rollershutter Living_Room_Shade_Secondary "Living Room Shade Secondary Position 
 Dimmer Living_Room_Shade_Vane "Living Room Shade Vane [%.0f %%]" {channel="hdpowerview:shade:g24:s50150:vane"}
 
 Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm [%s]" {channel="hdpowerview:shade:g24:s50150:lowBattery"}
+
+Switch Living_Room_Shade_Calibrate "Living Room Shade Calibrate" {channel="hdpowerview:shade:g24:s50150:calibrate", autoupdate="false"}
 ```
 
 Scene items:
