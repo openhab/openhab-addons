@@ -24,10 +24,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Time;
-import javax.measure.quantity.Volume;
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,6 +34,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -74,6 +72,17 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class GuntamaticHandler extends BaseThingHandler {
 
+    private static final String NUMBER_TEMPERATURE = CoreItemFactory.NUMBER + ":Temperature";
+    private static final String NUMBER_VOLUME = CoreItemFactory.NUMBER + ":Volume";
+    private static final String NUMBER_TIME = CoreItemFactory.NUMBER + ":Time";
+    private static final String NUMBER_DIMENSIONLESS = CoreItemFactory.NUMBER + ":Dimensionless";
+
+    private static final Map<String, Unit<?>> MAP_UNIT = Map.of("%", Units.PERCENT, "°C", SIUnits.CELSIUS, "°F",
+            ImperialUnits.FAHRENHEIT, "m3", SIUnits.CUBIC_METRE, "d", Units.DAY, "h", Units.HOUR);
+    private static final Map<Unit<?>, String> MAP_UNIT_ITEMTYPE = Map.of(Units.PERCENT, NUMBER_DIMENSIONLESS,
+            SIUnits.CELSIUS, NUMBER_TEMPERATURE, ImperialUnits.FAHRENHEIT, NUMBER_TEMPERATURE, SIUnits.CUBIC_METRE,
+            NUMBER_VOLUME, Units.DAY, NUMBER_TIME, Units.HOUR, NUMBER_TIME);
+
     private final Logger logger = LoggerFactory.getLogger(GuntamaticHandler.class);
     private final HttpClient httpClient;
 
@@ -84,7 +93,7 @@ public class GuntamaticHandler extends BaseThingHandler {
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
     private Map<Integer, String> channels = new HashMap<>();
     private Map<Integer, String> types = new HashMap<>();
-    private Map<Integer, String> units = new HashMap<>();
+    private Map<Integer, Unit<?>> units = new HashMap<>();
 
     public GuntamaticHandler(Thing thing, HttpClient httpClient,
             GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
@@ -149,65 +158,51 @@ public class GuntamaticHandler extends BaseThingHandler {
 
         for (Integer i : channels.keySet()) {
             String channel = channels.get(i);
-            String unit = units.get(i);
-            if ((channel != null) && (unit != null) && (i < daqdata.length)) {
+            Unit<?> unit = units.get(i);
+            if ((channel != null) && (i < daqdata.length)) {
                 String value = daqdata[i];
                 Channel chn = thing.getChannel(channel);
                 if ((chn != null) && (value != null)) {
                     value = value.trim();
                     String typeName = chn.getAcceptedItemType();
-                    if ("Switch".equals(typeName)) {
-                        // Guntamatic uses German OnOff when configured to German and English OnOff for all other
-                        // languages
-                        if ("ON".equals(value) || "EIN".equals(value)) {
-                            updateState(channel, OnOffType.ON);
-                        } else if ("OFF".equals(value) || "AUS".equals(value)) {
-                            updateState(channel, OnOffType.OFF);
-                        }
-                    } else {
-                        try {
-                            State newState = null;
-                            if ("Number".equals(typeName)) {
-                                if (unit.isBlank()) {
+                    try {
+                        State newState = null;
+                        if (typeName != null) {
+                            switch (typeName) {
+                                case CoreItemFactory.SWITCH:
+                                    // Guntamatic uses German OnOff when configured to German and English OnOff for
+                                    // all other languages
+                                    if ("ON".equals(value) || "EIN".equals(value)) {
+                                        newState = OnOffType.ON;
+                                    } else if ("OFF".equals(value) || "AUS".equals(value)) {
+                                        newState = OnOffType.OFF;
+                                    }
+                                    break;
+                                case CoreItemFactory.NUMBER:
                                     newState = new DecimalType(value);
-                                }
-                            } else if ("Number:Dimensionless".equals(typeName)) {
-                                if ("%".equals(unit)) {
-                                    newState = new QuantityType<Dimensionless>(Double.parseDouble(value),
-                                            Units.PERCENT);
-                                }
-                            } else if ("Number:Temperature".equals(typeName)) {
-                                if ("°C".equals(unit)) {
-                                    newState = new QuantityType<Temperature>(Double.parseDouble(value),
-                                            SIUnits.CELSIUS);
-                                } else if ("°F".equals(unit)) {
-                                    newState = new QuantityType<Temperature>(Double.parseDouble(value),
-                                            ImperialUnits.FAHRENHEIT);
-                                }
-                            } else if ("Number:Volume".equals(typeName)) {
-                                if ("m³".equals(unit)) {
-                                    newState = new QuantityType<Volume>(Double.parseDouble(value), SIUnits.CUBIC_METRE);
-                                }
-                            } else if ("Number:Time".equals(typeName)) {
-                                if ("d".equals(unit)) {
-                                    newState = new QuantityType<Time>(Double.parseDouble(value), Units.DAY);
-                                } else if ("h".equals(unit)) {
-                                    newState = new QuantityType<Time>(Double.parseDouble(value), Units.HOUR);
-                                }
-                            } else if ("String".equals(typeName)) {
-                                if (unit.isBlank()) {
+                                    break;
+                                case NUMBER_DIMENSIONLESS:
+                                case NUMBER_TEMPERATURE:
+                                case NUMBER_VOLUME:
+                                case NUMBER_TIME:
+                                    if (unit != null) {
+                                        newState = new QuantityType<>(Double.parseDouble(value), unit);
+                                    }
+                                    break;
+                                case CoreItemFactory.STRING:
                                     newState = new StringType(value);
-                                }
+                                    break;
+                                default:
+                                    break;
                             }
-
-                            if (newState != null) {
-                                updateState(channel, newState);
-                            } else {
-                                logger.warn("Data for unknown typeName '{}' or unit '{}' received", typeName, unit);
-                            }
-                        } catch (NumberFormatException e) {
-                            logger.warn("NumberFormatException: {}", ((e.getMessage() != null) ? e.getMessage() : ""));
                         }
+                        if (newState != null) {
+                            updateState(channel, newState);
+                        } else {
+                            logger.warn("Data for unknown typeName '{}' or unknown unit received", typeName);
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.warn("NumberFormatException: {}", ((e.getMessage() != null) ? e.getMessage() : ""));
                     }
                 }
             } else {
@@ -222,15 +217,13 @@ public class GuntamaticHandler extends BaseThingHandler {
             JsonArray json = JsonParser.parseString(html.replace(",,", ",")).getAsJsonArray();
             for (int i = 1; i < json.size(); i++) {
                 JsonObject points = json.get(i).getAsJsonObject();
-                if (points.has("id")) {
+                if (points.has("id") && points.has("type")) {
                     int id = points.get("id").getAsInt();
-                    if (points.has("type")) {
-                        String type = points.get("type").getAsString();
-                        types.put(id, type);
-                    }
+                    String type = points.get("type").getAsString();
+                    types.put(id, type);
                 }
             }
-        } catch (JsonParseException e) {
+        } catch (JsonParseException | IllegalStateException | ClassCastException e) {
             logger.warn("Invalid JSON data will be ignored: '{}'", html.replace(",,", ","));
         }
     }
@@ -256,12 +249,8 @@ public class GuntamaticHandler extends BaseThingHandler {
                 String channel = toLowerCamelCase(replaceUmlaut(label));
                 label = label.substring(0, 1).toUpperCase() + label.substring(1);
 
-                String unit;
-                if ((param.length == 1) || (param[1].isBlank())) {
-                    unit = "";
-                } else {
-                    unit = param[1].trim().replace("m3", "m³");
-                }
+                String unitStr = (param.length == 1) || param[1].isBlank() ? "" : param[1].trim();
+                Unit<?> unit = guessUnit(unitStr);
 
                 boolean channelInitialized = channels.containsValue(channel);
                 if (!channelInitialized) {
@@ -273,34 +262,33 @@ public class GuntamaticHandler extends BaseThingHandler {
                     }
 
                     if ("boolean".equals(type)) {
-                        itemType = "Switch";
+                        itemType = CoreItemFactory.SWITCH;
                         pattern = "";
                     } else if ("integer".equals(type)) {
+                        itemType = guessItemType(unit);
                         pattern = "%d";
-                        if (unit.isBlank()) {
-                            itemType = "Number";
-                        } else {
-                            itemType = guessQuantityType(unit);
+                        if (unit != null) {
                             pattern += " %unit%";
                         }
                     } else if ("float".equals(type)) {
+                        itemType = guessItemType(unit);
                         pattern = "%.2f";
-                        if (unit.isBlank()) {
-                            itemType = "Number";
-                        } else {
-                            itemType = guessQuantityType(unit);
+                        if (unit != null) {
                             pattern += " %unit%";
                         }
                     } else if ("string".equals(type)) {
-                        itemType = "String";
+                        itemType = CoreItemFactory.STRING;
                         pattern = "%s";
                     } else {
-                        if (unit.isBlank()) {
-                            itemType = "String";
+                        if (unitStr.isBlank()) {
+                            itemType = CoreItemFactory.STRING;
                             pattern = "%s";
                         } else {
-                            itemType = guessQuantityType(unit);
-                            pattern = "%.2f %unit%";
+                            itemType = guessItemType(unit);
+                            pattern = "%.2f";
+                            if (unit != null) {
+                                pattern += " %unit%";
+                            }
                         }
                     }
 
@@ -311,11 +299,13 @@ public class GuntamaticHandler extends BaseThingHandler {
                             .withType(channelTypeUID).withKind(ChannelKind.STATE).withLabel(label).build();
                     channelList.add(newChannel);
                     channels.put(i, channel);
-                    units.put(i, unit);
+                    if (unit != null) {
+                        units.put(i, unit);
+                    }
 
                     logger.debug(
                             "Supported Channel: Idx: '{}', Name: '{}'/'{}', Type: '{}'/'{}', Unit: '{}', Pattern '{}' ",
-                            String.format("%03d", i), label, channel, type, itemType, unit, pattern);
+                            String.format("%03d", i), label, channel, type, itemType, unitStr, pattern);
                 }
             }
         }
@@ -325,22 +315,20 @@ public class GuntamaticHandler extends BaseThingHandler {
         channelsInitialized = true;
     }
 
-    private String guessQuantityType(String unit) {
-        String quantityType = "Number";
-
-        if ("%".equals(unit)) {
-            quantityType += ":Dimensionless";
-        } else if ("°C".equals(unit) || "°F".equals(unit)) {
-            quantityType += ":Temperature";
-        } else if ("m³".equals(unit)) {
-            quantityType += ":Volume";
-        } else if ("d".equals(unit) || "h".equals(unit)) {
-            quantityType += ":Time";
-        } else {
-            logger.warn("Unsupported unit '{}' detected: using native '{}' type", unit, quantityType);
+    private @Nullable Unit<?> guessUnit(String unit) {
+        Unit<?> finalUnit = MAP_UNIT.get(unit);
+        if (!unit.isBlank() && finalUnit == null) {
+            logger.warn("Unsupported unit '{}' detected", unit);
         }
+        return finalUnit;
+    }
 
-        return quantityType;
+    private String guessItemType(@Nullable Unit<?> unit) {
+        String itemType = unit != null ? MAP_UNIT_ITEMTYPE.get(unit) : null;
+        if (itemType == null) {
+            logger.warn("Unsupported unit '{}' detected: using native '{}' type", unit, CoreItemFactory.NUMBER);
+        }
+        return itemType != null ? itemType : CoreItemFactory.NUMBER;
     }
 
     private static String replaceUmlaut(String input) {
