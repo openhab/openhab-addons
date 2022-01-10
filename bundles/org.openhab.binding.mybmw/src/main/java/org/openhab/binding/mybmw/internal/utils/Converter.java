@@ -28,6 +28,7 @@ import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.charge.Time;
 import org.openhab.binding.mybmw.internal.dto.properties.Coordinates;
 import org.openhab.binding.mybmw.internal.dto.properties.Distance;
@@ -41,6 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
@@ -201,8 +205,20 @@ public class Converter {
         return INVALID_VEHICLE;
     }
 
+    public static String getRawVehicleContent(String vin, String json) {
+        JsonArray jArr = JsonParser.parseString(json).getAsJsonArray();
+        for (int i = 0; i < jArr.size(); i++) {
+            JsonObject jo = jArr.get(i).getAsJsonObject();
+            String jsonVin = jo.getAsJsonPrimitive(MyBMWConstants.VIN).getAsString();
+            if (vin.equals(jsonVin)) {
+                return jo.toString();
+            }
+        }
+        return Constants.EMPTY_JSON;
+    }
+
     /**
-     * ensure basic data like mileage and location data are in every time
+     * ensure basic data like mileage and location data are available every time
      *
      * @param v
      * @return

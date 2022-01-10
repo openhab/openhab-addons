@@ -209,6 +209,31 @@ Examples
 * 100% at ~00:43
 * Starts at ~09:00
 
+##### Vehicle Status Raw Data
+
+The _raw data channel_ is marked as _advanced_ and isn't shown by default.
+Target are advanced users to derive even more data out of BMW API replies.
+As the replies are formatted as JSON use the [JsonPath Transformation Service](https://www.openhab.org/addons/transformations/jsonpath/) to extract data for an item,   
+
+| Channel Label             | Channel ID          | Type          | Description                                    |
+|---------------------------|---------------------|---------------|------------------------------------------------|
+| Raw Data                  | raw                 | String        | Unfiltered JSON String of vehicle data         |
+
+<img align="right" src="./doc/RawData.png" width="400" height="125"/>
+
+Examples:
+
+_Country ISO Code_
+
+```
+$.properties.originCountryISO
+```
+
+_Drivers Guide URL_
+
+```
+$.driverGuideInfo.androidStoreUrl
+```
 
 #### Range Data
 

@@ -274,6 +274,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                     if (v.valid) {
                         vehicleStatusCache = Optional.of(content);
                         updateStatus(ThingStatus.ONLINE);
+                        updateChannel(CHANNEL_GROUP_STATUS, RAW,
+                                StringType.valueOf(Converter.getRawVehicleContent(configuration.get().vin, content)));
                         updateVehicle(v);
                         if (isElectric) {
                             updateChargeProfile(v.status.chargingProfile);
@@ -285,6 +287,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     logger.debug("configuration not present");
                 }
             } else {
+                updateChannel(CHANNEL_GROUP_STATUS, RAW, StringType.valueOf(Constants.EMPTY_JSON));
                 logger.debug("Content not valid");
             }
         }

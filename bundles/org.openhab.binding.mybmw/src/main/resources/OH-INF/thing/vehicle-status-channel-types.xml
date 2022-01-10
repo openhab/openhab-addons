@@ -52,4 +52,8 @@
 		<label>Last Status Timestamp</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
+	<channel-type id="raw-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw Data</label>
+	</channel-type>
 </thing:thing-descriptions>

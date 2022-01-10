@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int STATUS_ELECTRIC = 10;
-    private static final int STATUS_CONV = 7;
+    private static final int STATUS_ELECTRIC = 11;
+    private static final int STATUS_CONV = 8;
     private static final int RANGE_HYBRID = 9;
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 4;
@@ -114,7 +114,8 @@ public class VehicleTests {
 
     private void trace() {
         for (int i = 0; i < allChannels.size(); i++) {
-            logger.info("Channel {} {}", allChannels.get(i), allStates.get(i));
+            // change to info for debugging channel updates
+            logger.debug("Channel {} {}", allChannels.get(i), allStates.get(i));
         }
     }
 

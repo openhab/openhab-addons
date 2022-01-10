@@ -32,6 +32,9 @@ import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 /**
  * The {@link DiscoveryTest} Test Discovery Results
  *
@@ -95,5 +98,19 @@ public class DiscoveryTest {
 
         anonymous = Converter.anonymousFingerprint(Constants.EMPTY_JSON);
         assertEquals(Constants.EMPTY_JSON, anonymous, "Equal Fingerprint if Empty JSon");
+    }
+
+    @Test
+    public void testRawVehicleData() {
+        String content = FileReader.readFileInString("src/test/resources/responses/TwoVehicles/two-vehicles.json");
+        String anonymousVehicle = Converter.getRawVehicleContent("anonymous", content);
+        String contentAnon = FileReader.readFileInString("src/test/resources/responses/TwoVehicles/anonymous-raw.json");
+        // remove formatting
+        JsonObject jo = JsonParser.parseString(contentAnon).getAsJsonObject();
+        assertEquals(jo.toString(), anonymousVehicle, "Anonymous VIN raw data");
+        String contentF11 = FileReader.readFileInString("src/test/resources/responses/TwoVehicles/f11-raw.json");
+        String f11Vehicle = Converter.getRawVehicleContent("some_vin_F11", content);
+        jo = JsonParser.parseString(contentF11).getAsJsonObject();
+        assertEquals(jo.toString(), f11Vehicle, "F11 VIN raw data");
     }
 }

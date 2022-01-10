@@ -556,6 +556,9 @@ public class StatusWrapper {
                     assertTrue(state.equals(UnDefType.UNDEF));
                 }
                 break;
+            case RAW:
+                // don't assert raw channel
+                break;
             default:
                 if (!gUid.equals(CHANNEL_GROUP_CHARGE_PROFILE)) {
                     // fail in case of unknown update
