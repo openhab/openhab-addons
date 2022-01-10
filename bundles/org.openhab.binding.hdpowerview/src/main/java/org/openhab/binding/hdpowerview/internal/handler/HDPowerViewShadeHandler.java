@@ -253,15 +253,17 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private void updateCapabilities(ShadeData shade) {
-        if (capabilities == null) {
-            Integer value = shade.capabilities;
-            if (value != null) {
-                int valueAsInt = value.intValue();
-                logger.debug("Caching capabilities {} for shade {}", valueAsInt, shade.id);
-                capabilities = db.getCapabilities(valueAsInt);
-            } else {
-                logger.debug("Capabilities not included in shade response");
-            }
+        if (capabilities != null) {
+            // Already cached.
+            return;
+        }
+        Integer value = shade.capabilities;
+        if (value != null) {
+            int valueAsInt = value.intValue();
+            logger.debug("Caching capabilities {} for shade {}", valueAsInt, shade.id);
+            capabilities = db.getCapabilities(valueAsInt);
+        } else {
+            logger.debug("Capabilities not included in shade response");
         }
     }
 
