@@ -166,6 +166,7 @@ public class TeslaSSOHandler {
 
             try {
                 Document doc = Jsoup.parse(loginPageResponse.getContentAsString());
+                logger.trace("{}", doc.toString());
                 Element loginForm = doc.getElementsByTag("form").first();
 
                 Iterator<Element> elIt = loginForm.getElementsByTag("input").iterator();
