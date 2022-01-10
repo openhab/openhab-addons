@@ -119,7 +119,7 @@
 	<channel-type id="chargelimitsocstandard" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Charge Limit SOC Standard</label>
-		<description>Standard charging limity of the vehicle, in %</description>
+		<description>Standard charging limit of the vehicle, in %</description>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargeidealdistanceadded" advanced="true">
