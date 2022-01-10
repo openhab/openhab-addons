@@ -249,7 +249,7 @@ public class GuntamaticHandler extends BaseThingHandler {
                 String channel = toLowerCamelCase(replaceUmlaut(label));
                 label = label.substring(0, 1).toUpperCase() + label.substring(1);
 
-                String unitStr = (param.length == 1) || param[1].isBlank() ? "" : param[1].trim();
+                String unitStr = ((param.length == 1) || param[1].isBlank()) ? "" : param[1].trim();
                 Unit<?> unit = guessUnit(unitStr);
 
                 boolean channelInitialized = channels.containsValue(channel);
@@ -317,18 +317,19 @@ public class GuntamaticHandler extends BaseThingHandler {
 
     private @Nullable Unit<?> guessUnit(String unit) {
         Unit<?> finalUnit = MAP_UNIT.get(unit);
-        if (!unit.isBlank() && finalUnit == null) {
+        if (!unit.isBlank() && (finalUnit == null)) {
             logger.warn("Unsupported unit '{}' detected", unit);
         }
         return finalUnit;
     }
 
     private String guessItemType(@Nullable Unit<?> unit) {
-        String itemType = unit != null ? MAP_UNIT_ITEMTYPE.get(unit) : null;
+        String itemType = (unit != null) ? MAP_UNIT_ITEMTYPE.get(unit) : CoreItemFactory.NUMBER;
         if (itemType == null) {
-            logger.warn("Unsupported unit '{}' detected: using native '{}' type", unit, CoreItemFactory.NUMBER);
+            itemType = CoreItemFactory.NUMBER;
+            logger.warn("Unsupported unit '{}' detected: using native '{}' type", unit, itemType);
         }
-        return itemType != null ? itemType : CoreItemFactory.NUMBER;
+        return itemType;
     }
 
     private static String replaceUmlaut(String input) {
