@@ -170,6 +170,7 @@ public class HDPowerViewWebTargets {
      *
      * @param shadeId id of the shade to be moved
      * @param position instance of ShadePosition containing the new position
+     * @return Shade class instance (with new position)
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
@@ -184,6 +185,7 @@ public class HDPowerViewWebTargets {
      * Instructs the hub to stop movement of a specific shade
      *
      * @param shadeId id of the shade to be stopped
+     * @return Shade class instance (new position cannot be relied upon)
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
@@ -197,6 +199,7 @@ public class HDPowerViewWebTargets {
      * Instructs the hub to calibrate a specific shade
      *
      * @param shadeId id of the shade to be calibrated
+     * @return Shade class instance
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
