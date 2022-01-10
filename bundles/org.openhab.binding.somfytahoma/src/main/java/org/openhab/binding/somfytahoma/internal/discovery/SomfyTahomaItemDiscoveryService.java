@@ -301,7 +301,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 }
                 break;
             case CLASS_WATER_HEATING_SYSTEM:
-                deviceDiscovered(device, THING_TYPE_WATERHEATINGSYSTEM, place);
+                // widget: DomesticHotWaterProduction
+                if ("DomesticHotWaterProduction".equals(device.getWidget())) {
+                    deviceDiscovered(device, THING_TYPE_WATERHEATINGSYSTEM, place);
+                } else {
+                    logUnsupportedDevice(device);
+                }
                 break;
             case CLASS_DOCK:
                 // widget: Dock

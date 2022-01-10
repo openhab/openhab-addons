@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
         super.updateThingChannels(state);
     }
 
-    private void sendOPeratingMode() {
+    private void sendOperatingMode() {
         sendCommand(COMMAND_SET_CURRENT_OPERATING_MODE.toString(), "[ { \"relaunch\":\""
                 + (this.boostMode ? "on" : "off") + "\", \"absence\":\"" + (this.awayMode ? "on" : "off") + "\"} ]");
     }
@@ -150,10 +150,10 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                 int duration = Integer.parseInt(command.toString());
                 if (duration == 0) {
                     this.boostMode = false;
-                    sendOPeratingMode();
+                    sendOperatingMode();
                 } else if (duration > 0 && duration < 8) {
                     this.boostMode = true;
-                    sendOPeratingMode();
+                    sendOperatingMode();
                     sendBoostDuration(duration);
                 }
             } else if (WATER_HEATER_MODE.equals(channelUID.getId())) {
@@ -176,7 +176,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                     }, 1, TimeUnit.SECONDS);
 
                     scheduler.schedule(() -> {
-                        sendOPeratingMode();
+                        sendOperatingMode();
                     }, 2, TimeUnit.SECONDS);
 
                     scheduler.schedule(() -> {
@@ -185,7 +185,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
 
                 } else {
                     this.boostMode = false;
-                    sendOPeratingMode();
+                    sendOperatingMode();
                 }
             } else if (AWAY_MODE.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
@@ -194,7 +194,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                 } else {
                     this.awayMode = false;
                 }
-                sendOPeratingMode();
+                sendOperatingMode();
             } else if (SHOWERS.equals(channelUID.getId())) {
                 int showers = Integer.parseInt(command.toString());
                 Double value = 0.0;

@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 		<label>Somfy Water Heating System</label>
 		<channels>
-			<channel id="rssi" typeId="rssi"></channel>
 			<channel id="manufacturer" typeId="manufacturer"></channel>
 			<channel id="target_temperature" typeId="temperature"></channel>
 			<channel id="middlewater_temperature" typeId="middlewater_temperature"></channel>
@@ -23,7 +22,6 @@
 			<channel id="power_heatpump" typeId="power_heatpump"></channel>
 			<channel id="power_heatelec" typeId="power_heatelec"></channel>
 			<channel id="mode" typeId="water_heater_mode"></channel>
-
 			<channel id="showers" typeId="showers"></channel>
 		</channels>
 		<representation-property>url</representation-property>

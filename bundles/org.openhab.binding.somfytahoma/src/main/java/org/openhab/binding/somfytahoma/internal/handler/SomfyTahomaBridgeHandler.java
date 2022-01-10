@@ -218,7 +218,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             String urlParameters = "";
 
             // if cozytouch, must use oauth server
-            if (thingConfig.getCloudPortal().equalsIgnoreCase("ha110-1.overkiz.com")) {
+            if (thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
                 logger.debug("CozyTouch Oauth2 authentication flow");
                 urlParameters = "jwt=" + loginCozytouch();
             } else {
@@ -694,7 +694,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
 
         String jwt = response.getContentAsString();
 
-        logger.debug("JWT value: {}", jwt);
+        if (logger.isTraceEnabled()) {
+            logger.trace("JWT value: {}", jwt);
+        }
         return jwt.replace("\"", "");
     }
 
