@@ -102,7 +102,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             service.registerParticipant(this);
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, DEFAULT_REFRESH_INITIAL_DELAY,
                     DEFAULT_REFRESH_INTERVALL_SECONDS, TimeUnit.SECONDS);
-
+            updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
         }
@@ -162,7 +162,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                 // If not, set the thing state to OFFLINE and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "upnp device not registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
@@ -175,9 +175,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                         host = substringBetween(descriptorURL.toString(), "://", ":");
                     }
                 }
+                updateStatus(ThingStatus.ONLINE);
                 getDeviceState();
                 addSubscription();
-
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }

@@ -89,6 +89,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
+            updateStatus(ThingStatus.ONLINE);
         } else {
             logger.debug("Cannot initalize WemoCrockpotHandler. UDN not set.");
         }
@@ -119,7 +120,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                 // If not, set the thing state to OFFLINE and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "upnp device not registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
@@ -132,9 +133,9 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                         host = substringBetween(descriptorURL.toString(), "://", ":");
                     }
                 }
+                updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
                 addSubscription();
-
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }
