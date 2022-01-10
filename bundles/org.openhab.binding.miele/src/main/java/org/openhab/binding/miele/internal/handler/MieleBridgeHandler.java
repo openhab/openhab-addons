@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,6 +144,11 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
         }
 
         @NonNull
+        public String getFirmwareVersion() {
+            return Properties.get("firmware.version").getAsString();
+        }
+
+        @NonNull
         public String getRemoteUid() {
             JsonElement remoteUid = Properties.get("remote.uid");
             if (remoteUid == null) {
@@ -161,6 +166,14 @@ public class MieleBridgeHandler extends BaseBridgeHandler {
                 return null;
             }
             return connectionType.getAsString();
+        }
+
+        public String getConnectionBaudRate() {
+            JsonElement baudRate = Properties.get("connection.baud.rate");
+            if (baudRate == null) {
+                return null;
+            }
+            return baudRate.getAsString();
         }
 
         @NonNull

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -244,7 +244,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 metaDataCache.put(new StringBuilder().append(dp.Name).toString().trim(), metadata);
             }
 
-            if (dp.Name.equals(EXTENDED_DEVICE_STATE_PROPERTY_NAME)) {
+            if (EXTENDED_DEVICE_STATE_PROPERTY_NAME.equals(dp.Name)) {
                 if (!dp.Value.isEmpty()) {
                     byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
                     logger.trace("Extended device state for {}: {}", getThing().getUID(),
@@ -350,16 +350,22 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         if (applianceId.equals(applianceIdentifier.getApplianceId())) {
             @NonNull
             Map<@NonNull String, @NonNull String> properties = editProperties();
-            properties.put(MODEL_PROPERTY_NAME, appliance.getApplianceModel());
+            properties.put(Thing.PROPERTY_VENDOR, appliance.Vendor);
+            properties.put(Thing.PROPERTY_MODEL_ID, appliance.getApplianceModel());
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, appliance.getSerialNumber());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, appliance.getFirmwareVersion());
+            properties.put(PROPERTY_PROTOCOL_ADAPTER, appliance.ProtocolAdapterName);
             String deviceClass = appliance.getDeviceClass();
             if (deviceClass != null) {
-                properties.put(DEVICE_CLASS, deviceClass);
+                properties.put(PROPERTY_DEVICE_CLASS, deviceClass);
             }
-            properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
-            properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
             String connectionType = appliance.getConnectionType();
             if (connectionType != null) {
-                properties.put(CONNECTION_TYPE_PROPERTY_NAME, connectionType);
+                properties.put(PROPERTY_CONNECTION_TYPE, connectionType);
+            }
+            String connectionBaudRate = appliance.getConnectionBaudRate();
+            if (connectionBaudRate != null) {
+                properties.put(PROPERTY_CONNECTION_BAUD_RATE, connectionBaudRate);
             }
             updateProperties(properties);
             updateStatus(ThingStatus.ONLINE);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,14 +49,13 @@ public class DynamoDBConfig {
     public static final String DEFAULT_TABLE_NAME = "openhab";
     public static final long DEFAULT_READ_CAPACITY_UNITS = 1;
     public static final long DEFAULT_WRITE_CAPACITY_UNITS = 1;
-    public static final RetryMode DEFAULT_RETRY_MODE = RetryMode.STANDARD;
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamoDBConfig.class);
 
     private long readCapacityUnits;
     private long writeCapacityUnits;
     private Region region;
     private AwsCredentials credentials;
-    private RetryPolicy retryPolicy;
+    private Optional<RetryPolicy> retryPolicy;
     private ExpectedTableSchema tableRevision;
     private String table;
     private String tablePrefixLegacy;
@@ -81,7 +80,7 @@ public class DynamoDBConfig {
             }
             region = Region.of(regionName);
 
-            RetryMode retryMode = RetryMode.STANDARD;
+            Optional<RetryMode> retryMode = Optional.empty();
             AwsCredentials credentials;
             String accessKey = (String) config.get("accessKey");
             String secretKey = (String) config.get("secretKey");
@@ -110,11 +109,12 @@ public class DynamoDBConfig {
                                     return Optional.of(value);
                                 }
                             }
-                            LOGGER.warn("Unknown retry_mode '{}' in profile. Ignoring and using default {} retry mode.",
-                                    retry_mode, DEFAULT_RETRY_MODE);
+                            LOGGER.warn(
+                                    "Unknown retry_mode '{}' in profile. Ignoring and using SDK default retry mode.",
+                                    retry_mode);
                             return Optional.empty();
 
-                        }).orElse(DEFAULT_RETRY_MODE);
+                        });
                 LOGGER.debug("Retry mode {}", retryMode);
             }
 
@@ -169,18 +169,19 @@ public class DynamoDBConfig {
             switch (tableRevision) {
                 case NEW:
                     LOGGER.debug("Using new DynamoDB table schema");
-                    return DynamoDBConfig.newSchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode), table,
-                            readCapacityUnits, writeCapacityUnits, expireDays);
+                    return DynamoDBConfig.newSchema(region, credentials, retryMode.map(AwsRetryPolicy::forRetryMode),
+                            table, readCapacityUnits, writeCapacityUnits, expireDays);
                 case LEGACY:
                     LOGGER.warn(
                             "Using legacy DynamoDB table schema. It is recommended to transition to new schema by defining 'table' parameter and not configuring 'tablePrefix'");
-                    return DynamoDBConfig.legacySchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode),
+                    return DynamoDBConfig.legacySchema(region, credentials, retryMode.map(AwsRetryPolicy::forRetryMode),
                             tablePrefixLegacy, readCapacityUnits, writeCapacityUnits);
                 case MAYBE_LEGACY:
                     LOGGER.debug(
                             "Unclear whether we should use new legacy DynamoDB table schema. It is recommended to explicitly define new 'table' parameter. The correct table schema will be detected at runtime.");
-                    return DynamoDBConfig.maybeLegacySchema(region, credentials, AwsRetryPolicy.forRetryMode(retryMode),
-                            table, tablePrefixLegacy, readCapacityUnits, writeCapacityUnits, expireDays);
+                    return DynamoDBConfig.maybeLegacySchema(region, credentials,
+                            retryMode.map(AwsRetryPolicy::forRetryMode), table, tablePrefixLegacy, readCapacityUnits,
+                            writeCapacityUnits, expireDays);
                 default:
                     throw new IllegalStateException("Unhandled enum. Bug");
             }
@@ -190,26 +191,28 @@ public class DynamoDBConfig {
         }
     }
 
-    private static DynamoDBConfig newSchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
-            String table, long readCapacityUnits, long writeCapacityUnits, @Nullable Integer expireDays) {
+    private static DynamoDBConfig newSchema(Region region, AwsCredentials credentials,
+            Optional<RetryPolicy> retryPolicy, String table, long readCapacityUnits, long writeCapacityUnits,
+            @Nullable Integer expireDays) {
         return new DynamoDBConfig(region, credentials, retryPolicy, table, "", ExpectedTableSchema.NEW,
                 readCapacityUnits, writeCapacityUnits, expireDays);
     }
 
-    private static DynamoDBConfig legacySchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
-            String tablePrefixLegacy, long readCapacityUnits, long writeCapacityUnits) {
+    private static DynamoDBConfig legacySchema(Region region, AwsCredentials credentials,
+            Optional<RetryPolicy> retryPolicy, String tablePrefixLegacy, long readCapacityUnits,
+            long writeCapacityUnits) {
         return new DynamoDBConfig(region, credentials, retryPolicy, "", tablePrefixLegacy, ExpectedTableSchema.LEGACY,
                 readCapacityUnits, writeCapacityUnits, null);
     }
 
-    private static DynamoDBConfig maybeLegacySchema(Region region, AwsCredentials credentials, RetryPolicy retryPolicy,
-            String table, String tablePrefixLegacy, long readCapacityUnits, long writeCapacityUnits,
-            @Nullable Integer expireDays) {
+    private static DynamoDBConfig maybeLegacySchema(Region region, AwsCredentials credentials,
+            Optional<RetryPolicy> retryPolicy, String table, String tablePrefixLegacy, long readCapacityUnits,
+            long writeCapacityUnits, @Nullable Integer expireDays) {
         return new DynamoDBConfig(region, credentials, retryPolicy, table, tablePrefixLegacy,
                 ExpectedTableSchema.MAYBE_LEGACY, readCapacityUnits, writeCapacityUnits, expireDays);
     }
 
-    private DynamoDBConfig(Region region, AwsCredentials credentials, RetryPolicy retryPolicy, String table,
+    private DynamoDBConfig(Region region, AwsCredentials credentials, Optional<RetryPolicy> retryPolicy, String table,
             String tablePrefixLegacy, ExpectedTableSchema tableRevision, long readCapacityUnits,
             long writeCapacityUnits, @Nullable Integer expireDays) {
         this.region = region;
@@ -251,7 +254,7 @@ public class DynamoDBConfig {
         return writeCapacityUnits;
     }
 
-    public RetryPolicy getRetryPolicy() {
+    public Optional<RetryPolicy> getRetryPolicy() {
         return retryPolicy;
     }
 

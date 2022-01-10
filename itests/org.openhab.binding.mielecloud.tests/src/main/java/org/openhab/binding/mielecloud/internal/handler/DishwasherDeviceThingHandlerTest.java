@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,8 +47,10 @@ public class DishwasherDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     }
 
     @Test
-    public void testChannelUpdatesForNullValues() {
+    public void testChannelUpdatesForNullValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(DISHWASHER_DEVICE_THING_UID.getId());
         when(deviceState.getStateType()).thenReturn(Optional.empty());
@@ -83,8 +85,10 @@ public class DishwasherDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     }
 
     @Test
-    public void testChannelUpdatesForValidValues() {
+    public void testChannelUpdatesForValidValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.isInState(any())).thenCallRealMethod();
         when(deviceState.getDeviceIdentifier()).thenReturn(DISHWASHER_DEVICE_THING_UID.getId());
@@ -124,8 +128,10 @@ public class DishwasherDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     }
 
     @Test
-    public void testFinishStateChannelIsSetToOnWhenProgramHasFinished() {
+    public void testFinishStateChannelIsSetToOnWhenProgramHasFinished() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceStateBefore = mock(DeviceState.class);
         when(deviceStateBefore.getDeviceIdentifier()).thenReturn(DISHWASHER_DEVICE_THING_UID.getId());
         when(deviceStateBefore.getStateType()).thenReturn(Optional.of(StateType.RUNNING));
@@ -148,8 +154,10 @@ public class DishwasherDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     }
 
     @Test
-    public void testTransitionChannelUpdatesForNullValues() {
+    public void testTransitionChannelUpdatesForNullValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceStateBefore = mock(DeviceState.class);
         when(deviceStateBefore.getDeviceIdentifier()).thenReturn(DISHWASHER_DEVICE_THING_UID.getId());
         when(deviceStateBefore.getStateType()).thenReturn(Optional.of(StateType.RUNNING));
@@ -176,8 +184,10 @@ public class DishwasherDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     }
 
     @Test
-    public void testTransitionChannelUpdatesForValidValues() {
+    public void testTransitionChannelUpdatesForValidValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceStateBefore = mock(DeviceState.class);
         when(deviceStateBefore.getDeviceIdentifier()).thenReturn(DISHWASHER_DEVICE_THING_UID.getId());
         when(deviceStateBefore.getStateType()).thenReturn(Optional.of(StateType.RUNNING));
@@ -204,8 +214,10 @@ public class DishwasherDeviceThingHandlerTest extends AbstractMieleThingHandlerT
     }
 
     @Test
-    public void testActionsChannelUpdatesForValidValues() {
+    public void testActionsChannelUpdatesForValidValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         ActionsState actionsState = mock(ActionsState.class);
         when(actionsState.getDeviceIdentifier()).thenReturn(DISHWASHER_DEVICE_THING_UID.getId());
         when(actionsState.canBeStarted()).thenReturn(true);

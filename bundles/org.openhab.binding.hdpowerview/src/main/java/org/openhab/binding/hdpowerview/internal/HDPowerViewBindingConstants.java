@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,17 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
     public static final String CHANNELTYPE_SCENE_GROUP_ACTIVATE = "scene-group-activate";
     public static final String CHANNELTYPE_AUTOMATION_ENABLED = "automation-enabled";
+
+    // Hub properties
+    public static final String PROPERTY_FIRMWARE_NAME = "firmwareName";
+    public static final String PROPERTY_RADIO_FIRMWARE_VERSION = "radioFirmwareVersion";
+
+    // Shade properties
+    public static final String PROPERTY_SHADE_TYPE = "type";
+    public static final String PROPERTY_SHADE_CAPABILITIES = "capabilities";
+    public static final String PROPERTY_SECONDARY_RAIL_DETECTED = "secondaryRailDetected";
+    public static final String PROPERTY_TILT_ANYWHERE_DETECTED = "tiltAnywhereDetected";
+    public static final String PROPERTY_MOTOR_FIRMWARE_VERSION = "motorFirmwareVersion";
 
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 

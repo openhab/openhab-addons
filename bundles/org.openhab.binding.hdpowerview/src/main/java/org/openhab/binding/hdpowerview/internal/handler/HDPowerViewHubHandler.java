@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,9 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.HubProcessingException;
+import org.openhab.binding.hdpowerview.internal.api.Firmware;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
@@ -72,10 +75,12 @@ import com.google.gson.JsonParseException;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * @author Jacob Laursen - Add support for scene groups and automations
+ * @author Jacob Laursen - Added support for scene groups and automations
  */
 @NonNullByDefault
 public class HDPowerViewHubHandler extends BaseBridgeHandler {
+
+    private static final long INITIAL_SOFT_POLL_DELAY_MS = 5_000;
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
     private final HttpClient httpClient;
@@ -93,6 +98,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
+    private @Nullable FirmwareVersions firmwareVersions;
     private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
@@ -113,7 +119,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
+        if (RefreshType.REFRESH == command) {
             requestRefreshShadePositions();
             return;
         }
@@ -129,12 +135,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 throw new ProcessingException("Web targets not initialized");
             }
             int id = Integer.parseInt(channelUID.getIdWithoutGroup());
-            if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
+            if (sceneChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateScene(id);
-            } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON.equals(command)) {
+                // Reschedule soft poll for immediate shade position update.
+                scheduleSoftPoll(0);
+            } else if (sceneGroupChannelTypeUID.equals(channel.getChannelTypeUID()) && OnOffType.ON == command) {
                 webTargets.activateSceneCollection(id);
+                // Reschedule soft poll for immediate shade position update.
+                scheduleSoftPoll(0);
             } else if (automationChannelTypeUID.equals(channel.getChannelTypeUID())) {
-                webTargets.enableScheduledEvent(id, OnOffType.ON.equals(command));
+                webTargets.enableScheduledEvent(id, OnOffType.ON == command);
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
@@ -189,14 +199,22 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void schedulePoll() {
+        scheduleSoftPoll(INITIAL_SOFT_POLL_DELAY_MS);
+        scheduleHardPoll();
+    }
+
+    private void scheduleSoftPoll(long initialDelay) {
         ScheduledFuture<?> future = this.pollFuture;
         if (future != null) {
             future.cancel(false);
         }
-        logger.debug("Scheduling poll for 5000ms out, then every {}ms", refreshInterval);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 5000, refreshInterval, TimeUnit.MILLISECONDS);
+        logger.debug("Scheduling poll for {} ms out, then every {} ms", initialDelay, refreshInterval);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, initialDelay, refreshInterval,
+                TimeUnit.MILLISECONDS);
+    }
 
-        future = this.hardRefreshPositionFuture;
+    private void scheduleHardPoll() {
+        ScheduledFuture<?> future = this.hardRefreshPositionFuture;
         if (future != null) {
             future.cancel(false);
         }
@@ -240,6 +258,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private synchronized void poll() {
         try {
             logger.debug("Polling for state");
+            updateFirmwareProperties();
             pollShades();
 
             List<Scene> scenes = updateSceneChannels();
@@ -257,6 +276,39 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
         }
+    }
+
+    private void updateFirmwareProperties() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        if (firmwareVersions != null) {
+            return;
+        }
+        HDPowerViewWebTargets webTargets = this.webTargets;
+        if (webTargets == null) {
+            throw new ProcessingException("Web targets not initialized");
+        }
+        FirmwareVersion firmwareVersion = webTargets.getFirmwareVersion();
+        if (firmwareVersion == null || firmwareVersion.firmware == null) {
+            logger.warn("Unable to get firmware version.");
+            return;
+        }
+        this.firmwareVersions = firmwareVersion.firmware;
+        Firmware mainProcessor = firmwareVersion.firmware.mainProcessor;
+        if (mainProcessor == null) {
+            logger.warn("Main processor firmware version missing in response.");
+            return;
+        }
+        logger.debug("Main processor firmware version received: {}, {}", mainProcessor.name, mainProcessor.toString());
+        Map<String, String> properties = editProperties();
+        if (mainProcessor.name != null) {
+            properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_NAME, mainProcessor.name);
+        }
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, mainProcessor.toString());
+        Firmware radio = firmwareVersion.firmware.radio;
+        if (radio != null) {
+            logger.debug("Radio firmware version received: {}", radio.toString());
+            properties.put(HDPowerViewBindingConstants.PROPERTY_RADIO_FIRMWARE_VERSION, radio.toString());
+        }
+        updateProperties(properties);
     }
 
     private void pollShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {

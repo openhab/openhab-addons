@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -10,8 +10,7 @@
 
     <artifactId>org.openhab.addons.reactor</artifactId>
 
-    <version>3.2.0-SNAPSHOT</version>
-
+    <version>3.3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -183,6 +182,12 @@
     <module>org.openhab.binding.dwdunwetter</module>
 
     <module>org.openhab.binding.ecobee</module>
+
+    <module>org.openhab.binding.ecotouch</module>
+    
+    <module>org.openhab.binding.ekey</module>
+    
+    <module>org.openhab.binding.electroluxair</module>
 
     <module>org.openhab.binding.elerotransmitterstick</module>
 
@@ -490,6 +495,10 @@
 
     <module>org.openhab.binding.powermax</module>
 
+    <module>org.openhab.binding.proteusecometer</module>
+    
+    <module>org.openhab.binding.publictransportswitzerland</module>
+
     <module>org.openhab.binding.pulseaudio</module>
 
     <module>org.openhab.binding.pushbullet</module>
@@ -565,6 +574,8 @@
     <module>org.openhab.binding.somfymylink</module>
 
     <module>org.openhab.binding.somfytahoma</module>
+
+    <module>org.openhab.binding.sonnen</module>
 
     <module>org.openhab.binding.sonos</module>
 
@@ -653,6 +664,8 @@
     <module>org.openhab.binding.xmltv</module>
 
     <module>org.openhab.binding.xmppclient</module>
+
+    <module>org.openhab.binding.yamahamusiccast</module>
 
     <module>org.openhab.binding.yamahareceiver</module>
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -364,11 +364,7 @@ public class PowermaxPanelSettings {
                         break;
                     default:
                         if ((data[i] & 0x000000FF) >= 0x20) {
-                            try {
-                                result += new String(data, i, 1, "US-ASCII");
-                            } catch (UnsupportedEncodingException e) {
-                                logger.debug("Unhandled character code {}", data[i]);
-                            }
+                            result += new String(data, i, 1, StandardCharsets.US_ASCII);
                         } else {
                             logger.debug("Unhandled character code {}", data[i]);
                         }

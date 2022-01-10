@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.hccrubbishcollection.internal;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -60,7 +59,7 @@ public class API {
 
     /**
      * Create a new API class.
-     * 
+     *
      * @param httpClient The common http client provided from openHAB.
      * @param address The address of the premises.
      */
@@ -71,12 +70,12 @@ public class API {
 
     /**
      * Connects to the web service and gets the data.
-     * 
+     *
      * @return boolean Success.
      */
     public boolean update() {
         try {
-            final String url = REQUEST_URL + URLEncoder.encode(address, StandardCharsets.UTF_8.toString());
+            final String url = REQUEST_URL + URLEncoder.encode(address, StandardCharsets.UTF_8);
 
             logger.debug("Fetching data from URL {} (address hidden)", REQUEST_URL);
 
@@ -131,10 +130,6 @@ public class API {
                 errorDetailMessage = "HTTP Code " + response.getStatus();
                 return false;
             }
-        } catch (UnsupportedEncodingException ue) {
-            errorDetail = ThingStatusDetail.COMMUNICATION_ERROR;
-            errorDetailMessage = "Encoding not supported!";
-            return false;
         } catch (TimeoutException to) {
             errorDetail = ThingStatusDetail.COMMUNICATION_ERROR;
             errorDetailMessage = "Response Timeout (will try again soon)";
@@ -146,7 +141,7 @@ public class API {
 
     /**
      * Returns the last request status.
-     * 
+     *
      * @return ThingStatusDetail The openHAB error type.
      */
     public ThingStatusDetail getErrorDetail() {
@@ -155,7 +150,7 @@ public class API {
 
     /**
      * Gets the error, if occurred.
-     * 
+     *
      * @return String The error message.
      */
     public String getErrorDetailMessage() {
@@ -164,7 +159,7 @@ public class API {
 
     /**
      * The collection week.
-     * 
+     *
      * @return Integer The week number.
      */
     public @Nullable Integer getCollectionWeek() {
@@ -173,7 +168,7 @@ public class API {
 
     /**
      * Gets the collection day of week.
-     * 
+     *
      * @return Integer The day of the week. 1 = Monday.
      */
     public @Nullable Integer getDay() {
@@ -182,7 +177,7 @@ public class API {
 
     /**
      * The upcoming recycling collection date.
-     * 
+     *
      * @return ZonedDateTime
      */
     public @Nullable ZonedDateTime getRecyclingDate() {
@@ -191,7 +186,7 @@ public class API {
 
     /**
      * The upcoming general rubbish collection date.
-     * 
+     *
      * @return ZonedDateTime
      */
     public @Nullable ZonedDateTime getGeneralDate() {

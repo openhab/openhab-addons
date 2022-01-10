@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tplinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="kp405">
+		<label>KP405</label>
+		<description>TP-Link KP405 Kasa Smart Wi-Fi Outdoor Plug-In Dimmer</description>
+		<category>PowerOutlet</category>
+
+		<channels>
+			<channel id="brightness" typeId="system.brightness"/>
+			<channel id="led" typeId="led"/>
+			<channel id="rssi" typeId="rssi"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description-ref uri="thing-type:tplinksmarthome:device-plug"/>
+	</thing-type>
+</thing:thing-descriptions>

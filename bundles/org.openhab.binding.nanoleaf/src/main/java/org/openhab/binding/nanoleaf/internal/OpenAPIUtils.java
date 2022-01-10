@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -117,13 +117,13 @@ public class OpenAPIUtils {
             Throwable cause = ee.getCause();
             if (cause != null && cause instanceof HttpResponseException
                     && ((HttpResponseException) cause).getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
+                LOGGER.debug("OpenAPI request unauthorized. Invalid authorization token.");
                 throw new NanoleafUnauthorizedException("Invalid authorization token");
             } else {
                 throw new NanoleafException("Failed to send OpenAPI request (final)", ee);
             }
         } catch (TimeoutException te) {
-            LOGGER.warn("OpenAPI request failed with timeout", te);
+            LOGGER.debug("OpenAPI request failed with timeout", te);
             throw new NanoleafException("Failed to send OpenAPI request: Timeout", te);
         } catch (InterruptedException ie) {
             throw new NanoleafInterruptedException("OpenAPI request has been interrupted", ie);

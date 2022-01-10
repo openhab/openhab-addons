@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.ihc.internal.ws;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,10 +57,10 @@ public class IhcClientTest {
     }
 
     @Test
-    public void loadProjectFileFromControllerTest() throws IhcExecption, UnsupportedEncodingException {
+    public void loadProjectFileFromControllerTest() throws IhcExecption {
         final String expectedFileContent = ResourceFileUtils.getFileContent("ProjectFileContent.txt");
 
         final byte[] result = ihcClient.getProjectFileFromController();
-        assertEquals(expectedFileContent, new String(result, "UTF-8"));
+        assertEquals(expectedFileContent, new String(result, StandardCharsets.UTF_8));
     }
 }

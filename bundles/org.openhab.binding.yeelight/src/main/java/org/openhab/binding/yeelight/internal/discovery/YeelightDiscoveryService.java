@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,6 +92,7 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING4, device.getDeviceId());
             case color:
+            case color4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_WONDER, device.getDeviceId());
             case mono:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_DOLPHIN, device.getDeviceId());
@@ -117,6 +118,7 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
             case ceiling4:
                 return YeelightBindingConstants.THING_TYPE_CEILING4;
             case color:
+            case color4:
                 return YeelightBindingConstants.THING_TYPE_WONDER;
             case mono:
                 return YeelightBindingConstants.THING_TYPE_DOLPHIN;
