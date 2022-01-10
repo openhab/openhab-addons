@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,17 +14,20 @@ package org.openhab.io.homekit.internal.accessories;
 
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.LIGHT_LEVEL;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.LightSensorAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.lightsensor.CurrentAmbientLightLevelCharacteristic;
 import io.github.hapjava.services.impl.LightSensorService;
 
 /**
@@ -43,7 +46,11 @@ public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl impleme
     @Override
     public CompletableFuture<Double> getCurrentAmbientLightLevel() {
         final @Nullable DecimalType state = getStateAs(LIGHT_LEVEL, DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? state.doubleValue() : 0.0);
+        return CompletableFuture
+                .completedFuture(state != null ? state.doubleValue()
+                        : getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MIN_VALUE,
+                                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MIN_VALUE))
+                                        .doubleValue());
     }
 
     @Override

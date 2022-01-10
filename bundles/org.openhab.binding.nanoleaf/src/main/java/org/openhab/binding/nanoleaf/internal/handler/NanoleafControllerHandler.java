@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,6 +144,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         logger.debug("Using long SSE httpClient={} for {}}", httpClientSSETouchEvent, httpClientName);
     }
 
+    @Override
     public void initialize() {
         logger.debug("Initializing the controller (bridge)");
         updateStatus(ThingStatus.UNKNOWN);
@@ -199,6 +200,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
     }
 
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {} for channel {}", command, channelUID);
         if (!ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
@@ -565,7 +567,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     private void handleTouchEvents(TouchEvents touchEvents) {
         touchEvents.getEvents().forEach((event) -> {
-            logger.info("panel: {} gesture id: {}", event.getPanelId(), event.getGesture());
+            logger.debug("panel: {} gesture id: {}", event.getPanelId(), event.getGesture());
             // Swipes go to the controller, taps go to the individual panel
             if (event.getPanelId().equals(CONTROLLER_PANEL_ID)) {
                 logger.debug("Triggering controller {} with gesture {}.", thing.getUID(), event.getGesture());
@@ -628,8 +630,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             hue = min == null ? 0 : min;
             Integer max = colorTemperature.getMax();
             saturation = max == null ? 0 : max;
-            colorTempPercent = (float) ((colorTemperature.getValue() - hue) / (saturation - hue)
-                    * PercentType.HUNDRED.intValue());
+            colorTempPercent = (colorTemperature.getValue() - hue) / (saturation - hue)
+                    * PercentType.HUNDRED.intValue();
         }
 
         updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
@@ -650,30 +652,6 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode()));
         updateState(CHANNEL_RHYTHM_STATE,
                 controllerInfo.getRhythm().getRhythmConnected() ? OnOffType.ON : OnOffType.OFF);
-        // update bridge properties which may have changed, or are not present during discovery
-        Map<String, String> properties = editProperties();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
-        properties.put(Thing.PROPERTY_MODEL_ID, controllerInfo.getModel());
-        properties.put(Thing.PROPERTY_VENDOR, controllerInfo.getManufacturer());
-        updateProperties(properties);
-        Configuration config = editConfiguration();
-        if (hasTouchSupport(controllerInfo.getModel())) {
-            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_TOUCHSUPPORT);
-            logger.debug("Set to device type {}", DEVICE_TYPE_TOUCHSUPPORT);
-        } else {
-            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_LIGHTPANELS);
-            logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);
-        }
-        updateConfiguration(config);
-
-        getConfig().getProperties().forEach((key, value) -> {
-            logger.trace("Configuration property: key {} value {}", key, value);
-        });
-
-        getThing().getProperties().forEach((key, value) -> {
-            logger.debug("Thing property:  key {} value {}", key, value);
-        });
 
         // update the color channels of each panel
         getThing().getThings().forEach(child -> {
@@ -684,8 +662,46 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             }
         });
 
+        updateProperties();
+        updateConfiguration();
+
         for (NanoleafControllerListener controllerListener : controllerListeners) {
             controllerListener.onControllerInfoFetched(getThing().getUID(), controllerInfo);
+        }
+    }
+
+    private void updateConfiguration() {
+        // only update the Thing config if value isn't set yet
+        if (getConfig().get(NanoleafControllerConfig.DEVICE_TYPE) == null) {
+            Configuration config = editConfiguration();
+            if (hasTouchSupport(controllerInfo.getModel())) {
+                config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_TOUCHSUPPORT);
+                logger.debug("Set to device type {}", DEVICE_TYPE_TOUCHSUPPORT);
+            } else {
+                config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_LIGHTPANELS);
+                logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);
+            }
+            updateConfiguration(config);
+            if (logger.isTraceEnabled()) {
+                getConfig().getProperties().forEach((key, value) -> {
+                    logger.trace("Configuration property: key {} value {}", key, value);
+                });
+            }
+        }
+    }
+
+    private void updateProperties() {
+        // update bridge properties which may have changed, or are not present during discovery
+        Map<String, String> properties = editProperties();
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
+        properties.put(Thing.PROPERTY_MODEL_ID, controllerInfo.getModel());
+        properties.put(Thing.PROPERTY_VENDOR, controllerInfo.getManufacturer());
+        updateProperties(properties);
+        if (logger.isTraceEnabled()) {
+            getThing().getProperties().forEach((key, value) -> {
+                logger.trace("Thing property: key {} value {}", key, value);
+            });
         }
     }
 

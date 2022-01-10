@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -59,6 +60,7 @@ import com.digitaldan.harmony.HarmonyClientListener;
 import com.digitaldan.harmony.config.Activity;
 import com.digitaldan.harmony.config.Activity.Status;
 import com.digitaldan.harmony.config.HarmonyConfig;
+import com.digitaldan.harmony.config.Ping;
 
 /**
  * The {@link HarmonyHubHandler} is responsible for handling commands for Harmony Hubs, which are
@@ -88,6 +90,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     private final HarmonyClient client;
     private @Nullable ScheduledFuture<?> retryJob;
     private @Nullable ScheduledFuture<?> heartBeatJob;
+    private boolean propertiesUpdated;
 
     private int heartBeatInterval;
 
@@ -183,7 +186,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         config = getConfigAs(HarmonyHubConfig.class);
         cancelRetry();
         updateStatus(ThingStatus.UNKNOWN);
-        retryJob = scheduler.schedule(this::connect, 0, TimeUnit.SECONDS);
+        scheduleRetry(0);
     }
 
     @Override
@@ -221,12 +224,18 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     public void hubConnected() {
         heartBeatJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
-                client.sendPing();
+                Ping ping = client.sendPing().get();
+                if (!propertiesUpdated) {
+                    Map<String, String> properties = editProperties();
+                    properties.put(HUB_PROPERTY_ID, ping.getUuid());
+                    updateProperties(properties);
+                    propertiesUpdated = true;
+                }
             } catch (Exception e) {
                 logger.debug("heartbeat failed", e);
                 setOfflineAndReconnect("Hearbeat failed");
             }
-        }, heartBeatInterval, heartBeatInterval, TimeUnit.SECONDS);
+        }, 5, heartBeatInterval, TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
         getConfigFuture().thenAcceptAsync(harmonyConfig -> updateCurrentActivityChannel(harmonyConfig), scheduler)
                 .exceptionally(e -> {
@@ -294,7 +303,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
     private void setOfflineAndReconnect(String error) {
         disconnectFromHub();
-        retryJob = scheduler.schedule(this::connect, RETRY_TIME, TimeUnit.SECONDS);
+        scheduleRetry(RETRY_TIME);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
     }
 
@@ -303,6 +312,11 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
         if (localRetryJob != null && !localRetryJob.isDone()) {
             localRetryJob.cancel(false);
         }
+    }
+
+    private synchronized void scheduleRetry(int retrySeconds) {
+        cancelRetry();
+        retryJob = scheduler.schedule(this::connect, retrySeconds, TimeUnit.SECONDS);
     }
 
     private void updateState(@Nullable Activity activity) {

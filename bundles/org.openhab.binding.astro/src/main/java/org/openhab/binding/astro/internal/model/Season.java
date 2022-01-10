@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import static org.openhab.core.library.unit.MetricPrefix.MILLI;
-
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 
 import javax.measure.quantity.Time;
@@ -127,9 +127,10 @@ public class Season {
      * Returns the time left for current season
      */
     public QuantityType<Time> getTimeLeft() {
-        Calendar now = Calendar.getInstance();
-        Calendar next = getNextSeason();
-        return new QuantityType<>(next.getTimeInMillis() - now.getTimeInMillis(), MILLI(Units.SECOND))
-                .toUnit(Units.DAY);
+        final Calendar now = Calendar.getInstance();
+        final Calendar next = getNextSeason();
+        final Duration timeLeft = Duration.of(next.getTimeInMillis() - now.getTimeInMillis(), ChronoUnit.MILLIS);
+
+        return new QuantityType<>(timeLeft.toDays(), Units.DAY);
     }
 }

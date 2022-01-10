@@ -113,6 +113,7 @@
     <module>org.openhab.binding.ecobee</module>
     <module>org.openhab.binding.ecotouch</module>
     <module>org.openhab.binding.ekey</module>
+    <module>org.openhab.binding.electroluxair</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.enigma2</module>
@@ -278,6 +279,7 @@
     <module>org.openhab.binding.plugwiseha</module>
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.proteusecometer</module>
+    <module>org.openhab.binding.publictransportswitzerland</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
     <module>org.openhab.binding.pushover</module>
@@ -321,6 +323,7 @@
     <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
+    <module>org.openhab.binding.sonnen</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
     <module>org.openhab.binding.sonyprojector</module>
@@ -373,6 +376,7 @@
     <module>org.openhab.binding.wolfsmartset</module>
     <module>org.openhab.binding.xmltv</module>
     <module>org.openhab.binding.xmppclient</module>
+    <module>org.openhab.binding.yamahamusiccast</module>
     <module>org.openhab.binding.yamahareceiver</module>
     <module>org.openhab.binding.yioremote</module>
     <module>org.openhab.binding.yeelight</module>

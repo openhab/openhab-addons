@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.evohome.internal.api;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -200,17 +200,9 @@ public class EvohomeApiClient {
     }
 
     private boolean authenticateWithUsername() {
-        boolean result = false;
-
-        try {
-            String credentials = "Username=" + URLEncoder.encode(configuration.username, "UTF-8") + "&" + "Password="
-                    + URLEncoder.encode(configuration.password, "UTF-8");
-            result = authenticate(credentials, "password");
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Credential conversion failed", e);
-        }
-
-        return result;
+        String credentials = "Username=" + URLEncoder.encode(configuration.username, StandardCharsets.UTF_8) + "&"
+                + "Password=" + URLEncoder.encode(configuration.password, StandardCharsets.UTF_8);
+        return authenticate(credentials, "password");
     }
 
     private boolean authenticateWithToken(String accessToken) {

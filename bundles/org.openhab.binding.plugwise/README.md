@@ -2,7 +2,7 @@
 
 The Plugwise binding adds support to openHAB for [Plugwise](https://www.plugwise.com) ZigBee devices using the Stick.
 
-Users should use the Plugwise [Source](https://www.plugwise.com/source) software to define the network, reset devices or perform firmware upgrades.
+Users should use the Plugwise Source software to define the network, reset devices or perform firmware upgrades.
 
 Currently only "V2" of the Plugwise protocol is supported.
 It is advised that users of the binding upgrade their devices to the latest firmware using the Plugwise Source software.
@@ -11,15 +11,15 @@ It is advised that users of the binding upgrade their devices to the latest firm
 
 The binding supports the following Plugwise devices:
 
-| Device Type                                                   | Description                                                                              | Thing Type |
-|---------------------------------------------------------------|------------------------------------------------------------------------------------------|------------|
-| [Circle](https://www.plugwise.com/en_US/products/circle)      | A power outlet plug that provides energy measurement and switching control of appliances | circle     |
-| [Circle+](https://www.plugwise.com/en_US/products/circle)     | A special Circle that coordinates the ZigBee network and acts as network gateway         | circleplus |
-| [Scan](https://www.plugwise.com/en_US/products/scan)          | A wireless motion (PIR) and light sensor                                                 | scan       |
-| [Sense](https://www.plugwise.com/en_US/products/sense)        | A wireless temperature and humidity sensor                                               | sense      |
-| [Stealth](https://www.plugwise.com/en_US/products/stealth)    | A Circle with a more compact form factor that can be built-in                            | stealth    |
-| [Stick](https://www.plugwise.com/en_US/products/start-source) | A ZigBee USB controller that openHAB uses to communicate with the Circle+                | stick      |
-| [Switch](https://www.plugwise.com/en_US/products/switch)      | A wireless wall switch                                                                   | switch     |
+| Device Type | Description                                                                              | Thing Type |
+|-------------|------------------------------------------------------------------------------------------|------------|
+| Circle      | A power outlet plug that provides energy measurement and switching control of appliances | circle     |
+| Circle+     | A special Circle that coordinates the ZigBee network and acts as network gateway         | circleplus |
+| Scan        | A wireless motion (PIR) and light sensor                                                 | scan       |
+| Sense       | A wireless temperature and humidity sensor                                               | sense      |
+| Stealth     | A Circle with a more compact form factor that can be built-in                            | stealth    |
+| Stick       | A ZigBee USB controller that openHAB uses to communicate with the Circle+                | stick      |
+| Switch      | A wireless wall switch                                                                   | switch     |
 
 ## Discovery
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,10 +67,9 @@ public class YeelightHandlerFactory extends BaseThingHandlerFactory {
             return new YeelightColorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_STRIPE)) {
             return new YeelightStripeHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_CEILING3)
-                || thingTypeUID.equals(THING_TYPE_DESKLAMP)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING) || thingTypeUID.equals(THING_TYPE_DESKLAMP)) {
             return new YeelightCeilingHandler(thing);
-        } else if (thingTypeUID.equals(THING_TYPE_CEILING1)) {
+        } else if (thingTypeUID.equals(THING_TYPE_CEILING1) || thingTypeUID.equals(THING_TYPE_CEILING3)) {
             return new YeelightCeilingWithNightHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_CEILING4)) {
             return new YeelightCeilingWithAmbientHandler(thing);

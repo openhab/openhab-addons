@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.miio.internal;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -99,11 +99,7 @@ public class MiIoCrypto {
             SecretKeySpec keySpec = new SecretKeySpec(new byte[16], "AES");
             cipher.init(Cipher.DECRYPT_MODE, keySpec);
             byte[] decrypted = cipher.doFinal(cipherText);
-            try {
-                return new String(decrypted, "UTF-8").trim();
-            } catch (UnsupportedEncodingException e) {
-                return new String(decrypted).trim();
-            }
+            return new String(decrypted, StandardCharsets.UTF_8).trim();
         } catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException
                 | BadPaddingException e) {
             throw new MiIoCryptoException(e.getMessage(), e);

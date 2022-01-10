@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,8 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
     public CompletableFuture<Double> getCurrentTemperature() {
         final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
                 DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
+        return CompletableFuture
+                .completedFuture(state != null ? convertToCelsius(state.doubleValue()) : getMinCurrentTemperature());
     }
 
     @Override

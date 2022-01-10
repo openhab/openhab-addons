@@ -27,7 +27,10 @@ Furthermore, once an account is configured, it is automatically queried for asso
 
 The `account` bridge requires an OAuth2 refresh token as the only parameter `refreshToken`.
 
-There are two different ways of obtaining the token:
+There are three different ways of obtaining the token.
+
+NOTE: Tesla has introduced some captcha mechanism, which might prevent options 1 and 2 from working as expected.
+In case you are only receiving error messages, please make use of option 3!
 
 1. Use the openHAB console
 
@@ -49,6 +52,18 @@ Alternatively, you can use the refresh token to textually configure your `accoun
 If you do not want to use the openHAB console, you can also manually create a "Tesla Account" thing in the UI by providing your username and password as parameters (to show them, use the "Show More" button) in the "Edit Thing" view and leaving the refresh token parameter field empty.
 
 openHAB will use the provided credentials to retrieve and set the refresh token and automatically delete your password from the configuration afterwards for safety reasons.
+
+3. Use external tools
+
+There are a few 3rd party tools available that have specialized on getting hold of refresh tokens for the Tesla API.
+Please note that we in general consider it dangerous to enter your credentials into some 3rd party app - you will have to trust the author not to send or store those credentials anywhere.
+
+- [Tesla Access Token Generator (Chromium Extension](https://github.com/DoctorMcKay/chromium-tesla-token-generator)
+- [Auth App for Tesla (iOS)](https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613)
+- [Tesla Tokens (Android)](https://play.google.com/store/apps/details?id=net.leveugle.teslatokens)
+
+When using one of such apps, simply copy and paste the received refresh token into the account configuration.
+
 
 ## Thing Configuration
 
