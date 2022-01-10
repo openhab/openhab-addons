@@ -207,7 +207,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
                     .header("Authorization", authHeader).get();
 
-            logger.debug("Querying the vehicle: Response: {}:{}", response.getStatus(), response.getStatusInfo());
+            logger.debug("Querying the vehicle: Response: {}: {}", response.getStatus(),
+                    response.getStatusInfo().getReasonPhrase());
 
             if (!checkResponse(response, true)) {
                 logger.error("An error occurred while querying the vehicle");
@@ -335,9 +336,9 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             }
 
             if (!checkResponse(response, false)) {
-                logger.debug("An error occurred while communicating with the vehicle during request {}: {}:{}", command,
-                        (response != null) ? response.getStatus() : "",
-                        (response != null) ? response.getStatusInfo() : "No Response");
+                logger.debug("An error occurred while communicating with the vehicle during request {}: {}: {}",
+                        command, (response != null) ? response.getStatus() : "",
+                        (response != null) ? response.getStatusInfo().getReasonPhrase() : "No Response");
                 return null;
             }
 
