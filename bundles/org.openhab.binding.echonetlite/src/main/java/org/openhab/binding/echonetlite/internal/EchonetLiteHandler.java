@@ -133,6 +133,9 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
     }
 
     public void onUpdated(final String channelId, final State value) {
+        if (ThingStatus.ONLINE != getThing().getStatus()) {
+            updateStatus(ThingStatus.ONLINE);
+        }
         updateState(channelId, value);
     }
 

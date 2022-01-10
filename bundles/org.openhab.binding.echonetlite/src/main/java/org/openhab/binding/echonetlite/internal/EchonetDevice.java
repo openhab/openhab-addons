@@ -96,10 +96,6 @@ public class EchonetDevice extends EchonetObject {
             }
         } else if (esv == Esv.Set_Res) {
             pendingSets.remove(epc);
-            // if (pendingSets.containsKey(epc)) {
-            // logger.debug("Set value {} received, getting latest from device", epc);
-            // pendingGets.add(epc);
-            // }
         }
     }
 
