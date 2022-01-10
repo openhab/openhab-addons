@@ -11,10 +11,14 @@
 
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="plugStatus" typeId="plugStatus"/>
+			<channel id="chargingStatus" typeId="chargingStatus"/>
+			<channel id="estimatedRange" typeId="estimatedRange"/>
+			<channel id="odometer" typeId="odometer"/>
 			<channel id="hvacstatus" typeId="hvacstatus"/>
+			<channel id="externalTemperature" typeId="externalTemperature"/>
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
-			<channel id="odometer" typeId="odometer"/>
 		</channels>
 		<config-description>
 
@@ -73,36 +77,6 @@
 	</thing-type>
 
 	<!-- Sample Channel Type -->
-	<channel-type id="hvacstatus">
-		<item-type>Switch</item-type>
-		<label>HVAC Status</label>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="image">
-		<item-type>String</item-type>
-		<label>Image URL</label>
-		<description>Image URL of MyRenault</description>
-		<state readOnly="true"></state>
-	</channel-type>
-	<channel-type id="odometer">
-		<item-type>Number:Length</item-type>
-		<label>Odometer</label>
-		<description>Total distance travelled</description>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="estimatedRange">
-		<item-type>Number:Length</item-type>
-		<label>Estimated Range</label>
-		<description>Estimated range of the car.</description>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="externalTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>External Temperature</label>
-		<description>Temperature outside of the car</description>
-		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true"></state>
-	</channel-type>
 	<channel-type id="plugStatus">
 		<item-type>String</item-type>
 		<label>Plug Status</label>
@@ -113,6 +87,36 @@
 		<item-type>String</item-type>
 		<label>Charging Status</label>
 		<description>Charging status</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="estimatedRange">
+		<item-type>Number:Length</item-type>
+		<label>Estimated Range</label>
+		<description>Estimated range of the car.</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="odometer">
+		<item-type>Number:Length</item-type>
+		<label>Odometer</label>
+		<description>Total distance travelled</description>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="hvacstatus">
+		<item-type>Switch</item-type>
+		<label>HVAC Status</label>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="externalTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>External Temperature</label>
+		<description>Temperature outside of the car</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="image">
+		<item-type>String</item-type>
+		<label>Image URL</label>
+		<description>Image URL of MyRenault</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

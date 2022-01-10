@@ -32,12 +32,15 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 
 Currently all available channels are read only:
 
-| Channel ID   | Type          | Description                     |
-|--------------|---------------|---------------------------------|
-| batterylevel | Number        | State of the battery in %       |
-| hvacstatus   | Switch        | HVAC status switch              |
-| image        | String        | Image URL of MyRenault          |
-| location     | Location      | The GPS position of the vehicle |
-| odometer     | Number:Length | Total distance travelled        |
-
+| Channel ID          | Type               | Description                     |
+|---------------------|--------------------|---------------------------------|
+| batterylevel        | Number             | State of the battery in %       |
+| plugStatus          | String             | Status of charging plug.        |
+| chargingStatus      | String             | Charging status                 |
+| estimatedRange      | Number:Length      | Estimated range of the car      |
+| odometer            | Number:Length      | Total distance travelled        |
+| hvacstatus          | Switch             | HVAC status switch              |
+| externalTemperature | Number:Temperature | Temperature outside of the car  |
+| image               | String             | Image URL of MyRenault          |
+| location            | Location           | The GPS position of the vehicle |
 
