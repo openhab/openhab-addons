@@ -11,7 +11,7 @@
 		<config-description>
 			<parameter name="refreshToken" type="text" required="false">
 				<label>Refresh Token</label>
-				<description>Refresh token for account authentication. Use "smarthome:tesla" to retrieve it.</description>
+				<description>Refresh token for account authentication. Use "openhab:tesla" to retrieve it.</description>
 			</parameter>
 			<parameter name="username" type="text" required="false">
 				<advanced>true</advanced>
