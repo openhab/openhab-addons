@@ -6,11 +6,20 @@ This binding adds support to control Tapo (Copyright © TP-Link Corporation Limi
 
 The following Tapo-Devices are supported
 
-### P100/P105/P110 SmartPlug (WiFi)
+### P100/P105 SmartPlug (WiFi)
 
 * Power On/Off
 * Wi-Fi signal (SignalStrength)
 * On-Time (Time in seconds device is switched on)
+
+### P110 EnergyMonitoring SmartPlug (WiFi)
+
+* Power On/Off
+* Wi-Fi signal (SignalStrength)
+* On-Time (Time in seconds device is switched on)
+* actual PowerUsage (Watt)
+* today EnergyUsage (Wh)
+* today Runtime (Time in seconds device was on today)
 
 ### L510(Series) dimmable SmartBulb (WiFi)
 
@@ -87,6 +96,9 @@ All devices support some of the following channels:
 |           | color            | Color                  | Color                        | L530, L900                                  |
 | device    | wifiSignal       | system.signal-strength | WiFi-quality-level           | P100, P105, P110, L510, L530, L900, L920    |
 |           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, L510, L530, L900, L920    |
+| energy    | actualPower      | Number:Power           | actual Power (Watt)          | P110                                        |
+|           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110                                        |
+|           | todyRuntime      | Number:Time            | seconds output was on today  | P110                                        |
 
 
 ## Channel Refresh
