@@ -22,4 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class NukiDeviceConfiguration {
     public String nukiId = "";
+    public int deviceType;
 }
