@@ -59,10 +59,10 @@ public class Car {
                     estimatedRange = attributes.get("batteryAutonomy").getAsDouble();
                 }
                 if (attributes.get("plugStatus") != null) {
-                    plugStatus = attributes.get("plugStatus").getAsString();
+                    plugStatus = mapPlugStatus(attributes.get("plugStatus").getAsString());
                 }
                 if (attributes.get("chargingStatus") != null) {
-                    chargingStatus = attributes.get("chargingStatus").getAsString();
+                    chargingStatus = mapChargingStatus(attributes.get("chargingStatus").getAsString());
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -262,5 +262,45 @@ public class Car {
             return responseJson.get("data").getAsJsonObject().get("attributes").getAsJsonObject();
         }
         return null;
+    }
+
+    private String mapPlugStatus(String plugState) {
+        // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
+        switch (plugState) {
+            case "0":
+                return "UNPLUGGED";
+            case "1":
+                return "PLUGGED";
+            case "-1":
+                return "PLUG_ERROR";
+            case "-2147483648":
+                return "PLUG_UNKNOWN";
+            default:
+                return "UNKNOWEN";
+        }
+    }
+
+    private String mapChargingStatus(String chargeState) {
+        // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
+        switch (chargeState) {
+            case "0.0":
+                return "NOT_IN_CHARGE";
+            case "0.1":
+                return "WAITING_FOR_A_PLANNED_CHARGE";
+            case "0.2":
+                return "CHARGE_ENDED";
+            case "0.3":
+                return "WAITING_FOR_CURRENT_CHARGE";
+            case "0.4":
+                return "ENERGY_FLAP_OPENED";
+            case "1.0":
+                return "CHARGE_IN_PROGRESS";
+            case "-1.0":
+                return "CHARGE_ERROR";
+            case "-1.1":
+                return "UNAVAILABLE";
+            default:
+                return "UNKNOWEN";
+        }
     }
 }
