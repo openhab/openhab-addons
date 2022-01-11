@@ -80,12 +80,12 @@
 		<description>Undocumented / To be defined</description>
 		<state readOnly="true"></state>
 	</channel-type>
-    <channel-type id="chargingamps" advanced="true">
-        <item-type>Number:ElectricCurrent</item-type>
-        <label>Set Charging Amps</label>
-        <description>Current (Ampere) to use for charging</description>
-        <state pattern="%.0f A"></state>
-    </channel-type>
+	<channel-type id="chargingamps" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Set Charging Amps</label>
+		<description>Current (Ampere) to use for charging</description>
+		<state pattern="%.0f A"></state>
+	</channel-type>
 	<channel-type id="chargecurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charge Current</label>
@@ -544,17 +544,17 @@
 		<description>Indicates when the scheduled charging session will start, in yyyy-MM-dd'T'HH:mm:ss format</description>
 		<state readOnly="true"></state>
 	</channel-type>
-    <channel-type id="sentrymode" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Sentry Mode</label>
-        <description>Activates or deactivates sentry mode</description>
-    </channel-type>
-    <channel-type id="sentrymodeavailable" advanced="true">
-        <item-type>Switch</item-type>
-        <label>Sentry Available</label>
-        <description>Indicates whether sentry mode is currently available</description>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="sentrymode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sentry Mode</label>
+		<description>Activates or deactivates sentry mode</description>
+	</channel-type>
+	<channel-type id="sentrymodeavailable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sentry Available</label>
+		<description>Indicates whether sentry mode is currently available</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="shiftstate" advanced="true">
 		<item-type>String</item-type>
 		<label>Shift State</label>
