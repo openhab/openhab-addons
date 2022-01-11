@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:porcupineks">
+		<parameter-group name="authentication">
+			<label>Pico Voice Credentials</label>
+		</parameter-group>
+		<parameter-group name="spot">
+			<label>Spot</label>
+		</parameter-group>
+		<parameter name="apiKey" type="text" required="true" groupName="authentication">
+			<label>Pico Voice API Key</label>
+			<description>API Key for using the underling binary.</description>
+		</parameter>
+		<parameter name="sensitivity" type="decimal" min="0" max="1" required="true" groupName="spot">
+			<label>Sensitivity</label>
+			<description>Spot sensitivity.</description>
+			<default>0.5</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
