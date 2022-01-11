@@ -287,23 +287,25 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             throw new ProcessingException("Web targets not initialized");
         }
         FirmwareVersion firmwareVersion = webTargets.getFirmwareVersion();
-        if (firmwareVersion == null || firmwareVersion.firmware == null) {
+        FirmwareVersions firmwareVersions = firmwareVersion != null ? firmwareVersion.firmware : null;
+        if (firmwareVersions == null) {
             logger.warn("Unable to get firmware version.");
             return;
         }
-        this.firmwareVersions = firmwareVersion.firmware;
-        Firmware mainProcessor = firmwareVersion.firmware.mainProcessor;
+        this.firmwareVersions = firmwareVersions;
+        Firmware mainProcessor = firmwareVersions.mainProcessor;
         if (mainProcessor == null) {
             logger.warn("Main processor firmware version missing in response.");
             return;
         }
         logger.debug("Main processor firmware version received: {}, {}", mainProcessor.name, mainProcessor.toString());
         Map<String, String> properties = editProperties();
-        if (mainProcessor.name != null) {
-            properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_NAME, mainProcessor.name);
+        String mainProcessorName = mainProcessor.name;
+        if (mainProcessorName != null) {
+            properties.put(HDPowerViewBindingConstants.PROPERTY_FIRMWARE_NAME, mainProcessorName);
         }
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, mainProcessor.toString());
-        Firmware radio = firmwareVersion.firmware.radio;
+        Firmware radio = firmwareVersions.radio;
         if (radio != null) {
             logger.debug("Radio firmware version received: {}", radio.toString());
             properties.put(HDPowerViewBindingConstants.PROPERTY_RADIO_FIRMWARE_VERSION, radio.toString());
