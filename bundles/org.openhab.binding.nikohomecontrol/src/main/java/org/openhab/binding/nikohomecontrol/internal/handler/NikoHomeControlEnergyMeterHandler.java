@@ -151,11 +151,12 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm != null) {
             nhcComm.stopEnergyMeter(energyMeterId);
-            NhcEnergyMeter nhcEnergyMeter = nhcComm.getEnergyMeters().get(energyMeterId);
-            if (nhcEnergyMeter != null) {
-                nhcEnergyMeter.unsetEventHandler();
+            NhcEnergyMeter energyMeter = nhcComm.getEnergyMeters().get(energyMeterId);
+            if (energyMeter != null) {
+                energyMeter.unsetEventHandler();
             }
         }
+        nhcEnergyMeter = null;
         super.dispose();
     }
 

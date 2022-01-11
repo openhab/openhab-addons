@@ -282,11 +282,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     public void dispose() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm != null) {
-            NhcAction nhcAction = nhcComm.getActions().get(actionId);
-            if (nhcAction != null) {
-                nhcAction.unsetEventHandler();
+            NhcAction action = nhcComm.getActions().get(actionId);
+            if (action != null) {
+                action.unsetEventHandler();
             }
         }
+        nhcAction = null;
         super.dispose();
     }
 

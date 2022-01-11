@@ -225,11 +225,12 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     public void dispose() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm != null) {
-            NhcThermostat nhcThermostat = nhcComm.getThermostats().get(thermostatId);
-            if (nhcThermostat != null) {
-                nhcThermostat.unsetEventHandler();
+            NhcThermostat thermostat = nhcComm.getThermostats().get(thermostatId);
+            if (thermostat != null) {
+                thermostat.unsetEventHandler();
             }
         }
+        nhcThermostat = null;
         super.dispose();
     }
 

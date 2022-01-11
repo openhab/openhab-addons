@@ -177,6 +177,7 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
             comm.stopCommunication();
         }
         nhcComm = null;
+        super.dispose();
     }
 
     @Override
