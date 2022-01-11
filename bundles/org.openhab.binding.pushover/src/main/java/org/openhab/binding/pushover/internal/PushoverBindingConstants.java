@@ -31,4 +31,9 @@ public class PushoverBindingConstants {
 
     public static final String DEFAULT_SOUND = "default";
     public static final String DEFAULT_TITLE = "openHAB";
+
+    public static final String TEXT_OFFLINE_COMMUNICATION_ERROR = "@text/offline.communication-error";
+    public static final String TEXT_OFFLINE_CONF_ERROR_MISSING_APIKEY = "@text/offline.conf-error-missing-apikey";
+    public static final String TEXT_OFFLINE_CONF_ERROR_MISSING_USER = "@text/offline.conf-error-missing-user";
+    public static final String TEXT_OFFLINE_CONF_ERROR_UNKNOWN = "@text/offline.conf-error-unknown";
 }
