@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public enum EpsonProjectorCommandType {
     VREVERSE("verticalreverse", SwitchItem.class),
     BACKGROUND("background", StringItem.class),
     ERR_CODE("errcode", NumberItem.class),
-    ERR_MESSAGE("errmessage", StringItem.class),;
+    ERR_MESSAGE("errmessage", StringItem.class);
 
     private final String text;
     private Class<? extends Item> itemClass;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -342,10 +342,14 @@ public class JdbcBaseDAO {
         String sql = histItemFilterQueryProvider(filter, numberDecimalcount, table, name, timeZone);
         logger.debug("JDBC::doGetHistItemFilterQuery sql={}", sql);
         List<Object[]> m = Yank.queryObjectArrays(sql, null);
+        if (m == null) {
+            logger.debug("JDBC::doGetHistItemFilterQuery Query failed. Returning an empty list.");
+            return List.of();
+        }
         // we already retrieve the unit here once as it is a very costly operation
         String itemName = item.getName();
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
-        return m.stream().map(o -> new JdbcHistoricItem(itemName, getState(item, unit, o[1]), objectAsDate(o[0])))
+        return m.stream().map(o -> new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsDate(o[0])))
                 .collect(Collectors.<HistoricItem> toList());
     }
 
@@ -476,6 +480,12 @@ public class JdbcBaseDAO {
                 logger.debug("JDBC::storeItemValueProvider: DateTimeItem: '{}'", d);
                 vo.setValue(d);
                 break;
+            case "IMAGEITEM":
+                vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
+                String encodedString = item.getState().toFullString();
+                logger.debug("JDBC::storeItemValueProvider: ImageItem: '{}'", encodedString);
+                vo.setValue(encodedString);
+                break;
             default:
                 // All other items should return the best format by default
                 vo.setValueTypes(getSqlTypes().get(itemType), java.lang.String.class);
@@ -489,7 +499,7 @@ public class JdbcBaseDAO {
     /*****************
      * H E L P E R S *
      *****************/
-    protected State getState(Item item, @Nullable Unit<? extends Quantity<?>> unit, Object v) {
+    protected State objectAsState(Item item, @Nullable Unit<? extends Quantity<?>> unit, Object v) {
         logger.debug(
                 "JDBC::ItemResultHandler::handleResult getState value = '{}', unit = '{}', getClass = '{}', clazz = '{}'",
                 v, unit, v.getClass(), v.getClass().getSimpleName());

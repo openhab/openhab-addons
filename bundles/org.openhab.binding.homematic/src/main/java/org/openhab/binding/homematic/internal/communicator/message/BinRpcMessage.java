@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,16 +53,16 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     private String methodName;
     private TYPE type;
     private int args;
-    private String encoding;
+    private Charset encoding;
 
-    public BinRpcMessage(String methodName, String encoding) {
+    public BinRpcMessage(String methodName, Charset encoding) {
         this(methodName, TYPE.REQUEST, encoding);
     }
 
     /**
      * Creates a new request with the specified methodName.
      */
-    public BinRpcMessage(String methodName, TYPE type, String encoding) {
+    public BinRpcMessage(String methodName, TYPE type, Charset encoding) {
         this.methodName = methodName;
         this.type = type;
         this.encoding = encoding;
@@ -71,7 +72,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     /**
      * Decodes a BIN-RPC message from the given InputStream.
      */
-    public BinRpcMessage(InputStream is, boolean methodHeader, String encoding) throws IOException {
+    public BinRpcMessage(InputStream is, boolean methodHeader, Charset encoding) throws IOException {
         this.encoding = encoding;
         byte sig[] = new byte[8];
         int length = is.read(sig, 0, 4);
@@ -111,7 +112,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     /**
      * Decodes a BIN-RPC message from the given byte array.
      */
-    public BinRpcMessage(byte[] message, boolean methodHeader, String encoding) throws IOException, ParseException {
+    public BinRpcMessage(byte[] message, boolean methodHeader, Charset encoding) throws IOException, ParseException {
         this.encoding = encoding;
         if (message.length < 8) {
             throw new EOFException("Only " + message.length + " bytes received");
@@ -213,7 +214,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
         return (new BigInteger(bi)).longValue();
     }
 
-    private String readString() throws UnsupportedEncodingException {
+    private String readString() {
         int len = readInt();
         offset += len;
         return new String(binRpcData, offset - len, len, encoding);
@@ -310,12 +311,7 @@ public class BinRpcMessage implements RpcRequest<byte[]>, RpcResponse {
     }
 
     private void addString(String string) {
-        byte sd[];
-        try {
-            sd = string.getBytes(encoding);
-        } catch (UnsupportedEncodingException use) {
-            sd = string.getBytes();
-        }
+        byte sd[] = string.getBytes(encoding);
         for (byte ch : sd) {
             addByte(ch);
         }

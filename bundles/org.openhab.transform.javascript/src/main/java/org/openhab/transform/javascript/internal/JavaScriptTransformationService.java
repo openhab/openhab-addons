@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,9 +14,9 @@ package org.openhab.transform.javascript.internal;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -107,7 +107,7 @@ public class JavaScriptTransformationService implements TransformationService, C
                 filename = parts[0];
                 try {
                     vars = splitQuery(parts[1]);
-                } catch (UnsupportedEncodingException e) {
+                } catch (IllegalArgumentException e) {
                     throw new TransformationException("Illegal filename syntax");
                 }
                 if (isReservedWordUsed(vars)) {
@@ -142,16 +142,17 @@ public class JavaScriptTransformationService implements TransformationService, C
         return false;
     }
 
-    private Map<String, String> splitQuery(@Nullable String query) throws UnsupportedEncodingException {
+    private Map<String, String> splitQuery(@Nullable String query) throws IllegalArgumentException {
         Map<String, String> result = new LinkedHashMap<>();
         if (query != null) {
             String[] pairs = query.split("&");
             for (String pair : pairs) {
                 String[] keyval = pair.split("=");
                 if (keyval.length != 2) {
-                    throw new UnsupportedEncodingException();
+                    throw new IllegalArgumentException();
                 } else {
-                    result.put(URLDecoder.decode(keyval[0], "UTF-8"), URLDecoder.decode(keyval[1], "UTF-8"));
+                    result.put(URLDecoder.decode(keyval[0], StandardCharsets.UTF_8),
+                            URLDecoder.decode(keyval[1], StandardCharsets.UTF_8));
                 }
             }
         }

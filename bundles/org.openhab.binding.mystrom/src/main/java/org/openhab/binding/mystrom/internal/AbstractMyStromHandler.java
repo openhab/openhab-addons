@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,8 +46,11 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link AbstractMyStromHandler} is responsible for handling commands, which are
@@ -64,6 +67,7 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
     protected String hostname = "";
     protected String mac = "";
 
+    private final Logger logger = LoggerFactory.getLogger(AbstractMyStromHandler.class);
     private @Nullable ScheduledFuture<?> pollingJob;
     protected final Gson gson = new Gson();
 
@@ -91,28 +95,33 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    private void updateProperties() throws MyStromException {
-        String json = sendHttpRequest(HttpMethod.GET, "/api/v1/info", null);
-        MyStromDeviceInfo deviceInfo = gson.fromJson(json, MyStromDeviceInfo.class);
-        if (deviceInfo == null) {
-            throw new MyStromException("Cannot retrieve device info from myStrom device " + getThing().getUID());
+    private void updateProperties() {
+        try {
+            String json = sendHttpRequest(HttpMethod.GET, "/api/v1/info", null);
+            MyStromDeviceInfo deviceInfo = gson.fromJson(json, MyStromDeviceInfo.class);
+            if (deviceInfo == null) {
+                throw new MyStromException("Cannot retrieve device info from myStrom device " + getThing().getUID());
+            }
+            this.mac = deviceInfo.mac;
+            Map<String, String> properties = editProperties();
+            properties.put(PROPERTY_MAC, deviceInfo.mac);
+            properties.put(PROPERTY_VERSION, deviceInfo.version);
+            properties.put(PROPERTY_TYPE, Long.toString(deviceInfo.type));
+            properties.put(PROPERTY_SSID, deviceInfo.ssid);
+            properties.put(PROPERTY_IP, deviceInfo.ip);
+            properties.put(PROPERTY_MASK, deviceInfo.mask);
+            properties.put(PROPERTY_GW, deviceInfo.gw);
+            properties.put(PROPERTY_DNS, deviceInfo.dns);
+            properties.put(PROPERTY_STATIC, Boolean.toString(deviceInfo.staticState));
+            properties.put(PROPERTY_CONNECTED, Boolean.toString(deviceInfo.connected));
+            Calendar calendar = Calendar.getInstance();
+            DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM,
+                    Locale.getDefault());
+            properties.put(PROPERTY_LAST_REFRESH, formatter.format(calendar.getTime()));
+            updateProperties(properties);
+        } catch (JsonSyntaxException | MyStromException ex) {
+            logger.debug("Updating properties failed: ", ex);
         }
-        this.mac = deviceInfo.mac;
-        Map<String, String> properties = editProperties();
-        properties.put(PROPERTY_MAC, deviceInfo.mac);
-        properties.put(PROPERTY_VERSION, deviceInfo.version);
-        properties.put(PROPERTY_TYPE, Long.toString(deviceInfo.type));
-        properties.put(PROPERTY_SSID, deviceInfo.ssid);
-        properties.put(PROPERTY_IP, deviceInfo.ip);
-        properties.put(PROPERTY_MASK, deviceInfo.mask);
-        properties.put(PROPERTY_GW, deviceInfo.gw);
-        properties.put(PROPERTY_DNS, deviceInfo.dns);
-        properties.put(PROPERTY_STATIC, Boolean.toString(deviceInfo.staticState));
-        properties.put(PROPERTY_CONNECTED, Boolean.toString(deviceInfo.connected));
-        Calendar calendar = Calendar.getInstance();
-        DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM, Locale.getDefault());
-        properties.put(PROPERTY_LAST_REFRESH, formatter.format(calendar.getTime()));
-        updateProperties(properties);
     }
 
     /**
@@ -147,12 +156,16 @@ public abstract class AbstractMyStromHandler extends BaseThingHandler {
     private void initializeInternal() {
         try {
             updateProperties();
+            checkRequiredInfo();
             updateStatus(ThingStatus.ONLINE);
             MyStromConfiguration config = getConfigAs(MyStromConfiguration.class);
             pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.refresh, TimeUnit.SECONDS);
         } catch (MyStromException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
+    }
+
+    protected void checkRequiredInfo() throws MyStromException {
     }
 
     protected abstract void pollDevice();

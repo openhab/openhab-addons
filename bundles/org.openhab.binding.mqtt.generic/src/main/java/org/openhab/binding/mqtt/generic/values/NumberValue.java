@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.mqtt.generic.values;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,19 +49,19 @@ public class NumberValue extends Value {
     private final @Nullable BigDecimal min;
     private final @Nullable BigDecimal max;
     private final BigDecimal step;
-    private final String unit;
+    private final Unit<?> unit;
 
     public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
-            @Nullable String unit) {
+            @Nullable Unit<?> unit) {
         super(CoreItemFactory.NUMBER, Stream.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class)
                 .collect(Collectors.toList()));
         this.min = min;
         this.max = max;
         this.step = step == null ? BigDecimal.ONE : step;
-        this.unit = unit == null ? "" : unit;
+        this.unit = unit != null ? unit : Units.ONE;
     }
 
-    protected boolean checkConditions(BigDecimal newValue, DecimalType oldvalue) {
+    protected boolean checkConditions(BigDecimal newValue) {
         BigDecimal min = this.min;
         if (min != null && newValue.compareTo(min) == -1) {
             logger.trace("Number not accepted as it is below the configured minimum");
@@ -90,47 +92,52 @@ public class NumberValue extends Value {
 
     @Override
     public void update(Command command) throws IllegalArgumentException {
-        DecimalType oldvalue = (state == UnDefType.UNDEF) ? new DecimalType() : (DecimalType) state;
         BigDecimal newValue = null;
         if (command instanceof DecimalType) {
-            if (!checkConditions(((DecimalType) command).toBigDecimal(), oldvalue)) {
-                return;
-            }
-            state = (DecimalType) command;
+            newValue = ((DecimalType) command).toBigDecimal();
         } else if (command instanceof IncreaseDecreaseType || command instanceof UpDownType) {
+            BigDecimal oldValue = getOldValue();
             if (command == IncreaseDecreaseType.INCREASE || command == UpDownType.UP) {
-                newValue = oldvalue.toBigDecimal().add(step);
+                newValue = oldValue.add(step);
             } else {
-                newValue = oldvalue.toBigDecimal().subtract(step);
+                newValue = oldValue.subtract(step);
             }
-            if (!checkConditions(newValue, oldvalue)) {
-                return;
-            }
-            state = new DecimalType(newValue);
         } else if (command instanceof QuantityType<?>) {
-            QuantityType<?> qType = (QuantityType<?>) command;
-
-            if (qType.getUnit().isCompatible(Units.ONE)) {
-                newValue = qType.toBigDecimal();
-            } else {
-                qType = qType.toUnit(unit);
-                if (qType != null) {
-                    newValue = qType.toBigDecimal();
-                }
-            }
-            if (newValue != null) {
-                if (!checkConditions(newValue, oldvalue)) {
-                    return;
-                }
-                state = new DecimalType(newValue);
-            }
+            newValue = getQuantityTypeAsDecimal((QuantityType<?>) command);
         } else {
             newValue = new BigDecimal(command.toString());
-            if (!checkConditions(newValue, oldvalue)) {
-                return;
-            }
+        }
+        if (!checkConditions(newValue)) {
+            return;
+        }
+        // items with units specified in the label in the UI but no unit on mqtt are stored as
+        // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
+        if (!Units.ONE.equals(unit)) {
+            state = new QuantityType<>(newValue, unit);
+        } else {
             state = new DecimalType(newValue);
         }
+    }
+
+    private BigDecimal getOldValue() {
+        BigDecimal val = BigDecimal.ZERO;
+        if (state instanceof DecimalType) {
+            val = ((DecimalType) state).toBigDecimal();
+        } else if (state instanceof QuantityType<?>) {
+            val = ((QuantityType<?>) state).toBigDecimal();
+        }
+        return val;
+    }
+
+    private BigDecimal getQuantityTypeAsDecimal(QuantityType<?> qType) {
+        BigDecimal val = qType.toBigDecimal();
+        if (!qType.getUnit().isCompatible(Units.ONE)) {
+            QuantityType<?> convertedType = qType.toUnit(unit);
+            if (convertedType != null) {
+                val = convertedType.toBigDecimal();
+            }
+        }
+        return val;
     }
 
     @Override
@@ -144,10 +151,6 @@ public class NumberValue extends Value {
         if (min != null) {
             builder = builder.withMinimum(min);
         }
-        builder = builder.withStep(step);
-        if (this.unit.length() > 0) {
-            builder = builder.withPattern("%s " + this.unit.replace("%", "%%"));
-        }
-        return builder;
+        return builder.withStep(step).withPattern("%s %unit%");
     }
 }

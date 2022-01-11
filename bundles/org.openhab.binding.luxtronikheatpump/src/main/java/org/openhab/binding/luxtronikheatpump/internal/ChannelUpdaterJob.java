@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -137,7 +137,7 @@ public class ChannelUpdaterJob implements SchedulerRunnable, Runnable {
             if (SIUnits.CELSIUS.equals(unit) || Units.KELVIN.equals(unit) || Units.KILOWATT_HOUR.equals(unit)
                     || Units.PERCENT.equals(unit) || Units.HOUR.equals(unit)) {
                 return new QuantityType<>((double) rawValue / 10, unit);
-            } else if (Units.HERTZ.equals(unit) || Units.SECOND.equals(unit)) {
+            } else if (Units.HERTZ.equals(unit) || Units.SECOND.equals(unit) || Units.WATT.equals(unit)) {
                 return new QuantityType<>((double) rawValue, unit);
             } else if (Units.LITRE_PER_MINUTE.equals(unit)) {
                 return new QuantityType<>((double) rawValue / 60, unit);
