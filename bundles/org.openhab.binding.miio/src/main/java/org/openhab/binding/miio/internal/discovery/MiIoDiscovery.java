@@ -188,7 +188,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
                 String id = device.getDid();
                 if (SUPPORTED.contentEquals(cloudDiscoveryMode)) {
                     if (MiIoDevices.getType(device.getModel()).getThingType().equals(THING_TYPE_UNSUPPORTED)) {
-                        logger.info("Discovered from cloud, but ignored because not supported: {} {}", id, device);
+                        logger.debug("Discovered from cloud, but ignored because not supported: {} {}", id, device);
                     }
                 }
                 if (device.getIsOnline() || ALL.contentEquals(cloudDiscoveryMode)) {
