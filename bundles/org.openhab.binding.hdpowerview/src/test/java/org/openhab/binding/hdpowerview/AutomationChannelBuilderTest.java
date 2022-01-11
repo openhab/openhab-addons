@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
@@ -39,21 +39,21 @@ import org.osgi.framework.Bundle;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class AutomationChannelBuilderTest {
 
     private static final ChannelGroupUID CHANNEL_GROUP_UID = new ChannelGroupUID(
             new ThingUID(HDPowerViewBindingConstants.BINDING_ID, AutomationChannelBuilderTest.class.getSimpleName()),
             HDPowerViewBindingConstants.CHANNELTYPE_AUTOMATION_ENABLED);
 
-    private HDPowerViewTranslationProvider translationProvider;
-    private AutomationChannelBuilder builder;
-    private List<Scene> scenes;
-    private List<SceneCollection> sceneCollections;
+    private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
+            mock(Bundle.class), new TranslationProviderForTests(), new LocaleProviderForTests());
+    private AutomationChannelBuilder builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
+    private List<Scene> scenes = new ArrayList<>();
+    private List<SceneCollection> sceneCollections = new ArrayList<>();
 
     @BeforeEach
     private void setUp() {
-        translationProvider = new HDPowerViewTranslationProvider(mock(Bundle.class), new TranslationProviderForTests(),
-                new LocaleProviderForTests());
         builder = AutomationChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
 
         Scene scene = new Scene();
@@ -74,9 +74,7 @@ public class AutomationChannelBuilderTest {
         scheduledEvent.daySunday = true;
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene, At sunrise, Weekends", channels.get(0).getLabel());
@@ -92,9 +90,7 @@ public class AutomationChannelBuilderTest {
         scheduledEvent.dayFriday = true;
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene, At sunset, Weekdays", channels.get(0).getLabel());
@@ -114,9 +110,7 @@ public class AutomationChannelBuilderTest {
         scheduledEvent.minute = 30;
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene, 06:30, All days", channels.get(0).getLabel());
@@ -130,9 +124,7 @@ public class AutomationChannelBuilderTest {
         scheduledEvent.minute = -15;
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene, 15m before sunrise, Mon, Tue", channels.get(0).getLabel());
@@ -145,9 +137,7 @@ public class AutomationChannelBuilderTest {
         scheduledEvent.minute = 61;
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene, 1hr 1m after sunrise, Mon", channels.get(0).getLabel());
@@ -162,9 +152,7 @@ public class AutomationChannelBuilderTest {
         scheduledEvent.minute = -59;
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene, 59m before sunset, Wed, Thu, Fri", channels.get(0).getLabel());
@@ -179,9 +167,7 @@ public class AutomationChannelBuilderTest {
         scheduledEvent.minute = 60;
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene, 1hr after sunset, Fri, Sat, Sun", channels.get(0).getLabel());
@@ -193,10 +179,8 @@ public class AutomationChannelBuilderTest {
                 ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
 
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withSceneCollections(sceneCollections)
-                .withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withSceneCollections(sceneCollections).withScheduledEvents(scheduledEvents)
+                .build();
 
         assertEquals(1, channels.size());
         assertEquals("TestSceneCollection, At sunrise, ", channels.get(0).getLabel());
@@ -207,9 +191,7 @@ public class AutomationChannelBuilderTest {
         ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
         List<Channel> existingChannels = new ArrayList<>(0);
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents)
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents)
                 .withChannels(existingChannels).build();
 
         assertEquals(existingChannels, channels);
@@ -217,8 +199,7 @@ public class AutomationChannelBuilderTest {
 
     @Test
     public void emptyListWhenNoScheduledEvents() {
-        @NonNull
-        List<@NonNull Channel> channels = builder.build();
+        List<Channel> channels = builder.build();
 
         assertEquals(0, channels.size());
     }
@@ -227,9 +208,7 @@ public class AutomationChannelBuilderTest {
     public void emptyListWhenNoScenesOrSceneCollections() {
         ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScheduledEvents(scheduledEvents).build();
 
         assertEquals(0, channels.size());
     }
@@ -239,9 +218,7 @@ public class AutomationChannelBuilderTest {
         ScheduledEvent scheduledEvent = createScheduledEventWithSceneCollection(
                 ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(0, channels.size());
     }
@@ -251,9 +228,8 @@ public class AutomationChannelBuilderTest {
         ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
 
-        @NonNull
-        List<@NonNull Channel> channels = builder.withSceneCollections(sceneCollections)
-                .withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withSceneCollections(sceneCollections).withScheduledEvents(scheduledEvents)
+                .build();
 
         assertEquals(0, channels.size());
     }
@@ -263,9 +239,7 @@ public class AutomationChannelBuilderTest {
         ScheduledEvent scheduledEvent = createScheduledEventWithScene(ScheduledEvents.SCHEDULED_EVENT_TYPE_SUNRISE);
         scheduledEvent.id = 42;
         List<ScheduledEvent> scheduledEvents = new ArrayList<>(List.of(scheduledEvent));
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
+        List<Channel> channels = builder.withScenes(scenes).withScheduledEvents(scheduledEvents).build();
 
         assertEquals(1, channels.size());
         assertEquals(CHANNEL_GROUP_UID.getId(), channels.get(0).getUID().getGroupId());

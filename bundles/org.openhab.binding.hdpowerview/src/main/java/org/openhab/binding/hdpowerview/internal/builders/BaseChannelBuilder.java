@@ -15,7 +15,6 @@ package org.openhab.binding.hdpowerview.internal.builders;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
@@ -48,6 +47,7 @@ public class BaseChannelBuilder {
     }
 
     protected List<Channel> getChannelList(int initialCapacity) {
-        return channels != null ? (@NonNull List<Channel>) channels : new ArrayList<>(initialCapacity);
+        List<Channel> channels = this.channels;
+        return channels != null ? channels : new ArrayList<>(initialCapacity);
     }
 }

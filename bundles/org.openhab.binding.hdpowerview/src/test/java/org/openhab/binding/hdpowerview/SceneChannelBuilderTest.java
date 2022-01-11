@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
@@ -36,28 +36,26 @@ import org.osgi.framework.Bundle;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class SceneChannelBuilderTest {
 
     private static final ChannelGroupUID CHANNEL_GROUP_UID = new ChannelGroupUID(
             new ThingUID(HDPowerViewBindingConstants.BINDING_ID, SceneChannelBuilderTest.class.getSimpleName()),
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
 
-    private HDPowerViewTranslationProvider translationProvider;
-    private SceneChannelBuilder builder;
+    private static final HDPowerViewTranslationProvider translationProvider = new HDPowerViewTranslationProvider(
+            mock(Bundle.class), new TranslationProviderForTests(), new LocaleProviderForTests());
+    private SceneChannelBuilder builder = SceneChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
 
     @BeforeEach
     private void setUp() {
-        translationProvider = new HDPowerViewTranslationProvider(mock(Bundle.class), new TranslationProviderForTests(),
-                new LocaleProviderForTests());
         builder = SceneChannelBuilder.create(translationProvider, CHANNEL_GROUP_UID);
     }
 
     @Test
     public void labelIsCorrect() {
         List<Scene> scenes = createScenes();
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).build();
+        List<Channel> channels = builder.withScenes(scenes).build();
 
         assertEquals(1, channels.size());
         assertEquals("TestScene", channels.get(0).getLabel());
@@ -66,9 +64,7 @@ public class SceneChannelBuilderTest {
     @Test
     public void descriptionIsCorrect() {
         List<Scene> scenes = createScenes();
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).build();
+        List<Channel> channels = builder.withScenes(scenes).build();
 
         assertEquals(1, channels.size());
         assertEquals("Activates the scene 'TestScene'", channels.get(0).getDescription());
@@ -77,9 +73,7 @@ public class SceneChannelBuilderTest {
     @Test
     public void groupAndIdAreCorrect() {
         List<Scene> scenes = createScenes();
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).build();
+        List<Channel> channels = builder.withScenes(scenes).build();
 
         assertEquals(1, channels.size());
         assertEquals(CHANNEL_GROUP_UID.getId(), channels.get(0).getUID().getGroupId());
@@ -90,17 +84,14 @@ public class SceneChannelBuilderTest {
     public void suppliedListIsUsed() {
         List<Scene> scenes = createScenes();
         List<Channel> existingChannels = new ArrayList<>(0);
-
-        @NonNull
-        List<@NonNull Channel> channels = builder.withScenes(scenes).withChannels(existingChannels).build();
+        List<Channel> channels = builder.withScenes(scenes).withChannels(existingChannels).build();
 
         assertEquals(existingChannels, channels);
     }
 
     @Test
     public void emptyListWhenNoScenes() {
-        @NonNull
-        List<@NonNull Channel> channels = builder.build();
+        List<Channel> channels = builder.build();
 
         assertEquals(0, channels.size());
     }

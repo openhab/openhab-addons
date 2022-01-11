@@ -14,7 +14,6 @@ package org.openhab.binding.hdpowerview.internal.builders;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
@@ -84,10 +83,10 @@ public class SceneGroupChannelBuilder extends BaseChannelBuilder {
      * @return the {@link Channel} list
      */
     public List<Channel> build() {
+        List<SceneCollection> sceneCollections = this.sceneCollections;
         if (sceneCollections == null) {
             return getChannelList(0);
         }
-        List<SceneCollection> sceneCollections = (@NonNull List<SceneCollection>) this.sceneCollections;
         List<Channel> channels = getChannelList(sceneCollections.size());
         sceneCollections.stream().sorted().forEach(sceneCollection -> channels.add(createChannel(sceneCollection)));
         return channels;

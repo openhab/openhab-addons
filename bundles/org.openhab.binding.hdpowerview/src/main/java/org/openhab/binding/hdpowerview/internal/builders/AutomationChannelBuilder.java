@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
@@ -125,10 +124,10 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
      * @return the {@link Channel} list
      */
     public List<Channel> build() {
+        List<ScheduledEvent> scheduledEvents = this.scheduledEvents;
         if (scheduledEvents == null || (scenes == null && sceneCollections == null)) {
             return getChannelList(0);
         }
-        List<ScheduledEvent> scheduledEvents = (@NonNull List<ScheduledEvent>) this.scheduledEvents;
         List<Channel> channels = getChannelList(scheduledEvents.size());
         scheduledEvents.stream().forEach(scheduledEvent -> {
             Channel channel = createChannel(scheduledEvent);
@@ -157,26 +156,27 @@ public class AutomationChannelBuilder extends BaseChannelBuilder {
 
     private @Nullable String getReferencedSceneOrSceneCollectionName(ScheduledEvent scheduledEvent) {
         if (scheduledEvent.sceneId > 0) {
+            Map<Integer, Scene> scenes = this.scenes;
             if (scenes == null) {
                 logger.warn("Scheduled event '{}' references scene '{}', but no scenes are loaded", scheduledEvent.id,
                         scheduledEvent.sceneId);
                 return null;
             }
-            Scene scene = ((@NonNull Map<Integer, Scene>) scenes).get(scheduledEvent.sceneId);
+            Scene scene = scenes.get(scheduledEvent.sceneId);
             if (scene != null) {
                 return scene.getName();
             }
             logger.warn("Scene '{}' was not found for scheduled event '{}'", scheduledEvent.sceneId, scheduledEvent.id);
             return null;
         } else if (scheduledEvent.sceneCollectionId > 0) {
+            Map<Integer, SceneCollection> sceneCollections = this.sceneCollections;
             if (sceneCollections == null) {
                 logger.warn(
                         "Scheduled event '{}' references scene collection '{}', but no scene collections are loaded",
                         scheduledEvent.id, scheduledEvent.sceneCollectionId);
                 return null;
             }
-            SceneCollection sceneCollection = ((@NonNull Map<Integer, SceneCollection>) sceneCollections)
-                    .get(scheduledEvent.sceneCollectionId);
+            SceneCollection sceneCollection = sceneCollections.get(scheduledEvent.sceneCollectionId);
             if (sceneCollection != null) {
                 return sceneCollection.getName();
             }
