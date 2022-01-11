@@ -123,7 +123,7 @@ Additionally, these advanced channels are available (not all are available on al
 | chargermaxcurrent         | Number:ElectricCurrent   | Charger Maximum Current       | Maximum current (Ampere) that can be delivered by the charger                                                    |
 | chargerpower              | Number                   | Charger Power                 | Power actually delivered by the charger                                                                          |
 | chargervoltage            | Number:ElectricPotential | Charger Voltage               | Voltage (V) actually presented by the charger                                                                    |
-| chargingamps              | Number:ElectricPotential | Set Charging Amps             | Current (Ampere) to use for charging                                                                             |
+| chargingamps              | Number:ElectricCurrent   | Set Charging Amps             | Current (Ampere) to use for charging                                                                             |
 | driverfrontdoor           | Contact                  | Driver Front Door             | Indicates if the front door at the driver's side is open                                                         |
 | driverreardoor            | Contact                  | Driver Rear Door              | Indicates if the rear door at the driver's side is open                                                          |
 | drivertemp                | Number:Temperature       | Driver Temperature            | Indicates the auto conditioning temperature set at the driver's side                                             |
