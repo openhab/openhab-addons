@@ -112,12 +112,16 @@ To minimize network traffic the default refresh-rate is set to 30 seconds. This 
 ### tapocontrol.things:
 
 ```
-tapocontrol:bridge:myTapoBridge                     "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
-tapocontrol:P100:myTapoBridge:mySocket              "My-Socket"                 [ ipAddress="192.168.178.150", pollingInterval=30 ]
-tapocontrol:L510:myTapoBridge:whiteBulb      		"white-light"               [ ipAddress="192.168.178.151", pollingInterval=30 ]
-tapocontrol:L530:myTapoBridge:colorBulb      		"color-light"               [ ipAddress="192.168.178.152", pollingInterval=30 ]
-tapocontrol:L900:myTapoBridge:myLightStrip          "light-strip"               [ ipAddress="192.168.178.153", pollingInterval=30 ]
-``` 
+tapocontrol:bridge:myTapoBridge                 "Cloud-Login"               [ username="you@yourpovider.com", password="verysecret" ]
+tapocontrol:P100:myTapoBridge:mySocket          "My-Socket"     (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.150", pollingInterval=30 ]
+tapocontrol:L510:myTapoBridge:whiteBulb         "white-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.151", pollingInterval=30 ]
+tapocontrol:L530:myTapoBridge:colorBulb         "color-light"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.152", pollingInterval=30 ]
+tapocontrol:L900:myTapoBridge:myLightStrip      "light-strip"   (tapocontrol:bridge:myTapoBridge)   [ ipAddress="192.168.178.153", pollingInterval=30 ]
+
+Bridge tapocontrol:bridge:secondBridgeExample            "Cloud-Login"        [ username="youtoo@anyprovider.com", password="verysecret" ] {
+   Thing tapocontrol:P110:secondBridgeExample:mySocket   "My-Socket"          [ ipAddress="192.168.101.51", pollingInterval=30 ]
+}
+```
 
 ### tapocontrol.items:
 
