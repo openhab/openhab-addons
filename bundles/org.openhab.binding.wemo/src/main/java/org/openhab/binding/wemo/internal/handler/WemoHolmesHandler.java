@@ -99,6 +99,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
+        host = (String) configuration.get("ipaddress");
 
         if (configuration.get("udn") != null) {
             logger.debug("Initializing WemoHolmesHandler for UDN '{}'", configuration.get("udn"));

@@ -17,7 +17,10 @@
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
 			</parameter>
-
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo Device</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -46,6 +49,10 @@
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
 			</parameter>
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo Device</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -61,6 +68,10 @@
 			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
+			</parameter>
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo Device</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -78,6 +89,10 @@
 			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
+			</parameter>
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo Device</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -106,6 +121,10 @@
 				<label>Device ID</label>
 				<description>The device ID identifies one certain WeMo light.</description>
 			</parameter>
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo bridge</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -122,6 +141,10 @@
 			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
+			</parameter>
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo Device</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -146,6 +169,10 @@
 			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
+			</parameter>
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo Device</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" min="15" max="180">
 				<label>Polling Interval</label>
@@ -176,7 +203,10 @@
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
 			</parameter>
-
+			<parameter name="ipaddress" type="text" required="false">
+				<label>IP-Address</label>
+				<description>IP-Address of the WeMo Device</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

@@ -96,6 +96,8 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     public void initialize() {
         // initialize() is only called if the required parameter 'deviceID' is available
         wemoLightID = (String) getConfig().get(DEVICE_ID);
+        host = (String) getConfig().get(IPADDRESS);
+        ;
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {

@@ -99,6 +99,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     public void initialize() {
         Configuration configuration = getConfig();
         String udn = (String) configuration.get("udn");
+        host = (String) configuration.get("ipaddress");
 
         if (udn != null && !udn.isEmpty()) {
             logger.debug("Initializing WemoHandler for UDN '{}'", udn);

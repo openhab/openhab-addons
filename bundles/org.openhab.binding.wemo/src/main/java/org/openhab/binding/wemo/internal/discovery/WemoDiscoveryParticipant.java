@@ -14,6 +14,7 @@ package org.openhab.binding.wemo.internal.discovery;
 
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +64,8 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 // ignore and use default label
             }
             properties.put(UDN, device.getIdentity().getUdn().getIdentifierString());
+            URL descriptorURL = device.getIdentity().getDescriptorURL();
+            properties.put("ipAddress", descriptorURL.getHost());
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
                     .withRepresentationProperty(UDN).build();

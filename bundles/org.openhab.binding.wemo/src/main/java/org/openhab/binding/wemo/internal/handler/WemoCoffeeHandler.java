@@ -96,6 +96,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
+        host = (String) configuration.get("ipaddress");
 
         if (configuration.get("udn") != null) {
             logger.debug("Initializing WemoCoffeeHandler for UDN '{}'", configuration.get("udn"));

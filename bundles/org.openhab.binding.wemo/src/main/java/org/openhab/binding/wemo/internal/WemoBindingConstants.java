@@ -109,6 +109,7 @@ public class WemoBindingConstants {
 
     // List of thing configuration properties
     public static final String UDN = "udn";
+    public static final String IPADDRESS = "ipaddress";
     public static final String DEVICE_ID = "deviceID";
     public static final String POLLINGINTERVALL = "pollingInterval";
     public static final int DEFAULT_REFRESH_INTERVALL_SECONDS = 60;

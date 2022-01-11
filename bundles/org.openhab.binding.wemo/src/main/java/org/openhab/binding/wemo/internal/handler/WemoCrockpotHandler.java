@@ -82,6 +82,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
+        host = (String) configuration.get("ipaddress");
 
         if (configuration.get("udn") != null) {
             logger.debug("Initializing WemoCrockpotHandler for UDN '{}'", configuration.get("udn"));
