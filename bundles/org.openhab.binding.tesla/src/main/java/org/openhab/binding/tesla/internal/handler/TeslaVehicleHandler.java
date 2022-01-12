@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import javax.measure.quantity.ElectricCurrent;
 import javax.measure.quantity.Temperature;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
@@ -55,6 +54,7 @@ import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleState;
 import org.openhab.binding.tesla.internal.throttler.QueueChannelThrottler;
 import org.openhab.binding.tesla.internal.throttler.Rate;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -266,9 +266,14 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             break;
                         }
                         case CHARGE_AMPS:
-                            if (command instanceof QuantityType) {
-                                @SuppressWarnings({ "unchecked", "null" })
-                                int amps = ((QuantityType<ElectricCurrent>) command).toUnit(Units.AMPERE).intValue();
+                            if (command instanceof DecimalType) {
+                                int amps = ((DecimalType) command).intValue();
+                                if (command instanceof QuantityType<?>) {
+                                    QuantityType<?> qamps = ((QuantityType<?>) command).toUnit(Units.AMPERE);
+                                    if (qamps != null) {
+                                        amps = qamps.intValue();
+                                    }
+                                }
                                 if (amps < 5 || amps > 32) {
                                     logger.warn("Charging amps can only be set in a range of 5-32A, but not to {}A.",
                                             amps);
