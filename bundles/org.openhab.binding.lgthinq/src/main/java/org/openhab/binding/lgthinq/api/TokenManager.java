@@ -1,16 +1,34 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.lgthinq.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.openhab.binding.lgthinq.errors.*;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.GATEWAY_URL;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_CONNECTION_DATA_FILE;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.GATEWAY_URL;
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_CONNECTION_DATA_FILE;
+import org.openhab.binding.lgthinq.errors.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+/**
+ * The {@link TokenManager} Principal facade to manage all token handles
+ *
+ * @author Nemer Daud - Initial contribution
+ */
 public class TokenManager {
     private static final int EXPIRICY_TOLERANCE_SEC = 60;
     private final OauthLgEmpAuthenticator oAuthAuthenticator;
@@ -19,6 +37,7 @@ public class TokenManager {
     static {
         instance = new TokenManager();
     }
+
     private TokenManager() {
         oAuthAuthenticator = OauthLgEmpAuthenticator.getInstance();
     }
@@ -51,8 +70,8 @@ public class TokenManager {
         return tokenFile.isFile();
     }
 
-    public TokenResult oauthFirstRegistration(String language, String country, String username, String password) throws LGGatewayException,
-            PreLoginException, AccountLoginException, TokenException, IOException {
+    public TokenResult oauthFirstRegistration(String language, String country, String username, String password)
+            throws LGGatewayException, PreLoginException, AccountLoginException, TokenException, IOException {
         Gateway gw;
         OauthLgEmpAuthenticator.PreLoginResult preLogin;
         OauthLgEmpAuthenticator.LoginAccountResult accountLogin;
@@ -61,7 +80,8 @@ public class TokenManager {
         try {
             gw = oAuthAuthenticator.discoverGatewayConfiguration(GATEWAY_URL, language, country);
         } catch (Exception ex) {
-            throw new LGGatewayException("Error trying to discovery the LG Gateway Setting for the region informed", ex);
+            throw new LGGatewayException("Error trying to discovery the LG Gateway Setting for the region informed",
+                    ex);
         }
         try {
             preLogin = oAuthAuthenticator.preLoginUser(gw, username, password);
@@ -69,12 +89,12 @@ public class TokenManager {
             throw new PreLoginException("Error doing pre-login of the user in the Emp LG Server", ex);
         }
         try {
-            accountLogin = oAuthAuthenticator.loginUser(gw,preLogin);
+            accountLogin = oAuthAuthenticator.loginUser(gw, preLogin);
         } catch (Exception ex) {
             throw new AccountLoginException("Error doing user's account login on the Emp LG Server", ex);
         }
         try {
-            token = oAuthAuthenticator.getToken(gw,accountLogin);
+            token = oAuthAuthenticator.getToken(gw, accountLogin);
         } catch (Exception ex) {
             throw new TokenException("Error getting Token", ex);
         }
@@ -101,4 +121,13 @@ public class TokenManager {
         return tokenCached;
     }
 
+    /**
+     * Remove the toke file registered for the bridge. Must be called only if the bridge is removed
+     */
+    public void cleanupTokenRegistry() {
+        File f = new File(THINQ_CONNECTION_DATA_FILE);
+        if (f.isFile()) {
+            f.delete();
+        }
+    }
 }

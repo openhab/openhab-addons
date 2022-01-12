@@ -1,9 +1,26 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.lgthinq.lgapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * The {@link LGDevice}
+ *
+ * @author Nemer Daud - Initial contribution
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LGDevice {
     private String modelName;
@@ -13,6 +30,7 @@ public class LGDevice {
     private String alias;
     private String deviceId;
     private String platformType;
+    private String modelJSonUri;
 
     public String getModelName() {
         return modelName;
@@ -41,6 +59,14 @@ public class LGDevice {
 
     public void setDeviceCode(String deviceCode) {
         this.deviceCode = deviceCode;
+    }
+
+    public String getModelJSonUri() {
+        return modelJSonUri;
+    }
+
+    public void setModelJSonUri(String modelJSonUri) {
+        this.modelJSonUri = modelJSonUri;
     }
 
     public String getAlias() {

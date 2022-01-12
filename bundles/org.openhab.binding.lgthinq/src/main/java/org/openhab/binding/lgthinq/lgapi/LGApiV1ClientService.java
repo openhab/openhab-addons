@@ -10,15 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.errors;
+package org.openhab.binding.lgthinq.lgapi;
+
+import java.util.Map;
+
+import org.openhab.binding.lgthinq.errors.LGApiException;
 
 /**
- * The {@link AccountLoginException}
+ * The {@link LGApiV1ClientService}
  *
  * @author Nemer Daud - Initial contribution
  */
-public class AccountLoginException extends LGThinqException {
-    public AccountLoginException(String message, Throwable cause) {
-        super(message, cause);
-    }
+public interface LGApiV1ClientService {
+    public String startMonitor(String deviceId) throws LGApiException;
+
+    public Map<String, Object> getMonitorData(String workerId) throws LGApiException;
 }
