@@ -1,8 +1,25 @@
+/**
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.lgthinq.api;
 
 import java.io.Serializable;
 import java.util.Map;
 
+/**
+ * The {@link Gateway} hold informations about the LG Gateway
+ *
+ * @author Nemer Daud - Initial contribution
+ */
 public class Gateway implements Serializable {
     private String empBaseUri;
     private String loginBaseUri;
@@ -14,12 +31,14 @@ public class Gateway implements Serializable {
     private String username;
     private String password;
 
-    public Gateway(){}
-    public Gateway(Map<String,String> params, String language, String country) {
+    public Gateway() {
+    }
+
+    public Gateway(Map<String, String> params, String language, String country) {
         this.apiRootV2 = params.get("thinq2Uri");
         this.apiRootV1 = params.get("thinq1Uri");
         this.loginBaseUri = params.get("empSpxUri");
-        this.authBase =  params.get("empUri");
+        this.authBase = params.get("empUri");
         this.empBaseUri = params.get("empTermsUri");
         this.language = language;
         this.country = country;

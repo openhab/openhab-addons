@@ -13,12 +13,16 @@
 package org.openhab.binding.lgthinq.errors;
 
 /**
- * The {@link AccountLoginException}
+ * The {@link LGThinqException} Parent Exception for all exceptions of this module
  *
  * @author Nemer Daud - Initial contribution
  */
-public class AccountLoginException extends LGThinqException {
-    public AccountLoginException(String message, Throwable cause) {
+public class LGThinqException extends Exception {
+    public LGThinqException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public LGThinqException(String message) {
+        super(message);
     }
 }

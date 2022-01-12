@@ -1,25 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="mqtt"
-						  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						  xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-						  xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="lgthinq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
 		<label>LGThinq GatewayBridge</label>
 		<description>A connection to a LGThinq Gateway</description>
 
 		<config-description>
-			<parameter name="lwtQos" type="integer">
-				<label>Last Will QoS</label>
-				<description>The quality of service parameter of the last will.</description>
-				<options>
-					<option value="0">At most once (0)</option>
-					<option value="1">At least once (1)</option>
-					<option value="2">Exactly once (2)</option>
-				</options>
-				<default>0</default>
-				<advanced>true</advanced>
-			</parameter>
 			<parameter name="language" type="text" required="true">
 				<label>User Language (LG registry)</label>
 				<description>The User Language registered in LG Account</description>
@@ -48,6 +37,11 @@
 				<label>Password</label>
 				<description>Password from LG Thinq Personal Account</description>
 				<context>password</context>
+			</parameter>
+			<parameter name="poolingIntervalSec" type="integer">
+				<label>Pooling Discovery Interval (>300)</label>
+				<description>Pooling interval to discover new devices agains LG API.</description>
+				<context>poolingIntervalSec</context>
 			</parameter>
 		</config-description>
 	</bridge-type>

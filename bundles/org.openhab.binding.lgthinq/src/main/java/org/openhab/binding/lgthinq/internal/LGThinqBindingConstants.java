@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,10 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.lgapi.model.DeviceTypes;
-import org.openhab.core.OpenHAB;
-import org.openhab.core.thing.ThingTypeUID;
-
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.OpenHAB;
 
 /**
  * The {@link LGThinqBindingConstants} class defines common constants, which are
@@ -30,13 +26,10 @@ import java.util.List;
 @NonNullByDefault
 public class LGThinqBindingConstants {
 
-    static final String BINDING_ID = "lgthinq";
-
-    // List of all Thing Type UIDs
-    static final ThingTypeUID THING_SUPPORTED_TYPE = new ThingTypeUID(BINDING_ID, "LGThinqGateway");
+    public static final String BINDING_ID = "lgthinq";
 
     public static final String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
-    public static String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator+"thinqbridge.json";
+    public static String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinqbridge.json";
 
     public static final String V2_AUTH_PATH = "/oauth/1.0/oauth2/token";
     public static final String V2_USER_INFO = "/users/profile";
@@ -49,19 +42,15 @@ public class LGThinqBindingConstants {
     public static final String V2_APP_VER = "3.0.1700";
 
     public static final String V2_LS_PATH = "/service/application/dashboard";
+    public static final String V2_DEVICE_CONFIG_PATH = "service/devices/";
+    public static final String V2_CTRL_DEVICE_CONFIG_PATH = "service/devices/%s/control-sync";
+    public static final String V2_START_MON_PATH = "rti/rtiMon";
     public static final String GATEWAY_URL = "https://route.lgthinq.com:46030/v1/service/application/gateway-uri";
     public static final String SECURITY_KEY = "nuts_securitykey";
-    public static final String APP_KEY = "wideq";
-    public static final String DATA_ROOT = "result";
-    public static final String POST_DATA_ROOT = "lgedmRoot";
-    public static final String RETURN_CODE_ROOT = "resultCode";
-    public static final String RETURN_MESSAGE_ROOT = "returnMsg";
     public static final String SVC_CODE = "SVC202";
     public static final String OAUTH_SECRET_KEY = "c053c2a6ddeb7ad97cb0eed0dcb31cf8";
     public static final String OAUTH_CLIENT_KEY = "LGAO722A02";
     public static final String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss +0000";
-    public static final String DEFAULT_COUNTRY = "US";
-    public static final String DEFAULT_LANGUAGE = "en-US";
     public static final String APPLICATION_KEY = "6V1V8H2BN5P9ZQGOI5DAQ92YZBDO3EK9";
     public static final String V2_EMP_SESS_URL = "https://emp-oauth.lgecloud.com/emp/oauth2/token/empsession";
     // v2
@@ -78,15 +67,18 @@ public class LGThinqBindingConstants {
     public static final String APP_TYPE = "NUTS";
     public static final String APP_VER = "3.5.1200";
 
-    public static final String AUTH_URI = "empUri";
+    public static final String DEVICE_ID = "device_id";
+    public static final String MODEL_NAME = "model_name";
+    public static final String DEVICE_ALIAS = "device_alias";
+    public static final String MODEL_URL_INFO = "model_url_indo";
 
-    public static final String OAUTH_REDIRECT_URI = "https://kr.m.lgaccount.com/login/iabClose";
-
-    public static final int RETRY_COUNT = 5;  //Anecdotally this seems sufficient.
-    public static final double RETRY_FACTOR = 0.5;
-    public static final List<Integer> RETRY_STATUSES = Arrays.asList(new Integer[] {502, 503, 504});
-
-    // Thing Types
-    public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER =
-            new ThingTypeUID(BINDING_ID, ""+DeviceTypes.AIR_CONDITIONER.deviceTypeId()); // deviceType from AirConditioner
+    public static final int SEARCH_TIME = 20;
+    // delay between each devices's scan for state changes (in seconds)
+    public static final int DEFAULT_STATE_POOLING_UPDATE_DELAY = 60;
+    // CHANNEL IDS
+    public static final String CHANNEL_MOD_OP_ID = "op_mode";
+    public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
+    public static final String CHANNEL_POWER_ID = "power";
+    public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
+    public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
 }
