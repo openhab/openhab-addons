@@ -37,7 +37,6 @@ import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
-import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
@@ -286,13 +285,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
         }
-        FirmwareVersion firmwareVersion = webTargets.getFirmwareVersion();
-        FirmwareVersions firmwareVersions = firmwareVersion != null ? firmwareVersion.firmware : null;
-        if (firmwareVersions == null) {
-            logger.warn("Unable to get firmware version.");
-            return;
-        }
-        this.firmwareVersions = firmwareVersions;
+        FirmwareVersions firmwareVersions = webTargets.getFirmwareVersions();
         Firmware mainProcessor = firmwareVersions.mainProcessor;
         if (mainProcessor == null) {
             logger.warn("Main processor firmware version missing in response.");
