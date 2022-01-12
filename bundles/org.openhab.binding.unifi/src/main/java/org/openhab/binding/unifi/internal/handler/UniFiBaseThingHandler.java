@@ -54,7 +54,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
         if (bridge == null || bridge.getHandler() == null
                 || !(bridge.getHandler() instanceof UniFiControllerThingHandler)) {
             updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "You must choose a UniFi Controller for this thing.");
+                    "@text/error.thing.offline.configuration_error");
             return;
         }
         // mgb: derive the config class from the generic type
@@ -63,7 +63,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
         final C config = (C) getConfigAs(clazz);
         if (initialize(config)) {
             if (bridge.getStatus() == OFFLINE) {
-                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "The UniFi Controller is currently offline.");
+                updateStatus(OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.thing.offline.bridge_offline");
                 return;
             } else {
                 updateStatus(ONLINE);
@@ -108,7 +108,7 @@ public abstract class UniFiBaseThingHandler<E, C> extends BaseThingHandler {
                             logger.info("Ignoring unsupported command = {} for channel = {}", command, channelUID);
                         }
                     } catch (final UniFiException e) {
-                        logger.warn("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
+                        logger.info("Unexpected error handling command = {} for channel = {} : {}", command, channelUID,
                                 e.getMessage());
                     }
                 }

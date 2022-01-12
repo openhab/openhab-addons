@@ -38,25 +38,27 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 abstract class UniFiCache<T extends @Nullable HasId> {
 
-    private static final String SEPARATOR = ":";
+    public enum Prefix {
+        ALIAS,
+        DESC,
+        HOSTNAME,
+        ID,
+        IP,
+        MAC,
+        NAME;
+    }
 
-    public static final String PREFIX_ALIAS = "alias";
-    public static final String PREFIX_DESC = "desc";
-    public static final String PREFIX_HOSTNAME = "hostname";
-    public static final String PREFIX_ID = "id";
-    public static final String PREFIX_IP = "ip";
-    public static final String PREFIX_MAC = "mac";
-    public static final String PREFIX_NAME = "name";
+    private static final String SEPARATOR = ":";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     // Map of cid keys to the id.
     private final Map<String, String> mapToId = new HashMap<>();
     // Map of id to data object
     private final Map<String, T> map = new HashMap<>();
-    private final String[] prefixes;
+    private final Prefix[] prefixes;
     private final String type;
 
-    protected UniFiCache(final String type, final String... prefixes) {
+    protected UniFiCache(final String type, final Prefix... prefixes) {
         this.type = type;
         this.prefixes = prefixes;
     }
@@ -87,7 +89,7 @@ abstract class UniFiCache<T extends @Nullable HasId> {
 
     public @Nullable String getId(final String cid) {
         String value = null;
-        for (final String prefix : prefixes) {
+        for (final Prefix prefix : prefixes) {
             final String key = key(prefix, cid);
 
             if (mapToId.containsKey(key)) {
@@ -111,7 +113,7 @@ abstract class UniFiCache<T extends @Nullable HasId> {
     }
 
     public final void put(final String id, final T value) {
-        for (final String prefix : prefixes) {
+        for (final Prefix prefix : prefixes) {
             final String suffix = getSuffix(value, prefix);
 
             if (suffix != null && !suffix.isBlank()) {
@@ -121,15 +123,15 @@ abstract class UniFiCache<T extends @Nullable HasId> {
         map.put(id, value);
     }
 
-    private String key(final String prefix, final String suffix) {
-        return (prefix + SEPARATOR + suffix).toLowerCase(Locale.ROOT);
+    private String key(final Prefix prefix, final String suffix) {
+        return (prefix.name() + SEPARATOR + suffix).toLowerCase(Locale.ROOT);
     }
 
     public final Collection<T> values() {
         return map.values().stream().distinct().collect(Collectors.toList());
     }
 
-    protected abstract @Nullable String getSuffix(T value, String prefix);
+    protected abstract @Nullable String getSuffix(T value, Prefix prefix);
 
     private static Object lazyFormatAsList(final Object[] arr) {
         return new Object() {

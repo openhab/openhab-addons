@@ -12,7 +12,6 @@
 		<config-description-ref uri="thing-type:unifi:controller"/>
 	</bridge-type>
 
-	<!-- <thing-type id="wiredClient"> .. coming soon .. </thing-type> -->
 
 	<thing-type id="wiredClient">
 
@@ -68,14 +67,13 @@
 		<config-description-ref uri="thing-type:unifi:client"/>
 	</thing-type>
 
-
 	<thing-type id="poePort">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
 
-		<label>UniFi POE Port</label>
-		<description>A Power Over Ethernet (POE) port on a UniFi switch</description>
+		<label>UniFi PoE Port</label>
+		<description>A Power Over Ethernet (PoE) port on a UniFi switch</description>
 
 		<channels>
 			<channel id="online" typeId="portOnline"/>
@@ -94,7 +92,7 @@
 	<channel-type id="online">
 		<item-type>Switch</item-type>
 		<label>Online</label>
-		<description>Online status of the wireless client</description>
+		<description>Online status of the client</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -182,14 +180,14 @@
 	<channel-type id="poeEnable">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
-		<description>If POE is enabled</description>
+		<description>If PoE is enabled</description>
 		<config-description-ref uri="channel-type:unifi:poeEnable"/>
 	</channel-type>
 
 	<channel-type id="poeMode">
 		<item-type>String</item-type>
-		<label>POE Mode</label>
-		<description>The POE mode the port is in.</description>
+		<label>PoE Mode</label>
+		<description>The PoE mode the port is in.</description>
 		<state>
 			<options>
 				<option value="off">Off</option>
@@ -202,22 +200,22 @@
 
 	<channel-type id="poePower" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>Port POE Power</label>
-		<description>Power usage of the POE port</description>
+		<label>Port PoE Power</label>
+		<description>Power usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="poeVoltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Port POE Voltage</label>
-		<description>Voltage usage of the POE port</description>
+		<label>Port PoE Voltage</label>
+		<description>Voltage usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="poeCurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Port POE Current</label>
-		<description>Current usage of the POE port</description>
+		<label>Port PoE Current</label>
+		<description>Current usage of the PoE port</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 

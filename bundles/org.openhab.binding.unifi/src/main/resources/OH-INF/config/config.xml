@@ -67,7 +67,7 @@
 	<config-description uri="channel-type:unifi:poeEnable">
 		<parameter name="mode" type="text">
 			<label>On Mode</label>
-			<description>The value to set when setting POE on.</description>
+			<description>The value to set when setting PoE on.</description>
 			<options>
 				<option value="auto">Auto</option>
 				<option value="24v">24V</option>

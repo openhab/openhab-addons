@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.ALIAS;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.HOSTNAME;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.ID;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.IP;
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.MAC;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.model.UniFiClient;
@@ -29,23 +35,24 @@ import org.openhab.binding.unifi.internal.api.model.UniFiClient;
 class UniFiClientCache extends UniFiCache<UniFiClient> {
 
     public UniFiClientCache() {
-        super("Client", PREFIX_ID, PREFIX_MAC, PREFIX_IP, PREFIX_HOSTNAME, PREFIX_ALIAS);
+        super("Client", ID, MAC, IP, HOSTNAME, ALIAS);
     }
 
     @Override
-    protected @Nullable String getSuffix(final UniFiClient client, final String prefix) {
+    protected @Nullable String getSuffix(final UniFiClient client, final Prefix prefix) {
         switch (prefix) {
-            case PREFIX_ID:
+            case ID:
                 return client.getId();
-            case PREFIX_MAC:
+            case MAC:
                 return client.getMac();
-            case PREFIX_IP:
+            case IP:
                 return client.getIp();
-            case PREFIX_HOSTNAME:
+            case HOSTNAME:
                 return client.getHostname();
-            case PREFIX_ALIAS:
+            case ALIAS:
                 return client.getAlias();
+            default:
+                return null;
         }
-        return null;
     }
 }

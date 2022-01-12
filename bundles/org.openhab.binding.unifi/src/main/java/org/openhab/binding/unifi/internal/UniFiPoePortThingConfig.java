@@ -15,7 +15,7 @@ package org.openhab.binding.unifi.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Configuration for POE Port.
+ * Configuration for PoE Port.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
@@ -32,5 +32,9 @@ public class UniFiPoePortThingConfig {
 
     public String getMacAddress() {
         return macAddress;
+    }
+
+    public boolean isValid() {
+        return !macAddress.isBlank();
     }
 }

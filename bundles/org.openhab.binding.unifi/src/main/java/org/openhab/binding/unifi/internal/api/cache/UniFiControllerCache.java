@@ -41,7 +41,7 @@ public class UniFiControllerCache {
 
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerCache.class);
 
-    private UniFiSiteCache sitesCache = new UniFiSiteCache();
+    private final UniFiSiteCache sitesCache = new UniFiSiteCache();
     private final UniFiDeviceCache devicesCache = new UniFiDeviceCache();
     private final UniFiClientCache clientsCache = new UniFiClientCache();
     private final UniFiClientCache insightsCache = new UniFiClientCache();
@@ -57,13 +57,9 @@ public class UniFiControllerCache {
     // Sites Cache
 
     public List<UniFiSite> setSites(final UniFiSite @Nullable [] sites) {
-        final UniFiSiteCache cache = new UniFiSiteCache();
-        cache.putAll(sites);
-        sitesCache = cache;
+        sitesCache.putAll(sites);
         return List.of(sites);
     }
-
-    // Site Cache
 
     public @Nullable UniFiSite getSite(final @Nullable String id) {
         return sitesCache.get(id);

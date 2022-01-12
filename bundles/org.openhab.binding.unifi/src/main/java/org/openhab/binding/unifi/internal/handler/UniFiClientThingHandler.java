@@ -76,8 +76,7 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
         // mgb: called when the config changes
         logger.debug("Initializing the UniFi Client Handler with config = {}", config);
         if (!config.isValid()) {
-            updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                    "You must define a MAC address, IP address, hostname or alias for this thing.");
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/error.thing.client.offline.configuration_error");
             return false;
         }
         this.config = config;
@@ -277,39 +276,32 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
         final String channelID = channelUID.getIdWithoutGroup();
         switch (channelID) {
             case CHANNEL_BLOCKED:
-                handleBlockedCommand(controller, client, channelUID, command);
-                break;
+                return handleBlockedCommand(controller, client, channelUID, command);
             case CHANNEL_RECONNECT:
-                handleReconnectCommand(controller, client, channelUID, command);
-                break;
+                return handleReconnectCommand(controller, client, channelUID, command);
             default:
                 return false;
         }
-        return true;
     }
 
-    private void handleBlockedCommand(final UniFiController controller, final UniFiClient client,
+    private boolean handleBlockedCommand(final UniFiController controller, final UniFiClient client,
             final ChannelUID channelUID, final Command command) throws UniFiException {
         if (command instanceof OnOffType) {
             controller.block(client, command == OnOffType.ON);
             refresh();
-        } else {
-            logger.info("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
-                    command, channelUID);
+            return true;
         }
+        return false;
     }
 
-    private void handleReconnectCommand(final UniFiController controller, final UniFiClient client,
+    private boolean handleReconnectCommand(final UniFiController controller, final UniFiClient client,
             final ChannelUID channelUID, final Command command) throws UniFiException {
-        if (command instanceof OnOffType) {
-            if (command == OnOffType.ON) {
-                controller.reconnect(client);
-                updateState(channelUID, OnOffType.OFF);
-                refresh();
-            }
-        } else {
-            logger.info("Ignoring unsupported command = {} for channel = {} - valid commands types are: OnOffType",
-                    command, channelUID);
+        if (command instanceof OnOffType && command == OnOffType.ON) {
+            controller.reconnect(client);
+            updateState(channelUID, OnOffType.OFF);
+            refresh();
+            return true;
         }
+        return false;
     }
 }

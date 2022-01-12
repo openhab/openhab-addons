@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifi.internal.api.cache;
 
+import static org.openhab.binding.unifi.internal.api.cache.UniFiCache.Prefix.MAC;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
@@ -28,13 +30,13 @@ import org.openhab.binding.unifi.internal.api.model.UniFiDevice;
 class UniFiDeviceCache extends UniFiCache<UniFiDevice> {
 
     public UniFiDeviceCache() {
-        super("Device", PREFIX_MAC);
+        super("Device", MAC);
     }
 
     @Override
-    protected @Nullable String getSuffix(final UniFiDevice device, final String prefix) {
+    protected @Nullable String getSuffix(final UniFiDevice device, final Prefix prefix) {
         switch (prefix) {
-            case PREFIX_MAC:
+            case MAC:
                 return device.getMac();
         }
         return null;

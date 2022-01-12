@@ -8,7 +8,7 @@ This binding integrates with [Ubiquiti UniFi Networks](https://www.ubnt.com/prod
 * `controller` - An instance of the UniFi controller software
 * `wirelessClient` - Any wireless client connected to a UniFi wireless network
 * `wiredClient` - A wired client connected to the UniFi network
-* `poePort` - A POE (Power Over Ethernet) port on a Unifi switch
+* `poePort` - A PoE (Power Over Ethernet) port on a Unifi switch
 
 ## Discovery
 
@@ -143,13 +143,13 @@ The `poePort` information that is retrieved is available as these channels:
 | Channel ID | Item Type                | Description                                        | Permissions |
 |------------|--------------------------|----------------------------------------------------|-------------|
 | online     | Switch                   | Online status of the port                          | Read        |
-| mode       | Selection                | Select the POE mode: off, auto, 24v or passthrough | Read, Write |
+| mode       | Selection                | Select the PoE mode: off, auto, 24v or passthrough | Read, Write |
 | enable     | Switch                   | Enable Power Over Ethernet                         | Read, Write |
 | power      | Number:Power             | Power consumption of the port in Watt              | Read        |
 | voltage    | Number:ElectricPotential | Voltage of the port in Volt                        | Read        |
 | current    | Number:ElectricCurrent   | Current used by the port in mA                     | Read        |
 
-The `enable` switch channel has a configuration parameter `mode` which is the value used to switch POE on when the channel is switched to ON.
+The `enable` switch channel has a configuration parameter `mode` which is the value used to switch PoE on when the channel is switched to ON.
 The default mode value is `auto`.
 
 ## Full Example

@@ -54,13 +54,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UniFiControllerThingHandler extends BaseBridgeHandler {
 
-    private static final String STATUS_DESCRIPTION_COMMUNICATION_ERROR = "Error communicating with the UniFi controller";
-
-    private static final String STATUS_DESCRIPTION_SSL_ERROR = "Error establishing an SSL connection with the UniFi controller";
-
-    private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "Invalid username and/or password - please double-check your configuration";
-
-    private static final String STATUS_DESCRIPTION_INVALID_HOSTNAME = "Invalid hostname - please double-check your configuration";
+    private static final String STATUS_DESCRIPTION_COMMUNICATION_ERROR = "@text/error.bridge.offline.communication_error";
+    private static final String STATUS_DESCRIPTION_SSL_ERROR = "@text/error.bridge.offline.ssl_error";
+    private static final String STATUS_DESCRIPTION_INVALID_CREDENTIALS = "@text/error.bridge.offline.invalid_credentials";
+    private static final String STATUS_DESCRIPTION_INVALID_HOSTNAME = "@text/error.bridge.offline.invalid_hostname";
 
     private final Logger logger = LoggerFactory.getLogger(UniFiControllerThingHandler.class);
 

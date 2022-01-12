@@ -28,7 +28,7 @@ public class UniFiPortTable extends UnfiPortOverride {
     private boolean up;
 
     /**
-     * If true supports POE.
+     * If true supports PoE.
      */
     private boolean portPoe;
 

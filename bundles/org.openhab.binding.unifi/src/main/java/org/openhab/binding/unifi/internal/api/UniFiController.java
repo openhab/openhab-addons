@@ -143,6 +143,10 @@ public class UniFiController {
         }
     }
 
+    public @Nullable UniFiSite getSite(final @Nullable String id) {
+        return cache.getSite(id);
+    }
+
     public @Nullable UniFiClient getClient(@Nullable final String cid) {
         return cache.getClient(cid);
     }

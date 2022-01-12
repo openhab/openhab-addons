@@ -56,16 +56,16 @@ public final class UniFiBindingConstants {
     public static final String CHANNEL_ESSID = "essid";
     public static final String CHANNEL_RSSI = "rssi";
 
-    // Lit of switch port channels
+    // List of switch port channels
     public static final String CHANNEL_ENABLE = "enable";
     public static final String CHANNEL_ENABLE_PARAMETER_MODE = "mode";
     public static final String CHANNEL_ENABLE_PARAMETER_MODE_OFF = "off";
     public static final String CHANNEL_ENABLE_PARAMETER_MODE_AUTO = "auto";
-    public static final String CHANNEL_PORT_PEO_MODE = "mode";
-    public static final String CHANNEL_PORT_PEO_ENABLE = "enable";
-    public static final String CHANNEL_PORT_PEO_POWER = "power";
-    public static final String CHANNEL_PORT_PEO_VOLTAGE = "voltage";
-    public static final String CHANNEL_PORT_PEO_CURRENT = "current";
+    public static final String CHANNEL_PORT_POE_MODE = "mode";
+    public static final String CHANNEL_PORT_POE_ENABLE = "enable";
+    public static final String CHANNEL_PORT_POE_POWER = "power";
+    public static final String CHANNEL_PORT_POE_VOLTAGE = "voltage";
+    public static final String CHANNEL_PORT_POE_CURRENT = "current";
 
     // List of all Parameters
     public static final String PARAMETER_HOST = "host";

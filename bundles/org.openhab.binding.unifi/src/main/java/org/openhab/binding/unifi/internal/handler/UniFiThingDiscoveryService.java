@@ -120,7 +120,7 @@ public class UniFiThingDiscoveryService extends AbstractDiscoveryService
                 final ThingUID thingUID = new ThingUID(UniFiBindingConstants.THING_TYPE_POE_PORT, bridgeUID, id);
                 final Map<String, Object> properties = Map.of(PARAMETER_PORT_IDX, pt.getPortIdx(),
                         PARAMETER_MAC_ADDRESS, deviceMac);
-                logger.debug("Found POE PORT: {} ", properties);
+                logger.debug("Found PoE PORT: {} ", properties);
                 thingDiscovered(DiscoveryResultBuilder.create(thingUID)
                         .withThingType(UniFiBindingConstants.THING_TYPE_POE_PORT).withBridge(bridgeUID)
                         .withTTL(TTL_SECONDS).withProperties(properties).withLabel(pt.getName()).build());

@@ -49,6 +49,14 @@ public class UniFiSite implements HasId {
         return desc;
     }
 
+    public UniFiControllerCache getCache() {
+        return cache;
+    }
+
+    public boolean isSite(final UniFiSite site) {
+        return site != null && id.equals(site.getId());
+    }
+
     public boolean matchesName(final String siteName) {
         return siteName.equalsIgnoreCase(desc) || siteName.equalsIgnoreCase(name) || siteName.equalsIgnoreCase(id);
     }
