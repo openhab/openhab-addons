@@ -583,14 +583,19 @@
 	<channel-type id="sunroofstate" advanced="true">
 		<item-type>String</item-type>
 		<label>Sunroof State</label>
-		<description>“unknown”, “open”, “closed”, “vent”, “comfort”</description>
-		<state readOnly="true"></state>
+		<description>Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".</description>
+		<command>
+			<options>
+				<option value="close">close</option>
+				<option value="vent">vent</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="sunroof">
 		<item-type>Dimmer</item-type>
 		<label>Sunroof</label>
-		<description>Open or close the sunroof to provided % (0 closed, 100 fully open)</description>
-		<state pattern="%d %%"></state>
+		<description>Indicates the opening state of the sunroof (0% closed, 100% fully open)</description>
+		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="combinedtemp" advanced="true">
 		<item-type>Number:Temperature</item-type>
