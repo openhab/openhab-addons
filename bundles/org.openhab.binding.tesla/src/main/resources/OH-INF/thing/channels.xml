@@ -58,10 +58,22 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="centerdisplay" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Central Display State</label>
 		<description>Indicates the state of the central display in the vehicle</description>
-		<state readOnly="true"></state>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="2">On, Standby or Camp Mode</option>
+				<option value="3">On, Charging Screen</option>
+				<option value="4">On</option>
+				<option value="5">On, Big Charging Screen</option>
+				<option value="6">On, Ready to Unlock</option>
+				<option value="7">Sentry Mode</option>
+				<option value="8">Dog Mode</option>
+				<option value="9">Media</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="centerrearseatheater" advanced="true">
 		<item-type>Switch</item-type>
