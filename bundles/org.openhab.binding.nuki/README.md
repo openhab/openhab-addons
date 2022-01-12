@@ -57,7 +57,7 @@ connected to is configured and online.
 
 ### Nuki Smart Lock
 
-The following configuration options are available:
+This is a common thing for all Nuki smart lock products - Nuki Smart Lock 1.0/2.0/3.0 (Pro) and Nuki Smart Door. The following configuration options are available:
 
   | Parameter | Description                                                                                                                                                                                               | Comment       |
   |-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
@@ -106,14 +106,16 @@ Unfortunately the Nuki Bridge is not reporting any transition states (e.g. for L
 
 ##### Supported doorSensorState values
 
-  | State  | Name                     |
-  |--------|--------------------------|
-  | 0      | Unavailable              |
-  | 1      | Deactivated              |
-  | 2      | Closed                   |
-  | 3      | Open                     |
-  | 4      | Unknown                  |
-  | 5      | Calibrating              |
+  | State | Name                |
+  |-------|---------------------|
+  | 1     | Deactivated         |
+  | 2     | Closed              |
+  | 3     | Open                |
+  | 4     | Door state unknonwn |
+  | 5     | Calibrating         |
+  | 16    | Uncalibrated        |
+  | 240   | Removed             |
+  | 255   | Unknown             |
 
 ### Nuki Opener
 
@@ -175,7 +177,7 @@ A manual setup through files could look like this:
 
 ```
 Bridge nuki:bridge:NB1 [ ip="192.168.0.50", port=8080, apiToken="myS3cr3t!", manageCallbacks=true ] {
-    Thing smartlock SL1 [ nukiId="12AB89EF", unlatch=false ]
+    Thing smartlock SL1 [ nukiId="12AB89EF", deviceType=0, unlatch=false ]
 }
 ```
 

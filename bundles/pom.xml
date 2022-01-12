@@ -143,6 +143,7 @@
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
     <module>org.openhab.binding.groheondus</module>
+    <module>org.openhab.binding.guntamatic</module>
     <module>org.openhab.binding.haassohnpelletstove</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.haywardomnilogic</module>
@@ -230,6 +231,7 @@
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
     <module>org.openhab.binding.mqtt.homie</module>
+    <module>org.openhab.binding.mycroft</module>
     <module>org.openhab.binding.myq</module>
     <module>org.openhab.binding.mystrom</module>
     <module>org.openhab.binding.nanoleaf</module>

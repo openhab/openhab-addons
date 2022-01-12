@@ -163,8 +163,8 @@ public class NukiHttpClient {
         }
     }
 
-    public BridgeLockActionResponse getSmartLockAction(String nukiId, SmartLockAction action) {
-        return getBridgeLockAction(nukiId, action.getAction(), NukiBindingConstants.DEVICE_SMART_LOCK);
+    public BridgeLockActionResponse getSmartLockAction(String nukiId, SmartLockAction action, int deviceType) {
+        return getBridgeLockAction(nukiId, action.getAction(), deviceType);
     }
 
     public BridgeLockActionResponse getOpenerAction(String nukiId, OpenerAction action) {
