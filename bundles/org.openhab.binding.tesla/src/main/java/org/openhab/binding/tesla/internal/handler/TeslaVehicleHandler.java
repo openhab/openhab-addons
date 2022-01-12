@@ -290,22 +290,6 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                             break;
                         }
-                        case SUN_ROOF: {
-                            if (command instanceof PercentType) {
-                                moveSunroof(((PercentType) command).intValue());
-                            } else if (command instanceof OnOffType && command == OnOffType.ON) {
-                                moveSunroof(100);
-                            } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-                                moveSunroof(0);
-                            } else if (command instanceof IncreaseDecreaseType
-                                    && command == IncreaseDecreaseType.INCREASE) {
-                                moveSunroof(Math.min(vehicleState.sun_roof_percent_open + 1, 100));
-                            } else if (command instanceof IncreaseDecreaseType
-                                    && command == IncreaseDecreaseType.DECREASE) {
-                                moveSunroof(Math.max(vehicleState.sun_roof_percent_open - 1, 0));
-                            }
-                            break;
-                        }
                         case CHARGE_TO_MAX: {
                             if (command instanceof OnOffType) {
                                 if (((OnOffType) command) == OnOffType.ON) {
@@ -582,18 +566,14 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     public void setSunroof(String state) {
-        JsonObject payloadObject = new JsonObject();
-        payloadObject.addProperty("state", state);
-        sendCommand(COMMAND_SUN_ROOF, gson.toJson(payloadObject), account.commandTarget);
-        requestData(VEHICLE_STATE);
-    }
-
-    public void moveSunroof(int percent) {
-        JsonObject payloadObject = new JsonObject();
-        payloadObject.addProperty("state", "move");
-        payloadObject.addProperty("percent", percent);
-        sendCommand(COMMAND_SUN_ROOF, gson.toJson(payloadObject), account.commandTarget);
-        requestData(VEHICLE_STATE);
+        if (state.equals("vent") || state.equals("close")) {
+            JsonObject payloadObject = new JsonObject();
+            payloadObject.addProperty("state", state);
+            sendCommand(COMMAND_SUN_ROOF, gson.toJson(payloadObject), account.commandTarget);
+            requestData(VEHICLE_STATE);
+        } else {
+            logger.warn("Ignoring invalid command '{}' for sunroof.", state);
+        }
     }
 
     /**
