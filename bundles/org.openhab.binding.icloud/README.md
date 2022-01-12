@@ -34,6 +34,8 @@ You may create multiple account Things for multiple accounts.
 A device is identified by the device ID provided by Apple.
 If a device is removed or disconnects from the account the respective openHAB device Thing status will change to `OFFLINE`.
 
+In addition the name set on the device (see iPhone > Settings > General > About > Name) needs to be provided as the `owner` of this device thing.
+
 All Things are updated according to the configured refresh time of their shared account Bridge.
 You may force an update by sending the `REFRESH` command to any channel of the Bridge Things.
 However this `REFRESH` command will not request data directly from the phone, but it will only make a query to the server.
@@ -64,7 +66,7 @@ The following channels are available (if supported by the device):
 ```php
 Bridge icloud:account:myaccount [appleId="mail@example.com", password="secure", refreshTimeInMinutes=5]
 {
-    Thing device myiPhone8 "iPhone 8" @ "World" [deviceId="VIRG9FsrvXfE90ewVBA1H5swtwEQePdXVjHq3Si6pdJY2Cjro8QlreHYVGSUzuWV"]
+    Thing device myiPhone8 "iPhone 8" @ "World" [deviceId="VIRG9FsrvXfE90ewVBA1H5swtwEQePdXVjHq3Si6pdJY2Cjro8QlreHYVGSUzuWV", owner="DeviceNameSetInIPhoneSettings"]
 }
 ```
 
