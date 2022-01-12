@@ -266,14 +266,17 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             break;
                         }
                         case CHARGE_AMPS:
+                            Integer amps = null;
                             if (command instanceof DecimalType) {
-                                int amps = ((DecimalType) command).intValue();
-                                if (command instanceof QuantityType<?>) {
-                                    QuantityType<?> qamps = ((QuantityType<?>) command).toUnit(Units.AMPERE);
-                                    if (qamps != null) {
-                                        amps = qamps.intValue();
-                                    }
+                                amps = ((DecimalType) command).intValue();
+                            }
+                            if (command instanceof QuantityType<?>) {
+                                QuantityType<?> qamps = ((QuantityType<?>) command).toUnit(Units.AMPERE);
+                                if (qamps != null) {
+                                    amps = qamps.intValue();
                                 }
+                            }
+                            if (amps != null) {
                                 if (amps < 5 || amps > 32) {
                                     logger.warn("Charging amps can only be set in a range of 5-32A, but not to {}A.",
                                             amps);
