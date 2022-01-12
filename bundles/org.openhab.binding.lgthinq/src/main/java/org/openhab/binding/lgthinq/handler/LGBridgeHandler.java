@@ -31,8 +31,8 @@ import org.openhab.binding.lgthinq.internal.LGDeviceThing;
 import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
-import org.openhab.binding.lgthinq.lgapi.LGApiClientServiceImpl;
-import org.openhab.binding.lgthinq.lgapi.LGApiV2ClientService;
+import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
+import org.openhab.binding.lgthinq.lgapi.LGApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.*;
@@ -68,14 +68,14 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
     private LGThinqConfiguration lgthinqConfig;
     private TokenManager tokenManager;
     private LGThinqDiscoveryService discoveryService;
-    private LGApiV2ClientService lgApiClient;
+    private LGApiClientService lgApiClient;
     private @Nullable Future<?> initJob;
     private @Nullable ScheduledFuture<?> devicePollingJob;
 
     public LGBridgeHandler(Bridge bridge) {
         super(bridge);
         tokenManager = TokenManager.getInstance();
-        lgApiClient = LGApiClientServiceImpl.getInstance();
+        lgApiClient = LGApiV1ClientServiceImpl.getInstance();
     }
 
     final ReentrantLock pollingLock = new ReentrantLock();
