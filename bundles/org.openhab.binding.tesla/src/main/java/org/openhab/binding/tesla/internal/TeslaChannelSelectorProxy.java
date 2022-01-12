@@ -119,18 +119,7 @@ public class TeslaChannelSelectorProxy {
             }
         },
         CAR_VERSION("car_version", "version", StringType.class, true),
-        CENTER_DISPLAY("center_display_state", "centerdisplay", OnOffType.class, false) {
-            @Override
-            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
-                if (s.equals("true") || s.equals("1")) {
-                    return super.getState("ON");
-                }
-                if (s.equals("false") || s.equals("0")) {
-                    return super.getState("OFF");
-                }
-                return super.getState(s);
-            }
-        },
+        CENTER_DISPLAY("center_display_state", "centerdisplay", DecimalType.class, false),
         CHARGE(null, "charge", OnOffType.class, false) {
             @Override
             public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
