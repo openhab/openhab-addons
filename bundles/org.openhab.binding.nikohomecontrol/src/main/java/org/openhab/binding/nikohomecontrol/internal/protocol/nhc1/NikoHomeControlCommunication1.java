@@ -131,7 +131,7 @@ public class NikoHomeControlCommunication1 extends NikoHomeControlCommunication 
      *
      */
     @Override
-    public synchronized void stopCommunication() {
+    public synchronized void resetCommunication() {
         listenerStopped = true;
 
         Socket socket = nhcSocket;

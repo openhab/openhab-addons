@@ -324,7 +324,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     private void restartCommunication(NikoHomeControlCommunication nhcComm) {
         // We lost connection but the connection object is there, so was correctly started.
         // Try to restart communication.
-        nhcComm.restartCommunication();
+        nhcComm.scheduleRestartCommunication();
         // If still not active, take thing offline and return.
         if (!nhcComm.communicationActive()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

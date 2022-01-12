@@ -135,13 +135,14 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     @Override
-    public synchronized void stopCommunication() {
+    public synchronized void resetCommunication() {
         CompletableFuture<Boolean> started = communicationStarted;
         if (started != null) {
             started.complete(false);
         }
         communicationStarted = null;
         initStarted = false;
+
         mqttConnection.stopConnection();
     }
 
@@ -185,13 +186,13 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } catch (MqttException e) {
             initStarted = false;
             logger.debug("error in mqtt communication during initialization");
-            stopCommunication();
+            resetCommunication();
         }
     }
 
     private void connectionLost(String message) {
         logger.debug("connection lost");
-        stopCommunication();
+        resetCommunication();
         handler.controllerOffline(message);
     }
 

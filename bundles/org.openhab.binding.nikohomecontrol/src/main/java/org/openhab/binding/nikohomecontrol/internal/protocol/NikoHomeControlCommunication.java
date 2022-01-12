@@ -15,9 +15,11 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc1.NikoHomeControlCommunication1;
 import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NikoHomeControlCommunication2;
 import org.slf4j.Logger;
@@ -52,6 +54,7 @@ public abstract class NikoHomeControlCommunication {
     // restart attempts
     private volatile int delay = 0;
     private volatile int attempt = 0;
+    protected @Nullable ScheduledFuture<?> scheduledRestart = null;
 
     protected NikoHomeControlCommunication(NhcControllerEvent handler, ScheduledExecutorService scheduler) {
         this.handler = handler;
@@ -66,13 +69,32 @@ public abstract class NikoHomeControlCommunication {
     /**
      * Stop Communication with Niko Home Control system.
      */
-    public abstract void stopCommunication();
+    public void stopCommunication() {
+        stopScheduledRestart();
+
+        resetCommunication();
+    }
+
+    /**
+     * Stop Communication with Niko Home Control system, but keep reconnection attempts going.
+     */
+    public abstract void resetCommunication();
+
+    protected void stopScheduledRestart() {
+        ScheduledFuture<?> future = scheduledRestart;
+        if (future != null) {
+            future.cancel(false);
+        }
+        scheduledRestart = null;
+        delay = 0;
+        attempt = 0;
+    }
 
     /**
      * Close and restart communication with Niko Home Control system.
      */
     public synchronized void restartCommunication() {
-        stopCommunication();
+        resetCommunication();
 
         logger.debug("restart communication from thread {}", Thread.currentThread().getId());
 
@@ -80,26 +102,31 @@ public abstract class NikoHomeControlCommunication {
     }
 
     private void checkAndRestartCommunication() {
-        if (!communicationActive()) {
-            restartCommunication();
-        }
+        restartCommunication();
+
+        // Try again if it didn't succeed
         if (!communicationActive()) {
             attempt++;
-            delay = (attempt == 1) ? 0 : ((attempt == 2) ? 30 : ((attempt <= 5) ? 60 : 300));
+            delay = ((attempt <= 5) ? 30 : 60);
             logger.debug("schedule communication restart in {} seconds", delay);
-            scheduler.schedule(this::checkAndRestartCommunication, delay, TimeUnit.SECONDS);
+            scheduledRestart = scheduler.schedule(this::checkAndRestartCommunication, delay, TimeUnit.SECONDS);
+        } else {
+            stopScheduledRestart();
         }
     }
 
     /**
      * Close and restart communication with Niko Home Control system. This method will keep doing multiple reconnection
-     * attempts, starting immediately, then after 30 seconds, 3 times with a minute interval and every 5 minutes
-     * thereafter until the connection is re-established.
+     * attempts, starting immediately, then 5 times with 30 second intervals and every minute thereafter until the
+     * connection is re-established.
      */
     public void scheduleRestartCommunication() {
-        delay = 0;
-        attempt = 0;
-        checkAndRestartCommunication();
+        // Don't do this if we already scheduled to restart
+        if (scheduledRestart == null) {
+            delay = 0;
+            attempt = 0;
+            scheduledRestart = scheduler.schedule(this::checkAndRestartCommunication, 0, TimeUnit.SECONDS);
+        }
     }
 
     /**
