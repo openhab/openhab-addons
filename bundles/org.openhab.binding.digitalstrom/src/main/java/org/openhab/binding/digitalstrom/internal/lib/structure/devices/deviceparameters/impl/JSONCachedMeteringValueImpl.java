@@ -61,8 +61,8 @@ public class JSONCachedMeteringValueImpl implements CachedMeteringValue {
         if (jObject.get(JSONApiResponseKeysEnum.DSID_LOWER_CASE.getKey()) != null) {
             this.dsid = new DSID(jObject.get(JSONApiResponseKeysEnum.DSID_LOWER_CASE.getKey()).getAsString());
         }
-        if (jObject.get(JSONApiResponseKeysEnum.DSUID_LOWER_CASE.getKey()) != null) {
-            this.dsuid = new DSUID(jObject.get(JSONApiResponseKeysEnum.DSUID_LOWER_CASE.getKey()).getAsString());
+        if (jObject.get(JSONApiResponseKeysEnum.DSUID.getKey()) != null) {
+            this.dsuid = new DSUID(jObject.get(JSONApiResponseKeysEnum.DSUID.getKey()).getAsString());
         }
         if (jObject.get(JSONApiResponseKeysEnum.VALUE.getKey()) != null) {
             this.value = jObject.get(JSONApiResponseKeysEnum.VALUE.getKey()).getAsDouble();

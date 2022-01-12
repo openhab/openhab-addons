@@ -391,7 +391,7 @@ public class StructureManagerImpl implements StructureManager {
 
     @Override
     public Circuit getCircuitByDSUID(DSUID dSUID) {
-        return getCircuitByDSUID(dSUID.getValue());
+        return dSUID != null ? getCircuitByDSUID(dSUID.getValue()) : null;
     }
 
     @Override
