@@ -44,7 +44,9 @@ public class LGThinqBindingConstants {
     public static final String V2_LS_PATH = "/service/application/dashboard";
     public static final String V2_DEVICE_CONFIG_PATH = "service/devices/";
     public static final String V2_CTRL_DEVICE_CONFIG_PATH = "service/devices/%s/control-sync";
-    public static final String V2_START_MON_PATH = "rti/rtiMon";
+    public static final String V1_START_MON_PATH = "rti/rtiMon";
+    public static final String V1_POOL_MON_PATH = "rti/rtiResult";
+    public static final String V1_CONTROL_OP = "rti/rtiControl";
     public static final String GATEWAY_URL = "https://route.lgthinq.com:46030/v1/service/application/gateway-uri";
     public static final String SECURITY_KEY = "nuts_securitykey";
     public static final String SVC_CODE = "SVC202";
@@ -71,10 +73,13 @@ public class LGThinqBindingConstants {
     public static final String MODEL_NAME = "model_name";
     public static final String DEVICE_ALIAS = "device_alias";
     public static final String MODEL_URL_INFO = "model_url_indo";
+    public static final String PLATFORM_TYPE = "platform_type";
+    public static final String PLATFORM_TYPE_V1 = "thinq1";
+    public static final String PLATFORM_TYPE_V2 = "thinq2";
 
     public static final int SEARCH_TIME = 20;
     // delay between each devices's scan for state changes (in seconds)
-    public static final int DEFAULT_STATE_POOLING_UPDATE_DELAY = 60;
+    public static final int DEFAULT_STATE_POOLING_UPDATE_DELAY = 30;
     // CHANNEL IDS
     public static final String CHANNEL_MOD_OP_ID = "op_mode";
     public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";

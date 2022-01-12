@@ -14,14 +14,10 @@ package org.openhab.binding.lgthinq.lgapi;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.api.RestResult;
 import org.openhab.binding.lgthinq.api.RestUtils;
 import org.openhab.binding.lgthinq.api.TokenManager;
@@ -36,29 +32,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link LGApiClientServiceImpl}
+ * The {@link LGApiV1ClientServiceImpl}
  *
  * @author Nemer Daud - Initial contribution
  */
-public class LGApiClientServiceImpl implements LGApiV2ClientService, LGApiV1ClientService {
-    private static final LGApiV2ClientService instance;
+public abstract class LGApiClientServiceImpl implements LGApiClientService {
     private static final Logger logger = LoggerFactory.getLogger(LGApiClientServiceImpl.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final TokenManager tokenManager;
 
-    static {
-        instance = new LGApiClientServiceImpl();
-    }
+    protected abstract TokenManager getTokenManager();
 
-    private LGApiClientServiceImpl() {
-        tokenManager = TokenManager.getInstance();
-    }
-
-    public static LGApiV2ClientService getInstance() {
-        return instance;
-    }
-
-    private Map<String, String> getCommonV2Headers(String language, String country, String accessToken,
+    protected Map<String, String> getCommonHeaders(String language, String country, String accessToken,
             String userNumber) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
@@ -82,12 +66,18 @@ public class LGApiClientServiceImpl implements LGApiV2ClientService, LGApiV1Clie
         return headers;
     }
 
+    /**
+     * Even using V2 URL, this endpoint support grab informations about account devices from V1 and V2.
+     * 
+     * @return list os LG Devices.
+     * @throws LGApiException if some communication error occur.
+     */
     @Override
     public List<LGDevice> listAccountDevices() throws LGApiException {
         try {
-            TokenResult token = tokenManager.getValidRegisteredToken();
+            TokenResult token = getTokenManager().getValidRegisteredToken();
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(V2_LS_PATH);
-            Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
+            Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
             RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
             return handleListAccountDevicesResult(resp);
@@ -96,131 +86,27 @@ public class LGApiClientServiceImpl implements LGApiV2ClientService, LGApiV1Clie
         }
     }
 
+    /**
+     * Get device settings and snapshot for a specific device.
+     * <b>It works only for API V2 device versions!</b>
+     * 
+     * @param deviceId device ID for de desired V2 LG Thinq.
+     * @return return map containing metamodel of settings and snapshot
+     * @throws LGApiException if some communication error occur.
+     */
     @Override
     public Map<String, Object> getDeviceSettings(String deviceId) throws LGApiException {
         try {
-            TokenResult token = tokenManager.getValidRegisteredToken();
+            TokenResult token = getTokenManager().getValidRegisteredToken();
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
                     .path(String.format("%s/%s", V2_DEVICE_CONFIG_PATH, deviceId));
-            Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
+            Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
             RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
             return handleDeviceSettingsResult(resp);
         } catch (Exception e) {
             throw new LGApiException("Erros list account devices from LG Server API", e);
         }
-    }
-
-    @Override
-    public ACSnapShot getAcDeviceData(String deviceId) throws LGApiException {
-        Map<String, Object> deviceSettings = getDeviceSettings(deviceId);
-        if (deviceSettings != null && deviceSettings.get("snapshot") != null) {
-            Map<String, Object> snapMap = (Map<String, Object>) deviceSettings.get("snapshot");
-            return objectMapper.convertValue(snapMap, ACSnapShot.class);
-        }
-        return null;
-    }
-
-    public RestResult sendControlCommands(String deviceId, String command, String keyName, int value) throws Exception {
-        TokenResult token = tokenManager.getValidRegisteredToken();
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
-                .path(String.format(V2_CTRL_DEVICE_CONFIG_PATH, deviceId));
-        Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
-                token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-        String payload = String.format("{\n" + "\"ctrlKey\": \"basicCtrl\",\n" + "\"command\": \"%s\",\n"
-                + "\"dataKey\": \"%s\",\n" + "\"dataValue\": %d}", command, keyName, value);
-        return RestUtils.postCall(builder.build().toURL().toString(), headers, payload);
-    }
-
-    @Override
-    public boolean turnDevicePower(String deviceId, DevicePowerState newPowerState) throws LGApiException {
-        try {
-            RestResult resp = sendControlCommands(deviceId, "Operation", "airState.operation",
-                    newPowerState.commandValue());
-
-            return handleGenericErrorResult(resp) != null;
-        } catch (Exception e) {
-            throw new LGApiException("Error adjusting device power", e);
-        }
-    }
-
-    @Override
-    public boolean changeOperationMode(String deviceId, ACOpMode newOpMode) throws LGApiException {
-        try {
-            RestResult resp = sendControlCommands(deviceId, "Set", "airState.opMode", newOpMode.commandValue());
-            return handleGenericErrorResult(resp) != null;
-        } catch (LGApiException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new LGApiException("Error adjusting operation mode", e);
-        }
-    }
-    @Override
-    public boolean changeFanSpeed(String deviceId, ACFanSpeed newFanSpeed) throws LGApiException {
-        try {
-            RestResult resp = sendControlCommands(deviceId, "Set", "airState.windStrength",
-                    newFanSpeed.commandValue());
-            return handleGenericErrorResult(resp) != null;
-        } catch (LGApiException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new LGApiException("Error adjusting operation mode", e);
-        }
-    }
-
-    @Override
-    public boolean changeTargetTemperature(String deviceId, ACTargetTmp newTargetTemp) throws LGApiException {
-        try {
-            RestResult resp = sendControlCommands(deviceId, "Set", "airState.tempState.target",
-                    newTargetTemp.commandValue());
-            return handleGenericErrorResult(resp) != null;
-        } catch (LGApiException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new LGApiException("Error adjusting operation mode", e);
-        }
-    }
-    @Override
-    public String startMonitor(String deviceId) throws LGApiException {
-        try {
-            TokenResult token = tokenManager.getValidRegisteredToken();
-            UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V2_START_MON_PATH);
-            Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
-                    token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-            String workerId = UUID.randomUUID().toString();
-            String jsonData = String.format(" { \"lgedmRoot\" : {" + "\"cmd\": \"Mon\"," + "\"cmdOpt\": \"Start\","
-                    + "\"deviceId\": \"%s\"," + "\"workId\": \"%s\"" + "} }", deviceId, workerId);
-            RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, jsonData);
-            return resp != null ? resp.getJsonResponse() : null;
-        } catch (Exception e) {
-            throw new LGApiException("Erros list account devices from LG Server API", e);
-        }
-    }
-
-    private Map<String, Object> handleGenericErrorResult(@Nullable RestResult resp) throws LGApiException {
-        Map<String, Object> metaResult;
-        if (resp == null) {
-            return null;
-        }
-        if (resp.getStatusCode() != 200) {
-            logger.error("Error returned by LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGApiException(
-                    String.format("Error returned by LG Server API. The reason is:%s", resp.getJsonResponse()));
-        } else {
-            try {
-                metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<Map<String, Object>>() {
-                });
-                if (!"0000".equals(metaResult.get("resultCode"))) {
-                    throw new LGApiException(
-                            String.format("Status error executing endpoint. resultCode must be 0000, but was:%s",
-                                    metaResult.get("resultCode")));
-                }
-            } catch (JsonProcessingException e) {
-                throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
-            }
-
-        }
-        return (Map<String, Object>) metaResult.get("result");
     }
 
     private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGApiException {
@@ -275,10 +161,5 @@ public class LGApiClientServiceImpl implements LGApiV2ClientService, LGApiV1Clie
         }
 
         return devices;
-    }
-
-    @Override
-    public Map<String, Object> getMonitorData(String workerId) throws LGApiException {
-        return null;
     }
 }

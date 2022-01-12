@@ -14,18 +14,14 @@ package org.openhab.binding.lgthinq.handler;
 
 import static org.mockito.Mockito.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.binding.lgthinq.errors.LGApiException;
+import org.openhab.binding.lgthinq.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
-import org.openhab.binding.lgthinq.lgapi.LGApiClientServiceImpl;
-import org.openhab.binding.lgthinq.lgapi.LGApiV2ClientService;
-import org.openhab.binding.lgthinq.lgapi.model.ACFanSpeed;
-import org.openhab.binding.lgthinq.lgapi.model.ACTargetTmp;
-import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
+import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
+import org.openhab.binding.lgthinq.lgapi.LGApiV1ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgapi.model.ACOpMode;
 import org.openhab.core.thing.Bridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,22 +44,31 @@ class LGBridgeHandlerTest {
         doReturn(new LGThinqConfiguration("nemer.daud@gmail.com", "@Apto94&J4V4", "BR", "pt-BR", 60)).when(spyBridge)
                 .getConfigAs(any(Class.class));
         spyBridge.initialize();
-        LGApiV2ClientService service = LGApiClientServiceImpl.getInstance();
+        LGApiClientService service = LGApiV1ClientServiceImpl.getInstance();
         try {
             // String json = service.startMonitor("d7ee2251-e4bb-14a8-9d96-60ab14f3c836");
-            // (V1) String json = service.startMonitor("d27cc560-7149-11d3-80b6-7440bec3653e");
+            // service.stopMonitor("d27cc560-7149-11d3-80b6-7440bec3653e", "n-d27cc560-7149-11d3-80b6-7440bec3653e");
+            // String workId = service.startMonitor("d27cc560-7149-11d3-80b6-7440bec3653e");
+            // String workId = "n-d27cc560-7149-11d3-80b6-7440bec3653e";
+            // service.getMonitorData("d27cc560-7149-11d3-80b6-7440bec3653e", workId);
+            // Thread.sleep(1000);
+            // service.getMonitorData("d27cc560-7149-11d3-80b6-7440bec3653e", workId);
+            // Thread.sleep(1000);
+            // service.getMonitorData("d27cc560-7149-11d3-80b6-7440bec3653e", workId);
             // ACSnapShot ac = service.getAcDeviceData("d7ee2251-e4bb-14a8-9d96-60ab14f3c836");
             // boolean ok = service.turnDevicePower("d7ee2251-e4bb-14a8-9d96-60ab14f3c836",
             // DevicePowerState.DV_POWER_ON);
             // boolean ok = service.changeOperationMode("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACOpMode.COOL);
             // ACSnapShot ac = service.getAcDeviceData("d7ee2251-e4bb-14a8-9d96-60ab14f3c836");
-//            service.changeFanSpeed("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACFanSpeed.F3);
-            service.changeTargetTemperature("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACTargetTmp._21);
+            // service.changeFanSpeed("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACFanSpeed.F3);
+            // service.changeTargetTemperature("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACTargetTmp._21);
 
-
-            System.out.println("AC power ON:");
-        } catch (LGApiException e) {
+            service.changeOperationMode("d27cc560-7149-11d3-80b6-7440bec3653e", ACOpMode.FAN);
+            // System.out.println("AC power ON:" + workId);
+        } catch (LGThinqException e) {
             logger.error("Error testing facade", e);
+            // } catch (InterruptedException | IOException e) {
+            // e.printStackTrace();
         }
     }
 }

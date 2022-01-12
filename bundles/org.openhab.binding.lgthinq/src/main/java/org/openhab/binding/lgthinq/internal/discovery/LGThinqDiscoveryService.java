@@ -97,6 +97,7 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
             properties.put(MODEL_NAME, device.getModelName());
             properties.put(DEVICE_ALIAS, device.getAlias());
             properties.put(MODEL_URL_INFO, device.getModelJSonUri());
+            properties.put(PLATFORM_TYPE, device.getPlatformType());
             if (modelId != null) {
                 properties.put(Thing.PROPERTY_MODEL_ID, modelId);
             }

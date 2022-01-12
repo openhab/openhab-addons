@@ -53,16 +53,17 @@ public enum ACFanSpeed {
                 return F_UNK;
         }
     }
+
     /**
-     *         "0": "@AC_MAIN_WIND_STRENGTH_SLOW_W",
-     *         "1": "@AC_MAIN_WIND_STRENGTH_SLOW_LOW_W",
-     *         "2": "@AC_MAIN_WIND_STRENGTH_LOW_W",
-     *         "3": "@AC_MAIN_WIND_STRENGTH_LOW_MID_W",
-     *         "4": "@AC_MAIN_WIND_STRENGTH_MID_W",
-     *         "5": "@AC_MAIN_WIND_STRENGTH_MID_HIGH_W",
-     *         "6": "@AC_MAIN_WIND_STRENGTH_HIGH_W",
-     *         "7": "@AC_MAIN_WIND_STRENGTH_POWER_W",
-     *         "8": "@AC_MAIN_WIND_STRENGTH_NATURE_W",
+     * "0": "@AC_MAIN_WIND_STRENGTH_SLOW_W",
+     * "1": "@AC_MAIN_WIND_STRENGTH_SLOW_LOW_W",
+     * "2": "@AC_MAIN_WIND_STRENGTH_LOW_W",
+     * "3": "@AC_MAIN_WIND_STRENGTH_LOW_MID_W",
+     * "4": "@AC_MAIN_WIND_STRENGTH_MID_W",
+     * "5": "@AC_MAIN_WIND_STRENGTH_MID_HIGH_W",
+     * "6": "@AC_MAIN_WIND_STRENGTH_HIGH_W",
+     * "7": "@AC_MAIN_WIND_STRENGTH_POWER_W",
+     * "8": "@AC_MAIN_WIND_STRENGTH_NATURE_W",
      */
     /**
      * Value of command (not state, but command to change the state of device)

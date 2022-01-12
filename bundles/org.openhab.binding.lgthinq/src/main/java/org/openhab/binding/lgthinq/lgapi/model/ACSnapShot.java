@@ -14,7 +14,6 @@ package org.openhab.binding.lgthinq.lgapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The {@link ACSnapShot}
@@ -22,17 +21,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Nemer Daud - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ACSnapShot {
-    @JsonProperty("airState.windStrength")
+public abstract class ACSnapShot {
+
     private Double airWindStrength;
-    @JsonProperty("airState.tempState.target")
+
     private Double targetTemperature;
-    @JsonProperty("airState.tempState.current")
+
     private Double currentTemperature;
-    @JsonProperty("airState.opMode")
+
     private Double operationMode;
-    @JsonProperty("airState.operation")
+
     private Double operation;
+    @JsonIgnore
+    private boolean online;
 
     @JsonIgnore
     public DevicePowerState getAcPowerStatus() {
@@ -90,11 +91,20 @@ public class ACSnapShot {
         this.operation = operation;
     }
 
+    @JsonIgnore
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
+    }
+
     @Override
     public String toString() {
         return "ACSnapShot{" + "airWindStrength=" + airWindStrength + ", targetTemperature=" + targetTemperature
                 + ", currentTemperature=" + currentTemperature + ", operationMode=" + operationMode + ", operation="
                 + operation + ", acPowerStatus=" + getAcPowerStatus() + ", acFanSpeed=" + getAcFanSpeed()
-                + ", acOpMode=" + getAcOpMode() + '}';
+                + ", acOpMode=" + getAcOpMode() + ", online=" + isOnline() + " }";
     }
 }

@@ -31,6 +31,7 @@ public class LGDevice {
     private String deviceId;
     private String platformType;
     private String modelJSonUri;
+    private boolean online;
 
     public String getModelName() {
         return modelName;
@@ -91,5 +92,13 @@ public class LGDevice {
 
     public void setPlatformType(String platformType) {
         this.platformType = platformType;
+    }
+
+    public boolean isOnline() {
+        return online;
+    }
+
+    public void setOnline(boolean online) {
+        this.online = online;
     }
 }

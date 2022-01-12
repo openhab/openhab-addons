@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.lgthinq.lgapi;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.openhab.binding.lgthinq.errors.LGApiException;
+import org.openhab.binding.lgthinq.errors.LGDeviceV1OfflineException;
+import org.openhab.binding.lgthinq.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
 
 /**
- * The {@link LGApiV2ClientService}
+ * The {@link LGApiClientService}
  *
  * @author Nemer Daud - Initial contribution
  */
-public interface LGApiV2ClientService {
+public interface LGApiClientService {
 
     public List<LGDevice> listAccountDevices() throws LGApiException;
 
@@ -45,4 +48,11 @@ public interface LGApiV2ClientService {
     public boolean changeFanSpeed(String deviceId, ACFanSpeed newFanSpeed) throws LGApiException;
 
     public boolean changeTargetTemperature(String deviceId, ACTargetTmp newTargetTemp) throws LGApiException;
+
+    public String startMonitor(String deviceId) throws LGApiException, LGDeviceV1OfflineException, IOException;
+
+    public void stopMonitor(String deviceId, String workId)
+            throws LGThinqException, LGDeviceV1OfflineException, IOException;
+
+    public ACSnapShot getMonitorData(String deviceId, String workerId) throws LGApiException, IOException;
 }

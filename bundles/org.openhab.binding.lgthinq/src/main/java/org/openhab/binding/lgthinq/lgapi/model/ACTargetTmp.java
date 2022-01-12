@@ -88,6 +88,6 @@ public enum ACTargetTmp {
      * @return value of the command to reach the state
      */
     public int commandValue() {
-        return (int)this.targetTmp;
+        return (int) this.targetTmp;
     }
 }
