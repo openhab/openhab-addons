@@ -53,7 +53,6 @@ import org.osgi.framework.Constants;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,20 +104,6 @@ public class PorcupineKSService implements KSService {
         if (serviceConfig.apiKey.isBlank()) {
             logger.warn("Missing pico voice api key to use Porcupine Keyword Spotter");
         }
-    }
-
-    @Deactivate
-    protected void deactivate() {
-        var scheduledTask = this.scheduledTask;
-        if (scheduledTask != null) {
-            scheduledTask.cancel(true);
-        }
-        var porcupine = this.porcupine;
-        if (porcupine != null) {
-            porcupine.delete();
-        }
-        loop = false;
-        bundleContext = null;
     }
 
     private String prepareLib(BundleContext bundleContext, String path) throws IOException {
@@ -188,7 +173,9 @@ public class PorcupineKSService implements KSService {
         return () -> {
             loop = false;
             scheduledTask.cancel(true);
+            this.scheduledTask = null;
             porcupine.delete();
+            this.porcupine = null;
         };
     }
 
@@ -206,7 +193,7 @@ public class PorcupineKSService implements KSService {
     }
 
     private String getPorcupineEnv() {
-        // extract library detected env from default library path
+        // get porcupine env from resolved library path
         var searchTerm = "lib" + File.separator + "java" + File.separator;
         var env = Porcupine.LIBRARY_PATH.substring(Porcupine.LIBRARY_PATH.indexOf(searchTerm) + searchTerm.length());
         env = env.substring(0, env.indexOf(File.separator));
