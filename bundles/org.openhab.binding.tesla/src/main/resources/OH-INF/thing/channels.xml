@@ -92,6 +92,12 @@
 		<description>Undocumented / To be defined</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="chargingamps" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Set Charging Amps</label>
+		<description>Current (Ampere) to use for charging</description>
+		<state pattern="%.0f A"></state>
+	</channel-type>
 	<channel-type id="chargecurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Charge Current</label>
@@ -136,8 +142,8 @@
 	</channel-type>
 	<channel-type id="chargeidealdistanceadded" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>"Ideal" Charge Distance Added</label>
-		<description>"Ideal" range added during the last charging session</description>
+		<label>Ideal Charge Distance Added</label>
+		<description>Ideal range added during the last charging session</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargemaxcurrent" advanced="true">
@@ -148,8 +154,8 @@
 	</channel-type>
 	<channel-type id="chargerateddistanceadded" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>"Rated" Charge Distance Added</label>
-		<description>"Rated" range added during the last charging session</description>
+		<label>Rated Charge Distance Added</label>
+		<description>Rated range added during the last charging session</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargerate" advanced="true">
@@ -415,7 +421,7 @@
 	</channel-type>
 	<channel-type id="notenoughpower" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Not Enought Power </label>
+		<label>Not Enought Power</label>
 		<description>Indicates if not enough power (ON) is available to heat the vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -548,6 +554,17 @@
 		<item-type>DateTime</item-type>
 		<label>Scheduled Charging Start</label>
 		<description>Indicates when the scheduled charging session will start, in yyyy-MM-dd'T'HH:mm:ss format</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="sentrymode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sentry Mode</label>
+		<description>Activates or deactivates sentry mode</description>
+	</channel-type>
+	<channel-type id="sentrymodeavailable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sentry Available</label>
+		<description>Indicates whether sentry mode is currently available</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="shiftstate" advanced="true">
