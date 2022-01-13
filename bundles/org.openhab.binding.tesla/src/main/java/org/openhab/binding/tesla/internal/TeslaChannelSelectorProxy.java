@@ -177,6 +177,7 @@ public class TeslaChannelSelectorProxy {
                 return new QuantityType<>(value, ImperialUnits.MILES_PER_HOUR);
             }
         },
+        CHARGE_AMPS("charge_amps", "chargingamps", DecimalType.class, false),
         CHARGE_STARTING_RANGE("charge_starting_range", "chargestartingrange", StringType.class, false),
         CHARGE_STARTING_SOC("charge_starting_soc", "chargestartingsoc", StringType.class, false),
         CHARGE_STATE("charging_state", "chargingstate", StringType.class, false),
@@ -838,6 +839,30 @@ public class TeslaChannelSelectorProxy {
 
                 date.setTime(Long.valueOf(s) * 1000);
                 return super.getState(dateFormatter.format(date));
+            }
+        },
+        SENTRY_MODE("sentry_mode", "sentrymode", OnOffType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                if (s.equals("true") || s.equals("1")) {
+                    return super.getState("ON");
+                }
+                if (s.equals("false") || s.equals("0")) {
+                    return super.getState("OFF");
+                }
+                return super.getState(s);
+            }
+        },
+        SENTRY_MODE_AVAILABLE("sentry_mode_available", "sentrymodeavailable", OnOffType.class, false) {
+            @Override
+            public State getState(String s, TeslaChannelSelectorProxy proxy, Map<String, String> properties) {
+                if (s.equals("true") || s.equals("1")) {
+                    return super.getState("ON");
+                }
+                if (s.equals("false") || s.equals("0")) {
+                    return super.getState("OFF");
+                }
+                return super.getState(s);
             }
         },
         SHIFTSTATE("shift_state", "shiftstate", StringType.class, false),

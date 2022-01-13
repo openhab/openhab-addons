@@ -54,12 +54,14 @@ import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleState;
 import org.openhab.binding.tesla.internal.throttler.QueueChannelThrottler;
 import org.openhab.binding.tesla.internal.throttler.Rate;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -263,6 +265,26 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                        case CHARGE_AMPS:
+                            Integer amps = null;
+                            if (command instanceof DecimalType) {
+                                amps = ((DecimalType) command).intValue();
+                            }
+                            if (command instanceof QuantityType<?>) {
+                                QuantityType<?> qamps = ((QuantityType<?>) command).toUnit(Units.AMPERE);
+                                if (qamps != null) {
+                                    amps = qamps.intValue();
+                                }
+                            }
+                            if (amps != null) {
+                                if (amps < 5 || amps > 32) {
+                                    logger.warn("Charging amps can only be set in a range of 5-32A, but not to {}A.",
+                                            amps);
+                                    return;
+                                }
+                                setChargingAmps(amps);
+                            }
+                            break;
                         case COMBINED_TEMP: {
                             QuantityType<Temperature> quantity = commandToQuantityType(command);
                             if (quantity != null) {
@@ -281,6 +303,12 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             QuantityType<Temperature> quantity = commandToQuantityType(command);
                             if (quantity != null) {
                                 setPassengerTemperature(quanityToRoundedFloat(quantity));
+                            }
+                            break;
+                        }
+                        case SENTRY_MODE: {
+                            if (command instanceof OnOffType) {
+                                setSentryMode(command == OnOffType.ON);
                             }
                             break;
                         }
@@ -563,6 +591,20 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         payloadObject.addProperty("percent", percent);
         sendCommand(COMMAND_SET_CHARGE_LIMIT, gson.toJson(payloadObject), account.commandTarget);
         requestData(CHARGE_STATE);
+    }
+
+    public void setChargingAmps(int amps) {
+        JsonObject payloadObject = new JsonObject();
+        payloadObject.addProperty("charging_amps", amps);
+        sendCommand(COMMAND_SET_CHARGING_AMPS, gson.toJson(payloadObject), account.commandTarget);
+        requestData(CHARGE_STATE);
+    }
+
+    public void setSentryMode(boolean b) {
+        JsonObject payloadObject = new JsonObject();
+        payloadObject.addProperty("on", b);
+        sendCommand(COMMAND_SET_SENTRY_MODE, gson.toJson(payloadObject), account.commandTarget);
+        requestData(VEHICLE_STATE);
     }
 
     public void setSunroof(String state) {
