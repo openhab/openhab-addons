@@ -344,7 +344,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
             try {
                 JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-                logger.trace("Request : {}:{}:{} yields {}", command, payLoad, target, jsonObject.get("response"));
+                logger.trace("Request : {}:{} yields {}", command, payLoad, jsonObject.get("response"));
                 return jsonObject.get("response").toString();
             } catch (Exception e) {
                 logger.error("An exception occurred while invoking a REST request: '{}'", e.getMessage());
