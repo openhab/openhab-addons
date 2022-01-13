@@ -29,11 +29,12 @@
 				<label>@text/config.subType.label</label>
 				<description>@text/config.subType.description</description>
 				<options>
+					<option value="ALFAWISE_DBELL">Alfawise, dBell</option>
 					<option value="BYRONSX">Byron SX</option>
 					<option value="BYRONMP001">Byron MP001</option>
+					<option value="ENVIVO">Envivo</option>
 					<option value="SELECTPLUS">SelectPlus</option>
 					<option value="SELECTPLUS3">SelectPlus3</option>
-					<option value="ENVIVO">Envivo</option>
 				</options>
 			</parameter>
 		</config-description>
