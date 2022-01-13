@@ -1,6 +1,9 @@
-# lgthinq Binding
+# LG Thinq Bridge & Things
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+_This binding performance discovery & registry of (for now) LG Thinq Air Conditioners in version 1 & 2 of LG Emp API.
+With this binding, you can control the following air conditioner resources:_
+* Target Temperature;
+* Operation Mode (restricted to: FAN, DRY, COOL, )
 
 _If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 
