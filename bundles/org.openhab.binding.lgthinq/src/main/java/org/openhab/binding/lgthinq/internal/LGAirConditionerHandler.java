@@ -15,7 +15,6 @@ package org.openhab.binding.lgthinq.internal;
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 import static org.openhab.core.library.types.OnOffType.ON;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -238,14 +237,16 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     if (shot != null) {
                         return shot;
                     }
-                    Thread.sleep(100);
+                    Thread.sleep(500);
                     retries--;
-                } catch (InterruptedException | IOException e) {
+                } catch (Exception e) {
+                    // If can't get monitoring, then stop monitor and restart the process again in new interaction
+                    // I force restart monitoring because of the errors returned (just in case)
+                    forceStopDeviceV1Monitor(deviceId, monitorWorkId);
                     throw new LGApiException("Error getting monitor data for the device:" + deviceId, e);
                 }
             }
-            // If can't get monitoring, then stop monitor and restart the process again in new interaction
-            forceStopDeviceV1Monitor(deviceId, monitorWorkId);
+            // I cant stop monitoring by exhausting, because the monitor can need more time.
             throw new LGApiException("Exhausted trying to get monitor data for the device:" + deviceId);
         }
     }
