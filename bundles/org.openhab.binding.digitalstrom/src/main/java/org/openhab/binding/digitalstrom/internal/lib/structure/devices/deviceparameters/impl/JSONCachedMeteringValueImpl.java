@@ -119,5 +119,4 @@ public class JSONCachedMeteringValueImpl implements CachedMeteringValue {
         return "dSUID: " + this.getDsuid() + ", dSID: " + this.getDsid() + ", metering-type " + meteringType.toString()
                 + ", metering-unit " + meteringUnit + ", date: " + this.getDate() + ", value: " + this.getValue();
     }
-
 }
