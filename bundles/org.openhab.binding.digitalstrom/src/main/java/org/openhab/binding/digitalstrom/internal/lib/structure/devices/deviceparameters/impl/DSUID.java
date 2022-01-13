@@ -15,32 +15,22 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DSUID} represents the digitalSTROM-Device unique identifier.
  *
- * @author Alexander Friese - initial contributer
+ * @author Alexander Friese - initial contributor
  */
 public class DSUID {
 
-    private String dsuid;
+    private final String dsuid;
     private final String DEFAULT_DSUID = "3504175fe0000000000000000000000001";
-    private final String PRE = "3504175fe0000000";
-    private final String ALL = "ALL";
 
     /**
      * Creates a new {@link DSUID}.
      *
      * @param dsuid to create
      */
-    public DSUID(String dsid) {
-        this.dsuid = dsid;
-        if (dsid != null && !dsid.trim().equals("")) {
-            if (dsid.trim().length() == 34) {
-                this.dsuid = dsid;
-            } else if (dsid.trim().length() == 18) {
-                this.dsuid = this.PRE + dsid;
-            } else if (dsid.trim().toUpperCase().equals(ALL)) {
-                this.dsuid = ALL;
-            } else {
-                this.dsuid = DEFAULT_DSUID;
-            }
+    public DSUID(String dsuid) {
+        var trimmedDsuid = dsuid != null ? dsuid.trim() : "";
+        if (trimmedDsuid.length() == 34) {
+            this.dsuid = trimmedDsuid;
         } else {
             this.dsuid = DEFAULT_DSUID;
         }
@@ -49,7 +39,7 @@ public class DSUID {
     /**
      * Returns the dSUID as {@link String}.
      *
-     * @return dSID
+     * @return dsuid
      */
     public String getValue() {
         return dsuid;
