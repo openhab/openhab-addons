@@ -905,20 +905,19 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
-        if (error != null) {
-            logger.debug("Connection state: {}, error", state, error);
-            String message = error.getLocalizedMessage();
-            message = (message != null) ? message : "@text/offline.communication-error";
-            connectionLost(message);
-            if (state != MqttConnectionState.CONNECTING) {
-                // This is a connection loss, try to restart
+        // do in separate thread as this method needs to return early
+        scheduler.submit(() -> {
+            if (error != null) {
+                logger.debug("Connection state: {}, error", state, error);
+                String localizedMessage = error.getLocalizedMessage();
+                String message = (localizedMessage != null) ? localizedMessage : "@text/offline.communication-error";
+                connectionLost(message);
                 scheduleRestartCommunication();
+            } else if ((state == MqttConnectionState.CONNECTED) && !initStarted) {
+                initialize();
+            } else {
+                logger.trace("Connection state: {}", state);
             }
-        } else if ((state == MqttConnectionState.CONNECTED) && !initStarted) {
-            // do in separate thread as this method needs to return early
-            scheduler.submit(this::initialize);
-        } else {
-            logger.trace("Connection state: {}", state);
-        }
+        });
     }
 }
