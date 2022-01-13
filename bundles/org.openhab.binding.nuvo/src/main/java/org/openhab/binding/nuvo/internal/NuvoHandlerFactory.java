@@ -19,7 +19,9 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.nuvo.internal.handler.NuvoHandler;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -46,6 +48,8 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
 
     private final NuvoStateDescriptionOptionProvider stateDescriptionProvider;
 
+    private final HttpClient httpClient;
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -53,9 +57,11 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public NuvoHandlerFactory(final @Reference NuvoStateDescriptionOptionProvider provider,
-            final @Reference SerialPortManager serialPortManager) {
+            final @Reference SerialPortManager serialPortManager,
+            final @Reference HttpClientFactory httpClientFactory) {
         this.stateDescriptionProvider = provider;
         this.serialPortManager = serialPortManager;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -63,7 +69,7 @@ public class NuvoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new NuvoHandler(thing, stateDescriptionProvider, serialPortManager);
+            return new NuvoHandler(thing, stateDescriptionProvider, serialPortManager, httpClient);
         }
 
         return null;

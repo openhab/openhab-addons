@@ -151,6 +151,174 @@
 					so this setting has no effect on that component.</description>
 				<default>false</default>
 			</parameter>
+			<parameter name="nuvoNetSrc1" type="integer" required="true">
+				<label>S1 is NuvoNet</label>
+				<description>Indicates if Source 1 is configured as a NuvoNet source</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="0">No</option>
+					<option value="1">MPS4 NuvoNet Source</option>
+					<option value="2">openHAB NuvoNet Source</option>
+				</options>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="nuvoNetSrc2" type="integer" required="true">
+				<label>S2 is NuvoNet</label>
+				<description>Indicates if Source 2 is configured as a NuvoNet source</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="0">No</option>
+					<option value="1">MPS4 NuvoNet Source</option>
+					<option value="2">openHAB NuvoNet Source</option>
+				</options>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="nuvoNetSrc3" type="integer" required="true">
+				<label>S3 is NuvoNet</label>
+				<description>Indicates if Source 3 is configured as a NuvoNet source</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="0">No</option>
+					<option value="1">MPS4 NuvoNet Source</option>
+					<option value="2">openHAB NuvoNet Source</option>
+				</options>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="nuvoNetSrc4" type="integer" required="true">
+				<label>S4 is NuvoNet</label>
+				<description>Indicates if Source 4 is configured as a NuvoNet source</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="0">No</option>
+					<option value="1">MPS4 NuvoNet Source</option>
+					<option value="2">openHAB NuvoNet Source</option>
+				</options>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="nuvoNetSrc5" type="integer" required="true">
+				<label>S5 is NuvoNet</label>
+				<description>Indicates if Source 5 is configured as a NuvoNet source</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="0">No</option>
+					<option value="1">MPS4 NuvoNet Source</option>
+					<option value="2">openHAB NuvoNet Source</option>
+				</options>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="nuvoNetSrc6" type="integer" required="true">
+				<label>S6 is NuvoNet</label>
+				<description>Indicates if Source 6 is configured as a NuvoNet source</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="0">No</option>
+					<option value="1">MPS4 NuvoNet Source</option>
+					<option value="2">openHAB NuvoNet Source</option>
+				</options>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favoritesSrc1" type="text" required="false">
+				<label>S1 Favorites</label>
+				<description>A comma separated list of favorite names to load into Source 1</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favoritesSrc2" type="text" required="false">
+				<label>S2 Favorites</label>
+				<description>A comma separated list of favorite names to load into Source 2</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favoritesSrc3" type="text" required="false">
+				<label>S3 Favorites</label>
+				<description>A comma separated list of favorite names to load into Source 3</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favoritesSrc4" type="text" required="false">
+				<label>S4 Favorites</label>
+				<description>A comma separated list of favorite names to load into Source 4</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favoritesSrc5" type="text" required="false">
+				<label>S5 Favorites</label>
+				<description>A comma separated list of favorite names to load into Source 5</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favoritesSrc6" type="text" required="false">
+				<label>S6 Favorites</label>
+				<description>A comma separated list of favorite names to load into Source 6</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favPrefix1" type="text" required="false">
+				<label>S1 Favorite Prefix</label>
+				<description>To quickly locate Source1's favorites, this prefix will be added to the favorite
+					names</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favPrefix2" type="text" required="false">
+				<label>S2 Favorite Prefix</label>
+				<description>To quickly locate Source2's favorites, this prefix will be added to the favorite
+					names</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favPrefix3" type="text" required="false">
+				<label>S3 Favorite Prefix</label>
+				<description>To quickly locate Source3's favorites, this prefix will be added to the favorite
+					names</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favPrefix4" type="text" required="false">
+				<label>S4 Favorite Prefix</label>
+				<description>To quickly locate Source4's favorites, this prefix will be added to the favorite
+					names</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favPrefix5" type="text" required="false">
+				<label>S5 Favorite Prefix</label>
+				<description>To quickly locate Source5's favorites, this prefix will be added to the favorite
+					names</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="favPrefix6" type="text" required="false">
+				<label>S6 Favorite Prefix</label>
+				<description>To quickly locate Source6's favorites, this prefix will be added to the favorite
+					names</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="menuXmlSrc1" type="text" required="false">
+				<label>S1 Menu XML</label>
+				<description>An XML string representing the menu items to load into the keypad for for Source 1, see README</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="menuXmlSrc2" type="text" required="false">
+				<label>S2 Menu XML</label>
+				<description>An XML string representing the menu items to load into the keypad for for Source 2, see README</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="menuXmlSrc3" type="text" required="false">
+				<label>S3 Menu XML</label>
+				<description>An XML string representing the menu items to load into the keypad for for Source 3, see README</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="menuXmlSrc4" type="text" required="false">
+				<label>S4 Menu XML</label>
+				<description>An XML string representing the menu items to load into the keypad for for Source 4, see README</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="menuXmlSrc5" type="text" required="false">
+				<label>S5 Menu XML</label>
+				<description>An XML string representing the menu items to load into the keypad for for Source 5, see README</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="menuXmlSrc6" type="text" required="false">
+				<label>S6 Menu XML</label>
+				<description>An XML string representing the menu items to load into the keypad for for Source 6, see README</description>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -161,6 +329,7 @@
 			<channel id="alloff" typeId="alloff"/>
 			<channel id="allmute" typeId="system.mute"/>
 			<channel id="page" typeId="page"/>
+			<channel id="sendcmd" typeId="sendcmd"/>
 		</channels>
 	</channel-group-type>
 
@@ -196,6 +365,7 @@
 			<channel id="track_length" typeId="track_length"/>
 			<channel id="track_position" typeId="track_position"/>
 			<channel id="button_press" typeId="button_press"/>
+			<channel id="art_url" typeId="art_url"/>
 		</channels>
 	</channel-group-type>
 
@@ -209,6 +379,12 @@
 		<item-type>Switch</item-type>
 		<label>Page</label>
 		<description>Activates the Page Mode for All Zones</description>
+	</channel-type>
+
+	<channel-type id="sendcmd">
+		<item-type>String</item-type>
+		<label>Send Command</label>
+		<description>Send a command to the amplifier</description>
 	</channel-type>
 
 	<channel-type id="source">
@@ -347,6 +523,12 @@
 		<label>Button Pressed</label>
 		<description>Indicates the Last Button Pressed On the Keypad for a Non NuvoNet Source</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="art_url">
+		<item-type>String</item-type>
+		<label>Album Art URL</label>
+		<description>The URL of the Album Art JPG for this source that is displayed on a CTP-36</description>
 	</channel-type>
 
 </thing:thing-descriptions>

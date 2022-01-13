@@ -49,6 +49,34 @@ public class NuvoStatusCodes {
         PLAY_MODE.put("12", "unknown-12");
     }
 
+    // map to lookup button action name from NuvoNet button code
+    public static final Map<String, String> BUTTON_CODE = new HashMap<>();
+    static {
+        BUTTON_CODE.put("1", "OK");
+        BUTTON_CODE.put("2", "PLAYPAUSE");
+        BUTTON_CODE.put("3", "PREV");
+        BUTTON_CODE.put("4", "NEXT");
+        BUTTON_CODE.put("5", "POWERMUTE"); // source will not receive this
+        BUTTON_CODE.put("6", "UP"); // source will not receive this
+        BUTTON_CODE.put("7", "DOWN"); // source will not receive this
+        BUTTON_CODE.put("41", "DISCRETEPLAYPAUSE");
+        BUTTON_CODE.put("42", "DISCRETENEXTTRACK");
+        BUTTON_CODE.put("43", "DISCRETEPREVIOUSTRACK");
+        BUTTON_CODE.put("44", "SHUFFLETOGGLE");
+        BUTTON_CODE.put("45", "REPEATTOGGLE");
+        BUTTON_CODE.put("46", "TUNEUP");
+        BUTTON_CODE.put("47", "TUNEDOWN");
+        BUTTON_CODE.put("48", "SEEKUP");
+        BUTTON_CODE.put("49", "SEEKDOWN");
+        BUTTON_CODE.put("50", "PRESETUP");
+        BUTTON_CODE.put("51", "PRESETDOWN");
+        BUTTON_CODE.put("52", "DIRECTFREQUENCYENTRY");
+        BUTTON_CODE.put("53", "DIRECTPRESETENTRY");
+        BUTTON_CODE.put("54", "NEXTBAND");
+        BUTTON_CODE.put("55", "THUMBSUP");
+        BUTTON_CODE.put("56", "THUMBSDOWN");
+    }
+
     /*
      * This looks broken because the controller is seriously broken...
      * On the keypad when adjusting the balance to "Left 18", the serial data reports R18 ¯\_(ツ)_/¯
