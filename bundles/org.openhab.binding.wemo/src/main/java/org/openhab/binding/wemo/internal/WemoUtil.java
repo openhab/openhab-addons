@@ -13,6 +13,7 @@
 package org.openhab.binding.wemo.internal;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -152,5 +153,14 @@ public class WemoUtil {
         entities.put("apos", "'");
         entities.put("quot", "\"");
         return entities;
+    }
+
+    public static String getWemoHost(@Nullable URL descriptorURL) {
+        if (descriptorURL != null) {
+            String host = descriptorURL.getHost();
+            return host;
+        } else {
+            return "";
+        }
     }
 }
