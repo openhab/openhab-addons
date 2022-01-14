@@ -10,10 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ipp.internal;
+package org.openhab.binding.ipp.internal.factory;
 
-import static org.openhab.binding.ipp.internal.IppBindingConstants.PRINTER_THING_TYPE;
+import static org.openhab.binding.ipp.internal.IppBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipp.internal.handler.IppPrinterHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
@@ -23,6 +25,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -35,49 +38,47 @@ import org.slf4j.LoggerFactory;
  * @author Tobias Braeutigam - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.ipp")
+@NonNullByDefault
 public class IppHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(IppHandlerFactory.class);
 
-    private DiscoveryServiceRegistry discoveryServiceRegistry;
+    private final DiscoveryServiceRegistry discoveryServiceRegistry;
 
-    @Reference
-    protected void setDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
+    @Activate
+    public IppHandlerFactory(final @Reference DiscoveryServiceRegistry discoveryServiceRegistry) {
         this.discoveryServiceRegistry = discoveryServiceRegistry;
-    }
-
-    protected void unsetDiscoveryServiceRegistry(DiscoveryServiceRegistry discoveryServiceRegistry) {
-        this.discoveryServiceRegistry = null;
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return IppBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         logger.trace("createThing({},{},{},{})", thingTypeUID, configuration, thingUID, bridgeUID);
-        if (IppBindingConstants.PRINTER_THING_TYPE.equals(thingTypeUID)) {
+        if (PRINTER_THING_TYPE.equals(thingTypeUID)) {
             ThingUID deviceUID = getIppPrinterUID(thingTypeUID, thingUID, configuration);
             logger.debug("creating thing {} from deviceUID: {}", thingTypeUID, deviceUID);
             return super.createThing(thingTypeUID, configuration, deviceUID, null);
         }
-        throw new IllegalArgumentException("The thing type {} " + thingTypeUID + " is not supported by the binding.");
+        throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the binding.");
     }
 
-    private ThingUID getIppPrinterUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getIppPrinterUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID,
+            Configuration configuration) {
         if (thingUID == null) {
-            String name = (String) configuration.get(IppBindingConstants.PRINTER_PARAMETER_NAME);
-            thingUID = new ThingUID(thingTypeUID, name);
+            String name = (String) configuration.get(PRINTER_PARAMETER_NAME);
+            return new ThingUID(thingTypeUID, name);
         }
         return thingUID;
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(PRINTER_THING_TYPE)) {
+        if (PRINTER_THING_TYPE.equals(thingTypeUID)) {
             return new IppPrinterHandler(thing, discoveryServiceRegistry);
         }
         return null;
