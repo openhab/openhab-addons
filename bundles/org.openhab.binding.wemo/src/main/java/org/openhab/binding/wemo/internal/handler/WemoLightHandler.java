@@ -165,7 +165,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
                     }

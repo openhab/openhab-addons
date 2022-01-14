@@ -92,7 +92,8 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-udn");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/config-status.error.missing-udn");
             logger.debug("Cannot initalize WemoCrockpotHandler. UDN not set.");
         }
     }
@@ -123,7 +124,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
                     }

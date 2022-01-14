@@ -108,7 +108,8 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-udn");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/config-status.error.missing-udn");
             logger.debug("Cannot initalize WemoHolmesHandler. UDN not set.");
         }
     }
@@ -138,7 +139,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
+                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
                     }
