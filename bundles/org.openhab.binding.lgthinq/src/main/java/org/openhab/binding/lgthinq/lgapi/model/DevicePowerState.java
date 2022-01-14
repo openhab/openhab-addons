@@ -21,26 +21,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum DevicePowerState {
-    DV_POWER_ON(1.0),
-    DV_POWER_OFF(0.0),
+    DV_POWER_ON(1),
+    DV_POWER_OFF(0),
     DV_POWER_UNK(-1);
 
-    private final double powerState;
+    private final int powerState;
 
     public double getValue() {
         return powerState;
     }
 
-    DevicePowerState(double i) {
+    DevicePowerState(int i) {
         powerState = i;
     }
 
     public static DevicePowerState statusOf(double value) {
         switch ((int) value) {
-            case 1:
-                return DV_POWER_ON;
             case 0:
                 return DV_POWER_OFF;
+            case 1:
+            case 256:
+            case 257:
+                return DV_POWER_ON;
+
             default:
                 return DV_POWER_UNK;
         }
