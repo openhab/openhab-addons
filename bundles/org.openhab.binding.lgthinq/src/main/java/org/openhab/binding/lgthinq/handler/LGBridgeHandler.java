@@ -76,6 +76,7 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
         super(bridge);
         tokenManager = TokenManager.getInstance();
         lgApiClient = LGApiV1ClientServiceImpl.getInstance();
+        lgDevicePollingRunnable = new LGDevicePollingRunnable(bridge.getUID().getId());
     }
 
     final ReentrantLock pollingLock = new ReentrantLock();
@@ -84,17 +85,23 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
      * Abstract Runnable Pooling Class to schedule sincronization status of the Bridge Thing Kinds !
      */
     abstract class PollingRunnable implements Runnable {
+        protected final String bridgeName;
+
+        PollingRunnable(String bridgeName) {
+            this.bridgeName = bridgeName;
+        }
+
         @Override
         public void run() {
             try {
                 pollingLock.lock();
                 // check if configuration file already exists
-                if (tokenManager.isOauthTokenRegistered()) {
+                if (tokenManager.isOauthTokenRegistered(bridgeName)) {
                     logger.debug(
                             "Token authentication process has been already done. Skip first authentication process.");
                     try {
                         // Dummy - if token is expired, then provide the refresh
-                        tokenManager.getValidRegisteredToken();
+                        tokenManager.getValidRegisteredToken(bridgeName);
                     } catch (IOException e) {
                         logger.error("Error reading LGThinq TokenFile", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -107,9 +114,9 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
                     }
                 } else {
                     try {
-                        tokenManager.oauthFirstRegistration(lgthinqConfig.getLanguage(), lgthinqConfig.getCountry(),
-                                lgthinqConfig.getUsername(), lgthinqConfig.getPassword());
-                        if (tokenManager.getValidRegisteredToken() != null) {
+                        tokenManager.oauthFirstRegistration(bridgeName, lgthinqConfig.getLanguage(),
+                                lgthinqConfig.getCountry(), lgthinqConfig.getUsername(), lgthinqConfig.getPassword());
+                        if (tokenManager.getValidRegisteredToken(bridgeName) != null) {
 
                         }
                     } catch (IOException e) {
@@ -186,17 +193,24 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
         return lGDeviceRegister.get(deviceId);
     }
 
-    private final Runnable lgDevicePollingRunnable = new PollingRunnable() {
+    private final LGDevicePollingRunnable lgDevicePollingRunnable;
+
+    class LGDevicePollingRunnable extends PollingRunnable {
+
+        public LGDevicePollingRunnable(String bridgeName) {
+            super(bridgeName);
+        }
+
         @Override
         protected void doConnectedRun() throws LGThinqException {
             Map<String, LGDevice> lastDevicesDiscoveredCopy = new HashMap<>(lastDevicesDiscovered);
-            for (final LGDevice device : lgApiClient.listAccountDevices()) {
+            for (final LGDevice device : lgApiClient.listAccountDevices(bridgeName)) {
                 String deviceId = device.getDeviceId();
 
                 if (lGDeviceRegister.get(deviceId) == null) {
                     logger.debug("Adding new LG Device to things registry with id:{}", deviceId);
                     if (discoveryService != null) {
-                        discoveryService.addLgDeviceDiscovery(device);
+                        discoveryService.addLgDeviceDiscovery(bridgeName, device);
                     }
                 }
                 lastDevicesDiscovered.put(deviceId, device);
@@ -245,7 +259,7 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
     public void handleRemoval() {
         if (devicePollingJob != null)
             devicePollingJob.cancel(true);
-        tokenManager.cleanupTokenRegistry();
+        tokenManager.cleanupTokenRegistry(getBridge().getUID().getId());
         super.handleRemoval();
     }
 
@@ -278,21 +292,23 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
     }
 
     private void startLGDevicePolling() {
-        if (devicePollingJob == null || devicePollingJob.isDone()) {
-            long pollingInterval;
-            int configPollingInterval = lgthinqConfig.getPoolingIntervalSec();
-            // It's not recommended to pool for resources in LG API short intervals to do not enter in BlackList
-            if (configPollingInterval < 300) {
-                pollingInterval = TimeUnit.SECONDS.toSeconds(300);
-                logger.info("Wrong configuration value for polling interval. Using default value: {}s",
-                        pollingInterval);
-            } else {
-                pollingInterval = configPollingInterval;
-            }
-            // Delay the first execution to give a chance to have all light and group things registered
-            devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, 10, pollingInterval,
-                    TimeUnit.SECONDS);
+        // stop current scheduler, if any
+        if (devicePollingJob != null && !devicePollingJob.isDone()) {
+            devicePollingJob.cancel(true);
         }
+        long pollingInterval;
+        int configPollingInterval = lgthinqConfig.getPoolingIntervalSec();
+        // It's not recommended to pool for resources in LG API short intervals to do not enter in BlackList
+        if (configPollingInterval < 300) {
+            pollingInterval = TimeUnit.SECONDS.toSeconds(300);
+            logger.info("Wrong configuration value for polling interval. Using default value: {}s", pollingInterval);
+        } else {
+            pollingInterval = configPollingInterval;
+        }
+        // submit instantlly and schedule for the next pooling interval.
+        scheduler.submit(lgDevicePollingRunnable);
+        devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, pollingInterval, pollingInterval,
+                TimeUnit.SECONDS);
     }
 
     @Override

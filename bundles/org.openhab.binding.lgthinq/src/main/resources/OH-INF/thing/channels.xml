@@ -26,12 +26,12 @@
 		<category>Wind</category>
 		<state>
 			<options>
-				<option value="2.0">Lower</option>
-				<option value="3.0">Low</option>
-				<option value="4.0">Medium</option>
-				<option value="5.0">Fast</option>
-				<option value="6.0">Faster</option>
-				<option value="8.0">Auto</option>
+				<option value="2">Lower</option>
+				<option value="3">Low</option>
+				<option value="4">Medium</option>
+				<option value="5">Fast</option>
+				<option value="6">Faster</option>
+				<option value="8">Auto</option>
 			</options>
 		</state>
 	</channel-type>
@@ -41,11 +41,9 @@
 		<description>AC Operation Mode</description>
 		<state>
 			<options>
-				<option value="0.0">Cool</option>
-				<option value="1.0">Dry</option>
-				<option value="2.0">Fan</option>
-				<option value="3.0">AI</option>
-				<option value="4.0">Heat</option>
+				<option value="1">Cool</option>
+				<option value="2">Dry</option>
+				<option value="3">Fan</option>
 			</options>
 		</state>
 	</channel-type>

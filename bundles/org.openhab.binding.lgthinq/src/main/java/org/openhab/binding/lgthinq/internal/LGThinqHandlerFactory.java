@@ -28,7 +28,9 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,7 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
             THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(LGThinqHandlerFactory.class);
+    private final LGDeviceDynStateDescriptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -56,7 +59,7 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_AIR_CONDITIONER.equals(thingTypeUID)) {
-            return new LGAirConditionerHandler(thing);
+            return new LGAirConditionerHandler(thing, stateDescriptionProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new LGBridgeHandler((Bridge) thing);
         }
@@ -73,5 +76,10 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
         return null;
+    }
+
+    @Activate
+    public LGThinqHandlerFactory(final @Reference LGDeviceDynStateDescriptionProvider stateDescriptionProvider) {
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 }

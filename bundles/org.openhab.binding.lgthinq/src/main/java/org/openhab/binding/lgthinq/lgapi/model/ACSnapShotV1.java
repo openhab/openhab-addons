@@ -23,7 +23,7 @@ public class ACSnapShotV1 extends ACSnapShot {
 
     @Override
     @JsonProperty("WindStrength")
-    public Double getAirWindStrength() {
+    public Integer getAirWindStrength() {
         return super.getAirWindStrength();
     }
 
@@ -41,13 +41,13 @@ public class ACSnapShotV1 extends ACSnapShot {
 
     @Override
     @JsonProperty("OpMode")
-    public Double getOperationMode() {
+    public Integer getOperationMode() {
         return super.getOperationMode();
     }
 
     @Override
     @JsonProperty("Operation")
-    public Double getOperation() {
+    public Integer getOperation() {
         return super.getOperation();
     }
 }

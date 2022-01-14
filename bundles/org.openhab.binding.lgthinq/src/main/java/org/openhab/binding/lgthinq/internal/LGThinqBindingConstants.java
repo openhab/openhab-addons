@@ -13,6 +13,7 @@
 package org.openhab.binding.lgthinq.internal;
 
 import java.io.File;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.OpenHAB;
@@ -29,8 +30,8 @@ public class LGThinqBindingConstants {
     public static final String BINDING_ID = "lgthinq";
 
     public static final String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
-    public static String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinqbridge.json";
-
+    public static String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinqbridge-%s.json";
+    public static String BASE_CAP_CONFIG_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinq-%s-cap.json";
     public static final String V2_AUTH_PATH = "/oauth/1.0/oauth2/token";
     public static final String V2_USER_INFO = "/users/profile";
     public static final String V2_API_KEY = "VGhpblEyLjAgU0VSVklDRQ==";
@@ -86,4 +87,25 @@ public class LGThinqBindingConstants {
     public static final String CHANNEL_POWER_ID = "power";
     public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
     public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
+
+    public static final Map<String, String> CAP_OP_MODE = Map.of("@AC_MAIN_OPERATION_MODE_COOL_W", "Cool",
+            "@AC_MAIN_OPERATION_MODE_DRY_W", "Dry", "@AC_MAIN_OPERATION_MODE_FAN_W", "Fan",
+            "@AC_MAIN_OPERATION_MODE_HEAT_W", "Heat", "@AC_MAIN_OPERATION_MODE_AIRCLEAN_W", "Air Clean",
+            "@AC_MAIN_OPERATION_MODE_ACO_W", "Auto", "@AC_MAIN_OPERATION_MODE_AI_W", "AI",
+            "@AC_MAIN_OPERATION_MODE_ENERGY_SAVING_W", "Eco", "@AC_MAIN_OPERATION_MODE_AROMA_W", "Aroma",
+            "@AC_MAIN_OPERATION_MODE_ANTIBUGS_W", "Anti Bugs");
+
+    public static final Map<String, String> CAP_FAN_SPEED = Map.ofEntries(
+            Map.entry("@AC_MAIN_WIND_STRENGTH_SLOW_W", "Slow"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_SLOW_LOW_W", "Slower"), Map.entry("@AC_MAIN_WIND_STRENGTH_LOW_W", "Low"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_LOW_MID_W", "Low Mid"), Map.entry("@AC_MAIN_WIND_STRENGTH_MID_W", "Mid"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_MID_HIGH_W", "Mid High"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_HIGH_W", "High"), Map.entry("@AC_MAIN_WIND_STRENGTH_POWER_W", "Power"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_AUTO_W", "Auto"), Map.entry("@AC_MAIN_WIND_STRENGTH_NATURE_W", "Nature"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_LOW_RIGHT_W", "Right Low"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_MID_RIGHT_W", "Right Mid"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_HIGH_RIGHT_W", "Right High"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_LOW_LEFT_W", "Left Low"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_MID_LEFT_W", "Left Mid"),
+            Map.entry("@AC_MAIN_WIND_STRENGTH_HIGH_LEFT_W", "Left High"));
 }

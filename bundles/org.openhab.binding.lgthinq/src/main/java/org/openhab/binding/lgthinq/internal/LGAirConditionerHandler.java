@@ -15,14 +15,13 @@ package org.openhab.binding.lgthinq.internal;
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 import static org.openhab.core.library.types.OnOffType.ON;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.errors.LGApiException;
@@ -41,6 +40,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,8 +56,14 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
             "" + DeviceTypes.AIR_CONDITIONER.deviceTypeId()); // deviceType from AirConditioner
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AIR_CONDITIONER);
+    private final LGDeviceDynStateDescriptionProvider stateDescriptionProvider;
+    private final ChannelUID opModeChannelUID;
+    private final ChannelUID opModeFanSpeedUID;
+    @Nullable
+    private ACCapability acCapability;
     private String lgPlatfomType = "";
     private final Logger logger = LoggerFactory.getLogger(LGAirConditionerHandler.class);
+    @NonNullByDefault
     private final LGApiClientService lgApiClientService;
     private @Nullable LGThinqConfiguration config;
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
@@ -71,12 +77,17 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     private boolean monitorV1Began = false;
     private String monitorWorkId = "";
     private final LinkedBlockingQueue<AsyncCommandParams> commandBlockQueue = new LinkedBlockingQueue<>(20);
+    @NonNullByDefault
+    private String bridgeId = "";
 
-    public LGAirConditionerHandler(Thing thing) {
+    public LGAirConditionerHandler(Thing thing, LGDeviceDynStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
+        this.stateDescriptionProvider = stateDescriptionProvider;
         lgPlatfomType = "" + thing.getProperties().get(PLATFORM_TYPE);
         lgApiClientService = lgPlatfomType.equals(PLATFORM_TYPE_V1) ? LGApiV1ClientServiceImpl.getInstance()
                 : LGApiV2ClientServiceImpl.getInstance();
+        opModeChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_MOD_OP_ID);
+        opModeFanSpeedUID = new ChannelUID(getThing().getUID(), CHANNEL_FAN_SPEED_ID);
     }
 
     static class AsyncCommandParams {
@@ -104,7 +115,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
 
     @Override
     public void initialize() {
-        logger.debug("Initializing hue light handler.");
+        logger.debug("Initializing Thinq thing.");
         Bridge bridge = getBridge();
         initializeThing((bridge == null) ? null : bridge.getStatus());
     }
@@ -125,6 +136,12 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
         }
         Bridge bridge = getBridge();
         if (!deviceId.isBlank()) {
+            try {
+                updateChannelDynStateDescription();
+            } catch (LGApiException e) {
+                logger.error(
+                        "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.");
+            }
             if (bridge != null) {
                 LGBridgeHandler handler = (LGBridgeHandler) bridge.getHandler();
                 // registry this thing to the bridge
@@ -152,7 +169,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
 
     private void startCommandExecutorQueueJob() {
         if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
-            commandExecutorQueueJob = scheduler.submit(new CommandExecutorRunnable());
+            commandExecutorQueueJob = scheduler.submit(queuedCommandExecutor);
         }
     }
 
@@ -173,7 +190,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                         }
                         return;
                     }
-                    if (shot.getAcOpMode() != null) {
+                    if (shot.getOperationMode() != null) {
                         updateState(CHANNEL_MOD_OP_ID, new DecimalType(shot.getOperationMode()));
                     }
                     if (shot.getAcPowerStatus() != null) {
@@ -201,22 +218,67 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
         }
     }
 
+    private String getBridgeId() {
+        if (bridgeId.isBlank() && (getBridge() == null || getBridge().getUID() == null)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            logger.error("Configuration error um Thinq Thing - No Bridge defined for the thing.");
+            return "UNKNOWN";
+        } else if (bridgeId.isBlank()) {
+            bridgeId = getBridge().getUID().getId();
+        }
+        return bridgeId;
+    }
+
     private void forceStopDeviceV1Monitor(String deviceId, String workId) {
         try {
             monitorV1Began = false;
-            lgApiClientService.stopMonitor(deviceId, monitorWorkId);
+            lgApiClientService.stopMonitor(getBridgeId(), deviceId, monitorWorkId);
         } catch (Exception e) {
         }
+    }
+
+    @NonNull
+    private String emptyIfNull(@Nullable String value) {
+        return value == null ? "" : "" + value;
+    }
+
+    @Override
+    public void updateChannelDynStateDescription() throws LGApiException {
+        ACCapability acCap = getAcCapabilities();
+        if (isLinked(opModeChannelUID)) {
+            List<StateOption> options = new ArrayList<>();
+            acCap.getSupportedOpMode().forEach((v) -> {
+                options.add(new StateOption(emptyIfNull(acCap.getOpMod().get(v)), emptyIfNull(CAP_OP_MODE.get(v))));
+            });
+            stateDescriptionProvider.setStateOptions(opModeChannelUID, options);
+        }
+        if (isLinked(opModeFanSpeedUID)) {
+            List<StateOption> options = new ArrayList<>();
+            acCap.getSupportedFanSpeed().forEach((v) -> {
+                options.add(
+                        new StateOption(emptyIfNull(acCap.getFanSpeed().get(v)), emptyIfNull(CAP_FAN_SPEED.get(v))));
+            });
+            stateDescriptionProvider.setStateOptions(opModeFanSpeedUID, options);
+        }
+    }
+
+    @Override
+    @Nullable
+    public ACCapability getAcCapabilities() throws LGApiException {
+        if (acCapability == null) {
+            acCapability = lgApiClientService.getDeviceCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
+        }
+        return acCapability;
     }
 
     private ACSnapShot getSnapshotDeviceAdapter(String deviceId) throws LGApiException {
         // analise de platform version
         if (PLATFORM_TYPE_V2.equals(lgPlatfomType)) {
-            return lgApiClientService.getAcDeviceData(getDeviceId());
+            return lgApiClientService.getAcDeviceData(getBridgeId(), getDeviceId());
         } else {
             try {
                 if (!monitorV1Began) {
-                    monitorWorkId = lgApiClientService.startMonitor(getDeviceId());
+                    monitorWorkId = lgApiClientService.startMonitor(getBridgeId(), getDeviceId());
                     monitorV1Began = true;
                 }
             } catch (LGDeviceV1OfflineException e) {
@@ -233,7 +295,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
             while (retries > 0) {
                 // try to get monitoring data result 3 times.
                 try {
-                    shot = lgApiClientService.getMonitorData(deviceId, monitorWorkId);
+                    shot = lgApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId);
                     if (shot != null) {
                         return shot;
                     }
@@ -295,12 +357,17 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
 
     @Override
     public String getDeviceAlias() {
-        return "" + getThing().getProperties().get(DEVICE_ALIAS);
+        return emptyIfNull(getThing().getProperties().get(DEVICE_ALIAS));
     }
 
     @Override
     public String getDeviceModelName() {
-        return "" + getThing().getProperties().get(MODEL_NAME);
+        return emptyIfNull(getThing().getProperties().get(MODEL_NAME));
+    }
+
+    @Override
+    public String getDeviceUriJsonConfig() {
+        return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
     }
 
     @Override
@@ -349,7 +416,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
         }
     }
 
-    class CommandExecutorRunnable implements Runnable {
+    private Runnable queuedCommandExecutor = new Runnable() {
         @Override
         public void run() {
             while (true) {
@@ -361,12 +428,14 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     return;
                 }
                 Command command = params.command;
+
                 try {
+                    ACCapability acCap = getAcCapabilities();
                     switch (params.channelUID) {
                         case CHANNEL_MOD_OP_ID: {
                             if (params.command instanceof DecimalType) {
-                                lgApiClientService.changeOperationMode(getDeviceId(),
-                                        ACOpMode.statusOf(((DecimalType) command).doubleValue()));
+                                lgApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
+                                        ((DecimalType) command).intValue());
                             } else {
                                 logger.warn("Received command different of Numeric in Mod Operation. Ignoring");
                             }
@@ -374,8 +443,8 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                         }
                         case CHANNEL_FAN_SPEED_ID: {
                             if (command instanceof DecimalType) {
-                                lgApiClientService.changeFanSpeed(getDeviceId(),
-                                        ACFanSpeed.statusOf(((DecimalType) command).doubleValue()));
+                                lgApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
+                                        ((DecimalType) command).intValue());
                             } else {
                                 logger.warn("Received command different of Numeric in FanSpeed Channel. Ignoring");
                             }
@@ -383,7 +452,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                         }
                         case CHANNEL_POWER_ID: {
                             if (command instanceof OnOffType) {
-                                lgApiClientService.turnDevicePower(getDeviceId(),
+                                lgApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
                                         command == ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
                             } else {
                                 logger.warn("Received command different of OnOffType in Power Channel. Ignoring");
@@ -400,7 +469,8 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                                 logger.warn("Received command different of Numeric in TargetTemp Channel. Ignoring");
                                 break;
                             }
-                            lgApiClientService.changeTargetTemperature(getDeviceId(), ACTargetTmp.statusOf(targetTemp));
+                            lgApiClientService.changeTargetTemperature(getBridgeId(), getDeviceId(),
+                                    ACTargetTmp.statusOf(targetTemp));
                             break;
                         }
                         default: {
@@ -415,5 +485,5 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                 }
             }
         }
-    }
+    };
 }

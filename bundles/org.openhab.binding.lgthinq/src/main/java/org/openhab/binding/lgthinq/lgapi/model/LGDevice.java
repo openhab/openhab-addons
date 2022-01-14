@@ -30,7 +30,7 @@ public class LGDevice {
     private String alias;
     private String deviceId;
     private String platformType;
-    private String modelJSonUri;
+    private String modelJsonUri;
     private boolean online;
 
     public String getModelName() {
@@ -62,12 +62,12 @@ public class LGDevice {
         this.deviceCode = deviceCode;
     }
 
-    public String getModelJSonUri() {
-        return modelJSonUri;
+    public String getModelJsonUri() {
+        return modelJsonUri;
     }
 
-    public void setModelJSonUri(String modelJSonUri) {
-        this.modelJSonUri = modelJSonUri;
+    public void setmodelJsonUri(String modelJsonUri) {
+        this.modelJsonUri = modelJsonUri;
     }
 
     public String getAlias() {

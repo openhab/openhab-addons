@@ -21,6 +21,9 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.handler.LGBridgeHandler;
 import org.openhab.binding.lgthinq.internal.LGAirConditionerHandler;
+import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
+import org.openhab.binding.lgthinq.lgapi.LGApiV1ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgapi.LGApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -44,9 +47,12 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
     private final Logger logger = LoggerFactory.getLogger(LGThinqDiscoveryService.class);
     private @Nullable LGBridgeHandler bridgeHandler;
     private @Nullable ThingUID bridgeHandlerUID;
+    private LGApiClientService lgApiV1ClientService, lgApiV2ClientService;
 
     public LGThinqDiscoveryService() {
         super(LGAirConditionerHandler.SUPPORTED_THING_TYPES, SEARCH_TIME);
+        lgApiV1ClientService = LGApiV1ClientServiceImpl.getInstance();
+        lgApiV2ClientService = LGApiV2ClientServiceImpl.getInstance();
     }
 
     @Override
@@ -86,7 +92,7 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
         }
     }
 
-    public void addLgDeviceDiscovery(LGDevice device) {
+    public void addLgDeviceDiscovery(String bridgeName, LGDevice device) {
         ThingUID thingUID = getThingUID(device);
         ThingTypeUID thingTypeUID = getThingTypeUID(device);
 
@@ -94,10 +100,22 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
         if (thingUID != null && thingTypeUID != null) {
             Map<String, Object> properties = new HashMap<>();
             properties.put(DEVICE_ID, device.getDeviceId());
-            properties.put(MODEL_NAME, device.getModelName());
             properties.put(DEVICE_ALIAS, device.getAlias());
-            properties.put(MODEL_URL_INFO, device.getModelJSonUri());
+            properties.put(MODEL_URL_INFO, device.getModelJsonUri());
             properties.put(PLATFORM_TYPE, device.getPlatformType());
+            try {
+                // registry the capabilities of the thing
+                if (PLATFORM_TYPE_V1.equals(device.getPlatformType())) {
+                    lgApiV1ClientService.getDeviceCapability(bridgeName, device.getModelJsonUri(), true);
+                } else {
+                    lgApiV2ClientService.getDeviceCapability(bridgeName, device.getModelJsonUri(), true);
+                }
+
+            } catch (Exception ex) {
+                logger.error(
+                        "Error trying to get device capabilities in discovery service. Fallback to the defaults values",
+                        ex);
+            }
             if (modelId != null) {
                 properties.put(Thing.PROPERTY_MODEL_ID, modelId);
             }
