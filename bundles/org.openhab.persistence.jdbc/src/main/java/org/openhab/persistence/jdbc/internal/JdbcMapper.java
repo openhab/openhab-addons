@@ -184,6 +184,21 @@ public class JdbcMapper {
         return null;
     }
 
+    public boolean deleteItemValues(FilterCriteria filter, String table, Item item) {
+        logger.debug("JDBC::deleteItemValues filter='{}' table='{}' item='{}' itemName='{}'", (filter != null), table,
+                item, item.getName());
+        if (table != null) {
+            long timerStart = System.currentTimeMillis();
+            conf.getDBDAO().doDeleteItemValues(item, filter, table, timeZoneProvider.getTimeZone());
+            logTime("deleteItemValues", timerStart, System.currentTimeMillis());
+            errCnt = 0;
+            return true;
+        } else {
+            logger.error("JDBC::deleteItemValues: TABLE is NULL; cannot delete data from non-existent table.");
+            return false;
+        }
+    }
+
     /***********************
      * DATABASE CONNECTION *
      ***********************/

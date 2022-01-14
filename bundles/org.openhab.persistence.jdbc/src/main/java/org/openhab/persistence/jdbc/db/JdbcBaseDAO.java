@@ -362,6 +362,12 @@ public class JdbcBaseDAO {
                 .collect(Collectors.<HistoricItem> toList());
     }
 
+    public void doDeleteItemValues(Item item, FilterCriteria filter, String table, ZoneId timeZone) {
+        String sql = histItemFilterDeleteProvider(filter, table, timeZone);
+        logger.debug("JDBC::doDeleteItemValues sql={}", sql);
+        Yank.execute(sql, null);
+    }
+
     /*************
      * Providers *
      *************/
@@ -373,19 +379,9 @@ public class JdbcBaseDAO {
                 "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
                 filter, numberDecimalcount, table, simpleName);
 
-        String filterString = "";
-        if (filter.getBeginDate() != null) {
-            filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
-                    + "'";
-        }
-        if (filter.getEndDate() != null) {
-            filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
-                    + "'";
-        }
-        filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC ";
-        if (filter.getPageSize() != 0x7fffffff) {
+        String filterString = resolveTimeFilter(filter, timeZone);
+        filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
+        if (filter.getPageSize() != Integer.MAX_VALUE) {
             filterString += " LIMIT " + filter.getPageNumber() * filter.getPageSize() + "," + filter.getPageSize();
         }
         // SELECT time, ROUND(value,3) FROM number_item_0114 ORDER BY time DESC LIMIT 0,1
@@ -398,6 +394,33 @@ public class JdbcBaseDAO {
         }
         logger.debug("JDBC::query queryString = {}", queryString);
         return queryString;
+    }
+
+    protected String histItemFilterDeleteProvider(FilterCriteria filter, String table, ZoneId timeZone) {
+        logger.debug("JDBC::histItemFilterDeleteProvider filter = {}, table = {}", filter, table);
+
+        String filterString = resolveTimeFilter(filter, timeZone);
+        String deleteString = "DELETE FROM " + table;
+        if (!filterString.isEmpty()) {
+            deleteString += filterString;
+        }
+        logger.debug("JDBC::delete deleteString = {}", deleteString);
+        return deleteString;
+    }
+
+    protected String resolveTimeFilter(FilterCriteria filter, ZoneId timeZone) {
+        String filterString = "";
+        if (filter.getBeginDate() != null) {
+            filterString += filterString.isEmpty() ? " WHERE" : " AND";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate().withZoneSameInstant(timeZone))
+                    + "'";
+        }
+        if (filter.getEndDate() != null) {
+            filterString += filterString.isEmpty() ? " WHERE" : " AND";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate().withZoneSameInstant(timeZone))
+                    + "'";
+        }
+        return filterString;
     }
 
     private String updateItemTableNamesProvider(List<ItemVO> namesList) {

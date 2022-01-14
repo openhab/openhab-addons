@@ -246,6 +246,39 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
     @Override
     public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::remove: database not connected, remove aborted for item '{}'", filter.getItemName());
+            return false;
+        }
+
+        // Get the item name from the filter
+        // Also get the Item object so we can determine the type
+        Item item = null;
+        String itemName = filter.getItemName();
+        logger.debug("JDBC::remove: item is {}", itemName);
+        if (itemName == null) {
+            throw new IllegalArgumentException("Item name must not be null");
+        }
+        try {
+            item = itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            logger.error("JDBC::remove: unable to get item for itemName: '{}'. Ignore and give up!", itemName);
+            return false;
+        }
+
+        String table = sqlTables.get(itemName);
+        if (table == null) {
+            logger.debug("JDBC::remove: unable to find table for item with name: '{}', no data in database.", itemName);
+            return false;
+        }
+
+        long timerStart = System.currentTimeMillis();
+        boolean result = deleteItemValues(filter, table, item);
+        if (logger.isDebugEnabled()) {
+            logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", item.getName(),
+                    new Date(), System.currentTimeMillis() - timerStart);
+        }
+
+        return result;
     }
 }
