@@ -92,7 +92,7 @@ public class ShadeCapabilitiesDatabase {
         protected int intValue = -1;
         protected String text = "-- not in database --";
 
-        protected Integer getValue() {
+        public Integer getValue() {
             return intValue;
         }
 
