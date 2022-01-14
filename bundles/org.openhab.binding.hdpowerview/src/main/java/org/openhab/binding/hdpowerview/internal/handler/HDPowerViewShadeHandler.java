@@ -54,6 +54,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParseException;
+
 /**
  * Handles commands for an HD PowerView Shade
  *
@@ -169,6 +171,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         try {
             handleShadeCommand(channelId, command, webTargets, shadeId);
+        } catch (JsonParseException e) {
+            logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
         } catch (HubProcessingException e) {
             // ScheduledFutures will be cancelled by dispose(), naturally causing InterruptedException in invoke()
             // for any ongoing requests. Logging this would only cause confusion.

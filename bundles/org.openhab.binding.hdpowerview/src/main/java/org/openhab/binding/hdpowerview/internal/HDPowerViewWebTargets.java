@@ -175,7 +175,7 @@ public class HDPowerViewWebTargets {
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
     public @Nullable Shade moveShade(int shadeId, ShadePosition position)
-            throws HubProcessingException, HubMaintenanceException {
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
         String jsonRequest = gson.toJson(new ShadeMove(position));
         String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
         return gson.fromJson(jsonResponse, Shade.class);
@@ -189,7 +189,8 @@ public class HDPowerViewWebTargets {
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Shade stopShade(int shadeId) throws HubProcessingException, HubMaintenanceException {
+    public @Nullable Shade stopShade(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
         String jsonRequest = gson.toJson(new ShadeStop());
         String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
         return gson.fromJson(jsonResponse, Shade.class);
@@ -203,7 +204,8 @@ public class HDPowerViewWebTargets {
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable Shade calibrateShade(int shadeId) throws HubProcessingException, HubMaintenanceException {
+    public @Nullable Shade calibrateShade(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
         String jsonRequest = gson.toJson(new ShadeCalibrate());
         String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
         return gson.fromJson(jsonResponse, Shade.class);
