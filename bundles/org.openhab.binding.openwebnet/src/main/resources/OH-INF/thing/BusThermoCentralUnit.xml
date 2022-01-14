@@ -14,12 +14,14 @@
 		<description>A OpenWebNet BUS/SCS configured thermo central unit.</description>
 
 		<channels>
-			<!-- read only -->			
+			<!-- read only -->
 			<channel id="remoteControl" typeId="remoteControl"/>
 			<channel id="batteryStatus" typeId="batteryStatus"/>
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
 			<channel id="modeCentralUnit" typeId="modeCentralUnit"/>
+			<channel id="weeklyProgramCentralUnit" typeId="weeklyProgramCentralUnit"/>
+			<channel id="scenarioProgramCentralUnit" typeId="scenarioProgramCentralUnit"/>
 		</channels>
 
 		<properties>

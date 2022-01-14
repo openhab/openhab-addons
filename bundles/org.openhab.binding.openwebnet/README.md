@@ -150,10 +150,13 @@ Temperature sensors can be configured defining a `bus_thermo_sensor` Thing with 
     - example sensor `5` of external zone `00` --> `where="500"`
     - example: slave sensor `3` of zone `2` --> `where="302"`
 
-#### NOTE
+The Central Unit can be configured defining a `bus_themo_cu` Thing:  `where` must be set to `0`.
 
-Systems with Central Units (4 or 99 zones) are not fully supported yet.
+### Central Unit integration open points 
 
+- Read setPoint temperature 
+- Holiday activation command (all zones)
+- Discovery 
 
 ## Channels 
 
@@ -183,7 +186,9 @@ Systems with Central Units (4 or 99 zones) are not fully supported yet.
 | `localMode`          | `bus_thermo_zone`                    | String             | The zone local offset status: `OFF`, `PROTECTION`, `MINUS_3`, `MINUS_2` , `MINUS_1`, `NORMAL`, `PLUS_1`, `PLUS_2`, `PLUS_3`  | R | Y |
 | `remoteControl`          | `bus_thermo_cu`                    | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`  | R | Y |
 | `batteryStatus`          | `bus_thermo_cu`                    | String             | The Central Unit Battery status: `OK`, `KO`  | R | Y |
-| `modeCentralUnit`                       | `bus_thermo_cu`                    | String             | The Central Unit set mode: `OFF`, `PROTECTION`  | R/W        | N        |
+| `modeCentralUnit`                       | `bus_thermo_cu`                    | String             | The Central Unit set mode: `MANUAL`, `OFF`, `PROTECTION`, `WEEKLY`, `SCENARIO`  | R/W        | N        |
+| `weeklyProgramCentralUnit`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`  | R/W        | N        |
+| `scenarioProgramCentralUnit`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, .. ,  `16`) when Central Unit mode is `SCENARIO` | R/W        | N        |
 
 
 ### Notes on channels
@@ -235,10 +240,14 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_on_off_switch             LR_switch            "Living Room Light"        [ where="51" ]
       bus_dimmer                    LR_dimmer            "Living Room Dimmer"       [ where="0311#4#01" ]
       bus_automation                LR_shutter           "Living Room Shutter"      [ where="93", shutterRun="10050"]      
+
       bus_energy_meter              CENTRAL_Ta           "Energy Meter Ta"          [ where="51" ]	
       bus_energy_meter              CENTRAL_Tb           "Energy Meter Tb"          [ where="52" ]	   
+
+      bus_thermo_cu                 CU_3550              "99 zones central unit"    [ where="0" ]
       bus_thermo_zone               LR_zone              "Living Room Zone"         [ where="2"]
       bus_thermo_sensor             EXT_tempsensor       "External Temperature"     [ where="500"]
+
       bus_cen_scenario_control      LR_CEN_scenario      "Living Room CEN"          [ where="51", buttons="4,3,8"]
       bus_cenplus_scenario_control  LR_CENplus_scenario  "Living Room CEN+"         [ where="212", buttons="1,5,18" ]
       bus_dry_contact_ir            LR_IR_sensor         "Living Room IR Sensor"    [ where="399" ]
@@ -260,17 +269,25 @@ Bridge openwebnet:zb_gateway:myZBgateway  [ serialPort="COM3" ] {
 
 Example items linked to BUS devices:
 
-NOTE: lights, blinds and zones (thermostat) can be handled  from personal assistants (Google Home, Alexa). In the following example `Google Assistant` was configured  (`ga="..."`) according to the [official documentation](https://www.openhab.org/docs/ecosystem/google-assistant).
+NOTE: lights, blinds and zones (thermostat) can be handled  from personal assistants (Google Home, Alexa). In the following example `Google Assistant` (`ga="..."`) and `HomeKit` (`homekit="..."`)  were configured according to the [Google official documentation](https://www.openhab.org/docs/ecosystem/google-assistant) and [HomeKit official documentation](https://www.openhab.org/addons/integrations/homekit/) 
 
 ```
-Switch              iLR_switch            "Light"               (gLivingRoom) { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light" }
-Dimmer              iLR_dimmer            "Dimmer [%.0f %%]"    (gLivingRoom) { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light" }
+Switch              iLR_switch            "Light"               (gLivingRoom) { channel="openwebnet:bus_on_off_switch:mybridge:LR_switch:switch", ga="Light", homekit="Lighting" }
+Dimmer              iLR_dimmer            "Dimmer [%.0f %%]"    (gLivingRoom) { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness", ga="Light", homekit="Lighting" }
 
-Rollershutter       iLR_shutter           "Shutter [%.0f %%]"   (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds" }
+Rollershutter       iLR_shutter           "Shutter [%.0f %%]"   (gShutters, gLivingRoom) { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter", ga="Blinds", homekit = "Window" }
 
 Number:Power        iCENTRAL_Ta           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Ta:power" }
 Number:Power        iCENTRAL_Tb           "Power [%.0f %unit%]" { channel="openwebnet:bus_energy_meter:mybridge:CENTRAL_Tb:power" }
 
+// 99 zones central unit 
+Group   gCentralUnit                "Central Unit"                
+Number:Temperature iCU_3550_manualset "Temperatura"       (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
+String iCU_3550_remote    "Remote Control"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
+String iCU_3550_battery   "Battery Status"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
+String iCU_3550_mode      "Mode"              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:modeCentralUnit" }
+String iCU_3550_wpn       "Weekly Program"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgramCentralUnit" } 
+String iCU_3550_spn       "Scenario Program" (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgramCentralUnit" } 
 
 Group   gLivingRoomZone                         "Living Room Zone"   { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
 Number:Temperature  iLR_zone_temp               "Temperature [%.1f %unit%]"   (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:temperature", ga="thermostatTemperatureAmbient" }

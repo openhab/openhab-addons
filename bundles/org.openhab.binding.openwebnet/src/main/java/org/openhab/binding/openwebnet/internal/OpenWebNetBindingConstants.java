@@ -132,6 +132,8 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_CU_MODE = "modeCentralUnit";
     public static final String CHANNEL_CU_REMOTE_CONTROL = "remoteControl";
     public static final String CHANNEL_CU_BATTERY_STATUS = "batteryStatus";
+    public static final String CHANNEL_CU_WEEKLY_PROGRAM_NUMBER = "weeklyProgramCentralUnit";
+    public static final String CHANNEL_CU_SCENARIO_PROGRAM_NUMBER = "scenarioProgramCentralUnit";
 
     // energy management
     public static final String CHANNEL_POWER = "power";

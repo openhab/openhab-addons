@@ -198,25 +198,47 @@
 				<option value="MANUAL">Manual</option>
 				<option value="PROTECTION">Protection</option>
 				<option value="OFF">Off</option>
-				<option value="WEEKLY_1">Weekly Program 1</option>
-				<option value="WEEKLY_2">Weekly Program 2</option>
-				<option value="WEEKLY_3">Weekly Program 3</option>				
-				<option value="SCENARIO_1">Scenario 1</option>
-				<option value="SCENARIO_2">Scenario 2</option>
-				<option value="SCENARIO_3">Scenario 3</option>
-				<option value="SCENARIO_4">Scenario 4</option>
-				<option value="SCENARIO_5">Scenario 5</option>
-				<option value="SCENARIO_6">Scenario 6</option>
-				<option value="SCENARIO_7">Scenario 7</option>
-				<option value="SCENARIO_8">Scenario 8</option>
-				<option value="SCENARIO_9">Scenario 9</option>
-				<option value="SCENARIO_10">Scenario 10</option>
-				<option value="SCENARIO_11">Scenario 11</option>
-				<option value="SCENARIO_12">Scenario 12</option>
-				<option value="SCENARIO_13">Scenario 13</option>
-				<option value="SCENARIO_14">Scenario 14</option>
-				<option value="SCENARIO_15">Scenario 15</option>
-				<option value="SCENARIO_16">Scenario 16</option>
+				<option value="WEEKLY">Weekly</option>
+				<option value="SCENARIO">Scenario</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="weeklyProgramCentralUnit">
+		<item-type>String</item-type>
+		<label>Weekly Program Number</label>
+		<description>Set program number in the central unit, valid only for Mode Central Unit = "WEEKLY"(read/write)</description>
+		<state>
+			<options>
+				<option value="1">Program 1</option>
+				<option value="2">Program 2</option>
+				<option value="3">Program 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scenarioProgramCentralUnit">
+		<item-type>String</item-type>
+		<label>Scenario Program Number</label>
+		<description>Set program number in the central unit, valid only for Mode Central Unit = "SCENARIO"(read/write)</description>
+		<state>
+			<options>
+				<option value="1">Program 1</option>
+				<option value="2">Program 2</option>
+				<option value="3">Program 3</option>
+				<option value="4">Program 4</option>
+				<option value="5">Program 5</option>
+				<option value="6">Program 6</option>
+				<option value="7">Program 7</option>
+				<option value="8">Program 8</option>
+				<option value="9">Program 9</option>
+				<option value="10">Program 10</option>
+				<option value="11">Program 11</option>
+				<option value="12">Program 12</option>
+				<option value="13">Program 13</option>
+				<option value="14">Program 14</option>
+				<option value="15">Program 15</option>
+				<option value="16">Program 16</option>
 			</options>
 		</state>
 	</channel-type>
@@ -232,7 +254,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="batteryStatus" advanced="true">
 		<item-type>String</item-type>
 		<label>Battery Status</label>
