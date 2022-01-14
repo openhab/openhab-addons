@@ -755,7 +755,6 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                             for (int i = 0; i < subMenuSize; i++) {
                                 connector.sendCommand(
                                         zoneSource + "MENUITEM" + (i + 1) + ",0,0,\"" + subMenuItems.get(i) + "\"");
-                                // Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             }
                         } catch (NuvoException | InterruptedException e) {
                             logger.debug("Error sending sub menu for {}", zoneSource);
