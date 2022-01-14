@@ -13,21 +13,18 @@
 package org.openhab.binding.hdpowerview.internal.api.requests;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The motion "stop" directive for a shade
+ * A request to calibrate a shade
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-class ShadeIdStop {
+public class ShadeCalibrate {
 
-    int id;
-    public @Nullable String motion;
+    public ShadeMotion shade;
 
-    public ShadeIdStop(int id) {
-        this.id = id;
-        this.motion = "stop";
+    public ShadeCalibrate() {
+        this.shade = new ShadeMotion(ShadeMotion.Type.CALIBRATE);
     }
 }
