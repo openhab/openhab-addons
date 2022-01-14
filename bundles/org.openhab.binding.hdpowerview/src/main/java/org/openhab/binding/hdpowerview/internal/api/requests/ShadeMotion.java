@@ -15,16 +15,31 @@ package org.openhab.binding.hdpowerview.internal.api.requests;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A request to stop the movement of a shade
+ * A motion directive for a shade
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class ShadeStop {
+class ShadeMotion {
 
-    public ShadeMotion shade;
+    public enum Type {
+        STOP("stop"),
+        CALIBRATE("calibrate");
 
-    public ShadeStop() {
-        this.shade = new ShadeMotion(ShadeMotion.Type.STOP);
+        private String motion;
+
+        Type(String motion) {
+            this.motion = motion;
+        }
+
+        public String getMotion() {
+            return this.motion;
+        }
+    }
+
+    public String motion;
+
+    public ShadeMotion(Type motionType) {
+        this.motion = motionType.getMotion();
     }
 }
