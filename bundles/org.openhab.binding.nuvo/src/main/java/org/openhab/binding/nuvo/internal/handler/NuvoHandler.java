@@ -311,6 +311,10 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 nuvoNetSrcMap.forEach((srcNum, val) -> {
                     if (val == 2) {
                         try {
+                            connector.sendCommand(S + srcNum + "DISPINFOTWO0,0,0,0,0,0,0");
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                            connector.sendCommand(S + srcNum + "DISPLINES0,0,0,\"Source Unavailable\",\"\",\"\",\"\"");
+                            Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                             connector.sendCommand("SCFG" + srcNum + "NUVONET0");
                             Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         } catch (NuvoException | InterruptedException e) {
@@ -630,7 +634,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                 break;
             case TYPE_RESTART:
                 logger.debug("Restart message received; re-sending initialization messages");
-                enableNuvonet();
+                enableNuvonet(false);
                 return;
             case TYPE_PING:
                 logger.debug("Ping message received- rescheduling ping timeout");
@@ -928,7 +932,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         }
     }
 
-    private void enableNuvonet() {
+    private void enableNuvonet(boolean showReady) {
         if (!this.isAnyOhNuvoNet) {
             return;
         }
@@ -987,6 +991,14 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                                 + favPrefixMap.get(srcNum) + favorites[i] + "\"");
                         Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                     }
+
+                    if (showReady) {
+                        connector.sendCommand(S + srcNum + "DISPINFOTWO0,0,0,0,0,0,0");
+                        Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                        connector.sendCommand(S + srcNum + "DISPLINES0,0,0,\"Ready\",\"\",\"\",\"\"");
+                        Thread.sleep(SLEEP_BETWEEN_CMD_MS);
+                    }
+
                 } catch (NuvoException | InterruptedException e) {
                     logger.debug("Error configuring NuvoNet for source: {}", srcNum);
                 }
@@ -1011,7 +1023,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
                     if (!isMps4) {
                         pollStatus();
                     }
-                    enableNuvonet();
+                    enableNuvonet(true);
                 } else {
                     error = "Reconnection failed";
                 }
