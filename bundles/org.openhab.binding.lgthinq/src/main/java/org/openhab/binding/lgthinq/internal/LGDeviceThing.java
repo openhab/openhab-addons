@@ -13,6 +13,8 @@
 package org.openhab.binding.lgthinq.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lgthinq.errors.LGApiException;
+import org.openhab.binding.lgthinq.lgapi.model.ACCapability;
 import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 
 /**
@@ -30,9 +32,15 @@ public interface LGDeviceThing {
 
     public String getDeviceModelName();
 
+    public String getDeviceUriJsonConfig();
+
     public boolean onDeviceStateChanged();
 
     public void onDeviceRemoved();
 
     public void onDeviceGone();
+
+    public void updateChannelDynStateDescription() throws LGApiException;
+
+    public ACCapability getAcCapabilities() throws LGApiException;
 }

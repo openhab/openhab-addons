@@ -73,9 +73,9 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
      * @throws LGApiException if some communication error occur.
      */
     @Override
-    public List<LGDevice> listAccountDevices() throws LGApiException {
+    public List<LGDevice> listAccountDevices(String bridgeName) throws LGApiException {
         try {
-            TokenResult token = getTokenManager().getValidRegisteredToken();
+            TokenResult token = getTokenManager().getValidRegisteredToken(bridgeName);
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(V2_LS_PATH);
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
@@ -95,9 +95,9 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
      * @throws LGApiException if some communication error occur.
      */
     @Override
-    public Map<String, Object> getDeviceSettings(String deviceId) throws LGApiException {
+    public Map<String, Object> getDeviceSettings(String bridgeName, String deviceId) throws LGApiException {
         try {
-            TokenResult token = getTokenManager().getValidRegisteredToken();
+            TokenResult token = getTokenManager().getValidRegisteredToken(bridgeName);
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
                     .path(String.format("%s/%s", V2_DEVICE_CONFIG_PATH, deviceId));
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),

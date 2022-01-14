@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*,!org.apache.commons.codec.*</bnd.importpackage>
+    <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*,!org.apache.commons.codec.*,!org.apache.commons.io.*,!sun.nio.ch.*</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -36,6 +36,12 @@
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
       <version>4.5.8</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.11.0</version>
       <scope>compile</scope>
     </dependency>
 

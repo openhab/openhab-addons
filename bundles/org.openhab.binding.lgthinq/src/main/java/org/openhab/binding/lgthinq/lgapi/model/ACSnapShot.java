@@ -23,15 +23,15 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ACSnapShot {
 
-    private Double airWindStrength;
+    private Integer airWindStrength;
 
     private Double targetTemperature;
 
     private Double currentTemperature;
 
-    private Double operationMode;
+    private Integer operationMode;
 
-    private Double operation;
+    private Integer operation;
     @JsonIgnore
     private boolean online;
 
@@ -46,16 +46,11 @@ public abstract class ACSnapShot {
         return airWindStrength == null ? ACFanSpeed.F_UNK : ACFanSpeed.statusOf(airWindStrength);
     }
 
-    @JsonIgnore
-    public ACOpMode getAcOpMode() {
-        return operationMode == null ? ACOpMode.OP_UNK : ACOpMode.statusOf(operationMode);
-    }
-
-    public Double getAirWindStrength() {
+    public Integer getAirWindStrength() {
         return airWindStrength;
     }
 
-    public void setAirWindStrength(Double airWindStrength) {
+    public void setAirWindStrength(Integer airWindStrength) {
         this.airWindStrength = airWindStrength;
     }
 
@@ -75,19 +70,19 @@ public abstract class ACSnapShot {
         this.currentTemperature = currentTemperature;
     }
 
-    public Double getOperationMode() {
+    public Integer getOperationMode() {
         return operationMode;
     }
 
-    public void setOperationMode(Double operationMode) {
+    public void setOperationMode(Integer operationMode) {
         this.operationMode = operationMode;
     }
 
-    public Double getOperation() {
+    public Integer getOperation() {
         return operation;
     }
 
-    public void setOperation(Double operation) {
+    public void setOperation(Integer operation) {
         this.operation = operation;
     }
 
@@ -105,6 +100,6 @@ public abstract class ACSnapShot {
         return "ACSnapShot{" + "airWindStrength=" + airWindStrength + ", targetTemperature=" + targetTemperature
                 + ", currentTemperature=" + currentTemperature + ", operationMode=" + operationMode + ", operation="
                 + operation + ", acPowerStatus=" + getAcPowerStatus() + ", acFanSpeed=" + getAcFanSpeed()
-                + ", acOpMode=" + getAcOpMode() + ", online=" + isOnline() + " }";
+                + ", acOpMode=" + ", online=" + isOnline() + " }";
     }
 }

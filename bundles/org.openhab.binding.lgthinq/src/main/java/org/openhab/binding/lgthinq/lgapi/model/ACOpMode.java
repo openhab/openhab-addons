@@ -21,22 +21,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum ACOpMode {
-    COOL(0.0),
-    DRY(1.0),
-    FAN(2.0),
-    AI(3.0),
-    HEAT(4.0),
-    AIRCLEAN(5.0),
+    COOL(0),
+    DRY(1),
+    FAN(2),
+    AI(3),
+    HEAT(4),
+    AIRCLEAN(5),
     ENSAV(8),
     OP_UNK(-1);
 
-    private final double opMode;
+    private final int opMode;
 
-    ACOpMode(double v) {
+    ACOpMode(int v) {
         this.opMode = v;
     }
 
-    public static ACOpMode statusOf(double value) {
+    public static ACOpMode statusOf(int value) {
         switch ((int) value) {
             case 0:
                 return COOL;
@@ -57,7 +57,7 @@ public enum ACOpMode {
         }
     }
 
-    public double getValue() {
+    public int getValue() {
         return this.opMode;
     }
 

@@ -54,23 +54,28 @@ public class TokenManager {
         return expiricyDate.before(new Date());
     }
 
-    public TokenResult refreshToken(TokenResult currentToken) throws RefreshTokenException {
+    public TokenResult refreshToken(String bridgeName, TokenResult currentToken) throws RefreshTokenException {
         try {
             TokenResult token = oAuthAuthenticator.doRefreshToken(currentToken);
-            new ObjectMapper().writeValue(new File(THINQ_CONNECTION_DATA_FILE), token);
+            new ObjectMapper().writeValue(new File(getConfigDataFileName(bridgeName)), token);
             return token;
         } catch (IOException e) {
             throw new RefreshTokenException("Error refreshing LGThinq token", e);
         }
     }
 
-    public boolean isOauthTokenRegistered() {
-        File tokenFile = new File(THINQ_CONNECTION_DATA_FILE);
+    private String getConfigDataFileName(String bridgeName) {
+        return String.format(THINQ_CONNECTION_DATA_FILE, bridgeName);
+    }
+
+    public boolean isOauthTokenRegistered(String bridgeName) {
+        File tokenFile = new File(getConfigDataFileName(bridgeName));
         // TODO - check if the file content is valid.
         return tokenFile.isFile();
     }
 
-    public TokenResult oauthFirstRegistration(String language, String country, String username, String password)
+    public TokenResult oauthFirstRegistration(String bridgeName, String language, String country, String username,
+            String password)
             throws LGGatewayException, PreLoginException, AccountLoginException, TokenException, IOException {
         Gateway gw;
         OauthLgEmpAuthenticator.PreLoginResult preLogin;
@@ -107,16 +112,16 @@ public class TokenManager {
         }
 
         // persist the token information generated in file
-        new ObjectMapper().writeValue(new File(THINQ_CONNECTION_DATA_FILE), token);
+        new ObjectMapper().writeValue(new File(getConfigDataFileName(bridgeName)), token);
         return token;
     }
 
-    public TokenResult getValidRegisteredToken() throws IOException, RefreshTokenException {
+    public TokenResult getValidRegisteredToken(String bridgeName) throws IOException, RefreshTokenException {
         if (tokenCached == null) {
-            tokenCached = new ObjectMapper().readValue(new File(THINQ_CONNECTION_DATA_FILE), TokenResult.class);
+            tokenCached = new ObjectMapper().readValue(new File(getConfigDataFileName(bridgeName)), TokenResult.class);
         }
         if (isTokenExpired(tokenCached)) {
-            tokenCached = refreshToken(tokenCached);
+            tokenCached = refreshToken(bridgeName, tokenCached);
         }
         return tokenCached;
     }
@@ -124,8 +129,8 @@ public class TokenManager {
     /**
      * Remove the toke file registered for the bridge. Must be called only if the bridge is removed
      */
-    public void cleanupTokenRegistry() {
-        File f = new File(THINQ_CONNECTION_DATA_FILE);
+    public void cleanupTokenRegistry(String bridgeName) {
+        File f = new File(getConfigDataFileName(bridgeName));
         if (f.isFile()) {
             f.delete();
         }

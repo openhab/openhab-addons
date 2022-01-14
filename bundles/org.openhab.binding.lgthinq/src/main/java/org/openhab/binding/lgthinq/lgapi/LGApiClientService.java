@@ -28,9 +28,9 @@ import org.openhab.binding.lgthinq.lgapi.model.*;
  */
 public interface LGApiClientService {
 
-    public List<LGDevice> listAccountDevices() throws LGApiException;
+    public List<LGDevice> listAccountDevices(String bridgeName) throws LGApiException;
 
-    public Map<String, Object> getDeviceSettings(String deviceId) throws LGApiException;
+    public Map<String, Object> getDeviceSettings(String bridgeName, String deviceId) throws LGApiException;
 
     /**
      * Retrieve actual data from device (its sensors and points states).
@@ -39,20 +39,26 @@ public interface LGApiClientService {
      * @return return snapshot state of the device
      * @throws LGApiException if some error interacting with LG API Server occur.
      */
-    public ACSnapShot getAcDeviceData(String deviceId) throws LGApiException;
+    public ACSnapShot getAcDeviceData(String bridgeName, String deviceId) throws LGApiException;
 
-    public boolean turnDevicePower(String deviceId, DevicePowerState newPowerState) throws LGApiException;
+    public boolean turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
+            throws LGApiException;
 
-    public boolean changeOperationMode(String deviceId, ACOpMode newOpMode) throws LGApiException;
+    public boolean changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGApiException;
 
-    public boolean changeFanSpeed(String deviceId, ACFanSpeed newFanSpeed) throws LGApiException;
+    public boolean changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGApiException;
 
-    public boolean changeTargetTemperature(String deviceId, ACTargetTmp newTargetTemp) throws LGApiException;
+    public boolean changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
+            throws LGApiException;
 
-    public String startMonitor(String deviceId) throws LGApiException, LGDeviceV1OfflineException, IOException;
+    public String startMonitor(String bridgeName, String deviceId)
+            throws LGApiException, LGDeviceV1OfflineException, IOException;
 
-    public void stopMonitor(String deviceId, String workId)
+    public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGApiException;
+
+    public void stopMonitor(String bridgeName, String deviceId, String workId)
             throws LGThinqException, LGDeviceV1OfflineException, IOException;
 
-    public ACSnapShot getMonitorData(String deviceId, String workerId) throws LGApiException, IOException;
+    public ACSnapShot getMonitorData(String bridgeName, String deviceId, String workerId)
+            throws LGApiException, IOException;
 }
