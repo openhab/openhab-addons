@@ -52,6 +52,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class IppPrinterHandler extends BaseThingHandler implements DiscoveryListener {
 
+    /**
+     * Refresh interval defaults to every minute (60s)
+     */
+    private static final int DEFAULT_REFRESH_INTERVAL_IN_SECONDS = 60;
+
     private final Logger logger = LoggerFactory.getLogger(IppPrinterHandler.class);
 
     private @Nullable URL url;
@@ -82,7 +87,7 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
             logger.error("malformed url {}, printer thing creation failed", config.get(PRINTER_PARAMETER_URL));
         }
 
-        int refresh = 60; // refresh every minute as default
+        int refresh = DEFAULT_REFRESH_INTERVAL_IN_SECONDS;
         Object obj = config.get(PRINTER_PARAMETER_REFRESH_INTERVAL);
         if (obj != null) {
             BigDecimal ref = (BigDecimal) obj;
