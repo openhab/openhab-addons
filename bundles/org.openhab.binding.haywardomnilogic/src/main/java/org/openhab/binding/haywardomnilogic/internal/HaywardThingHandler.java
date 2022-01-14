@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,9 @@
  */
 
 package org.openhab.binding.haywardomnilogic.internal;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
@@ -56,6 +59,9 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
 
     public abstract void getTelemetry(String xmlResponse) throws HaywardException;
 
+    public void setStateDescriptions() throws HaywardException {
+    }
+
     public State toState(String type, String channelID, String value) throws NumberFormatException {
         switch (type) {
             case "Number":
@@ -65,14 +71,22 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
                 return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
             case "Number:Dimensionless":
                 switch (channelID) {
-                    case "chlorTimedPercent":
-                    case "filterSpeed":
-                    case "pumpSpeed":
-                    case "filterLastSpeed":
-                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
-                    case "chlorAvgSaltLevel":
-                    case "chlorInstantSaltLevel":
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_AVGSALTLEVEL:
                         return new QuantityType<>(Integer.parseInt(value), Units.PARTS_PER_MILLION);
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_INSTANTSALTLEVEL:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PARTS_PER_MILLION);
+                    case HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_FILTER_LASTSPEED:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDPERCENT:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_FILTER_SPEEDRPM:
+                    case HaywardBindingConstants.CHANNEL_PUMP_LASTSPEED:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDPERCENT:
+                        return new QuantityType<>(Integer.parseInt(value), Units.PERCENT);
+                    case HaywardBindingConstants.CHANNEL_PUMP_SPEEDRPM:
                 }
                 return StringType.valueOf(value);
             case "Number:Temperature":
@@ -108,14 +122,17 @@ public abstract class HaywardThingHandler extends BaseThingHandler {
         }
     }
 
-    public void updateData(String channelID, String data) {
+    public Map<String, State> updateData(String channelID, String data) {
+        Map<String, State> channelStates = new HashMap<>();
         Channel chan = getThing().getChannel(channelID);
         if (chan != null) {
             String acceptedItemType = chan.getAcceptedItemType();
             if (acceptedItemType != null) {
                 State state = toState(acceptedItemType, channelID, data);
                 updateState(chan.getUID(), state);
+                channelStates.put(channelID, state);
             }
         }
+        return channelStates;
     }
 }

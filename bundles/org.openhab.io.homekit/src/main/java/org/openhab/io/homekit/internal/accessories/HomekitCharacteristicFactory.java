@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -286,10 +286,11 @@ public class HomekitCharacteristicFactory {
         };
     }
 
-    private static Supplier<CompletableFuture<Double>> getDoubleSupplier(HomekitTaggedItem taggedItem) {
+    private static Supplier<CompletableFuture<Double>> getDoubleSupplier(HomekitTaggedItem taggedItem,
+            double defaultValue) {
         return () -> {
             final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
-            return CompletableFuture.completedFuture(value != null ? value.doubleValue() : 0.0);
+            return CompletableFuture.completedFuture(value != null ? value.doubleValue() : defaultValue);
         };
     }
 
@@ -373,28 +374,40 @@ public class HomekitCharacteristicFactory {
 
     private static CarbonMonoxideLevelCharacteristic createCarbonMonoxideLevelCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CarbonMonoxideLevelCharacteristic(getDoubleSupplier(taggedItem),
+        return new CarbonMonoxideLevelCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                CarbonMonoxideLevelCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, CARBON_DIOXIDE_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_DIOXIDE_LEVEL, updater));
     }
 
     private static CarbonMonoxidePeakLevelCharacteristic createCarbonMonoxidePeakLevelCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CarbonMonoxidePeakLevelCharacteristic(getDoubleSupplier(taggedItem),
+        return new CarbonMonoxidePeakLevelCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                CarbonMonoxidePeakLevelCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, CARBON_DIOXIDE_PEAK_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_DIOXIDE_PEAK_LEVEL, updater));
     }
 
     private static CarbonDioxideLevelCharacteristic createCarbonDioxideLevelCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new CarbonDioxideLevelCharacteristic(getDoubleSupplier(taggedItem),
+        return new CarbonDioxideLevelCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                CarbonDioxideLevelCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, CARBON_MONOXIDE_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_MONOXIDE_LEVEL, updater));
     }
 
     private static CarbonDioxidePeakLevelCharacteristic createCarbonDioxidePeakLevelCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new CarbonDioxidePeakLevelCharacteristic(getDoubleSupplier(taggedItem),
+        return new CarbonDioxidePeakLevelCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                CarbonDioxidePeakLevelCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, CARBON_MONOXIDE_PEAK_LEVEL, updater),
                 getUnsubscriber(taggedItem, CARBON_MONOXIDE_PEAK_LEVEL, updater));
     }
@@ -618,8 +631,10 @@ public class HomekitCharacteristicFactory {
                         CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
                         CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP),
-                getDoubleSupplier(taggedItem), setDoubleConsumer(taggedItem),
-                getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE)),
+                setDoubleConsumer(taggedItem), getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
     }
 
@@ -632,46 +647,66 @@ public class HomekitCharacteristicFactory {
                         HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE),
                 taggedItem.getConfigurationAsDouble(HomekitTaggedItem.STEP,
                         HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP),
-                getDoubleSupplier(taggedItem), setDoubleConsumer(taggedItem),
-                getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE)),
+                setDoubleConsumer(taggedItem), getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater));
     }
 
     private static OzoneDensityCharacteristic createOzoneDensityCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new OzoneDensityCharacteristic(getDoubleSupplier(taggedItem),
+        return new OzoneDensityCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                OzoneDensityCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, OZONE_DENSITY, updater), getUnsubscriber(taggedItem, OZONE_DENSITY, updater));
     }
 
     private static NitrogenDioxideDensityCharacteristic createNitrogenDioxideDensityCharacteristic(
             final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new NitrogenDioxideDensityCharacteristic(getDoubleSupplier(taggedItem),
+        return new NitrogenDioxideDensityCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                NitrogenDioxideDensityCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, NITROGEN_DIOXIDE_DENSITY, updater),
                 getUnsubscriber(taggedItem, NITROGEN_DIOXIDE_DENSITY, updater));
     }
 
     private static SulphurDioxideDensityCharacteristic createSulphurDioxideDensityCharacteristic(
             final HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        return new SulphurDioxideDensityCharacteristic(getDoubleSupplier(taggedItem),
+        return new SulphurDioxideDensityCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                SulphurDioxideDensityCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, SULPHUR_DIOXIDE_DENSITY, updater),
                 getUnsubscriber(taggedItem, SULPHUR_DIOXIDE_DENSITY, updater));
     }
 
     private static PM25DensityCharacteristic createPM25DensityCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new PM25DensityCharacteristic(getDoubleSupplier(taggedItem),
+        return new PM25DensityCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                PM25DensityCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, PM25_DENSITY, updater), getUnsubscriber(taggedItem, PM25_DENSITY, updater));
     }
 
     private static PM10DensityCharacteristic createPM10DensityCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new PM10DensityCharacteristic(getDoubleSupplier(taggedItem),
+        return new PM10DensityCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                PM10DensityCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, PM10_DENSITY, updater), getUnsubscriber(taggedItem, PM10_DENSITY, updater));
     }
 
     private static VOCDensityCharacteristic createVOCDensityCharacteristic(final HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        return new VOCDensityCharacteristic(getDoubleSupplier(taggedItem),
+        return new VOCDensityCharacteristic(
+                getDoubleSupplier(taggedItem,
+                        taggedItem.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                                VOCDensityCharacteristic.DEFAULT_MIN_VALUE)),
                 getSubscriber(taggedItem, VOC_DENSITY, updater), getUnsubscriber(taggedItem, VOC_DENSITY, updater));
     }
 }

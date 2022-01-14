@@ -4,7 +4,7 @@ The DSC PowerSeries Alarm System is a popular do-it-yourself home security syste
 
 This is the binding for the DSC PowerSeries Alarm System, utilizing either the EyezOn Envisalink 4/3/2DS interface or the DSC IT-100 RS-232 interface.
 It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.
-Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
+Additionally, there is provision to connect to the DSC IT-100 interface through a TCP serial server.
 
 ## Supported Things
 
@@ -86,8 +86,8 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 
 <table>
     <tr><td><b>Channel</b></td><td><b>Item Type</b></td><td><b>Description</b></td></tr>
-    <tr><td>bridge_reset</td><td>Switch</td><td>Reset the bridge connection.</td></tr>
-    <tr><td>send_command</td><td>Switch</td><td>Send a DSC Alarm command.</td></tr>
+    <tr><td>bridge_reset</td><td>Switch</td><td>(Writable) Reset the bridge connection.</td></tr>
+    <tr><td>send_command</td><td>Switch</td><td>(Writable) Send a DSC Alarm command. See <a href="http://forum.eyez-on.com/FORUM/download/file.php?id=223&sid=e146abb17dbccca14f19d6b50cbe8379">here</a> for a list of commands.</td></tr>
     <tr><td>panel_message</td><td>String</td><td>Event messages received from the DSC Alarm system.</td></tr>
     <tr><td>panel_system_error</td><td>String</td><td>DSC Alarm system error.</td></tr>
     <tr><td>panel_trouble_message</td><td>String</td><td>Displays any trouble messages the panel might send.</td></tr>
@@ -101,14 +101,14 @@ DSC Alarm things support a variety of channels as seen below in the following ta
     <tr><td>panel_zone_low_battery</td><td>Switch</td><td>There is a low battery condition on a zone/sensor.</td></tr>
     <tr><td>panel_time_loss</td><td>Switch</td><td>Loss of time on the panel.</td></tr>
     <tr><td>panel_time</td><td>DateTime</td><td>DSC Alarm system time and date.</td></tr>
-    <tr><td>panel_time_stamp</td><td>Switch</td><td>Turn DSC Alarm message time stamping ON/OFF.</td></tr>
-    <tr><td>panel_time_broadcast</td><td>Switch</td><td>Turn DSC Alarm time broadcasting ON/OFF.</td></tr>
+    <tr><td>panel_time_stamp</td><td>Switch</td><td>(Writable) Turn DSC Alarm message time stamping ON/OFF.</td></tr>
+    <tr><td>panel_time_broadcast</td><td>Switch</td><td>(Writable) Turn DSC Alarm time broadcasting ON/OFF.</td></tr>
     <tr><td>panel_fire_key_alarm</td><td>Switch</td><td>A fire key alarm has happened.</td></tr>
     <tr><td>panel_panic_key_alarm</td><td>Switch</td><td>A panic key alarm has happened.</td></tr>
     <tr><td>panel_aux_key_alarm</td><td>Switch</td><td>An auxiliary key alarm has happened.</td></tr>
     <tr><td>panel_aux_input_alarm</td><td>Switch</td><td>An auxiliary input alarm has happened.</td></tr>
     <tr><td>partition_status</td><td>String</td><td>A partitions current status.</td></tr>
-    <tr><td>partition_arm_mode</td><td>Number</td><td>A partitions current arm mode. The possible values are:
+    <tr><td>partition_arm_mode</td><td>Number</td><td>(Writable) A partitions current arm mode. The possible values are:
 <br/>
 0=disarmed<br/>
 1=armed away<br/>

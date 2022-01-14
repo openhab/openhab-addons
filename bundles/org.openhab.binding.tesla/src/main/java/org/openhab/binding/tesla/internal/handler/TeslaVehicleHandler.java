@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,12 +54,14 @@ import org.openhab.binding.tesla.internal.protocol.Vehicle;
 import org.openhab.binding.tesla.internal.protocol.VehicleState;
 import org.openhab.binding.tesla.internal.throttler.QueueChannelThrottler;
 import org.openhab.binding.tesla.internal.throttler.Rate;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -263,6 +265,26 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                             break;
                         }
+                        case CHARGE_AMPS:
+                            Integer amps = null;
+                            if (command instanceof DecimalType) {
+                                amps = ((DecimalType) command).intValue();
+                            }
+                            if (command instanceof QuantityType<?>) {
+                                QuantityType<?> qamps = ((QuantityType<?>) command).toUnit(Units.AMPERE);
+                                if (qamps != null) {
+                                    amps = qamps.intValue();
+                                }
+                            }
+                            if (amps != null) {
+                                if (amps < 5 || amps > 32) {
+                                    logger.warn("Charging amps can only be set in a range of 5-32A, but not to {}A.",
+                                            amps);
+                                    return;
+                                }
+                                setChargingAmps(amps);
+                            }
+                            break;
                         case COMBINED_TEMP: {
                             QuantityType<Temperature> quantity = commandToQuantityType(command);
                             if (quantity != null) {
@@ -284,25 +306,15 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                             }
                             break;
                         }
-                        case SUN_ROOF_STATE: {
-                            if (command instanceof StringType) {
-                                setSunroof(command.toString());
+                        case SENTRY_MODE: {
+                            if (command instanceof OnOffType) {
+                                setSentryMode(command == OnOffType.ON);
                             }
                             break;
                         }
-                        case SUN_ROOF: {
-                            if (command instanceof PercentType) {
-                                moveSunroof(((PercentType) command).intValue());
-                            } else if (command instanceof OnOffType && command == OnOffType.ON) {
-                                moveSunroof(100);
-                            } else if (command instanceof OnOffType && command == OnOffType.OFF) {
-                                moveSunroof(0);
-                            } else if (command instanceof IncreaseDecreaseType
-                                    && command == IncreaseDecreaseType.INCREASE) {
-                                moveSunroof(Math.min(vehicleState.sun_roof_percent_open + 1, 100));
-                            } else if (command instanceof IncreaseDecreaseType
-                                    && command == IncreaseDecreaseType.DECREASE) {
-                                moveSunroof(Math.max(vehicleState.sun_roof_percent_open - 1, 0));
+                        case SUN_ROOF_STATE: {
+                            if (command instanceof StringType) {
+                                setSunroof(command.toString());
                             }
                             break;
                         }
@@ -581,19 +593,29 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         requestData(CHARGE_STATE);
     }
 
-    public void setSunroof(String state) {
+    public void setChargingAmps(int amps) {
         JsonObject payloadObject = new JsonObject();
-        payloadObject.addProperty("state", state);
-        sendCommand(COMMAND_SUN_ROOF, gson.toJson(payloadObject), account.commandTarget);
+        payloadObject.addProperty("charging_amps", amps);
+        sendCommand(COMMAND_SET_CHARGING_AMPS, gson.toJson(payloadObject), account.commandTarget);
+        requestData(CHARGE_STATE);
+    }
+
+    public void setSentryMode(boolean b) {
+        JsonObject payloadObject = new JsonObject();
+        payloadObject.addProperty("on", b);
+        sendCommand(COMMAND_SET_SENTRY_MODE, gson.toJson(payloadObject), account.commandTarget);
         requestData(VEHICLE_STATE);
     }
 
-    public void moveSunroof(int percent) {
-        JsonObject payloadObject = new JsonObject();
-        payloadObject.addProperty("state", "move");
-        payloadObject.addProperty("percent", percent);
-        sendCommand(COMMAND_SUN_ROOF, gson.toJson(payloadObject), account.commandTarget);
-        requestData(VEHICLE_STATE);
+    public void setSunroof(String state) {
+        if (state.equals("vent") || state.equals("close")) {
+            JsonObject payloadObject = new JsonObject();
+            payloadObject.addProperty("state", state);
+            sendCommand(COMMAND_SUN_ROOF, gson.toJson(payloadObject), account.commandTarget);
+            requestData(VEHICLE_STATE);
+        } else {
+            logger.warn("Ignoring invalid command '{}' for sunroof.", state);
+        }
     }
 
     /**

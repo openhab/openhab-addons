@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,7 +37,8 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
         BYRONMP001(1),
         SELECTPLUS(2),
         SELECTPLUS3(3),
-        ENVIVO(4);
+        ENVIVO(4),
+        ALFAWISE_DBELL(5);
 
         private final int subType;
 
@@ -91,6 +92,7 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
             case SELECTPLUS:
             case SELECTPLUS3:
             case ENVIVO:
+            case ALFAWISE_DBELL:
                 sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
                 chimeSound = 1;
                 break;
@@ -118,6 +120,7 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
             case SELECTPLUS:
             case SELECTPLUS3:
             case ENVIVO:
+            case ALFAWISE_DBELL:
                 data[4] = (byte) ((sensorId & 0xFF0000) >> 16);
                 data[5] = (byte) ((sensorId & 0x00FF00) >> 8);
                 data[6] = (byte) ((sensorId & 0x0000FF));

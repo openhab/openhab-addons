@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,7 +67,7 @@ public class DaliFrame {
         byte[] result = new byte[bytesList.size()];
         int i = 0;
         for (byte b : bytesList) {
-            result[bytesList.size() - i++] = b;
+            result[bytesList.size() - ++i] = b;
         }
         return result;
     }

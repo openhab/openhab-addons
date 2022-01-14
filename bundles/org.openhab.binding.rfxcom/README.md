@@ -324,11 +324,12 @@ A Chime device
 *   subType - Sub Type
     *   Specifies device sub type.
 
-        *   BYRONSX - Byron SX
-        *   BYRONMP001 - Byron MP001
-        *   SELECTPLUS - SelectPlus
-        *   SELECTPLUS3 - SelectPlus3
-        *   ENVIVO - Envivo
+        * BYRONSX - Byron SX
+        * BYRONMP001 - Byron MP001
+        * SELECTPLUS - SelectPlus
+        * SELECTPLUS3 - SelectPlus3
+        * ENVIVO - Envivo
+        * ALFAWISE_DBELL - Alfawise, dBell
 
 
 ### current - RFXCOM Current Sensor
@@ -609,6 +610,7 @@ A Humidity device
 
         *   HUM1 - LaCrosse TX3
         *   HUM2 - LaCrosse WS2300
+        *   HUM3 - Inovalley S80 plant humidity sensor
 
 
 ### lighting1 - RFXCOM Lighting1 Actuator
@@ -642,18 +644,19 @@ A Lighting1 device
 *   subType - Sub Type
     *   Specifies device sub type.
 
-        *   X10 - X10 lighting
-        *   ARC - ARC
-        *   AB400D - ELRO AB400D (Flamingo)
-        *   WAVEMAN - Waveman
-        *   EMW200 - Chacon EMW200
-        *   IMPULS - IMPULS
-        *   RISINGSUN - RisingSun
-        *   PHILIPS - Philips SBC
-        *   ENERGENIE - Energenie ENER010
-        *   ENERGENIE\_5 - Energenie 5-gang
-        *   COCO - COCO GDR2-2000R
-        *   HQ\_COCO20 - HQ COCO-20
+        * X10 - X10 lighting
+        * ARC - ARC
+        * AB400D - ELRO AB400D (Flamingo)
+        * WAVEMAN - Waveman
+        * EMW200 - Chacon EMW200
+        * IMPULS - IMPULS
+        * RISINGSUN - RisingSun
+        * PHILIPS - Philips SBC
+        * ENERGENIE - Energenie ENER010
+        * ENERGENIE\_5 - Energenie 5-gang
+        * COCO - COCO GDR2-2000R
+        * HQ\_COCO20 - HQ COCO-20
+        * OASE_INSCENIO_FM_N - Oase Inscenio FM Master
 
 
 ### lighting2 - RFXCOM Lighting2 Actuator

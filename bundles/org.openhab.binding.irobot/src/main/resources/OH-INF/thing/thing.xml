@@ -33,7 +33,7 @@
 			</channel>
 			<channel id="sched_thu" typeId="sched_switch">
 				<label>Schedule Thu</label>
-				<description>Thirsday schedule active</description>
+				<description>Thursday schedule active</description>
 			</channel>
 			<channel id="sched_fri" typeId="sched_switch">
 				<label>Schedule Fri</label>

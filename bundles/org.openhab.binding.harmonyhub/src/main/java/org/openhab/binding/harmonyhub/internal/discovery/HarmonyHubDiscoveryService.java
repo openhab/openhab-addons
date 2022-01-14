@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -255,10 +255,12 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                         String friendlyName = properties.get("friendlyName");
                         String hostName = properties.get("host_name");
                         String ip = properties.get("ip");
+                        String uuid = properties.get("uuid");
                         if (friendlyName != null && !friendlyName.isBlank() && hostName != null && !hostName.isBlank()
-                                && ip != null && !ip.isBlank() && !responses.contains(hostName)) {
+                                && ip != null && !ip.isBlank() && uuid != null && !uuid.isBlank()
+                                && !responses.contains(hostName)) {
                             responses.add(hostName);
-                            hubDiscovered(ip, friendlyName, hostName);
+                            hubDiscovered(ip, friendlyName, hostName, uuid);
                         }
                     }
                 } catch (IOException | IndexOutOfBoundsException e) {
@@ -270,7 +272,7 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void hubDiscovered(String ip, String friendlyName, String hostName) {
+    private void hubDiscovered(String ip, String friendlyName, String hostName, String uuid) {
         String thingId = hostName.replaceAll("[^A-Za-z0-9\\-_]", "");
         logger.trace("Adding HarmonyHub {} ({}) at host {}", friendlyName, thingId, ip);
         ThingUID uid = new ThingUID(HARMONY_HUB_THING_TYPE, thingId);
@@ -279,6 +281,8 @@ public class HarmonyHubDiscoveryService extends AbstractDiscoveryService {
                 .withLabel("HarmonyHub " + friendlyName)
                 .withProperty(HUB_PROPERTY_HOST, ip)
                 .withProperty(HUB_PROPERTY_NAME, friendlyName)
+                .withProperty(HUB_PROPERTY_ID, uuid)
+                .withRepresentationProperty(HUB_PROPERTY_ID)
                 .build());
         // @formatter:on
     }
