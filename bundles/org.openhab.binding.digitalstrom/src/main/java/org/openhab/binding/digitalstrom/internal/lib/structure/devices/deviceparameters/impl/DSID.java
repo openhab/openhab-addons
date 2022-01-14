@@ -15,11 +15,12 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.devicepa
 /**
  * The {@link DSID} represents the digitalSTROM-Device identifier.
  *
- * @author Alexander Betker - initial contributer
+ * @author Alexander Betker - initial contributor
+ * @author Alexander Friese - simplified constructor
  */
 public class DSID {
 
-    private String dsid;
+    private final String dsid;
     private final String DEFAULT_DSID = "3504175fe000000000000001";
     private final String PRE = "3504175fe0000000";
     private final String ALL = "ALL";
@@ -30,12 +31,12 @@ public class DSID {
      * @param dsid to create
      */
     public DSID(String dsid) {
-        var trimmedDsuid = dsid != null ? dsid.trim() : "";
-        if (trimmedDsuid.length() == 24) {
-            this.dsid = trimmedDsuid;
-        } else if (trimmedDsuid.length() == 8) {
-            this.dsid = this.PRE + trimmedDsuid;
-        } else if (trimmedDsuid.toUpperCase().equals(ALL)) {
+        var trimmedDsid = dsid != null ? dsid.trim() : "";
+        if (trimmedDsid.length() == 24) {
+            this.dsid = trimmedDsid;
+        } else if (trimmedDsid.length() == 8) {
+            this.dsid = this.PRE + trimmedDsid;
+        } else if (trimmedDsid.toUpperCase().equals(ALL)) {
             this.dsid = ALL;
         } else {
             this.dsid = DEFAULT_DSID;
