@@ -16,10 +16,7 @@ import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 import static org.openhab.core.library.types.OnOffType.ON;
 
 import java.util.*;
-import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -74,6 +71,10 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     private static final Set<String> SUPPORTED_LG_PLATFORMS = Set.of(PLATFORM_TYPE_V1, PLATFORM_TYPE_V2);
     private @Nullable ScheduledFuture<?> thingStatePoolingJob;
     private @Nullable Future<?> commandExecutorQueueJob;
+    // *** Long running isolated threadpools.
+    private ScheduledExecutorService poolingScheduler = Executors.newScheduledThreadPool(1);
+    private ExecutorService executorService = Executors.newFixedThreadPool(1);
+
     private boolean monitorV1Began = false;
     private String monitorWorkId = "";
     private final LinkedBlockingQueue<AsyncCommandParams> commandBlockQueue = new LinkedBlockingQueue<>(20);
@@ -169,8 +170,12 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
 
     private void startCommandExecutorQueueJob() {
         if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
-            commandExecutorQueueJob = scheduler.submit(queuedCommandExecutor);
+            commandExecutorQueueJob = getExecutorService().submit(queuedCommandExecutor);
         }
+    }
+
+    private ExecutorService getExecutorService() {
+        return executorService;
     }
 
     private void stopCommandExecutorQueueJob() {
@@ -181,7 +186,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
 
     protected void startThingStatePooling() {
         if (thingStatePoolingJob == null || thingStatePoolingJob.isDone()) {
-            thingStatePoolingJob = scheduler.scheduleWithFixedDelay(() -> {
+            thingStatePoolingJob = getLocalScheduler().scheduleWithFixedDelay(() -> {
                 try {
                     ACSnapShot shot = getSnapshotDeviceAdapter(getDeviceId());
                     if (!shot.isOnline()) {
@@ -216,6 +221,10 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                 }
             }, 10, DEFAULT_STATE_POOLING_UPDATE_DELAY, TimeUnit.SECONDS);
         }
+    }
+
+    private ScheduledExecutorService getLocalScheduler() {
+        return poolingScheduler;
     }
 
     private String getBridgeId() {
