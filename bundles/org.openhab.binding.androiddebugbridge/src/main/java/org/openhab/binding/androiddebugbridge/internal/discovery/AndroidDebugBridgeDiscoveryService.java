@@ -37,8 +37,6 @@ import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeDeviceR
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
-import org.openhab.core.i18n.LocaleProvider;
-import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.cm.Configuration;
@@ -67,13 +65,9 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     private boolean discoveryRunning = false;
 
     @Activate
-    public AndroidDebugBridgeDiscoveryService(final @Reference ConfigurationAdmin admin, //
-            final @Reference TranslationProvider i18nProvider, //
-            final @Reference LocaleProvider localeProvide) {
+    public AndroidDebugBridgeDiscoveryService(final @Reference ConfigurationAdmin admin) {
         super(SUPPORTED_THING_TYPES, TIMEOUT_MS, false);
         this.admin = admin;
-        this.i18nProvider = i18nProvider;
-        this.localeProvider = localeProvide;
     }
 
     @Override
