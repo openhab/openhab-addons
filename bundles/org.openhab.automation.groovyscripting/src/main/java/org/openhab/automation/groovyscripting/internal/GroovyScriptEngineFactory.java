@@ -45,10 +45,11 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
             .collect(Collectors.toUnmodifiableList());
 
     private final GroovyClassLoader gcl = new GroovyClassLoader();
+
     public GroovyScriptEngineFactory() {
         String scriptDir = OpenHAB.getConfigFolder() + File.separator + FILE_DIRECTORY;
         logger.info("Adding script directory {} to the GroovyScriptEngine class path.", scriptDir);
-        gcl.addClasspath (scriptDir);
+        gcl.addClasspath(scriptDir);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     @Override
     public @Nullable ScriptEngine createScriptEngine(String scriptType) {
-        if(scriptTypes.contains(scriptType)) {
+        if (scriptTypes.contains(scriptType)) {
             return new org.codehaus.groovy.jsr223.GroovyScriptEngineImpl(gcl);
         }
         return null;
