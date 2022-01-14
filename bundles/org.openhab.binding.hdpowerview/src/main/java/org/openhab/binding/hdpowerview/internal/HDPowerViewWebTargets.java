@@ -29,6 +29,7 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
@@ -130,15 +131,23 @@ public class HDPowerViewWebTargets {
     /**
      * Fetches a JSON package with firmware information for the hub.
      *
-     * @return FirmwareVersion class instance
+     * @return FirmwareVersions class instance
      * @throws JsonParseException if there is a JSON parsing error
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public @Nullable FirmwareVersion getFirmwareVersion()
+    public FirmwareVersions getFirmwareVersions()
             throws JsonParseException, HubProcessingException, HubMaintenanceException {
         String json = invoke(HttpMethod.GET, firmwareVersion, null, null);
-        return gson.fromJson(json, FirmwareVersion.class);
+        FirmwareVersion firmwareVersion = gson.fromJson(json, FirmwareVersion.class);
+        if (firmwareVersion == null) {
+            throw new JsonParseException("Missing firmware response");
+        }
+        FirmwareVersions firmwareVersions = firmwareVersion.firmware;
+        if (firmwareVersions == null) {
+            throw new JsonParseException("Missing 'firmware' element");
+        }
+        return firmwareVersions;
     }
 
     /**
