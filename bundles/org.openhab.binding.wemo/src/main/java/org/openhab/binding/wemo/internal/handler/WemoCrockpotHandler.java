@@ -82,9 +82,9 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
-        host = (String) configuration.get("ipaddress");
+        host = (String) configuration.get(IPADDRESS);
 
-        if (configuration.get("udn") != null) {
+        if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoCrockpotHandler for UDN '{}'", configuration.get("udn"));
             service.registerParticipant(this);
 
@@ -92,6 +92,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-udn");
             logger.debug("Cannot initalize WemoCrockpotHandler. UDN not set.");
         }
     }
@@ -122,7 +123,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "upnp device not registered [\"" + getUDN() + "\"]");
+                            "config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
                     }

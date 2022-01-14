@@ -99,15 +99,16 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
-        host = (String) configuration.get("ipaddress");
+        host = (String) configuration.get(IPADDRESS);
 
-        if (configuration.get("udn") != null) {
+        if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoHolmesHandler for UDN '{}'", configuration.get("udn"));
             service.registerParticipant(this);
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-udn");
             logger.debug("Cannot initalize WemoHolmesHandler. UDN not set.");
         }
     }
@@ -137,7 +138,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "upnp device not registered [\"" + getUDN() + "\"]");
+                            "config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
                     }

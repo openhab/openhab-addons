@@ -98,8 +98,8 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
-        String udn = (String) configuration.get("udn");
-        host = (String) configuration.get("ipaddress");
+        String udn = (String) configuration.get(UDN);
+        host = (String) configuration.get(IPADDRESS);
 
         if (udn != null && !udn.isEmpty()) {
             logger.debug("Initializing WemoHandler for UDN '{}'", udn);
@@ -109,7 +109,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing UDN");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-udn");
             logger.debug("Cannot initalize WemoHandler. UDN not set.");
         }
     }
@@ -141,7 +141,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "upnp device not registered [\"" + getUDN() + "\"]");
+                            "config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
                     }

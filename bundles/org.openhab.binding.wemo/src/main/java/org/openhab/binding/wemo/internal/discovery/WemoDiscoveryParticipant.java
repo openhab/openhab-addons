@@ -65,7 +65,7 @@ public class WemoDiscoveryParticipant implements UpnpDiscoveryParticipant {
             }
             properties.put(UDN, device.getIdentity().getUdn().getIdentifierString());
             URL descriptorURL = device.getIdentity().getDescriptorURL();
-            properties.put("ipAddress", descriptorURL.getHost());
+            properties.put(IPADDRESS, descriptorURL.getHost());
 
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
                     .withRepresentationProperty(UDN).build();

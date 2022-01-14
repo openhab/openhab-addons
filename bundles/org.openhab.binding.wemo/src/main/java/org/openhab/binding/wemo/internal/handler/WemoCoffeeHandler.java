@@ -90,15 +90,15 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         this.wemoCall = wemoHttpCaller;
         this.service = upnpIOService;
 
-        logger.debug("Creating a WemoCoffeeHandler V0.4 for thing '{}'", getThing().getUID());
+        logger.debug("Creating a WemoCoffeeHandler for thing '{}'", getThing().getUID());
     }
 
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
-        host = (String) configuration.get("ipaddress");
+        host = (String) configuration.get(IPADDRESS);
 
-        if (configuration.get("udn") != null) {
+        if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoCoffeeHandler for UDN '{}'", configuration.get("udn"));
             service.registerParticipant(this);
 
@@ -106,7 +106,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing UDN");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-udn");
             logger.debug("Cannot initalize WemoCoffeeHandler. UDN not set.");
         }
     }
@@ -137,7 +137,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "upnp device not registered [\"" + getUDN() + "\"]");
+                            "config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
                     }

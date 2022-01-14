@@ -13,7 +13,6 @@
 package org.openhab.binding.wemo.internal;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -121,20 +120,6 @@ public class WemoUtil {
         m.appendTail(unescapedOutput);
 
         return unescapedOutput.toString();
-    }
-
-    public static @Nullable String getWemoURL(URL descriptorURL, String actionService) {
-        int portCheckStart = 49151;
-        int portCheckStop = 49157;
-        String port = null;
-        String host = substringBetween(descriptorURL.toString(), "://", ":");
-        for (int i = portCheckStart; i < portCheckStop; i++) {
-            if (serviceAvailableFunction.apply(host, i)) {
-                port = String.valueOf(i);
-                break;
-            }
-        }
-        return port == null ? null : "http://" + host + ":" + port + "/upnp/control/" + actionService + "1";
     }
 
     public static @Nullable String getWemoURL(String host, String actionService) {
