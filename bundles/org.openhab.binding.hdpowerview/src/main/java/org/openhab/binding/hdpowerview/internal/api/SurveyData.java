@@ -10,21 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal;
+package org.openhab.binding.hdpowerview.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link HubProcessingException} is a custom exception for the HD PowerView hub
+ * Survey data of a single Shade, as returned by an HD PowerView hub
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class HubProcessingException extends Exception {
+public class SurveyData {
+    @SerializedName("neighbor_id")
+    public int neighborId;
+    public int rssi;
 
-    private static final long serialVersionUID = 4307088023775166450L;
-
-    public HubProcessingException(String message) {
-        super(message);
+    @Override
+    public String toString() {
+        return String.format("{neighbor id:%d, rssi:%d}", neighborId, rssi);
     }
 }

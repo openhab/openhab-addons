@@ -34,8 +34,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewTranslationProvider;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
-import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
@@ -48,6 +46,10 @@ import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
@@ -65,8 +67,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonParseException;
 
 /**
  * The {@link HDPowerViewHubHandler} is responsible for handling commands, which
@@ -147,7 +147,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
-        } catch (NumberFormatException | HubProcessingException e) {
+        } catch (NumberFormatException | HubException e) {
             logger.debug("Unexpected error {}", e.getMessage());
         }
     }
@@ -267,17 +267,23 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             // Scheduled events should also have their current state updated if event has been
             // enabled or disabled through app or other integration.
             updateScheduledEventStates(scheduledEvents);
-        } catch (JsonParseException e) {
-            logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
-        } catch (HubProcessingException e) {
-            logger.warn("Error connecting to bridge: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
+        } catch (HubInvalidResponseException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
+            } else {
+                logger.warn("Bridge returned a bad JSON response: {} -> {}", e.getMessage(), cause.getMessage());
+            }
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
+        } catch (HubException e) {
+            logger.warn("Error connecting to bridge: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         }
     }
 
-    private void updateFirmwareProperties() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+    private void updateFirmwareProperties()
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         if (firmwareVersions != null) {
             return;
         }
@@ -306,20 +312,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         updateProperties(properties);
     }
 
-    private void pollShades() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+    private void pollShades() throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
         }
 
         Shades shades = webTargets.getShades();
-        if (shades == null) {
-            throw new JsonParseException("Missing 'shades' element");
-        }
-
         List<ShadeData> shadesData = shades.shadeData;
         if (shadesData == null) {
-            throw new JsonParseException("Missing 'shades.shadeData' element");
+            throw new HubInvalidResponseException("Missing 'shades.shadeData' element");
         }
 
         updateStatus(ThingStatus.ONLINE);
@@ -349,20 +351,17 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         thingHandler.onReceiveUpdate(shadeData);
     }
 
-    private List<Scene> fetchScenes() throws JsonParseException, HubProcessingException, HubMaintenanceException {
+    private List<Scene> fetchScenes()
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
         }
 
         Scenes scenes = webTargets.getScenes();
-        if (scenes == null) {
-            throw new JsonParseException("Missing 'scenes' element");
-        }
-
         List<Scene> sceneData = scenes.sceneData;
         if (sceneData == null) {
-            throw new JsonParseException("Missing 'scenes.sceneData' element");
+            throw new HubInvalidResponseException("Missing 'scenes.sceneData' element");
         }
         logger.debug("Received data for {} scenes", sceneData.size());
 
@@ -370,7 +369,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private List<Scene> updateSceneChannels()
-            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         List<Scene> scenes = fetchScenes();
 
         if (scenes.size() == sceneCache.size() && sceneCache.containsAll(scenes)) {
@@ -445,20 +444,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private List<SceneCollection> fetchSceneCollections()
-            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
         }
 
         SceneCollections sceneCollections = webTargets.getSceneCollections();
-        if (sceneCollections == null) {
-            throw new JsonParseException("Missing 'sceneCollections' element");
-        }
-
         List<SceneCollection> sceneCollectionData = sceneCollections.sceneCollectionData;
         if (sceneCollectionData == null) {
-            throw new JsonParseException("Missing 'sceneCollections.sceneCollectionData' element");
+            throw new HubInvalidResponseException("Missing 'sceneCollections.sceneCollectionData' element");
         }
         logger.debug("Received data for {} sceneCollections", sceneCollectionData.size());
 
@@ -466,7 +461,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private List<SceneCollection> updateSceneCollectionChannels()
-            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         List<SceneCollection> sceneCollections = fetchSceneCollections();
 
         if (sceneCollections.size() == sceneCollectionCache.size()
@@ -502,20 +497,16 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private List<ScheduledEvent> fetchScheduledEvents()
-            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         HDPowerViewWebTargets webTargets = this.webTargets;
         if (webTargets == null) {
             throw new ProcessingException("Web targets not initialized");
         }
 
         ScheduledEvents scheduledEvents = webTargets.getScheduledEvents();
-        if (scheduledEvents == null) {
-            throw new JsonParseException("Missing 'scheduledEvents' element");
-        }
-
         List<ScheduledEvent> scheduledEventData = scheduledEvents.scheduledEventData;
         if (scheduledEventData == null) {
-            throw new JsonParseException("Missing 'scheduledEvents.scheduledEventData' element");
+            throw new HubInvalidResponseException("Missing 'scheduledEvents.scheduledEventData' element");
         }
         logger.debug("Received data for {} scheduledEvents", scheduledEventData.size());
 
@@ -524,7 +515,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private List<ScheduledEvent> updateScheduledEventChannels(List<Scene> scenes,
             List<SceneCollection> sceneCollections)
-            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         List<ScheduledEvent> scheduledEvents = fetchScheduledEvents();
 
         if (scheduledEvents.size() == scheduledEventCache.size() && scheduledEventCache.containsAll(scheduledEvents)) {
