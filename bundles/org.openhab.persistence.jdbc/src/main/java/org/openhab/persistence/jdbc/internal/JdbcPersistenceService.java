@@ -12,6 +12,8 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -27,10 +29,12 @@ import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.persistence.ModifiablePersistenceService;
 import org.openhab.core.persistence.PersistenceItemInfo;
 import org.openhab.core.persistence.PersistenceService;
 import org.openhab.core.persistence.QueryablePersistenceService;
 import org.openhab.core.persistence.strategy.PersistenceStrategy;
+import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -52,8 +56,10 @@ import org.slf4j.LoggerFactory;
         QueryablePersistenceService.class }, configurationPid = "org.openhab.jdbc", //
         property = Constants.SERVICE_PID + "=org.openhab.jdbc")
 @ConfigurableService(category = "persistence", label = "JDBC Persistence Service", description_uri = JdbcPersistenceService.CONFIG_URI)
-public class JdbcPersistenceService extends JdbcMapper implements QueryablePersistenceService {
+public class JdbcPersistenceService extends JdbcMapper implements ModifiablePersistenceService {
 
+    private static final String SERVICE_ID = "jdbc";
+    private static final String SERVICE_LABEL = "JDBC";
     protected static final String CONFIG_URI = "persistence:jdbc";
 
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
@@ -110,39 +116,48 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     @Override
     public String getId() {
         logger.debug("JDBC::getName: returning name 'jdbc' for queryable persistence service.");
-        return "jdbc";
+        return SERVICE_ID;
     }
 
     @Override
     public String getLabel(@Nullable Locale locale) {
-        return "JDBC";
+        return SERVICE_LABEL;
     }
 
     @Override
     public void store(Item item) {
-        store(item, null);
+        internalStore(item, null, item.getState());
     }
 
-    /**
-     * @{inheritDoc
-     */
     @Override
     public void store(Item item, @Nullable String alias) {
+        // alias is not supported
+        internalStore(item, null, item.getState());
+    }
+
+    @Override
+    public void store(Item item, ZonedDateTime date, State state) {
+        internalStore(item, date, state);
+    }
+
+    private void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
         // Do not store undefined/uninitialized data
-        if (item.getState() instanceof UnDefType) {
+        if (state instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());
             return;
         }
         if (!checkDBAccessability()) {
             logger.warn(
-                    "JDBC::store:  No connection to database. Cannot persist item '{}'! Will retry connecting to database when error count:{} equals errReconnectThreshold:{}",
-                    item, errCnt, conf.getErrReconnectThreshold());
+                    "JDBC::store: No connection to database. Cannot persist state '{}' for item '{}'! Will retry connecting to database when error count:{} equals errReconnectThreshold:{}",
+                    state, item, errCnt, conf.getErrReconnectThreshold());
             return;
         }
         long timerStart = System.currentTimeMillis();
-        storeItemValue(item);
-        logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), item.getState(),
-                new java.util.Date(), System.currentTimeMillis() - timerStart);
+        storeItemValue(item, state, date);
+        if (logger.isDebugEnabled()) {
+            logger.debug("JDBC: Stored item '{}' as '{}' in SQL database at {} in {} ms.", item.getName(), state,
+                    new Date(), System.currentTimeMillis() - timerStart);
+        }
     }
 
     @Override
@@ -227,5 +242,43 @@ public class JdbcPersistenceService extends JdbcMapper implements QueryablePersi
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
         return List.of(PersistenceStrategy.Globals.CHANGE);
+    }
+
+    @Override
+    public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
+        if (!checkDBAccessability()) {
+            logger.warn("JDBC::remove: database not connected, remove aborted for item '{}'", filter.getItemName());
+            return false;
+        }
+
+        // Get the item name from the filter
+        // Also get the Item object so we can determine the type
+        Item item = null;
+        String itemName = filter.getItemName();
+        logger.debug("JDBC::remove: item is {}", itemName);
+        if (itemName == null) {
+            throw new IllegalArgumentException("Item name must not be null");
+        }
+        try {
+            item = itemRegistry.getItem(itemName);
+        } catch (ItemNotFoundException e) {
+            logger.error("JDBC::remove: unable to get item for itemName: '{}'. Ignore and give up!", itemName);
+            return false;
+        }
+
+        String table = sqlTables.get(itemName);
+        if (table == null) {
+            logger.debug("JDBC::remove: unable to find table for item with name: '{}', no data in database.", itemName);
+            return false;
+        }
+
+        long timerStart = System.currentTimeMillis();
+        boolean result = deleteItemValues(filter, table, item);
+        if (logger.isDebugEnabled()) {
+            logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", item.getName(),
+                    new Date(), System.currentTimeMillis() - timerStart);
+        }
+
+        return result;
     }
 }
