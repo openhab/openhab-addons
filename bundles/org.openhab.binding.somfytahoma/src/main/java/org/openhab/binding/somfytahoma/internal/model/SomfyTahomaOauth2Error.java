@@ -43,5 +43,4 @@ public class SomfyTahomaOauth2Error {
     public void setErrorDescription(String errorDescription) {
         this.errorDescription = errorDescription;
     }
-
 }
