@@ -25,6 +25,7 @@ import javax.measure.quantity.Temperature;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.renault.internal.RenaultBindingConstants;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
@@ -73,7 +74,34 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+
+        // if (command instanceof RefreshType) {
         // This binding only polls status data automatically.
+        // }
+
+        logger.info("handleCommand: {} = {}", channelUID, command);
+        switch (channelUID.toString()) {
+            case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
+                if (command instanceof OnOffType) {
+                    MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                    try {
+                        httpSession.initSesssion(car);
+                        if (command == OnOffType.ON) {
+                            httpSession.hvacOn(car.getHvacTargetTemperature());
+                        } else {
+                            httpSession.hvacOff();
+                        }
+                        updateHvacStatus(httpSession);
+                    } catch (Exception e) {
+                        httpSession = null;
+                        logger.warn("Error My Renault Http Session.", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -105,6 +133,9 @@ public class RenaultHandler extends BaseThingHandler {
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
+
+        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
+                new QuantityType<Temperature>(car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
 
         // Background initialization:
         ScheduledFuture<?> job = pollingJob;

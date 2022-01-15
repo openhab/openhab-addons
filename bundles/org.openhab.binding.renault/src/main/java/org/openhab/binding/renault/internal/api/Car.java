@@ -37,6 +37,7 @@ public class Car {
     private boolean disableCockpit = false;
     private boolean disableHvac = false;
 
+    private Double hvacTargetTemperature = 20.0;
     private @Nullable Double batteryLevel;
     private @Nullable Boolean hvacstatus;
     private @Nullable Double odometer;
@@ -302,5 +303,13 @@ public class Car {
             default:
                 return "UNKNOWEN";
         }
+    }
+
+    public Double getHvacTargetTemperature() {
+        return hvacTargetTemperature;
+    }
+
+    public void setHvacTargetTemperature(Double hvacTargetTemperature) {
+        this.hvacTargetTemperature = hvacTargetTemperature;
     }
 }

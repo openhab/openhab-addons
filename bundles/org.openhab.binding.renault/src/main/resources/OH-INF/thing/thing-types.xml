@@ -16,6 +16,7 @@
 			<channel id="estimatedRange" typeId="estimatedRange"/>
 			<channel id="odometer" typeId="odometer"/>
 			<channel id="hvacstatus" typeId="hvacstatus"/>
+			<channel id="hvacTargetTemperature" typeId="hvacTargetTemperature"/>
 			<channel id="externalTemperature" typeId="externalTemperature"/>
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
@@ -104,7 +105,13 @@
 	<channel-type id="hvacstatus">
 		<item-type>Switch</item-type>
 		<label>HVAC Status</label>
-		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="hvacTargetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>HVAC Target Temperature</label>
+		<description>HVAC thermostat target temperature inside car</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="externalTemperature">
 		<item-type>Number:Temperature</item-type>
