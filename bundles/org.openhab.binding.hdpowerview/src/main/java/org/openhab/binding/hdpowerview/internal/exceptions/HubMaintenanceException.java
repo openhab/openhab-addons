@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal;
+package org.openhab.binding.hdpowerview.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class HubMaintenanceException extends Exception {
+public class HubMaintenanceException extends HubException {
 
     private static final long serialVersionUID = -708582495003057343L;
 
