@@ -170,7 +170,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="localMode" advanced="true">
+	<channel-type id="localOffset" advanced="true">
 		<item-type>String</item-type>
 		<label>Local Offset</label>
 		<description>Local knob status (read only)</description>
