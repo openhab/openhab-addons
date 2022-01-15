@@ -21,21 +21,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
-import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonParseException;
 
 /**
  * Discovers an HD PowerView Shade from an existing hub
@@ -89,7 +88,7 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                     throw new HubProcessingException("Web targets not initialized");
                 }
                 Shades shades = webTargets.getShades();
-                if (shades != null && shades.shadeData != null) {
+                if (shades.shadeData != null) {
                     ThingUID bridgeUID = hub.getThing().getUID();
                     List<ShadeData> shadesData = shades.shadeData;
                     if (shadesData != null) {
@@ -116,10 +115,10 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                         }
                     }
                 }
-            } catch (HubProcessingException | JsonParseException e) {
-                logger.warn("Unexpected error: {}", e.getMessage());
             } catch (HubMaintenanceException e) {
                 // exceptions are logged in HDPowerViewWebTargets
+            } catch (HubException e) {
+                logger.warn("Unexpected error: {}", e.getMessage());
             }
             stopScan();
         };
