@@ -362,7 +362,7 @@ public class JdbcBaseDAO {
                 .collect(Collectors.<HistoricItem> toList());
     }
 
-    public void doDeleteItemValues(Item item, FilterCriteria filter, String table, ZoneId timeZone) {
+    public void doDeleteItemValues(FilterCriteria filter, String table, ZoneId timeZone) {
         String sql = histItemFilterDeleteProvider(filter, table, timeZone);
         logger.debug("JDBC::doDeleteItemValues sql={}", sql);
         Yank.execute(sql, null);
@@ -400,10 +400,8 @@ public class JdbcBaseDAO {
         logger.debug("JDBC::histItemFilterDeleteProvider filter = {}, table = {}", filter, table);
 
         String filterString = resolveTimeFilter(filter, timeZone);
-        String deleteString = "DELETE FROM " + table;
-        if (!filterString.isEmpty()) {
-            deleteString += filterString;
-        }
+        String deleteString = filterString.isEmpty() ? "TRUNCATE TABLE " + table
+                : "DELETE FROM " + table + filterString;
         logger.debug("JDBC::delete deleteString = {}", deleteString);
         return deleteString;
     }
