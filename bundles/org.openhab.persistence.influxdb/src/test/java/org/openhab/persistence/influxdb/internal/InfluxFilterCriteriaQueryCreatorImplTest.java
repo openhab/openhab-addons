@@ -168,6 +168,18 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
                         + "|> sort(desc:false, columns:[\"_time\"])"));
     }
 
+    @Test
+    public void testPreviousState() {
+        FilterCriteria criteria = createBaseCriteria();
+        criteria.setOrdering(FilterCriteria.Ordering.DESCENDING);
+        criteria.setPageSize(1);
+        String queryV2 = instanceV2.createQuery(criteria, RETENTION_POLICY);
+        assertThat(queryV2,
+                equalTo("from(bucket:\"origin\")\n\t" + "|> range(start:-100y)\n\t"
+                        + "|> filter(fn: (r) => r[\"_measurement\"] == \"sampleItem\")\n\t"
+                        + "|> keep(columns:[\"_measurement\", \"_time\", \"_value\"])\n\t" + "|> last()"));
+    }
+
     private FilterCriteria createBaseCriteria() {
         return createBaseCriteria(ITEM_NAME);
     }
