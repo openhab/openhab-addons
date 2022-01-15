@@ -144,7 +144,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                 try {
                     Integer.parseInt(command.toString());
                 } catch (NumberFormatException e) {
-                    logger.debug("Invalid value received for boost mode duration", command);
+                    logger.debug("Invalid value received for boost mode duration: {}", command);
                     return;
                 }
                 if (duration == 0) {
@@ -199,7 +199,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                 try {
                     showers = Integer.parseInt(command.toString());
                 } catch (NumberFormatException e) {
-                    logger.info("Received an invalid value for desired number of showers", command);
+                    logger.info("Received an invalid value for desired number of showers: {}", command);
                     return;
                 }
                 Double value = 0.0;
