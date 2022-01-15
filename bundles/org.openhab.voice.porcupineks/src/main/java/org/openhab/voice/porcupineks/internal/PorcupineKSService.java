@@ -181,6 +181,9 @@ public class PorcupineKSService implements KSService {
 
     private Porcupine initPorcupine(BundleContext bundleContext, Locale locale, String keyword)
             throws IOException, PorcupineException {
+        // Suppress library logs
+        java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME)
+                .setLevel(java.util.logging.Level.OFF);
         var libraryPath = prepareLib(bundleContext, Porcupine.LIBRARY_PATH);
         var modelPath = getModelPath(bundleContext, locale);
         var keywordPath = getKeywordResourcePath(bundleContext, keyword);

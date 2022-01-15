@@ -2,6 +2,8 @@
 
 This voice service allows you to use the PicoVoice product Porcupine as your keyword spotter in openHAB.
 
+This add-on use a platform specific binary, should work on all the platforms supported by porcupine, if you encounter a problem try to run one of the porcupine java demos on your machine.
+
 ## How to use it
 
 After installing you would be able to access the addon options through the openHAB configuration page under the 'Other Services' section. There you will need to provide your PicoVoice Api Key.
@@ -20,6 +22,6 @@ As a summary service will only work if it's able find the correct ppn for your m
 
 This service currently supports english, german, french and spanish. But only the english model binary is included with the addon and will be used if the one for your configured language is not found under '\<openHAB userdata\>/.porcupine'. 
 
-To get the language model files go to the porcupine github repo. As an example for spanish the file is called 'porcupine_params_es.pv'
+To get the language model files go to the [porcupine repo](https://github.com/Picovoice/porcupine/tree/v2.0/lib/common).
 
-Note that the keyword model in use should match the language model.
+Note that the keyword model you use should match the language model.
