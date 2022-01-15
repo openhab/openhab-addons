@@ -13,10 +13,10 @@ By using a scene to control multiple shades at once, the shades will all begin m
 
 ## Supported Things
 
-| Thing           | Thing Type | Description        |
-|-----------------|------------|--------------------|
-| PowerView Hub   | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
-| PowerView Shade | Thing      | A motorized shade. |
+| Thing | Thing Type | Description |
+|-------|------------|-------------|
+| hub   | Bridge     | The PowerView hub provides the interface between your network and the shade's radio network. It also contains channels used to interact with scenes. |
+| shade | Thing      | A motorized shade. |
 
 ## Discovery
 
@@ -52,13 +52,13 @@ PowerView shades should preferably be configured via the automatic discovery pro
 It is quite difficult to configure manually as the `id` of the shade is not exposed in the PowerView app.
 However, the configuration parameters are described below:
 
-| Configuration Parameter | Description                                                   |
-|-------------------------|---------------------------------------------------------------|
+| Configuration Parameter | Description |
+|-------------------------|-------------|
 | id                      | The ID of the PowerView shade in the app. Must be an integer. |
 
 ## Channels
 
-### Channels for PowerView Hub
+### Channels for Hub (Thing type `hub`)
 
 Scene, scene group and automation channels will be added dynamically to the binding as they are discovered in the hub.
 Each will have an entry in the hub as shown below, whereby different scenes, scene groups and automations
@@ -70,7 +70,7 @@ have different `id` values:
 | sceneGroups   | id      | Switch    | Setting this to ON will activate the scene group. Scene groups are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
 | automations   | id      | Switch    | Setting this to ON will enable the automation, while OFF will disable it. |
 
-### Channels for PowerView Shade
+### Channels for Shades (Thing type `shade`)
 
 A shade always implements a roller shutter channel `position` which controls the vertical position of the shade's (primary) rail.
 If the shade has slats or rotatable vanes, there is also a dimmer channel `vane` which controls the slat / vane position.
@@ -80,8 +80,9 @@ All of these channels appear in the binding, but only those which have a physica
 | Channel        | Item Type                | Description |
 |----------------|--------------------------|-------------|
 | position       | Rollershutter            | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
-| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is basically identical to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
+| secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
 | vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
+| calibrate      | Switch                   | Setting this to ON will calibrate the shade. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
 | lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
 | batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
 | batteryVoltage | Number:ElectricPotential | Battery voltage reported by the shade. |
@@ -95,20 +96,34 @@ And for horizontal shades, it maps the horizontal position of the "truck" to the
 
 Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
 
-| Type of Shade            | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent |
-|--------------------------|-------------------|-----------------------|------------------|----------------|---------|
-| Single action bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%      |
-|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    |
-| Single action top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%      |
-|                          |                   | ▼                     | Down             | ***`OPEN`***   | 100%    |
-| Single action right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%      |
-|                          |                   | ▼                     | ***Right***      | `CLOSED`       | 100%    |
-| Single action left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%      |
-|                          |                   | ▼                     | ***Left***       | `CLOSED`       | 100%    |
-| Dual action (lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%      |
-|                          |                   | ▼                     | Down             | `CLOSED`       | 100%    |
-| Dual action (upper rail) | ***`secondary`*** | ▲                     | ***Down***       | `OPEN`         | 0%      |
-|                          |                   | ▼                     | ***Up***         | `CLOSED`       | 100%    |
+| Type of Shade               | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent           | Pebble Remote Button |
+|-----------------------------|-------------------|-----------------------|------------------|----------------|-------------------|----------------------|
+| Single action<br>bottom-up  | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
+| Single action<br>top-down   | `position`        | ▲                     | Up               | ***`CLOSED`*** | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%              | ▼                    |
+| Single action<br>right-left | `position`        | ▲                     | ***Left***       | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | ***Right***      | `CLOSED`       | 100%              | ▼                    |
+| Single action<br>left-right | `position`        | ▲                     | ***Right***      | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | ***Left***       | `CLOSED`       | 100%              | ▼                    |
+| Dual action<br>(lower rail) | `position`        | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
+| Dual action<br>(upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%<sup>1)</sup>   | ![](doc/right.png)   |
+|                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%<sup>1)</sup> | ![](doc/left.png)    |
+
+***<sup>1)</sup> BUG NOTE***: In openHAB versions v3.1.x and earlier, there was a bug in the handling of the position percent value of the `secondary` shade.
+Although the RollerShutter Up/Down commands functioned properly as described in the table above, the percent state values (e.g. displayed on a slider control), did not.
+After moving the shade, the percent value would initially display the correct value, but on the next refresh it would 'flip' to the **inverse** of the correct value.
+The details are shown in the following table.
+This bug has been fixed from openHAB v3.2.x (or later) —
+***so if you have rules that depend on the percent value, and you update from an earlier openHAB version to v3.2.x (or later), you will need to modify them!***
+
+| Channel     | UI Control Element | UI Control Command  | Immediate Action<br>on Shade State | Dimmer Percent Display<br>(Initial => Final) |
+|-------------|--------------------|---------------------|------------------------------------|----------------------------------------------|
+| `secondary` | RollerShutter      | Press `UP` button   | Rail moves Up (`CLOSED`)           | 0% (initial) => 100% (final)                 |
+|             |                    | Press `DOWN` button | Rail moves Down (`OPEN`)           | 100% (initial) => 0% (final)                 |
+|             | Dimmer             | Move slider to 0%   | Rail moves Up (`CLOSED`)           | 0% (initial) => 100% (final)                 |
+|             |                    | Move slider to 100% | Rail moves Down (`OPEN`)           | 100% (initial) => 0% (final)                 |
 
 ### Interdependency between Channel positions
 
@@ -123,8 +138,9 @@ So there is an interdependency between the value of `vane` and the value of `pos
 | Shade 100% down, Vane 50%  | 100% = `DOWN`       | 50%             |
 | Shade 100% down, Vane 100% | 100% = `DOWN`       | 100%            |
 
-On dual action shades, the top rail cannot move below the position of the bottom rail.
-So the value of `secondary` may be constrained by the value of `position`.
+On dual action shades, the top rail cannot move below the bottom rail, nor can the bottom rail move above the top.
+So the value of `secondary` is constrained by the prior value of `position`.
+And the value of `position` is constrained by the prior value of `secondary`.
 
 ## Refreshing the PowerView Hub Cache
 
@@ -156,6 +172,18 @@ then
 end
 ```
 
+For single shades the refresh takes the item's channel into consideration:
+
+| Channel        | Hard refresh kind |
+|----------------|-------------------|
+| position       | Position          |
+| secondary      | Position          |
+| vane           | Position          |
+| lowBattery     | Battery           |
+| batteryLevel   | Battery           |
+| batteryVoltage | Battery           |
+| signalStrength | Survey            |
+
 ## Full Example
 
 ### `demo.things` File
@@ -178,6 +206,8 @@ Rollershutter Living_Room_Shade_Secondary "Living Room Shade Secondary Position 
 Dimmer Living_Room_Shade_Vane "Living Room Shade Vane [%.0f %%]" {channel="hdpowerview:shade:g24:s50150:vane"}
 
 Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm [%s]" {channel="hdpowerview:shade:g24:s50150:lowBattery"}
+
+Switch Living_Room_Shade_Calibrate "Living Room Shade Calibrate" {channel="hdpowerview:shade:g24:s50150:calibrate", autoupdate="false"}
 ```
 
 Scene items:

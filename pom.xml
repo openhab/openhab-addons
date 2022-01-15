@@ -74,7 +74,7 @@
     <eea.version>2.2.1</eea.version>
     <jackson.version>2.12.5</jackson.version>
     <karaf.version>4.3.4</karaf.version>
-    <netty.version>4.1.68.Final</netty.version>
+    <netty.version>4.1.72.Final</netty.version>
     <okhttp.version>3.14.9</okhttp.version>
     <sat.version>0.12.0</sat.version>
     <spotless.version>2.0.3</spotless.version>
@@ -425,7 +425,7 @@ Import-Package: \\
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2021</year>
+              <year>2022</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>

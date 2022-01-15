@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.solaredge.internal.connector;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.Queue;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -193,8 +192,6 @@ public class WebInterface implements AtomicReferenceTrait {
 
     /**
      * authenticates with the Solaredge WEB interface
-     *
-     * @throws UnsupportedEncodingException
      */
     private synchronized void authenticate() {
         setAuthenticated(false);

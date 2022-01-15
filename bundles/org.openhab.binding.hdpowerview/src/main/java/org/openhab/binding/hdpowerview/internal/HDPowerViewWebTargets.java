@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,13 +26,17 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
+import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.ScheduledEvents;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
+import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +50,7 @@ import com.google.gson.JsonParser;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * @author Jacob Laursen - Add support for scene groups and automations
+ * @author Jacob Laursen - Added support for scene groups and automations
  */
 @NonNullByDefault
 public class HDPowerViewWebTargets {
@@ -63,6 +67,7 @@ public class HDPowerViewWebTargets {
     private Instant maintenanceScheduledEnd = Instant.now().minusSeconds(2 * maintenancePeriod);
 
     private final String base;
+    private final String firmwareVersion;
     private final String shades;
     private final String sceneActivate;
     private final String scenes;
@@ -96,6 +101,11 @@ public class HDPowerViewWebTargets {
         public String getValue() {
             return value;
         }
+
+        @Override
+        public String toString() {
+            return String.format("?%s=%s", key, value);
+        }
     }
 
     /**
@@ -107,6 +117,7 @@ public class HDPowerViewWebTargets {
     public HDPowerViewWebTargets(HttpClient httpClient, String ipAddress) {
         base = "http://" + ipAddress + "/api/";
         shades = base + "shades/";
+        firmwareVersion = base + "fwversion/";
         sceneActivate = base + "scenes";
         scenes = base + "scenes/";
 
@@ -116,6 +127,28 @@ public class HDPowerViewWebTargets {
 
         scheduledEvents = base + "scheduledevents";
         this.httpClient = httpClient;
+    }
+
+    /**
+     * Fetches a JSON package with firmware information for the hub.
+     *
+     * @return FirmwareVersions class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public FirmwareVersions getFirmwareVersions()
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, firmwareVersion, null, null);
+        FirmwareVersion firmwareVersion = gson.fromJson(json, FirmwareVersion.class);
+        if (firmwareVersion == null) {
+            throw new JsonParseException("Missing firmware response");
+        }
+        FirmwareVersions firmwareVersions = firmwareVersion.firmware;
+        if (firmwareVersions == null) {
+            throw new JsonParseException("Missing 'firmware' element");
+        }
+        return firmwareVersions;
     }
 
     /**
@@ -137,12 +170,45 @@ public class HDPowerViewWebTargets {
      *
      * @param shadeId id of the shade to be moved
      * @param position instance of ShadePosition containing the new position
+     * @return Shade class instance (with new position)
      * @throws HubProcessingException if there is any processing error
      * @throws HubMaintenanceException if the hub is down for maintenance
      */
-    public void moveShade(int shadeId, ShadePosition position) throws HubProcessingException, HubMaintenanceException {
-        String json = gson.toJson(new ShadeMove(shadeId, position));
-        invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, json);
+    public @Nullable Shade moveShade(int shadeId, ShadePosition position)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new ShadeMove(position));
+        String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
+        return gson.fromJson(jsonResponse, Shade.class);
+    }
+
+    /**
+     * Instructs the hub to stop movement of a specific shade
+     *
+     * @param shadeId id of the shade to be stopped
+     * @return Shade class instance (new position cannot be relied upon)
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Shade stopShade(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new ShadeStop());
+        String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
+        return gson.fromJson(jsonResponse, Shade.class);
+    }
+
+    /**
+     * Instructs the hub to calibrate a specific shade
+     *
+     * @param shadeId id of the shade to be calibrated
+     * @return Shade class instance
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Shade calibrateShade(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new ShadeCalibrate());
+        String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
+        return gson.fromJson(jsonResponse, Shade.class);
     }
 
     /**
@@ -246,7 +312,11 @@ public class HDPowerViewWebTargets {
     private synchronized String invoke(HttpMethod method, String url, @Nullable Query query,
             @Nullable String jsonCommand) throws HubMaintenanceException, HubProcessingException {
         if (logger.isTraceEnabled()) {
-            logger.trace("API command {} {}", method, url);
+            if (query != null) {
+                logger.trace("API command {} {}{}", method, url, query);
+            } else {
+                logger.trace("API command {} {}", method, url);
+            }
             if (jsonCommand != null) {
                 logger.trace("JSON command = {}", jsonCommand);
             }
@@ -327,6 +397,25 @@ public class HDPowerViewWebTargets {
 
     /**
      * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
+     * a specific shade's survey data, which will also refresh signal strength;
+     * fetches a JSON package that describes that survey, and wraps it in a Survey
+     * class instance
+     *
+     * @param shadeId id of the shade to be surveyed
+     * @return Survey class instance
+     * @throws JsonParseException if there is a JSON parsing error
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public @Nullable Survey getShadeSurvey(int shadeId)
+            throws JsonParseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
+                Query.of("survey", Boolean.toString(true)), null);
+        return gson.fromJson(json, Survey.class);
+    }
+
+    /**
+     * Instructs the hub to do a hard refresh (discovery on the hubs RF network) on
      * a specific shade's battery level; fetches a JSON package that describes that shade,
      * and wraps it in a Shade class instance
      *
@@ -341,17 +430,5 @@ public class HDPowerViewWebTargets {
         String json = invoke(HttpMethod.GET, shades + Integer.toString(shadeId),
                 Query.of("updateBatteryLevel", Boolean.toString(true)), null);
         return gson.fromJson(json, Shade.class);
-    }
-
-    /**
-     * Tells the hub to stop movement of a specific shade
-     *
-     * @param shadeId id of the shade to be stopped
-     * @throws HubProcessingException if there is any processing error
-     * @throws HubMaintenanceException if the hub is down for maintenance
-     */
-    public void stopShade(int shadeId) throws HubProcessingException, HubMaintenanceException {
-        String json = gson.toJson(new ShadeStop(shadeId));
-        invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, json);
     }
 }

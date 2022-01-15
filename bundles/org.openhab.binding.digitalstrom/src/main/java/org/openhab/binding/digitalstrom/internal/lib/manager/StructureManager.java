@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.Set;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Circuit;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSUID;
 
 /**
  * The {@link StructureManager} builds the internal model of the digitalSTROM-System.
@@ -225,6 +226,14 @@ public interface StructureManager {
      * @return the {@link Circuit} with the given dSID
      */
     Circuit getCircuitByDSID(String dSID);
+
+    /**
+     * Returns the {@link Circuit} with the given dSUID as {@link DSUID}.
+     *
+     * @param dSUID of the {@link Circuit} to get
+     * @return the {@link Circuit} with the given {@link DSUID}
+     */
+    Circuit getCircuitByDSUID(DSUID dSUID);
 
     /**
      * Returns the {@link Circuit} with the given dSUID as {@link String}.

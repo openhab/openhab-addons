@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.HomeDevice;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -96,24 +97,30 @@ public class MieleApplianceDiscoveryService extends AbstractDiscoveryService imp
         ThingUID thingUID = getThingUID(appliance);
         if (thingUID != null) {
             ThingUID bridgeUID = mieleBridgeHandler.getThing().getUID();
-            Map<String, Object> properties = new HashMap<>(2);
+            Map<String, Object> properties = new HashMap<>(9);
 
             FullyQualifiedApplianceIdentifier applianceIdentifier = appliance.getApplianceIdentifier();
-            properties.put(MODEL_PROPERTY_NAME, appliance.getApplianceModel());
+            properties.put(Thing.PROPERTY_VENDOR, appliance.Vendor);
+            properties.put(Thing.PROPERTY_MODEL_ID, appliance.getApplianceModel());
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, appliance.getSerialNumber());
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, appliance.getFirmwareVersion());
+            properties.put(PROPERTY_PROTOCOL_ADAPTER, appliance.ProtocolAdapterName);
+            properties.put(APPLIANCE_ID, applianceIdentifier.getApplianceId());
             String deviceClass = appliance.getDeviceClass();
             if (deviceClass != null) {
-                properties.put(DEVICE_CLASS, deviceClass);
+                properties.put(PROPERTY_DEVICE_CLASS, deviceClass);
             }
-            properties.put(PROTOCOL_ADAPTER_PROPERTY_NAME, appliance.ProtocolAdapterName);
-            properties.put(APPLIANCE_ID, applianceIdentifier.getApplianceId());
-            properties.put(SERIAL_NUMBER_PROPERTY_NAME, appliance.getSerialNumber());
             String connectionType = appliance.getConnectionType();
             if (connectionType != null) {
-                properties.put(CONNECTION_TYPE_PROPERTY_NAME, connectionType);
+                properties.put(PROPERTY_CONNECTION_TYPE, connectionType);
+            }
+            String connectionBaudRate = appliance.getConnectionBaudRate();
+            if (connectionBaudRate != null) {
+                properties.put(PROPERTY_CONNECTION_BAUD_RATE, connectionBaudRate);
             }
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel((String) properties.get(DEVICE_CLASS))
+                    .withBridge(bridgeUID).withLabel(deviceClass != null ? deviceClass : appliance.getApplianceModel())
                     .withRepresentationProperty(APPLIANCE_ID).build();
 
             thingDiscovered(discoveryResult);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -282,11 +281,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private String urlEncode(String text) {
-        try {
-            return URLEncoder.encode(text, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            return text;
-        }
+        return URLEncoder.encode(text, StandardCharsets.UTF_8);
     }
 
     private void enableLogin() {

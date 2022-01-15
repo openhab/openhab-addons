@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.hdpowerview.internal.api.requests;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A request to stop the movement of a shade
@@ -23,9 +22,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class ShadeStop {
 
-    public @Nullable ShadeIdStop shade;
+    public ShadeMotion shade;
 
-    public ShadeStop(int id) {
-        this.shade = new ShadeIdStop(id);
+    public ShadeStop() {
+        this.shade = new ShadeMotion(ShadeMotion.Type.STOP);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,11 @@ import static java.util.stream.Collectors.toSet;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -255,14 +255,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      * It is in package scope to be accessed by tests.
      */
     private String createURL(String apiKey, String text, String locale, String voice, String audioFormat) {
-        String encodedMsg;
-        try {
-            encodedMsg = URLEncoder.encode(text, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            logger.error("UnsupportedEncodingException for UTF-8 MUST NEVER HAPPEN! Check your JVM configuration!", ex);
-            // fall through and use msg un-encoded
-            encodedMsg = text;
-        }
+        String encodedMsg = URLEncoder.encode(text, StandardCharsets.UTF_8);
         String url = "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioFormat;
         if (!DEFAULT_VOICE.equals(voice)) {
             url += "&v=" + voice;
