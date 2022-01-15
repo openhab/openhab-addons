@@ -5,19 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="voice:porcupineks">
-		<parameter-group name="authentication">
-			<label>Pico Voice Credentials</label>
-		</parameter-group>
-		<parameter-group name="spot">
-			<label>Spot</label>
-		</parameter-group>
-		<parameter name="apiKey" type="text" required="true" groupName="authentication">
+		<parameter name="apiKey" type="text" required="true">
 			<label>Pico Voice API Key</label>
-			<description>API Key for using the underling binary.</description>
+			<description>API key from PicoVoice, required to use Porcupine.</description>
 		</parameter>
-		<parameter name="sensitivity" type="decimal" min="0" max="1" required="true" groupName="spot">
+		<parameter name="sensitivity" type="decimal" min="0" max="1">
 			<label>Sensitivity</label>
-			<description>Spot sensitivity.</description>
+			<description>Spot sensitivity, a higher sensitivity reduces miss rate at cost of increased false alarm rate.</description>
 			<default>0.5</default>
 		</parameter>
 	</config-description>

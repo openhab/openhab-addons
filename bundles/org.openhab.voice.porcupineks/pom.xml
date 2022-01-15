@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.voice.porcupineks</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Porcupine Keyword Spotter</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: Porcupine Keyword Spotter</name>
   <dependencies>
     <dependency>
       <groupId>ai.picovoice</groupId>

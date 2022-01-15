@@ -23,11 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PorcupineKSConfiguration {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Api key to use porcupine
      */
     public String apiKey = "";
     /**
-     * Sample configuration parameters. Replace with your own.
+     * A higher sensitivity reduces miss rate at cost of increased false alarm rate
      */
     public float sensitivity = 0.5f;
 }
