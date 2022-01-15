@@ -24,6 +24,7 @@ In the thing file, this looks e.g. like
 ```
 wemo:socket:Switch1 [udn="Socket-1_0-221242K11xxxxx"]
 ```
+If for some reason the device IP address cannot be retrieved, it can be configured as an optional parameter, see examples below.
 
 For a WeMo Link bridge and paired LED Lights, please use the following Thing definition
 
@@ -100,7 +101,7 @@ Devices support some of the following channels:
 demo.things:
 
 ```
-wemo:socket:Switch1     "DemoSwitch"   @ "Office"   [udn="Socket-1_0-221242K11xxxxx"]
+wemo:socket:Switch1     "DemoSwitch"   @ "Office"   [udn="Socket-1_0-221242K11xxxxx", ipAddress="127.0.0.1"]
 wemo:motion:Sensor1     "MotionSensor" @ "Entrance" [udn="Sensor-1_0-221337L11xxxxx"]
 
 Bridge wemo:bridge:Bridge-1_0-231445B010xxxx [udn="Bridge-1_0-231445B010xxxx"] {
