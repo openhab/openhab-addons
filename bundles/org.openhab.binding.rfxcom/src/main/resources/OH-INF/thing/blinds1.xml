@@ -25,12 +25,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Sensor Id + unit code, separated by dot. Example 23455.1</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="T0">RollerTrol, Hasta new</option>
 					<option value="T1">Hasta old</option>
@@ -38,10 +38,21 @@
 					<option value="T3">A-OK AC114/AC123</option>
 					<option value="T4">Raex YR1326</option>
 					<option value="T5">Media Mount</option>
-					<option value="T6">DC106/Rohrmotor24-RMF/Yooda</option>
+					<option value="T6">DC106/Rohrmotor24-RMF/Yooda/Dooya/ESMO/Brel/Quitidom</option>
 					<option value="T7">Forest</option>
 					<option value="T8">Chamberlain CS4330CN</option>
+					<option value="T9">Sunpery/BTX</option>
+					<option value="T10">Dolat DLM-1, Topstar</option>
 					<option value="T11">ASP</option>
+					<option value="T12">Confexx CNF24-2435</option>
+					<option value="T13">Screenline</option>
+					<option value="T14">Hualite</option>
+					<option value="T15">Motostar</option>
+					<option value="T16">Zemismart</option>
+					<option value="T17">Gaposa</option>
+					<option value="T18">Cherubini</option>
+					<option value="T19">Louvolite One Touch Vogue motor</option>
+					<option value="T20">OZRoll</option>
 				</options>
 			</parameter>
 		</config-description>

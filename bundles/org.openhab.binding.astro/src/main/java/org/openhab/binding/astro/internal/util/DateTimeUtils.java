@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,10 +13,8 @@
 package org.openhab.binding.astro.internal.util;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Range;
 import org.slf4j.Logger;
@@ -31,8 +29,8 @@ public class DateTimeUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeUtils.class);
     private static final Pattern HHMM_PATTERN = Pattern.compile("^([0-1][0-9]|2[0-3])(:[0-5][0-9])$");
 
-    public static final double J1970 = 2440588.0;
-    public static final double MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
+    private static final double J1970 = 2440588.0;
+    private static final double MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
     /** Constructor */
     private DateTimeUtils() {
@@ -42,8 +40,29 @@ public class DateTimeUtils {
     /**
      * Truncates the time from the calendar object.
      */
+    public static Calendar truncateToSecond(Calendar calendar) {
+        Calendar cal = (Calendar) calendar.clone();
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal;
+    }
+
+    /**
+     * Truncates the time from the calendar object.
+     */
+    private static Calendar truncateToMinute(Calendar calendar) {
+        Calendar cal = truncateToSecond(calendar);
+        cal.set(Calendar.SECOND, 0);
+        return cal;
+    }
+
+    /**
+     * Truncates the time from the calendar object.
+     */
     public static Calendar truncateToMidnight(Calendar calendar) {
-        return DateUtils.truncate(calendar, Calendar.DAY_OF_MONTH);
+        Calendar cal = truncateToMinute(calendar);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        return cal;
     }
 
     /**
@@ -79,7 +98,11 @@ public class DateTimeUtils {
         long millis = (long) ((julianDate + 0.5 - J1970) * MILLISECONDS_PER_DAY);
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(millis);
-        return DateUtils.round(cal, Calendar.MINUTE);
+        int second = cal.get(Calendar.SECOND);
+        if (second > 30) {
+            cal.add(Calendar.MINUTE, 1);
+        }
+        return truncateToMinute(cal);
     }
 
     /**
@@ -100,8 +123,8 @@ public class DateTimeUtils {
      * Returns the end of day from the calendar object.
      */
     public static Calendar endOfDayDate(Calendar calendar) {
-        Calendar cal = (Calendar) calendar.clone();
-        cal = DateUtils.ceiling(cal, Calendar.DATE);
+        Calendar cal = truncateToMidnight(calendar);
+        cal.add(Calendar.DATE, 1);
         cal.add(Calendar.MILLISECOND, -1);
         return cal;
     }
@@ -139,21 +162,16 @@ public class DateTimeUtils {
         }
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, minute);
-        return DateUtils.truncate(cal, Calendar.MINUTE);
+        return truncateToMinute(cal);
     }
 
     /**
      * Returns true, if two calendar objects are on the same day ignoring time.
      */
     public static boolean isSameDay(Calendar cal1, Calendar cal2) {
-        return cal1 != null && cal2 != null && DateUtils.isSameDay(cal1, cal2);
-    }
-
-    /**
-     * Returns a date object from a calendar.
-     */
-    public static Date getDate(Calendar calendar) {
-        return calendar == null ? null : calendar.getTime();
+        return cal1 != null && cal2 != null && cal1.get(Calendar.ERA) == cal2.get(Calendar.ERA)
+                && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
     }
 
     /**
@@ -174,15 +192,22 @@ public class DateTimeUtils {
                 next = calendar;
             }
         }
-        return next == null ? firstSeasonOfYear : next;
+        if (next == null) {
+            final Calendar nextYearSeason = (Calendar) firstSeasonOfYear.clone();
+
+            nextYearSeason.add(Calendar.YEAR, 1);
+            return nextYearSeason;
+        } else {
+            return next;
+        }
     }
 
     /**
      * Returns true, if cal1 is greater or equal than cal2, ignoring seconds.
      */
     public static boolean isTimeGreaterEquals(Calendar cal1, Calendar cal2) {
-        Calendar truncCal1 = DateUtils.truncate(cal1, Calendar.MINUTE);
-        Calendar truncCal2 = DateUtils.truncate(cal2, Calendar.MINUTE);
+        Calendar truncCal1 = truncateToMinute(cal1);
+        Calendar truncCal2 = truncateToMinute(cal2);
         return truncCal1.getTimeInMillis() >= truncCal2.getTimeInMillis();
     }
 
@@ -212,8 +237,7 @@ public class DateTimeUtils {
 
     private static Calendar adjustTime(Calendar cal, int minutes) {
         if (minutes > 0) {
-            Calendar cTime = Calendar.getInstance();
-            cTime = DateUtils.truncate(cal, Calendar.DAY_OF_MONTH);
+            Calendar cTime = truncateToMidnight(cal);
             cTime.add(Calendar.MINUTE, minutes);
             return cTime;
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.radiothermostat.internal.discovery;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -57,7 +56,6 @@ import com.google.gson.JsonSyntaxException;
  * @author Michael Lobstein - Cleanup for RadioThermostat
  *
  */
-
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.radiothermostat")
 public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
@@ -119,10 +117,8 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
      * @throws UnknownHostException
      * @throws IOException
      * @throws SocketException
-     * @throws UnsupportedEncodingException
      */
-    private void sendDiscoveryBroacast(NetworkInterface ni)
-            throws UnknownHostException, SocketException, UnsupportedEncodingException {
+    private void sendDiscoveryBroacast(NetworkInterface ni) throws UnknownHostException, SocketException {
         InetAddress m = InetAddress.getByName("239.255.255.250");
         final int port = 1900;
         logger.debug("Sending discovery broadcast");
@@ -153,7 +149,7 @@ public class RadioThermostatDiscoveryService extends AbstractDiscoveryService {
             socket.setNetworkInterface(ni);
             socket.joinGroup(m);
             logger.debug("Joined UPnP Multicast group on Interface: {}", ni.getName());
-            byte[] requestMessage = RADIOTHERMOSTAT_DISCOVERY_MESSAGE.getBytes("UTF-8");
+            byte[] requestMessage = RADIOTHERMOSTAT_DISCOVERY_MESSAGE.getBytes(StandardCharsets.UTF_8);
             DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, m, port);
             socket.send(datagramPacket);
             try {

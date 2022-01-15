@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Used to map received messages from the Visonic alarm panel to a ENUM value
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public enum PowermaxReceiveType {
 
     ACK((byte) 0x02, 0, false),
@@ -36,9 +39,9 @@ public enum PowermaxReceiveType {
     POWERMASTER((byte) 0xB0, 0, true),
     F1((byte) 0xF1, 9, false);
 
-    private byte code;
-    private int length;
-    private boolean ackRequired;
+    private final byte code;
+    private final int length;
+    private final boolean ackRequired;
 
     private PowermaxReceiveType(byte code, int length, boolean ackRequired) {
         this.code = code;

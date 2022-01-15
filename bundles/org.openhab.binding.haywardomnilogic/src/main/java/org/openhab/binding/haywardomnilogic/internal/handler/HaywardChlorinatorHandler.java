@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                 try {
                     switch (channelUID.getId()) {
                         case HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE:
-                            if (cmdString.equals("1")) {
+                            if ("1".equals(cmdString)) {
                                 chlorCfgState = "3";
                                 chlorTimedPercent = this.chlorTimedPercent;
                             } else {
@@ -168,7 +168,7 @@ public class HaywardChlorinatorHandler extends HaywardThingHandler {
                     String status = bridgehandler.evaluateXPath("//Parameter[@name='Status']/text()", xmlResponse)
                             .get(0);
 
-                    if (!(status.equals("0"))) {
+                    if (!("0".equals(status))) {
                         logger.debug("haywardCommand XML response: {}", xmlResponse);
                         return;
                     }

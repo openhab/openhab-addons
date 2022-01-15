@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,9 +23,9 @@ import java.util.Hashtable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.synopanalyser.internal.discovery.SynopAnalyzerDiscoveryService;
-import org.openhab.binding.synopanalyser.internal.synop.StationDB;
+import org.openhab.binding.synopanalyzer.internal.discovery.SynopAnalyzerDiscoveryService;
 import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
+import org.openhab.binding.synopanalyzer.internal.synop.StationDB;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.thing.Thing;

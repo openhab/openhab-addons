@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.nanoleaf.internal;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,12 +40,16 @@ public class TouchTest {
     @Test
     public void testTheRightLayoutView() {
         String json = "{\"events\":[{\"panelId\":48111,\"gesture\":1}]}";
-        @Nullable
+
         TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
-        assertThat(touchEvents.getEvents().size(), greaterThan(0));
-        assertThat(touchEvents.getEvents().size(), is(1));
+        if (touchEvents == null) {
+            touchEvents = new TouchEvents();
+        }
+        List<TouchEvent> events = touchEvents.getEvents();
+        assertThat(events.size(), greaterThan(0));
+        assertThat(events.size(), is(1));
         @Nullable
-        TouchEvent touchEvent = touchEvents.getEvents().get(0);
+        TouchEvent touchEvent = events.get(0);
         assertThat(touchEvent.getPanelId(), is("48111"));
         assertThat(touchEvent.getGesture(), is(1));
     }

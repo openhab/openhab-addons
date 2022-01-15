@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -141,6 +141,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     private void initializeThing() {
         String errorMessage = "";
         try {
+            config.setFriendlyName(getThing().getLabel().toString());
             if (config.getUDN().isEmpty()) {
                 // get UDN from device name
                 String uid = this.getThing().getUID().getAsString();
@@ -321,6 +322,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     protected void connectReceiver() throws MagentaTVException {
         if (control.checkDev()) {
             updateThingProperties();
+            control.setThingId(config.getFriendlyName());
             manager.registerDevice(config.getUDN(), config.getTerminalID(), config.getIpAddress(), this);
             control.subscribeEventChannel();
             control.sendPairingRequest();

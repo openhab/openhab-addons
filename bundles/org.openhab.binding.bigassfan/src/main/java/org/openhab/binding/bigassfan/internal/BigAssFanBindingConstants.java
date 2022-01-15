@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,9 +33,6 @@ public class BigAssFanBindingConstants {
 
     // Fans communicate on this port using both UDP (discovery) and TCP (commands)
     public static final int BAF_PORT = 31415;
-
-    // Commands sent to/from fan are ASCII
-    public static final String CHARSET = "US-ASCII";
 
     // BigAssFan Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_FAN = new ThingTypeUID(BINDING_ID, "fan");

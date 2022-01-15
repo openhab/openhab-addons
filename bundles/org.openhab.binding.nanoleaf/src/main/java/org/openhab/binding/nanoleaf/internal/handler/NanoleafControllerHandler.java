@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.nanoleaf.internal.handler;
 import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
 
 import java.net.URI;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
@@ -33,11 +32,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.api.Response;
-import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants;
 import org.openhab.binding.nanoleaf.internal.NanoleafControllerListener;
 import org.openhab.binding.nanoleaf.internal.NanoleafException;
 import org.openhab.binding.nanoleaf.internal.NanoleafUnauthorizedException;
@@ -55,11 +53,13 @@ import org.openhab.binding.nanoleaf.internal.model.Hue;
 import org.openhab.binding.nanoleaf.internal.model.IntegerState;
 import org.openhab.binding.nanoleaf.internal.model.Layout;
 import org.openhab.binding.nanoleaf.internal.model.On;
+import org.openhab.binding.nanoleaf.internal.model.PanelLayout;
 import org.openhab.binding.nanoleaf.internal.model.Rhythm;
 import org.openhab.binding.nanoleaf.internal.model.Sat;
 import org.openhab.binding.nanoleaf.internal.model.State;
 import org.openhab.binding.nanoleaf.internal.model.TouchEvents;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -94,20 +94,21 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
 
     // Pairing interval in seconds
     private static final int PAIRING_INTERVAL = 10;
+    private static final int CONNECT_TIMEOUT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafControllerHandler.class);
+    private HttpClientFactory httpClientFactory;
     private HttpClient httpClient;
-    private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<>();
 
-    // Pairing, update and panel discovery jobs and touch event job
+    private @Nullable HttpClient httpClientSSETouchEvent;
+    private @Nullable Request sseTouchjobRequest;
+    private List<NanoleafControllerListener> controllerListeners = new CopyOnWriteArrayList<NanoleafControllerListener>();
+
     private @NonNullByDefault({}) ScheduledFuture<?> pairingJob;
     private @NonNullByDefault({}) ScheduledFuture<?> updateJob;
     private @NonNullByDefault({}) ScheduledFuture<?> touchJob;
-
-    // JSON parser for API responses
     private final Gson gson = new Gson();
 
-    // Controller configuration settings and channel values
     private @Nullable String address;
     private int port;
     private int refreshIntervall;
@@ -115,9 +116,32 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     private @Nullable String deviceType;
     private @NonNullByDefault({}) ControllerInfo controllerInfo;
 
-    public NanoleafControllerHandler(Bridge bridge, HttpClient httpClient) {
+    private boolean touchJobRunning = false;
+
+    public NanoleafControllerHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
-        this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
+    private void initializeTouchHttpClient() {
+        String httpClientName = thing.getUID().getId();
+
+        try {
+            httpClientSSETouchEvent = httpClientFactory.createHttpClient(httpClientName);
+            final HttpClient localHttpClientSSETouchEvent = this.httpClientSSETouchEvent;
+            if (localHttpClientSSETouchEvent != null) {
+                localHttpClientSSETouchEvent.setConnectTimeout(CONNECT_TIMEOUT * 1000L);
+                localHttpClientSSETouchEvent.start();
+            }
+        } catch (Exception e) {
+            logger.error(
+                    "Long running HttpClient for Nanoleaf controller handler {} cannot be started. Creating Handler failed.",
+                    httpClientName);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+
+        logger.debug("Using long SSE httpClient={} for {}}", httpClientSSETouchEvent, httpClientName);
     }
 
     @Override
@@ -128,42 +152,45 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         setAddress(config.address);
         setPort(config.port);
         setRefreshIntervall(config.refreshInterval);
-        setAuthToken(config.authToken);
-
+        String authToken = (config.authToken != null) ? config.authToken : "";
+        setAuthToken(authToken);
         Map<String, String> properties = getThing().getProperties();
         String propertyModelId = properties.get(Thing.PROPERTY_MODEL_ID);
         if (hasTouchSupport(propertyModelId)) {
             config.deviceType = DEVICE_TYPE_TOUCHSUPPORT;
+            initializeTouchHttpClient();
         } else {
             config.deviceType = DEVICE_TYPE_LIGHTPANELS;
         }
-        setDeviceType(config.deviceType);
 
+        setDeviceType(config.deviceType);
         String propertyFirmwareVersion = properties.get(Thing.PROPERTY_FIRMWARE_VERSION);
 
         try {
-            if (config.address.isEmpty() || String.valueOf(config.port).isEmpty()) {
+            if (!config.address.isEmpty() && !String.valueOf(config.port).isEmpty()) {
+                if (propertyFirmwareVersion != null && !propertyFirmwareVersion.isEmpty() && !OpenAPIUtils
+                        .checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID), propertyFirmwareVersion)) {
+                    logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
+                            propertyFirmwareVersion, API_MIN_FW_VER_LIGHTPANELS);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/error.nanoleaf.controller.incompatibleFirmware");
+                    stopAllJobs();
+                } else if (authToken != null && !authToken.isEmpty()) {
+                    stopPairingJob();
+                    startUpdateJob();
+                    startTouchJob();
+                } else {
+                    logger.debug("No token found. Start pairing background job");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                            "@text/error.nanoleaf.controller.noToken");
+                    startPairingJob();
+                    stopUpdateJob();
+                }
+            } else {
                 logger.warn("No IP address and port configured for the Nanoleaf controller");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noIp");
                 stopAllJobs();
-            } else if (propertyFirmwareVersion != null && !propertyFirmwareVersion.isEmpty() && !OpenAPIUtils
-                    .checkRequiredFirmware(properties.get(Thing.PROPERTY_MODEL_ID), propertyFirmwareVersion)) {
-                logger.warn("Nanoleaf controller firmware is too old: {}. Must be equal or higher than {}",
-                        propertyFirmwareVersion, API_MIN_FW_VER_LIGHTPANELS);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/error.nanoleaf.controller.incompatibleFirmware");
-                stopAllJobs();
-            } else if (config.authToken == null || config.authToken.isEmpty()) {
-                logger.debug("No token found. Start pairing background job");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                        "@text/error.nanoleaf.controller.noToken");
-                startPairingJob();
-                stopUpdateJob();
-            } else {
-                stopPairingJob();
-                startUpdateJob();
-                startTouchJob();
             }
         } catch (IllegalArgumentException iae) {
             logger.warn("Nanoleaf controller firmware version not in format x.y.z: {}",
@@ -178,50 +205,48 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         logger.debug("Received command {} for channel {}", command, channelUID);
         if (!ThingStatus.ONLINE.equals(getThing().getStatusInfo().getStatus())) {
             logger.debug("Cannot handle command. Bridge is not online.");
-            return;
-        }
-        try {
-            if (command instanceof RefreshType) {
-                updateFromControllerInfo();
-            } else {
-                switch (channelUID.getId()) {
-                    case CHANNEL_COLOR:
-                    case CHANNEL_COLOR_TEMPERATURE:
-                    case CHANNEL_COLOR_TEMPERATURE_ABS:
-                        sendStateCommand(channelUID.getId(), command);
-                        break;
-                    case CHANNEL_EFFECT:
-                        sendEffectCommand(command);
-                        break;
-                    case CHANNEL_RHYTHM_MODE:
-                        sendRhythmCommand(command);
-                        break;
-                    default:
-                        logger.warn("Channel with id {} not handled", channelUID.getId());
-                        break;
+        } else {
+            try {
+                if (command instanceof RefreshType) {
+                    updateFromControllerInfo();
+                } else {
+                    switch (channelUID.getId()) {
+                        case CHANNEL_COLOR:
+                        case CHANNEL_COLOR_TEMPERATURE:
+                        case CHANNEL_COLOR_TEMPERATURE_ABS:
+                            sendStateCommand(channelUID.getId(), command);
+                            break;
+                        case CHANNEL_EFFECT:
+                            sendEffectCommand(command);
+                            break;
+                        case CHANNEL_RHYTHM_MODE:
+                            sendRhythmCommand(command);
+                            break;
+                        default:
+                            logger.warn("Channel with id {} not handled", channelUID.getId());
+                            break;
+                    }
                 }
+            } catch (NanoleafUnauthorizedException nue) {
+                logger.debug("Authorization for command {} to channelUID {} failed: {}", command, channelUID,
+                        nue.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/error.nanoleaf.controller.invalidToken");
+            } catch (NanoleafException ne) {
+                logger.debug("Handling command {} to channelUID {} failed: {}", command, channelUID, ne.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/error.nanoleaf.controller.communication");
             }
-        } catch (NanoleafUnauthorizedException nae) {
-            logger.warn("Authorization for command {} to channelUID {} failed: {}", command, channelUID,
-                    nae.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.invalidToken");
-        } catch (NanoleafException ne) {
-            logger.warn("Handling command {} to channelUID {} failed: {}", command, channelUID, ne.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/error.nanoleaf.controller.communication");
         }
     }
 
     @Override
     public void handleRemoval() {
         scheduler.execute(() -> {
-            // delete token for openHAB
-            ContentResponse deleteTokenResponse;
             try {
                 Request deleteTokenRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(),
                         API_DELETE_USER, HttpMethod.DELETE);
-                deleteTokenResponse = OpenAPIUtils.sendOpenAPIRequest(deleteTokenRequest);
+                ContentResponse deleteTokenResponse = OpenAPIUtils.sendOpenAPIRequest(deleteTokenRequest);
                 if (deleteTokenResponse.getStatus() != HttpStatus.NO_CONTENT_204) {
                     logger.warn("Failed to delete token for openHAB. Response code is {}",
                             deleteTokenResponse.getStatus());
@@ -272,32 +297,38 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     public String getLayout() {
-        Layout layout = controllerInfo.getPanelLayout().getLayout();
-        String layoutView = (layout != null) ? layout.getLayoutView() : "";
+        String layoutView = "";
+        if (controllerInfo != null) {
+            PanelLayout panelLayout = controllerInfo.getPanelLayout();
+            Layout layout = panelLayout.getLayout();
+            layoutView = layout != null ? layout.getLayoutView() : "";
+        }
+
         return layoutView;
     }
 
     public synchronized void startPairingJob() {
         if (pairingJob == null || pairingJob.isCancelled()) {
             logger.debug("Start pairing job, interval={} sec", PAIRING_INTERVAL);
-            pairingJob = scheduler.scheduleWithFixedDelay(this::runPairing, 0, PAIRING_INTERVAL, TimeUnit.SECONDS);
+            pairingJob = scheduler.scheduleWithFixedDelay(this::runPairing, 0L, PAIRING_INTERVAL, TimeUnit.SECONDS);
         }
     }
 
     private synchronized void stopPairingJob() {
+        logger.debug("Stop pairing job {}", pairingJob != null ? pairingJob.isCancelled() : "pairing job = null");
         if (pairingJob != null && !pairingJob.isCancelled()) {
-            logger.debug("Stop pairing job");
             pairingJob.cancel(true);
-            this.pairingJob = null;
+            pairingJob = null;
+            logger.debug("Stopped pairing job");
         }
     }
 
     private synchronized void startUpdateJob() {
-        String localAuthToken = getAuthToken();
+        final String localAuthToken = getAuthToken();
         if (localAuthToken != null && !localAuthToken.isEmpty()) {
             if (updateJob == null || updateJob.isCancelled()) {
                 logger.debug("Start controller status job, repeat every {} sec", getRefreshInterval());
-                updateJob = scheduler.scheduleWithFixedDelay(this::runUpdate, 0, getRefreshInterval(),
+                updateJob = scheduler.scheduleWithFixedDelay(this::runUpdate, 0L, getRefreshInterval(),
                         TimeUnit.SECONDS);
             }
         } else {
@@ -307,126 +338,146 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
     }
 
     private synchronized void stopUpdateJob() {
+        logger.debug("Stop update job {}", updateJob != null ? updateJob.isCancelled() : "update job = null");
         if (updateJob != null && !updateJob.isCancelled()) {
-            logger.debug("Stop status job");
             updateJob.cancel(true);
-            this.updateJob = null;
+            updateJob = null;
+            logger.debug("Stopped status job");
         }
     }
 
     private synchronized void startTouchJob() {
         NanoleafControllerConfig config = getConfigAs(NanoleafControllerConfig.class);
         if (!config.deviceType.equals(DEVICE_TYPE_TOUCHSUPPORT)) {
-            logger.debug("NOT starting TouchJob for Panel {} because it has wrong device type '{}' vs required '{}'",
+            logger.debug(
+                    "NOT starting TouchJob for Controller {} because it has wrong device type '{}' vs required '{}'",
                     this.getThing().getUID(), config.deviceType, DEVICE_TYPE_TOUCHSUPPORT);
-            return;
         } else {
-            logger.debug("Starting TouchJob for Panel {}", this.getThing().getUID());
-        }
-
-        String localAuthToken = getAuthToken();
-        if (localAuthToken != null && !localAuthToken.isEmpty()) {
-            if (touchJob == null || touchJob.isCancelled()) {
-                logger.debug("Starting Touchjob now");
-                touchJob = scheduler.schedule(this::runTouchDetection, 0, TimeUnit.SECONDS);
+            logger.debug("Starting TouchJob for Controller {}", getThing().getUID());
+            final String localAuthToken = getAuthToken();
+            if (localAuthToken != null && !localAuthToken.isEmpty()) {
+                if (touchJob != null && !touchJob.isDone()) {
+                    logger.trace("tj: tj={} already running touchJobRunning = {}  cancelled={} done={}", touchJob,
+                            touchJobRunning, touchJob == null ? null : touchJob.isCancelled(),
+                            touchJob == null ? null : touchJob.isDone());
+                } else {
+                    logger.debug("tj: Starting NEW touch job : tj={} touchJobRunning={} cancelled={}  done={}",
+                            touchJob, touchJobRunning, touchJob == null ? null : touchJob.isCancelled(),
+                            touchJob == null ? null : touchJob.isDone());
+                    touchJob = scheduler.scheduleWithFixedDelay(this::runTouchDetection, 0L, 1L, TimeUnit.SECONDS);
+                }
+            } else {
+                logger.error("starting TouchJob for Controller {} failed - missing token", getThing().getUID());
             }
-        } else {
-            logger.error("starting TouchJob for Controller {} failed - missing token", this.getThing().getUID());
+
+        }
+    }
+
+    private synchronized void stopTouchJob() {
+        logger.debug("Stop touch job {}", touchJob != null ? touchJob.isCancelled() : "touchJob job = null");
+        if (touchJob != null) {
+            logger.trace("tj: touch job stopping for {} with client {}", thing.getUID(), httpClientSSETouchEvent);
+
+            final Request localSSERequest = sseTouchjobRequest;
+            if (localSSERequest != null) {
+                localSSERequest.abort(new NanoleafException("Touch detection stopped"));
+            }
+            if (!touchJob.isCancelled()) {
+                touchJob.cancel(true);
+            }
+
+            touchJob = null;
+            touchJobRunning = false;
+            logger.debug("tj: touch job stopped for {} with client {}", thing.getUID(), httpClientSSETouchEvent);
         }
     }
 
     private boolean hasTouchSupport(@Nullable String deviceType) {
-        return (MODELS_WITH_TOUCHSUPPORT.contains(deviceType));
-    }
-
-    private synchronized void stopTouchJob() {
-        if (touchJob != null && !touchJob.isCancelled()) {
-            logger.debug("Stop touch job");
-            touchJob.cancel(true);
-            this.touchJob = null;
-        }
+        return NanoleafBindingConstants.MODELS_WITH_TOUCHSUPPORT.contains(deviceType);
     }
 
     private void runUpdate() {
         logger.debug("Run update job");
+
         try {
             updateFromControllerInfo();
-            startTouchJob(); // if device type has changed, start touch detection.
+            startTouchJob();
             updateStatus(ThingStatus.ONLINE);
         } catch (NanoleafUnauthorizedException nae) {
-            logger.warn("Status update unauthorized: {}", nae.getMessage());
+            logger.debug("Status update unauthorized for controller {}: {}", getThing().getUID(), nae.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.invalidToken");
-            String localAuthToken = getAuthToken();
+            final String localAuthToken = getAuthToken();
             if (localAuthToken == null || localAuthToken.isEmpty()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                         "@text/error.nanoleaf.controller.noToken");
             }
         } catch (NanoleafException ne) {
-            logger.warn("Status update failed: {}", ne.getMessage());
+            logger.debug("Status update failed for controller {} : {}", getThing().getUID(), ne.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.communication");
         } catch (RuntimeException e) {
-            logger.warn("Update job failed", e);
+            logger.debug("Update job failed", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/error.nanoleaf.controller.runtime");
         }
     }
 
     private void runPairing() {
         logger.debug("Run pairing job");
+
         try {
-            String localAuthToken = getAuthToken();
+            final String localAuthToken = getAuthToken();
             if (localAuthToken != null && !localAuthToken.isEmpty()) {
                 if (pairingJob != null) {
                     pairingJob.cancel(false);
                 }
+
                 logger.debug("Authentication token found. Canceling pairing job");
                 return;
             }
+
             ContentResponse authTokenResponse = OpenAPIUtils
                     .requestBuilder(httpClient, getControllerConfig(), API_ADD_USER, HttpMethod.POST)
-                    .timeout(20, TimeUnit.SECONDS).send();
+                    .timeout(20L, TimeUnit.SECONDS).send();
+            String authTokenResponseString = (authTokenResponse != null) ? authTokenResponse.getContentAsString() : "";
             if (logger.isTraceEnabled()) {
-                logger.trace("Auth token response: {}", authTokenResponse.getContentAsString());
+                logger.trace("Auth token response: {}", authTokenResponseString);
             }
 
-            if (authTokenResponse.getStatus() != HttpStatus.OK_200) {
-                logger.debug("Pairing pending for {}. Controller returns status code {}", this.getThing().getUID(),
+            if (authTokenResponse != null && authTokenResponse.getStatus() != HttpStatus.OK_200) {
+                logger.debug("Pairing pending for {}. Controller returns status code {}", getThing().getUID(),
                         authTokenResponse.getStatus());
             } else {
-                // get auth token from response
-                AuthToken authTokenObject = gson.fromJson(authTokenResponse.getContentAsString(), AuthToken.class);
-                localAuthToken = authTokenObject.getAuthToken();
-                if (localAuthToken != null && !localAuthToken.isEmpty()) {
-                    logger.debug("Pairing succeeded.");
-
-                    // Update and save the auth token in the thing configuration
-                    Configuration config = editConfiguration();
-                    config.put(NanoleafControllerConfig.AUTH_TOKEN, localAuthToken);
-                    updateConfiguration(config);
-
-                    updateStatus(ThingStatus.ONLINE);
-                    // Update local field
-                    setAuthToken(localAuthToken);
-
-                    stopPairingJob();
-                    startUpdateJob();
-                    startTouchJob();
-                } else {
-                    logger.debug("No auth token found in response: {}", authTokenResponse.getContentAsString());
+                AuthToken authTokenObject = gson.fromJson(authTokenResponseString, AuthToken.class);
+                authTokenObject = (authTokenObject != null) ? authTokenObject : new AuthToken();
+                if (authTokenObject.getAuthToken().isEmpty()) {
+                    logger.debug("No auth token found in response: {}", authTokenResponseString);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/error.nanoleaf.controller.pairingFailed");
-                    throw new NanoleafException(authTokenResponse.getContentAsString());
+                    throw new NanoleafException(authTokenResponseString);
                 }
+
+                logger.debug("Pairing succeeded.");
+                Configuration config = editConfiguration();
+
+                config.put(NanoleafControllerConfig.AUTH_TOKEN, authTokenObject.getAuthToken());
+                updateConfiguration(config);
+                updateStatus(ThingStatus.ONLINE);
+                // Update local field
+                setAuthToken(authTokenObject.getAuthToken());
+
+                stopPairingJob();
+                startUpdateJob();
+                startTouchJob();
             }
         } catch (JsonSyntaxException e) {
             logger.warn("Received invalid data", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.invalidData");
-        } catch (NanoleafException e) {
+        } catch (NanoleafException ne) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/error.nanoleaf.controller.noTokenReceived");
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
             logger.debug("Cannot send authorization request to controller: ", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/error.nanoleaf.controller.authRequest");
@@ -440,133 +491,159 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * This is based on the touch event detection described in https://forum.nanoleaf.me/docs/openapi#_842h3097vbgq
-     */
-    private static boolean touchJobRunning = false;
-
-    private void runTouchDetection() {
-        if (touchJobRunning) {
-            logger.debug("touch job already running. quitting.");
-            return;
+    private synchronized void runTouchDetection() {
+        final HttpClient localhttpSSEClientTouchEvent = httpClientSSETouchEvent;
+        int eventHashcode = -1;
+        if (localhttpSSEClientTouchEvent != null) {
+            eventHashcode = localhttpSSEClientTouchEvent.hashCode();
         }
-        try {
-            touchJobRunning = true;
-            URI eventUri = OpenAPIUtils.getUri(getControllerConfig(), API_EVENTS, "id=4");
-            logger.debug("touch job registered on: {}", eventUri.toString());
-            httpClient.newRequest(eventUri).send(new Response.Listener.Adapter() // request runs forever
-            {
-                @Override
-                public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
-                    String s = StandardCharsets.UTF_8.decode(content).toString();
-                    logger.trace("content {}", s);
+        if (touchJobRunning) {
+            logger.trace("tj: touch job {} touch job already running. quitting. {} controller {} with {}\",\n",
+                    touchJob, eventHashcode, thing.getUID(), httpClientSSETouchEvent);
+        } else {
+            try {
+                URI eventUri = OpenAPIUtils.getUri(getControllerConfig(), API_EVENTS, "id=4");
+                logger.debug("tj: touch job request registering for {} with client {}", thing.getUID(),
+                        httpClientSSETouchEvent);
+                touchJobRunning = true;
+                if (localhttpSSEClientTouchEvent != null) {
+                    localhttpSSEClientTouchEvent.setIdleTimeout(CONNECT_TIMEOUT * 1000L);
+                    sseTouchjobRequest = localhttpSSEClientTouchEvent.newRequest(eventUri);
+                    final Request localSSETouchjobRequest = sseTouchjobRequest;
+                    int requestHashCode = -1;
+                    if (localSSETouchjobRequest != null) {
+                        requestHashCode = localSSETouchjobRequest.hashCode();
 
-                    Scanner eventContent = new Scanner(s);
-                    while (eventContent.hasNextLine()) {
-                        String line = eventContent.nextLine().trim();
-                        // we don't expect anything than content id:4, so we do not check that but only care about the
-                        // data part
-                        if (line.startsWith("data:")) {
-                            String json = line.substring(5).trim(); // supposed to be JSON
-                            try {
-                                TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
-                                handleTouchEvents(Objects.requireNonNull(touchEvents));
-                            } catch (JsonSyntaxException jse) {
-                                logger.error("couldn't parse touch event json {}", json);
+                        logger.debug("tj: triggering new touch job request {} for {} with client {}", requestHashCode,
+                                thing.getUID(), eventHashcode);
+                        localSSETouchjobRequest.onResponseContent((response, content) -> {
+                            String s = StandardCharsets.UTF_8.decode(content).toString();
+                            logger.debug("touch detected for controller {}", thing.getUID());
+                            logger.trace("content {}", s);
+                            Scanner eventContent = new Scanner(s);
+
+                            while (eventContent.hasNextLine()) {
+                                String line = eventContent.nextLine().trim();
+                                if (line.startsWith("data:")) {
+                                    String json = line.substring(5).trim();
+
+                                    try {
+                                        TouchEvents touchEvents = gson.fromJson(json, TouchEvents.class);
+                                        handleTouchEvents(Objects.requireNonNull(touchEvents));
+                                    } catch (JsonSyntaxException e) {
+                                        logger.error("Couldn't parse touch event json {}", json);
+                                    }
+                                }
                             }
+
+                            eventContent.close();
+                            logger.debug("leaving touch onContent");
+                        }).onResponseSuccess((response) -> {
+                            logger.trace("tj: r={} touch event SUCCESS: {}", response.getRequest(), response);
+                        }).onResponseFailure((response, failure) -> {
+                            logger.trace("tj: r={} touch event FAILURE. Touchjob not running anymore for controller {}",
+                                    response.getRequest(), thing.getUID());
+                        }).send((result) -> {
+                            logger.trace(
+                                    "tj: r={} touch event COMPLETE. Touchjob not running anymore for controller {}      failed: {}        succeeded: {}",
+                                    result.getRequest(), thing.getUID(), result.isFailed(), result.isSucceeded());
+                            touchJobRunning = false;
+                        });
+                    }
+                }
+                logger.trace("tj: started touch job request for {} with {} at {}", thing.getUID(),
+                        httpClientSSETouchEvent, eventUri);
+            } catch (NanoleafException | RuntimeException e) {
+                logger.warn("tj: setting up TouchDetection failed for controller {} with {}\",\n", thing.getUID(),
+                        httpClientSSETouchEvent);
+                logger.warn("tj: setting up TouchDetection failed with exception", e);
+            } finally {
+                logger.trace("tj: touch job {} started for new request {} controller {} with {}\",\n",
+                        touchJob.hashCode(), eventHashcode, thing.getUID(), httpClientSSETouchEvent);
+            }
+
+        }
+    }
+
+    private void handleTouchEvents(TouchEvents touchEvents) {
+        touchEvents.getEvents().forEach((event) -> {
+            logger.debug("panel: {} gesture id: {}", event.getPanelId(), event.getGesture());
+            // Swipes go to the controller, taps go to the individual panel
+            if (event.getPanelId().equals(CONTROLLER_PANEL_ID)) {
+                logger.debug("Triggering controller {} with gesture {}.", thing.getUID(), event.getGesture());
+                updateControllerGesture(event.getGesture());
+            } else {
+                getThing().getThings().forEach((child) -> {
+                    NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) child.getHandler();
+                    if (panelHandler != null) {
+                        logger.trace("Checking available panel -{}- versus event panel -{}-", panelHandler.getPanelID(),
+                                event.getPanelId());
+                        if (panelHandler.getPanelID().equals(event.getPanelId())) {
+                            logger.debug("Panel {} found. Triggering item with gesture {}.", panelHandler.getPanelID(),
+                                    event.getGesture());
+                            panelHandler.updatePanelGesture(event.getGesture());
                         }
                     }
-                    eventContent.close();
-                    logger.debug("leaving touch onContent");
-                    super.onContent(response, content);
-                }
 
-                @Override
-                public void onSuccess(@Nullable Response response) {
-                    logger.trace("touch event SUCCESS: {}", response);
-                }
-
-                @Override
-                public void onFailure(@Nullable Response response, @Nullable Throwable failure) {
-                    logger.trace("touch event FAILURE: {}", response);
-                }
-
-                @Override
-                public void onComplete(@Nullable Result result) {
-                    logger.trace("touch event COMPLETE: {}", result);
-                }
-            });
-        } catch (RuntimeException | NanoleafException e) {
-            logger.warn("setting up TouchDetection failed", e);
-        } finally {
-            touchJobRunning = false;
-        }
-        logger.debug("leaving run touch detection");
+                });
+            }
+        });
     }
 
     /**
-     * Interate over all gathered touch events and apply them to the panel they belong to
+     * Apply the swipe gesture to the controller
      *
-     * @param touchEvents
+     * @param gesture Only swipes are supported on the complete nanoleaf panels
      */
-    private void handleTouchEvents(TouchEvents touchEvents) {
-        touchEvents.getEvents().forEach(event -> {
-            logger.info("panel: {} gesture id: {}", event.getPanelId(), event.getGesture());
-
-            // Iterate over all child things = all panels of that controller
-            this.getThing().getThings().forEach(child -> {
-                NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) child.getHandler();
-                if (panelHandler != null) {
-                    logger.trace("Checking available panel -{}- versus event panel -{}-", panelHandler.getPanelID(),
-                            event.getPanelId());
-                    if (panelHandler.getPanelID().equals(event.getPanelId())) {
-                        logger.debug("Panel {} found. Triggering item with gesture {}.", panelHandler.getPanelID(),
-                                event.getGesture());
-                        panelHandler.updatePanelGesture(event.getGesture());
-                    }
-                }
-            });
-        });
+    private void updateControllerGesture(int gesture) {
+        switch (gesture) {
+            case 2:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_UP);
+                break;
+            case 3:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_DOWN);
+                break;
+            case 4:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_LEFT);
+                break;
+            case 5:
+                triggerChannel(CHANNEL_SWIPE, CHANNEL_SWIPE_EVENT_RIGHT);
+                break;
+        }
     }
 
     private void updateFromControllerInfo() throws NanoleafException {
         logger.debug("Update channels for controller {}", thing.getUID());
-        this.controllerInfo = receiveControllerInfo();
-        final State state = controllerInfo.getState();
+        controllerInfo = receiveControllerInfo();
+        State state = controllerInfo.getState();
 
         OnOffType powerState = state.getOnOff();
 
-        @Nullable
         Ct colorTemperature = state.getColorTemperature();
 
-        float colorTempPercent = 0f;
+        float colorTempPercent = 0.0F;
+        int hue;
+        int saturation;
         if (colorTemperature != null) {
             updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new DecimalType(colorTemperature.getValue()));
-
-            @Nullable
             Integer min = colorTemperature.getMin();
-            int colorMin = (min == null) ? 0 : min;
-
-            @Nullable
+            hue = min == null ? 0 : min;
             Integer max = colorTemperature.getMax();
-            int colorMax = (max == null) ? 0 : max;
-
-            colorTempPercent = (colorTemperature.getValue() - colorMin) / (colorMax - colorMin)
+            saturation = max == null ? 0 : max;
+            colorTempPercent = (colorTemperature.getValue() - hue) / (saturation - hue)
                     * PercentType.HUNDRED.intValue();
         }
 
         updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(Float.toString(colorTempPercent)));
         updateState(CHANNEL_EFFECT, new StringType(controllerInfo.getEffects().getSelect()));
-
-        @Nullable
         Hue stateHue = state.getHue();
-        int hue = (stateHue != null) ? stateHue.getValue() : 0;
-        @Nullable
+        hue = stateHue != null ? stateHue.getValue() : 0;
+
         Sat stateSaturation = state.getSaturation();
-        int saturation = (stateSaturation != null) ? stateSaturation.getValue() : 0;
-        @Nullable
+        saturation = stateSaturation != null ? stateSaturation.getValue() : 0;
+
         Brightness stateBrightness = state.getBrightness();
-        int brightness = (stateBrightness != null) ? stateBrightness.getValue() : 0;
+        int brightness = stateBrightness != null ? stateBrightness.getValue() : 0;
 
         updateState(CHANNEL_COLOR, new HSBType(new DecimalType(hue), new PercentType(saturation),
                 new PercentType(powerState == OnOffType.ON ? brightness : 0)));
@@ -575,35 +652,9 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         updateState(CHANNEL_RHYTHM_MODE, new DecimalType(controllerInfo.getRhythm().getRhythmMode()));
         updateState(CHANNEL_RHYTHM_STATE,
                 controllerInfo.getRhythm().getRhythmConnected() ? OnOffType.ON : OnOffType.OFF);
-        // update bridge properties which may have changed, or are not present during discovery
-        Map<String, String> properties = editProperties();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
-        properties.put(Thing.PROPERTY_MODEL_ID, controllerInfo.getModel());
-        properties.put(Thing.PROPERTY_VENDOR, controllerInfo.getManufacturer());
-        updateProperties(properties);
-
-        Configuration config = editConfiguration();
-
-        if (hasTouchSupport(controllerInfo.getModel())) {
-            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_TOUCHSUPPORT);
-            logger.debug("Set to device type {}", DEVICE_TYPE_TOUCHSUPPORT);
-        } else {
-            config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_LIGHTPANELS);
-            logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);
-        }
-        updateConfiguration(config);
-
-        getConfig().getProperties().forEach((key, value) -> {
-            logger.trace("Configuration property: key {} value {}", key, value);
-        });
-
-        getThing().getProperties().forEach((key, value) -> {
-            logger.debug("Thing property:  key {} value {}", key, value);
-        });
 
         // update the color channels of each panel
-        this.getThing().getThings().forEach(child -> {
+        getThing().getThings().forEach(child -> {
             NanoleafPanelHandler panelHandler = (NanoleafPanelHandler) child.getHandler();
             if (panelHandler != null) {
                 logger.debug("Update color channel for panel {}", panelHandler.getThing().getUID());
@@ -611,8 +662,46 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
             }
         });
 
+        updateProperties();
+        updateConfiguration();
+
         for (NanoleafControllerListener controllerListener : controllerListeners) {
             controllerListener.onControllerInfoFetched(getThing().getUID(), controllerInfo);
+        }
+    }
+
+    private void updateConfiguration() {
+        // only update the Thing config if value isn't set yet
+        if (getConfig().get(NanoleafControllerConfig.DEVICE_TYPE) == null) {
+            Configuration config = editConfiguration();
+            if (hasTouchSupport(controllerInfo.getModel())) {
+                config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_TOUCHSUPPORT);
+                logger.debug("Set to device type {}", DEVICE_TYPE_TOUCHSUPPORT);
+            } else {
+                config.put(NanoleafControllerConfig.DEVICE_TYPE, DEVICE_TYPE_LIGHTPANELS);
+                logger.debug("Set to device type {}", DEVICE_TYPE_LIGHTPANELS);
+            }
+            updateConfiguration(config);
+            if (logger.isTraceEnabled()) {
+                getConfig().getProperties().forEach((key, value) -> {
+                    logger.trace("Configuration property: key {} value {}", key, value);
+                });
+            }
+        }
+    }
+
+    private void updateProperties() {
+        // update bridge properties which may have changed, or are not present during discovery
+        Map<String, String> properties = editProperties();
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, controllerInfo.getSerialNo());
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, controllerInfo.getFirmwareVersion());
+        properties.put(Thing.PROPERTY_MODEL_ID, controllerInfo.getModel());
+        properties.put(Thing.PROPERTY_VENDOR, controllerInfo.getManufacturer());
+        updateProperties(properties);
+        if (logger.isTraceEnabled()) {
+            getThing().getProperties().forEach((key, value) -> {
+                logger.trace("Thing property: key {} value {}", key, value);
+            });
         }
     }
 
@@ -653,8 +742,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                     if (controllerInfo != null) {
                         @Nullable
                         Brightness brightness = controllerInfo.getState().getBrightness();
-                        int brightnessMin = 0;
-                        int brightnessMax = 0;
+                        int brightnessMin;
+                        int brightnessMax;
                         if (brightness != null) {
                             @Nullable
                             Integer min = brightness.getMin();
@@ -679,7 +768,7 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
                         }
                     }
                 } else {
-                    logger.warn("Unhandled command type: {}", command.getClass().getName());
+                    logger.warn("Unhandled command {} with command type: {}", command, command.getClass().getName());
                     return;
                 }
                 break;
@@ -736,30 +825,28 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         Effects effects = new Effects();
         if (command instanceof StringType) {
             effects.setSelect(command.toString());
+            Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_EFFECT,
+                    HttpMethod.PUT);
+            String content = gson.toJson(effects);
+            logger.debug("sending effect command from controller {}: {}", getThing().getUID(), content);
+            setNewEffectRequest.content(new StringContentProvider(content), "application/json");
+            OpenAPIUtils.sendOpenAPIRequest(setNewEffectRequest);
         } else {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
-            return;
         }
-        Request setNewEffectRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_EFFECT,
-                HttpMethod.PUT);
-        String content = gson.toJson(effects);
-        logger.debug("sending effect command from controller {}: {}", getThing().getUID(), content);
-        setNewEffectRequest.content(new StringContentProvider(content), "application/json");
-        OpenAPIUtils.sendOpenAPIRequest(setNewEffectRequest);
     }
 
     private void sendRhythmCommand(Command command) throws NanoleafException {
         Rhythm rhythm = new Rhythm();
         if (command instanceof DecimalType) {
             rhythm.setRhythmMode(((DecimalType) command).intValue());
+            Request setNewRhythmRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(),
+                    API_RHYTHM_MODE, HttpMethod.PUT);
+            setNewRhythmRequest.content(new StringContentProvider(gson.toJson(rhythm)), "application/json");
+            OpenAPIUtils.sendOpenAPIRequest(setNewRhythmRequest);
         } else {
             logger.warn("Unhandled command type: {}", command.getClass().getName());
-            return;
         }
-        Request setNewRhythmRequest = OpenAPIUtils.requestBuilder(httpClient, getControllerConfig(), API_RHYTHM_MODE,
-                HttpMethod.PUT);
-        setNewRhythmRequest.content(new StringContentProvider(gson.toJson(rhythm)), "application/json");
-        OpenAPIUtils.sendOpenAPIRequest(setNewRhythmRequest);
     }
 
     private @Nullable String getAddress() {
@@ -786,7 +873,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         this.refreshIntervall = refreshIntervall;
     }
 
-    private @Nullable String getAuthToken() {
+    @Nullable
+    private String getAuthToken() {
         return authToken;
     }
 
@@ -794,7 +882,8 @@ public class NanoleafControllerHandler extends BaseBridgeHandler {
         this.authToken = authToken;
     }
 
-    private @Nullable String getDeviceType() {
+    @Nullable
+    private String getDeviceType() {
         return deviceType;
     }
 

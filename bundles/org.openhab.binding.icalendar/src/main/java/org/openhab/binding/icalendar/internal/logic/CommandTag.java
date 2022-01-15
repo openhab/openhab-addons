@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,8 +46,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CommandTag {
 
-    private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(DecimalType.class,
-            QuantityType.class, OnOffType.class, OpenClosedType.class, UpDownType.class, HSBType.class,
+    private static final List<Class<? extends Command>> otherCommandTypes = Arrays.asList(HSBType.class,
+            DecimalType.class, QuantityType.class, OnOffType.class, OpenClosedType.class, UpDownType.class,
             PlayPauseType.class, RewindFastforwardType.class, StringType.class);
 
     private static final List<Class<? extends Command>> percentCommandType = Arrays.asList(PercentType.class);

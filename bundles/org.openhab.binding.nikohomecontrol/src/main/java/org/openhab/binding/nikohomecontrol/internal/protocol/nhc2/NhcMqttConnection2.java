@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -158,7 +158,7 @@ public class NhcMqttConnection2 implements MqttActionCallback {
     }
 
     private MqttBrokerConnection createMqttConnection() throws MqttException {
-        MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, clientId);
+        MqttBrokerConnection connection = new MqttBrokerConnection(cocoAddress, port, true, false, clientId);
         connection.setTrustManagers(trustManagers);
         connection.setCredentials(profile, token);
         connection.setQos(1);

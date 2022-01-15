@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class A5_3F_7F_Universal extends _4BSMessage {
                 String c = Transformation.transform(transformationInfo.transformationType,
                         transformationInfo.transformationFunction, command.toString());
 
-                if (c != null && c != command.toString()) {
+                if (c != null && !c.equals(command.toString())) {
                     setData(HexUtils.hexToBytes(c));
                 }
 

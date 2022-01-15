@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -122,7 +122,7 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
             try {
                 final QuantityType<?> quantity = new QuantityType<>(source);
                 return formatResult(data, source, quantity.toBigDecimal());
-            } catch (NumberFormatException e2) {
+            } catch (IllegalArgumentException e2) {
                 String nonNumeric = data.get(null);
                 if (nonNumeric != null) {
                     return nonNumeric;

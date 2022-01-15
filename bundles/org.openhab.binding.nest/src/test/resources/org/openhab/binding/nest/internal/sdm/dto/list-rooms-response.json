@@ -1,0 +1,20 @@
+{
+  "rooms": [
+    {
+      "name": "enterprises/project-id/structures/structure-id/rooms/kitchen-room-id",
+      "traits": {
+        "sdm.structures.traits.RoomInfo": {
+          "customName": "Kitchen"
+        }
+      }
+    },
+    {
+      "name": "enterprises/project-id/structures/structure-id/rooms/living-room-id",
+      "traits": {
+        "sdm.structures.traits.RoomInfo": {
+          "customName": "Living"
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class StateDescriptionDTO {
         return minimum;
     }
 
-    public void setMinimum(BigDecimal minimum) {
+    public void setMinimum(@Nullable BigDecimal minimum) {
         this.minimum = minimum;
     }
 
@@ -68,7 +68,7 @@ public class StateDescriptionDTO {
         return maximum;
     }
 
-    public void setMaximum(BigDecimal maximum) {
+    public void setMaximum(@Nullable BigDecimal maximum) {
         this.maximum = maximum;
     }
 
@@ -77,7 +77,7 @@ public class StateDescriptionDTO {
         return step;
     }
 
-    public void setStep(BigDecimal step) {
+    public void setStep(@Nullable BigDecimal step) {
         this.step = step;
     }
 
@@ -86,7 +86,7 @@ public class StateDescriptionDTO {
         return pattern;
     }
 
-    public void setPattern(String pattern) {
+    public void setPattern(@Nullable String pattern) {
         this.pattern = pattern;
     }
 
@@ -95,7 +95,7 @@ public class StateDescriptionDTO {
         return readOnly;
     }
 
-    public void setReadOnly(Boolean readOnly) {
+    public void setReadOnly(@Nullable Boolean readOnly) {
         this.readOnly = readOnly;
     }
 
@@ -104,7 +104,7 @@ public class StateDescriptionDTO {
         return options;
     }
 
-    public void setOptions(List<OptionsValueListDTO> options) {
+    public void setOptions(@Nullable List<OptionsValueListDTO> options) {
         this.options = options;
     }
 }

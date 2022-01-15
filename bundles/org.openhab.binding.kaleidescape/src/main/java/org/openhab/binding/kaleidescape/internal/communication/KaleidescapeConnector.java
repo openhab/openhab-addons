@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -185,7 +185,7 @@ public abstract class KaleidescapeConnector {
      */
     public void sendCommand(@Nullable String cmd, @Nullable String cachedMessage) throws KaleidescapeException {
         // if sent a cachedMessage, just send out an event with the data so KaleidescapeMessageHandler will process it
-        if (cachedMessage != null) {
+        if (cmd != null && cachedMessage != null) {
             logger.debug("Command: '{}' returning cached value: '{}'", cmd, cachedMessage);
             // change GET_SOMETHING into SOMETHING and special case GET_PLAYING_TITLE_NAME into TITLE_NAME
             dispatchKeyValue(cmd.replace("GET_", "").replace("PLAYING_TITLE_NAME", "TITLE_NAME"), cachedMessage, true);

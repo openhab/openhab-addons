@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -170,7 +170,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
                 // this is the first handler for this reading class => also setup converter
                 readingClassHandlerMap.put(h.getReadingClass(), handlers);
 
-                if (SensorDefinition.ALL_TYPE == h.getSensorType()) {
+                if (SensorDefinition.ALL_TYPE.equals(h.getSensorType())) {
                     converters.addAll(SensorDefinition.getDiscoveryConverters());
                 } else {
                     JeeLinkReadingConverter<?> c = SensorDefinition.getConverter(h.getSensorType());
@@ -200,7 +200,7 @@ public class JeeLinkHandler extends BaseBridgeHandler implements BridgeHandler, 
                     // this was the last handler for this reading class => also remove converter
                     readingClassHandlerMap.remove(h.getReadingClass());
 
-                    if (SensorDefinition.ALL_TYPE == h.getSensorType()) {
+                    if (SensorDefinition.ALL_TYPE.equals(h.getSensorType())) {
                         converters.removeAll(SensorDefinition.getDiscoveryConverters());
                     } else {
                         JeeLinkReadingConverter<?> c = SensorDefinition.getConverter(h.getSensorType());

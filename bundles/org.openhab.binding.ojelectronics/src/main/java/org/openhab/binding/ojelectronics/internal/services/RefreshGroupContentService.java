@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import org.openhab.binding.ojelectronics.internal.ThermostatHandler;
 import org.openhab.binding.ojelectronics.internal.models.Thermostat;
 import org.openhab.binding.ojelectronics.internal.models.groups.GroupContent;
 import org.openhab.core.thing.Thing;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Refreshes values of {@link ThermostatHandler}
@@ -29,6 +31,7 @@ import org.openhab.core.thing.Thing;
 public class RefreshGroupContentService {
 
     private final List<GroupContent> groupContentList;
+    private final Logger logger = LoggerFactory.getLogger(RefreshGroupContentService.class);
     private List<Thing> things;
 
     /**
@@ -40,6 +43,9 @@ public class RefreshGroupContentService {
     public RefreshGroupContentService(List<GroupContent> groupContents, List<Thing> things) {
         this.groupContentList = groupContents;
         this.things = things;
+        if (this.things.isEmpty()) {
+            logger.warn("Bridge contains no thermostats.");
+        }
     }
 
     /**

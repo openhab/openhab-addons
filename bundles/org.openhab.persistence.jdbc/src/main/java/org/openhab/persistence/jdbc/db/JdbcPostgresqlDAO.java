@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
+import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
@@ -52,7 +53,8 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
         sqlIfTableExists = "SELECT * FROM PG_TABLES WHERE TABLENAME='#searchTable#'";
         sqlCreateItemsTableIfNot = "CREATE TABLE IF NOT EXISTS #itemsManageTable# (itemid SERIAL NOT NULL, #colname# #coltype# NOT NULL, CONSTRAINT #itemsManageTable#_pkey PRIMARY KEY (itemid))";
         sqlCreateNewEntryInItemsTable = "INSERT INTO items (itemname) SELECT itemname FROM #itemsManageTable# UNION VALUES ('#itemname#') EXCEPT SELECT itemname FROM items";
-        sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='public' AND NOT table_name='#itemsManageTable#'";
+        sqlGetItemTables = "SELECT table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema=(SELECT table_schema "
+                + "FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_name='#itemsManageTable#') AND NOT table_name='#itemsManageTable#'";
         // http://stackoverflow.com/questions/17267417/how-do-i-do-an-upsert-merge-insert-on-duplicate-update-in-postgresql
         // for later use, PostgreSql > 9.5 to prevent PRIMARY key violation use:
         // SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( NOW(), CAST( ? as #dbType#) ) ON
@@ -121,9 +123,10 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
 
     @Override
     public List<ItemsVO> doGetItemTables(ItemsVO vo) {
-        String sql = StringUtilsExt.replaceArrayMerge(sqlGetItemTables, new String[] { "#itemsManageTable#" },
-                new String[] { vo.getItemsManageTable() });
-        logger.debug("JDBC::doGetItemTables sql={}", sql);
+        String sql = StringUtilsExt.replaceArrayMerge(this.sqlGetItemTables,
+                new String[] { "#itemsManageTable#", "#itemsManageTable#" },
+                new String[] { vo.getItemsManageTable(), vo.getItemsManageTable() });
+        this.logger.debug("JDBC::doGetItemTables sql={}", sql);
         return Yank.queryBeanList(sql, ItemsVO.class, null);
     }
 
@@ -131,13 +134,13 @@ public class JdbcPostgresqlDAO extends JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     @Override
-    public void doStoreItemValue(Item item, ItemVO vo) {
-        vo = storeItemValueProvider(item, vo);
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { vo.getValue() };
-        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, vo.getValue());
+                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+        Object[] params = new Object[] { storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }
 

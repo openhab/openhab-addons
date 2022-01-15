@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mielecloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="robotic_vacuum_cleaner">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.mielecloud.robotic_vacuum_cleaner.label</label>
+		<description>@text/thing-type.mielecloud.robotic_vacuum_cleaner.description</description>
+		<category>WhiteGood</category>
+
+		<channels>
+			<channel id="remote_control_can_be_started" typeId="remote_control_can_be_started"/>
+			<channel id="remote_control_can_be_stopped" typeId="remote_control_can_be_stopped"/>
+			<channel id="remote_control_can_be_paused" typeId="remote_control_can_be_paused"/>
+			<channel id="remote_control_can_set_program_active" typeId="remote_control_can_set_program_active"/>
+			<channel id="vacuum_cleaner_program_active" typeId="vacuum_cleaner_program_active"/>
+			<channel id="program_active_raw" typeId="program_active_raw"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="operation_state_raw" typeId="operation_state_raw"/>
+			<channel id="finish_state" typeId="finish_state"/>
+			<channel id="program_start_stop_pause" typeId="program_start_stop_pause"/>
+			<channel id="power_state_on_off" typeId="power_state_on_off"/>
+			<channel id="error_state" typeId="error_state"/>
+			<channel id="info_state" typeId="info_state"/>
+			<channel id="battery_level" typeId="battery_level"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Miele</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:mielecloud:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

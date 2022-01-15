@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,21 +15,24 @@ package org.openhab.binding.miele.internal.discovery;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miele.internal.MieleBindingConstants;
+import org.openhab.binding.miele.internal.handler.MieleBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
-import org.openhab.core.config.discovery.mdns.internal.MDNSDiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,71 +42,115 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  * @author Martin Lepsy - Added check for Miele gateway for cleaner discovery
- *
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
-@Component
+@NonNullByDefault
+@Component(configurationPid = "discovery.miele")
 public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
+    private static final String SERVICE_TYPE = "_mieleathome._tcp.local.";
     private static final String PATH_TO_CHECK_FOR_XGW3000 = "/rest/";
     private static final String SERVICE_NAME = "mieleathome";
     private static final String PATH_PROPERTY_NAME = "path";
 
+    private final Logger logger = LoggerFactory.getLogger(MieleMDNSDiscoveryParticipant.class);
+
+    private long removalGracePeriodSeconds = 15;
+
+    @Activate
+    public void activate(@Nullable Map<String, Object> configProperties) {
+        if (configProperties == null) {
+            return;
+        }
+        updateRemovalGracePeriod(configProperties);
+    }
+
+    @Modified
+    public void modified(@Nullable Map<String, Object> configProperties) {
+        if (configProperties == null) {
+            return;
+        }
+        updateRemovalGracePeriod(configProperties);
+    }
+
+    /**
+     * Update the removalGracePeriodSeconds when the component is activates or modified.
+     *
+     * @param configProperties the passed configuration parameters.
+     */
+    private void updateRemovalGracePeriod(Map<String, Object> configProperties) {
+        Object value = configProperties.get(MieleBindingConstants.REMOVAL_GRACE_PERIOD);
+        if (value != null) {
+            try {
+                removalGracePeriodSeconds = Integer.parseInt(value.toString());
+            } catch (NumberFormatException e) {
+                logger.warn("Configuration property '{}' has invalid value: {}",
+                        MieleBindingConstants.REMOVAL_GRACE_PERIOD, value);
+            }
+        }
+    }
+
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(MieleBindingConstants.THING_TYPE_XGW3000);
+        return MieleBridgeHandler.SUPPORTED_THING_TYPES;
     }
 
     @Override
     public String getServiceType() {
-        return "_mieleathome._tcp.local.";
+        return SERVICE_TYPE;
     }
 
     @Override
-    public DiscoveryResult createResult(ServiceInfo service) {
-        if (isMieleGateway(service)) {
-            ThingUID uid = getThingUID(service);
-
-            if (uid != null) {
-                Map<String, Object> properties = new HashMap<>(2);
-
-                InetAddress[] addresses = service.getInetAddresses();
-                if (addresses.length > 0 && addresses[0] != null) {
-                    properties.put(MieleBindingConstants.HOST, addresses[0].getHostAddress());
-
-                    Socket socket = null;
-                    try {
-                        socket = new Socket(addresses[0], 80);
-                        InetAddress ourAddress = socket.getLocalAddress();
-                        properties.put(MieleBindingConstants.INTERFACE, ourAddress.getHostAddress());
-                    } catch (IOException e) {
-                        logger.error("An exception occurred while connecting to the Miele Gateway : '{}'",
-                                e.getMessage());
-                    }
-                }
-
-                return DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(MieleBindingConstants.HOST).withLabel("Miele XGW3000 Gateway")
-                        .build();
-            }
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+        if (!isMieleGateway(service)) {
+            return null;
         }
-        return null;
+
+        ThingUID uid = getThingUID(service);
+        if (uid == null) {
+            return null;
+        }
+
+        InetAddress[] addresses = service.getInetAddresses();
+        if (addresses.length <= 0 || addresses[0] == null) {
+            return null;
+        }
+
+        String ipAddress = addresses[0].getHostAddress();
+        Map<String, Object> properties = new HashMap<>(2);
+        properties.put(MieleBindingConstants.HOST, ipAddress);
+
+        Socket socket = null;
+        try {
+            socket = new Socket(addresses[0], 80);
+            InetAddress ourAddress = socket.getLocalAddress();
+            String interfaceIpAddress = ourAddress.getHostAddress();
+            socket.close();
+
+            properties.put(MieleBindingConstants.INTERFACE, interfaceIpAddress);
+            logger.debug("Discovered Miele@home gateway with IP address {} and interface IP address {}", ipAddress,
+                    interfaceIpAddress);
+        } catch (IOException e) {
+            logger.warn("An exception occurred while connecting to the Miele Gateway: '{}'", e.getMessage());
+            return null;
+        }
+
+        return DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withRepresentationProperty(MieleBindingConstants.HOST).withLabel("@text/discovery.xgw3000.label")
+                .build();
     }
 
     @Override
-    public ThingUID getThingUID(ServiceInfo service) {
-        if (service.getType() != null) {
-            if (service.getType().equals(getServiceType())) {
-                logger.trace("Discovered a Miele@Home gateway thing with name '{}'", service.getName());
-                return new ThingUID(MieleBindingConstants.THING_TYPE_XGW3000, service.getName().replace(" ", "_"));
-            }
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+        if (SERVICE_TYPE.equals(service.getType())) {
+            return new ThingUID(MieleBindingConstants.THING_TYPE_XGW3000, service.getName().replace(" ", "_"));
         }
 
         return null;
     }
 
     /**
-     * Checks if service is a Miele XGW3000 Gateway
+     * Checks if service is a Miele XGW 3000 Gateway
      *
      * application must be mieleathome
      * must contain path with value /rest/
@@ -111,8 +158,18 @@ public class MieleMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
      * @param service the service to check
      * @return true, if the discovered service is a Miele XGW3000 Gateway
      */
-    private boolean isMieleGateway(ServiceInfo service) {
-        return service.getApplication().contains(SERVICE_NAME) && service.getPropertyString(PATH_PROPERTY_NAME) != null
-                && service.getPropertyString(PATH_PROPERTY_NAME).equalsIgnoreCase(PATH_TO_CHECK_FOR_XGW3000);
+    private boolean isMieleGateway(ServiceInfo serviceInfo) {
+        return serviceInfo.getApplication().contains(SERVICE_NAME)
+                && PATH_TO_CHECK_FOR_XGW3000.equalsIgnoreCase(serviceInfo.getPropertyString(PATH_PROPERTY_NAME));
+    }
+
+    /**
+     * Miele devices are sometimes a few seconds late in updating their mDNS announcements, which means that they are
+     * repeatedly removed from, and (re)added to, the Inbox. To prevent this, we override this method to specify an
+     * additional delay period (grace period) to wait before the device is removed from the Inbox.
+     */
+    @Override
+    public long getRemovalGracePeriodSeconds(ServiceInfo serviceInfo) {
+        return removalGracePeriodSeconds;
     }
 }

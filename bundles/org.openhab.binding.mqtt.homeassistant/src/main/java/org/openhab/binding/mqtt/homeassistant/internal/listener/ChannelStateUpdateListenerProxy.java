@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.listener;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.core.thing.ChannelUID;
@@ -36,17 +35,17 @@ public abstract class ChannelStateUpdateListenerProxy implements ChannelStateUpd
     }
 
     @Override
-    public void updateChannelState(@NonNull ChannelUID channelUID, @NonNull State value) {
+    public void updateChannelState(ChannelUID channelUID, State value) {
         original.updateChannelState(channelUID, value);
     }
 
     @Override
-    public void postChannelCommand(@NonNull ChannelUID channelUID, @NonNull Command value) {
+    public void postChannelCommand(ChannelUID channelUID, Command value) {
         original.postChannelCommand(channelUID, value);
     }
 
     @Override
-    public void triggerChannel(@NonNull ChannelUID channelUID, @NonNull String eventPayload) {
+    public void triggerChannel(ChannelUID channelUID, String eventPayload) {
         original.triggerChannel(channelUID, eventPayload);
     }
 }

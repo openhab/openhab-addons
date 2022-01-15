@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,6 +65,12 @@ public class TouchWandUnitFromJson {
                         .registerTypeAdapter(TouchWandUnitDataAlarmSensor.class, new AlarmSensorUnitDataDeserializer())
                         .create();
                 touchWandUnit = builder.fromJson(jsonUnit, TouchWandUnitDataAlarmSensor.class);
+                break;
+            case TYPE_BSENSOR:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandBSensorUnitData.class);
+                break;
+            case TYPE_THERMOSTAT:
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandThermostatUnitData.class);
                 break;
             case TYPE_UNKNOWN:
                 touchWandUnit = new TouchWandUnknownTypeUnitData();

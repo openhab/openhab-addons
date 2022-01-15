@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -162,6 +162,8 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             case CHANNEL_EINST_BWS_AKT:
             case CHANNEL_EINST_KUCFTL_AKT:
             case CHANNEL_SOLLWERT_KUCFTL_AKT:
+            case CHANNEL_SOLL_BWS_AKT:
+            case CHANNEL_EINST_HEIZGRENZE_TEMP:
                 float temperature = ((DecimalType) command).floatValue();
                 value = (int) (temperature * 10);
                 break;
@@ -275,8 +277,12 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             Integer channelId = channel.getChannelId();
             int length = channel.isWritable() ? heatpumpParams.length : heatpumpValues.length;
             ChannelUID channelUID = new ChannelUID(thing.getUID(), channel.getCommand());
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID,
-                    channel.getCommand());
+            ChannelTypeUID channelTypeUID;
+            if (channel.getCommand().matches("^channel[0-9]+$")) {
+                channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID, "unknown");
+            } else {
+                channelTypeUID = new ChannelTypeUID(LuxtronikHeatpumpBindingConstants.BINDING_ID, channel.getCommand());
+            }
             if ((channelId != null && length <= channelId)
                     || (config.showAllChannels == Boolean.FALSE && !channel.isVisible(visibilityValues))) {
                 logger.debug("Hiding channel {}", channel.getCommand());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -260,6 +260,15 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     updateState(CHANNEL_INPUTACTION, UnDefType.UNDEF);
                 } else if (RefreshType.REFRESH == command) {
                     updateState(CHANNEL_INPUTACTION, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_INPUTBUTTONEVENT:
+                logger.debug("handleCommand CHANNEL_INPUTBUTTONEVENT {}.", command);
+                if (command instanceof StringType) {
+                    connection.inputButtonEvent(command.toString());
+                    updateState(CHANNEL_INPUTBUTTONEVENT, UnDefType.UNDEF);
+                } else if (RefreshType.REFRESH == command) {
+                    updateState(CHANNEL_INPUTBUTTONEVENT, UnDefType.UNDEF);
                 }
                 break;
             case CHANNEL_SYSTEMCOMMAND:

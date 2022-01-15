@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.boschshc.internal.devices.bridge.dto;
+
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
@@ -47,7 +49,7 @@ public class DeviceStatusUpdate {
     /**
      * Id of device the update is for.
      */
-    public String deviceId;
+    public @Nullable String deviceId;
 
     @Override
     public String toString() {

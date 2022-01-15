@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.teleinfo.internal.data;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
@@ -22,6 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Olivier MARCEAU - Initial contribution
  *
  */
+@NonNullByDefault
 public enum FrameType {
     CBETM_SHORT(null),
     CBETM_LONG_BASE(THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID),
@@ -36,15 +39,19 @@ public enum FrameType {
     CBEMM_ICC_EJP(THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID),
     CBEMM_ICC_TEMPO(THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID),
     CBEMM_ICC_HC(THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID),
+    LSMT_PROD(THING_LSMT_PROD_ELECTRICITY_METER_TYPE_UID),
+    LSMM_PROD(THING_LSMM_PROD_ELECTRICITY_METER_TYPE_UID),
+    LSMM(THING_LSMM_ELECTRICITY_METER_TYPE_UID),
+    LSMT(THING_LSMT_ELECTRICITY_METER_TYPE_UID),
     UNKNOWN(null);
 
-    private ThingTypeUID thingTypeUid;
+    private @Nullable ThingTypeUID thingTypeUid;
 
-    FrameType(ThingTypeUID thingTypeUid) {
+    FrameType(@Nullable ThingTypeUID thingTypeUid) {
         this.thingTypeUid = thingTypeUid;
     }
 
-    public ThingTypeUID getThingTypeUid() {
+    public @Nullable ThingTypeUID getThingTypeUid() {
         return thingTypeUid;
     }
 }

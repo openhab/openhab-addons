@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,8 +72,14 @@ public class TimeSeries implements Iterable<Forecast> {
         return Optional.empty();
     }
 
+    /**
+     * Get all Forecasts for the n:th day after the start of the TimeSeries
+     *
+     * @param dayOffset
+     * @return
+     */
     public List<Forecast> getDay(int dayOffset) {
-        ZonedDateTime day = referenceTime.plusDays(dayOffset);
+        ZonedDateTime day = referenceTime.plusDays(dayOffset).plusHours(1);
         return forecasts.stream().filter(forecast -> forecast.getValidTime().getDayOfMonth() == day.getDayOfMonth())
                 .collect(Collectors.toList());
     }

@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": 404,
+    "message": "Device enterprises/project-id/devices/device-id not found.",
+    "status": "NOT_FOUND"
+  }
+}

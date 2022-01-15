@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,9 @@ package org.openhab.binding.rfxcom.internal.messages;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.CHANNEL_CHIME_SOUND;
 import static org.openhab.binding.rfxcom.internal.messages.ByteEnumUtil.fromByte;
 
+import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.openhab.binding.rfxcom.internal.exceptions.RFXComInvalidStateException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.handler.DeviceState;
@@ -35,7 +37,8 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
         BYRONMP001(1),
         SELECTPLUS(2),
         SELECTPLUS3(3),
-        ENVIVO(4);
+        ENVIVO(4),
+        ALFAWISE_DBELL(5);
 
         private final int subType;
 
@@ -89,6 +92,7 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
             case SELECTPLUS:
             case SELECTPLUS3:
             case ENVIVO:
+            case ALFAWISE_DBELL:
                 sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
                 chimeSound = 1;
                 break;
@@ -116,6 +120,7 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
             case SELECTPLUS:
             case SELECTPLUS3:
             case ENVIVO:
+            case ALFAWISE_DBELL:
                 data[4] = (byte) ((sensorId & 0xFF0000) >> 16);
                 data[5] = (byte) ((sensorId & 0x00FF00) >> 8);
                 data[6] = (byte) ((sensorId & 0x0000FF));
@@ -133,11 +138,12 @@ public class RFXComChimeMessage extends RFXComDeviceMessageImpl<RFXComChimeMessa
     }
 
     @Override
-    public State convertToState(String channelId, DeviceState deviceState) throws RFXComUnsupportedChannelException {
+    public State convertToState(String channelId, RFXComDeviceConfiguration config, DeviceState deviceState)
+            throws RFXComUnsupportedChannelException, RFXComInvalidStateException {
         if (CHANNEL_CHIME_SOUND.equals(channelId)) {
             return new DecimalType(chimeSound);
         } else {
-            return super.convertToState(channelId, deviceState);
+            return super.convertToState(channelId, config, deviceState);
         }
     }
 

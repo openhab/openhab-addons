@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,7 +71,7 @@ public class HeatpumpConnector {
             // the thermal energies can be unreasonably high in some cases, probably due to a sign bug in the firmware
             // trying to correct this issue here
             for (int i = 151; i <= 154; i++) {
-                if (heatpumpValues[i] >= 214748364) {
+                if (heatpumpValues.length > i && heatpumpValues[i] >= 214748364) {
                     heatpumpValues[i] -= 214748364;
                 }
             }

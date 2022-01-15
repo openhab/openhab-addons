@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -126,16 +126,18 @@ public abstract class LxWsSecurity {
      *
      * @param string string to be hashed
      * @param hashKeyHex hash key received from the Miniserver in hex format
+     * @param sha256 if SHA-256 algorithm should be used (SHA-1 otherwise)
      * @return hashed string or null if failed
      */
-    String hashString(String string, String hashKeyHex) {
+    String hashString(String string, String hashKeyHex, boolean sha256) {
         if (string == null || hashKeyHex == null) {
             return null;
         }
         try {
+            String alg = sha256 ? "HmacSHA256" : "HmacSHA1";
             byte[] hashKeyBytes = HexUtils.hexToBytes(hashKeyHex);
-            SecretKeySpec signKey = new SecretKeySpec(hashKeyBytes, "HmacSHA1");
-            Mac mac = Mac.getInstance("HmacSHA1");
+            SecretKeySpec signKey = new SecretKeySpec(hashKeyBytes, alg);
+            Mac mac = Mac.getInstance(alg);
             mac.init(signKey);
             byte[] rawData = mac.doFinal(string.getBytes());
             return HexUtils.bytesToHex(rawData);

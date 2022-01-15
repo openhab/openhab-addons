@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,15 @@ public class Token {
     private String token = Constants.EMPTY;
     private String tokenType = Constants.EMPTY;
     private long expiration = 0;
+    private boolean myBmwApiUsage = false;
+
+    public boolean isMyBmwApiUsage() {
+        return myBmwApiUsage;
+    }
+
+    public void setMyBmwApiUsage(boolean myBmwAppUsage) {
+        this.myBmwApiUsage = myBmwAppUsage;
+    }
 
     public String getBearerToken() {
         return new StringBuilder(tokenType).append(Constants.SPACE).append(token).toString();
@@ -38,18 +47,17 @@ public class Token {
         this.expiration = System.currentTimeMillis() / 1000 + expiration;
     }
 
-    /**
-     * @return true if Token expires in less than 1 second
-     */
-    public boolean isExpired() {
-        return (expiration - System.currentTimeMillis() / 1000) < 1;
-    }
-
     public void setType(String type) {
         tokenType = type;
     }
 
     public boolean isValid() {
-        return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY) && expiration > 0);
+        return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY)
+                && (this.expiration - System.currentTimeMillis() / 1000) > 1);
+    }
+
+    @Override
+    public String toString() {
+        return tokenType + token;
     }
 }

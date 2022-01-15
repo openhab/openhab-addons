@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.pentair.internal.PentairBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import org.openhab.binding.pentair.internal.PentairBindingConstants;
 import org.openhab.binding.pentair.internal.PentairPacket;
@@ -454,7 +455,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 }
                 break;
             case EASYTOUCH_SPAHEATMODESTR:
-                if (phsp == null || (phsp.spaheatmodestr != phspcur.spaheatmodestr)) {
+                if (phsp == null || (!Objects.equals(phsp.spaheatmodestr, phspcur.spaheatmodestr))) {
                     if (phspcur.spaheatmodestr != null) {
                         updateState(channel, new StringType(phspcur.spaheatmodestr));
                     }
@@ -466,7 +467,7 @@ public class PentairEasyTouchHandler extends PentairBaseThingHandler {
                 }
                 break;
             case EASYTOUCH_POOLHEATMODESTR:
-                if (phsp == null || (phsp.poolheatmodestr != phspcur.poolheatmodestr)) {
+                if (phsp == null || (!Objects.equals(phsp.poolheatmodestr, phspcur.poolheatmodestr))) {
                     if (phspcur.poolheatmodestr != null) {
                         updateState(channel, new StringType(phspcur.poolheatmodestr));
                     }

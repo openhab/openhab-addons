@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -289,8 +288,8 @@ public class WebthingTest {
         public final AtomicReference<WebSocketImpl> webSocketRef = new AtomicReference<>();
 
         @Override
-        public WebSocketConnection create(@NonNull URI webSocketURI, @NonNull ScheduledExecutorService executor,
-                @NonNull Consumer<String> errorHandler, @NonNull Duration pingPeriod) {
+        public WebSocketConnection create(URI webSocketURI, ScheduledExecutorService executor,
+                Consumer<String> errorHandler, Duration pingPeriod) {
             var webSocketConnection = new WebSocketConnectionImpl(executor, errorHandler, pingPeriod);
             var webSocket = new WebSocketImpl(webSocketConnection);
             webSocketRef.set(webSocket);

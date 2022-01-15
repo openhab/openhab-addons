@@ -6,14 +6,14 @@
 
 	<config-description uri="profile:transform:JS">
 		<parameter name="function" type="text" required="true">
-			<label>JavaScript Filename</label>
-			<description>Filename of the JavaScript in the transform folder. The state will be available in the variable
-				\"input\".</description>
+			<label>JavaScript Filename or Inline Script</label>
+			<description>Filename of the JavaScript in the transform folder or inline script starting with "|" character. The
+				state will be available in the variable "input".</description>
 			<limitToOptions>false</limitToOptions>
 		</parameter>
 		<parameter name="sourceFormat" type="text">
 			<label>State Formatter</label>
-			<description>How to format the state on the channel before transforming it, i.e. %s or %.1f °C (default is %s)</description>
+			<description>How to format the state on the channel before transforming it, i.e. %s or %.1f °C (default is %s).</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

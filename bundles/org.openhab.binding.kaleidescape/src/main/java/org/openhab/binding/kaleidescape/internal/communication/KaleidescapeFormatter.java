@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.kaleidescape.internal.communication;
 
+import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
+
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -23,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class KaleidescapeFormatter {
     public static String formatString(String input) {
-        if (!input.equals("")) {
+        if (!EMPTY.equals(input)) {
             // convert || back to :
             input = input.replace("||", ":");
 

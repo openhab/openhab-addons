@@ -70,6 +70,18 @@
 		<category>Time</category>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
+	<channel-type id="device-local-ac-cos-phi">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Cos Phi</label>
+		<description>AC Power Factor</description>
+		<state readOnly="true" pattern="%.2f"/>
+	</channel-type>
+	<channel-type id="device-local-ac-frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>AC Frequency</label>
+		<description>AC Frequency</description>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
 	<channel-type id="device-local-ac-phase-1-current-amperage">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>P1 Amperage</label>

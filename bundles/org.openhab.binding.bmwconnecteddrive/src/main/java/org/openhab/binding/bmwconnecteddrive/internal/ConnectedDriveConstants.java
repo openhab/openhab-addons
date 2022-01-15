@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,10 +119,12 @@ public class ConnectedDriveConstants {
     public static final String SERVICE_DATE = "service-date";
     public static final String SERVICE_MILEAGE = "service-mileage";
     public static final String CHECK_CONTROL = "check-control";
+    public static final String PLUG_CONNECTION = "plug-connection";
     public static final String CHARGE_STATUS = "charge";
     public static final String CHARGE_END_REASON = "reason";
     public static final String CHARGE_REMAINING = "remaining";
     public static final String LAST_UPDATE = "last-update";
+    public static final String LAST_UPDATE_REASON = "last-update-reason";
 
     // Door Details
     public static final String DOOR_DRIVER_FRONT = "driver-front";
@@ -161,13 +163,18 @@ public class ConnectedDriveConstants {
 
     // Range
     public static final String RANGE_HYBRID = "hybrid";
+    public static final String RANGE_HYBRID_MAX = "hybrid-max";
     public static final String RANGE_ELECTRIC = "electric";
+    public static final String RANGE_ELECTRIC_MAX = "electric-max";
     public static final String SOC = "soc";
+    public static final String SOC_MAX = "soc-max";
     public static final String RANGE_FUEL = "fuel";
     public static final String REMAINING_FUEL = "remaining-fuel";
     public static final String RANGE_RADIUS_ELECTRIC = "radius-electric";
+    public static final String RANGE_RADIUS_ELECTRIC_MAX = "radius-electric-max";
     public static final String RANGE_RADIUS_FUEL = "radius-fuel";
     public static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
+    public static final String RANGE_RADIUS_HYBRID_MAX = "radius-hybrid-max";
 
     // Last Trip
     public static final String DURATION = "duration";

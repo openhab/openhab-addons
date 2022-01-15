@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,6 +80,16 @@ public class SysteminfoBindingConstants {
      * Percents of the used memory
      */
     public static final String CHANNEL_MEMORY_USED_PERCENT = "memory#usedPercent";
+
+    /**
+     * Percents of the used heap
+     */
+    public static final String CHANNEL_MEMORY_USED_HEAP_PERCENT = "memory#usedHeapPercent";
+
+    /**
+     * Bytes used in the heap
+     */
+    public static final String CHANNEL_MEMORY_HEAP_AVAILABLE = "memory#availableHeap";
 
     /**
      * Total size of swap memory

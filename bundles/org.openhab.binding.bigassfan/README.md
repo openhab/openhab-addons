@@ -31,7 +31,7 @@ In the event that any of this information is changed on the device, the thing co
 
 ### Manual Thing Creation
 
-Fans and lights can be manually created in the *Paper UI* or *HABmin*, or by placing a *.things* file in the *conf/things* directory.
+Fan and light things can be manually created using the *UI*, or by placing a *.things* file in the *conf/things* directory.
 See example below.
 
 ## Device Discovery

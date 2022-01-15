@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,4 +42,8 @@ public class TelegramBindingConstants {
     public static final String CHATID = "chatId";
     public static final String REPLYID = "replyId";
     public static final String LONGPOLLINGTIME = "longPollingTime";
+    public static final String MESSAGEEVENT = "messageEvent";
+    public static final String MESSAGERAWEVENT = "messageRawEvent";
+    public static final String CALLBACKEVENT = "callbackEvent";
+    public static final String CALLBACKRAWEVENT = "callbackRawEvent";
 }

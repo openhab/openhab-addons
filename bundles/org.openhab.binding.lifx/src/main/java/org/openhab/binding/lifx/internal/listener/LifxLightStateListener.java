@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lifx.internal.LifxLightState;
 import org.openhab.binding.lifx.internal.dto.Effect;
+import org.openhab.binding.lifx.internal.dto.HevCycleState;
 import org.openhab.binding.lifx.internal.dto.PowerState;
 import org.openhab.binding.lifx.internal.dto.SignalStrength;
 import org.openhab.binding.lifx.internal.fields.HSBK;
@@ -44,6 +45,14 @@ public interface LifxLightStateListener {
      * @param newPowerState the new power state value
      */
     void handlePowerStateChange(@Nullable PowerState oldPowerState, PowerState newPowerState);
+
+    /**
+     * Called when the HEV cycle state property changes.
+     *
+     * @param oldHevCycleState the old HEV cycle state value
+     * @param newHevCycleState the new HEV cycle state value
+     */
+    void handleHevCycleStateChange(@Nullable HevCycleState oldHevCycleState, HevCycleState newHevCycleState);
 
     /**
      * Called when the infrared property changes.

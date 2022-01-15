@@ -1,0 +1,54 @@
+{
+  "name": "enterprises/project-id/devices/thermostat-device-id",
+  "type": "sdm.devices.types.THERMOSTAT",
+  "assignee": "enterprises/project-id/structures/structure-id/rooms/thermostat-room-id",
+  "traits": {
+    "sdm.devices.traits.Info": {
+      "customName": ""
+    },
+    "sdm.devices.traits.Humidity": {
+      "ambientHumidityPercent": 26
+    },
+    "sdm.devices.traits.Connectivity": {
+      "status": "ONLINE"
+    },
+    "sdm.devices.traits.Fan" : {
+      "timerMode" : "ON",
+      "timerTimeout" : "2019-05-10T03:22:54Z"
+    },
+    "sdm.devices.traits.ThermostatMode": {
+      "mode": "HEAT",
+      "availableModes": [
+        "HEAT",
+        "OFF"
+      ]
+    },
+    "sdm.devices.traits.ThermostatEco": {
+      "availableModes": [
+        "OFF",
+        "MANUAL_ECO"
+      ],
+      "mode": "OFF",
+      "heatCelsius": 15.34473,
+      "coolCelsius": 24.44443
+    },
+    "sdm.devices.traits.ThermostatHvac": {
+      "status": "OFF"
+    },
+    "sdm.devices.traits.Settings": {
+      "temperatureScale": "CELSIUS"
+    },
+    "sdm.devices.traits.ThermostatTemperatureSetpoint": {
+      "heatCelsius": 14.92249
+    },
+    "sdm.devices.traits.Temperature": {
+      "ambientTemperatureCelsius": 19.73
+    }
+  },
+  "parentRelations": [
+    {
+      "parent": "enterprises/project-id/structures/structure-id/rooms/thermostat-room-id",
+      "displayName": "Thermostat Room Name"
+    }
+  ]
+}

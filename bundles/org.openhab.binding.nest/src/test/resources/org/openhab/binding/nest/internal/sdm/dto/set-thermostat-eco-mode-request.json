@@ -1,0 +1,6 @@
+{
+  "command": "sdm.devices.commands.ThermostatEco.SetMode",
+  "params": {
+    "mode": "MANUAL_ECO"
+  }
+}

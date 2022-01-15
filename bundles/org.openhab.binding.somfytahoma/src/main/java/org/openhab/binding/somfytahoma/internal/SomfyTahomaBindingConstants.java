@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Ondrej Pecta - Initial contribution
+ * @author Laurent Garnier - Other portals integration
  */
 @NonNullByDefault
 public class SomfyTahomaBindingConstants {
@@ -280,17 +281,19 @@ public class SomfyTahomaBindingConstants {
     public static final String SHUTTER = "shutter";
 
     // Constants
-    public static final String TAHOMA_API_URL = "https://www.tahomalink.com/enduser-mobile-web/enduserAPI/";
-    public static final String TAHOMA_EVENTS_URL = TAHOMA_API_URL + "events/";
-    public static final String SETUP_URL = TAHOMA_API_URL + "setup/";
+    public static final String TAHOMA_PORTAL = "www.tahomalink.com";
+    public static final String API_BASE_URL = "/enduser-mobile-web/enduserAPI/";
+    public static final String EVENTS_URL = "events/";
+    public static final String SETUP_URL = "setup/";
     public static final String GATEWAYS_URL = SETUP_URL + "gateways/";
     public static final String DEVICES_URL = SETUP_URL + "devices/";
     public static final String REFRESH_URL = DEVICES_URL + "states/refresh";
-    public static final String EXEC_URL = TAHOMA_API_URL + "exec/";
+    public static final String EXEC_URL = "exec/";
     public static final String DELETE_URL = EXEC_URL + "current/setup/";
     public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
     public static final int TAHOMA_TIMEOUT = 5;
     public static final String UNAUTHORIZED = "Not logged in";
+    public static final int TYPE_NONE = 0;
     public static final int TYPE_PERCENT = 1;
     public static final int TYPE_DECIMAL = 2;
     public static final int TYPE_STRING = 3;
@@ -415,6 +418,7 @@ public class SomfyTahomaBindingConstants {
             put(29, "TAHOMA_V2");
             put(30, "KIZBOX_V2_3H");
             put(31, "KIZBOX_V2_2H");
+            put(32, "COZYTOUCH");
             put(34, "CONNEXOON");
             put(35, "JSW_CAMERA");
             put(37, "KIZBOX_MINI_DAUGHTERBOARD");

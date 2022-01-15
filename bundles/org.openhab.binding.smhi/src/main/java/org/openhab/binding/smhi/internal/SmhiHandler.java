@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.smhi.internal;
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -63,7 +64,6 @@ public class SmhiHandler extends BaseThingHandler {
     private final HttpClient httpClient;
     private @Nullable SmhiConnector connection;
     private ZonedDateTime currentHour;
-    private ZonedDateTime currentDay;
     private @Nullable TimeSeries cachedTimeSeries;
     private boolean hasLatestForecast = false;
     private @Nullable Future<?> forecastUpdater;
@@ -73,7 +73,6 @@ public class SmhiHandler extends BaseThingHandler {
         super(thing);
         this.httpClient = httpClient;
         this.currentHour = calculateCurrentHour();
-        this.currentDay = calculateCurrentDay();
     }
 
     /**
@@ -142,7 +141,7 @@ public class SmhiHandler extends BaseThingHandler {
             if (channels.isEmpty()) {
                 continue;
             }
-            Optional<Forecast> forecast = timeSeries.getForecast(i);
+            Optional<Forecast> forecast = timeSeries.getForecast(currentHour, i);
             if (forecast.isPresent()) {
                 channels.forEach(c -> {
                     String id = c.getUID().getIdWithoutGroup();
@@ -159,28 +158,10 @@ public class SmhiHandler extends BaseThingHandler {
             }
 
             int dayOffset = i;
-            int hourOffset = 24 * dayOffset + 12;
-            Optional<Forecast> forecast = timeSeries.getForecast(currentDay, hourOffset);
-
-            if (forecast.isEmpty()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("No forecast yet for {}", currentDay.plusHours(hourOffset));
-                }
-                channels.forEach(c -> {
-                    updateState(c.getUID(), UnDefType.UNDEF);
-                });
-            } else {
-                channels.forEach(c -> {
-                    String id = c.getUID().getIdWithoutGroup();
-                    Optional<BigDecimal> value;
-                    if (isAggregatedChannel(id)) {
-                        value = getAggregatedValue(id, timeSeries, dayOffset);
-                    } else {
-                        value = forecast.get().getParameter(id);
-                    }
-                    updateChannel(c, value);
-                });
-            }
+            channels.forEach(c -> {
+                String id = c.getUID().getIdWithoutGroup();
+                updateChannel(c, getDayValue(id, timeSeries, dayOffset));
+            });
         }
     }
 
@@ -238,7 +219,7 @@ public class SmhiHandler extends BaseThingHandler {
                     newState = new QuantityType<>(value.get(), MetricPrefix.MILLI(SIUnits.METRE));
                     break;
                 default:
-                    newState = new DecimalType(value.get());
+                    newState = new DecimalType(value.get().setScale(0, RoundingMode.DOWN));
             }
         }
 
@@ -258,18 +239,23 @@ public class SmhiHandler extends BaseThingHandler {
      * published, in that case, fetch it and update channels.
      */
     private void waitForForecast() {
-        if (isItNewHour()) {
-            currentHour = calculateCurrentHour();
-            currentDay = calculateCurrentDay();
-            // Update channels with cached forecasts - just shift an hour forward
-            TimeSeries forecast = cachedTimeSeries;
-            if (forecast != null) {
-                updateChannels(forecast);
+        try {
+            if (isItNewHour()) {
+                currentHour = calculateCurrentHour();
+                // Update channels with cached forecasts - just shift an hour forward
+                TimeSeries forecast = cachedTimeSeries;
+                if (forecast != null) {
+                    updateChannels(forecast);
+                }
+                hasLatestForecast = false;
             }
-            hasLatestForecast = false;
-        }
-        if (!hasLatestForecast && isForecastUpdated()) {
-            getUpdatedForecast();
+            if (!hasLatestForecast && isForecastUpdated()) {
+                getUpdatedForecast();
+            }
+        } catch (RuntimeException e) {
+            logger.warn("Unexpected exception occurred, please report to the developers: {}: {}", e.getClass(),
+                    e.getMessage());
+            logger.debug("Details: ", e);
         }
     }
 
@@ -325,7 +311,7 @@ public class SmhiHandler extends BaseThingHandler {
             try {
                 forecast = apiConnection.getForecast(config.latitude, config.longitude);
             } catch (SmhiException e) {
-                String message = e.getCause() == null ? e.getMessage() : e.getCause().getMessage();
+                String message = Optional.ofNullable(e.getCause()).orElse(e).getMessage();
                 logger.debug("Failed to get new forecast: {}", message);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
                 return;
@@ -360,22 +346,9 @@ public class SmhiHandler extends BaseThingHandler {
     }
 
     /**
-     * Get the current time rounded down to day
-     *
-     * @return A {@link ZonedDateTime} corresponding to the last even day.
-     */
-    private ZonedDateTime calculateCurrentDay() {
-        ZonedDateTime now = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
-        int y = now.getYear();
-        int m = now.getMonth().getValue();
-        int d = now.getDayOfMonth();
-        return ZonedDateTime.of(y, m, d, 0, 0, 0, 0, ZoneOffset.UTC);
-    }
-
-    /**
      * Creates channels based on selections in thing configuration
      *
-     * @return
+     * @return A List of Channels to add to the Thing
      */
     private List<Channel> createChannels() {
         List<Channel> channels = new ArrayList<>();
@@ -430,6 +403,7 @@ public class SmhiHandler extends BaseThingHandler {
                 break;
             case WIND_DIRECTION:
                 itemType += ":Angle";
+                break;
             case WIND_SPEED:
             case WIND_MAX:
             case WIND_MIN:
@@ -456,21 +430,16 @@ public class SmhiHandler extends BaseThingHandler {
         return channel;
     }
 
-    private boolean isAggregatedChannel(String channelId) {
-        switch (channelId) {
-            case TEMPERATURE_MAX:
-            case TEMPERATURE_MIN:
-            case WIND_MAX:
-            case WIND_MIN:
-            case PRECIPITATION_TOTAL:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    private Optional<BigDecimal> getAggregatedValue(String channelId, TimeSeries timeSeries, int dayOffset) {
-        switch (channelId) {
+    /**
+     * Gets the value that represents the day forecast for a specified day and channel
+     *
+     * @param parameter The parameter to retrieve or calculate
+     * @param timeSeries A TimeSeries object containing forecasts
+     * @param dayOffset The number of days from the start of the TimeSeries
+     * @return An Optional containing the retrieved or calculated value
+     */
+    private Optional<BigDecimal> getDayValue(String parameter, TimeSeries timeSeries, int dayOffset) {
+        switch (parameter) {
             case TEMPERATURE_MAX:
                 return ForecastAggregator.max(timeSeries, dayOffset, TEMPERATURE);
             case TEMPERATURE_MIN:
@@ -482,7 +451,7 @@ public class SmhiHandler extends BaseThingHandler {
             case PRECIPITATION_TOTAL:
                 return ForecastAggregator.total(timeSeries, dayOffset, PRECIPITATION_MEAN);
             default:
-                return Optional.empty();
+                return ForecastAggregator.noonOrFirst(timeSeries, dayOffset, parameter);
         }
     }
 }

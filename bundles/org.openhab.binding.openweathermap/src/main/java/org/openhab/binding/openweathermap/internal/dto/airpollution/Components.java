@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,7 @@ public class Components {
     public double nitrogenMonoxide;
     @SerializedName("no2")
     public double nitrogenDioxide;
-    @SerializedName("o2")
+    @SerializedName("o3")
     public double ozone;
     @SerializedName("so2")
     public double sulphurDioxide;

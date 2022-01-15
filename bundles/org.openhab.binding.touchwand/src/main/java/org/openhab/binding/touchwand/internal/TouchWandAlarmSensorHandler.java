@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,8 +144,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
                     toBeRemovedChannels.remove(thing.getChannel(CHANNEL_DOORWINDOW));
                     break;
                 case SENSOR_TYPE_LEAK:
-                    Channel channel = thing.getChannel(CHANNEL_LEAK);
-                    toBeRemovedChannels.remove(channel);
+                    toBeRemovedChannels.remove(thing.getChannel(CHANNEL_LEAK));
                     break;
             }
         }

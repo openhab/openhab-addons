@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -231,10 +231,9 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
      * When the conversion is towards the handler (towardsItem=false), unit will be ONE
      *
      */
-    @SuppressWarnings("unchecked") // Safe cast since QU = Dimensionless * QU
     private <QU extends Quantity<QU>> QuantityType<QU> applyGainTowardsItem(QuantityType<Dimensionless> qtState,
             QuantityType<QU> gainDelta) {
-        return (QuantityType<QU>) qtState.multiply(gainDelta);
+        return new QuantityType<>(qtState.toBigDecimal().multiply(gainDelta.toBigDecimal()), gainDelta.getUnit());
     }
 
     private QuantityType<Dimensionless> applyGainTowardsHandler(QuantityType<?> qtState, QuantityType<?> gainDelta) {

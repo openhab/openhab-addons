@@ -68,13 +68,13 @@
 		<item-type>DateTime</item-type>
 		<label>Current Event Start</label>
 		<description>Start of the currently present event</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="event_current_end">
 		<item-type>DateTime</item-type>
 		<label>Current Event End</label>
 		<description>End of the currently present event</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="event_current_presence">
 		<item-type>Switch</item-type>
@@ -92,26 +92,26 @@
 		<item-type>DateTime</item-type>
 		<label>Next Event Start</label>
 		<description>Start of the next event in calendar</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="event_next_end">
 		<item-type>DateTime</item-type>
 		<label>Next Event End</label>
 		<description>End of the next event in calendar</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 
 	<channel-type id="result_start">
 		<item-type>DateTime</item-type>
 		<label>Start of Result</label>
 		<description>Start of the found result in calendar</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="result_end">
 		<item-type>DateTime</item-type>
 		<label>End of Result</label>
 		<description>End of the found result in calendar</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-type id="result_title">
 		<item-type>String</item-type>
@@ -123,7 +123,7 @@
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
 		<description>The time the calendar was updated successfully last time</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
 	<channel-group-type id="result">
 		<label>Result Event</label>
@@ -156,6 +156,7 @@
 
 			<parameter name="maxEvents" type="integer" required="true" min="0" groupName="general">
 				<label>Maximum Matches</label>
+				<description>Maximum matches found by this filter</description>
 			</parameter>
 			<parameter name="refreshTime" type="integer" required="true" min="1" groupName="general" unit="min">
 				<label>Refresh Time</label>
@@ -171,7 +172,8 @@
 					<option value="WEEK">week</option>
 				</options>
 				<default>HOUR</default>
-				<label>Date or Time Unit for Start and End</label>
+				<label>Date/Time Unit</label>
+				<description>Date or time unit for start and end</description>
 			</parameter>
 			<parameter name="datetimeStart" type="integer" groupName="datetime_based">
 				<label>Start</label>

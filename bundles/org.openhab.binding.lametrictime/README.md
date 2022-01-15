@@ -125,7 +125,7 @@ They exist as one-way communication only.
 ## How Tos
 
 The following configuration examples assume the device was added with the thing id `lametrictime:device:demo`.
-Replace the thing id in all the configurations with your real thing id which can be looked up via Paper UI.
+Replace the thing id in all the configurations with your real thing id which can be looked up the UI.
 
 ### Notifications
 

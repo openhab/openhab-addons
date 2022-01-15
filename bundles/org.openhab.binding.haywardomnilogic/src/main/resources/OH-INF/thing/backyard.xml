@@ -23,7 +23,7 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
 		</properties>
 		<representation-property>systemID</representation-property>
 
@@ -33,7 +33,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Air Temp</label>
 		<description>Air Temp</description>
-		<state pattern="%1f %unit%" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="backyardstatus">

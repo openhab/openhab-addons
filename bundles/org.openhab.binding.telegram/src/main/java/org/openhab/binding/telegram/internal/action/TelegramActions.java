@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,6 +107,43 @@ public class TelegramActions implements ThingActions {
 
     @RuleAction(label = "send an answer", description = "Send a Telegram answer using the Telegram API.")
     public boolean sendTelegramAnswer(@ActionInput(name = "chatId") @Nullable Long chatId,
+            @ActionInput(name = "callbackId") @Nullable String callbackId,
+            @ActionInput(name = "messageId") @Nullable Long messageId,
+            @ActionInput(name = "message") @Nullable String message) {
+        if (chatId == null) {
+            logger.warn("chatId not defined; action skipped.");
+            return false;
+        }
+        if (messageId == null) {
+            logger.warn("messageId not defined; action skipped.");
+            return false;
+        }
+        TelegramHandler localHandler = handler;
+        if (localHandler != null) {
+            if (callbackId != null) {
+                AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery(callbackId);
+                // we could directly set the text here, but this
+                // doesn't result in a real message only in a
+                // little popup or in an alert, so the only purpose
+                // is to stop the progress bar on client side
+                logger.debug("Answering query with callbackId '{}'", callbackId);
+                if (!evaluateResponse(localHandler.execute(answerCallbackQuery))) {
+                    return false;
+                }
+            }
+            EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(chatId, messageId.intValue())
+                    .replyMarkup(new InlineKeyboardMarkup(new InlineKeyboardButton[0]));// remove reply markup from
+                                                                                        // old message
+            if (!evaluateResponse(localHandler.execute(editReplyMarkup))) {
+                return false;
+            }
+            return message != null ? sendTelegram(chatId, message) : true;
+        }
+        return false;
+    }
+
+    @RuleAction(label = "send an answer", description = "Send a Telegram answer using the Telegram API.")
+    public boolean sendTelegramAnswer(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "replyId") @Nullable String replyId,
             @ActionInput(name = "message") @Nullable String message) {
         if (replyId == null) {
@@ -121,28 +158,13 @@ public class TelegramActions implements ThingActions {
         if (localHandler != null) {
             String callbackId = localHandler.getCallbackId(chatId, replyId);
             if (callbackId != null) {
-                AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery(
-                        localHandler.getCallbackId(chatId, replyId));
                 logger.debug("AnswerCallbackQuery for chatId {} and replyId {} is the callbackId {}", chatId, replyId,
-                        localHandler.getCallbackId(chatId, replyId));
-                // we could directly set the text here, but this
-                // doesn't result in a real message only in a
-                // little popup or in an alert, so the only purpose
-                // is to stop the progress bar on client side
-                if (!evaluateResponse(localHandler.execute(answerCallbackQuery))) {
-                    return false;
-                }
+                        callbackId);
             }
             Integer messageId = localHandler.removeMessageId(chatId, replyId);
             logger.debug("remove messageId {} for chatId {} and replyId {}", messageId, chatId, replyId);
 
-            EditMessageReplyMarkup editReplyMarkup = new EditMessageReplyMarkup(chatId, messageId.intValue())
-                    .replyMarkup(new InlineKeyboardMarkup(new InlineKeyboardButton[0]));// remove reply markup from
-                                                                                        // old message
-            if (!evaluateResponse(localHandler.execute(editReplyMarkup))) {
-                return false;
-            }
-            return message != null ? sendTelegram(chatId, message) : true;
+            return sendTelegramAnswer(chatId, callbackId, messageId != null ? Long.valueOf(messageId) : null, message);
         }
         return false;
     }
@@ -239,7 +261,12 @@ public class TelegramActions implements ThingActions {
                     logger.warn("replyId {} must not contain spaces. ReplyMarkup will be ignored.", replyId);
                 }
             }
-            SendResponse retMessage = localHandler.execute(sendMessage);
+            SendResponse retMessage = null;
+            try {
+                retMessage = localHandler.execute(sendMessage);
+            } catch (Exception e) {
+                logger.warn("Exception occured whilst sending message:{}", e.getMessage());
+            }
             if (!evaluateResponse(retMessage)) {
                 return false;
             }
@@ -312,9 +339,9 @@ public class TelegramActions implements ThingActions {
                 if (username != null && password != null) {
                     AuthenticationStore auth = client.getAuthenticationStore();
                     URI uri = URI.create(photoURL);
-                    auth.addAuthenticationResult(new BasicResult(HttpHeader.AUTHORIZATION, uri,
-                            "Basic " + Base64.getEncoder().encodeToString(
-                                    (username + ":" + password).getBytes(StandardCharsets.ISO_8859_1))));
+                    auth.addAuthenticationResult(
+                            new BasicResult(HttpHeader.AUTHORIZATION, uri, "Basic " + Base64.getEncoder()
+                                    .encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8))));
                 }
                 try {
                     // API has 10mb limit to jpg file size, without this it can only accept 2mb
@@ -326,6 +353,7 @@ public class TelegramActions implements ThingActions {
                         sendPhoto = new SendPhoto(chatId, fileContent);
                     } else {
                         logger.warn("Download from {} failed with status: {}", photoURL, contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -450,6 +478,7 @@ public class TelegramActions implements ThingActions {
                     } else {
                         logger.warn("Download from {} failed with status: {}", animationURL,
                                 contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -527,6 +556,7 @@ public class TelegramActions implements ThingActions {
                         sendVideo = new SendVideo(chatId, fileContent);
                     } else {
                         logger.warn("Download from {} failed with status: {}", videoURL, contentResponse.getStatus());
+                        sendTelegram(chatId, caption + ":Download failed with status " + contentResponse.getStatus());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -635,6 +665,24 @@ public class TelegramActions implements ThingActions {
                 return false;
             }
             return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
+        } else {
+            throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
+        }
+    }
+
+    public static boolean sendTelegramAnswer(ThingActions actions, @Nullable Long chatId, @Nullable String callbackId,
+            @Nullable Long messageId, @Nullable String message) {
+        return ((TelegramActions) actions).sendTelegramAnswer(chatId, callbackId, messageId, message);
+    }
+
+    public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String callbackId,
+            @Nullable String messageId, @Nullable String message) {
+        if (actions instanceof TelegramActions) {
+            if (chatId == null) {
+                return false;
+            }
+            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), callbackId,
+                    messageId != null ? Long.parseLong(messageId) : null, message);
         } else {
             throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
         }

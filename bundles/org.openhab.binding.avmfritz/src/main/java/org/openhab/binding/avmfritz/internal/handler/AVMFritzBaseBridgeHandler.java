@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -329,6 +329,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         } else if (device instanceof DeviceModel && device.isHANFUNUnit()) {
             if (device.isHANFUNBlinds()) {
                 return DEVICE_HAN_FUN_BLINDS;
+            } else if (device.isColorLight()) {
+                return DEVICE_HAN_FUN_COLOR_BULB;
+            } else if (device.isDimmableLight()) {
+                return DEVICE_HAN_FUN_DIMMABLE_BULB;
             }
             List<String> interfaces = Arrays
                     .asList(((DeviceModel) device).getEtsiunitinfo().getInterfaces().split(","));
@@ -336,6 +340,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                 return DEVICE_HAN_FUN_CONTACT;
             } else if (interfaces.contains(HAN_FUN_INTERFACE_SIMPLE_BUTTON)) {
                 return DEVICE_HAN_FUN_SWITCH;
+            } else if (interfaces.contains(HAN_FUN_INTERFACE_ON_OFF)) {
+                return DEVICE_HAN_FUN_ON_OFF;
             }
         }
         return device.getProductName().replaceAll(INVALID_PATTERN, "_");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.omnilink.internal.handler;
 
 import static org.openhab.binding.omnilink.internal.OmnilinkBindingConstants.*;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -80,9 +79,7 @@ public class AudioZoneHandler extends AbstractOmnilinkStatusHandler<ExtendedAudi
                 .builder(bridgeHandler, ObjectPropertyRequests.AUDIO_ZONE, thingID, 0).selectNamed().build();
 
         for (AudioZoneProperties audioZoneProperties : objectPropertyRequest) {
-            Map<String, String> properties = editProperties();
-            properties.put(THING_PROPERTIES_NAME, audioZoneProperties.getName());
-            updateProperties(properties);
+            updateProperty(THING_PROPERTIES_NAME, audioZoneProperties.getName());
         }
     }
 

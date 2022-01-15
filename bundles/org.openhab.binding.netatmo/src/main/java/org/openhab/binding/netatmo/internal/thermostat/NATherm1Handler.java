@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,7 @@ public class NATherm1Handler extends NetatmoModuleHandler<NAThermostat> {
                 String currentPlanning = "-";
                 if (thermostat.isPresent()) {
                     for (NAThermProgram program : nonNullList(thermostat.get().getThermProgramList())) {
-                        if (program.isSelected() == Boolean.TRUE) {
+                        if (Boolean.TRUE.equals(program.isSelected())) {
                             currentPlanning = program.getProgramId();
                         }
                     }

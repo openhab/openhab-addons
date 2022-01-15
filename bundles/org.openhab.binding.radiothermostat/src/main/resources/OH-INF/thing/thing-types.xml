@@ -8,7 +8,7 @@
 	<thing-type id="rtherm">
 		<label>Thermostat</label>
 		<description>
-			A Thermostat to Control the House's HVAC System
+			CT30, CT50/3M50 or CT80 Wi-Fi Thermostat
 		</description>
 
 		<channels>
@@ -68,7 +68,11 @@
 					<option value="temporary">Temporary</option>
 				</options>
 			</parameter>
-
+			<parameter name="clockSync" type="boolean">
+				<label>Enable Thermostat Clock Sync</label>
+				<description>Optional Flag to snyc the thermostat's clock with the host system clock</description>
+				<default>false</default>
+			</parameter>
 		</config-description>
 	</thing-type>
 

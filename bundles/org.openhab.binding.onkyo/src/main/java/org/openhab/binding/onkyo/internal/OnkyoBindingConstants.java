@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,6 +89,11 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_NET_MENU7 = "netmenu#item7";
     public static final String CHANNEL_NET_MENU8 = "netmenu#item8";
     public static final String CHANNEL_NET_MENU9 = "netmenu#item9";
+
+    public final static String CHANNEL_AUDIO_IN_INFO = "info#audioIn";
+    public final static String CHANNEL_AUDIO_OUT_INFO = "info#audioOut";
+    public final static String CHANNEL_VIDEO_IN_INFO = "info#videoIn";
+    public final static String CHANNEL_VIDEO_OUT_INFO = "info#videoOut";
 
     // Used for Discovery service
     public static final String MANUFACTURER = "ONKYO";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,5 +36,5 @@ public class PIDControllerConstants {
     public static final String I_INSPECTOR = "iInspector";
     public static final String D_INSPECTOR = "dInspector";
     public static final String E_INSPECTOR = "eInspector";
-    public static final String OUTPUT = "output";
+    public static final String COMMAND = "command";
 }

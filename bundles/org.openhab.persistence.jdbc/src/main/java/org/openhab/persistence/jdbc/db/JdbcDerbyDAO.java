@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.persistence.HistoricItem;
+import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.dto.JdbcHistoricItem;
@@ -148,13 +149,14 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
     }
 
     @Override
-    public void doStoreItemValue(Item item, ItemVO vo) {
-        vo = storeItemValueProvider(item, vo);
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { vo.getTableName().toUpperCase(), vo.getDbType(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { vo.getValue() };
-        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, vo.getValue());
+                new String[] { storedVO.getTableName().toUpperCase(), storedVO.getDbType(),
+                        sqlTypes.get("tablePrimaryValue") });
+        Object[] params = new Object[] { storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }
 
@@ -169,7 +171,7 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
         Unit<? extends Quantity<?>> unit = item instanceof NumberItem ? ((NumberItem) item).getUnit() : null;
         return m.stream().map(o -> {
             logger.debug("JDBC::doGetHistItemFilterQuery 0='{}' 1='{}'", o[0], o[1]);
-            return new JdbcHistoricItem(itemName, getState(item, unit, o[1]), objectAsDate(o[0]));
+            return new JdbcHistoricItem(itemName, objectAsState(item, unit, o[1]), objectAsDate(o[0]));
         }).collect(Collectors.<HistoricItem> toList());
     }
 

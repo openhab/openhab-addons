@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.deconz.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link BindingConstants} class defines common constants, which are
@@ -50,6 +49,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY_SENSOR = new ThingTypeUID(BINDING_ID, "batterysensor");
     public static final ThingTypeUID THING_TYPE_CARBONMONOXIDE_SENSOR = new ThingTypeUID(BINDING_ID,
             "carbonmonoxidesensor");
+    public static final ThingTypeUID THING_TYPE_AIRQUALITY_SENSOR = new ThingTypeUID(BINDING_ID, "airqualitysensor");
     // Special sensor - Thermostat
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
@@ -99,6 +99,8 @@ public class BindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
     public static final String CHANNEL_CARBONMONOXIDE = "carbonmonoxide";
+    public static final String CHANNEL_AIRQUALITY = "airquality";
+    public static final String CHANNEL_AIRQUALITYPPB = "airqualityppb";
     public static final String CHANNEL_HEATSETPOINT = "heatsetpoint";
     public static final String CHANNEL_THERMOSTAT_MODE = "mode";
     public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
@@ -119,11 +121,6 @@ public class BindingConstants {
     public static final String CHANNEL_EFFECT_SPEED = "effectSpeed";
     public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_ONTIME = "ontime";
-
-    // channel uids
-    public static final ChannelTypeUID CHANNEL_EFFECT_TYPE_UID = new ChannelTypeUID(BINDING_ID, CHANNEL_EFFECT);
-    public static final ChannelTypeUID CHANNEL_EFFECT_SPEED_TYPE_UID = new ChannelTypeUID(BINDING_ID,
-            CHANNEL_EFFECT_SPEED);
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";

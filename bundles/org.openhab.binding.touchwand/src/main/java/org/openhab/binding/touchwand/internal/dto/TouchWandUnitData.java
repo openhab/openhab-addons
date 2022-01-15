@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,11 @@
  */
 package org.openhab.binding.touchwand.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 /**
  * The {@link TouchWandUnitData} implements unit property.
  *
  * @author Roie Geron - Initial contribution
  */
-@NonNullByDefault
 public abstract class TouchWandUnitData {
 
     private Integer id = 0;
@@ -99,6 +96,9 @@ public abstract class TouchWandUnitData {
     }
 
     public String getStatus() {
+        if (status == null) {
+            status = new String("");
+        }
         return status;
     }
 

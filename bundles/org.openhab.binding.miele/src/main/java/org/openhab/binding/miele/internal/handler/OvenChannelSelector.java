@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,23 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
+import static java.util.Map.entry;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
+
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.TimeZone;
 
-import org.openhab.binding.miele.internal.handler.MieleBridgeHandler.DeviceMetaData;
+import org.openhab.binding.miele.internal.DeviceMetaData;
+import org.openhab.binding.miele.internal.DeviceUtil;
+import org.openhab.binding.miele.internal.MieleTranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -30,26 +36,46 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
-
 /**
  * The {@link ApplianceChannelSelector} for ovens
  *
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - Changed START_TIME to DateTimeType
+ * @author Jacob Laursen - Added UoM for temperatures, raw channels
  */
 public enum OvenChannelSelector implements ApplianceChannelSelector {
 
     PRODUCT_TYPE("productTypeId", "productType", StringType.class, true),
     DEVICE_TYPE("mieleDeviceType", "deviceType", StringType.class, true),
-    BRAND_ID("brandId", "brandId", StringType.class, true),
-    COMPANY_ID("companyId", "companyId", StringType.class, true),
-    STATE("state", "state", StringType.class, false),
-    PROGRAMID("programId", "program", StringType.class, false),
-    PROGRAMPHASE("phase", "phase", StringType.class, false),
+    STATE_TEXT(STATE_PROPERTY_NAME, STATE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            State state = DeviceUtil.getStateTextState(s, dmd, translationProvider);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd, translationProvider);
+        }
+    },
+    STATE(null, STATE_CHANNEL_ID, DecimalType.class, false),
+    PROGRAM_TEXT(PROGRAM_ID_PROPERTY_NAME, PROGRAM_TEXT_CHANNEL_ID, StringType.class, false),
+    PROGRAM(null, PROGRAM_CHANNEL_ID, DecimalType.class, false),
+    PROGRAMTYPE("programType", "type", StringType.class, false),
+    PROGRAM_PHASE_TEXT(PHASE_PROPERTY_NAME, PHASE_TEXT_CHANNEL_ID, StringType.class, false) {
+        @Override
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            State state = DeviceUtil.getTextState(s, dmd, translationProvider, phases, MISSING_PHASE_TEXT_PREFIX,
+                    MIELE_OVEN_TEXT_PREFIX);
+            if (state != null) {
+                return state;
+            }
+            return super.getState(s, dmd, translationProvider);
+        }
+    },
+    PROGRAM_PHASE(RAW_PHASE_PROPERTY_NAME, PHASE_CHANNEL_ID, DecimalType.class, false),
     START_TIME("startTime", "start", DateTimeType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -63,7 +89,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     },
     DURATION("duration", "duration", DateTimeType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -77,7 +103,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     },
     ELAPSED_TIME("elapsedTime", "elapsed", DateTimeType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -91,7 +117,7 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     },
     FINISH_TIME("finishTime", "finish", DateTimeType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             Date date = new Date();
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT+0"));
@@ -103,34 +129,34 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
             return getState(dateFormatter.format(date));
         }
     },
-    TARGET_TEMP("targetTemperature", "target", DecimalType.class, false) {
+    TARGET_TEMP("targetTemperature", "target", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return getTemperatureState(s);
         }
     },
-    MEASURED_TEMP("measuredTemperature", "measured", DecimalType.class, false) {
+    MEASURED_TEMP("measuredTemperature", "measured", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return getTemperatureState(s);
         }
     },
-    DEVICE_TEMP_ONE("deviceTemperature1", "temp1", DecimalType.class, false) {
+    DEVICE_TEMP_ONE("deviceTemperature1", "temp1", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return getTemperatureState(s);
         }
     },
-    DEVICE_TEMP_TWO("deviceTemperature2", "temp2", DecimalType.class, false) {
+    DEVICE_TEMP_TWO("deviceTemperature2", "temp2", QuantityType.class, false) {
         @Override
-        public State getState(String s, DeviceMetaData dmd) {
-            return getState(s);
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return getTemperatureState(s);
         }
     },
     DOOR("signalDoor", "door", OpenClosedType.class, false) {
         @Override
 
-        public State getState(String s, DeviceMetaData dmd) {
+        public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
             if ("true".equals(s)) {
                 return getState("OPEN");
             }
@@ -146,6 +172,10 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     SWITCH(null, "switch", OnOffType.class, false);
 
     private final Logger logger = LoggerFactory.getLogger(OvenChannelSelector.class);
+
+    private static final Map<String, String> phases = Map.ofEntries(entry("1", "heating"), entry("2", "temp-hold"),
+            entry("3", "door-open"), entry("4", "pyrolysis"), entry("7", "lighting"), entry("8", "searing-phase"),
+            entry("10", "defrost"), entry("11", "cooling-down"), entry("12", "energy-save-phase"));
 
     private final String mieleID;
     private final String channelID;
@@ -175,19 +205,24 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
     }
 
     @Override
-    public Class<? extends Type> getTypeClass() {
-        return typeClass;
-    }
-
-    @Override
     public boolean isProperty() {
         return isProperty;
     }
 
     @Override
+    public boolean isExtendedState() {
+        return false;
+    }
+
+    @Override
+    public State getState(String s, DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+        return this.getState(s, dmd);
+    }
+
+    @Override
     public State getState(String s, DeviceMetaData dmd) {
         if (dmd != null) {
-            String localizedValue = getMieleEnum(s, dmd);
+            String localizedValue = dmd.getMieleEnum(s);
             if (localizedValue == null) {
                 localizedValue = dmd.LocalizedValue;
             }
@@ -215,15 +250,12 @@ public enum OvenChannelSelector implements ApplianceChannelSelector {
         return null;
     }
 
-    public String getMieleEnum(String s, DeviceMetaData dmd) {
-        if (dmd.MieleEnum != null) {
-            for (Entry<String, JsonElement> enumEntry : dmd.MieleEnum.entrySet()) {
-                if (enumEntry.getValue().getAsString().trim().equals(s.trim())) {
-                    return enumEntry.getKey();
-                }
-            }
+    public State getTemperatureState(String s) {
+        try {
+            return DeviceUtil.getTemperatureState(s);
+        } catch (NumberFormatException e) {
+            logger.warn("An exception occurred while converting '{}' into a State", s);
+            return UnDefType.UNDEF;
         }
-
-        return null;
     }
 }

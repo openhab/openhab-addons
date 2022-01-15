@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,10 +114,11 @@ public class EcoTouchConnector {
             throw new IOException("Too many users already logged in.");
         }
         if (cookies == null) {
-            if (cause == null)
+            if (cause == null) {
                 throw new IOException("Cannot login");
-            else
+            } else {
                 throw new IOException("Cannot login: " + cause);
+            }
         }
     }
 
@@ -212,8 +217,9 @@ public class EcoTouchConnector {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String line2 = reader.readLine();
-                    if (line2 == null)
+                    if (line2 == null) {
                         break;
+                    }
                     String doubleline = line + "\n" + line2;
                     Matcher m = responsePattern.matcher(doubleline);
                     if (m.find()) {
@@ -237,8 +243,9 @@ public class EcoTouchConnector {
                 }
                 loginAttempt++;
             } finally {
-                if (reader != null)
+                if (reader != null) {
                     reader.close();
+                }
             }
         }
 
@@ -291,8 +298,9 @@ public class EcoTouchConnector {
                 }
                 loginAttempt++;
             } finally {
-                if (reader != null)
+                if (reader != null) {
                     reader.close();
+                }
             }
         }
 

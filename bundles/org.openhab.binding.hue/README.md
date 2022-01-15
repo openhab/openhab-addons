@@ -19,7 +19,7 @@ Additionally, it is possible to use OSRAM Lightify devices as well as other ZigB
 Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue bridge before it is possible for this binding to use them.
 
-The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf).
+The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
 These are:
 
 | Device type              | ZigBee Device ID | Thing type |
@@ -118,7 +118,7 @@ or
 0107 motion-sensor "Motion Sensor" @ "Entrance" [ sensorId="4" ]
 ```
 
-You can freely choose the thing identifier (such as motion-sensor), its name (such as "Motion Sensor") and the location (such as "Entrance"). The name will then be used e.g. by Paper UI to show the item.
+You can freely choose the thing identifier (such as motion-sensor), its name (such as "Motion Sensor") and the location (such as "Entrance").
 
 The following device types also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state:
 
@@ -144,7 +144,6 @@ group kitchen-bulbs "Kitchen Lamps" @ "Kitchen" [ groupId="1" ]
 ```
 
 You can freely choose the thing identifier (such as kitchen-bulbs), its name (such as "Kitchen Lamps") and the location (such as "Kitchen").
-The name will then be used e.g. by Paper UI to show the item.
 
 The group type also have an optional configuration value to specify the fade time in milliseconds for the transition to a new state.
 
@@ -228,7 +227,7 @@ The `tap_switch_event` can trigger one of the following events:
 ## Rule Actions
 
 This binding includes a rule action, which allows to change a light channel with a specific fading time from within rules.
-There is a separate instance for each light, which can be retrieved e.g. through
+There is a separate instance for each light or light group, which can be retrieved e.g. through
 
 ```php
 val hueActions = getActions("hue","hue:0210:00178810d0dc:1")
@@ -245,7 +244,7 @@ hueActions.fadingLightCommand("color", new PercentType(100), new DecimalType(100
 |-----------|--------------------------------------------------------------------------------------------------|
 | channel   | The following channels have fade time support: **brightness, color, color_temperature, switch**  |
 | command   | All commands supported by the channel can be used                                                |
-| fadeTime  | Fade time in Milliseconds to a new light value (min="0", step="100")                             |
+| fadeTime  | Fade time in milliseconds to a new light value (min="0", step="100")                             |
 
 ## Full Example
 
@@ -307,7 +306,7 @@ String LightScene { channel="hue:bridge:1:scene"}
 ```
 
 Note: The bridge ID is in this example **1** but can be different in each system.
-Also, if you are doing all your configuration through files and do not use Paper UI and the Inbox, you may add the full bridge id to the channel definitions (e.g. `channel="hue:0210:00178810d0dc:bulb1:color`) instead of the short version (e.g. `channel="hue:0210:1:bulb1:color`) to prevent frequent discovery messages in the log file.
+Also, if you are doing all your configuration through files, you may add the full bridge id to the channel definitions (e.g. `channel="hue:0210:00178810d0dc:bulb1:color`) instead of the short version (e.g. `channel="hue:0210:1:bulb1:color`) to prevent frequent discovery messages in the log file.
 
 ### demo.sitemap:
 

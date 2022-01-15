@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,9 +56,9 @@ public class DSMRMeter {
 
         for (CosemObjectType msgType : meterDescriptor.getMeterType().supportedCosemObjects) {
             OBISIdentifier obisId = msgType.obisId;
-            if (msgType.obisId.getGroupB() == null) {
-                supportedIdentifiers.add(new OBISIdentifier(obisId.getGroupA(), meterDescriptor.getChannel(),
-                        obisId.getGroupC(), obisId.getGroupD(), obisId.getGroupE(), msgType.obisId.getGroupF()));
+            if (msgType.obisId.getChannel() == null) {
+                supportedIdentifiers.add(new OBISIdentifier(obisId.getGroupA(), obisId.getGroupC(), obisId.getGroupD(),
+                        obisId.getGroupE()));
             } else {
                 supportedIdentifiers.add(msgType.obisId);
             }
@@ -71,11 +71,12 @@ public class DSMRMeter {
      * @param cosemObjects list of CosemObject that must be processed and where the objects of this meter are removed
      * @return List of CosemObject that this meter can process
      */
-    public List<CosemObject> filterMeterValues(List<CosemObject> cosemObjects) {
+    public List<CosemObject> filterMeterValues(List<CosemObject> cosemObjects, int channel) {
         logger.trace("supported identifiers: {}, searching for objects {}", supportedIdentifiers, cosemObjects);
         List<CosemObject> filteredValues = cosemObjects.stream()
-                .filter(cosemObject -> supportedIdentifiers
-                        .contains(cosemObject.getObisIdentifier().getReducedOBISIdentifier()))
+                .filter(cosemObject -> (DSMRMeterConstants.UNKNOWN_CHANNEL == channel
+                        || cosemObject.getObisIdentifier().getChannel() == channel)
+                        && supportedIdentifiers.contains(cosemObject.getObisIdentifier().getReducedOBISIdentifier()))
                 .collect(Collectors.toList());
         return filteredValues;
     }

@@ -20,14 +20,15 @@ This binding supports one ThingType: `controller`.
 
 The `controller` Thing has the following configuration parameters:
 
-| Parameter                   | Description                                                                                                                  | Required | Default value |
-|-----------------------------|------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
-| hostname                    | Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if default port is not used.  | yes      |               |
-| username                    | User name to login to the IHC / ELKO controller.                                                                             | yes      |               |
-| password                    | Password to login to the IHC / ELKO controller.                                                                              | yes      |               |
-| timeout                     | Timeout in milliseconds to communicate to IHC / ELKO controller.                                                             | no       | 5000          |
-| loadProjectFile             | Load project file from controller.                                                                                           | no       | true          |
-| createChannelsAutomatically | Create channels automatically from project file. Project file loading parameter should be enabled as well.                   | no       | true          |
+| Parameter                   | Description                                                                                                                                                                                 | Required | Default value |
+|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|---------------|
+| hostname                    | Network/IP address of the IHC / ELKO controller without https prefix, but can contain TCP port if default port is not used.                                                                 | yes      |               |
+| username                    | User name to login to the IHC / ELKO controller.                                                                                                                                            | yes      |               |
+| password                    | Password to login to the IHC / ELKO controller.                                                                                                                                             | yes      |               |
+| timeout                     | Timeout in milliseconds to communicate to IHC / ELKO controller.                                                                                                                            | no       | 5000          |
+| loadProjectFile             | Load project file from controller.                                                                                                                                                          | no       | true          |
+| createChannelsAutomatically | Create channels automatically from project file. Project file loading parameter should be enabled as well.                                                                                  | no       | true          |
+| tlsVersion                  | TLS version used for controller communication. Choose `TLSv1` for older firmware versions and `TLSv1.2` for never versions (since fall 2021). `AUTO` mode try to recognize correct version. | no       | TLSv1         |
 
 
 ## Channels
@@ -148,7 +149,7 @@ Will send TOGGLE (ON/OFF) command to Dimmer test item when short button press is
 ### example.things
 
 ```xtend
-ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secret", timeout=5000, loadProjectFile=true, createChannelsAutomatically=false ] {
+ihc:controller:elko [ hostname="192.168.1.2", username="openhab", password="secret", timeout=5000, loadProjectFile=true, createChannelsAutomatically=false, tlsVersion="TLSv1" ] {
     Channels:
         Type switch                : my_test_switch  "My Test Switch"          [ resourceId=3988827 ]
         Type contact               : my_test_contact "My Test Contact"         [ resourceId=3988827 ]

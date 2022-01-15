@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.neeo.internal;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -158,16 +157,7 @@ public class NeeoUtil {
         if (s == null) {
             return "";
         }
-
-        String result = null;
-        try {
-            result = URLDecoder.decode(s, StandardCharsets.UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            // This exception should never occur.
-            result = s;
-        }
-
-        return result;
+        return URLDecoder.decode(s, StandardCharsets.UTF_8);
     }
 
     /**
@@ -180,18 +170,8 @@ public class NeeoUtil {
      */
     public static String encodeURIComponent(String s) {
         requireNotEmpty(s, "s cannot be null or empty");
-        String result = null;
-
-        try {
-            result = URLEncoder.encode(s, "UTF-8").replaceAll("\\+", "%20").replaceAll("\\%21", "!")
-                    .replaceAll("\\%27", "'").replaceAll("\\%28", "(").replaceAll("\\%29", ")")
-                    .replaceAll("\\%7E", "~");
-        } catch (UnsupportedEncodingException e) {
-            // This exception should never occur.
-            result = s;
-        }
-
-        return result;
+        return URLEncoder.encode(s, StandardCharsets.UTF_8).replaceAll("\\+", "%20").replaceAll("\\%21", "!")
+                .replaceAll("\\%27", "'").replaceAll("\\%28", "(").replaceAll("\\%29", ")").replaceAll("\\%7E", "~");
     }
 
     /**

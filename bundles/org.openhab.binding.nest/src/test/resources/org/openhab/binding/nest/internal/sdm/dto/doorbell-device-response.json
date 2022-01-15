@@ -1,0 +1,39 @@
+{
+  "name": "enterprises/project-id/devices/doorbell-device-id",
+  "type": "sdm.devices.types.DOORBELL",
+  "assignee": "enterprises/project-id/structures/structure-id/rooms/doorbell-room-id",
+  "traits": {
+    "sdm.devices.traits.Info": {
+      "customName": ""
+    },
+    "sdm.devices.traits.CameraLiveStream": {
+      "maxVideoResolution": {
+        "width": 640,
+        "height": 480
+      },
+      "videoCodecs": [
+        "H264"
+      ],
+      "audioCodecs": [
+        "AAC"
+      ]
+    },
+    "sdm.devices.traits.CameraImage": {
+      "maxImageResolution": {
+        "width": 1920,
+        "height": 1200
+      }
+    },
+    "sdm.devices.traits.CameraPerson": {},
+    "sdm.devices.traits.CameraSound": {},
+    "sdm.devices.traits.CameraMotion": {},
+    "sdm.devices.traits.CameraEventImage": {},
+    "sdm.devices.traits.DoorbellChime": {}
+  },
+  "parentRelations": [
+    {
+      "parent": "enterprises/project-id/structures/structure-id/rooms/doorbell-room-id",
+      "displayName": "Doorbell Room Name"
+    }
+  ]
+}

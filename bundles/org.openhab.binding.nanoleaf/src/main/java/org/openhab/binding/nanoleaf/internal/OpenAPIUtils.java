@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
-import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_ADD_USER;
+import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.API_V1_BASE_URL;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,20 +46,17 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenAPIUtils {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenAPIUtils.class);
-
-    // Regular expression for firmware version
     private static final Pattern FIRMWARE_VERSION_PATTERN = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)");
     private static final Pattern FIRMWARE_VERSION_PATTERN_BETA = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)-(\\d+)");
+    private static final long CONNECT_TIMEOUT = 10L;
 
     public static Request requestBuilder(HttpClient httpClient, NanoleafControllerConfig controllerConfig,
             String apiOperation, HttpMethod method) throws NanoleafException {
         URI requestURI = getUri(controllerConfig, apiOperation, null);
-        LOGGER.trace("RequestBuilder: Sending Request {}:{} {} ", requestURI.getHost(), requestURI.getPort(),
-                requestURI.getPath());
-
-        return httpClient.newRequest(requestURI).method(method).timeout(10, TimeUnit.SECONDS);
+        LOGGER.trace("RequestBuilder: Sending Request {}:{} {} \n op: {}  method: {}", new Object[] {
+                requestURI.getHost(), requestURI.getPort(), requestURI.getPath(), apiOperation, method.toString() });
+        return httpClient.newRequest(requestURI).method(method).timeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);
     }
 
     public static URI getUri(NanoleafControllerConfig controllerConfig, String apiOperation, @Nullable String query)
@@ -73,35 +71,33 @@ public class OpenAPIUtils {
             path = String.format("%s%s", API_V1_BASE_URL, apiOperation);
         } else {
             String authToken = controllerConfig.authToken;
-            if (authToken != null) {
-                path = String.format("%s/%s%s", API_V1_BASE_URL, authToken, apiOperation);
-            } else {
+            if (authToken == null) {
                 throw new NanoleafUnauthorizedException("No authentication token found in configuration");
             }
+
+            path = String.format("%s/%s%s", API_V1_BASE_URL, authToken, apiOperation);
         }
-        URI requestURI;
+
         try {
-            requestURI = new URI(HttpScheme.HTTP.asString(), null, address, port, path, query, null);
-        } catch (URISyntaxException use) {
+            URI requestURI = new URI(HttpScheme.HTTP.asString(), (String) null, address, port, path, query,
+                    (String) null);
+            return requestURI;
+        } catch (URISyntaxException var8) {
             LOGGER.warn("URI could not be parsed with path {}", path);
             throw new NanoleafException("Wrong URI format for API request");
         }
-        return requestURI;
     }
 
     public static ContentResponse sendOpenAPIRequest(Request request) throws NanoleafException {
         try {
             traceSendRequest(request);
-            ContentResponse openAPIResponse;
-            openAPIResponse = request.send();
+            ContentResponse openAPIResponse = request.send();
             if (LOGGER.isTraceEnabled()) {
                 LOGGER.trace("API response from Nanoleaf controller: {}", openAPIResponse.getContentAsString());
             }
             LOGGER.debug("API response code: {}", openAPIResponse.getStatus());
             int responseStatus = openAPIResponse.getStatus();
-            if (responseStatus == HttpStatus.OK_200 || responseStatus == HttpStatus.NO_CONTENT_204) {
-                return openAPIResponse;
-            } else {
+            if (responseStatus != HttpStatus.OK_200 && responseStatus != HttpStatus.NO_CONTENT_204) {
                 if (openAPIResponse.getStatus() == HttpStatus.UNAUTHORIZED_401) {
                     throw new NanoleafUnauthorizedException("OpenAPI request unauthorized");
                 } else if (openAPIResponse.getStatus() == HttpStatus.NOT_FOUND_404) {
@@ -114,60 +110,67 @@ public class OpenAPIUtils {
                     throw new NanoleafException(String.format("OpenAPI request failed. HTTP response code %s",
                             openAPIResponse.getStatus()));
                 }
+            } else {
+                return openAPIResponse;
             }
-        } catch (ExecutionException | TimeoutException clientException) {
-            if (clientException.getCause() instanceof HttpResponseException
-                    && ((HttpResponseException) clientException.getCause()).getResponse()
-                            .getStatus() == HttpStatus.UNAUTHORIZED_401) {
-                LOGGER.warn("OpenAPI request unauthorized. Invalid authorization token.");
+        } catch (ExecutionException ee) {
+            Throwable cause = ee.getCause();
+            if (cause != null && cause instanceof HttpResponseException
+                    && ((HttpResponseException) cause).getResponse().getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                LOGGER.debug("OpenAPI request unauthorized. Invalid authorization token.");
                 throw new NanoleafUnauthorizedException("Invalid authorization token");
+            } else {
+                throw new NanoleafException("Failed to send OpenAPI request (final)", ee);
             }
-            throw new NanoleafException("Failed to send OpenAPI request", clientException);
-        } catch (InterruptedException interruptedException) {
-            throw new NanoleafInterruptedException("OpenAPI request has been interrupted", interruptedException);
+        } catch (TimeoutException te) {
+            LOGGER.debug("OpenAPI request failed with timeout", te);
+            throw new NanoleafException("Failed to send OpenAPI request: Timeout", te);
+        } catch (InterruptedException ie) {
+            throw new NanoleafInterruptedException("OpenAPI request has been interrupted", ie);
         }
     }
 
     private static void traceSendRequest(Request request) {
-        if (!LOGGER.isTraceEnabled()) {
-            return;
-        }
-        LOGGER.trace("Sending Request {} {}", request.getURI(),
-                request.getQuery() == null ? "no query parameters" : request.getQuery());
-        LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(), request.getParams());
-        if (request.getContent() != null) {
-            Iterator<ByteBuffer> iter = request.getContent().iterator();
-            if (iter != null) {
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Sending Request {} {}", request.getURI(),
+                    request.getQuery() == null ? "no query parameters" : request.getQuery());
+            LOGGER.trace("Request method:{} uri:{} params{}\n", request.getMethod(), request.getURI(),
+                    request.getParams());
+            if (request.getContent() != null) {
+                Iterator<ByteBuffer> iter = request.getContent().iterator();
                 while (iter.hasNext()) {
-                    @Nullable
                     ByteBuffer buffer = iter.next();
                     LOGGER.trace("Content {}", StandardCharsets.UTF_8.decode(buffer).toString());
                 }
             }
+
         }
     }
 
     public static boolean checkRequiredFirmware(@Nullable String modelId, @Nullable String currentFirmwareVersion) {
-        if (modelId == null || currentFirmwareVersion == null) {
+        if (modelId != null && currentFirmwareVersion != null) {
+            int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
+            int[] requiredVer = getFirmwareVersionNumbers("NL22".equals(modelId) ? "1.5.0" : "1.1.0");
+
+            for (int i = 0; i < currentVer.length; ++i) {
+                if (currentVer[i] != requiredVer[i]) {
+                    if (currentVer[i] > requiredVer[i]) {
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
+
+            return true;
+        } else {
             return false;
         }
-        int[] currentVer = getFirmwareVersionNumbers(currentFirmwareVersion);
-
-        int[] requiredVer = getFirmwareVersionNumbers(
-                MODEL_ID_LIGHTPANELS.equals(modelId) ? API_MIN_FW_VER_LIGHTPANELS : API_MIN_FW_VER_CANVAS);
-
-        for (int i = 0; i < currentVer.length; i++) {
-            if (currentVer[i] != requiredVer[i]) {
-                return currentVer[i] > requiredVer[i];
-            }
-        }
-        return true;
     }
 
     public static int[] getFirmwareVersionNumbers(String firmwareVersion) throws IllegalArgumentException {
         LOGGER.debug("firmwareVersion: {}", firmwareVersion);
         Matcher m = FIRMWARE_VERSION_PATTERN.matcher(firmwareVersion);
-
         if (m.matches()) {
             return new int[] { Integer.parseInt(m.group(1)), Integer.parseInt(m.group(2)),
                     Integer.parseInt(m.group(3)) };

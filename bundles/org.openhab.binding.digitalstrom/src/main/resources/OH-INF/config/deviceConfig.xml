@@ -6,7 +6,7 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<!-- yellow/black Device -->
-	<config-description uri="binding:digitalstrom:deviceWithPowerSensors">
+	<config-description uri="thing-type:digitalstrom:deviceWithPowerSensors">
 		<parameter-group name="devInfo">
 			<label>@text/device_param_group_info_label</label>
 			<description>@text/device_param_group_info_desc</description>
@@ -55,7 +55,7 @@
 		</parameter>
 	</config-description>
 	<!-- gray Device -->
-	<config-description uri="binding:digitalstrom:deviceWithoutPowerSensors">
+	<config-description uri="thing-type:digitalstrom:deviceWithoutPowerSensors">
 		<parameter name="dSID" type="text" readOnly="true" required="true">
 			<label>@text/device_param_dsid_label</label>
 			<description>@text/device_param_dsid_desc</description>

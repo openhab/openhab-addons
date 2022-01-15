@@ -18,7 +18,11 @@
 		</channels>
 
 		<properties>
-			<property name="Vendor">Hayward</property>
+			<property name="vendor">Hayward</property>
+			<property name="sharedType"></property>
+			<property name="minSettableWaterTemp"></property>
+			<property name="maxSettableWaterTemp"></property>
+			<property name="maxWaterTemp"></property>
 		</properties>
 		<representation-property>systemID</representation-property>
 	</thing-type>
@@ -28,7 +32,7 @@
 		<label>Current Setpoint</label>
 		<description>Current Setpoint</description>
 		<category>Temperature</category>
-		<state min="65" max="90" step="1.0" pattern="%1f %unit%" readOnly="false"/>
+		<state min="65" max="90" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

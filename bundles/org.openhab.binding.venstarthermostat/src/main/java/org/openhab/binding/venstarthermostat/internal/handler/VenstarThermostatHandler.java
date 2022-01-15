@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,10 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,16 +51,30 @@ import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.venstarthermostat.internal.VenstarThermostatConfiguration;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarInfoData;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarResponse;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSensor;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSensorData;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemMode;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemModeSerializer;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemState;
-import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemStateSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarAwayMode;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarAwayModeSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarFanMode;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarFanModeSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarFanState;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarFanStateSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarInfoData;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarResponse;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarRuntime;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarRuntimeData;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarScheduleMode;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarScheduleModeSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSchedulePart;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSchedulePartSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSensor;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSensorData;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemMode;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemModeSerializer;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemState;
+import org.openhab.binding.venstarthermostat.internal.dto.VenstarSystemStateSerializer;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -84,16 +102,16 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author William Welliver - Initial contribution
  * @author Dan Cunningham - Migration to Jetty, annotations and various improvements
+ * @author Matthew Davies - added code to include away mode in binding
  */
 @NonNullByDefault
 public class VenstarThermostatHandler extends ConfigStatusThingHandler {
-
     private static final int TIMEOUT_SECONDS = 30;
     private static final int UPDATE_AFTER_COMMAND_SECONDS = 2;
-
     private Logger log = LoggerFactory.getLogger(VenstarThermostatHandler.class);
     private List<VenstarSensor> sensorData = new ArrayList<>();
     private VenstarInfoData infoData = new VenstarInfoData();
+    private VenstarRuntimeData runtimeData = new VenstarRuntimeData();
     private Map<String, State> stateMap = Collections.synchronizedMap(new HashMap<>());
     private @Nullable Future<?> updatesTask;
     private @Nullable URL baseURL;
@@ -108,12 +126,16 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         super(thing);
         httpClient = new HttpClient(new SslContextFactory.Client(true));
         gson = new GsonBuilder().registerTypeAdapter(VenstarSystemState.class, new VenstarSystemStateSerializer())
-                .registerTypeAdapter(VenstarSystemMode.class, new VenstarSystemModeSerializer()).create();
+                .registerTypeAdapter(VenstarSystemMode.class, new VenstarSystemModeSerializer())
+                .registerTypeAdapter(VenstarAwayMode.class, new VenstarAwayModeSerializer())
+                .registerTypeAdapter(VenstarFanMode.class, new VenstarFanModeSerializer())
+                .registerTypeAdapter(VenstarFanState.class, new VenstarFanStateSerializer())
+                .registerTypeAdapter(VenstarScheduleMode.class, new VenstarScheduleModeSerializer())
+                .registerTypeAdapter(VenstarSchedulePart.class, new VenstarSchedulePartSerializer()).create();
 
         log.trace("VenstarThermostatHandler for thing {}", getThing().getUID());
     }
 
-    @SuppressWarnings("null") // compiler does not see conf.refresh == null check
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         Collection<ConfigStatusMessage> status = new ArrayList<>();
@@ -130,7 +152,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
                     .withArguments(CONFIG_PASSWORD).build());
         }
 
-        if (config.refresh == null || config.refresh < 10) {
+        if (config.refresh < 10) {
             log.warn("refresh is too small: {}", config.refresh);
 
             status.add(ConfigStatusMessage.Builder.error(CONFIG_REFRESH).withMessageKeySuffix(REFRESH_INVALID)
@@ -141,7 +163,6 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             log.debug("Controller is NOT ONLINE and is not responding to commands");
             return;
@@ -156,25 +177,73 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             stateMap.remove(channelUID.getAsString());
             if (channelUID.getId().equals(CHANNEL_HEATING_SETPOINT)) {
                 QuantityType<Temperature> quantity = commandToQuantityType(command, unitSystem);
-                int value = quantityToRoundedTemperature(quantity, unitSystem).intValue();
+                double value = quantityToRoundedTemperature(quantity, unitSystem).doubleValue();
                 log.debug("Setting heating setpoint to {}", value);
                 setHeatingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_COOLING_SETPOINT)) {
                 QuantityType<Temperature> quantity = commandToQuantityType(command, unitSystem);
-                int value = quantityToRoundedTemperature(quantity, unitSystem).intValue();
+                double value = quantityToRoundedTemperature(quantity, unitSystem).doubleValue();
                 log.debug("Setting cooling setpoint to {}", value);
                 setCoolingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_SYSTEM_MODE)) {
                 VenstarSystemMode value;
-                if (command instanceof StringType) {
-                    value = VenstarSystemMode.valueOf(((StringType) command).toString().toUpperCase());
-                } else {
-                    value = VenstarSystemMode.fromInt(((DecimalType) command).intValue());
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarSystemMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarSystemMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting system mode to  {}", value);
+                    setSystemMode(value);
+                    updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid System Mode");
                 }
-                log.debug("Setting system mode to  {}", value);
-                setSystemMode(value);
-                updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new StringType("" + value));
+            } else if (channelUID.getId().equals(CHANNEL_AWAY_MODE)) {
+                VenstarAwayMode value;
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarAwayMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarAwayMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting away mode to  {}", value);
+                    setAwayMode(value);
+                    updateIfChanged(CHANNEL_AWAY_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid Away Mode");
+                }
+
+            } else if (channelUID.getId().equals(CHANNEL_FAN_MODE)) {
+                VenstarFanMode value;
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarFanMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarFanMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting fan mode to  {}", value);
+                    setFanMode(value);
+                    updateIfChanged(CHANNEL_FAN_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid Fan Mode");
+                }
+            } else if (channelUID.getId().equals(CHANNEL_SCHEDULE_MODE)) {
+                VenstarScheduleMode value;
+                try {
+                    if (command instanceof StringType) {
+                        value = VenstarScheduleMode.valueOf(((StringType) command).toString().toUpperCase());
+                    } else {
+                        value = VenstarScheduleMode.fromInt(((DecimalType) command).intValue());
+                    }
+                    log.debug("Setting schedule mode to  {}", value);
+                    setScheduleMode(value);
+                    updateIfChanged(CHANNEL_SCHEDULE_MODE_RAW, new StringType(value.toString()));
+                } catch (IllegalArgumentException e) {
+                    log.warn("Invalid Schedule Mode");
+                }
             }
+
             startUpdatesTask(UPDATE_AFTER_COMMAND_SECONDS);
         }
     }
@@ -284,22 +353,42 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         return UnDefType.UNDEF;
     }
 
-    private void setCoolingSetpoint(int cool) {
-        int heat = getHeatingSetpoint().intValue();
-        VenstarSystemMode mode = getSystemMode();
-        updateThermostat(heat, cool, mode);
+    private void setCoolingSetpoint(double cool) {
+        double heat = getHeatingSetpoint().doubleValue();
+        VenstarSystemMode mode = infoData.getSystemMode();
+        VenstarFanMode fanmode = infoData.getFanMode();
+        updateControls(heat, cool, mode, fanmode);
     }
 
     private void setSystemMode(VenstarSystemMode mode) {
-        int cool = getCoolingSetpoint().intValue();
-        int heat = getHeatingSetpoint().intValue();
-        updateThermostat(heat, cool, mode);
+        double cool = getCoolingSetpoint().doubleValue();
+        double heat = getHeatingSetpoint().doubleValue();
+        VenstarFanMode fanmode = infoData.getFanMode();
+        updateControls(heat, cool, mode, fanmode);
     }
 
-    private void setHeatingSetpoint(int heat) {
-        int cool = getCoolingSetpoint().intValue();
-        VenstarSystemMode mode = getSystemMode();
-        updateThermostat(heat, cool, mode);
+    private void setHeatingSetpoint(double heat) {
+        double cool = getCoolingSetpoint().doubleValue();
+        VenstarSystemMode mode = infoData.getSystemMode();
+        VenstarFanMode fanmode = infoData.getFanMode();
+        updateControls(heat, cool, mode, fanmode);
+    }
+
+    private void setFanMode(VenstarFanMode fanmode) {
+        double cool = getCoolingSetpoint().doubleValue();
+        double heat = getHeatingSetpoint().doubleValue();
+        VenstarSystemMode mode = infoData.getSystemMode();
+        updateControls(heat, cool, mode, fanmode);
+    }
+
+    private void setAwayMode(VenstarAwayMode away) {
+        VenstarScheduleMode schedule = infoData.getScheduleMode();
+        updateSettings(away, schedule);
+    }
+
+    private void setScheduleMode(VenstarScheduleMode schedule) {
+        VenstarAwayMode away = infoData.getAwayMode();
+        updateSettings(away, schedule);
     }
 
     private QuantityType<Temperature> getCoolingSetpoint() {
@@ -310,34 +399,75 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         return new QuantityType<Temperature>(infoData.getHeattemp(), unitSystem);
     }
 
-    private VenstarSystemState getSystemState() {
-        return infoData.getState();
+    private ZonedDateTime getTimestampRuntime(VenstarRuntime runtime) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime now = LocalDateTime.now().atZone(zoneId);
+        int diff = now.getOffset().getTotalSeconds();
+        ZonedDateTime z = ZonedDateTime.ofInstant(Instant.ofEpochSecond(runtime.getTimeStamp() - diff), zoneId);
+        return z;
     }
 
-    private VenstarSystemMode getSystemMode() {
-        return infoData.getMode();
-    }
-
-    private void updateThermostat(int heat, int cool, VenstarSystemMode mode) {
+    private void updateSettings(VenstarAwayMode away, VenstarScheduleMode schedule) {
+        // this function corresponds to the thermostat local API POST /settings instruction
+        // the function can be expanded with other parameters which are changed via POST /settings
+        // settings that can be included are tempunits, away mode, schedule mode, humidifier setpoint, dehumidifier
+        // setpoint
+        // (hum/dehum are the only ones missing)
         Map<String, String> params = new HashMap<>();
-        log.debug("Updating thermostat {}  heat:{} cool {} mode: {}", getThing().getLabel(), heat, cool, mode);
+        params.put("away", String.valueOf(away.mode()));
+        params.put("schedule", String.valueOf(schedule.mode()));
+        VenstarResponse res = updateThermostat("/settings", params);
+        if (res != null) {
+            log.debug("Updated thermostat");
+            // update our local copy until the next refresh occurs
+            infoData.setAwayMode(away);
+            infoData.setScheduleMode(schedule);
+            // add other parameters here in the same way
+        }
+    }
+
+    private void updateControls(double heat, double cool, VenstarSystemMode mode, VenstarFanMode fanmode) {
+        // this function corresponds to the thermostat local API POST /control instruction
+        // the function can be expanded with other parameters which are changed via POST /control
+        // controls that can be included are thermostat mode, fan mode, heat temp, cool temp (all done already)
+        Map<String, String> params = new HashMap<>();
         if (heat > 0) {
             params.put("heattemp", String.valueOf(heat));
         }
         if (cool > 0) {
             params.put("cooltemp", String.valueOf(cool));
         }
-        params.put("mode", "" + mode.mode());
+        params.put("mode", String.valueOf(mode.mode()));
+        params.put("fan", String.valueOf(fanmode.mode()));
+        VenstarResponse res = updateThermostat("/control", params);
+        if (res != null) {
+            log.debug("Updated thermostat");
+            // update our local copy until the next refresh occurs
+            infoData.setCooltemp(cool);
+            infoData.setHeattemp(heat);
+            infoData.setSystemMode(mode);
+            infoData.setFanMode(fanmode);
+            // add other parameters here in the same way
+        }
+    }
+
+    /**
+     * Function to send data to the thermostat and update the Thing state if there is an error
+     *
+     * @param path
+     * @param params
+     * @return VenstarResponse object or null if there was an error
+     */
+    private @Nullable VenstarResponse updateThermostat(String path, Map<String, String> params) {
         try {
-            String result = postData("/control", params);
+            String result = postData(path, params);
             VenstarResponse res = gson.fromJson(result, VenstarResponse.class);
-            if (res.isSuccess()) {
-                log.debug("Updated thermostat");
-                // update our local copy until the next refresh occurs
-                infoData = new VenstarInfoData(cool, heat, infoData.getState(), mode);
+            if (res != null && res.isSuccess()) {
+                return res;
             } else {
-                log.debug("Failed to update thermostat: {}", res.getReason());
-                goOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Thermostat update failed: " + res.getReason());
+                String reason = res == null ? "invalid response" : res.getReason();
+                log.debug("Failed to update thermostat: {}", reason);
+                goOffline(ThingStatusDetail.COMMUNICATION_ERROR, reason);
             }
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
             log.debug("Unable to fetch info data", e);
@@ -346,6 +476,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
         } catch (VenstarAuthenticationException e) {
             goOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Authorization Failed");
         }
+        return null;
     }
 
     private void updateData() {
@@ -361,6 +492,29 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             updateIfChanged(CHANNEL_EXTERNAL_TEMPERATURE, getOutdoorTemperature());
             updateIfChanged(CHANNEL_HUMIDITY, getHumidity());
 
+            response = getData("/query/runtimes");
+            if (!isFutureValid(localUpdatesTask)) {
+                return;
+            }
+
+            runtimeData = Objects.requireNonNull(gson.fromJson(response, VenstarRuntimeData.class));
+            List<VenstarRuntime> runtimes = runtimeData.getRuntimes();
+            Collections.reverse(runtimes);// reverse the list so that the most recent runtime data is first in the list
+            int nRuntimes = Math.min(7, runtimes.size());// check how many runtimes are available, might be less than
+                                                         // seven if equipment
+                                                         // was reset, and also might be more than 7, so limit to 7
+            for (int i = 0; i < nRuntimes; i++) {
+                VenstarRuntime rt = runtimes.get(i);
+                updateIfChanged(CHANNEL_TIMESTAMP_RUNTIME_DAY + i, new DateTimeType(getTimestampRuntime(rt)));
+                updateIfChanged(CHANNEL_HEAT1_RUNTIME_DAY + i, new DecimalType(rt.getHeat1Runtime()));
+                updateIfChanged(CHANNEL_HEAT2_RUNTIME_DAY + i, new DecimalType(rt.getHeat2Runtime()));
+                updateIfChanged(CHANNEL_COOL1_RUNTIME_DAY + i, new DecimalType(rt.getCool1Runtime()));
+                updateIfChanged(CHANNEL_COOL2_RUNTIME_DAY + i, new DecimalType(rt.getCool2Runtime()));
+                updateIfChanged(CHANNEL_AUX1_RUNTIME_DAY + i, new DecimalType(rt.getAux1Runtime()));
+                updateIfChanged(CHANNEL_AUX2_RUNTIME_DAY + i, new DecimalType(rt.getAux2Runtime()));
+                updateIfChanged(CHANNEL_FC_RUNTIME_DAY + i, new DecimalType(rt.getFreeCoolRuntime()));
+            }
+
             response = getData("/query/info");
             if (!isFutureValid(localUpdatesTask)) {
                 return;
@@ -369,10 +523,20 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             updateUnits(infoData);
             updateIfChanged(CHANNEL_HEATING_SETPOINT, getHeatingSetpoint());
             updateIfChanged(CHANNEL_COOLING_SETPOINT, getCoolingSetpoint());
-            updateIfChanged(CHANNEL_SYSTEM_STATE, new StringType(getSystemState().stateName()));
-            updateIfChanged(CHANNEL_SYSTEM_MODE, new StringType(getSystemMode().modeName()));
-            updateIfChanged(CHANNEL_SYSTEM_STATE_RAW, new DecimalType(getSystemState().state()));
-            updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new DecimalType(getSystemMode().mode()));
+            updateIfChanged(CHANNEL_SYSTEM_STATE, new StringType(infoData.getSystemState().stateName()));
+            updateIfChanged(CHANNEL_SYSTEM_MODE, new StringType(infoData.getSystemMode().modeName()));
+            updateIfChanged(CHANNEL_SYSTEM_STATE_RAW, new DecimalType(infoData.getSystemState().state()));
+            updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new DecimalType(infoData.getSystemMode().mode()));
+            updateIfChanged(CHANNEL_AWAY_MODE, new StringType(infoData.getAwayMode().modeName()));
+            updateIfChanged(CHANNEL_AWAY_MODE_RAW, new DecimalType(infoData.getAwayMode().mode()));
+            updateIfChanged(CHANNEL_FAN_MODE, new StringType(infoData.getFanMode().modeName()));
+            updateIfChanged(CHANNEL_FAN_MODE_RAW, new DecimalType(infoData.getFanMode().mode()));
+            updateIfChanged(CHANNEL_FAN_STATE, OnOffType.from(infoData.getFanState().stateName()));
+            updateIfChanged(CHANNEL_FAN_STATE_RAW, new DecimalType(infoData.getFanState().state()));
+            updateIfChanged(CHANNEL_SCHEDULE_MODE, new StringType(infoData.getScheduleMode().modeName()));
+            updateIfChanged(CHANNEL_SCHEDULE_MODE_RAW, new DecimalType(infoData.getScheduleMode().mode()));
+            updateIfChanged(CHANNEL_SCHEDULE_PART, new StringType(infoData.getSchedulePart().partName()));
+            updateIfChanged(CHANNEL_SCHEDULE_PART_RAW, new DecimalType(infoData.getSchedulePart().part()));
 
             goOnline();
         } catch (VenstarCommunicationException | JsonSyntaxException e) {
@@ -438,14 +602,13 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
 
             if (response.getStatus() != 200) {
                 throw new VenstarCommunicationException(
-                        "Error communitcating with thermostat. Error Code: " + response.getStatus());
+                        "Error communicating with thermostat. Error Code: " + response.getStatus());
             }
             String content = response.getContentAsString();
             log.trace("sendRequest: response {}", content);
             return content;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new VenstarCommunicationException(e);
-
         }
     }
 

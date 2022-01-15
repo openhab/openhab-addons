@@ -27,11 +27,14 @@ sudo usermod -a -G dialout openhab
 
 ## Supported Things
 
-Only a single generic thing type is supported by the binding:
+The binding supports thing types for different device types.
+They only differ in the available channels, where the generic *comfoair* thing type supports all available channels.
+If there is no thing type that matches your specific device you can safely choose the *comfoair* type.
 
-|Thing Type ID |Description                                                          |
-|--------------|---------------------------------------------------------------------|
-|comfoair      |A ComfoAir ventilation system connected via RS232 serial connection. |
+|Thing Type ID |Description                                                                  |
+|--------------|-----------------------------------------------------------------------------|
+|comfoair      |A ComfoAir ventilation system connected via RS232 serial connection.         |
+|WHR930        |Thing type restricted to the data points available for the StorkAir WHR930.  |
 
 ## Discovery
 

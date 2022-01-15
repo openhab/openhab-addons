@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,9 +20,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import javax.measure.Quantity;
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
@@ -32,8 +27,6 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
@@ -113,6 +106,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return accessory;
     }
 
+    @Override
     public Collection<Service> getServices() {
         return this.services;
     }
@@ -182,7 +176,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * return configuration attached to the root accessory, e.g. groupItem.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.
-     * 
+     *
      * @param key configuration key
      * @param defaultValue default value
      * @param <T> expected type
@@ -197,7 +191,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * return configuration of the characteristic item, e.g. currentTemperature.
      * Note: result will be casted to the type of the default value.
      * The type for number is BigDecimal.
-     * 
+     *
      * @param characteristicType characteristic type
      * @param key configuration key
      * @param defaultValue default value
@@ -215,7 +209,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * update mapping with values from item configuration.
      * it checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
      * replace the value.
-     * 
+     *
      * @param characteristicType characteristicType to identify item
      * @param map mapping to update
      * @param customEnumList list to store custom state enumeration
@@ -247,7 +241,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     /**
      * takes item state as value and retrieves the key for that value from mapping.
      * e.g. used to map StringItem value to HomeKit Enum
-     * 
+     *
      * @param characteristicType characteristicType to identify item
      * @param mapping mapping
      * @param defaultValue default value if nothing found in mapping
@@ -281,32 +275,13 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         characteristics.add(characteristic);
     }
 
-    @NonNullByDefault
-    private <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
-        double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
-        return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
-    }
-
-    @NonNullByDefault
-    protected double convertToCelsius(double degrees) {
-        return convertAndRound(degrees,
-                getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
-    }
-
-    @NonNullByDefault
-    protected double convertFromCelsius(double degrees) {
-        return convertAndRound(degrees,
-                getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT,
-                ImperialUnits.FAHRENHEIT);
-    }
-
     /**
      * create boolean reader with ON state mapped to trueOnOffValue or trueOpenClosedValue depending of item type
-     * 
+     *
      * @param characteristicType characteristic id
      * @param trueOnOffValue ON value for switch
      * @param trueOpenClosedValue ON value for contact
-     * @return boolean readed
+     * @return boolean read
      * @throws IncompleteAccessoryException
      */
     @NonNullByDefault
@@ -320,7 +295,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
 
     /**
      * create boolean reader with default ON/OFF mapping considering inverted flag
-     * 
+     *
      * @param characteristicType characteristic id
      * @return boolean reader
      * @throws IncompleteAccessoryException

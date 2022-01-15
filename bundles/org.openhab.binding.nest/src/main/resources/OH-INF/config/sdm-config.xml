@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:nest:sdm_account">
+		<parameter-group name="sdm">
+			<label>SDM</label>
+			<description>The parameters used when communicating with the SDM API</description>
+		</parameter-group>
+		<parameter-group name="pubsub">
+			<label>Pub/Sub</label>
+			<description>The parameters used when communicating with the Pub/Sub API</description>
+		</parameter-group>
+
+		<parameter name="sdmProjectId" type="text" required="true" groupName="sdm">
+			<label>Project ID</label>
+			<description>The UUID that identifies the SDM project in the SDM "Device Access Console"</description>
+		</parameter>
+		<parameter name="sdmClientId" type="text" required="true" groupName="sdm">
+			<label>Client ID</label>
+			<description>Identifies the OAuth 2.0 client used for accessing the SDM project</description>
+		</parameter>
+		<parameter name="sdmClientSecret" type="text" required="true" groupName="sdm">
+			<context>password</context>
+			<label>Client Secret</label>
+			<description>The OAuth 2.0 client secret used for accessing the SDM project</description>
+		</parameter>
+		<parameter name="sdmAuthorizationCode" type="text" groupName="sdm">
+			<label>Authorization Code</label>
+			<description><![CDATA[The one time authorization code used to retrieve the refresh and access token used with the SDM API. The code is obtained by following the instructions at the following URL in your browser:<br><br>https://nestservices.google.com/partnerconnections/{{ProjectID}}/auth?redirect_uri=urn:ietf:wg:oauth:2.0:oob&access_type=offline&prompt=consent&client_id={{ClientID}}&response_type=code&scope=https://www.googleapis.com/auth/sdm.service]]></description>
+		</parameter>
+
+		<parameter name="pubsubProjectId" type="text" groupName="pubsub">
+			<label>Project ID</label>
+			<description>Identifies the Google Cloud Platform project where the Pub/Sub subscription is created</description>
+		</parameter>
+		<parameter name="pubsubSubscriptionId" type="text" groupName="pubsub">
+			<label>Subscription ID</label>
+			<description>Identifies the subscription that is created for subscribing to SDM Pub/Sub events</description>
+		</parameter>
+		<parameter name="pubsubClientId" type="text" groupName="pubsub">
+			<label>Client ID</label>
+			<description>Identifies the OAuth 2.0 client used for accessing the Pub/Sub subscription</description>
+		</parameter>
+		<parameter name="pubsubClientSecret" type="text" groupName="pubsub">
+			<context>password</context>
+			<label>Client Secret</label>
+			<description>The OAuth 2.0 client secret used for accessing the Pub/Sub subscription</description>
+		</parameter>
+		<parameter name="pubsubAuthorizationCode" type="text" groupName="pubsub">
+			<label>Authorization Code</label>
+			<description><![CDATA[The one time authorization code used to retrieve the refresh and access token used with the Pub/Sub API. The code is obtained by following the instructions at the following URL in your browser:<br><br>https://accounts.google.com/o/oauth2/auth?client_id={{ClientID}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code&scope=https://www.googleapis.com/auth/pubsub]]></description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:nest:sdm_device">
+		<parameter name="deviceId" type="text" required="true">
+			<label>Device ID</label>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" min="30" step="1" unit="s">
+			<label>Refresh Interval</label>
+			<description>This is refresh interval in seconds to update the Nest device information</description>
+			<default>300</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:nest:sdm_camera_image">
+		<parameter name="imageWidth" type="integer" min="1" step="1">
+			<label>Image Width</label>
+			<description>The width in pixels used for generating event images. A default value of 480 pixels is used if not
+				configured.</description>
+			<unitLabel>px</unitLabel>
+		</parameter>
+		<parameter name="imageHeight" type="integer" min="1" step="1">
+			<label>Image Height</label>
+			<description>The height in pixels used for generating event images. This parameter is ignored when the image width
+				parameter is also configured.</description>
+			<unitLabel>px</unitLabel>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:nest:sdm_fan_timer_mode">
+		<parameter name="fanTimerDuration" type="integer" min="1" max="43200" step="1" unit="s">
+			<label>Fan Timer Duration</label>
+			<description>Specifies the length of time in seconds that the timer is set to run.</description>
+			<default>900</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

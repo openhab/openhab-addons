@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.persistence.jdbc.db;
 
 import org.knowm.yank.Yank;
 import org.openhab.core.items.Item;
+import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.utils.StringUtilsExt;
 import org.slf4j.Logger;
@@ -71,13 +72,13 @@ public class JdbcH2DAO extends JdbcBaseDAO {
      * ITEM DAOs *
      *************/
     @Override
-    public void doStoreItemValue(Item item, ItemVO vo) {
-        vo = storeItemValueProvider(item, vo);
+    public void doStoreItemValue(Item item, State itemState, ItemVO vo) {
+        ItemVO storedVO = storeItemValueProvider(item, itemState, vo);
         String sql = StringUtilsExt.replaceArrayMerge(sqlInsertItemValue,
                 new String[] { "#tableName#", "#dbType#", "#tablePrimaryValue#" },
-                new String[] { vo.getTableName(), vo.getDbType(), sqlTypes.get("tablePrimaryValue") });
-        Object[] params = new Object[] { vo.getValue() };
-        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, vo.getValue());
+                new String[] { storedVO.getTableName(), storedVO.getDbType(), sqlTypes.get("tablePrimaryValue") });
+        Object[] params = new Object[] { storedVO.getValue() };
+        logger.debug("JDBC::doStoreItemValue sql={} value='{}'", sql, storedVO.getValue());
         Yank.execute(sql, params);
     }
 

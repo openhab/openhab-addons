@@ -586,13 +586,13 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature Cooling Enable</label>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="nviSollKuehlen" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>nviSollKuehlen</label>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="false" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="tempchange_heating_pv" advanced="true">
 		<item-type>Number:Temperature</item-type>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class ConverterTest {
         Assertions.assertEquals(new QuantityType<>(500, Units.WATT), converter.toState("500"));
 
         // no valid value
-        Assertions.assertEquals(UnDefType.UNDEF, converter.toState("100°C"));
+        Assertions.assertEquals(UnDefType.UNDEF, converter.toState("100foo"));
         Assertions.assertEquals(UnDefType.UNDEF, converter.toState("foo"));
         Assertions.assertEquals(UnDefType.UNDEF, converter.toState(""));
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -86,11 +87,13 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
+    private @Nullable ScheduledFuture<?> clockSyncJob;
 
     private int refreshPeriod = DEFAULT_REFRESH_PERIOD;
     private int logRefreshPeriod = DEFAULT_LOG_REFRESH_PERIOD;
     private boolean isCT80 = false;
     private boolean disableLogs = false;
+    private boolean clockSync = false;
     private String setpointCmdKeyPrefix = "t_";
 
     public RadioThermostatHandler(Thing thing, RadioThermostatStateDescriptionProvider stateDescriptionProvider,
@@ -111,8 +114,9 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         final Integer logRefresh = config.logRefresh;
         this.isCT80 = config.isCT80;
         this.disableLogs = config.disableLogs;
+        this.clockSync = config.clockSync;
 
-        if (hostName == null || hostName.equals("")) {
+        if (hostName == null || "".equals(hostName)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Thermostat Host Name must be specified");
             return;
@@ -145,12 +149,18 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             channels.removeIf(c -> (c.getUID().getId().equals(PROGRAM_MODE)));
             updateThing(editThing().withChannels(channels).build());
         }
+
+        updateStatus(ThingStatus.UNKNOWN);
+
         startAutomaticRefresh();
+
         if (!this.disableLogs || this.isCT80) {
             startAutomaticLogRefresh();
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
+        if (this.clockSync) {
+            scheduleClockSyncJob();
+        }
     }
 
     @Override
@@ -175,6 +185,35 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     }
 
     /**
+     * Schedule the clock sync job
+     */
+    private void scheduleClockSyncJob() {
+        ScheduledFuture<?> clockSyncJob = this.clockSyncJob;
+        if (clockSyncJob == null || clockSyncJob.isCancelled()) {
+            clockSyncJob = null;
+            this.clockSyncJob = scheduler.scheduleWithFixedDelay(this::syncThermostatClock, 1, 60, TimeUnit.MINUTES);
+        }
+    }
+
+    /**
+     * Sync the thermostat's clock with the host system clock
+     */
+    private void syncThermostatClock() {
+        Calendar c = Calendar.getInstance();
+
+        // The thermostat week starts as Monday = 0, subtract 2 since in standard DoW Monday = 2
+        int thermDayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
+        // Sunday will be -1, so add 7 to make it 6
+        if (thermDayOfWeek < 0) {
+            thermDayOfWeek += 7;
+        }
+
+        connector.sendCommand(null, null,
+                String.format(JSON_TIME, thermDayOfWeek, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE)),
+                TIME_RESOURCE);
+    }
+
+    /**
      * Start the job to periodically update humidity and runtime date from the thermostat
      */
     private void startAutomaticLogRefresh() {
@@ -194,7 +233,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             };
 
             logRefreshJob = null;
-            this.logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, logRefreshPeriod, TimeUnit.MINUTES);
+            this.logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, (!this.clockSync ? 1 : 2), logRefreshPeriod,
+                    TimeUnit.MINUTES);
         }
     }
 
@@ -213,6 +253,12 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         if (logRefreshJob != null) {
             logRefreshJob.cancel(true);
             this.logRefreshJob = null;
+        }
+
+        ScheduledFuture<?> clockSyncJob = this.clockSyncJob;
+        if (clockSyncJob != null) {
+            clockSyncJob.cancel(true);
+            this.clockSyncJob = null;
         }
     }
 
@@ -244,8 +290,8 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                         // set the new operating mode, reset everything else,
                         // because refreshing the tstat data below is really slow.
                         rthermData.getThermostatData().setMode(cmdInt);
-                        rthermData.getThermostatData().setHeatTarget(0);
-                        rthermData.getThermostatData().setCoolTarget(0);
+                        rthermData.getThermostatData().setHeatTarget(Double.valueOf(0));
+                        rthermData.getThermostatData().setCoolTarget(Double.valueOf(0));
                         updateChannel(SET_POINT, rthermData);
                         rthermData.getThermostatData().setHold(0);
                         updateChannel(HOLD, rthermData);
@@ -278,10 +324,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                     String cmdKey = null;
                     if (rthermData.getThermostatData().getMode() == 1) {
                         cmdKey = this.setpointCmdKeyPrefix + "heat";
-                        rthermData.getThermostatData().setHeatTarget(cmdInt);
+                        rthermData.getThermostatData().setHeatTarget(Double.valueOf(cmdInt));
                     } else if (rthermData.getThermostatData().getMode() == 2) {
                         cmdKey = this.setpointCmdKeyPrefix + "cool";
-                        rthermData.getThermostatData().setCoolTarget(cmdInt);
+                        rthermData.getThermostatData().setCoolTarget(Double.valueOf(cmdInt));
                     } else {
                         // don't do anything if we are not in heat or cool mode
                         break;

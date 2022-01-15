@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.touchwand.internal;
 
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.CookieManager;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -67,6 +66,11 @@ public class TouchWandRestClient {
     private static final String ACTION_SHUTTER_STOP = "{\"id\":%s,\"value\":0,\"type\":\"stop\"}";
     private static final String ACTION_SHUTTER_POSITION = "{\"id\":%s,\"value\":%s}";
     private static final String ACTION_DIMMER_POSITION = "{\"id\":%s,\"value\":%s}";
+    private static final String ACTION_THERMOSTAT_ON = "{\"id\":%s,\"value\":" + THERMOSTAT_STATE_ON + "}";
+    private static final String ACTION_THERMOSTAT_OFF = "{\"id\":%s,\"value\":" + THERMOSTAT_STATE_OFF + "}";
+    private static final String ACTION_THERMOSTAT_MODE = "{\"id\":%s,\"ac-all\":\"mode\",\"fan\":\"%s\"}";
+    private static final String ACTION_THERMOSTAT_FAN_LEVEL = "{\"id\":%s,\"ac-all\":\"fan\",\"fan\":\"%s\"}";
+    private static final String ACTION_THERMOSTAT_TARGET_TEMPERATURE = "{\"id\":%s,\"ac-all\":\"temp\",\"temp_val\":%s}";
 
     private static final String CONTENT_TYPE_APPLICATION_JSON = MimeTypes.Type.APPLICATION_JSON.asString();
 
@@ -99,18 +103,11 @@ public class TouchWandRestClient {
     }
 
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
-        String encodedUser;
-        String encodedPass;
+        String encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8);
+        String encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8);
         String response = "";
-
-        try {
-            encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8.toString());
-            encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8.toString());
-            String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
-            response = sendCommand(command, METHOD_GET, "");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Error url encoding username or password : {}", e.getMessage());
-        }
+        String command = buildUrl(CMD_LOGIN) + "user=" + encodedUser + "&" + "psw=" + encodedPass;
+        response = sendCommand(command, METHOD_GET, "");
 
         return !response.equals("Unauthorized");
     }
@@ -167,6 +164,32 @@ public class TouchWandRestClient {
 
     public void cmdDimmerPosition(String id, String position) {
         String action = String.format(ACTION_DIMMER_POSITION, id, position);
+        cmdUnitAction(action);
+    }
+
+    public void cmdThermostatOnOff(String id, OnOffType onoff) {
+        String action;
+
+        if (OnOffType.OFF.equals(onoff)) {
+            action = String.format(ACTION_THERMOSTAT_OFF, id);
+        } else {
+            action = String.format(ACTION_THERMOSTAT_ON, id);
+        }
+        cmdUnitAction(action);
+    }
+
+    public void cmdThermostatMode(String id, String mode) {
+        String action = String.format(ACTION_THERMOSTAT_MODE, id, mode);
+        cmdUnitAction(action);
+    }
+
+    public void cmdThermostatFanLevel(String id, String fanLevel) {
+        String action = String.format(ACTION_THERMOSTAT_FAN_LEVEL, id, fanLevel);
+        cmdUnitAction(action);
+    }
+
+    public void cmdThermostatTargetTemperature(String id, String targetTemperature) {
+        String action = String.format(ACTION_THERMOSTAT_TARGET_TEMPERATURE, id, targetTemperature);
         cmdUnitAction(action);
     }
 

@@ -163,7 +163,7 @@
 	</channel-type>
 
 	<channel-group-type id="rollershutterrelays">
-		<label>Roller Shutter on Relays</label>
+		<label>Roller Shutter (Relay)</label>
 		<channels>
 			<channel typeId="rollershutter" id="1">
 				<label>Shutter 1-2</label>
@@ -181,7 +181,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="rollershutteroutputs">
-		<label>Roller Shutter on Dimmer Outputs</label>
+		<label>Roller Shutter (Dimmer)</label>
 		<channels>
 			<channel typeId="rollershutter" id="1">
 				<label>Shutter 1-2</label>
@@ -496,7 +496,7 @@
 	</channel-type>
 
 	<channel-group-type id="keyslocktablea">
-		<label>Keys Lock State of Table A</label>
+		<label>Keys Locks Table A</label>
 		<channels>
 			<channel typeId="keylock" id="1">
 				<label>Key 1</label>
@@ -526,7 +526,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="keyslocktableb">
-		<label>Keys Lock State of Table B</label>
+		<label>Keys Locks Table B</label>
 		<channels>
 			<channel typeId="keylock" id="1">
 				<label>Key 1</label>
@@ -556,7 +556,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="keyslocktablec">
-		<label>Keys Lock State of Table C</label>
+		<label>Keys Locks Table C</label>
 		<channels>
 			<channel typeId="keylock" id="1">
 				<label>Key 1</label>
@@ -586,7 +586,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="keyslocktabled">
-		<label>Keys Lock State of Table D</label>
+		<label>Keys Locks Table D</label>
 		<channels>
 			<channel typeId="keylock" id="1">
 				<label>Key 1</label>
@@ -616,7 +616,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="codes">
-		<label>Transponder &amp; Remote Control</label>
+		<label>Access Control</label>
 		<channels>
 			<channel typeId="transponders" id="transponder"/>
 			<channel typeId="fingerprints" id="fingerprint"/>
@@ -640,24 +640,25 @@
 
 	<channel-type id="remotecontrolkeys">
 		<kind>trigger</kind>
-		<label>Remote Control Keys</label>
+		<label>Remote Control (Keys)</label>
 		<event/>
 	</channel-type>
 
 	<channel-type id="remotecontrolcodes">
 		<kind>trigger</kind>
-		<label>Remote Control with Access Control Code</label>
+		<label>Remote Control (Codes)</label>
 		<event/>
 	</channel-type>
 
 	<channel-type id="remotecontrolsbatterylow">
 		<kind>trigger</kind>
-		<label>Remote Control Low Battery</label>
+		<label>Low Battery</label>
 		<event/>
 	</channel-type>
 
 	<channel-group-type id="hostcommands">
-		<label>Host Command (to openHAB)</label>
+		<label>Host Commands</label>
+		<description>Command from LCN to openHAB</description>
 		<channels>
 			<channel typeId="sendKeys" id="sendKeys"/>
 		</channels>

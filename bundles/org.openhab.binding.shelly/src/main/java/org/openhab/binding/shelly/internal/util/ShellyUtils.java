@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.shelly.internal.util;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
@@ -52,8 +51,8 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class ShellyUtils {
-    private final static String PRE = "Unable to create object of type ";
-    public final static DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
+    private static final String PRE = "Unable to create object of type ";
+    public static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern(DateTimeType.DATE_PATTERN);
 
     public static <T> T fromJson(Gson gson, @Nullable String json, Class<T> classOfT) throws ShellyApiException {
         @Nullable
@@ -96,6 +95,7 @@ public class ShellyUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> Class<T> wrap(Class<T> type) {
         if (type == int.class) {
             return (Class<T>) Integer.class;
@@ -270,11 +270,7 @@ public class ShellyUtils {
     }
 
     public static String urlEncode(String input) {
-        try {
-            return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            return input;
-        }
+        return URLEncoder.encode(input, StandardCharsets.UTF_8);
     }
 
     public static Long now() {

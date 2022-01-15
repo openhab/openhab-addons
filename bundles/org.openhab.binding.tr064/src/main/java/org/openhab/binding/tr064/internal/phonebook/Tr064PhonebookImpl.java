@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,6 +93,6 @@ public class Tr064PhonebookImpl implements Phonebook {
 
     private String normalizeNumber(String number) {
         // Naive normalization: remove all non-digit characters
-        return number.replaceAll("[^0-9]\\+\\*", "");
+        return number.replaceAll("[^0-9\\*\\+]", "");
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.russound.internal.rio;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -94,13 +95,8 @@ public class StatefulHandlerCallback implements RioHandlerCallback {
 
         final State oldState = state.get(channelId);
 
-        // If both null OR the same value (enums), nothing changed
-        if (oldState == newState) {
-            return;
-        }
-
         // If they are equal - nothing changed
-        if (oldState != null && oldState.equals(newState)) {
+        if (Objects.equals(oldState, newState)) {
             return;
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,7 +62,8 @@ public class WeatherCompanyBridgeHandler extends BaseBridgeHandler {
                 if (rootcause instanceof HttpResponseException
                         && rootcause.getMessage().contains("Authentication challenge without")) {
                     logger.debug("Bridge: HttpResponseException: API key is not valid");
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API key is invalid");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-invalid-api-key");
                 } else {
                     logger.debug("Bridge: IOException trying to validate Api key: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());

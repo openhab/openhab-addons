@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,8 @@ package org.openhab.binding.opensprinkler.internal.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,6 +28,7 @@ import com.google.gson.JsonParser;
  *
  * @author Chris Graham - Initial contribution
  */
+@NonNullByDefault
 public class Parse {
     /**
      * Parses an integer from a JSON string given its key name.
@@ -37,7 +40,11 @@ public class Parse {
     public static int jsonInt(String jsonData, String keyName) {
         JsonElement jelement = JsonParser.parseString(jsonData);
         JsonObject jobject = jelement.getAsJsonObject();
-        return jobject.get(keyName).getAsInt();
+        jelement = jobject.get(keyName);
+        if (jelement == null) {
+            return 0;// prevents a NPE if the key does not exist.
+        }
+        return jelement.getAsInt();
     }
 
     /**

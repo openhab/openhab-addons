@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -876,7 +876,9 @@ public class SonosXMLParser {
                 case "SurroundEnabled":
                 case "SurroundMode":
                 case "SurroundLevel":
+                case "HTAudioIn":
                 case "MusicSurroundLevel":
+                case "HeightChannelLevel":
                     val = attributes == null ? null : attributes.getValue("val");
                     if (val != null) {
                         changes.put(qName, val);

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mielecloud"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dish_warmer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>@text/thing-type.mielecloud.dish_warmer.label</label>
+		<description>@text/thing-type.mielecloud.dish_warmer.description</description>
+		<category>WhiteGood</category>
+
+		<channels>
+			<channel id="remote_control_can_be_switched_on" typeId="remote_control_can_be_switched_on"/>
+			<channel id="remote_control_can_be_switched_off" typeId="remote_control_can_be_switched_off"/>
+			<channel id="dish_warmer_program_active" typeId="dish_warmer_program_active"/>
+			<channel id="program_active_raw" typeId="program_active_raw"/>
+			<channel id="operation_state" typeId="operation_state"/>
+			<channel id="operation_state_raw" typeId="operation_state_raw"/>
+			<channel id="power_state_on_off" typeId="power_state_on_off"/>
+			<channel id="finish_state" typeId="finish_state"/>
+			<channel id="program_remaining_time" typeId="program_remaining_time"/>
+			<channel id="program_elapsed_time" typeId="program_elapsed_time"/>
+			<channel id="program_progress" typeId="program_progress"/>
+			<channel id="temperature_target" typeId="temperature_target"/>
+			<channel id="temperature_current" typeId="temperature_current"/>
+			<channel id="error_state" typeId="error_state"/>
+			<channel id="info_state" typeId="info_state"/>
+			<channel id="door_state" typeId="door_state"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Miele</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:mielecloud:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

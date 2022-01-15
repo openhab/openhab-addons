@@ -1,0 +1,65 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab2-addons
+
+== Third-party Content
+
+Thymeleaf
+* License: Apache License 2.0
+* Project: https://www.thymeleaf.org/
+* Source:  https://github.com/thymeleaf/thymeleaf
+
+Thymeleaf - Java 8 Time API compatibility
+* License: Apache License 2.0
+* Project: https://www.thymeleaf.org/
+* Source:  https://github.com/thymeleaf/thymeleaf-extras-java8time
+
+OGNL Object Graph Navigation Library
+* License: Apache License 2.0
+* Project: http://www.opensymphony.com/ognl/
+* Source:  https://github.com/jkuhnert/ognl/
+
+Javassist
+* License: Apache License 2.0
+* Project: http://www.javassist.org/
+* Source:  https://github.com/jboss-javassist/javassist
+
+ATTOPARSER
+* License: Apache License 2.0
+* Project: http://www.attoparser.org/
+* Source:  https://github.com/attoparser/attoparser
+
+UNBESCAPE
+* License: Apache License 2.0
+* Project: http://www.unbescape.org/
+* Source:  https://github.com/unbescape/unbescape
+
+Bucket4j
+* License: Apache License 2.0
+* Project: https://github.com/vladimir-bukhtoyarov/bucket4j
+* Source:  https://github.com/vladimir-bukhtoyarov/bucket4j
+
+Feather icons
+* License: MIT License
+* Project: https://feathericons.com/
+* Source:  https://github.com/feathericons/feather
+
+jQuery
+* License: MIT License
+* Project: https://jquery.com/
+* Source:  https://github.com/jquery/jquery
+
+Bootstrap
+* License: MIT License
+* Project: https://getbootstrap.com/
+* Source:  https://github.com/twbs/bootstrap

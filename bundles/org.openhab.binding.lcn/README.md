@@ -249,6 +249,10 @@ After the colon, the LCN "hit type" follows: HIT, MAKE or BREAK (German: kurz, l
 
 If multiple keys or key tables are programmed in a single "send keys" command, multiple triggers will be executed.
 
+> Notice: Don't test the command with the "Test command" button in LCN-PRO.
+This will send a command from LCN-PRO to openHAB, but openHAB expects the module as the sender.
+Simply press the physical button at the module for testing.
+
 ### Remote Control
 
 To evaluate commands from LCN remote controls (e.g. LCN-RT or LCN-RT16), the module's I-port behavior must be configured as "IR access control" within *LCN-PRO*:

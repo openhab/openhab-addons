@@ -6,15 +6,17 @@ If your hardware is on the list but still does not work, please fill a bug repor
 
 ## Supported Things
 
-Thing | Type | Description
---------|------|------
-yamahaAV | Bridge | Yamaha Receiver hardware
-zone | Thing | Zones of your receiver
+| Thing    | Type   | Description              |
+|----------|--------|--------------------------|
+| yamahaAV | Bridge | Yamaha Receiver hardware |
+| zone     | Thing  | Zones of your receiver   |
 
 
 ## Discovery
 
-Just use the auto discovery feature to detect your hardware. Initially a thing for the main zone will be created. This will trigger a zone detection internally and all available additional zones will appear as new things.
+Just use the auto discovery feature to detect your hardware.
+Initially a thing for the main zone will be created.
+This will trigger a zone detection internally and all available additional zones will appear as new things.
 
 
 ## Thing Configuration
@@ -32,22 +34,22 @@ Bridge yamahareceiver:yamahaAV:ReceiverID "Yamaha Receiver Bridge Name" [host="a
 
 Configuration parameters for Bridge `yamahaAV`:
 
-Parameter | Required | Default | Description
---------|------|------|------
-`host` | yes | N/A | The IP address of the AVR to control
-`port` | no | 80 | The API port of the AVR to control
-`refreshInterval` | no | 60 | Refresh interval in seconds
-`albumUrl` | no | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply
-`inputMapping` | no | "" (empty string) | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details
+| Parameter         | Required | Default            | Description                                                                                                                                          |
+|-------------------|----------|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `host`            | yes      | N/A                | The IP address of the AVR to control                                                                                                                 |
+| `port`            | no       | 80                 | The API port of the AVR to control                                                                                                                   |
+| `refreshInterval` | no       | 60                 | Refresh interval in seconds                                                                                                                          |
+| `albumUrl`        | no       | embedded image URL | When the album image is not provided by the Yamaha input source, you can specify the default image URL to apply                                      |
+| `inputMapping`    | no       | "" (empty string)  | Some Yamaha models return different input values on status update than required in the change input commands. See [below](#input-values) for details |
 
 Configruation parameters for Thing `zone`:
 
-Parameter | Required | Default | Description
---------|------|------|------
-`zone` | yes | / | The zone can be Main_Zone, Zone_2, Zone_3, Zone_4 depending on your device
-`volumeRelativeChangeFactor` | no | 2 | Relative volume change in percent
-`volumeDbMin` | no | -80 | Lowest volume in dB
-`volumeDbMax` | no | 12 | Highest volume in dB
+| Parameter                    | Required | Default | Description                                                                |
+|------------------------------|----------|---------|----------------------------------------------------------------------------|
+| `zone`                       | yes      | /       | The zone can be Main_Zone, Zone_2, Zone_3, Zone_4 depending on your device |
+| `volumeRelativeChangeFactor` | no       | 2       | Relative volume change in percent                                          |
+| `volumeDbMin`                | no       | -80     | Lowest volume in dB                                                        |
+| `volumeDbMax`                | no       | 12      | Highest volume in dB                                                       |
 
 
 ## Channels
@@ -77,6 +79,8 @@ Zone control channels are:
 | `zone_channels#surroundProgram`               | `String`     | Sets the surround mode. Examples: `2ch Stereo`, `7ch Stereo`, `Hall in Munic`, `Straight`, `Surround Decoder`.                                                                                                                                                                                                                                                                                                                          |
 | `zone_channels#scene`                         | `String`     | Sets the scene. Examples: `Scene 1`, `Scene 2`, `Scene 3`, `Scene 4`. Write only (state updates are not available). May not be supported on all models (e.g. RX-V3900).                                                                                                                                                                                                                                                                 |
 | `zone_channels#dialogueLevel`                 | `Number`     | Sets the receivers dialogue level. May not be supported on all models.                                                                                                                                                                                                                                                                                                                                                                  |
+| `zone_channels#hdmi1Out`                      | `Number`     | Switches the HDMI1 Output ON or OFF (channel in desc.xml is placed in Main_Zone but in fact it is more some kind of system parameter). May not be supported on all models.                                                                                                                                                                                                                                                              |
+| `zone_channels#hdmi2Out`                      | `Number`     | Switches the HDMI2 Output ON or OFF (channel is desc.xml is placed in Main_Zone but in fact it is more some kind of system parameter). May not be supported on all models.                                                                                                                                                                                                                                                              |
 | `playback_channels#preset`                    | `Number`     | Set a preset. Not supported by `Spotify` input. For `NET RADIO` input there is no way to get current preset (tested on RX-S601D, RX-V3900), so the preset is write only. For RX-V3900 the presets are alphanumeric `A1`,`A2`,`B1`,`B2` thus you need to use numbers grater than 100 that represent these presets as follows: 101, 102, 201, 202.                                                                                        |
 | `playback_channels#playback`                  | `String`     | Set a play mode or get the current play mode. Values supported: `Previous`, `Play`, `Pause`, `Stop`, `Next`. Applies for inputs which support playback (`Spotify`, `SERVER`, `NET RADIO`, `Bluetooth`). Note that some values may not be supported on certain input type and AVR model combination. For `Spotify` and `Bluetooth` all values work, but for `NET RADIO` input only `Play` and `Stop` are supported (tested on RX-S601D). |
 | `playback_channels#playback_station`          | `String`     | Get the current played station (radio). Applies to `TUNER` and `NET RADIO` inputs only.                                                                                                                                                                                                                                                                                                                                                 |
@@ -101,9 +105,9 @@ Navigation is not supported by Spotify input.
 
 ### Basic Setup
 
-##### For auto linking with Paper UI
+##### Auto Linking
 
-Link the items to the channels of your preferred zone (here `Main_Zone`) in Paper UI after you have saved your items file.
+Link the items to the channels of your preferred zone (here `Main_Zone`) in the UI after you have saved your items file.
 
 Items:
 
@@ -117,7 +121,7 @@ String      Yamaha_Scene           "Scene []"                  <video>
 Number      Yamaha_Dialogue_Level  "Dialogue Level [%d]"       <soundvolume>
 ```
 
-##### For manually linking
+##### Manual Linking
 
 Replace the UPnP UDN (here: `96a40ba9`) with the real UDN provided by your UPnP discovery.
 Also replace the zone name with your preferred zone (here `Main_Zone`).
@@ -132,6 +136,8 @@ String      Yamaha_Input           "Input [%s]"                <video>          
 String      Yamaha_Surround        "Surround [%s]"             <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#surroundProgram" }
 String      Yamaha_Scene           "Scene []"                  <video>              { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#scene" }
 Switch      Yamaha_Dialogue_Level  "Dialogue Level [%d]"       <soundvolume>        { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#dialogueLevel" }
+Switch      Yamaha_HDMI1_Output    "HDMI1 Output [%s]"      	 <switch>             { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#hdmi1Out" }
+Switch      Yamaha_HDMI2_Output    "HDMI2 Output [%s]"      	 <switch>             { channel="yamahareceiver:zone:96a40ba9:Main_Zone:zone_channels#hdmi2Out" }
 
 Switch      Yamaha_PartyMode       "Party mode [%s]"           <switch>             { channel="yamahareceiver:yamahaAV:96a40ba9:party_mode" }
 Switch      Yamaha_PartyModeMute   "Party mode mute [%s]"      <soundvolume_mute>   { channel="yamahareceiver:yamahaAV:96a40ba9:party_mode_mute" }
@@ -148,6 +154,8 @@ Selection   item=Yamaha_Input            mappings=[HDMI1="Kodi",HDMI2="PC",AUDIO
 Selection   item=Yamaha_Surround         mappings=["2ch Stereo"="2ch Stereo","5ch Stereo"="5ch Stereo","Chamber"="Chamber","Sci-Fi"="Sci-Fi","Adventure"="Adventure"]
 Switch      item=Yamaha_Scene            mappings=["Scene 1"="Kodi","Scene 2"="TV","Scene 3"="NET","Scene 4"="Radio"]
 Setpoint    item=Yamaha_Dialogue_Level   minValue=0 maxValue=2 step=1
+Switch      item=Yamaha_HDMI1_Output
+Switch      item=Yamaha_HDMI2_Output
 
 Switch      item=Yamaha_PartyMode
 Switch      item=Yamaha_PartyModeMute
@@ -256,7 +264,7 @@ On top of that some AVR models during status updates report different value than
 To account for all variations a Yamaha thing setting got introduced: `Input mapping`. 
 This allows to map the input value reported by the AVR after status update to the desired canonical value. 
 
-Use the Paper UI to customize the setting for your particular AVR: `Paper UI > Configuration > Things > Edit > Yamaha Receiver XXX > Input mapping`.
+Use the UI to customize the setting for your particular AVR: `Things > Edit > Yamaha Receiver XXX > Input mapping`.
 For example, if your AVR returns `HDMI_1` for command `HDMI1` you can create such mapping list:
 
 `HDMI_1=HDMI1,HDMI 1=HDMI1,HDMI_2=HDMI2,HDMI 2=HDMI2`

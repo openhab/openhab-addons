@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -164,6 +164,21 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     if (loc.since != null) {
                         updateState(PET_CHANNEL_LOCATION_CHANGED, new DateTimeType(loc.since));
                     }
+
+                    if (loc.deviceId != null) {
+                        SurePetcareDevice device = petcareAPI.getDevice(loc.deviceId.toString());
+                        if (device != null) {
+                            updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH, new StringType(device.name));
+                        }
+                    } else if (loc.userId != null) {
+                        SurePetcareHousehold household = petcareAPI.getHousehold(pet.householdId.toString());
+                        if (household != null) {
+                            Long userId = loc.userId;
+                            household.users.stream().map(user -> user.user).filter(user -> userId.equals(user.userId))
+                                    .forEach(user -> updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH,
+                                            new StringType(user.userName)));
+                        }
+                    }
                 }
                 updateState(PET_CHANNEL_DATE_OF_BIRTH, pet.dateOfBirth == null ? UnDefType.UNDEF
                         : new DateTimeType(pet.dateOfBirth.atStartOfDay(ZoneId.systemDefault())));
@@ -173,20 +188,6 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     SurePetcareTag tag = petcareAPI.getTag(pet.tagId.toString());
                     if (tag != null) {
                         updateState(PET_CHANNEL_TAG_IDENTIFIER, new StringType(tag.tag));
-                    }
-                }
-                if (pet.status.activity.deviceId != null) {
-                    SurePetcareDevice device = petcareAPI.getDevice(pet.status.activity.deviceId.toString());
-                    if (device != null) {
-                        updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH, new StringType(device.name));
-                    }
-                } else if (pet.status.activity.userId != null) {
-                    SurePetcareHousehold household = petcareAPI.getHousehold(pet.householdId.toString());
-                    if (household != null) {
-                        Long userId = pet.status.activity.userId;
-                        household.users.stream().map(user -> user.user).filter(user -> userId.equals(user.userId))
-                                .forEach(user -> updateState(PET_CHANNEL_LOCATION_CHANGED_THROUGH,
-                                        new StringType(user.userName)));
                     }
                 }
                 SurePetcarePetFeeding feeding = pet.status.feeding;

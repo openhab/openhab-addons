@@ -54,12 +54,12 @@ This service does not require specific hardware or devices. To connect the WebTh
 
 After installing the WebThing binding you should find the WebThings of your network in the things section of your openHAB administration interface as shown below.
  
-![discovery picture](docs/discovery.png) 
+![discovery picture](doc/discovery.png) 
 
 Here, the WebThings provided by the *Internet Monitor Service*: the *Internet Connectivity* WebThing as well as the 
 *Internet Speed Monitor* WebThing have been discovered. To add a WebThing as an openHAB Thing click the 'Add as Thing' button. 
 
-![discovery picture](docs/speedmonitor.png) 
+![discovery picture](doc/speedmonitor.png) 
 
 Alternatively, you may add the WebThing as a openHAB Thing by using a webthing.thing file that has to be located inside the things folder.  
 
@@ -73,7 +73,7 @@ the connectivity WebThing URI path ends with '/1' in this example.
 
 Due to the fact that the WebThing API is based on web technologies, you can validate the WebThing description by opening the WebThing uri in a browser.   
  
-![webthing picture](docs/webthing_description.png) 
+![webthing picture](doc/webthing_description.png) 
  
 ### Items   
 
@@ -82,7 +82,7 @@ For each property of the WebThing a dedicated openHAB channel will be created, a
 as *webthing:generic:speedmonitor:uploadspeed* is the combination of the thingUID *webthing:generic* and the 
 WebThing property name *uploadspeed*. 
 
-![channels picture](docs/channels.png) 
+![channels picture](doc/channels.png) 
 
 These channels may be linked via the channels tab of the graphical user interface or manually via a webthing.items file as shown below
 
@@ -103,4 +103,4 @@ sitemap internetmonitor label="Internet Speed Monitor" {
 }
 ```
 
-![sitemap picture](docs/sitemap.png) 
+![sitemap picture](doc/sitemap.png) 

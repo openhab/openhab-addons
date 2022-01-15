@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxPanelSettings;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 
@@ -20,6 +22,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxEventLogMessage extends PowermaxBaseMessage {
 
     /**
@@ -33,7 +36,7 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
+    protected @Nullable PowermaxState handleMessageInternal(@Nullable PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
@@ -61,8 +64,8 @@ public class PowermaxEventLogMessage extends PowermaxBaseMessage {
             String timestamp = String.format("%02d/%02d/%04d %02d:%02d:%02d", day, month, year, hour, minute, second);
             byte eventZone = message[10];
             byte logEvent = message[11];
-            String logEventStr = PowermaxMessageConstants.getSystemEventString(logEvent & 0x000000FF);
-            String logUserStr = PowermaxMessageConstants.getZoneOrUserString(eventZone & 0x000000FF);
+            String logEventStr = PowermaxMessageConstants.getSystemEvent(logEvent & 0x000000FF).toString();
+            String logUserStr = panelSettings.getZoneOrUserName(eventZone & 0x000000FF);
 
             String eventStr;
             if (panelSettings.getPanelType().getPartitions() > 1) {

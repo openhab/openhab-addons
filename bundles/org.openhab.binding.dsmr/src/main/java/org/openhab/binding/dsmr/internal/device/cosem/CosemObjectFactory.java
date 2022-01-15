@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,16 +43,6 @@ public class CosemObjectFactory {
     private final Map<OBISIdentifier, List<CosemObjectType>> obisLookupTableMultipleFixed = new HashMap<>();
 
     /**
-     * Lookup cache for dynamic OBIS Identifiers
-     */
-    private final Map<OBISIdentifier, CosemObjectType> obisLookupTableDynamic = new HashMap<>();
-
-    /**
-     * Lookup cache for wild card Cosem Object types
-     */
-    private final List<CosemObjectType> obisWildcardCosemTypeList = new ArrayList<>();
-
-    /**
      * Creates a new CosemObjectFactory
      */
     public CosemObjectFactory() {
@@ -64,7 +54,7 @@ public class CosemObjectFactory {
          * (i.e. groupA == null || groupB == null || groupC == null). This lookuptable will be filled
          * dynamically with unique wildcard OBISIdentifiers when values are received and matches a particular real
          * device (if the device is changed, this lookupTable must be cleared by removing the corresponding DSMRDevice
-         * Thing from the configuration.
+         * Thing from the configuration.)
          * - obisWildCardCosemTypeList. This is the list of all wild card Cosem Object types. Multiple Cosem Object
          * Types can have the same wild card OBISIdentifer.
          *
@@ -72,9 +62,7 @@ public class CosemObjectFactory {
          * correct OBISIdentifier is discovered for a certain OBISMsgType this is added to the obisLookupTableDynamic.
          */
         for (CosemObjectType msgType : CosemObjectType.values()) {
-            if (msgType.obisId.reducedOBISIdentifierIsWildCard()) {
-                obisWildcardCosemTypeList.add(msgType);
-            } else if (msgType.obisId.isConflict()) {
+            if (msgType.obisId.isConflict()) {
                 obisLookupTableMultipleFixed.computeIfAbsent(msgType.obisId, r -> new ArrayList<>()).add(msgType);
             } else {
                 obisLookupTableFixed.put(msgType.obisId, msgType);
@@ -123,27 +111,9 @@ public class CosemObjectFactory {
             }
         }
 
-        objectType = obisLookupTableDynamic.get(reducedObisId);
-        if (objectType != null) {
-            logger.trace("Found obisId {} in the dynamic lookup table", reducedObisId);
-            return getCosemObjectInternal(objectType, obisId, cosemStringValues);
-        }
-
         objectType = obisLookupTableFixed.get(reducedObisIdGroupE);
         if (objectType != null) {
             return getCosemObjectInternal(objectType, obisId, cosemStringValues);
-        }
-
-        for (CosemObjectType obisMsgType : obisWildcardCosemTypeList) {
-            if (obisMsgType.obisId.equalsWildCard(reducedObisId)) {
-                CosemObject cosemObject = getCosemObjectInternal(obisMsgType, obisId, cosemStringValues);
-                if (cosemObject != null) {
-                    logger.trace("Searched reducedObisId {} in the wild card type list, result: {}", reducedObisId,
-                            cosemObject);
-                    obisLookupTableDynamic.put(reducedObisId, obisMsgType);
-                    return cosemObject;
-                }
-            }
         }
 
         logger.debug("Received unknown Cosem Object(OBIS id: {})", obisId);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -603,7 +603,7 @@ public class EthernetBridgeHandler extends BaseBridgeHandler implements Transcei
                 SelectionKey selKey = it.next();
                 it.remove();
                 if (selKey.isValid()) {
-                    if (selKey.isAcceptable() && selKey == listenerKey) {
+                    if (selKey.isAcceptable() && selKey.equals(listenerKey)) {
                         try {
                             SocketChannel newChannel = listenerChannel.accept();
                             newChannel.configureBlocking(false);

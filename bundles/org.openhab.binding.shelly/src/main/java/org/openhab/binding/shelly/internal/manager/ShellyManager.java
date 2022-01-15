@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,11 +34,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 @NonNullByDefault
 public class ShellyManager {
     private final Map<String, ShellyManagerPage> pages = new LinkedHashMap<>();
-    private final ShellyHandlerFactory handlerFactory;
 
     public ShellyManager(ConfigurationAdmin configurationAdmin, ShellyTranslationProvider translationProvider,
             HttpClient httpClient, String localIp, int localPort, ShellyHandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
         pages.put(SHELLY_MGR_OVERVIEW_URI, new ShellyManagerOverviewPage(configurationAdmin, translationProvider,
                 httpClient, localIp, localPort, handlerFactory));
         pages.put(SHELLY_MGR_ACTION_URI, new ShellyManagerActionPage(configurationAdmin, translationProvider,

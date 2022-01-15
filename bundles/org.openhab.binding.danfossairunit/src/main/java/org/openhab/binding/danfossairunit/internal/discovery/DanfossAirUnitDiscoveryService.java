@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,11 +51,12 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
     private static final int BROADCAST_PORT = 30045;
     private static final byte[] DISCOVER_SEND = { 0x0c, 0x00, 0x30, 0x00, 0x11, 0x00, 0x12, 0x00, 0x13 };
     private static final byte[] DISCOVER_RECEIVE = { 0x0d, 0x00, 0x07, 0x00, 0x02, 0x02, 0x00 };
+    private static final int TIMEOUT_IN_SECONDS = 15;
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitDiscoveryService.class);
 
     public DanfossAirUnitDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 15, true);
+        super(SUPPORTED_THING_TYPES_UIDS, TIMEOUT_IN_SECONDS, true);
     }
 
     @Override
@@ -79,7 +80,6 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Try to discover all Danfoss Air CCM devices");
 
         try (DatagramSocket socket = new DatagramSocket()) {
-
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
@@ -95,7 +95,6 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
                     sendBroadcastToDiscoverThing(socket, interfaceAddress.getBroadcast());
                 }
             }
-
         } catch (IOException e) {
             logger.debug("No Danfoss Air CCM device found. Diagnostic: {}", e.getMessage());
         }

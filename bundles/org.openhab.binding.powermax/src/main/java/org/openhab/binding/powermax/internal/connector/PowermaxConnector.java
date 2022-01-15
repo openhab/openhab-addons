@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.message.PowermaxBaseMessage;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageEvent;
 import org.openhab.binding.powermax.internal.message.PowermaxMessageEventListener;
@@ -30,17 +32,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public abstract class PowermaxConnector implements PowermaxConnectorInterface {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxConnector.class);
 
-    private InputStream input;
-    private OutputStream output;
+    protected final String readerThreadName;
+    private final List<PowermaxMessageEventListener> listeners = new ArrayList<>();
+
+    private @Nullable InputStream input;
+    private @Nullable OutputStream output;
     private boolean connected;
-    protected String readerThreadName;
-    private Thread readerThread;
+    private @Nullable Thread readerThread;
     private long waitingForResponse;
-    private List<PowermaxMessageEventListener> listeners = new ArrayList<>();
 
     public PowermaxConnector(String readerThreadName) {
         this.readerThreadName = readerThreadName;
@@ -58,26 +62,29 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     protected void cleanup(boolean closeStreams) {
         logger.debug("cleanup(): cleaning up Connection");
 
-        if (readerThread != null) {
-            readerThread.interrupt();
+        Thread thread = readerThread;
+        if (thread != null) {
+            thread.interrupt();
             try {
-                readerThread.join();
+                thread.join();
             } catch (InterruptedException e) {
             }
         }
 
         if (closeStreams) {
-            if (output != null) {
+            OutputStream out = output;
+            if (out != null) {
                 try {
-                    output.close();
+                    out.close();
                 } catch (IOException e) {
                     logger.debug("Error while closing the output stream: {}", e.getMessage());
                 }
             }
 
-            if (input != null) {
+            InputStream in = input;
+            if (in != null) {
                 try {
-                    input.close();
+                    in.close();
                 } catch (IOException e) {
                     logger.debug("Error while closing the input stream: {}", e.getMessage());
                 }
@@ -107,16 +114,20 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Handles a communication failure
      */
-    public void handleCommunicationFailure(String message) {
+    public void handleCommunicationFailure(@Nullable String message) {
         close();
-        listeners.forEach(listener -> listener.onCommunicationFailure(message));
+        listeners.forEach(listener -> listener.onCommunicationFailure(message != null ? message : ""));
     }
 
     @Override
     public void sendMessage(byte[] data) {
         try {
-            output.write(data);
-            output.flush();
+            OutputStream out = output;
+            if (out == null) {
+                throw new IOException("output stream is undefined");
+            }
+            out.write(data);
+            out.flush();
         } catch (IOException e) {
             logger.debug("sendMessage(): Writing error: {}", e.getMessage(), e);
             handleCommunicationFailure(e.getMessage());
@@ -125,7 +136,11 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
 
     @Override
     public int read(byte[] buffer) throws IOException {
-        return input.read(buffer);
+        InputStream in = input;
+        if (in == null) {
+            throw new IOException("input stream is undefined");
+        }
+        return in.read(buffer);
     }
 
     @Override
@@ -141,7 +156,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * @return the input stream
      */
-    public InputStream getInput() {
+    public @Nullable InputStream getInput() {
         return input;
     }
 
@@ -150,14 +165,14 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
      *
      * @param input the input stream
      */
-    public void setInput(InputStream input) {
+    public void setInput(@Nullable InputStream input) {
         this.input = input;
     }
 
     /**
      * @return the output stream
      */
-    public OutputStream getOutput() {
+    public @Nullable OutputStream getOutput() {
         return output;
     }
 
@@ -166,7 +181,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
      *
      * @param output the output stream
      */
-    public void setOutput(OutputStream output) {
+    public void setOutput(@Nullable OutputStream output) {
         this.output = output;
     }
 
@@ -190,7 +205,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * @return the thread that handles the message reading
      */
-    public Thread getReaderThread() {
+    public @Nullable Thread getReaderThread() {
         return readerThread;
     }
 

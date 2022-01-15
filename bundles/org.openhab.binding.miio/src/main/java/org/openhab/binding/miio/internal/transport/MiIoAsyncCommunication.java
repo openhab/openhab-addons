@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,7 @@ public class MiIoAsyncCommunication {
 
     private final String ip;
     private final byte[] token;
-    private byte[] deviceId;
+    private String deviceId;
     private @Nullable DatagramSocket socket;
 
     private List<MiIoMessageListener> listeners = new CopyOnWriteArrayList<>();
@@ -85,7 +85,7 @@ public class MiIoAsyncCommunication {
 
     private ConcurrentLinkedQueue<MiIoSendCommand> concurrentLinkedQueue = new ConcurrentLinkedQueue<>();
 
-    public MiIoAsyncCommunication(String ip, byte[] token, byte[] did, int id, int timeout,
+    public MiIoAsyncCommunication(String ip, byte[] token, String did, int id, int timeout,
             CloudConnector cloudConnector) {
         this.ip = ip;
         this.token = token;
@@ -93,7 +93,6 @@ public class MiIoAsyncCommunication {
         this.timeout = timeout;
         this.cloudConnector = cloudConnector;
         setId(id);
-        startReceiver();
     }
 
     protected List<MiIoMessageListener> getListeners() {
@@ -129,16 +128,7 @@ public class MiIoAsyncCommunication {
         }
     }
 
-    public int queueCommand(MiIoCommand command, String cloudServer) throws MiIoCryptoException, IOException {
-        return queueCommand(command, "[]", cloudServer);
-    }
-
-    public int queueCommand(MiIoCommand command, String params, String cloudServer)
-            throws MiIoCryptoException, IOException {
-        return queueCommand(command.getCommand(), params, cloudServer);
-    }
-
-    public int queueCommand(String command, String params, String cloudServer)
+    public int queueCommand(String command, String params, String cloudServer, String sender)
             throws MiIoCryptoException, IOException, JsonSyntaxException {
         try {
             JsonObject fullCommand = new JsonObject();
@@ -146,26 +136,34 @@ public class MiIoAsyncCommunication {
             if (cmdId > MAX_ID) {
                 id.set(0);
             }
-            fullCommand.addProperty("id", cmdId);
-            fullCommand.addProperty("method", command);
-            fullCommand.add("params", JsonParser.parseString(params));
+            if (command.startsWith("{") && command.endsWith("}")) {
+                fullCommand = JsonParser.parseString(command).getAsJsonObject();
+                fullCommand.addProperty("id", cmdId);
+                if (!fullCommand.has("params") && !params.isBlank()) {
+                    fullCommand.add("params", JsonParser.parseString(params));
+                }
+            } else {
+                fullCommand.addProperty("id", cmdId);
+                fullCommand.addProperty("method", command);
+                fullCommand.add("params", JsonParser.parseString(params));
+            }
             MiIoSendCommand sendCmd = new MiIoSendCommand(cmdId, MiIoCommand.getCommand(command), fullCommand,
-                    cloudServer);
+                    cloudServer, sender);
             concurrentLinkedQueue.add(sendCmd);
             if (logger.isDebugEnabled()) {
                 // Obfuscate part of the token to allow sharing of the logfiles
                 String tokenText = Utils.obfuscateToken(Utils.getHex(token));
                 logger.debug("Command added to Queue {} -> {} (Device: {} token: {} Queue: {}).{}{}",
-                        fullCommand.toString(), ip, Utils.getHex(deviceId), tokenText, concurrentLinkedQueue.size(),
+                        fullCommand.toString(), ip, deviceId, tokenText, concurrentLinkedQueue.size(),
                         cloudServer.isBlank() ? "" : " Send via cloudserver: ", cloudServer);
             }
             if (needPing && cloudServer.isBlank()) {
                 sendPing(ip);
             }
             return cmdId;
-        } catch (JsonSyntaxException e) {
+        } catch (JsonSyntaxException | IllegalStateException e) {
             logger.warn("Send command '{}' with parameters {} -> {} (Device: {}) gave error {}", command, params, ip,
-                    Utils.getHex(deviceId), e.getMessage());
+                    deviceId, e.getMessage());
             throw e;
         }
     }
@@ -177,11 +175,21 @@ public class MiIoAsyncCommunication {
             if (miIoSendCommand.getCloudServer().isBlank()) {
                 decryptedResponse = sendCommand(miIoSendCommand.getCommandString(), token, ip, deviceId);
             } else {
-                decryptedResponse = cloudConnector.sendRPCCommand(Utils.getHex(deviceId),
-                        miIoSendCommand.getCloudServer(), miIoSendCommand);
-                logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
-                        miIoSendCommand.getCloudServer());
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                if (!miIoSendCommand.getMethod().startsWith("/")) {
+                    decryptedResponse = cloudConnector.sendRPCCommand(Utils.getHexId(deviceId),
+                            miIoSendCommand.getCloudServer(), miIoSendCommand);
+                    logger.debug("Command {} send via cloudserver {}", miIoSendCommand.getCommandString(),
+                            miIoSendCommand.getCloudServer());
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                } else {
+                    String data = miIoSendCommand.getParams().toString();
+                    logger.debug("Custom cloud request send to url '{}' with data '{}'", miIoSendCommand.getMethod(),
+                            data);
+                    decryptedResponse = cloudConnector.sendCloudCommand(miIoSendCommand.getMethod(),
+                            miIoSendCommand.getCloudServer(), data);
+                    miIoSendCommand.setResponse(JsonParser.parseString(decryptedResponse).getAsJsonObject());
+                    return miIoSendCommand;
+                }
             }
             // hack due to avoid invalid json errors from some misbehaving device firmwares
             decryptedResponse = decryptedResponse.replace(",,", ",");
@@ -216,16 +224,15 @@ public class MiIoAsyncCommunication {
             logger.debug("{}: {}", errorMsg, decryptedResponse);
         } catch (MiIoCryptoException | IOException e) {
             logger.debug("Send command '{}'  -> {} (Device: {}) gave error {}", miIoSendCommand.getCommandString(), ip,
-                    Utils.getHex(deviceId), e.getMessage());
+                    deviceId, e.getMessage());
             errorMsg = e.getMessage();
         } catch (JsonSyntaxException e) {
             logger.warn("Could not parse '{}' <- {} (Device: {}) gave error {}", decryptedResponse,
-                    miIoSendCommand.getCommandString(), Utils.getHex(deviceId), e.getMessage());
+                    miIoSendCommand.getCommandString(), deviceId, e.getMessage());
             errorMsg = "Received message is invalid JSON";
         } catch (MiCloudException e) {
             logger.debug("Send command '{}'  -> cloudserver '{}' (Device: {}) gave error {}",
-                    miIoSendCommand.getCommandString(), miIoSendCommand.getCloudServer(), Utils.getHex(deviceId),
-                    e.getMessage());
+                    miIoSendCommand.getCommandString(), miIoSendCommand.getCloudServer(), deviceId, e.getMessage());
             errorMsg = e.getMessage();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
@@ -238,7 +245,7 @@ public class MiIoAsyncCommunication {
     public synchronized void startReceiver() {
         MessageSenderThread senderThread = this.senderThread;
         if (senderThread == null || !senderThread.isAlive()) {
-            senderThread = new MessageSenderThread();
+            senderThread = new MessageSenderThread(deviceId.isBlank() ? "?" + ip : deviceId);
             senderThread.start();
             this.senderThread = senderThread;
         }
@@ -250,14 +257,17 @@ public class MiIoAsyncCommunication {
      *
      */
     private class MessageSenderThread extends Thread {
-        public MessageSenderThread() {
-            super("Mi IO MessageSenderThread");
+        private final String deviceId;
+
+        public MessageSenderThread(String deviceId) {
+            super("OH-binding-miio-MessageSenderThread-" + deviceId);
             setDaemon(true);
+            this.deviceId = deviceId;
         }
 
         @Override
         public void run() {
-            logger.debug("Starting Mi IO MessageSenderThread");
+            logger.debug("Starting Mi IO MessageSenderThread {}", deviceId);
             while (!interrupted()) {
                 try {
                     if (concurrentLinkedQueue.isEmpty()) {
@@ -280,30 +290,31 @@ public class MiIoAsyncCommunication {
                     // That's our signal to stop
                     break;
                 } catch (Exception e) {
-                    logger.warn("Error while polling/sending message", e);
+                    logger.warn("Error while polling/sending message for {}", deviceId, e);
                 }
             }
             closeSocket();
-            logger.debug("Finished Mi IO MessageSenderThread");
+            logger.debug("Finished Mi IO MessageSenderThread {}", deviceId);
         }
     }
 
-    private String sendCommand(String command, byte[] token, String ip, byte[] deviceId)
+    private String sendCommand(String command, byte[] token, String ip, String deviceId)
             throws MiIoCryptoException, IOException {
         byte[] sendMsg = new byte[0];
         if (!command.isBlank()) {
             byte[] encr;
             encr = MiIoCrypto.encrypt(command.getBytes(StandardCharsets.UTF_8), token);
             timeStamp = (int) Instant.now().getEpochSecond();
-            sendMsg = Message.createMsgData(encr, token, deviceId, timeStamp + timeDelta);
+            sendMsg = Message.createMsgData(encr, token, Utils.hexStringToByteArray(Utils.getHexId(deviceId)),
+                    timeStamp + timeDelta);
         }
         Message miIoResponseMsg = sendData(sendMsg, ip);
         if (miIoResponseMsg == null) {
             if (logger.isTraceEnabled()) {
-                logger.trace("No response from device {} at {} for command {}.\r\n{}", Utils.getHex(deviceId), ip,
-                        command, (new Message(sendMsg)).toSting());
+                logger.trace("No response from device {} at {} for command {}.\r\n{}", deviceId, ip, command,
+                        (new Message(sendMsg)).toSting());
             } else {
-                logger.debug("No response from device {} at {} for command {}.", Utils.getHex(deviceId), ip, command);
+                logger.debug("No response from device {} at {} for command {}.", deviceId, ip, command);
             }
             errorCounter++;
             if (errorCounter > MAX_ERRORS) {
@@ -330,7 +341,7 @@ public class MiIoAsyncCommunication {
 
     public @Nullable Message sendPing(String ip) throws IOException {
         for (int i = 0; i < 3; i++) {
-            logger.debug("Sending Ping {} ({})", Utils.getHex(deviceId), ip);
+            logger.debug("Sending Ping to device '{}' ({})", deviceId, ip);
             Message resp = sendData(MiIoBindingConstants.DISCOVER_STRING, ip);
             if (resp != null) {
                 pingSuccess();
@@ -342,14 +353,14 @@ public class MiIoAsyncCommunication {
     }
 
     private void pingFail() {
-        logger.debug("Ping {} ({}) failed", Utils.getHex(deviceId), ip);
+        logger.debug("Ping to device '{}' ({}) failed", deviceId, ip);
         connected = false;
         status = ThingStatusDetail.COMMUNICATION_ERROR;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
     }
 
     private void pingSuccess() {
-        logger.debug("Ping {} ({}) success", Utils.getHex(deviceId), ip);
+        logger.debug("Ping to device '{}' ({}) success", deviceId, ip);
         if (!connected) {
             connected = true;
             status = ThingStatusDetail.NONE;
@@ -420,7 +431,7 @@ public class MiIoAsyncCommunication {
         if (socket == null || socket.isClosed()) {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
-            logger.debug("Opening socket on port: {} ", socket.getLocalPort());
+            logger.debug("Opening socket on port: {} ({} {})", socket.getLocalPort(), deviceId, ip);
             this.socket = socket;
             return socket;
         } else {
@@ -476,12 +487,16 @@ public class MiIoAsyncCommunication {
         return timeDelta;
     }
 
-    public byte[] getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(byte[] deviceId) {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+        MessageSenderThread senderThread = this.senderThread;
+        if (senderThread != null) {
+            senderThread.setName("OH-binding-miio-MessageSenderThread-" + deviceId);
+        }
     }
 
     public int getQueueLength() {

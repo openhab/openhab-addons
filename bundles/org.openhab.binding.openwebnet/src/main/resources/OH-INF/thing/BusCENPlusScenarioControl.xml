@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for BUS CEN+ Scenario Control (BTicino HC/HD/HS/L/N/NT4680) -->
+	<thing-type id="bus_cenplus_scenario_control">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+		<label>CEN+ Scenario Control</label>
+		<description>A OpenWebNet BUS/SCS CEN+ Scenario Control device. BTicino models: HC/HD/HS/L/N/NT4680</description>
+
+		<!-- channels are created dynamically based on configured buttons -->
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-HC/HD/HS/L/N/NT4680</property>
+			<property name="ownDeviceType">273</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="buttons" type="text">
+				<label>Configured Buttons</label>
+				<description>List (comma separated) of buttons numbers [0-31] configured for this scenario device, example:
+					buttons=1,2,4
+				</description>
+			</parameter>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Address (where)</label>
+				<description>Use 2+N[0-2047]. Example: scenario control 5 --> where=25</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

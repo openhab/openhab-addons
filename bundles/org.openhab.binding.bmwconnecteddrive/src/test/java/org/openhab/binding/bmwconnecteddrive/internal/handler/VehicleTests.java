@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,11 +51,11 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int STATUS_ELECTRIC = 9;
-    private static final int STATUS_CONV = 7;
-    private static final int RANGE_HYBRID = 9;
+    private static final int STATUS_ELECTRIC = 12;
+    private static final int STATUS_CONV = 8;
+    private static final int RANGE_HYBRID = 12;
     private static final int RANGE_CONV = 4;
-    private static final int RANGE_ELECTRIC = 4;
+    private static final int RANGE_ELECTRIC = 5;
     private static final int DOORS = 12;
     private static final int CHECK_EMPTY = 3;
     private static final int CHECK_AVAILABLE = 3;

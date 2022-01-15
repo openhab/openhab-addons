@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,12 @@
  */
 package org.openhab.binding.nuki.internal.dataexchange;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListCallbackDto;
 import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListDto;
 
@@ -22,15 +26,19 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiCallbackListDto;
  *
  * @author Markus Katter - Initial contribution
  */
+@NonNullByDefault
 public class BridgeCallbackListResponse extends NukiBaseResponse {
 
-    private List<BridgeApiCallbackListCallbackDto> callbacks;
+    private List<BridgeApiCallbackListCallbackDto> callbacks = Collections.emptyList();
 
-    public BridgeCallbackListResponse(int status, String message, BridgeApiCallbackListDto bridgeApiCallbackListDto) {
+    public BridgeCallbackListResponse(int status, String message,
+            @Nullable BridgeApiCallbackListDto bridgeApiCallbackListDto) {
         super(status, message);
         if (bridgeApiCallbackListDto != null) {
             this.setSuccess(true);
-            this.callbacks = bridgeApiCallbackListDto.getCallbacks();
+            if (bridgeApiCallbackListDto.getCallbacks() != null) {
+                this.callbacks = bridgeApiCallbackListDto.getCallbacks();
+            }
         }
     }
 
@@ -42,7 +50,11 @@ public class BridgeCallbackListResponse extends NukiBaseResponse {
         return callbacks;
     }
 
-    public void setCallbacks(List<BridgeApiCallbackListCallbackDto> callbacks) {
-        this.callbacks = callbacks;
+    public void setCallbacks(@Nullable List<BridgeApiCallbackListCallbackDto> callbacks) {
+        if (callbacks == null) {
+            this.callbacks = new ArrayList<>();
+        } else {
+            this.callbacks = callbacks;
+        }
     }
 }

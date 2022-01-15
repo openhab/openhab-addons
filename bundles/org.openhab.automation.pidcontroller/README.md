@@ -14,7 +14,12 @@ A PID controller can be used for closed-loop controls. For example:
 
 ## Modules
 
-The PID controller can be used in openHAB's [rule engine](https://www.openhab.org/docs/configuration/rules-dsl.html). This automation provides a trigger and an action module.
+The PID controller can be used in openHAB's [rule engine](https://www.openhab.org/docs/configuration/rules-dsl.html).
+This automation provides a trigger module ("PID controller triggers").
+The return value is used to feed the Action module "Item Action" aka "send a command", which controls the actuator.
+
+To configure a rule, you need to add a Trigger ("PID controller triggers") and an Action ("Item Action").
+Select the Item you like to control in the "Item Action" and leave the command empty.
 
 ### Trigger
 
@@ -32,27 +37,18 @@ This is then transferred to the action module.
 | `kdTimeConstant` | Decimal | D-T1: [Derivative Gain Time Constant](#derivative-time-constant-d-t1-parameter) in sec.                                                            | Y        |
 | `commandItem`    | String  | Send a String "RESET" to this item to reset the I and the D part to 0.                                                                             | N        |
 | `loopTime`       | Decimal | The interval the output value will be updated in milliseconds. Note: the output will also be updated when the input value or the setpoint changes. | Y        |
-
+| `pInspector`     | Item    | Name of the debug Item for the current P part                                                                                                      | N        |
+| `iInspector`     | Item    | Name of the debug Item for the current I part                                                                                                      | N        |
+| `dInspector`     | Item    | Name of the debug Item for the current D part                                                                                                      | N        |
+| `eInspector`     | Item    | Name of the debug Item for the current regulation difference (error)                                                                               | N        |
 
 The `loopTime` should be max a tenth of the system response.
 E.g. the heating needs 10 min to heat up the room, the loop time should be max 1 min.
 Lower values won't harm, but need more calculation resources.
 
-### Action
-
-This module writes the PID controller's output value into the `output` Item and provides debugging abilities.
-
-| Name         | Type | Description                                                          | Required |
-|--------------|------|----------------------------------------------------------------------|----------|
-| `output`     | Item | Name of the output Item (e.g. the valve actuator 0-100%)             | Y        |
-| `pInspector` | Item | Name of the debug Item for the current P part                        | N        |
-| `iInspector` | Item | Name of the debug Item for the current I part                        | N        |
-| `dInspector` | Item | Name of the debug Item for the current D part                        | N        |
-| `eInspector` | Item | Name of the debug Item for the current regulation difference (error) | N        |
-
 You can view the internal P, I and D parts of the controller with the inspector Items.
 These values are useful when tuning the controller.
-They are updated everytime the output is updated.
+They are updated every time the output is updated.
 
 ## Proportional (P) Gain Parameter
 
@@ -112,8 +108,8 @@ This results in quite reasonable working systems in most cases.
 So, this will be described in the following.
 
 To be able to proceed with this method, you need to visualize the input and the output value of the PID controller over time.
-It's also good to visualize the individual P, I and D parts (these are forming the output value) via the inspector Items.
-The visualization can be done by the analyze function in Main UI or by adding a persistence and use Grafana for example.
+It's also good to visualize the individual P, I and D parts (these are forming the output value) via the inspector items.
+The visualization could be done by adding a persistence and use Grafana for example.
 
 After you added a [Rule](https://www.openhab.org/docs/configuration/rules-dsl.html) with above trigger and action module and configured those, proceed with the following steps:
 

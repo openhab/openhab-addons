@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ import org.openhab.binding.homematic.internal.model.HmDatapointConfig;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
+import org.openhab.binding.homematic.internal.type.HomematicChannelTypeProvider;
 import org.openhab.binding.homematic.internal.type.HomematicTypeGeneratorImpl;
 import org.openhab.binding.homematic.internal.type.MetadataUtils;
 import org.openhab.binding.homematic.internal.type.UidUtils;
@@ -57,6 +58,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -70,12 +73,14 @@ import org.slf4j.LoggerFactory;
  */
 public class HomematicThingHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HomematicThingHandler.class);
+    private final HomematicChannelTypeProvider channelTypeProvider;
     private Future<?> initFuture;
     private final Object initLock = new Object();
     private volatile boolean deviceDeletionPending = false;
 
-    public HomematicThingHandler(Thing thing) {
+    public HomematicThingHandler(Thing thing, HomematicChannelTypeProvider channelTypeProvider) {
         super(thing);
+        this.channelTypeProvider = channelTypeProvider;
     }
 
     @Override
@@ -142,10 +147,52 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
         updateConfiguration(config);
 
+        boolean channelsChanged = false;
+
         // update thing channel list for reconfigurable channels (relies on the new value of the
         // CHANNEL_FUNCTION datapoint fetched during configuration update)
         List<Channel> thingChannels = new ArrayList<>(getThing().getChannels());
+
+        if (thingChannels.isEmpty()) {
+            for (HmChannel channel : device.getChannels()) {
+                for (HmDatapoint dp : channel.getDatapoints()) {
+                    if (HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)
+                            || dp.getParamsetType() != HmParamsetType.VALUES) {
+                        continue;
+                    }
+                    ChannelUID channelUID = UidUtils.generateChannelUID(dp, getThing().getUID());
+                    if (containsChannel(thingChannels, channelUID)) {
+                        // Channel is already present
+                        continue;
+                    }
+
+                    ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
+                    ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
+                    if (channelType == null) {
+                        channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
+                        channelTypeProvider.addChannelType(channelType);
+                    }
+
+                    Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
+                            .withLabel(MetadataUtils.getLabel(dp))
+                            .withDescription(MetadataUtils.getDatapointDescription(dp)).withType(channelType.getUID())
+                            .build();
+                    thingChannels.add(thingChannel);
+
+                    logger.debug(
+                            "Updated value datapoints for channel {} of device '{}' (function {}), now has {} datapoints",
+                            channel, channel.getDevice().getAddress(), channel.getCurrentFunction(),
+                            channel.getDatapoints().size());
+                }
+            }
+            channelsChanged = true;
+        }
+
         if (updateDynamicChannelList(device, thingChannels)) {
+            channelsChanged = true;
+        }
+
+        if (channelsChanged) {
             updateThing(editThing().withChannels(thingChannels).build());
         }
 
@@ -196,10 +243,17 @@ public class HomematicThingHandler extends BaseThingHandler {
                 Map<String, String> channelProps = new HashMap<>();
                 channelProps.put(propertyName, expectedFunction);
 
+                ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
+                ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
+                if (channelType == null) {
+                    channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
+                    channelTypeProvider.addChannelType(channelType);
+                }
+
                 Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
                         .withProperties(channelProps).withLabel(MetadataUtils.getLabel(dp))
-                        .withDescription(MetadataUtils.getDatapointDescription(dp))
-                        .withType(UidUtils.generateChannelTypeUID(dp)).build();
+                        .withDescription(MetadataUtils.getDatapointDescription(dp)).withType(channelType.getUID())
+                        .build();
                 thingChannels.add(thingChannel);
                 changed = true;
             }
@@ -372,8 +426,9 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, GatewayNotAvailableException, ConverterException {
         if (dp.isTrigger()) {
-            if (dp.getValue() != null) {
-                triggerChannel(channel.getUID(), dp.getValue() == null ? "" : dp.getValue().toString());
+            final Object value = dp.getValue();
+            if (value != null && !value.equals(dp.getPreviousValue())) {
+                triggerChannel(channel.getUID(), value.toString());
             }
         } else if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());

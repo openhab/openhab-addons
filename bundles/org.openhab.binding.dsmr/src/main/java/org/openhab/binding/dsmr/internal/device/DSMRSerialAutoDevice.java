@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -223,6 +223,7 @@ public class DSMRSerialAutoDevice implements DSMRDevice, DSMREventListener {
     /**
      * Switches the baudrate on the serial port.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void switchBaudrate() {
         if (lastSwitchedBaudrateNanos + SWITCHING_BAUDRATE_TIMEOUT_NANOS > System.nanoTime()) {
             // Ignore switching baudrate if this is called within the timeout after a previous switch.

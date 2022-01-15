@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,8 +115,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             Map<String, Object> properties = new TreeMap<>();
 
             name = service.getName().toLowerCase();
-            address = service.getHostAddress();
-            if ((address == null) || address.isEmpty()) {
+            String[] hostAddresses = service.getHostAddresses();
+            if ((hostAddresses != null) && (hostAddresses.length > 0)) {
+                address = hostAddresses[0];
+            }
+            if (address.isEmpty()) {
                 logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", name, service);
                 return null;
             }

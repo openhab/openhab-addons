@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.zoneminder.internal.handler;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -61,14 +60,8 @@ public class ZmAuth {
             logger.debug("ZmAuth: Authorization is enabled");
             usingAuthorization = true;
             isAuthorized = false;
-            String encodedUser = null;
-            String encodedPass = null;
-            try {
-                encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8.name());
-                encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                logger.warn("ZmAuth: Unable to encode user name and password");
-            }
+            String encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8);
+            String encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8);
             authContent = encodedUser == null ? ""
                     : String.format("user=%s&pass=%s&stateful=1", encodedUser, encodedPass);
         }

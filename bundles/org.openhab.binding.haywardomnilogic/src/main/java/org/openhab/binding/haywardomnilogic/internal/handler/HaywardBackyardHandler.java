@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,7 +101,7 @@ public class HaywardBackyardHandler extends HaywardThingHandler {
                             .evaluateXPath("/Response/Parameters//Parameter[@name='Status']/text()", xmlResponse)
                             .get(0);
 
-                    if (!(status.equals("0"))) {
+                    if (!("0".equals(status))) {
                         logger.trace("Hayward getAlarm XML response: {}", xmlResponse);
                         return false;
                     }

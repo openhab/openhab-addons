@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.powermax.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PowermaxX10Configuration} is responsible for holding
  * configuration informations associated to a Powermax IP thing type
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxX10Configuration {
 
     public static final String DEVICE_NUMBER = "deviceNumber";
 
-    public Integer deviceNumber;
+    public int deviceNumber = -1;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,7 @@ public class CallMonitor {
                     reconnectTime = 60000L;
                 } catch (IOException e) {
                     handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Cannot connect to FRITZ!Box Call Monitor - make sure to enable it by dialing '#96*5'!");
+                            "Cannot connect to FRITZ!Box Call Monitor - make sure to enable it by dialing '#96*5*'!");
                     logger.debug("Error attempting to connect to FRITZ!Box. Retrying in {} seconds",
                             reconnectTime / 1000L, e);
                     try {

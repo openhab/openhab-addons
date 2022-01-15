@@ -192,7 +192,7 @@ if (objectFound) {
         else { dp_type = "BOOL"; }
       }
       if (dp_obj.ValueType() == 16) {
-        if (dp_obj.ValueSubType() == 0 || dp_obj.ValueSubType() == 27) { dp_type = "INTEGER"; }
+        if ((dp_obj.ValueSubType() == 0) || (dp_obj.ValueSubType() == 27)) { dp_type = "INTEGER"; }
         else { dp_type = "ENUM"; }
       }
       if (dp_obj.ValueType() == 4   ) { dp_type = "FLOAT"; }

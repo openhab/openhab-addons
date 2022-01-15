@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzButtonHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzColorLightDeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingGroupHandler;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
@@ -74,8 +75,10 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (BRIDGE_THING_TYPE.equals(thingTypeUID)) {
             return new BoxHandler((Bridge) thing, httpClient, commandDescriptionProvider);
-        } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
+        } else if (POWERLINE546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             return new Powerline546EHandler((Bridge) thing, httpClient, commandDescriptionProvider);
+        } else if (SUPPORTED_LIGHTING_THING_TYPES.contains(thingTypeUID)) {
+            return new AVMFritzColorLightDeviceHandler(thing);
         } else if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new AVMFritzButtonHandler(thing);
         } else if (SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)) {

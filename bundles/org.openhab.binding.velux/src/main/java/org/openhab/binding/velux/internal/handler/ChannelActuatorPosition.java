@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,6 +129,7 @@ final class ChannelActuatorPosition extends ChannelHandlerTemplate {
      *            information for this channel.
      * @return newValue ...
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     static @Nullable Command handleCommand(ChannelUID channelUID, String channelId, Command command,
             VeluxBridgeHandler thisBridgeHandler) {
         LOGGER.debug("handleCommand({},{},{},{}) called.", channelUID, channelId, command, thisBridgeHandler);

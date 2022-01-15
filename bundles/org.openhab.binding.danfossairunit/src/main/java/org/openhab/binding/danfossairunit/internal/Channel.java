@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,8 +28,11 @@ public enum Channel {
 
     CHANNEL_CURRENT_TIME("current_time", ChannelGroup.MAIN, DanfossAirUnit::getCurrentTime),
     CHANNEL_MODE("mode", ChannelGroup.MAIN, DanfossAirUnit::getMode, DanfossAirUnit::setMode),
-    CHANNEL_MANUAL_FAN_SPEED("manual_fan_speed", ChannelGroup.MAIN, DanfossAirUnit::getManualFanSpeed,
-            DanfossAirUnit::setManualFanSpeed),
+    // Backwards compatibility as channel was renamed from manual_fan_speed to manual_fan_step.
+    CHANNEL_MANUAL_FAN_SPEED("manual_fan_speed", ChannelGroup.MAIN, DanfossAirUnit::getManualFanStep,
+            DanfossAirUnit::setManualFanStep),
+    CHANNEL_MANUAL_FAN_STEP("manual_fan_step", ChannelGroup.MAIN, DanfossAirUnit::getManualFanStep,
+            DanfossAirUnit::setManualFanStep),
     CHANNEL_EXTRACT_FAN_SPEED("extract_fan_speed", ChannelGroup.MAIN, DanfossAirUnit::getExtractFanSpeed),
     CHANNEL_SUPPLY_FAN_SPEED("supply_fan_speed", ChannelGroup.MAIN, DanfossAirUnit::getSupplyFanSpeed),
     CHANNEL_EXTRACT_FAN_STEP("extract_fan_step", ChannelGroup.MAIN, DanfossAirUnit::getExtractFanStep),
@@ -56,7 +59,9 @@ public enum Channel {
 
     // service channels
     CHANNEL_BATTERY_LIFE("battery_life", ChannelGroup.SERVICE, DanfossAirUnit::getBatteryLife),
-    CHANNEL_FILTER_LIFE("filter_life", ChannelGroup.SERVICE, DanfossAirUnit::getFilterLife);
+    CHANNEL_FILTER_LIFE("filter_life", ChannelGroup.SERVICE, DanfossAirUnit::getFilterLife),
+    CHANNEL_FILTER_PERIOD("filter_period", ChannelGroup.SERVICE, DanfossAirUnit::getFilterPeriod,
+            DanfossAirUnit::setFilterPeriod);
 
     private final String channelName;
     private final ChannelGroup group;
@@ -64,7 +69,7 @@ public enum Channel {
     @Nullable
     private final DanfossAirUnitWriteAccessor writeAccessor;
 
-    static Channel getByName(String name) {
+    public static Channel getByName(String name) {
         for (Channel channel : values()) {
             if (channel.getChannelName().equals(name)) {
                 return channel;

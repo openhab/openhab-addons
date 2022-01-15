@@ -3,8 +3,8 @@
 The DSC PowerSeries Alarm System is a popular do-it-yourself home security system, which can be monitored and controlled remotely through a standard web-browser or mobile device.
 
 This is the binding for the DSC PowerSeries Alarm System, utilizing either the EyezOn Envisalink 4/3/2DS interface or the DSC IT-100 RS-232 interface.
-It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.  
-Additionally, their is provision to connect to the DSC IT-100 interface through a TCP serial server.
+It provides connectivity to the DSC Alarm panel via a TCP socket connection to the EyesOn Envisalink 4/3/2DS interface or a RS-232 serial connection to the DSC IT-100 interface.
+Additionally, there is provision to connect to the DSC IT-100 interface through a TCP serial server.
 
 ## Supported Things
 
@@ -27,16 +27,16 @@ Most settings are through thing configuration parameters.
 
 ## Discovery
 
-The DSC Alarm binding incorporates a discovery modes in order to find DSC Alarm systems.  
+The DSC Alarm binding incorporates a discovery modes in order to find DSC Alarm systems.
 There is the Envisalink bridge discovery mode which performs a network query for any Envisalink adapters and adds them to the discovery inbox.
-This bridge discovery mode is started manually through Paper UI.  
+This bridge discovery mode is started manually through the UI.
 After a bridge is discovered and available to openHAB, the binding will attempt to discover DSC Alarm things and add them to the discovery inbox.
 The TCP Server bridge does not implement bridge discovery but will utilize thing discovery once it is online.
 
 Note:
 The Envisalink Bridge discovery does a TCP scan across your local network to find the interface.
 This may create issues on the network so it is suggested that caution be used when trying this discovery.
-The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the Paper UI.
+The recommended method would be to manually add and configure the bridge through the 'dscalarm.thing' file or the UI.
 And then allow the binding to discover the DSC Alarm things.
 
 ## Thing Configuration
@@ -55,8 +55,8 @@ The following table shows the available configuration parameters for each thing.
 	<tr><td>keypad</td><td>No parameters</td></tr>
 </table>
 
-The binding can be configured manually if discovery is not used.  
-A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.  
+The binding can be configured manually if discovery is not used.
+A thing configuration file in the format 'bindingName.things' would need to be created, and placed in the 'conf/things' folder.
 Here is an example of a thing configuration file called 'dscalarm.things':
 
 ```perl
@@ -86,8 +86,8 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 
 <table>
     <tr><td><b>Channel</b></td><td><b>Item Type</b></td><td><b>Description</b></td></tr>
-    <tr><td>bridge_reset</td><td>Switch</td><td>Reset the bridge connection.</td></tr>
-    <tr><td>send_command</td><td>Switch</td><td>Send a DSC Alarm command.</td></tr>
+    <tr><td>bridge_reset</td><td>Switch</td><td>(Writable) Reset the bridge connection.</td></tr>
+    <tr><td>send_command</td><td>Switch</td><td>(Writable) Send a DSC Alarm command. See <a href="http://forum.eyez-on.com/FORUM/download/file.php?id=223&sid=e146abb17dbccca14f19d6b50cbe8379">here</a> for a list of commands.</td></tr>
     <tr><td>panel_message</td><td>String</td><td>Event messages received from the DSC Alarm system.</td></tr>
     <tr><td>panel_system_error</td><td>String</td><td>DSC Alarm system error.</td></tr>
     <tr><td>panel_trouble_message</td><td>String</td><td>Displays any trouble messages the panel might send.</td></tr>
@@ -101,14 +101,14 @@ DSC Alarm things support a variety of channels as seen below in the following ta
     <tr><td>panel_zone_low_battery</td><td>Switch</td><td>There is a low battery condition on a zone/sensor.</td></tr>
     <tr><td>panel_time_loss</td><td>Switch</td><td>Loss of time on the panel.</td></tr>
     <tr><td>panel_time</td><td>DateTime</td><td>DSC Alarm system time and date.</td></tr>
-    <tr><td>panel_time_stamp</td><td>Switch</td><td>Turn DSC Alarm message time stamping ON/OFF.</td></tr>
-    <tr><td>panel_time_broadcast</td><td>Switch</td><td>Turn DSC Alarm time broadcasting ON/OFF.</td></tr>
+    <tr><td>panel_time_stamp</td><td>Switch</td><td>(Writable) Turn DSC Alarm message time stamping ON/OFF.</td></tr>
+    <tr><td>panel_time_broadcast</td><td>Switch</td><td>(Writable) Turn DSC Alarm time broadcasting ON/OFF.</td></tr>
     <tr><td>panel_fire_key_alarm</td><td>Switch</td><td>A fire key alarm has happened.</td></tr>
     <tr><td>panel_panic_key_alarm</td><td>Switch</td><td>A panic key alarm has happened.</td></tr>
     <tr><td>panel_aux_key_alarm</td><td>Switch</td><td>An auxiliary key alarm has happened.</td></tr>
     <tr><td>panel_aux_input_alarm</td><td>Switch</td><td>An auxiliary input alarm has happened.</td></tr>
     <tr><td>partition_status</td><td>String</td><td>A partitions current status.</td></tr>
-    <tr><td>partition_arm_mode</td><td>Number</td><td>A partitions current arm mode. The possible values are:
+    <tr><td>partition_arm_mode</td><td>Number</td><td>(Writable) A partitions current arm mode. The possible values are:
 <br/>
 0=disarmed<br/>
 1=armed away<br/>
@@ -175,7 +175,7 @@ DSC Alarm things support a variety of channels as seen below in the following ta
 1=ON<br/>
 2=Flashing<br/></td></tr>
     <tr><td>keypad_lcd_update</td><td>String</td><td>Text Changes of the IT-100 LCD Menu.</td></tr>
-    <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>    
+    <tr><td>keypad_lcd_cursor</td><td>String</td><td>LCD Cursor Position for The IT-100</td></tr>
 </table>
 
 ##Example

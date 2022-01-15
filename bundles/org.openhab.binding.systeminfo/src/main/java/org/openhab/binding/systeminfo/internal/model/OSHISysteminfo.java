@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.systeminfo.internal.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
@@ -68,11 +68,11 @@ public class OSHISysteminfo implements SysteminfoInterface {
     // Static objects, should be recreated on each request
     private @NonNullByDefault({}) ComputerSystem computerSystem;
     private @NonNullByDefault({}) OperatingSystem operatingSystem;
-    private @NonNullByDefault({}) NetworkIF[] networks;
-    private @NonNullByDefault({}) Display[] displays;
-    private @NonNullByDefault({}) OSFileStore[] fileStores;
-    private @NonNullByDefault({}) PowerSource[] powerSources;
-    private @NonNullByDefault({}) HWDiskStore[] drives;
+    private @NonNullByDefault({}) List<NetworkIF> networks;
+    private @NonNullByDefault({}) List<Display> displays;
+    private @NonNullByDefault({}) List<OSFileStore> fileStores;
+    private @NonNullByDefault({}) List<PowerSource> powerSources;
+    private @NonNullByDefault({}) List<HWDiskStore> drives;
 
     public static final int PRECISION_AFTER_DECIMAL_SIGN = 1;
 
@@ -105,8 +105,15 @@ public class OSHISysteminfo implements SysteminfoInterface {
         drives = hal.getDiskStores();
     }
 
-    private Object getDevice(Object @Nullable [] devices, int index) throws DeviceNotFoundException {
-        if ((devices == null) || (devices.length <= index)) {
+    private <T> T getDevice(List<@Nullable T> devices, int index) throws DeviceNotFoundException {
+        if (devices.size() <= index) {
+            throw new DeviceNotFoundException("Device with index: " + index + " can not be found!");
+        }
+        return (T) devices.get(index);
+    }
+
+    private <T> T getDevice(T @Nullable [] devices, int index) throws DeviceNotFoundException {
+        if (devices == null || devices.length <= index) {
             throw new DeviceNotFoundException("Device with index: " + index + " can not be found!");
         }
         return devices[index];
@@ -196,8 +203,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageTotal(int index) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        fileStore.updateAtrributes();
+        OSFileStore fileStore = getDevice(fileStores, index);
+        fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
         totalSpace = getSizeInMB(totalSpace);
         return new DecimalType(totalSpace);
@@ -205,8 +212,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageAvailable(int index) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        fileStore.updateAtrributes();
+        OSFileStore fileStore = getDevice(fileStores, index);
+        fileStore.updateAttributes();
         long freeSpace = fileStore.getUsableSpace();
         freeSpace = getSizeInMB(freeSpace);
         return new DecimalType(freeSpace);
@@ -214,8 +221,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getStorageUsed(int index) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
-        fileStore.updateAtrributes();
+        OSFileStore fileStore = getDevice(fileStores, index);
+        fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
         long usedSpace = totalSpace - freeSpace;
@@ -225,8 +232,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public @Nullable DecimalType getStorageAvailablePercent(int deviceIndex) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        fileStore.updateAtrributes();
+        OSFileStore fileStore = getDevice(fileStores, deviceIndex);
+        fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
         if (totalSpace > 0) {
@@ -240,8 +247,8 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public @Nullable DecimalType getStorageUsedPercent(int deviceIndex) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
-        fileStore.updateAtrributes();
+        OSFileStore fileStore = getDevice(fileStores, deviceIndex);
+        fileStore.updateAttributes();
         long totalSpace = fileStore.getTotalSpace();
         long freeSpace = fileStore.getUsableSpace();
         long usedSpace = totalSpace - freeSpace;
@@ -256,51 +263,51 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getStorageName(int index) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        OSFileStore fileStore = getDevice(fileStores, index);
         String name = fileStore.getName();
         return new StringType(name);
     }
 
     @Override
     public StringType getStorageType(int deviceIndex) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, deviceIndex);
+        OSFileStore fileStore = getDevice(fileStores, deviceIndex);
         String type = fileStore.getType();
         return new StringType(type);
     }
 
     @Override
     public StringType getStorageDescription(int index) throws DeviceNotFoundException {
-        OSFileStore fileStore = (OSFileStore) getDevice(fileStores, index);
+        OSFileStore fileStore = getDevice(fileStores, index);
         String description = fileStore.getDescription();
         return new StringType(description);
     }
 
     @Override
     public StringType getNetworkIp(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
+        NetworkIF netInterface = getDevice(networks, index);
         netInterface.updateAttributes();
         String[] ipAddresses = netInterface.getIPv4addr();
-        String ipv4 = (String) getDevice(ipAddresses, 0);
+        String ipv4 = getDevice(ipAddresses, 0);
         return new StringType(ipv4);
     }
 
     @Override
     public StringType getNetworkName(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
+        NetworkIF netInterface = getDevice(networks, index);
         String name = netInterface.getName();
         return new StringType(name);
     }
 
     @Override
     public StringType getNetworkDisplayName(int index) throws DeviceNotFoundException {
-        NetworkIF netInterface = (NetworkIF) getDevice(networks, index);
+        NetworkIF netInterface = getDevice(networks, index);
         String adapterName = netInterface.getDisplayName();
         return new StringType(adapterName);
     }
 
     @Override
     public StringType getDisplayInformation(int index) throws DeviceNotFoundException {
-        Display display = (Display) getDevice(displays, index);
+        Display display = getDevice(displays, index);
 
         byte[] edid = display.getEdid();
         String manufacturer = EdidUtil.getManufacturerID(edid);
@@ -331,13 +338,16 @@ public class OSHISysteminfo implements SysteminfoInterface {
     @Override
     public @Nullable DecimalType getSensorsFanSpeed(int index) throws DeviceNotFoundException {
         int[] fanSpeeds = sensors.getFanSpeeds();
-        int speed = (int) getDevice(ArrayUtils.toObject(fanSpeeds), index);
+        int speed = 0;// 0 means unable to measure speed
+        if (index < fanSpeeds.length) {
+            speed = fanSpeeds[index];
+        }
         return speed > 0 ? new DecimalType(speed) : null;
     }
 
     @Override
     public @Nullable DecimalType getBatteryRemainingTime(int index) throws DeviceNotFoundException {
-        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
+        PowerSource powerSource = getDevice(powerSources, index);
         powerSource.updateAttributes();
         double remainingTimeInSeconds = powerSource.getTimeRemainingEstimated();
         // The getTimeRemaining() method returns (-1.0) if is calculating or (-2.0) if the time is unlimited.
@@ -347,7 +357,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getBatteryRemainingCapacity(int index) throws DeviceNotFoundException {
-        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
+        PowerSource powerSource = getDevice(powerSources, index);
         powerSource.updateAttributes();
         double remainingCapacity = powerSource.getRemainingCapacityPercent();
         BigDecimal remainingCapacityPercents = getPercentsValue(remainingCapacity);
@@ -356,7 +366,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getBatteryName(int index) throws DeviceNotFoundException {
-        PowerSource powerSource = (PowerSource) getDevice(powerSources, index);
+        PowerSource powerSource = getDevice(powerSources, index);
         String name = powerSource.getName();
         return new StringType(name);
     }
@@ -390,21 +400,21 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getDriveName(int deviceIndex) throws DeviceNotFoundException {
-        HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
+        HWDiskStore drive = getDevice(drives, deviceIndex);
         String name = drive.getName();
         return new StringType(name);
     }
 
     @Override
     public StringType getDriveModel(int deviceIndex) throws DeviceNotFoundException {
-        HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
+        HWDiskStore drive = getDevice(drives, deviceIndex);
         String model = drive.getModel();
         return new StringType(model);
     }
 
     @Override
     public StringType getDriveSerialNumber(int deviceIndex) throws DeviceNotFoundException {
-        HWDiskStore drive = (HWDiskStore) getDevice(drives, deviceIndex);
+        HWDiskStore drive = getDevice(drives, deviceIndex);
         String serialNumber = drive.getSerial();
         return new StringType(serialNumber);
     }
@@ -544,14 +554,14 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public StringType getNetworkMac(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = getDevice(networks, networkIndex);
         String mac = network.getMacaddr();
         return new StringType(mac);
     }
 
     @Override
     public DecimalType getNetworkPacketsReceived(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = getDevice(networks, networkIndex);
         network.updateAttributes();
         long packRecv = network.getPacketsRecv();
         return new DecimalType(packRecv);
@@ -559,7 +569,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getNetworkPacketsSent(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = getDevice(networks, networkIndex);
         network.updateAttributes();
         long packSent = network.getPacketsSent();
         return new DecimalType(packSent);
@@ -567,7 +577,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getNetworkDataSent(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = getDevice(networks, networkIndex);
         network.updateAttributes();
         long bytesSent = network.getBytesSent();
         return new DecimalType(getSizeInMB(bytesSent));
@@ -575,7 +585,7 @@ public class OSHISysteminfo implements SysteminfoInterface {
 
     @Override
     public DecimalType getNetworkDataReceived(int networkIndex) throws DeviceNotFoundException {
-        NetworkIF network = (NetworkIF) getDevice(networks, networkIndex);
+        NetworkIF network = getDevice(networks, networkIndex);
         network.updateAttributes();
         long bytesRecv = network.getBytesRecv();
         return new DecimalType(getSizeInMB(bytesRecv));

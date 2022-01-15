@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,19 +30,9 @@ public class DanfossAirUnitBindingConstants {
 
     public static String BINDING_ID = "danfossairunit";
 
-    // List of all Thing Type UIDs
-    public static ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
-
-    // List of all Channel ids
-    public static String CHANNEL_1 = "channel1";
-
     // The only thing type UIDs
     public static ThingTypeUID THING_TYPE_AIRUNIT = new ThingTypeUID(BINDING_ID, "airunit");
 
     // The thing type as a set
     public static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AIRUNIT);
-
-    // Properties
-    public static String PROPERTY_UNIT_NAME = "Unit Name";
-    public static String PROPERTY_SERIAL = "Serial Number";
 }

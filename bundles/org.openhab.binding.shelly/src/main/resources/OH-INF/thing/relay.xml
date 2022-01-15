@@ -456,6 +456,13 @@
 		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
+	<channel-type id="supplyVoltage" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Supply Voltage</label>
+		<description>Supply voltage of the device in Volt</description>
+		<state readOnly="true" pattern="%.2f %unit%">
+		</state>
+	</channel-type>
 	<channel-type id="meterAccuWatts" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Accumulated Watt</label>
@@ -523,7 +530,7 @@
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
 		<description></description>
-		<state readOnly="true" pattern="%.3f %unit%">
+		<state readOnly="true" pattern="%.2f %unit%">
 		</state>
 	</channel-type>
 	<channel-type id="timestamp">

@@ -48,9 +48,9 @@ Finally, there are commands to execute and clear the commands:
 items:
 
 ```
-String SprinkerCommandStatus       "Command Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:commandstatus" }
-String SprinkerOperatingStatus     "Operating Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingstatus" }
-String SprinkerOperatingResult     "Operating Result [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingresult" }
+String SprinklerCommandStatus       "Command Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:commandstatus" }
+String SprinklerOperatingStatus     "Operating Status [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingstatus" }
+String SprinklerOperatingResult     "Operating Result [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:operatingresult" }
             
 String SprinklerActiveZone         "Active Zone [%s]"  (gMain) { channel="etherrain:etherrain:sprinkler0:relayindex" }                  
 Switch SprinklerRainSensor        (gMain) { channel="etherrain:etherrain:sprinkler0:rainsensor" }

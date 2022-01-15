@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,9 @@ package org.openhab.binding.mail.internal.action;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.internet.AddressException;
 
@@ -44,6 +46,7 @@ public class SendMailActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(SendMailActions.class);
 
     private @Nullable SMTPHandler handler;
+    private Map<String, String> headers = new HashMap<>();
 
     @RuleAction(label = "@text/sendMessageActionLabel", description = "@text/sendMessageActionDescription")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMail(
@@ -89,6 +92,8 @@ public class SendMailActions implements ThingActions {
                     builder.withURLAttachment(urlString);
                 }
             }
+
+            headers.forEach((name, value) -> builder.withHeader(name, value));
 
             final SMTPHandler handler = this.handler;
             if (handler == null) {
@@ -167,6 +172,8 @@ public class SendMailActions implements ThingActions {
                 }
             }
 
+            headers.forEach((name, value) -> builder.withHeader(name, value));
+
             final SMTPHandler handler = this.handler;
             if (handler == null) {
                 logger.warn("Handler is null, cannot send mail.");
@@ -209,5 +216,23 @@ public class SendMailActions implements ThingActions {
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return handler;
+    }
+
+    @RuleAction(label = "@text/addHeaderActionLabel", description = "@text/addHeaderActionDescription")
+    public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean addHeader(
+            @ActionInput(name = "name") @Nullable String name, @ActionInput(name = "value") @Nullable String value) {
+        if (name != null && !name.isEmpty()) {
+            if (value != null && !value.isEmpty()) {
+                headers.put(name, value);
+            } else {
+                headers.remove(name);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean addHeader(ThingActions actions, @Nullable String name, @Nullable String value) {
+        return ((SendMailActions) actions).addHeader(name, value);
     }
 }

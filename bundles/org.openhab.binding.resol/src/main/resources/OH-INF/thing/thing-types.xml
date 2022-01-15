@@ -144,6 +144,29 @@
 
 	</thing-type>
 
+	<channel-type id="weektime">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Time and day of week.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="time">
+		<item-type>String</item-type>
+		<label>Time</label>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>Time and date.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="None">
 		<item-type>Number</item-type>
 		<label>Any</label>

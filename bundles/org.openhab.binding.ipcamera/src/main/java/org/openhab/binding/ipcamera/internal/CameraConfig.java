@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,6 @@ public class CameraConfig {
     private String ffmpegInputOptions = "";
     private int port;
     private int onvifPort;
-    private int serverPort;
     private String username = "";
     private String password = "";
     private int onvifMediaProfile;
@@ -94,6 +93,10 @@ public class CameraConfig {
         return ffmpegOutput;
     }
 
+    public void setFfmpegOutput(String path) {
+        ffmpegOutput = path;
+    }
+
     public boolean getPtzContinuous() {
         return ptzContinuous;
     }
@@ -136,10 +139,6 @@ public class CameraConfig {
 
     public int getOnvifPort() {
         return onvifPort;
-    }
-
-    public int getServerPort() {
-        return serverPort;
     }
 
     public String getIp() {

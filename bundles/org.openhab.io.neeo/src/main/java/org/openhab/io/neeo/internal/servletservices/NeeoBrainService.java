@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -251,7 +251,8 @@ public class NeeoBrainService extends DefaultServletService {
             final NeeoDeviceChannel channel = device.getChannel(pathInfo.getItemName(), pathInfo.getSubType(),
                     pathInfo.getChannelNbr());
             if (channel != null && channel.getKind() == NeeoDeviceChannelKind.TRIGGER) {
-                final ChannelTriggeredEvent event = ThingEventFactory.createTriggerEvent(channel.getValue(),
+                String value = channel.getValue();
+                final ChannelTriggeredEvent event = ThingEventFactory.createTriggerEvent(value == null ? "" : value,
                         new ChannelUID(device.getUid(), channel.getItemName()));
                 logger.debug("Posting triggered event: {}", event);
                 context.getEventPublisher().post(event);

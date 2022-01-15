@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
@@ -64,8 +65,10 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void deactivate() {
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterControllerListener(this);
+        NanoleafControllerHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            Boolean result = localBridgeHandler.unregisterControllerListener(this);
+            logger.debug("unregistration of controller was {}", result ? "successful" : "unsuccessful");
         }
         super.deactivate();
     }
@@ -89,13 +92,16 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
 
     private void createResultsFromControllerInfo() {
         ThingUID bridgeUID;
-        if (bridgeHandler != null) {
-            bridgeUID = bridgeHandler.getThing().getUID();
+        BridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            bridgeUID = localBridgeHandler.getThing().getUID();
         } else {
             return;
         }
-        if (controllerInfo != null) {
-            final PanelLayout panelLayout = controllerInfo.getPanelLayout();
+
+        ControllerInfo localControllerInfo = controllerInfo;
+        if (localControllerInfo != null) {
+            final PanelLayout panelLayout = localControllerInfo.getPanelLayout();
             @Nullable
             Layout layout = panelLayout.getLayout();
 
@@ -133,7 +139,9 @@ public class NanoleafPanelsDiscoveryService extends AbstractDiscoveryService
     @Override
     public void setThingHandler(ThingHandler handler) {
         this.bridgeHandler = (NanoleafControllerHandler) handler;
-        this.bridgeHandler.registerControllerListener(this);
+        NanoleafControllerHandler localBridgeHandler = (NanoleafControllerHandler) handler;
+
+        localBridgeHandler.registerControllerListener(this);
     }
 
     @Override

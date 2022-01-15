@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -175,11 +175,12 @@ public class AhaWasteCollectionHandler extends BaseThingHandler {
      */
     private void updateChannels(final Map<WasteType, CollectionDate> collectionDates) {
         for (final Channel channel : this.getThing().getChannels()) {
+
             final WasteType wasteType = getWasteTypeByChannel(channel.getUID().getId());
 
             final CollectionDate collectionDate = collectionDates.get(wasteType);
             if (collectionDate == null) {
-                this.logger.warn("No collection dates found for waste type: {}", wasteType);
+                this.logger.debug("No collection dates found for waste type: {}", wasteType);
                 continue;
             }
 

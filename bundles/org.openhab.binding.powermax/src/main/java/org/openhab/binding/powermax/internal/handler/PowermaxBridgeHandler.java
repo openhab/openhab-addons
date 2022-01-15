@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.config.PowermaxIpConfiguration;
 import org.openhab.binding.powermax.internal.config.PowermaxSerialConfiguration;
 import org.openhab.binding.powermax.internal.discovery.PowermaxDiscoveryService;
@@ -36,6 +38,7 @@ import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.binding.powermax.internal.state.PowermaxStateContainer.Value;
 import org.openhab.binding.powermax.internal.state.PowermaxStateEvent;
 import org.openhab.binding.powermax.internal.state.PowermaxStateEventListener;
+import org.openhab.binding.powermax.internal.state.PowermaxZoneSettings;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.library.types.OnOffType;
@@ -59,17 +62,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxBridgeHandler extends BaseBridgeHandler implements PowermaxStateEventListener {
-
-    private final Logger logger = LoggerFactory.getLogger(PowermaxBridgeHandler.class);
-    private final SerialPortManager serialPortManager;
-    private final TimeZoneProvider timeZoneProvider;
 
     private static final long ONE_MINUTE = TimeUnit.MINUTES.toMillis(1);
     private static final long FIVE_MINUTES = TimeUnit.MINUTES.toMillis(5);
-
-    /** Default delay in milliseconds to reset a motion detection */
-    private static final long DEFAULT_MOTION_OFF_DELAY = TimeUnit.MINUTES.toMillis(3);
 
     private static final int NB_EVENT_LOG = 10;
 
@@ -79,9 +76,14 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
     private static final int MAX_DOWNLOAD_ATTEMPTS = 3;
 
-    private ScheduledFuture<?> globalJob;
+    private final Logger logger = LoggerFactory.getLogger(PowermaxBridgeHandler.class);
 
-    private List<PowermaxPanelSettingsListener> listeners = new CopyOnWriteArrayList<>();
+    private final SerialPortManager serialPortManager;
+    private final TimeZoneProvider timeZoneProvider;
+
+    private final List<PowermaxPanelSettingsListener> listeners = new CopyOnWriteArrayList<>();
+
+    private @Nullable ScheduledFuture<?> globalJob;
 
     /** The delay in milliseconds to reset a motion detection */
     private long motionOffDelay;
@@ -96,7 +98,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     private PowermaxState currentState;
 
     /** The object in charge of the communication with the Powermax alarm system */
-    private PowermaxCommManager commManager;
+    private @Nullable PowermaxCommManager commManager;
 
     private int remainingDownloadAttempts;
 
@@ -104,6 +106,8 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         super(thing);
         this.serialPortManager = serialPortManager;
         this.timeZoneProvider = timeZoneProvider;
+        this.pinCode = "";
+        this.currentState = new PowermaxState(new PowermaxPanelSettings(DEFAULT_PANEL_TYPE), timeZoneProvider);
     }
 
     @Override
@@ -111,12 +115,14 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         return Collections.singleton(PowermaxDiscoveryService.class);
     }
 
-    public PowermaxState getCurrentState() {
-        return currentState;
+    public @Nullable PowermaxState getCurrentState() {
+        PowermaxCommManager localCommManager = commManager;
+        return (localCommManager == null) ? null : currentState;
     }
 
-    public PowermaxPanelSettings getPanelSettings() {
-        return (commManager == null) ? null : commManager.getPanelSettings();
+    public @Nullable PowermaxPanelSettings getPanelSettings() {
+        PowermaxCommManager localCommManager = commManager;
+        return (localCommManager == null) ? null : localCommManager.getPanelSettings();
     }
 
     @Override
@@ -127,25 +133,26 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
 
         String threadName = "OH-binding-" + getThing().getUID().getAsString();
 
-        String errorMsg = null;
+        String errorMsg = String.format("@text/offline.config-error-unexpected-thing-type [ \"%s\" ]",
+                getThing().getThingTypeUID().getAsString());
         if (getThing().getThingTypeUID().equals(BRIDGE_TYPE_SERIAL)) {
             errorMsg = initializeBridgeSerial(getConfigAs(PowermaxSerialConfiguration.class), threadName);
         } else if (getThing().getThingTypeUID().equals(BRIDGE_TYPE_IP)) {
             errorMsg = initializeBridgeIp(getConfigAs(PowermaxIpConfiguration.class), threadName);
-        } else {
-            errorMsg = "Unexpected thing type " + getThing().getThingTypeUID();
         }
 
         if (errorMsg == null) {
-            if (globalJob == null || globalJob.isCancelled()) {
+            ScheduledFuture<?> job = globalJob;
+            if (job == null || job.isCancelled()) {
                 // Delay the startup in case the handler is restarted immediately
                 globalJob = scheduler.scheduleWithFixedDelay(() -> {
                     try {
                         logger.trace("Powermax job...");
                         updateMotionSensorState();
+                        updateRingingState();
                         if (isConnected()) {
                             checkKeepAlive();
-                            commManager.retryDownloadSetup(remainingDownloadAttempts);
+                            retryDownloadSetup();
                         } else {
                             tryReconnect();
                         }
@@ -159,61 +166,56 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
     }
 
-    private String initializeBridgeSerial(PowermaxSerialConfiguration config, String threadName) {
+    private @Nullable String initializeBridgeSerial(PowermaxSerialConfiguration config, String threadName) {
         String errorMsg = null;
-        if (config.serialPort != null && !config.serialPort.trim().isEmpty()
-                && !config.serialPort.trim().startsWith("rfc2217")) {
-            motionOffDelay = getMotionOffDelaySetting(config.motionOffDelay, DEFAULT_MOTION_OFF_DELAY);
-            boolean allowArming = getBooleanSetting(config.allowArming, false);
-            boolean allowDisarming = getBooleanSetting(config.allowDisarming, false);
+        String serialPort = config.serialPort.trim();
+        if (!serialPort.isEmpty() && !serialPort.startsWith("rfc2217")) {
+            motionOffDelay = config.motionOffDelay * ONE_MINUTE;
             pinCode = config.pinCode;
-            forceStandardMode = getBooleanSetting(config.forceStandardMode, false);
+            forceStandardMode = config.forceStandardMode;
             PowermaxPanelType panelType = getPanelTypeSetting(config.panelType, DEFAULT_PANEL_TYPE);
-            boolean autoSyncTime = getBooleanSetting(config.autoSyncTime, false);
 
-            PowermaxArmMode.DISARMED.setAllowedCommand(allowDisarming);
-            PowermaxArmMode.ARMED_HOME.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_AWAY.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_HOME_INSTANT.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_AWAY_INSTANT.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_NIGHT.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_NIGHT_INSTANT.setAllowedCommand(allowArming);
+            PowermaxArmMode.DISARMED.setAllowedCommand(config.allowDisarming);
+            PowermaxArmMode.ARMED_HOME.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_AWAY.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_HOME_INSTANT.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_AWAY_INSTANT.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_NIGHT.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_NIGHT_INSTANT.setAllowedCommand(config.allowArming);
 
-            commManager = new PowermaxCommManager(config.serialPort, panelType, forceStandardMode, autoSyncTime,
+            commManager = new PowermaxCommManager(serialPort, panelType, forceStandardMode, config.autoSyncTime,
                     serialPortManager, threadName, timeZoneProvider);
         } else {
-            if (config.serialPort != null && config.serialPort.trim().startsWith("rfc2217")) {
-                errorMsg = "Please use the IP Connection thing type for a serial over IP connection.";
+            if (serialPort.startsWith("rfc2217")) {
+                errorMsg = "@text/offline.config-error-invalid-thing-type";
             } else {
-                errorMsg = "serialPort setting must be defined in thing configuration";
+                errorMsg = "@text/offline.config-error-mandatory-serial-port";
             }
         }
         return errorMsg;
     }
 
-    private String initializeBridgeIp(PowermaxIpConfiguration config, String threadName) {
+    private @Nullable String initializeBridgeIp(PowermaxIpConfiguration config, String threadName) {
         String errorMsg = null;
-        if (config.ip != null && !config.ip.trim().isEmpty() && config.tcpPort != null) {
-            motionOffDelay = getMotionOffDelaySetting(config.motionOffDelay, DEFAULT_MOTION_OFF_DELAY);
-            boolean allowArming = getBooleanSetting(config.allowArming, false);
-            boolean allowDisarming = getBooleanSetting(config.allowDisarming, false);
+        String ip = config.ip.trim();
+        if (!ip.isEmpty() && config.tcpPort > 0) {
+            motionOffDelay = config.motionOffDelay * ONE_MINUTE;
             pinCode = config.pinCode;
-            forceStandardMode = getBooleanSetting(config.forceStandardMode, false);
+            forceStandardMode = config.forceStandardMode;
             PowermaxPanelType panelType = getPanelTypeSetting(config.panelType, DEFAULT_PANEL_TYPE);
-            boolean autoSyncTime = getBooleanSetting(config.autoSyncTime, false);
 
-            PowermaxArmMode.DISARMED.setAllowedCommand(allowDisarming);
-            PowermaxArmMode.ARMED_HOME.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_AWAY.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_HOME_INSTANT.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_AWAY_INSTANT.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_NIGHT.setAllowedCommand(allowArming);
-            PowermaxArmMode.ARMED_NIGHT_INSTANT.setAllowedCommand(allowArming);
+            PowermaxArmMode.DISARMED.setAllowedCommand(config.allowDisarming);
+            PowermaxArmMode.ARMED_HOME.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_AWAY.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_HOME_INSTANT.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_AWAY_INSTANT.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_NIGHT.setAllowedCommand(config.allowArming);
+            PowermaxArmMode.ARMED_NIGHT_INSTANT.setAllowedCommand(config.allowArming);
 
-            commManager = new PowermaxCommManager(config.ip, config.tcpPort, panelType, forceStandardMode, autoSyncTime,
+            commManager = new PowermaxCommManager(ip, config.tcpPort, panelType, forceStandardMode, config.autoSyncTime,
                     threadName, timeZoneProvider);
         } else {
-            errorMsg = "ip and port settings must be defined in thing configuration";
+            errorMsg = "@text/offline.config-error-mandatory-ip-port";
         }
         return errorMsg;
     }
@@ -221,8 +223,9 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     @Override
     public void dispose() {
         logger.debug("Handler disposed for thing {}", getThing().getUID());
-        if (globalJob != null && !globalJob.isCancelled()) {
-            globalJob.cancel(true);
+        ScheduledFuture<?> job = globalJob;
+        if (job != null && !job.isCancelled()) {
+            job.cancel(true);
             globalJob = null;
         }
         closeConnection();
@@ -235,13 +238,15 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      * than the value defined by the variable motionOffDelay
      */
     private void updateMotionSensorState() {
-        long now = System.currentTimeMillis();
-        if (currentState != null) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager != null) {
+            long now = System.currentTimeMillis();
             boolean update = false;
-            PowermaxState updateState = commManager.createNewState();
-            PowermaxPanelSettings panelSettings = getPanelSettings();
+            PowermaxState updateState = localCommManager.createNewState();
+            PowermaxPanelSettings panelSettings = localCommManager.getPanelSettings();
             for (int i = 1; i <= panelSettings.getNbZones(); i++) {
-                if (panelSettings.getZoneSettings(i) != null && panelSettings.getZoneSettings(i).isMotionSensor()
+                PowermaxZoneSettings zoneSettings = panelSettings.getZoneSettings(i);
+                if (zoneSettings != null && zoneSettings.isMotionSensor()
                         && currentState.getZone(i).isLastTripBeforeTime(now - motionOffDelay)) {
                     update = true;
                     updateState.getZone(i).tripped.setValue(false);
@@ -254,39 +259,67 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         }
     }
 
+    /**
+     * Turn off the Ringing flag when the bell time expires
+     */
+    private void updateRingingState() {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager != null && Boolean.TRUE.equals(currentState.ringing.getValue())) {
+            long now = System.currentTimeMillis();
+            long bellTime = localCommManager.getPanelSettings().getBellTime() * ONE_MINUTE;
+
+            Long ringingSince = currentState.ringingSince.getValue();
+            if (ringingSince != null && (ringingSince + bellTime) < now) {
+                PowermaxState updateState = localCommManager.createNewState();
+                updateState.ringing.setValue(false);
+                updateChannelsFromAlarmState(RINGING, updateState);
+                currentState.merge(updateState);
+            }
+        }
+    }
+
     /*
      * Check that we're actively communicating with the panel
      */
     private void checkKeepAlive() {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            return;
+        }
         long now = System.currentTimeMillis();
-        if (Boolean.TRUE.equals(currentState.powerlinkMode.getValue())
-                && (currentState.lastKeepAlive.getValue() != null)
-                && ((now - currentState.lastKeepAlive.getValue()) > ONE_MINUTE)) {
+        Long lastKeepAlive = currentState.lastKeepAlive.getValue();
+        Long lastMessageTime = currentState.lastMessageTime.getValue();
+        if (Boolean.TRUE.equals(currentState.powerlinkMode.getValue()) && (lastKeepAlive != null)
+                && ((now - lastKeepAlive) > ONE_MINUTE)) {
             // In Powerlink mode: let Powermax know we are alive
-            commManager.sendRestoreMessage();
+            localCommManager.sendRestoreMessage();
             currentState.lastKeepAlive.setValue(now);
-        } else if (!Boolean.TRUE.equals(currentState.downloadMode.getValue())
-                && (currentState.lastMessageReceived.getValue() != null)
-                && ((now - currentState.lastMessageReceived.getValue()) > FIVE_MINUTES)) {
+        } else if (!Boolean.TRUE.equals(currentState.downloadMode.getValue()) && (lastMessageTime != null)
+                && ((now - lastMessageTime) > FIVE_MINUTES)) {
             // In Standard mode: ping the panel every so often to detect disconnects
-            commManager.sendMessage(PowermaxSendType.STATUS);
+            localCommManager.sendMessage(PowermaxSendType.STATUS);
         }
     }
 
     private void tryReconnect() {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            return;
+        }
         logger.info("Trying to connect or reconnect...");
         closeConnection();
-        currentState = commManager.createNewState();
+        currentState = localCommManager.createNewState();
         try {
             openConnection();
             logger.debug("openConnection(): connected");
             updateStatus(ThingStatus.ONLINE);
+            updateChannelsFromAlarmState(currentState);
             if (forceStandardMode) {
                 currentState.powerlinkMode.setValue(false);
                 updateChannelsFromAlarmState(MODE, currentState);
                 processPanelSettings();
             } else {
-                commManager.startDownload();
+                localCommManager.startDownload();
             }
         } catch (Exception e) {
             logger.debug("openConnection(): {}", e.getMessage(), e);
@@ -301,9 +334,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      * @return true if the connection has been opened
      */
     private synchronized void openConnection() throws Exception {
-        if (commManager != null) {
-            commManager.addEventListener(this);
-            commManager.open();
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager != null) {
+            localCommManager.addEventListener(this);
+            localCommManager.open();
         }
         remainingDownloadAttempts = MAX_DOWNLOAD_ATTEMPTS;
     }
@@ -312,15 +346,24 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      * Close TCP or Serial connection to the Powermax Alarm Panel and remove the Event Listener
      */
     private synchronized void closeConnection() {
-        if (commManager != null) {
-            commManager.close();
-            commManager.removeEventListener(this);
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager != null) {
+            localCommManager.close();
+            localCommManager.removeEventListener(this);
         }
         logger.debug("closeConnection(): disconnected");
     }
 
     private boolean isConnected() {
-        return commManager == null ? false : commManager.isConnected();
+        PowermaxCommManager localCommManager = commManager;
+        return localCommManager == null ? false : localCommManager.isConnected();
+    }
+
+    private void retryDownloadSetup() {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager != null) {
+            localCommManager.retryDownloadSetup(remainingDownloadAttempts);
+        }
     }
 
     @Override
@@ -328,7 +371,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         logger.debug("Received command {} from channel {}", command, channelUID.getId());
 
         if (command instanceof RefreshType) {
-            updateChannelsFromAlarmState(channelUID.getId(), currentState);
+            updateChannelsFromAlarmState(channelUID.getId(), getCurrentState());
         } else {
             switch (channelUID.getId()) {
                 case ARM_MODE:
@@ -365,62 +408,81 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     }
 
     private void armCommand(PowermaxArmMode armMode) {
-        if (!isConnected()) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            logger.debug("Powermax alarm binding not correctly initialized. Arm command is ignored.");
+        } else if (!isConnected()) {
             logger.debug("Powermax alarm binding not connected. Arm command is ignored.");
         } else {
-            commManager.requestArmMode(armMode,
-                    Boolean.TRUE.equals(currentState.powerlinkMode.getValue()) ? getPanelSettings().getFirstPinCode()
+            localCommManager.requestArmMode(armMode,
+                    Boolean.TRUE.equals(currentState.powerlinkMode.getValue())
+                            ? localCommManager.getPanelSettings().getFirstPinCode()
                             : pinCode);
         }
     }
 
     private void pgmCommand(Command command) {
-        if (!isConnected()) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            logger.debug("Powermax alarm binding not correctly initialized. PGM command is ignored.");
+        } else if (!isConnected()) {
             logger.debug("Powermax alarm binding not connected. PGM command is ignored.");
         } else {
-            commManager.sendPGMX10(command, null);
+            localCommManager.sendPGMX10(command, null);
         }
     }
 
     public void x10Command(Byte deviceNr, Command command) {
-        if (!isConnected()) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            logger.debug("Powermax alarm binding not correctly initialized. X10 command is ignored.");
+        } else if (!isConnected()) {
             logger.debug("Powermax alarm binding not connected. X10 command is ignored.");
         } else {
-            commManager.sendPGMX10(command, deviceNr);
+            localCommManager.sendPGMX10(command, deviceNr);
         }
     }
 
     public void zoneBypassed(byte zoneNr, boolean bypassed) {
-        if (!isConnected()) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            logger.debug("Powermax alarm binding not correctly initialized. Zone bypass command is ignored.");
+        } else if (!isConnected()) {
             logger.debug("Powermax alarm binding not connected. Zone bypass command is ignored.");
         } else if (!Boolean.TRUE.equals(currentState.powerlinkMode.getValue())) {
             logger.debug("Powermax alarm binding: Bypass option only supported in Powerlink mode");
-        } else if (!getPanelSettings().isBypassEnabled()) {
+        } else if (!localCommManager.getPanelSettings().isBypassEnabled()) {
             logger.debug("Powermax alarm binding: Bypass option not enabled in panel settings");
         } else {
-            commManager.sendZoneBypass(bypassed, zoneNr, getPanelSettings().getFirstPinCode());
+            localCommManager.sendZoneBypass(bypassed, zoneNr, localCommManager.getPanelSettings().getFirstPinCode());
         }
     }
 
     private void downloadEventLog() {
-        if (!isConnected()) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            logger.debug("Powermax alarm binding not correctly initialized. Event logs command is ignored.");
+        } else if (!isConnected()) {
             logger.debug("Powermax alarm binding not connected. Event logs command is ignored.");
         } else {
-            commManager.requestEventLog(
-                    Boolean.TRUE.equals(currentState.powerlinkMode.getValue()) ? getPanelSettings().getFirstPinCode()
-                            : pinCode);
+            localCommManager.requestEventLog(Boolean.TRUE.equals(currentState.powerlinkMode.getValue())
+                    ? localCommManager.getPanelSettings().getFirstPinCode()
+                    : pinCode);
         }
     }
 
     public void downloadSetup() {
-        if (!isConnected()) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            logger.debug("Powermax alarm binding not correctly initialized. Download setup command is ignored.");
+        } else if (!isConnected()) {
             logger.debug("Powermax alarm binding not connected. Download setup command is ignored.");
         } else if (!Boolean.TRUE.equals(currentState.powerlinkMode.getValue())) {
             logger.debug("Powermax alarm binding: download setup only supported in Powerlink mode");
-        } else if (commManager.isDownloadRunning()) {
+        } else if (localCommManager.isDownloadRunning()) {
             logger.debug("Powermax alarm binding: download setup not started as one is in progress");
         } else {
-            commManager.startDownload();
+            localCommManager.startDownload();
             if (currentState.lastKeepAlive.getValue() != null) {
                 currentState.lastKeepAlive.setValue(System.currentTimeMillis());
             }
@@ -428,11 +490,17 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     }
 
     public String getInfoSetup() {
-        return (getPanelSettings() == null) ? "" : getPanelSettings().getInfo();
+        PowermaxPanelSettings panelSettings = getPanelSettings();
+        return (panelSettings == null) ? "" : panelSettings.getInfo();
     }
 
     @Override
     public void onNewStateEvent(EventObject event) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            return;
+        }
+
         PowermaxStateEvent stateEvent = (PowermaxStateEvent) event;
         PowermaxState updateState = stateEvent.getState();
 
@@ -440,7 +508,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 && Boolean.TRUE.equals(updateState.downloadSetupRequired.getValue())) {
             // After Enrolling Powerlink or if a reset is required
             logger.debug("Powermax alarm binding: Reset");
-            commManager.startDownload();
+            localCommManager.startDownload();
             updateState.downloadSetupRequired.setValue(false);
             if (currentState.lastKeepAlive.getValue() != null) {
                 currentState.lastKeepAlive.setValue(System.currentTimeMillis());
@@ -450,23 +518,23 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
             // Were are in standard mode but received a keep alive message
             // so we switch in PowerLink mode
             logger.debug("Powermax alarm binding: Switching to Powerlink mode");
-            commManager.startDownload();
+            localCommManager.startDownload();
         }
 
         boolean doProcessSettings = (updateState.powerlinkMode.getValue() != null);
 
-        for (int i = 1; i <= getPanelSettings().getNbZones(); i++) {
+        PowermaxPanelSettings panelSettings = localCommManager.getPanelSettings();
+        panelSettings.getZoneRange().forEach(i -> {
             if (Boolean.TRUE.equals(updateState.getZone(i).armed.getValue())
                     && Boolean.TRUE.equals(currentState.getZone(i).bypassed.getValue())) {
                 updateState.getZone(i).armed.setValue(false);
             }
-        }
+        });
 
         updateState.keepOnlyDifferencesWith(currentState);
         updateChannelsFromAlarmState(updateState);
         currentState.merge(updateState);
 
-        PowermaxPanelSettings panelSettings = getPanelSettings();
         if (!updateState.getUpdatedZoneNames().isEmpty()) {
             for (Integer zoneIdx : updateState.getUpdatedZoneNames().keySet()) {
                 if (panelSettings.getZoneSettings(zoneIdx) != null) {
@@ -480,7 +548,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         if (doProcessSettings) {
             // There is a change of mode (standard or Powerlink)
             processPanelSettings();
-            commManager.exitDownload();
+            localCommManager.exitDownload();
         }
     }
 
@@ -491,9 +559,14 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
     }
 
     private void processPanelSettings() {
-        if (commManager.processPanelSettings(Boolean.TRUE.equals(currentState.powerlinkMode.getValue()))) {
+        PowermaxCommManager localCommManager = commManager;
+        if (localCommManager == null) {
+            return;
+        }
+
+        if (localCommManager.processPanelSettings(Boolean.TRUE.equals(currentState.powerlinkMode.getValue()))) {
             for (PowermaxPanelSettingsListener listener : listeners) {
-                listener.onPanelSettingsUpdated(getPanelSettings());
+                listener.onPanelSettingsUpdated(localCommManager.getPanelSettings());
             }
             remainingDownloadAttempts = 0;
         } else {
@@ -506,10 +579,10 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         updatePropertiesFromPanelSettings();
         if (Boolean.TRUE.equals(currentState.powerlinkMode.getValue())) {
             logger.info("Powermax alarm binding: running in Powerlink mode");
-            commManager.sendRestoreMessage();
+            localCommManager.sendRestoreMessage();
         } else {
             logger.info("Powermax alarm binding: running in Standard mode");
-            commManager.getInfosWhenInStandardMode();
+            localCommManager.getInfosWhenInStandardMode();
         }
     }
 
@@ -518,7 +591,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      *
      * @param state: the alarm system state
      */
-    private void updateChannelsFromAlarmState(PowermaxState state) {
+    private void updateChannelsFromAlarmState(@Nullable PowermaxState state) {
         updateChannelsFromAlarmState(null, state);
     }
 
@@ -528,7 +601,7 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      * @param channel: filter on a particular channel; if null, consider all channels
      * @param state: the alarm system state
      */
-    private synchronized void updateChannelsFromAlarmState(String channel, PowermaxState state) {
+    private synchronized void updateChannelsFromAlarmState(@Nullable String channel, @Nullable PowermaxState state) {
         if (state == null || !isConnected()) {
             return;
         }
@@ -536,17 +609,16 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         for (Value<?> value : state.getValues()) {
             String vChannel = value.getChannel();
 
-            if (((channel == null) || channel.equals(vChannel)) && (vChannel != null) && isLinked(vChannel)
-                    && (value.getValue() != null)) {
+            if (((channel == null) || channel.equals(vChannel)) && isLinked(vChannel) && (value.getValue() != null)) {
                 updateState(vChannel, value.getState());
             }
         }
 
         for (int i = 1; i <= NB_EVENT_LOG; i++) {
             String channel2 = String.format(EVENT_LOG, i);
-            if (((channel == null) || channel.equals(channel2)) && isLinked(channel2)
-                    && (state.getEventLog(i) != null)) {
-                updateState(channel2, new StringType(state.getEventLog(i)));
+            String log = state.getEventLog(i);
+            if (((channel == null) || channel.equals(channel2)) && isLinked(channel2) && (log != null)) {
+                updateState(channel2, new StringType(log));
             }
         }
 
@@ -555,14 +627,13 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
                 PowermaxThingHandler handler = (PowermaxThingHandler) thing.getHandler();
                 if (handler != null) {
                     if (thing.getThingTypeUID().equals(THING_TYPE_ZONE)) {
-
                         // All of the zone state objects will have the same list of values.
                         // The use of getZone(1) here is just to get any PowermaxZoneState
                         // and use it to get the list of zone channels.
 
                         for (Value<?> value : state.getZone(1).getValues()) {
                             String channelId = value.getChannel();
-                            if ((channelId != null) && ((channel == null) || channel.equals(channelId))) {
+                            if ((channel == null) || channel.equals(channelId)) {
                                 handler.updateChannelFromAlarmState(channelId, state);
                             }
                         }
@@ -587,11 +658,14 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
      * Update properties to match the alarm panel settings
      */
     private void updatePropertiesFromPanelSettings() {
+        PowermaxPanelSettings panelSettings = getPanelSettings();
+        if (panelSettings == null) {
+            return;
+        }
         String value;
         Map<String, String> properties = editProperties();
-        PowermaxPanelSettings panelSettings = getPanelSettings();
-        value = (panelSettings.getPanelType() != null) ? panelSettings.getPanelType().getLabel() : null;
-        if (value != null && !value.isEmpty()) {
+        value = panelSettings.getPanelType().getLabel();
+        if (!value.isEmpty()) {
             properties.put(Thing.PROPERTY_MODEL_ID, value);
         }
         value = panelSettings.getPanelSerial();
@@ -621,25 +695,13 @@ public class PowermaxBridgeHandler extends BaseBridgeHandler implements Powermax
         return listeners.remove(listener);
     }
 
-    private boolean getBooleanSetting(Boolean value, boolean defaultValue) {
-        return value != null ? value.booleanValue() : defaultValue;
-    }
-
-    private long getMotionOffDelaySetting(Integer value, long defaultValue) {
-        return value != null ? value.intValue() * ONE_MINUTE : defaultValue;
-    }
-
     private PowermaxPanelType getPanelTypeSetting(String value, PowermaxPanelType defaultValue) {
         PowermaxPanelType result;
-        if (value != null) {
-            try {
-                result = PowermaxPanelType.fromLabel(value);
-            } catch (IllegalArgumentException e) {
-                result = defaultValue;
-                logger.debug("Powermax alarm binding: panel type not configured correctly");
-            }
-        } else {
+        try {
+            result = PowermaxPanelType.fromLabel(value);
+        } catch (IllegalArgumentException e) {
             result = defaultValue;
+            logger.debug("Powermax alarm binding: panel type not configured correctly");
         }
         return result;
     }

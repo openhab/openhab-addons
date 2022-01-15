@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nest"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="sdm_account">
+		<label>Nest SDM Account</label>
+		<description>An account for using the Smart Device Management (SDM) API</description>
+		<config-description-ref uri="thing-type:nest:sdm_account"/>
+	</bridge-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,73 @@
+{
+    "mac-00124B000AE539D6": {
+        "ident": {
+            "type": {
+                "key_localized": "Devicetype",
+                "value_raw": 100,
+                "value_localized": ""
+            },
+            "deviceName": "Some Devicename",
+            "deviceIdentLabel": {
+                "fabNumber": "",
+                "fabIndex": "",
+                "techType": "",
+                "matNumber": "",
+                "swids": []
+            },
+            "xkmIdentLabel": {
+                "techType": "",
+                "releaseVersion": ""
+            }
+        },
+        "state": {
+            "ProgramID": {
+                "value_raw": 2499805184,
+                "value_localized": "",
+                "key_localized": "Program Id"
+            },
+            "status": {
+                "value_raw": 5,
+                "value_localized": "In use",
+                "key_localized": "State"
+            },
+            "programType": {
+                "value_raw": 0,
+                "value_localized": "Operation mode",
+                "key_localized": "Program type"
+            },
+            "programPhase": {
+                "value_raw": 0,
+                "value_localized": "",
+                "key_localized": "Phase"
+            },
+            "remainingTime": [
+                0,
+                0
+            ],
+            "startTime": [
+                0,
+                0
+            ],
+            "targetTemperature": [],
+            "signalInfo": false,
+            "signalFailure": false,
+            "signalDoor": false,
+            "remoteEnable": {
+                "fullRemoteControl": true,
+                "smartGrid": false
+            },
+            "light": 0,
+            "elapsedTime": [],
+            "dryingStep": {
+                "value_raw": null,
+                "value_localized": "",
+                "key_localized": "Drying level"
+            },
+            "ventilationStep": {
+                "value_raw": null,
+                "value_localized": "",
+                "key_localized": "Power Level"
+            }
+        }
+    }
+}

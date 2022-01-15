@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,13 +41,15 @@ import org.openhab.core.types.Command;
  * @author Michael Wodniok - Initial contribution.
  * @author Andrew Fiddian-Green - Tests for Command Tag code
  * @author Michael Wodniok - Extended Tests for filtered Events
- *
+ * @author Michael Wodniok - Extended Test for parallel current events
  */
 public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar;
     private AbstractPresentableCalendar calendar2;
     private AbstractPresentableCalendar calendar3;
     private AbstractPresentableCalendar calendar_issue9647;
+    private AbstractPresentableCalendar calendar_issue10808;
+    private AbstractPresentableCalendar calendar_issue11084;
 
     @BeforeEach
     public void setUp() throws IOException, CalendarException {
@@ -56,6 +58,10 @@ public class BiweeklyPresentableCalendarTest {
         calendar3 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test3.ics"));
         calendar_issue9647 = new BiweeklyPresentableCalendar(
                 new FileInputStream("src/test/resources/test-issue9647.ics"));
+        calendar_issue10808 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue10808.ics"));
+        calendar_issue11084 = new BiweeklyPresentableCalendar(
+                new FileInputStream("src/test/resources/test-issue11084.ics"));
     }
 
     /**
@@ -117,6 +123,25 @@ public class BiweeklyPresentableCalendarTest {
 
         Event nonExistingEvent = calendar.getCurrentEvent(Instant.parse("2019-09-09T09:07:00Z"));
         assertNull(nonExistingEvent);
+
+        Event currentEvent2 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:10:05Z"));
+        assertNotNull(currentEvent2);
+        assertTrue("Test event 1".contentEquals(currentEvent2.title));
+
+        Event currentEvent3 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:13:05Z"));
+        assertNotNull(currentEvent3);
+        assertTrue("Test event 2".contentEquals(currentEvent3.title));
+
+        Event currentEvent4 = calendar_issue10808.getCurrentEvent(Instant.parse("2021-06-05T17:18:05Z"));
+        assertNotNull(currentEvent4);
+        assertTrue("Test event 1".contentEquals(currentEvent4.title));
+
+        Event currentEvent5 = calendar_issue11084.getCurrentEvent(Instant.parse("2021-08-16T16:30:05Z"));
+        assertNull(currentEvent5);
+
+        Event currentEvent6 = calendar_issue11084.getCurrentEvent(Instant.parse("2021-08-16T16:45:05Z"));
+        assertNotNull(currentEvent6);
+        assertTrue("TEST_REPEATING_EVENT_3".contentEquals(currentEvent6.title));
     }
 
     /**
@@ -548,6 +573,17 @@ public class BiweeklyPresentableCalendarTest {
         cmd7 = cmdTags.get(7).getCommand();
         assertNotNull(cmd7);
         assertEquals(DecimalType.class, cmd7.getClass());
+
+        // issue 11084: Command tags from moved events are also executed
+        List<Event> events2 = calendar_issue11084.getJustBegunEvents(Instant.parse("2021-08-16T16:29:55Z"),
+                Instant.parse("2021-08-16T17:00:05Z"));
+        assertEquals(1, events2.size());
+        assertEquals(Instant.parse("2021-08-16T16:45:00Z"), events2.get(0).start);
+
+        List<Event> events3 = calendar_issue11084.getJustEndedEvents(Instant.parse("2021-08-16T16:29:55Z"),
+                Instant.parse("2021-08-16T17:00:05Z"));
+        assertEquals(1, events3.size());
+        assertEquals(Instant.parse("2021-08-16T17:00:00Z"), events3.get(0).end);
     }
 
     @SuppressWarnings("null")
@@ -606,5 +642,9 @@ public class BiweeklyPresentableCalendarTest {
                 LocalDate.parse("2021-01-04").atStartOfDay(ZoneId.systemDefault()).toInstant(),
                 LocalDate.parse("2021-01-05").atStartOfDay(ZoneId.systemDefault()).toInstant(), null, 3);
         assertArrayEquals(expectedFilteredEvents8, realFilteredEvents8.toArray(new Event[] {}));
+
+        List<Event> realFilteredEvents9 = calendar_issue11084.getFilteredEventsBetween(
+                Instant.parse("2021-08-16T16:45:00.123456Z"), Instant.parse("2021-08-16T16:46:00.768643Z"), null, 3);
+        assertEquals(0, realFilteredEvents9.size());
     }
 }

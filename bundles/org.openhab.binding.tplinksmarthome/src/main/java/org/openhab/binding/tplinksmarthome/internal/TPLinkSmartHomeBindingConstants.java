@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class TPLinkSmartHomeBindingConstants {
 
+    public enum ColorScales {
+        NOT_SUPPORTED(0, 0),
+        K_2500_6500(2500, 6500),
+        K_2700_6500(2700, 6500),
+        K_2500_9000(2500, 9000);
+
+        private final int warm;
+        private final int cool;
+
+        ColorScales(final int warm, final int cool) {
+            this.warm = warm;
+            this.cool = cool;
+        }
+
+        public int getWarm() {
+            return warm;
+        }
+
+        public int getCool() {
+            return cool;
+        }
+    }
+
     public static final String BINDING_ID = "tplinksmarthome";
 
     // List of all switch channel ids
@@ -40,10 +63,6 @@ public final class TPLinkSmartHomeBindingConstants {
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMPERATURE = "colorTemperature";
     public static final String CHANNEL_COLOR_TEMPERATURE_ABS = "colorTemperatureAbs";
-    public static final int COLOR_TEMPERATURE_1_MIN = 2700;
-    public static final int COLOR_TEMPERATURE_1_MAX = 6500;
-    public static final int COLOR_TEMPERATURE_2_MIN = 2500;
-    public static final int COLOR_TEMPERATURE_2_MAX = 9000;
 
     public static final Set<String> CHANNELS_BULB_SWITCH = Stream.of(CHANNEL_BRIGHTNESS, CHANNEL_COLOR,
             CHANNEL_COLOR_TEMPERATURE, CHANNEL_COLOR_TEMPERATURE_ABS, CHANNEL_SWITCH).collect(Collectors.toSet());

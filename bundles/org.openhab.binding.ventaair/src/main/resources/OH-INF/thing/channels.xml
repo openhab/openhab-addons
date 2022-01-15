@@ -103,6 +103,13 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="pm25">
+		<item-type>Number:Density</item-type>
+		<label>Air Quality</label>
+		<description>Current Air Quality measured in PM 2.5</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
 	<channel-type id="waterLevel">
 		<item-type>Number</item-type>
 		<label>Water Level</label>
@@ -113,6 +120,7 @@
 				<option value="1">Refill tank</option>
 				<option value="2">OK</option>
 				<option value="3">Full</option>
+				<option value="4">Max</option>
 			</options>
 		</state>
 	</channel-type>
@@ -149,6 +157,13 @@
 		<item-type>Number:Time</item-type>
 		<label>Cleaning Time</label>
 		<description>Time until next cleaning (in hours)</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="serviceTime">
+		<item-type>Number:Time</item-type>
+		<label>Service Time</label>
+		<description>Service time in minutes</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 

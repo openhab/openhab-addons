@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.venstarthermostat.internal.discovery;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -22,6 +21,7 @@ import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.Scanner;
 import java.util.concurrent.ScheduledFuture;
@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.venstarthermostat.internal.VenstarThermostatBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -47,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Dan Cunningham - Refactoring and Improvements
  */
 
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.venstarthermostat")
 public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(VenstarThermostatDiscoveryService.class);
@@ -57,7 +60,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
     private static final String SSDP_MATCH = "colortouch:ecp";
     private static final int BACKGROUND_SCAN_INTERVAL_SECONDS = 300;
 
-    private ScheduledFuture<?> scheduledFuture = null;
+    private @Nullable ScheduledFuture<?> scheduledFuture = null;
 
     public VenstarThermostatDiscoveryService() {
         super(VenstarThermostatBindingConstants.SUPPORTED_THING_TYPES, 30, true);
@@ -67,14 +70,15 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Background Scan");
         stopBackgroundDiscovery();
-        scheduledFuture = scheduler.scheduleAtFixedRate(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS,
+        scheduledFuture = scheduler.scheduleWithFixedDelay(this::doRunRun, 0, BACKGROUND_SCAN_INTERVAL_SECONDS,
                 TimeUnit.SECONDS);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scheduledFuture != null && !scheduledFuture.isCancelled()) {
-            scheduledFuture.cancel(true);
+        ScheduledFuture<?> scheduledFutureLocal = scheduledFuture;
+        if (scheduledFutureLocal != null && !scheduledFutureLocal.isCancelled()) {
+            scheduledFutureLocal.cancel(true);
         }
     }
 
@@ -110,10 +114,9 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
      * @throws UnknownHostException
      * @throws IOException
      * @throws SocketException
-     * @throws UnsupportedEncodingException
      */
-    private MulticastSocket sendDiscoveryBroacast(NetworkInterface ni)
-            throws UnknownHostException, SocketException, UnsupportedEncodingException {
+    private @Nullable MulticastSocket sendDiscoveryBroacast(NetworkInterface ni)
+            throws UnknownHostException, SocketException {
         InetAddress m = InetAddress.getByName("239.255.255.250");
         final int port = 1900;
 
@@ -150,7 +153,7 @@ public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService 
             socket.joinGroup(m);
 
             logger.trace("Joined UPnP Multicast group on Interface: {}", ni.getName());
-            byte[] requestMessage = COLOR_TOUCH_DISCOVERY_MESSAGE.getBytes("UTF-8");
+            byte[] requestMessage = COLOR_TOUCH_DISCOVERY_MESSAGE.getBytes(StandardCharsets.UTF_8);
             DatagramPacket datagramPacket = new DatagramPacket(requestMessage, requestMessage.length, m, port);
             socket.send(datagramPacket);
             return socket;
