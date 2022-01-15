@@ -79,7 +79,6 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
 
     @Override
     public void updateThingChannels(SomfyTahomaState state) {
-
         if (OPERATING_MODE_STATE.equals(state.getName()) && state.getValue() instanceof Map) {
             logger.debug("Operating Mode State: {}  {}", state.getValue().getClass().getName(), state.getValue());
 
@@ -162,7 +161,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                 sendCommand(COMMAND_SET_AWAY_MODE_DURATION.toString(), "[ \"" + command.toString() + "\" ]");
             } else if (BOOST_MODE.equals(channelUID.getId())) {
                 if (command == OnOffType.ON) {
-                    if (this.boostMode == true) {
+                    if (this.boostMode) {
                         return;
                     }
                     this.boostMode = true;

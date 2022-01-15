@@ -14,6 +14,8 @@ package org.openhab.binding.somfytahoma.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link SomfyTahomaOauth2Reponse} holds information about Oauth2 login
  * response to your CozyTouch account.
@@ -23,10 +25,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SomfyTahomaOauth2Reponse {
     private String scope = "";
-    private String token_type = "";
-    private int expires_in = 0;
-    private String refresh_token = "";
-    private String access_token = "";
+
+    @SerializedName("token_type")
+    private String tokenType = "";
+
+    @SerializedName("expires_in")
+    private int expiresIn = 0;
+
+    @SerializedName("refresh_token")
+    private String refreshToken = "";
+
+    @SerializedName("access_token")
+    private String accessToken = "";
 
     public String getScope() {
         return scope;
@@ -36,35 +46,35 @@ public class SomfyTahomaOauth2Reponse {
         this.scope = scope;
     }
 
-    public String getToken_type() {
-        return token_type;
+    public String getTokenType() {
+        return tokenType;
     }
 
-    public void setToken_type(String token_type) {
-        this.token_type = token_type;
+    public void setTokenType(String tokenType) {
+        this.tokenType = tokenType;
     }
 
-    public int getExpires_in() {
-        return expires_in;
+    public int getExpiresIn() {
+        return expiresIn;
     }
 
-    public void setExpires_in(int expires_in) {
-        this.expires_in = expires_in;
+    public void setExpiresIn(int expiresIn) {
+        this.expiresIn = expiresIn;
     }
 
-    public String getRefresh_token() {
-        return refresh_token;
+    public String getRefreshToken() {
+        return refreshToken;
     }
 
-    public void setRefresh_token(String refresh_token) {
-        this.refresh_token = refresh_token;
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
-    public String getAccess_token() {
-        return access_token;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setAccess_token(String access_token) {
-        this.access_token = access_token;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

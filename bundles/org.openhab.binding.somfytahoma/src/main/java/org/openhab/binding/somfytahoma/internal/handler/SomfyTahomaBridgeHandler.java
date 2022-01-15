@@ -686,10 +686,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
                 SomfyTahomaOauth2Reponse.class);
 
-        logger.debug("OAuth2 Access Token: {}", oauth2response.getAccess_token());
+        logger.debug("OAuth2 Access Token: {}", oauth2response.getAccessToken());
 
         response = httpClient.newRequest(authBaseUrl + COZYTOUCH_OAUTH2_JWT_URL).method(HttpMethod.GET)
-                .header(HttpHeader.AUTHORIZATION, "Bearer " + oauth2response.getAccess_token())
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + oauth2response.getAccessToken())
                 .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).send();
 
         String jwt = response.getContentAsString();
