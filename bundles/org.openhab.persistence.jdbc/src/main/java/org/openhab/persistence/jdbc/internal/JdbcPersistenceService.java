@@ -253,17 +253,10 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
         // Get the item name from the filter
         // Also get the Item object so we can determine the type
-        Item item = null;
         String itemName = filter.getItemName();
         logger.debug("JDBC::remove: item is {}", itemName);
         if (itemName == null) {
             throw new IllegalArgumentException("Item name must not be null");
-        }
-        try {
-            item = itemRegistry.getItem(itemName);
-        } catch (ItemNotFoundException e) {
-            logger.error("JDBC::remove: unable to get item for itemName: '{}'. Ignore and give up!", itemName);
-            return false;
         }
 
         String table = sqlTables.get(itemName);
@@ -273,10 +266,10 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
         }
 
         long timerStart = System.currentTimeMillis();
-        boolean result = deleteItemValues(filter, table, item);
+        boolean result = deleteItemValues(filter, table);
         if (logger.isDebugEnabled()) {
-            logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", item.getName(),
-                    new Date(), System.currentTimeMillis() - timerStart);
+            logger.debug("JDBC: Deleted values for item '{}' in SQL database at {} in {} ms.", itemName, new Date(),
+                    System.currentTimeMillis() - timerStart);
         }
 
         return result;

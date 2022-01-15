@@ -83,7 +83,7 @@ public class JdbcBaseDAOTest {
     @Test
     public void testHistItemFilterDeleteProviderReturnsDeleteQueryWithoutWhereClause() {
         String sql = jdbcBaseDAO.histItemFilterDeleteProvider(filter, DB_TABLE_NAME, UTC_ZONE_ID);
-        assertThat(sql, is("DELETE FROM " + DB_TABLE_NAME));
+        assertThat(sql, is("TRUNCATE TABLE " + DB_TABLE_NAME));
     }
 
     @Test
