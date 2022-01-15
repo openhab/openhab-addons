@@ -11,6 +11,9 @@
 
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
+			<channel id="batteryCapacity" typeId="batteryCapacity"/>
+			<channel id="batteryAvailableEnergy" typeId="batteryAvailableEnergy"/>
+			<channel id="batteryTemperature" typeId="batteryTemperature"/>
 			<channel id="plugStatus" typeId="plugStatus"/>
 			<channel id="chargingStatus" typeId="chargingStatus"/>
 			<channel id="estimatedRange" typeId="estimatedRange"/>
@@ -77,7 +80,22 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Sample Channel Type -->
+	<channel-type id="batteryCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Capacity</label>
+		<state pattern="%.1f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batteryAvailableEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Energy Available</label>
+		<state pattern="%.1f kWh" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batteryTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
 	<channel-type id="plugStatus">
 		<item-type>String</item-type>
 		<label>Plug Status</label>

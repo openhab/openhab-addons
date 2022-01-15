@@ -32,16 +32,19 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 
 Some channels may not work depending on your car and MyRenault account.
 
-| Channel ID            | Type               | Description                        | Read Only |
-|-----------------------|--------------------|------------------------------------|-----------|
-| batterylevel          | Number             | State of the battery in %          | Yes       |
-| plugStatus            | String             | Status of charging plug            | Yes       |
-| chargingStatus        | String             | Charging status                    | Yes       |
-| estimatedRange        | Number:Length      | Estimated range of the car         | Yes       |
-| odometer              | Number:Length      | Total distance travelled           | Yes       |
-| hvacstatus            | Switch             | HVAC status switch                 | No        |
-| hvacTargetTemperature | Number:Temperature | HVAC thermostat target temperature | No        |
-| externalTemperature   | Number:Temperature | Temperature outside of the car     | Yes       |
-| image                 | String             | Image URL of MyRenault             | Yes       |
-| location              | Location           | The GPS position of the vehicle    | Yes       |
+| Channel ID             | Type               | Description                        | Read Only |
+|------------------------|--------------------|------------------------------------|-----------|
+| batteryavailableEnergy | Number:Energy      | Battery Energy Available           | Yes       |
+| batterycapacity        | Number:Energy      | Battery Capacity                   | Yes       |
+| batterylevel           | Number             | State of the battery in %          | Yes       |
+| batterytemperature     | Number:Temperature | Battery Temperature                | Yes       |
+| plugstatus             | String             | Status of charging plug            | Yes       |
+| chargingstatus         | String             | Charging status                    | Yes       |
+| estimatedrange         | Number:Length      | Estimated range of the car         | Yes       |
+| odometer               | Number:Length      | Total distance travelled           | Yes       |
+| hvacstatus             | Switch             | HVAC status switch                 | No        |
+| hvactargettemperature  | Number:Temperature | HVAC thermostat target temperature | No        |
+| externaltemperature    | Number:Temperature | Temperature outside of the car     | Yes       |
+| image                  | String             | Image URL of MyRenault             | Yes       |
+| location               | Location           | The GPS position of the vehicle    | Yes       |
 

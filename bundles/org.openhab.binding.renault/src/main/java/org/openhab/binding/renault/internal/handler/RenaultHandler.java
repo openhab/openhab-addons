@@ -44,6 +44,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +75,14 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        // if (command instanceof RefreshType) {
-        // This binding only polls status data automatically.
-        // }
-
         logger.info("handleCommand: {} = {}", channelUID, command);
         switch (channelUID.toString()) {
+            case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
+                if (command instanceof RefreshType) {
+                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                }
+                break;
             case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
                 if (command instanceof OnOffType) {
                     MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);

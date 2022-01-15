@@ -32,12 +32,12 @@ public class RenaultBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_BATTERY_LEVEL = "batterylevel";
     public static final String CHANNEL_HVAC_STATUS = "hvacstatus";
-    public static final String CHANNEL_HVAC_TARGET_TEMPERATURE = "hvacTargetTemperature";
+    public static final String CHANNEL_HVAC_TARGET_TEMPERATURE = "hvactargettemperature";
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_ODOMETER = "odometer";
-    public static final String CHANNEL_ESTIMATED_RANGE = "estimatedRange";
-    public static final String CHANNEL_EXTERNAL_TEMPERATURE = "externalTemperature";
-    public static final String CHANNEL_PLUG_STATUS = "plugStatus";
-    public static final String CHANNEL_CHARGING_STATUS = "chargingStatus";
+    public static final String CHANNEL_ESTIMATED_RANGE = "estimatedrange";
+    public static final String CHANNEL_EXTERNAL_TEMPERATURE = "externaltemperature";
+    public static final String CHANNEL_PLUG_STATUS = "plugstatus";
+    public static final String CHANNEL_CHARGING_STATUS = "chargingstatus";
 }

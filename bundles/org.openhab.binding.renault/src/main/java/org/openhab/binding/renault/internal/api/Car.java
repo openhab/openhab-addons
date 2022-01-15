@@ -37,9 +37,12 @@ public class Car {
     private boolean disableCockpit = false;
     private boolean disableHvac = false;
 
-    private Double hvacTargetTemperature = 20.0;
     private @Nullable Double batteryLevel;
+    private @Nullable Double batteryCapacity;
+    private @Nullable Double batteryAvailableEnergy;
+    private @Nullable Double batteryTemperature;
     private @Nullable Boolean hvacstatus;
+    private Double hvacTargetTemperature = 20.0;
     private @Nullable Double odometer;
     private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
@@ -64,6 +67,15 @@ public class Car {
                 }
                 if (attributes.get("chargingStatus") != null) {
                     chargingStatus = mapChargingStatus(attributes.get("chargingStatus").getAsString());
+                }
+                if (attributes.get("batteryCapacity") != null) {
+                    batteryCapacity = attributes.get("batteryCapacity").getAsDouble();
+                }
+                if (attributes.get("batteryAvailableEnergy") != null) {
+                    batteryAvailableEnergy = attributes.get("batteryAvailableEnergy").getAsDouble();
+                }
+                if (attributes.get("batteryTemperature") != null) {
+                    batteryTemperature = attributes.get("batteryTemperature").getAsDouble();
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
