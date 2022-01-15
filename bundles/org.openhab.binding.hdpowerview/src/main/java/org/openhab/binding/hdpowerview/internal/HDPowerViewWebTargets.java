@@ -49,6 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -372,10 +373,14 @@ public class HDPowerViewWebTargets {
         String jsonResponse = invoke(HttpMethod.GET, uri, null, null);
         try {
             JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
-            JsonObject scheduledEventObject = jsonObject.get("scheduledEvent").getAsJsonObject();
+            JsonElement scheduledEventElement = jsonObject.get("scheduledEvent");
+            if (scheduledEventElement == null) {
+                throw new HubInvalidResponseException("Missing 'scheduledEvent' element");
+            }
+            JsonObject scheduledEventObject = scheduledEventElement.getAsJsonObject();
             scheduledEventObject.addProperty("enabled", enable);
             invoke(HttpMethod.PUT, uri, null, jsonObject.toString());
-        } catch (JsonParseException e) {
+        } catch (JsonParseException | IllegalStateException e) {
             throw new HubInvalidResponseException("Error parsing scheduledEvent response", e);
         }
     }
