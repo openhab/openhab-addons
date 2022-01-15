@@ -434,43 +434,43 @@
 	<channel-type id="boost_mode_duration">
 		<item-type>Number</item-type>
 		<label>Boost Mode Duration</label>
-		<description>Duration for Boot Mode</description>
+		<description>Duration for Boost Mode</description>
 		<state min="0" max="7" step="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="away_mode_duration">
 		<item-type>Number</item-type>
 		<label>Away Mode Duration</label>
-		<description>Duration for Boot Mode</description>
+		<description>Duration for Away Mode</description>
 		<state min="0" max="7" step="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="heat_pump_operating_time">
 		<item-type>Number</item-type>
 		<label>Heat Pump Operating Time</label>
-		<description>Time the Heat Pump has been operating</description>
+		<description>Time the Heat Pump has been operating in hours</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="electric_booster_operating_time">
 		<item-type>Number</item-type>
 		<label>Electric Bosster Operating Time</label>
-		<description>Time the Electric Bosster has been operating</description>
+		<description>Time the Electric Bosster has been operating in hours</description>
 		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="power_heatpump">
 		<item-type>Number</item-type>
 		<label>Heat Pump Power</label>
-		<description>Indicates current status of heatpump</description>
-		<state readOnly="true"/>
+		<description>Indicates current status of heatpump in watts</description>
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="power_heatelec">
 		<item-type>Number</item-type>
 		<label>Electrical Heater Active</label>
-		<description>Indicates current status of electrical heater</description>
-		<state readOnly="true"/>
+		<description>Indicates current status of electrical heater in watts</description>
+		<state pattern="%d" readOnly="true"/>
 	</channel-type>
 
 
@@ -491,13 +491,7 @@
 		<item-type>Number</item-type>
 		<label>Number of showers</label>
 		<description>3 to 5 showers</description>
-		<state>
-			<options>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
-			</options>
-		</state>
+		<state min="3" max="5" step="1" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="middlewater_temperature">

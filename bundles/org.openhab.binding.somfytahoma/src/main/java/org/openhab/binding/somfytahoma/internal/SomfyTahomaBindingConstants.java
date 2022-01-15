@@ -323,6 +323,7 @@ public class SomfyTahomaBindingConstants {
     public static final int TYPE_BOOLEAN = 6;
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
+    public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
     public static final int SUSPEND_TIME = 120;
     public static final int RECONCILIATION_TIME = 600;

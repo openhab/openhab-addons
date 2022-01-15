@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
@@ -46,10 +45,8 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
     public SomfyTahomaWaterHeatingSystemHandler(Thing thing) {
         super(thing);
 
-        stateNames.put(MANUFACTURER, MANUFACTURER_NAME_STATE);
         stateNames.put(MIDDLEWATER_TEMPERATURE, MIDDLE_WATER_TEMPERATURE_STATE);
         stateNames.put(TARGET_TEMPERATURE, TARGET_TEMPERATURE_STATE);
-        // stateNames.put(WATER_TEMPERATURE, TEMPERATURE_STATE);
         stateNames.put(WATER_HEATER_MODE, WATER_HEATER_MODE_STATE);
 
         stateNames.put(BOOST_MODE_DURATION, BOOST_MODE_DURATION_STATE);
@@ -88,27 +85,27 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
             if (relaunchValue != null) {
                 this.boostMode = relaunchValue.toString().equalsIgnoreCase("on");
                 logger.debug("Boost Value: {}", this.boostMode);
-                Channel chBoost = thing.getChannel(BOOST_MODE);
-                if (chBoost != null) {
-                    updateState(chBoost.getUID(), OnOffType.from(this.boostMode));
-                }
+                updateState(BOOST_MODE, OnOffType.from(this.boostMode));
             }
 
             Object awayValue = data.get("absence");
             if (awayValue != null) {
                 this.awayMode = awayValue.toString().equalsIgnoreCase("on");
                 logger.debug("Away Value: {}", this.awayMode);
-                Channel chAway = thing.getChannel(AWAY_MODE);
-                if (chAway != null) {
-                    updateState(chAway.getUID(), OnOffType.from(this.awayMode));
-                }
+                updateState(AWAY_MODE, OnOffType.from(this.boostMode));
             }
         } else if (TARGET_TEMPERATURE_STATE.equals(state.getName())) {
             logger.debug("Target Temperature: {}", state.getValue());
             // 50 -> 3
             // 54.5 -> 4
             // 62 -> 5
-            Double temp = Double.parseDouble(state.getValue().toString());
+            Double temp = null;
+            try {
+                temp = Double.parseDouble(state.getValue().toString());
+            } catch (NumberFormatException e) {
+                logger.warn("Unexcepted pre-defined value for Target State Temperature: {}", state.getValue());
+                return;
+            }
             int v = 0;
             if (temp == 50) {
                 v = 3;
@@ -118,22 +115,19 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                 v = 5;
             }
 
-            Channel chAway = thing.getChannel(SHOWERS);
-            if (chAway != null) {
-                updateState(chAway.getUID(), new DecimalType(v));
-            }
+            updateState(SHOWERS, new DecimalType(v));
         }
 
         super.updateThingChannels(state);
     }
 
     private void sendOperatingMode() {
-        sendCommand(COMMAND_SET_CURRENT_OPERATING_MODE.toString(), "[ { \"relaunch\":\""
-                + (this.boostMode ? "on" : "off") + "\", \"absence\":\"" + (this.awayMode ? "on" : "off") + "\"} ]");
+        sendCommand(COMMAND_SET_CURRENT_OPERATING_MODE, String.format("[ { \"relaunch\":\"%s\", \"absence\":\"%s\"} ]",
+                (this.boostMode ? "on" : "off"), (this.awayMode ? "on" : "off")));
     }
 
     private void sendBoostDuration(int duration) {
-        sendCommand(COMMAND_SET_BOOST_MODE_DURATION.toString(), "[ " + duration + " ]");
+        sendCommand(COMMAND_SET_BOOST_MODE_DURATION, "[ " + duration + " ]");
     }
 
     @Override
@@ -146,7 +140,13 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
             logger.debug("Command received: {}/{}", channelUID.getId(), command.toString());
 
             if (BOOST_MODE_DURATION.equals(channelUID.getId())) {
-                int duration = Integer.parseInt(command.toString());
+                int duration = 0;
+                try {
+                    Integer.parseInt(command.toString());
+                } catch (NumberFormatException e) {
+                    logger.debug("Invalid value received for boost mode duration", command);
+                    return;
+                }
                 if (duration == 0) {
                     this.boostMode = false;
                     sendOperatingMode();
@@ -156,10 +156,10 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                     sendBoostDuration(duration);
                 }
             } else if (WATER_HEATER_MODE.equals(channelUID.getId())) {
-                sendCommand(COMMAND_SET_WATER_HEATER_MODE.toString(), "[ \"" + command.toString() + "\" ]");
+                sendCommand(COMMAND_SET_WATER_HEATER_MODE, "[ \"" + command.toString() + "\" ]");
             } else if (AWAY_MODE_DURATION.equals(channelUID.getId())) {
-                sendCommand(COMMAND_SET_AWAY_MODE_DURATION.toString(), "[ \"" + command.toString() + "\" ]");
-            } else if (BOOST_MODE.equals(channelUID.getId())) {
+                sendCommand(COMMAND_SET_AWAY_MODE_DURATION, "[ \"" + command.toString() + "\" ]");
+            } else if (BOOST_MODE.equals(channelUID.getId()) && command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
                     if (this.boostMode) {
                         return;
@@ -171,7 +171,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                     });
 
                     scheduler.schedule(() -> {
-                        sendCommand(COMMAND_REFRESH_DHWMODE.toString(), "[ ]");
+                        sendCommand(COMMAND_REFRESH_DHWMODE, "[ ]");
                     }, 1, TimeUnit.SECONDS);
 
                     scheduler.schedule(() -> {
@@ -179,14 +179,14 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                     }, 2, TimeUnit.SECONDS);
 
                     scheduler.schedule(() -> {
-                        sendCommand(COMMAND_REFRESH_BOOST_MODE_DURATION.toString(), "[ ]");
+                        sendCommand(COMMAND_REFRESH_BOOST_MODE_DURATION, "[ ]");
                     }, 3, TimeUnit.SECONDS);
 
                 } else {
                     this.boostMode = false;
                     sendOperatingMode();
                 }
-            } else if (AWAY_MODE.equals(channelUID.getId())) {
+            } else if (AWAY_MODE.equals(channelUID.getId()) && command instanceof OnOffType) {
                 if (command == OnOffType.ON) {
                     this.boostMode = false;
                     this.awayMode = true;
@@ -195,7 +195,13 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                 }
                 sendOperatingMode();
             } else if (SHOWERS.equals(channelUID.getId())) {
-                int showers = Integer.parseInt(command.toString());
+                int showers = 0;
+                try {
+                    showers = Integer.parseInt(command.toString());
+                } catch (NumberFormatException e) {
+                    logger.info("Received an invalid value for desired number of showers", command);
+                    return;
+                }
                 Double value = 0.0;
 
                 switch (showers) {
@@ -211,7 +217,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
                     default:
                         break;
                 }
-                sendCommand(COMMAND_SET_TARGET_TEMPERATURE.toString(), "[ " + value.toString() + " ]");
+                sendCommand(COMMAND_SET_TARGET_TEMPERATURE, "[ " + value.toString() + " ]");
             }
 
         }

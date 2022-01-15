@@ -125,16 +125,17 @@ Please see the example below.
 | myfox camera                                                                  | shutter                      | controlling of the camera shutter                                                                                           |
 | myfox alarm                                                                   | myfox_alarm_command          | used for sending commands to Somfy Myfox alarm device                                                                       |
 | waterheatersystem                                                             | middlewater_temperature      | Number:Temperature indicating the temperature of the water at the middle of the heater |
-| waterheatersystem | boost_mode | Switch allowing to enable or disable the booster. When switching to ON, by default, the Boost duration will be set for 1 day.|
-| waterheatersystem | away_mode | TBC |
-| waterheatersystem | boost_mode_duration | The duration of the Boost mode in days. Valid from 1 to 7. |
-| waterheatersystem | power_heatpump | Current consumption/power of the heatpump in Watts. |
-| waterheatersystem | power_heatelec | Current consumption/power of the electric resistance in Watts. |
-| waterheatersystem | showers | Virtual channel, representing the number of desired showers - between 3 to 5. It actually switches the desired temperature to 50.0, 54.5 or 62.0 Celcius degrees. Please note that in ECO mode, only 3 and 4 showers are allowed. |
-| waterheatersystem | heat_pump_operating_time | Number of hours the heatpump has been operating |
-| waterheatersystem | electric_booster_operating_time | number of hours the electric booster has been operating. |
-| waterheatersystem | mode | The current mode of the boiler. Can be: autoMode / manualEcoInactive / manualEcoActive |
-
+| waterheatersystem                                                             | boost_mode                   | Switch allowing to enable or disable the booster. When switching to ON, by default, the Boost duration will be set for 1 day.|
+| waterheatersystem                                                             | away_mode                    | Defines if away mode is On or Off (no water heating) |
+| waterheatersystem                                                             | away_mode_duration           | Defines if away mode the duration in days. |
+| waterheatersystem                                                             | boost_mode_duration          | The duration of the Boost mode in days. Valid from 1 to 7. |
+| waterheatersystem                                                             | power_heatpump               | Current consumption/power of the heatpump in Watts. |
+| waterheatersystem                                                             | power_heatelec               | Current consumption/power of the electric resistance in Watts. |
+| waterheatersystem                                                             | showers                      | Virtual channel, representing the number of desired showers - between 3 to 5. It actually switches the desired temperature to 50.0, 54.5 or 62.0 Celcius degrees. Please note that in ECO mode, only 3 and 4 showers are allowed. |
+| waterheatersystem                                                             | heat_pump_operating_time     | Number of hours the heatpump has been operating |
+| waterheatersystem                                                             | electric_booster_operating_time | number of hours the electric booster has been operating. |
+| waterheatersystem                                                             | mode                         | The current mode of the boiler. Can be: autoMode / manualEcoInactive / manualEcoActive |
+| waterheatersystem                                                             | target_temperature           | Water target temperature in degrees. Read only. Temperature desired is managed through mode and showers channels. |
 
 To run a scenario inside a rule for example, the ID of the scenario will be required.
 You can list all the scenarios IDs with the following console command: `somfytahoma <bridgeUID> scenarios`.

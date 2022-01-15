@@ -29,6 +29,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.ws.rs.core.MediaType;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -45,6 +47,7 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Error;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Reponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRegisterEventsResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
@@ -261,7 +264,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             logger.debug("Received invalid data (login)", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
         } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e)) {
+            if (isAuthenticationChallenge(e) || isOAuthGrantError(e)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error logging in (check your credentials)");
                 setTooManyRequests();
@@ -662,9 +665,9 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Returns JSESSIONID cookie value
+     * Performs the login for Cozytouch using OAUTH2 authorization.
      *
-     * @return
+     * @return JSESSION ID cookie value.
      * @throws ExecutionException
      * @throws TimeoutException
      * @throws InterruptedException
@@ -683,6 +686,21 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
                 .send();
 
+        if (response.getStatus() != 200) {
+            // Login error
+            if (response.getHeaders().getField(HttpHeader.CONTENT_TYPE).getValue()
+                    .equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+                try {
+                    SomfyTahomaOauth2Error error = gson.fromJson(response.getContentAsString(),
+                            SomfyTahomaOauth2Error.class);
+                    throw new ExecutionException(error.getErrorDescription(), null);
+                } catch (JsonSyntaxException e) {
+
+                }
+            }
+            throw new ExecutionException("Unknown error while attempting to log in.", null);
+        }
+
         SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
                 SomfyTahomaOauth2Reponse.class);
 
@@ -693,10 +711,6 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).send();
 
         String jwt = response.getContentAsString();
-
-        if (logger.isTraceEnabled()) {
-            logger.trace("JWT value: {}", jwt);
-        }
         return jwt.replace("\"", "");
     }
 
@@ -848,6 +862,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private boolean isAuthenticationChallenge(Exception ex) {
         String msg = ex.getMessage();
         return msg != null && msg.contains(AUTHENTICATION_CHALLENGE);
+    }
+
+    private boolean isOAuthGrantError(Exception ex) {
+        String msg = ex.getMessage();
+        return msg != null && msg.contains(AUTHENTICATION_OAUTH_GRANT_ERROR);
     }
 
     @Override
