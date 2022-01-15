@@ -115,12 +115,12 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         if (handler != null) {
             OpenGateway gw = handler.gateway;
             if (gw != null && !gw.isConnected()) {
-                logger.info("Cannot handle {} command for {}: gateway is not connected", command, getThing().getUID());
+                logger.info("Cannot handle {} command for {}: gateway is not connected", command, thing.getUID());
                 return;
             }
             if (deviceWhere == null) {
                 logger.info("Cannot handle {} command for {}: 'where' parameter is not configured or is invalid",
-                        command, getThing().getUID());
+                        command, thing.getUID());
                 return;
             }
             if (command instanceof RefreshType) {
@@ -130,6 +130,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                     if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Could not get channel state (timer expired)");
+                        logger.debug("requestChannelState() timeout for thing {}", thing.getUID());
                     }
                 }, THING_STATE_REQ_TIMEOUT_SEC, TimeUnit.SECONDS);
             } else {

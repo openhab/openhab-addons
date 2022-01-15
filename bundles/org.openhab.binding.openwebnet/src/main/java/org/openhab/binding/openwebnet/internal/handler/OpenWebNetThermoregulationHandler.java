@@ -233,17 +233,17 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
 
         Thermoregulation.WhatThermo w = Thermoregulation.WhatThermo.fromValue(tmsg.getWhat().value());
 
-        if (w.mode() == null) {
+        if (w.getMode() == null) {
             logger.debug("updateModeAndFunction() Could not parse Mode from: {}", tmsg.getFrameValue());
             return;
         }
-        if (w.function() == null) {
+        if (w.getFunction() == null) {
             logger.debug("updateModeAndFunction() Could not parse Function from: {}", tmsg.getFrameValue());
             return;
         }
 
-        Thermoregulation.OperationMode mode = w.mode();
-        Thermoregulation.Function function = w.function();
+        Thermoregulation.OperationMode mode = w.getMode();
+        Thermoregulation.Function function = w.getFunction();
 
         if (w == Thermoregulation.WhatThermo.HEATING) {
             function = Thermoregulation.Function.HEATING;
