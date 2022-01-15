@@ -25,19 +25,19 @@ public class GoogleSTTBindingConstants {
     /**
      * Service name
      */
-    static final String SERVICE_NAME = "Google Cloud Speech-to-Text";
+    public static final String SERVICE_NAME = "Google Cloud Speech-to-Text";
     /**
      * Service id
      */
-    static final String SERVICE_ID = "googlestt";
+    public static final String SERVICE_ID = "googlestt";
 
     /**
      * Service category
      */
-    static final String SERVICE_CATEGORY = "voice";
+    public static final String SERVICE_CATEGORY = "voice";
 
     /**
      * Service pid
      */
-    static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
+    public static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 }

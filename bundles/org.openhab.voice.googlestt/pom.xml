@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.voice.googlestt</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Google Cloud Speech to Text</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: Google Cloud Speech to Text</name>
   <properties>
     <bnd.importpackage>!*opencensus*,!org.bouncycastle*,!*jboss*,!javax.annotation.*,!net.jpountz.*,!lzma.sdk.*,org.eclipse.jetty.*;resolution:=optional,com.ning.*;resolution:=optional,com.jcraft.*;resolution:=optional,com.google.re2j.*;resolution:=optional,com.google.api.client.*;resolution:=optional,org.conscrypt.*;resolution:=optional,!io.grpc.census.*,com.sun.jndi.dns.*;resolution:=optional,org.apache.log.*;resolution:=optional,org.apache.http.*;resolution:=optional,sun.security.*;resolution:=optional,com.oracle.svm.core.annotate.*;resolution:=optional,*blockhound*;resolution:=optional,com.google.protobuf.nano.*;resolution:=optional,io.grpc.*;resolution:=optional,com.google.protobuf.*;resolution:=optional,io.perfmark.*;resolution:=optional</bnd.importpackage>
   </properties>
