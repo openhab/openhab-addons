@@ -26,18 +26,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
-import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes.Scene;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -120,30 +120,28 @@ public class HDPowerViewJUnitTests {
             try {
                 shadesX = webTargets.getShades();
                 assertNotNull(shadesX);
-                if (shadesX != null) {
-                    List<ShadeData> shadesData = shadesX.shadeData;
-                    assertNotNull(shadesData);
+                List<ShadeData> shadesData = shadesX.shadeData;
+                assertNotNull(shadesData);
 
-                    if (shadesData != null) {
-                        assertTrue(!shadesData.isEmpty());
-                        ShadeData shadeData;
-                        shadeData = shadesData.get(0);
-                        assertNotNull(shadeData);
-                        assertTrue(shadeData.getName().length() > 0);
-                        shadePos = shadeData.positions;
-                        assertNotNull(shadePos);
-                        ShadeData shadeZero = shadesData.get(0);
-                        assertNotNull(shadeZero);
-                        shadeId = shadeZero.id;
-                        assertNotEquals(0, shadeId);
+                if (shadesData != null) {
+                    assertTrue(!shadesData.isEmpty());
+                    ShadeData shadeData;
+                    shadeData = shadesData.get(0);
+                    assertNotNull(shadeData);
+                    assertTrue(shadeData.getName().length() > 0);
+                    shadePos = shadeData.positions;
+                    assertNotNull(shadePos);
+                    ShadeData shadeZero = shadesData.get(0);
+                    assertNotNull(shadeZero);
+                    shadeId = shadeZero.id;
+                    assertNotEquals(0, shadeId);
 
-                        for (ShadeData shadexData : shadesData) {
-                            String shadeName = shadexData.getName();
-                            assertNotNull(shadeName);
-                        }
+                    for (ShadeData shadexData : shadesData) {
+                        String shadeName = shadexData.getName();
+                        assertNotNull(shadeName);
                     }
                 }
-            } catch (JsonParseException | HubProcessingException | HubMaintenanceException e) {
+            } catch (HubException e) {
                 fail(e.getMessage());
             }
 
@@ -153,90 +151,71 @@ public class HDPowerViewJUnitTests {
                 Scenes scenes = webTargets.getScenes();
                 assertNotNull(scenes);
 
-                if (scenes != null) {
-                    List<Scene> scenesData = scenes.sceneData;
-                    assertNotNull(scenesData);
+                List<Scene> scenesData = scenes.sceneData;
+                assertNotNull(scenesData);
 
-                    if (scenesData != null) {
-                        assertTrue(!scenesData.isEmpty());
-                        Scene sceneZero = scenesData.get(0);
-                        assertNotNull(sceneZero);
-                        sceneId = sceneZero.id;
-                        assertTrue(sceneId > 0);
+                if (scenesData != null) {
+                    assertTrue(!scenesData.isEmpty());
+                    Scene sceneZero = scenesData.get(0);
+                    assertNotNull(sceneZero);
+                    sceneId = sceneZero.id;
+                    assertTrue(sceneId > 0);
 
-                        for (Scene scene : scenesData) {
-                            String sceneName = scene.getName();
-                            assertNotNull(sceneName);
-                        }
+                    for (Scene scene : scenesData) {
+                        String sceneName = scene.getName();
+                        assertNotNull(sceneName);
                     }
                 }
-            } catch (JsonParseException | HubProcessingException | HubMaintenanceException e) {
+            } catch (HubException e) {
                 fail(e.getMessage());
             }
 
             // ==== refresh a specific shade ====
-            Shade shade = null;
+            ShadeData shadeData = null;
             try {
                 assertNotEquals(0, shadeId);
-                shade = webTargets.refreshShadePosition(shadeId);
-                assertNotNull(shade);
-            } catch (HubProcessingException | HubMaintenanceException e) {
+                shadeData = webTargets.refreshShadePosition(shadeId);
+            } catch (HubException e) {
                 fail(e.getMessage());
             }
 
             // ==== move a specific shade ====
             try {
                 assertNotEquals(0, shadeId);
-                assertNotNull(shade);
-                if (shade != null) {
-                    ShadeData shadeData = shade.shade;
-                    assertNotNull(shadeData);
 
-                    if (shadeData != null) {
-                        ShadePosition positions = shadeData.positions;
-                        assertNotNull(positions);
+                if (shadeData != null) {
+                    ShadePosition positions = shadeData.positions;
+                    assertNotNull(positions);
+                    Integer capabilitiesValue = shadeData.capabilities;
+                    assertNotNull(capabilitiesValue);
 
-                        if (positions != null) {
-                            Integer capabilitiesValue = shadeData.capabilities;
-                            assertNotNull(capabilitiesValue);
+                    if (positions != null && capabilitiesValue != null) {
+                        Capabilities capabilities = db.getCapabilities(capabilitiesValue.intValue());
 
-                            if (capabilitiesValue != null) {
-                                Capabilities capabilities = db.getCapabilities(capabilitiesValue.intValue());
+                        State pos = positions.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+                        assertEquals(PercentType.class, pos.getClass());
 
-                                State pos = positions.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
-                                assertEquals(PercentType.class, pos.getClass());
+                        int position = ((PercentType) pos).intValue();
+                        position = position + ((position <= 10) ? 5 : -5);
 
-                                int position = ((PercentType) pos).intValue();
-                                position = position + ((position <= 10) ? 5 : -5);
+                        ShadePosition targetPosition = new ShadePosition().setPosition(capabilities,
+                                PRIMARY_ZERO_IS_CLOSED, position);
+                        assertNotNull(targetPosition);
 
-                                ShadePosition targetPosition = new ShadePosition().setPosition(capabilities,
-                                        PRIMARY_ZERO_IS_CLOSED, position);
-                                assertNotNull(targetPosition);
+                        if (allowShadeMovementCommands) {
+                            webTargets.moveShade(shadeId, targetPosition);
 
-                                if (allowShadeMovementCommands) {
-                                    webTargets.moveShade(shadeId, targetPosition);
-
-                                    Shade newShade = webTargets.getShade(shadeId);
-                                    assertNotNull(newShade);
-                                    if (newShade != null) {
-                                        ShadeData newData = newShade.shade;
-                                        assertNotNull(newData);
-                                        if (newData != null) {
-                                            ShadePosition actualPosition = newData.positions;
-                                            assertNotNull(actualPosition);
-                                            if (actualPosition != null) {
-                                                assertEquals(
-                                                        targetPosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED),
-                                                        actualPosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED));
-                                            }
-                                        }
-                                    }
-                                }
+                            ShadeData newData = webTargets.getShade(shadeId);
+                            ShadePosition actualPosition = newData.positions;
+                            assertNotNull(actualPosition);
+                            if (actualPosition != null) {
+                                assertEquals(targetPosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED),
+                                        actualPosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED));
                             }
                         }
                     }
                 }
-            } catch (HubProcessingException | HubMaintenanceException e) {
+            } catch (HubException e) {
                 fail(e.getMessage());
             }
 
@@ -255,7 +234,7 @@ public class HDPowerViewJUnitTests {
                 try {
                     assertNotNull(sceneId);
                     webTargets.stopShade(shadeId);
-                } catch (HubProcessingException | HubMaintenanceException e) {
+                } catch (HubException e) {
                     fail(e.getMessage());
                 }
             }
