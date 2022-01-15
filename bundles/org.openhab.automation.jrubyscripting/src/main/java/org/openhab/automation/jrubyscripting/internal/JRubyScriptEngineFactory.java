@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.jrubyscripting.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -93,6 +95,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
         // Empty comments prevent the formatter from breaking up the correct streams chaining
+        logger.debug("Scope Values: {}", scopeValues);
         Map<String, Object> filteredScopeValues = //
                 scopeValues //
                         .entrySet() //
@@ -102,7 +105,26 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
                         .map(JRubyScriptEngineFactory::mapGlobalPresets) //
                         .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue())); //
 
-        super.scopeValues(scriptEngine, filteredScopeValues);
+        Map<Boolean, Map<String, Object>> partitionedMap = //
+                filteredScopeValues.entrySet() //
+                        .stream() //
+                        .collect(Collectors.partitioningBy(entry -> (entry.getValue() instanceof Class),
+                                Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+
+        importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<String, Object>()));
+        super.scopeValues(scriptEngine, partitionedMap.getOrDefault(false, new HashMap<String, Object>()));
+    }
+
+    private void importClassesToRuby(ScriptEngine scriptEngine, Map<String, Object> objects) {
+        String import_statements = objects.entrySet() //
+                .stream() //
+                .map(entry -> "java_import " + ((java.lang.Class<?>) entry.getValue()).getName() + " rescue nil") //
+                .collect(Collectors.joining("\n"));
+        try {
+            scriptEngine.eval(import_statements);
+        } catch (ScriptException e) {
+            logger.debug("Error importing java classes", e);
+        }
     }
 
     @Override
