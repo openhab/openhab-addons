@@ -184,12 +184,13 @@ public class JdbcMapper {
         return null;
     }
 
-    public boolean deleteItemValues(FilterCriteria filter, String table, Item item) {
-        logger.debug("JDBC::deleteItemValues filter='{}' table='{}' item='{}' itemName='{}'", (filter != null), table,
-                item, item.getName());
+    @SuppressWarnings("null")
+    public boolean deleteItemValues(FilterCriteria filter, String table) {
+        logger.debug("JDBC::deleteItemValues filter='{}' table='{}' itemName='{}'", (filter != null), table,
+                filter.getItemName());
         if (table != null) {
             long timerStart = System.currentTimeMillis();
-            conf.getDBDAO().doDeleteItemValues(item, filter, table, timeZoneProvider.getTimeZone());
+            conf.getDBDAO().doDeleteItemValues(filter, table, timeZoneProvider.getTimeZone());
             logTime("deleteItemValues", timerStart, System.currentTimeMillis());
             errCnt = 0;
             return true;
