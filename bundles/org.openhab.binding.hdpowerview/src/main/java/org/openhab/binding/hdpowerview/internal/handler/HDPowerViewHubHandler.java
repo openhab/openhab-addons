@@ -326,7 +326,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         logger.debug("Received data for {} shades", shadesData.size());
 
         Map<String, ShadeData> idShadeDataMap = getIdShadeDataMap(shadesData);
-        Map<Thing, String> thingIdMap = getThingIdMap();
+        Map<Thing, String> thingIdMap = getShadeThingIdMap();
         for (Entry<Thing, String> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
             String shadeId = item.getValue();
@@ -533,9 +533,12 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private Map<Thing, String> getThingIdMap() {
+    private Map<Thing, String> getShadeThingIdMap() {
         Map<Thing, String> ret = new HashMap<>();
         for (Thing thing : getThing().getThings()) {
+            if (!HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thing.getThingTypeUID())) {
+                continue;
+            }
             String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
             if (id != null && !id.isEmpty()) {
                 ret.put(thing, id);
@@ -555,7 +558,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void requestRefreshShadePositions() {
-        Map<Thing, String> thingIdMap = getThingIdMap();
+        Map<Thing, String> thingIdMap = getShadeThingIdMap();
         for (Entry<Thing, String> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
             ThingHandler handler = thing.getHandler();
@@ -569,7 +572,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     }
 
     private void requestRefreshShadeBatteryLevels() {
-        Map<Thing, String> thingIdMap = getThingIdMap();
+        Map<Thing, String> thingIdMap = getShadeThingIdMap();
         for (Entry<Thing, String> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
             ThingHandler handler = thing.getHandler();
