@@ -56,6 +56,11 @@ public abstract class EchonetObject {
         }
 
         final InflightRequest inflightGetRequest = this.inflightGetRequest;
+        if (null == inflightGetRequest) {
+            logger.warn("{} has null inflight", instanceKey());
+            return false;
+        }
+
         if (hasInflight(nowMs, inflightGetRequest)) {
             return false;
         }

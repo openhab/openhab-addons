@@ -65,11 +65,12 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService implements
     public void onDeviceFound(String identifier, InstanceKey instanceKey) {
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder
                 .create(new ThingUID(THING_TYPE_ECHONET_DEVICE, identifier))
-                .withRepresentationProperty(instanceKey.representationProperty())
+                .withProperty("instanceKey", instanceKey.representationProperty())
                 .withProperty("hostname", instanceKey.address.getAddress().getHostAddress())
                 .withProperty("port", instanceKey.address.getPort())
                 .withProperty("groupCode", instanceKey.klass.groupCode())
                 .withProperty("classCode", instanceKey.klass.classCode()).withProperty("instance", instanceKey.instance)
+                .withRepresentationProperty("instanceKey")
                 .build();
         thingDiscovered(discoveryResult);
     }

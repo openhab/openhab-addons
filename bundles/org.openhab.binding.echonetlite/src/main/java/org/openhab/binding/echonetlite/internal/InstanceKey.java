@@ -37,7 +37,7 @@ public class InstanceKey {
     }
 
     public String representationProperty() {
-        return address.toString() + "_" + hex(klass.groupCode()) + ":" + hex(klass.classCode()) + ":" + hex(instance);
+        return address.getAddress().getHostAddress() + "_" + hex(klass.groupCode()) + ":" + hex(klass.classCode()) + ":" + hex(instance);
     }
 
     public boolean equals(final Object o) {

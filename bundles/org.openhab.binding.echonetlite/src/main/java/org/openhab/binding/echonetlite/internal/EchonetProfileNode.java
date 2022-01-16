@@ -53,6 +53,7 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
 
                 final InstanceKey newItemKey = new InstanceKey(sourceInstanceKey.address, itemClass, instance);
                 final EchonetDevice discoveredDevice = new EchonetDevice(newItemKey, this);
+                discoveredDevice.setTimeouts(DEFAULT_POLL_INTERVAL_MS, DEFAULT_RETRY_TIMEOUT_MS);
                 newDeviceListener.accept(discoveredDevice);
             }
         }
@@ -76,9 +77,5 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
     @NonNullByDefault
     public void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {
         echonetDiscoveryListener.onDeviceFound(identifier, instanceKey);
-    }
-
-    protected boolean hasAllGetProperties() {
-        return true;
     }
 }

@@ -83,6 +83,7 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
             final InetSocketAddress address = new InetSocketAddress(config.hostname, config.port);
             instanceKey = new InstanceKey(address, EchonetClass.resolve(config.groupCode, config.classCode),
                     config.instance);
+            updateProperty("instanceKey", instanceKey.representationProperty());
             echonetMessenger.newDevice(instanceKey, config.pollIntervalMs, config.pollIntervalMs, this);
 
             // scheduler.scheduleAtFixedRate(() -> echonetMessenger.refreshDevice(instanceKey,
@@ -141,9 +142,5 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
 
     public void onRemoved() {
         updateStatus(ThingStatus.REMOVED);
-    }
-
-    public void deviceConfigured() {
-        // ChannelBuilder.create().withAcceptedItemType()
     }
 }

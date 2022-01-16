@@ -8,6 +8,7 @@
 
 		<label>EchonetLite Device</label>
 		<description>Device for EchonetLite Binding</description>
+		<representation-property>instanceKey</representation-property>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
