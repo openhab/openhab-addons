@@ -75,7 +75,7 @@ public class PorcupineKSService implements KSService {
     private static final String EXTRACTION_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine", "extracted")
             .toString();
     private final Logger logger = LoggerFactory.getLogger(PorcupineKSService.class);
-    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("audio");
+    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-porcupineks");
     private PorcupineKSConfiguration config = new PorcupineKSConfiguration();
     private boolean loop = false;
     private @Nullable BundleContext bundleContext;
