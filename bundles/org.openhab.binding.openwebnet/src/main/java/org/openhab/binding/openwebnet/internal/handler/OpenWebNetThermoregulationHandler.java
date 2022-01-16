@@ -15,7 +15,6 @@ package org.openhab.binding.openwebnet.internal.handler;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_ACTUATORS;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CONDITIONING_VALVES;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_BATTERY_STATUS;
-import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_MODE;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_REMOTE_CONTROL;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_SCENARIO_PROGRAM_NUMBER;
 import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants.CHANNEL_CU_WEEKLY_PROGRAM_NUMBER;
@@ -123,7 +122,6 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
             case CHANNEL_FUNCTION:
                 handleFunction(command);
                 break;
-            case CHANNEL_CU_MODE:
             case CHANNEL_MODE:
                 handleMode(command);
                 break;
@@ -335,12 +333,7 @@ public class OpenWebNetThermoregulationHandler extends OpenWebNetThingHandler {
         Thermoregulation.Function function = w.getFunction();
 
         updateState(CHANNEL_FUNCTION, new StringType(function.toString()));
-
-        if (isCentralUnit) {
-            updateState(CHANNEL_CU_MODE, new StringType(mode.toString()));
-        } else {
-            updateState(CHANNEL_MODE, new StringType(mode.toString()));
-        }
+        updateState(CHANNEL_MODE, new StringType(mode.toString()));
 
         // store current function
         currentFunction = function;

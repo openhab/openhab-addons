@@ -178,7 +178,7 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
 | `temperature`                | `bus_thermo_zone`, `bus_thermo_sensor` | Number:Temperature | The zone currently sensed temperature       | R          | N        |
 | `setpointTemperature`        | `bus_thermo_zone`, `bus_thermo_cu`                | Number:Temperature | The zone setpoint temperature           | R/W        | N        |
 | `function`                   | `bus_thermo_zone`                    | String             | The zone set thermo function: `COOLING`, `HEATING` or `GENERIC` (heating + cooling)  | R/W | N |
-| `mode`                       | `bus_thermo_zone`                    | String             | The zone set mode: `MANUAL`, `PROTECTION`, `OFF`  | R/W        | N        |
+| `mode`                       | `bus_thermo_zone`, `bus_thermo_cu`                       | String             | The zone set mode (`MANUAL`, `PROTECTION`, `OFF`) or the Central Unit set mode ( `MANUAL`, `PROTECTION`, `OFF`, `WEEKLY`, `SCENARIO`) | R/W        | N        |
 | `speedFanCoil`               | `bus_thermo_zone`                    | String             | The zone fancoil speed: `AUTO`, `SPEED_1`, `SPEED_2`, `SPEED_3`    | R/W | N |
 | `actuators`                   | `bus_thermo_zone`                    | String             | The zone actuator(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3` | R | Y |
 | `heatingValves`               | `bus_thermo_zone`                    | String             | The zone heating valve(s) status: `OFF`, `ON`, `OPENED`, `CLOSED` , `STOP`, `OFF_FAN_COIL`, `ON_SPEED_1`, `ON_SPEED_2`, `ON_SPEED_3`, `OFF_SPEED_1`, `OFF_SPEED_2`, `OFF_SPEED_3` | R | Y |
@@ -187,8 +187,8 @@ The (optional) Central Unit can be configured defining a `bus_themo_cu` Thing.
 | `remoteControl`          | `bus_thermo_cu`                    | String             | The Central Unit Remote Control status: `ENABLED`, `DISABLED`  | R | Y |
 | `batteryStatus`          | `bus_thermo_cu`                    | String             | The Central Unit Battery status: `OK`, `KO`  | R | Y |
 | `modeCentralUnit`                       | `bus_thermo_cu`                    | String             | The Central Unit set mode: `MANUAL`, `OFF`, `PROTECTION`, `WEEKLY`, `SCENARIO`  | R/W        | N        |
-| `weeklyProgramCentralUnit`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`  | R/W        | N        |
-| `scenarioProgramCentralUnit`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, .. ,  `16`) when Central Unit mode is `SCENARIO` | R/W        | N        |
+| `weeklyProgram`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, `3`) when Central Unit mode is `WEEKLY`  | R/W        | N        |
+| `scenarioProgram`                       | `bus_thermo_cu`                    | String             | The program number (`1`, `2`, .. ,  `16`) when Central Unit mode is `SCENARIO` | R/W        | N        |
 
 
 ### Notes on channels
@@ -228,15 +228,15 @@ See [openwebnet.sitemap](#openwebnet-sitemap) & [openwebnet.rules](#openwebnet-r
         - `EXTENDED_PRESS` - sent after `START_EXTENDED_PRESS` if you keep the button pressed longer; will be sent again every 0,5sec as long as you hold pressed (good for dimming rules)
         - `RELEASE_EXTENDED_PRESS` - sent once when you finally release the button after having it pressed longer than 0,5sec
 
-####  `modeCentralUnit` for values WEEKLY and SCENARIO
+####  `mode` for values WEEKLY and SCENARIO (Central Unit)
 
 There are three WEEKLY and sixteen SCENARIO programs defined in the central unit.
 
 In order to activate one of them you have to use two different channels: 
-- with `modeCentralUnit` you can set the mode (`WEEKLY` or `SCENARIO`)
-- with `weeklyProgramCentralUnit` (if `WEEKLY` was setted) or with `scenarioProgramCentralUnit` (if `SCENARIO` was setted) you can set the program number
+- with `mode` you can set the mode (`WEEKLY` or `SCENARIO`)
+- with `weeklyProgram` (if `WEEKLY` was setted) or with `scenarioProgram` (if `SCENARIO` was setted) you can set the program number
 
-Example: if you want to activate SCENARIO #9 you have to set `modeCentralUnit` = `SCENARIO` and `scenarioProgramCentralUnit` = `9`.
+Example: if you want to activate SCENARIO #9 you have to set `mode` = `SCENARIO` and `scenarioProgram` = `9`.
 
 ## Full Example
 
@@ -291,12 +291,12 @@ Number:Power        iCENTRAL_Tb           "Power [%.0f %unit%]" { channel="openw
 
 // 99 zones central unit 
 Group   gCentralUnit                "Central Unit"                
-Number:Temperature iCU_3550_manualset "Temperatura"       (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
+Number:Temperature iCU_3550_manualset "Temperature"       (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:setpointTemperature", ga="thermostatTemperatureSetpoint" }
 String iCU_3550_remote    "Remote Control"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:remoteControl" }
 String iCU_3550_battery   "Battery Status"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:batteryStatus" }
-String iCU_3550_mode      "Mode"              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:modeCentralUnit" }
-String iCU_3550_wpn       "Weekly Program"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgramCentralUnit" } 
-String iCU_3550_spn       "Scenario Program" (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgramCentralUnit" } 
+String iCU_3550_mode      "Mode"              (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:mode" }
+String iCU_3550_wpn       "Weekly Program"    (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:weeklyProgram" } 
+String iCU_3550_spn       "Scenario Program" (gCentralUnit) { channel="openwebnet:bus_thermo_cu:mybridge:CU_3550:scenarioProgram" } 
 
 Group   gLivingRoomZone                         "Living Room Zone"   { ga="Thermostat" [ modes="auto=GENERIC,heat=HEATING,cool=COOLING", thermostatTemperatureRange="7,35", useFahrenheit=false ] }
 Number:Temperature  iLR_zone_temp               "Temperature [%.1f %unit%]"   (gLivingRoomZone) { channel="openwebnet:bus_thermo_zone:mybridge:LR_zone:temperature", ga="thermostatTemperatureAmbient" }

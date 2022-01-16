@@ -129,11 +129,10 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_HEATING_VALVES = "heatingValves";
     public static final String CHANNEL_ACTUATORS = "actuators";
     public static final String CHANNEL_LOCAL_OFFSET = "localOffset";
-    public static final String CHANNEL_CU_MODE = "modeCentralUnit";
     public static final String CHANNEL_CU_REMOTE_CONTROL = "remoteControl";
     public static final String CHANNEL_CU_BATTERY_STATUS = "batteryStatus";
-    public static final String CHANNEL_CU_WEEKLY_PROGRAM_NUMBER = "weeklyProgramCentralUnit";
-    public static final String CHANNEL_CU_SCENARIO_PROGRAM_NUMBER = "scenarioProgramCentralUnit";
+    public static final String CHANNEL_CU_WEEKLY_PROGRAM_NUMBER = "weeklyProgram";
+    public static final String CHANNEL_CU_SCENARIO_PROGRAM_NUMBER = "scenarioProgram";
 
     // energy management
     public static final String CHANNEL_POWER = "power";

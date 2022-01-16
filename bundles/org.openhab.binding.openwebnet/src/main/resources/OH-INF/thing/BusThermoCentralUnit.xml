@@ -19,9 +19,9 @@
 			<channel id="batteryStatus" typeId="batteryStatus"/>
 			<!-- read/write -->
 			<channel id="setpointTemperature" typeId="setpointTemperature"/>
-			<channel id="modeCentralUnit" typeId="modeCentralUnit"/>
-			<channel id="weeklyProgramCentralUnit" typeId="weeklyProgramCentralUnit"/>
-			<channel id="scenarioProgramCentralUnit" typeId="scenarioProgramCentralUnit"/>
+			<channel id="mode" typeId="modeCentralUnit"/>
+			<channel id="weeklyProgram" typeId="weeklyProgramCentralUnit"/>
+			<channel id="scenarioProgram" typeId="scenarioProgramCentralUnit"/>
 		</channels>
 
 		<properties>
