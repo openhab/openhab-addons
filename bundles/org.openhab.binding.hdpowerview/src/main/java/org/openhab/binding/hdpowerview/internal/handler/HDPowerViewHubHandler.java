@@ -535,15 +535,14 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private Map<Thing, String> getShadeThingIdMap() {
         Map<Thing, String> ret = new HashMap<>();
-        for (Thing thing : getThing().getThings()) {
-            if (!HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thing.getThingTypeUID())) {
-                continue;
-            }
-            String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
-            if (id != null && !id.isEmpty()) {
-                ret.put(thing, id);
-            }
-        }
+        getThing().getThings().stream()
+                .filter(thing -> HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thing.getThingTypeUID()))
+                .forEach(thing -> {
+                    String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
+                    if (id != null && !id.isEmpty()) {
+                        ret.put(thing, id);
+                    }
+                });
         return ret;
     }
 
