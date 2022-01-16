@@ -170,12 +170,17 @@ public class PushoverAPIConnection {
             }
         } catch (ExecutionException e) {
             String message = e.getMessage();
-            logger.debug("Exception occurred during execution: {}", message, e);
+            logger.debug("ExecutionException occurred during execution: {}", message, e);
             throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message,
                     e.getCause());
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             String message = e.getMessage();
-            logger.debug("Exception occurred during execution: {}", message, e);
+            logger.debug("TimeoutException occurred during execution: {}", message, e);
+            throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            String message = e.getMessage();
+            logger.debug("InterruptedException occurred during execution: {}", message, e);
             throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
         }
     }

@@ -288,8 +288,9 @@ public class PushoverMessageBuilder {
             Path tmpFile = Files.createTempFile("pushover-", ".tmp");
             return Files.write(tmpFile, data);
         } catch (IOException e) {
-            logger.debug("IOException occurred while creating temp file - skip sending message: {}", e.getMessage(), e);
-            throw new CommunicationException(String.format("Skip sending the message: %s", e.getMessage()), e);
+            logger.debug("IOException occurred while creating temp file - skip sending the message: {}", e.getMessage(),
+                    e);
+            throw new CommunicationException(TEXT_ERROR_SKIP_SENDING_MESSAGE, e.getCause(), e.getLocalizedMessage());
         }
     }
 
@@ -298,8 +299,8 @@ public class PushoverMessageBuilder {
             body.addFilePart(MESSAGE_KEY_ATTACHMENT, path.toFile().getName(),
                     new PathContentProvider(contentType == null ? DEFAULT_CONTENT_TYPE : contentType, path), null);
         } catch (IOException e) {
-            logger.debug("IOException occurred while adding content - skip sending message: {}", e.getMessage(), e);
-            throw new CommunicationException(String.format("Skip sending the message: %s", e.getMessage()), e);
+            logger.debug("IOException occurred while adding content - skip sending the message: {}", e.getMessage(), e);
+            throw new CommunicationException(TEXT_ERROR_SKIP_SENDING_MESSAGE, e.getCause(), e.getLocalizedMessage());
         }
     }
 }

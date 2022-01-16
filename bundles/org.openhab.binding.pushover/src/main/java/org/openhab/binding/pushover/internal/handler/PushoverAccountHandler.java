@@ -110,7 +110,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
         } catch (CommunicationException e) {
             // do nothing, causing exception is already logged
         } catch (ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         }
         return PushoverAccountConfiguration.DEFAULT_SOUNDS;
     }
@@ -151,7 +151,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
             } catch (CommunicationException e) {
                 // do nothing, causing exception is already logged
             } catch (ConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
             }
             return false;
         } else {
@@ -166,7 +166,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
             } catch (CommunicationException e) {
                 // do nothing, causing exception is already logged
             } catch (ConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
             }
             return "";
         } else {
@@ -181,7 +181,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
             } catch (CommunicationException e) {
                 // do nothing, causing exception is already logged
             } catch (ConfigurationException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
             }
             return false;
         } else {
@@ -195,7 +195,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
             connection.validateUser();
             updateStatus(ThingStatus.ONLINE);
         } catch (CommunicationException | ConfigurationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getRawMessage());
         }
     }
 }
