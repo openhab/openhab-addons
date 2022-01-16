@@ -75,10 +75,13 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.info("handleCommand: {} = {}", channelUID, command);
-        switch (channelUID.toString()) {
+        switch (channelUID.getId()) {
             case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
                 if (command instanceof RefreshType) {
+                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                } else if (command instanceof QuantityType) {
+                    car.setHvacTargetTemperature(((QuantityType<?>) command).doubleValue());
                     updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
                             car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
                 }
@@ -90,7 +93,7 @@ public class RenaultHandler extends BaseThingHandler {
                         httpSession.initSesssion(car);
                         if (command == OnOffType.ON) {
                             httpSession.hvacOn(car.getHvacTargetTemperature());
-                        } else {
+                        } else if (command == OnOffType.OFF) {
                             httpSession.hvacOff();
                         }
                         updateHvacStatus(httpSession);
@@ -250,6 +253,19 @@ public class RenaultHandler extends BaseThingHandler {
                 String chargingStatus = car.getChargingStatus();
                 if (chargingStatus != null) {
                     updateState(CHANNEL_CHARGING_STATUS, new StringType(chargingStatus));
+                }
+                Double batteryAvailableEnergy = car.getBatteryAvailableEnergy();
+                if (batteryAvailableEnergy != null) {
+                    updateState(CHANNEL_BATTERY_AVAILABLE_ENERGY,
+                            new DecimalType(batteryAvailableEnergy.doubleValue()));
+                }
+                Double batteryCapacity = car.getBatteryCapacity();
+                if (batteryCapacity != null) {
+                    updateState(CHANNEL_BATTERY_CAPACITY, new DecimalType(batteryCapacity.doubleValue()));
+                }
+                Double batteryTemperature = car.getBatteryTemperature();
+                if (batteryCapacity != null) {
+                    updateState(CHANNEL_BATTERY_TEMPERATURE, new DecimalType(batteryTemperature.doubleValue()));
                 }
             } catch (RenaultNotImplementedException e) {
                 car.setDisableBattery(true);

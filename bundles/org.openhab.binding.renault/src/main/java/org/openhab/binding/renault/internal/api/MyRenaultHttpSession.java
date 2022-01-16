@@ -229,6 +229,54 @@ public class MyRenaultHttpSession {
         }
     }
 
+    public void hvacOn(Double hvacTargetTemperature) throws RenaultForbiddenException, RenaultNotImplementedException {
+        Request request = getActionHvacRequest();
+        request.content(new StringContentProvider(
+                "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":\""
+                        + hvacTargetTemperature + "\"}}}",
+                "utf-8"));
+        try {
+            ContentResponse response = request.send();
+            logger.debug("Kamereon Response HVAC ON: {}", response.getContentAsString());
+            if (HttpStatus.OK_200 != response.getStatus()) {
+                logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
+                        response.getContentAsString());
+                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
+                    throw new RenaultForbiddenException(
+                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
+                } else if (HttpStatus.NOT_IMPLEMENTED_501 == response.getStatus()) {
+                    throw new RenaultNotImplementedException(
+                            "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
+                }
+            }
+        } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+        }
+    }
+
+    public void hvacOff() throws RenaultForbiddenException, RenaultNotImplementedException {
+        Request request = getActionHvacRequest();
+        request.content(new StringContentProvider(
+                "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"cancel\"}}}", "utf-8"));
+        try {
+            ContentResponse response = request.send();
+            logger.debug("Kamereon Response HVAC OFF: {}", response.getContentAsString());
+            if (HttpStatus.OK_200 != response.getStatus()) {
+                logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
+                        response.getContentAsString());
+                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
+                    throw new RenaultForbiddenException(
+                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
+                } else if (HttpStatus.NOT_IMPLEMENTED_501 == response.getStatus()) {
+                    throw new RenaultNotImplementedException(
+                            "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
+                }
+            }
+        } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+        }
+    }
+
     private @Nullable JsonObject getKamereonResponse(String path)
             throws RenaultForbiddenException, RenaultUpdateException, RenaultNotImplementedException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.GET)
@@ -267,61 +315,13 @@ public class MyRenaultHttpSession {
         return country;
     }
 
-    public void hvacOn(Double hvacTargetTemperature) throws RenaultForbiddenException, RenaultNotImplementedException {
-        Request request = httpClient
+    private Request getActionHvacRequest() {
+        return httpClient
                 .newRequest(this.constants.getKamereonRootUrl() + "/commerce/v1/accounts/" + kamereonaccountId
                         + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/actions/hvac-start?country="
                         + getCountry(config))
                 .method(HttpMethod.POST).header("Content-type", "application/vnd.api+json")
                 .header("apikey", this.constants.getKamereonApiKey())
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
-        request.content(new StringContentProvider(
-                "{\"data\":{\"type\":\"HvacStart\",\"attributes\":{\"action\":\"start\",\"targetTemperature\":\""
-                        + hvacTargetTemperature + "\"}}}",
-                "utf-8"));
-        try {
-            ContentResponse response = request.send();
-            if (HttpStatus.OK_200 != response.getStatus()) {
-                logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
-                        response.getContentAsString());
-                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
-                    throw new RenaultForbiddenException(
-                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
-                } else if (HttpStatus.NOT_IMPLEMENTED_501 == response.getStatus()) {
-                    throw new RenaultNotImplementedException(
-                            "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
-                }
-            }
-        } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
-        }
-    }
-
-    public void hvacOff() throws RenaultForbiddenException, RenaultNotImplementedException {
-        Request request = httpClient
-                .newRequest(this.constants.getKamereonRootUrl() + "/commerce/v1/accounts/" + kamereonaccountId
-                        + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/actions/hvac-stop?country="
-                        + getCountry(config))
-                .method(HttpMethod.POST).header("Content-type", "application/vnd.api+json")
-                .header("apikey", this.constants.getKamereonApiKey())
-                .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
-        request.content(new StringContentProvider(
-                "{\"data\":{\"type\":\"HvacStop\",\"attributes\":{\"action\":\"stop\"}}}", "utf-8"));
-        try {
-            ContentResponse response = request.send();
-            if (HttpStatus.OK_200 != response.getStatus()) {
-                logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
-                        response.getContentAsString());
-                if (HttpStatus.FORBIDDEN_403 == response.getStatus()) {
-                    throw new RenaultForbiddenException(
-                            "Kamereon Response Forbidden! Ensure the car is paired in your MyRenault App.");
-                } else if (HttpStatus.NOT_IMPLEMENTED_501 == response.getStatus()) {
-                    throw new RenaultNotImplementedException(
-                            "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
-                }
-            }
-        } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
-        }
     }
 }

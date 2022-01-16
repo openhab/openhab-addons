@@ -11,16 +11,16 @@
 
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
-			<channel id="batteryCapacity" typeId="batteryCapacity"/>
-			<channel id="batteryAvailableEnergy" typeId="batteryAvailableEnergy"/>
-			<channel id="batteryTemperature" typeId="batteryTemperature"/>
-			<channel id="plugStatus" typeId="plugStatus"/>
-			<channel id="chargingStatus" typeId="chargingStatus"/>
-			<channel id="estimatedRange" typeId="estimatedRange"/>
+			<channel id="batterycapacity" typeId="batterycapacity"/>
+			<channel id="batteryavailableenergy" typeId="batteryavailableenergy"/>
+			<channel id="batterytemperature" typeId="batterytemperature"/>
+			<channel id="plugstatus" typeId="plugstatus"/>
+			<channel id="chargingstatus" typeId="chargingstatus"/>
+			<channel id="estimatedrange" typeId="estimatedrange"/>
 			<channel id="odometer" typeId="odometer"/>
 			<channel id="hvacstatus" typeId="hvacstatus"/>
-			<channel id="hvacTargetTemperature" typeId="hvacTargetTemperature"/>
-			<channel id="externalTemperature" typeId="externalTemperature"/>
+			<channel id="hvactargettemperature" typeId="hvactargettemperature"/>
+			<channel id="externaltemperature" typeId="externaltemperature"/>
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
 		</channels>
@@ -80,35 +80,35 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="batteryCapacity">
+	<channel-type id="batterycapacity">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Capacity</label>
 		<state pattern="%.1f kWh" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="batteryAvailableEnergy">
+	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
 		<state pattern="%.1f kWh" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="batteryTemperature">
+	<channel-type id="batterytemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Battery Temperature</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="plugStatus">
+	<channel-type id="plugstatus">
 		<item-type>String</item-type>
 		<label>Plug Status</label>
 		<description>Status of charging plug.</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="chargingStatus">
+	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
 		<label>Charging Status</label>
 		<description>Charging status</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	<channel-type id="estimatedRange">
+	<channel-type id="estimatedrange">
 		<item-type>Number:Length</item-type>
 		<label>Estimated Range</label>
 		<description>Estimated range of the car.</description>
@@ -124,14 +124,14 @@
 		<item-type>Switch</item-type>
 		<label>HVAC Status</label>
 	</channel-type>
-	<channel-type id="hvacTargetTemperature">
+	<channel-type id="hvactargettemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>HVAC Target Temperature</label>
 		<description>HVAC thermostat target temperature inside car</description>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
-	<channel-type id="externalTemperature">
+	<channel-type id="externaltemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>External Temperature</label>
 		<description>Temperature outside of the car</description>

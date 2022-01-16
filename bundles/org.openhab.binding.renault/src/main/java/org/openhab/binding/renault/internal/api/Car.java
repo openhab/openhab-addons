@@ -161,112 +161,84 @@ public class Car {
         return disableLocation;
     }
 
-    public void setDisableLocation(boolean disableLocation) {
-        this.disableLocation = disableLocation;
-    }
-
     public boolean isDisableBattery() {
         return disableBattery;
-    }
-
-    public void setDisableBattery(boolean disableBattery) {
-        this.disableBattery = disableBattery;
     }
 
     public boolean isDisableCockpit() {
         return disableCockpit;
     }
 
-    public void setDisableCockpit(boolean disableCockpit) {
-        this.disableCockpit = disableCockpit;
-    }
-
     public boolean isDisableHvac() {
         return disableHvac;
-    }
-
-    public void setDisableHvac(boolean disableHvac) {
-        this.disableHvac = disableHvac;
     }
 
     public @Nullable Double getBatteryLevel() {
         return batteryLevel;
     }
 
-    public void setBatteryLevel(Double batteryLevel) {
-        this.batteryLevel = batteryLevel;
-    }
-
     public @Nullable Boolean getHvacstatus() {
         return hvacstatus;
-    }
-
-    public void setHvacstatus(Boolean hvacstatus) {
-        this.hvacstatus = hvacstatus;
     }
 
     public @Nullable Double getOdometer() {
         return odometer;
     }
 
-    public void setOdometer(Double odometer) {
-        this.odometer = odometer;
-    }
-
     public @Nullable String getImageURL() {
         return imageURL;
-    }
-
-    public void setImageURL(String imageURL) {
-        this.imageURL = imageURL;
     }
 
     public @Nullable Double getGpsLatitude() {
         return gpsLatitude;
     }
 
-    public void setGpsLatitude(Double gpsLatitude) {
-        this.gpsLatitude = gpsLatitude;
-    }
-
     public @Nullable Double getGpsLongitude() {
         return gpsLongitude;
-    }
-
-    public void setGpsLongitude(Double gpsLongitude) {
-        this.gpsLongitude = gpsLongitude;
     }
 
     public @Nullable Double getExternalTemperature() {
         return externalTemperature;
     }
 
-    public void setExternalTemperature(Double externalTemperature) {
-        this.externalTemperature = externalTemperature;
-    }
-
     public @Nullable Double getEstimatedRange() {
         return estimatedRange;
-    }
-
-    public void setEstimatedRange(Double estimatedRange) {
-        this.estimatedRange = estimatedRange;
     }
 
     public @Nullable String getPlugStatus() {
         return plugStatus;
     }
 
-    public void setPlugStatus(String plugStatus) {
-        this.plugStatus = plugStatus;
-    }
-
     public @Nullable String getChargingStatus() {
         return chargingStatus;
     }
 
-    public void setChargingStatus(String chargingStatus) {
-        this.chargingStatus = chargingStatus;
+    public @Nullable Double getBatteryCapacity() {
+        return batteryCapacity;
+    }
+
+    public @Nullable Double getBatteryAvailableEnergy() {
+        return batteryAvailableEnergy;
+    }
+
+    public @Nullable Double getBatteryTemperature() {
+        return batteryTemperature;
+    }
+
+    public void setDisableLocation(boolean disableLocation) {
+        this.disableLocation = disableLocation;
+    }
+
+    public void setDisableBattery(boolean disableBattery) {
+        this.disableBattery = disableBattery;
+    }
+
+    public void setDisableCockpit(boolean disableCockpit) {
+        this.disableCockpit = disableCockpit;
+    }
+
+    public void setDisableHvac(boolean disableHvac) {
+        this.disableHvac = disableHvac;
     }
 
     private @Nullable JsonObject getAttributes(JsonObject responseJson)
