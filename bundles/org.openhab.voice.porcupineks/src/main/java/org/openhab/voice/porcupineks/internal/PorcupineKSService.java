@@ -32,7 +32,9 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.logging.Level;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,6 +43,7 @@ import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.voice.KSErrorEvent;
 import org.openhab.core.voice.KSException;
 import org.openhab.core.voice.KSListener;
@@ -78,7 +81,7 @@ public class PorcupineKSService implements KSService {
     private @Nullable BundleContext bundleContext;
 
     static {
-        var logger = LoggerFactory.getLogger(PorcupineKSService.class);
+        Logger logger = LoggerFactory.getLogger(PorcupineKSService.class);
         File directory = new File(PORCUPINE_FOLDER);
         if (!directory.exists()) {
             if (directory.mkdir()) {
@@ -95,7 +98,7 @@ public class PorcupineKSService implements KSService {
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        var serviceConfig = new org.openhab.core.config.core.Configuration(config).as(PorcupineKSConfiguration.class);
+        PorcupineKSConfiguration serviceConfig = new Configuration(config).as(PorcupineKSConfiguration.class);
         this.config = serviceConfig;
         this.bundleContext = componentContext.getBundleContext();
         if (serviceConfig.apiKey.isBlank()) {
@@ -104,8 +107,8 @@ public class PorcupineKSService implements KSService {
     }
 
     private String prepareLib(BundleContext bundleContext, String path) throws IOException {
-        var relativePath = path.substring(path.indexOf("porcupine/"));
-        var porcupineResource = bundleContext.getBundle().getEntry(relativePath);
+        String relativePath = path.substring(path.indexOf("porcupine/"));
+        URL porcupineResource = bundleContext.getBundle().getEntry(relativePath);
         File localFile = new File(EXTRACTION_FOLDER, relativePath.substring(relativePath.lastIndexOf("/") + 1));
         if (!localFile.exists()) {
             logger.debug("extracting binary {} from bundle to extraction folder", path);
@@ -155,7 +158,7 @@ public class PorcupineKSService implements KSService {
         if (config.apiKey.isBlank()) {
             throw new KSException("Missing pico voice api key");
         }
-        var bundleContext = this.bundleContext;
+        BundleContext bundleContext = this.bundleContext;
         if (bundleContext == null) {
             throw new KSException("Missing bundle context");
         }
@@ -164,7 +167,7 @@ public class PorcupineKSService implements KSService {
         } catch (PorcupineException | IOException e) {
             throw new KSException(e);
         }
-        var scheduledTask = executor.submit(() -> processInBackground(porcupine, ksListener, audioStream));
+        Future<?> scheduledTask = executor.submit(() -> processInBackground(porcupine, ksListener, audioStream));
         return () -> {
             loop = false;
             scheduledTask.cancel(true);
@@ -175,13 +178,16 @@ public class PorcupineKSService implements KSService {
     private Porcupine initPorcupine(BundleContext bundleContext, Locale locale, String keyword)
             throws IOException, PorcupineException {
         // Suppress library logs
-        var globalJavaLogger = java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
-        var currentGlobalLogLevel = globalJavaLogger.getLevel();
+        java.util.logging.Logger globalJavaLogger = java.util.logging.Logger
+                .getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
+        Level currentGlobalLogLevel = globalJavaLogger.getLevel();
         globalJavaLogger.setLevel(java.util.logging.Level.OFF);
 
-        var libraryPath = prepareLib(bundleContext, Porcupine.LIBRARY_PATH);
-        var modelPath = getModelPath(bundleContext, locale);
-        var keywordPath = getKeywordResourcePath(bundleContext, keyword);
+        String libraryPath = prepareLib(bundleContext, Porcupine.LIBRARY_PATH);
+        String alternativeModelPath = getAlternativeModelPath(bundleContext, locale);
+        String modelPath = alternativeModelPath != null ? alternativeModelPath
+                : prepareLib(bundleContext, Porcupine.MODEL_PATH);
+        String keywordPath = getKeywordResourcePath(bundleContext, keyword, alternativeModelPath == null);
         logger.debug("Porcupine library path: {}", libraryPath);
         logger.debug("Porcupine model path: {}", modelPath);
         logger.debug("Porcupine keyword path: {}", keywordPath);
@@ -197,16 +203,16 @@ public class PorcupineKSService implements KSService {
 
     private String getPorcupineEnv() {
         // get porcupine env from resolved library path
-        var searchTerm = "lib" + File.separator + "java" + File.separator;
-        var env = Porcupine.LIBRARY_PATH.substring(Porcupine.LIBRARY_PATH.indexOf(searchTerm) + searchTerm.length());
+        String searchTerm = "lib" + File.separator + "java" + File.separator;
+        String env = Porcupine.LIBRARY_PATH.substring(Porcupine.LIBRARY_PATH.indexOf(searchTerm) + searchTerm.length());
         env = env.substring(0, env.indexOf(File.separator));
         return env;
     }
 
-    private String getModelPath(BundleContext bundleContext, Locale locale) throws IOException {
+    private @Nullable String getAlternativeModelPath(BundleContext bundleContext, Locale locale) throws IOException {
         String modelPath = null;
         if (locale.getLanguage().equals(Locale.GERMAN.getLanguage())) {
-            var dePath = Path.of(PORCUPINE_FOLDER, "porcupine_params_de.pv");
+            Path dePath = Path.of(PORCUPINE_FOLDER, "porcupine_params_de.pv");
             if (Files.exists(dePath)) {
                 modelPath = dePath.toString();
             } else {
@@ -215,7 +221,7 @@ public class PorcupineKSService implements KSService {
                         PORCUPINE_FOLDER);
             }
         } else if (locale.getLanguage().equals(Locale.FRENCH.getLanguage())) {
-            var frPath = Path.of(PORCUPINE_FOLDER, "porcupine_params_fr.pv");
+            Path frPath = Path.of(PORCUPINE_FOLDER, "porcupine_params_fr.pv");
             if (Files.exists(frPath)) {
                 modelPath = frPath.toString();
             } else {
@@ -224,7 +230,7 @@ public class PorcupineKSService implements KSService {
                         PORCUPINE_FOLDER);
             }
         } else if (locale.getLanguage().equals("es")) {
-            var esPath = Path.of(PORCUPINE_FOLDER, "porcupine_params_es.pv");
+            Path esPath = Path.of(PORCUPINE_FOLDER, "porcupine_params_es.pv");
             if (Files.exists(esPath)) {
                 modelPath = esPath.toString();
             } else {
@@ -233,21 +239,33 @@ public class PorcupineKSService implements KSService {
                         PORCUPINE_FOLDER);
             }
         }
-        if (modelPath == null) {
-            modelPath = prepareLib(bundleContext, Porcupine.MODEL_PATH);
-        }
         return modelPath;
     }
 
-    private String getKeywordResourcePath(BundleContext bundleContext, String keyWord) throws IOException {
-        var localKeywordFile = keyWord.toLowerCase().replace(" ", "_") + ".ppn";
-        var localKeywordPath = Path.of(PORCUPINE_FOLDER, localKeywordFile);
+    private String getKeywordResourcePath(BundleContext bundleContext, String keyWord, boolean allowBuildIn)
+            throws IOException {
+        String localKeywordFile = keyWord.toLowerCase().replace(" ", "_") + ".ppn";
+        Path localKeywordPath = Path.of(PORCUPINE_FOLDER, localKeywordFile);
         if (Files.exists(localKeywordPath)) {
             return localKeywordPath.toString();
         }
-        String env = getPorcupineEnv();
-        var keywordPath = "porcupine/resources/keyword_files/" + env + "/" + keyWord.toLowerCase() + "_" + env + ".ppn";
-        return prepareLib(bundleContext, keywordPath);
+        if (allowBuildIn) {
+            try {
+                Porcupine.BuiltInKeyword.valueOf(keyWord.toUpperCase().replace(" ", "_"));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        "Unable to find model file for configured wake word neither is build-in. Should be at "
+                                + localKeywordPath);
+            }
+            String env = getPorcupineEnv();
+            String keywordPath = "porcupine/resources/keyword_files/" + env + "/" + keyWord.replace(" ", "_") + "_"
+                    + env + ".ppn";
+            return prepareLib(bundleContext, keywordPath);
+        } else {
+            throw new IllegalArgumentException(
+                    "Unable to find model file for configured wake word; there are no build-in wake words for your language. Should be at "
+                            + localKeywordPath);
+        }
     }
 
     private void processInBackground(Porcupine porcupine, KSListener ksListener, AudioStream audioStream) {
@@ -276,7 +294,7 @@ public class PorcupineKSService implements KSService {
                     ksListener.ksEventReceived(new KSpottedEvent());
                 }
             } catch (IOException | PorcupineException | InterruptedException e) {
-                var errorMessage = e.getMessage();
+                String errorMessage = e.getMessage();
                 ksListener.ksEventReceived(new KSErrorEvent(errorMessage != null ? errorMessage : "Unexpected error"));
             }
         }
