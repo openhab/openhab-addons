@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -69,16 +68,14 @@ import ai.picovoice.porcupine.PorcupineException;
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME, description_uri = SERVICE_CATEGORY + ":"
         + SERVICE_ID)
 public class PorcupineKSService implements KSService {
-    private final Logger logger = LoggerFactory.getLogger(PorcupineKSService.class);
-    private static final String PORCUPINE_FOLDER = Path.of(OpenHAB.getUserDataFolder(), ".porcupine").toString();
-    private static final String EXTRACTION_FOLDER = Path.of(OpenHAB.getUserDataFolder(), ".porcupine", "extracted")
+    private static final String PORCUPINE_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine").toString();
+    private static final String EXTRACTION_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "porcupine", "extracted")
             .toString();
+    private final Logger logger = LoggerFactory.getLogger(PorcupineKSService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("audio");
     private PorcupineKSConfiguration config = new PorcupineKSConfiguration();
     private boolean loop = false;
     private @Nullable BundleContext bundleContext;
-    private @Nullable Porcupine porcupine = null;
-    private @Nullable Future<?> scheduledTask;
 
     static {
         var logger = LoggerFactory.getLogger(PorcupineKSService.class);
@@ -142,7 +139,7 @@ public class PorcupineKSService implements KSService {
 
     @Override
     public Set<Locale> getSupportedLocales() {
-        return Set.of(Locale.ENGLISH, new Locale("es"), Locale.FRANCE, Locale.GERMAN);
+        return Set.of(Locale.ENGLISH, new Locale("es"), Locale.FRENCH, Locale.GERMAN);
     }
 
     @Override
@@ -152,7 +149,7 @@ public class PorcupineKSService implements KSService {
     }
 
     @Override
-    public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String s)
+    public KSServiceHandle spot(KSListener ksListener, AudioStream audioStream, Locale locale, String keyword)
             throws KSException {
         Porcupine porcupine;
         if (config.apiKey.isBlank()) {
@@ -163,27 +160,25 @@ public class PorcupineKSService implements KSService {
             throw new KSException("Missing bundle context");
         }
         try {
-            porcupine = initPorcupine(bundleContext, locale, s);
-            this.porcupine = porcupine;
+            porcupine = initPorcupine(bundleContext, locale, keyword);
         } catch (PorcupineException | IOException e) {
             throw new KSException(e);
         }
         var scheduledTask = executor.submit(() -> processInBackground(porcupine, ksListener, audioStream));
-        this.scheduledTask = scheduledTask;
         return () -> {
             loop = false;
             scheduledTask.cancel(true);
-            this.scheduledTask = null;
             porcupine.delete();
-            this.porcupine = null;
         };
     }
 
     private Porcupine initPorcupine(BundleContext bundleContext, Locale locale, String keyword)
             throws IOException, PorcupineException {
         // Suppress library logs
-        java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME)
-                .setLevel(java.util.logging.Level.OFF);
+        var globalJavaLogger = java.util.logging.Logger.getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
+        var currentGlobalLogLevel = globalJavaLogger.getLevel();
+        globalJavaLogger.setLevel(java.util.logging.Level.OFF);
+
         var libraryPath = prepareLib(bundleContext, Porcupine.LIBRARY_PATH);
         var modelPath = getModelPath(bundleContext, locale);
         var keywordPath = getKeywordResourcePath(bundleContext, keyword);
@@ -191,8 +186,13 @@ public class PorcupineKSService implements KSService {
         logger.debug("Porcupine model path: {}", modelPath);
         logger.debug("Porcupine keyword path: {}", keywordPath);
         logger.debug("Porcupine sensitivity: {}", config.sensitivity);
-        return new Porcupine(config.apiKey, libraryPath, modelPath, new String[] { keywordPath },
-                new float[] { config.sensitivity });
+        try {
+            return new Porcupine(config.apiKey, libraryPath, modelPath, new String[] { keywordPath },
+                    new float[] { config.sensitivity });
+        } finally {
+            // restore log level
+            globalJavaLogger.setLevel(currentGlobalLogLevel);
+        }
     }
 
     private String getPorcupineEnv() {
@@ -264,6 +264,7 @@ public class PorcupineKSService implements KSService {
                 numBytesRead = audioStream.read(captureBuffer.array(), 0, captureBuffer.capacity());
                 // don't pass to porcupine if we don't have a full buffer
                 if (numBytesRead != frameLength * 2) {
+                    Thread.sleep(100);
                     continue;
                 }
                 // copy into 16-bit buffer
@@ -274,7 +275,7 @@ public class PorcupineKSService implements KSService {
                     logger.debug("keyword detected!");
                     ksListener.ksEventReceived(new KSpottedEvent());
                 }
-            } catch (IOException | PorcupineException e) {
+            } catch (IOException | PorcupineException | InterruptedException e) {
                 var errorMessage = e.getMessage();
                 ksListener.ksEventReceived(new KSErrorEvent(errorMessage != null ? errorMessage : "Unexpected error"));
             }

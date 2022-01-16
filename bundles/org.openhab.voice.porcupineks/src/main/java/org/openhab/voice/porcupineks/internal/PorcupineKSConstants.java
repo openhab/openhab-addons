@@ -25,20 +25,20 @@ public class PorcupineKSConstants {
     /**
      * Service name
      */
-    static final String SERVICE_NAME = "Porcupine Keyword Spotter";
+    public static final String SERVICE_NAME = "Porcupine Keyword Spotter";
 
     /**
      * Service id
      */
-    static final String SERVICE_ID = "porcupineks";
+    public static final String SERVICE_ID = "porcupineks";
 
     /**
      * Service category
      */
-    static final String SERVICE_CATEGORY = "voice";
+    public static final String SERVICE_CATEGORY = "voice";
 
     /**
      * Service pid
      */
-    static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
+    public static final String SERVICE_PID = "org.openhab." + SERVICE_CATEGORY + "." + SERVICE_ID;
 }
