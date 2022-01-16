@@ -32,6 +32,7 @@ import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
@@ -74,42 +75,6 @@ public class RenaultHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        switch (channelUID.getId()) {
-            case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
-                if (command instanceof RefreshType) {
-                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
-                } else if (command instanceof QuantityType) {
-                    car.setHvacTargetTemperature(((QuantityType<?>) command).doubleValue());
-                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
-                }
-                break;
-            case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
-                if (command instanceof OnOffType) {
-                    MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
-                    try {
-                        httpSession.initSesssion(car);
-                        if (command == OnOffType.ON) {
-                            httpSession.hvacOn(car.getHvacTargetTemperature());
-                        } else if (command == OnOffType.OFF) {
-                            httpSession.hvacOff();
-                        }
-                        updateHvacStatus(httpSession);
-                    } catch (Exception e) {
-                        httpSession = null;
-                        logger.warn("Error My Renault Http Session.", e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
     public void initialize() {
         // reset the car on initialize
         this.car = new Car();
@@ -146,6 +111,57 @@ public class RenaultHandler extends BaseThingHandler {
         ScheduledFuture<?> job = pollingJob;
         if (job == null || job.isCancelled()) {
             pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, 0, config.refreshInterval, TimeUnit.MINUTES);
+        }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        switch (channelUID.getId()) {
+            case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
+                if (command instanceof RefreshType) {
+                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                } else if (command instanceof QuantityType) {
+                    car.setHvacTargetTemperature(((QuantityType<?>) command).doubleValue());
+                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                }
+                break;
+            case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
+                if (command instanceof OnOffType) {
+                    MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                    try {
+                        httpSession.initSesssion(car);
+                        if (command == OnOffType.ON) {
+                            httpSession.actionHvacOn(car.getHvacTargetTemperature());
+                        }
+                        updateHvacStatus(httpSession);
+                    } catch (Exception e) {
+                        httpSession = null;
+                        logger.warn("Error My Renault Http Session.", e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    }
+                }
+                break;
+            case RenaultBindingConstants.CHANNEL_CHARGING_MODE:
+                if (command instanceof StringType) {
+                    car.setChargeMode(command.toString());
+                    String mode = car.getChargingMode();
+                    if (mode != null) {
+                        MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                        try {
+                            httpSession.initSesssion(car);
+                            httpSession.actionChargeMode(command.toString());
+                            updateState(CHANNEL_CHARGING_MODE, new StringType(mode));
+                        } catch (Exception e) {
+                            httpSession = null;
+                            logger.warn("Error My Renault Http Session.", e);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                        }
+                    }
+                }
+            default:
+                break;
         }
     }
 
@@ -211,9 +227,13 @@ public class RenaultHandler extends BaseThingHandler {
                     updateState(CHANNEL_LOCATION, new PointType(new DecimalType(latitude.doubleValue()),
                             new DecimalType(longitude.doubleValue())));
                 }
+                String locationUpdated = car.getLocationUpdated();
+                if (locationUpdated != null) {
+                    updateState(CHANNEL_LOCATION_UPDATED, new DateTimeType(locationUpdated));
+                }
             } catch (RenaultNotImplementedException e) {
                 car.setDisableLocation(true);
-            } catch (RenaultForbiddenException | RenaultUpdateException e) {
+            } catch (IllegalArgumentException | RenaultForbiddenException | RenaultUpdateException e) {
             }
         }
     }
@@ -259,13 +279,9 @@ public class RenaultHandler extends BaseThingHandler {
                     updateState(CHANNEL_BATTERY_AVAILABLE_ENERGY,
                             new DecimalType(batteryAvailableEnergy.doubleValue()));
                 }
-                Double batteryCapacity = car.getBatteryCapacity();
-                if (batteryCapacity != null) {
-                    updateState(CHANNEL_BATTERY_CAPACITY, new DecimalType(batteryCapacity.doubleValue()));
-                }
-                Double batteryTemperature = car.getBatteryTemperature();
-                if (batteryCapacity != null) {
-                    updateState(CHANNEL_BATTERY_TEMPERATURE, new DecimalType(batteryTemperature.doubleValue()));
+                Integer chargingRemainingTime = car.getChargingRemainingTime();
+                if (chargingRemainingTime != null) {
+                    updateState(CHANNEL_CHARGING_REMAINING_TIME, new DecimalType(chargingRemainingTime.doubleValue()));
                 }
             } catch (RenaultNotImplementedException e) {
                 car.setDisableBattery(true);

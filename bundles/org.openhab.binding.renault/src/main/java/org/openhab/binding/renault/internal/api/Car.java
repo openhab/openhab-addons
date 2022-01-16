@@ -30,6 +30,9 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class Car {
 
+    final public static String CHARGING_MODE_SCHEDULE = "schedule_mode";
+    final public static String CHARGING_MODE_ALWAYS = "always_charging";
+
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
     private boolean disableLocation = false;
@@ -38,19 +41,20 @@ public class Car {
     private boolean disableHvac = false;
 
     private @Nullable Double batteryLevel;
-    private @Nullable Double batteryCapacity;
     private @Nullable Double batteryAvailableEnergy;
-    private @Nullable Double batteryTemperature;
+    private @Nullable Integer chargingRemainingTime;
+    private @Nullable String chargingStatus;
+    private @Nullable String chargingMode;
     private @Nullable Boolean hvacstatus;
     private Double hvacTargetTemperature = 20.0;
     private @Nullable Double odometer;
     private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
+    private @Nullable String locationUpdated;
     private @Nullable Double gpsLatitude;
     private @Nullable Double gpsLongitude;
     private @Nullable Double externalTemperature;
     private @Nullable String plugStatus;
-    private @Nullable String chargingStatus;
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
@@ -68,14 +72,11 @@ public class Car {
                 if (attributes.get("chargingStatus") != null) {
                     chargingStatus = mapChargingStatus(attributes.get("chargingStatus").getAsString());
                 }
-                if (attributes.get("batteryCapacity") != null) {
-                    batteryCapacity = attributes.get("batteryCapacity").getAsDouble();
-                }
                 if (attributes.get("batteryAvailableEnergy") != null) {
                     batteryAvailableEnergy = attributes.get("batteryAvailableEnergy").getAsDouble();
                 }
-                if (attributes.get("batteryTemperature") != null) {
-                    batteryTemperature = attributes.get("batteryTemperature").getAsDouble();
+                if (attributes.get("chargingRemainingTime") != null) {
+                    chargingRemainingTime = attributes.get("chargingRemainingTime").getAsInt();
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -119,6 +120,9 @@ public class Car {
                 }
                 if (attributes.get("gpsLongitude") != null) {
                     gpsLongitude = attributes.get("gpsLongitude").getAsDouble();
+                }
+                if (attributes.get("lastUpdateTime") != null) {
+                    locationUpdated = attributes.get("lastUpdateTime").getAsString();
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
@@ -197,6 +201,10 @@ public class Car {
         return gpsLongitude;
     }
 
+    public @Nullable String getLocationUpdated() {
+        return locationUpdated;
+    }
+
     public @Nullable Double getExternalTemperature() {
         return externalTemperature;
     }
@@ -213,16 +221,24 @@ public class Car {
         return chargingStatus;
     }
 
-    public @Nullable Double getBatteryCapacity() {
-        return batteryCapacity;
+    public @Nullable String getChargingMode() {
+        return chargingMode;
+    }
+
+    public @Nullable Integer getChargingRemainingTime() {
+        return chargingRemainingTime;
     }
 
     public @Nullable Double getBatteryAvailableEnergy() {
         return batteryAvailableEnergy;
     }
 
-    public @Nullable Double getBatteryTemperature() {
-        return batteryTemperature;
+    public Double getHvacTargetTemperature() {
+        return hvacTargetTemperature;
+    }
+
+    public void setHvacTargetTemperature(Double hvacTargetTemperature) {
+        this.hvacTargetTemperature = hvacTargetTemperature;
     }
 
     public void setDisableLocation(boolean disableLocation) {
@@ -239,6 +255,19 @@ public class Car {
 
     public void setDisableHvac(boolean disableHvac) {
         this.disableHvac = disableHvac;
+    }
+
+    public void setChargeMode(String mode) {
+        switch (mode) {
+            case CHARGING_MODE_SCHEDULE:
+                chargingMode = CHARGING_MODE_SCHEDULE;
+                break;
+            case CHARGING_MODE_ALWAYS:
+                chargingMode = CHARGING_MODE_ALWAYS;
+                break;
+            default:
+                break;
+        }
     }
 
     private @Nullable JsonObject getAttributes(JsonObject responseJson)
@@ -287,13 +316,5 @@ public class Car {
             default:
                 return "UNKNOWEN";
         }
-    }
-
-    public Double getHvacTargetTemperature() {
-        return hvacTargetTemperature;
-    }
-
-    public void setHvacTargetTemperature(Double hvacTargetTemperature) {
-        this.hvacTargetTemperature = hvacTargetTemperature;
     }
 }
