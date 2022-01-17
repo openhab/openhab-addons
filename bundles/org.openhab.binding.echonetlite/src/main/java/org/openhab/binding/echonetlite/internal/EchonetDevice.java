@@ -168,10 +168,8 @@ public class EchonetDevice extends EchonetObject {
     }
 
     public void setListener(EchonetDeviceListener listener) {
-        final boolean isNewListener = !Objects.equals(this.listener, listener);
         this.listener = listener;
-
-        if (isNewListener && initialised) {
+        if (initialised) {
             listener.onInitialised(identifier(), instanceKey(), channelIds());
             stateFields.forEach((e, s) -> listener.onUpdated(e.channelId(), s));
         }

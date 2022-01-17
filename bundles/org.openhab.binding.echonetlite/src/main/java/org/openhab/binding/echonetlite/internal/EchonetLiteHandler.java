@@ -85,11 +85,6 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
                     config.instance);
             updateProperty("instanceKey", instanceKey.representationProperty());
             echonetMessenger.newDevice(instanceKey, config.pollIntervalMs, config.pollIntervalMs, this);
-
-            // scheduler.scheduleAtFixedRate(() -> echonetMessenger.refreshDevice(instanceKey,
-            // CHANNEL_OPERATION_STATUS),
-            // 30, 30, TimeUnit.SECONDS);
-
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             logger.error("Failed to configure {}", config, e);

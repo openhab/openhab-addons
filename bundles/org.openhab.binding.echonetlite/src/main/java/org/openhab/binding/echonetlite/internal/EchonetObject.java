@@ -79,11 +79,7 @@ public abstract class EchonetObject {
 
     protected boolean hasInflight(long nowMs, InflightRequest inflightGetRequest) {
         if (inflightGetRequest.isInflight()) {
-            if (inflightGetRequest.hasTimedOut(nowMs)) {
-                logger.warn("Timed out previous request, retrying");
-            } else {
-                return true;
-            }
+            return !inflightGetRequest.hasTimedOut(nowMs);
         }
         return false;
     }
@@ -91,8 +87,8 @@ public abstract class EchonetObject {
     protected void setTimeouts(long pollIntervalMs, long retryTimeoutMs) {
         this.pollIntervalMs = pollIntervalMs;
         this.retryTimeoutMs = retryTimeoutMs;
-        this.inflightGetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
-        this.inflightSetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1));
+        this.inflightGetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1), inflightGetRequest, "GET");
+        this.inflightSetRequest = new InflightRequest(TimeUnit.SECONDS.toMillis(1), inflightSetRequest, "SET");
     }
 
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid,
@@ -136,13 +132,20 @@ public abstract class EchonetObject {
 
     protected static class InflightRequest {
         private static final long NULL_TIMESTAMP = -1;
+        private final Logger logger = LoggerFactory.getLogger(InflightRequest.class);
         private final long timeoutMs;
+        private final String name;
         private short tid;
-        private long timestampMs;
+        private long timestampMs = NULL_TIMESTAMP;
         private int timeoutCount = 0;
 
-        InflightRequest(long timeoutMs) {
+        InflightRequest(long timeoutMs, InflightRequest existing, String name) {
             this.timeoutMs = timeoutMs;
+            this.name = name;
+            if (null != existing) {
+                this.tid = existing.tid;
+                this.timestampMs = existing.timestampMs;
+            }
         }
 
         void requestSent(short tid, long timestampMs) {
@@ -160,6 +163,8 @@ public abstract class EchonetObject {
         boolean hasTimedOut(long nowMs) {
             final boolean timedOut = timestampMs + timeoutMs <= nowMs;
             if (timedOut) {
+                logger.warn("Timed out {}, tid={}, timestampMs={} + timeoutMs={} <= nowMs={}", name, tid, timestampMs,
+                        timeoutMs, nowMs);
                 timeoutCount++;
             }
             return timedOut;

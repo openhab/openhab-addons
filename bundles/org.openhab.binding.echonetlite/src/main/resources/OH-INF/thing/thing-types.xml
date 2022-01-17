@@ -43,11 +43,11 @@
 				<label>Poll Interval (ms)</label>
 				<description>Interval in ms between each poll of the device</description>
 			</parameter>
-			<parameter name="updateTimeoutMs" type="integer" required="true">
-				<context>update-timeout-ms</context>
+			<parameter name="retryTimeoutMs" type="integer" required="true">
+				<context>retry-timeout-ms</context>
 				<default>1000</default>
 				<label>Retry Timeout (ms)</label>
-				<description>Timeout in ms before an update is resent to apply changes to a device</description>
+				<description>Timeout in ms before a message is resent</description>
 			</parameter>
 		</config-description>
 	</thing-type>

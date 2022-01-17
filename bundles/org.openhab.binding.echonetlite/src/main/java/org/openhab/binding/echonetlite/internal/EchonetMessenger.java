@@ -79,8 +79,8 @@ public class EchonetMessenger implements EchonetMessengerService {
             if (echonetObject instanceof EchonetDevice) {
                 logger.debug("Update item: {} already discovered", message.instanceKey);
                 EchonetDevice device = (EchonetDevice) echonetObject;
-                device.setListener(message.echonetDeviceListener);
                 device.setTimeouts(message.pollIntervalMs, message.retryTimeoutMs);
+                device.setListener(message.echonetDeviceListener);
             } else {
                 logger.debug("Item: {} already discovered, but was not a device", message.instanceKey);
             }
@@ -276,6 +276,15 @@ public class EchonetMessenger implements EchonetMessengerService {
             this.pollIntervalMs = pollIntervalMs;
             this.retryTimeoutMs = retryTimeoutMs;
             this.echonetDeviceListener = echonetDeviceListener;
+        }
+
+        @Override
+        public String toString() {
+            return "NewDeviceMessage{" +
+                    "instanceKey=" + instanceKey +
+                    ", pollIntervalMs=" + pollIntervalMs +
+                    ", retryTimeoutMs=" + retryTimeoutMs +
+                    "} " + super.toString();
         }
     }
 
