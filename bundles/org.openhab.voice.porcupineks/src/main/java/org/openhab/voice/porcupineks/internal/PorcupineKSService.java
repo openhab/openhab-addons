@@ -107,12 +107,25 @@ public class PorcupineKSService implements KSService {
     }
 
     private String prepareLib(BundleContext bundleContext, String path) throws IOException {
-        String relativePath = path.substring(path.indexOf("porcupine/"));
-        URL porcupineResource = bundleContext.getBundle().getEntry(relativePath);
-        File localFile = new File(EXTRACTION_FOLDER, relativePath.substring(relativePath.lastIndexOf("/") + 1));
+        if (!path.contains("porcupine" + File.separator)) {
+            // this should never happen
+            throw new IOException("Path is not pointing to porcupine bundle files " + path);
+        }
+        // get a path relative to the porcupine bundle folder
+        String relativePath;
+        if (path.startsWith("porcupine" + File.separator)) {
+            relativePath = path;
+        } else {
+            relativePath = path.substring(path.lastIndexOf(File.separator + "porcupine" + File.separator) + 1);
+        }
+        File localFile = new File(EXTRACTION_FOLDER,
+                relativePath.substring(relativePath.lastIndexOf(File.separator) + 1));
         if (!localFile.exists()) {
-            logger.debug("extracting binary {} from bundle to extraction folder", path);
+            URL porcupineResource = bundleContext.getBundle().getEntry(relativePath);
+            logger.debug("extracting binary {} from bundle to extraction folder", relativePath);
             extractFromBundle(porcupineResource, localFile);
+        } else {
+            logger.debug("binary {} already extracted", relativePath);
         }
         return localFile.toString();
     }
