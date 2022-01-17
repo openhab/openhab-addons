@@ -86,7 +86,7 @@ public class GoogleSTTService implements STTService {
     private static final String GCP_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
 
     private final Logger logger = LoggerFactory.getLogger(GoogleSTTService.class);
-    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("voice");
+    private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-googlestt");
     private final OAuthFactory oAuthFactory;
     private final ConfigurationAdmin configAdmin;
 
