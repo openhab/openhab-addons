@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.oppo.internal.communication;
 
+import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,5 +55,37 @@ public class OppoStatusCodes {
         ZOOM_MODE.put("10", "1/2");
         ZOOM_MODE.put("11", "1/3");
         ZOOM_MODE.put("12", "1/4");
+    }
+
+    // map to lookup disc type
+    public static final Map<String, String> DISC_TYPE = new HashMap<>();
+    static {
+        DISC_TYPE.put("BDMV", "BD-MV");
+        DISC_TYPE.put("DVDV", "DVD-VIDEO");
+        DISC_TYPE.put("DVDA", "DVD-AUDIO");
+        DISC_TYPE.put("SACD", "SACD");
+        DISC_TYPE.put("CDDA", "CDDA");
+        DISC_TYPE.put("HDCD", "HDCD");
+        DISC_TYPE.put("DATA", "DATA-DISC");
+        DISC_TYPE.put("VCD2", "VCD2");
+        DISC_TYPE.put("SVCD", "SVCD");
+        DISC_TYPE.put("UHBD", "UHBD");
+        DISC_TYPE.put("UNKN", UNKNOW_DISC);
+    }
+
+    // map to lookup playback status
+    public static final Map<String, String> PLAYBACK_STATUS = new HashMap<>();
+    static {
+        PLAYBACK_STATUS.put("DISC", "NO DISC");
+        PLAYBACK_STATUS.put("LOAD", "LOADING");
+        PLAYBACK_STATUS.put("OPEN", "OPEN");
+        PLAYBACK_STATUS.put("CLOS", "CLOSE");
+        PLAYBACK_STATUS.put("PLAY", "PLAY");
+        PLAYBACK_STATUS.put("PAUS", "PAUSE");
+        PLAYBACK_STATUS.put("STOP", "STOP");
+        PLAYBACK_STATUS.put("HOME", "HOME MENU");
+        PLAYBACK_STATUS.put("MCTR", "MEDIA CENTER");
+        PLAYBACK_STATUS.put("SCSV", "SCREEN SAVER");
+        PLAYBACK_STATUS.put("MENU", "DISC MENU");
     }
 }
