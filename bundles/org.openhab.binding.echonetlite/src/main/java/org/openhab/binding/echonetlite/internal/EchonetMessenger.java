@@ -280,11 +280,8 @@ public class EchonetMessenger implements EchonetMessengerService {
 
         @Override
         public String toString() {
-            return "NewDeviceMessage{" +
-                    "instanceKey=" + instanceKey +
-                    ", pollIntervalMs=" + pollIntervalMs +
-                    ", retryTimeoutMs=" + retryTimeoutMs +
-                    "} " + super.toString();
+            return "NewDeviceMessage{" + "instanceKey=" + instanceKey + ", pollIntervalMs=" + pollIntervalMs
+                    + ", retryTimeoutMs=" + retryTimeoutMs + "} " + super.toString();
         }
     }
 

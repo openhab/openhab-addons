@@ -70,8 +70,7 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService implements
                 .withProperty("port", instanceKey.address.getPort())
                 .withProperty("groupCode", instanceKey.klass.groupCode())
                 .withProperty("classCode", instanceKey.klass.classCode()).withProperty("instance", instanceKey.instance)
-                .withRepresentationProperty("instanceKey")
-                .build();
+                .withRepresentationProperty("instanceKey").build();
         thingDiscovered(discoveryResult);
     }
 }
