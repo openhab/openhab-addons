@@ -117,11 +117,10 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
             if (maxKeyLen <= 128) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Java Cryptography Extension (JCE) have to be installed");
-                logger.warn("Java Cryptography Extension (JCE) have to be installed");
                 return;
             }
         } catch (NoSuchAlgorithmException e) {
-            logger.warn("AES encoding not supported", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "AES encoding not supported");
             return;
         }
         if (!getDevice().getInited()) {

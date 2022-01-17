@@ -67,10 +67,10 @@ public class KM200SwitchProgramServiceHandler {
     private static List<String> days = new ArrayList<>(Arrays.asList(TYPE_MONDAY, TYPE_TUESDAY, TYPE_WEDNESDAY,
             TYPE_THURSDAY, TYPE_FRIDAY, TYPE_SATURDAY, TYPE_SUNDAY));
 
-    public static List<StateOption> daysList = new ArrayList<>(Arrays.asList(new StateOption(TYPE_MONDAY, "Monday"),
+    public static List<StateOption> daysList = List.of(new StateOption(TYPE_MONDAY, "Monday"),
             new StateOption(TYPE_TUESDAY, "Tuesday"), new StateOption(TYPE_WEDNESDAY, "Wednesday"),
             new StateOption(TYPE_THURSDAY, "Thursday"), new StateOption(TYPE_FRIDAY, "Friday"),
-            new StateOption(TYPE_SATURDAY, "Saturday"), new StateOption(TYPE_SUNDAY, "Sunday")));
+            new StateOption(TYPE_SATURDAY, "Saturday"), new StateOption(TYPE_SUNDAY, "Sunday"));
 
     /* List with setpoints */
     private List<String> setpoints = new ArrayList<>();
