@@ -518,7 +518,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         // try to normalize the slightly different responses between UDT and QDT
                         final String discType = OppoStatusCodes.DISC_TYPE.get(updateData);
                         currentDiscType = (discType != null ? discType : updateData);
-                        updateChannelState(CHANNEL_DISC_TYPE, (discType != null ? discType : updateData));
+                        updateChannelState(CHANNEL_DISC_TYPE, currentDiscType);
                         break;
                     case UAT:
                         // we got the audio type status update, throw it away
