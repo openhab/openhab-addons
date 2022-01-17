@@ -18,6 +18,7 @@
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
 			<property name="modelId">PowerView Hub</property>
 		</properties>
+
 		<representation-property>host</representation-property>
 
 		<config-description>
@@ -70,10 +71,6 @@
 		<properties>
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
 			<property name="modelId">PowerView Motorized Shade</property>
-			<property name="type"></property>
-			<property name="capabilities"></property>
-			<property name="secondaryRailDetected"></property>
-			<property name="tiltAnywhereDetected"></property>
 		</properties>
 		<representation-property>id</representation-property>
 
