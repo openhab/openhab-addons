@@ -34,13 +34,7 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
-import org.openhab.core.voice.STTListener;
-import org.openhab.core.voice.STTService;
-import org.openhab.core.voice.STTServiceHandle;
-import org.openhab.core.voice.SpeechRecognitionErrorEvent;
-import org.openhab.core.voice.SpeechRecognitionEvent;
-import org.openhab.core.voice.SpeechStartEvent;
-import org.openhab.core.voice.SpeechStopEvent;
+import org.openhab.core.voice.*;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
@@ -347,6 +341,8 @@ public class GoogleSTTService implements STTService {
             } else {
                 if (!config.noResultsMessage.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
+                } else {
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
                 }
             }
         }
@@ -357,6 +353,10 @@ public class GoogleSTTService implements STTService {
             sttListener.sttEventReceived(new SpeechStopEvent());
             if (!config.errorMessage.isBlank()) {
                 sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+            } else {
+                String errorMessage = t.getMessage();
+                sttListener.sttEventReceived(
+                        new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
             }
         }
 
