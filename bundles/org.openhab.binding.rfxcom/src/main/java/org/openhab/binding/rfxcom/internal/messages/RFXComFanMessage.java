@@ -147,7 +147,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         @Nullable
         public static Commands bySpeed(SubType subType, int speed) {
             for (Commands value : values()) {
-                if (value.supportedBySubTypes.contains(subType) && value.speed == speed) {
+                if (value.supportedBySubTypes.contains(subType) && value.speed != null && value.speed == speed) {
                     return value;
                 }
             }
