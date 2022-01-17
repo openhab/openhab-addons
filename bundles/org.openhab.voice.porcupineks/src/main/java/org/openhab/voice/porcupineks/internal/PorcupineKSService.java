@@ -182,8 +182,11 @@ public class PorcupineKSService implements KSService {
                 .getLogger(java.util.logging.Logger.GLOBAL_LOGGER_NAME);
         Level currentGlobalLogLevel = globalJavaLogger.getLevel();
         globalJavaLogger.setLevel(java.util.logging.Level.OFF);
-
-        String libraryPath = prepareLib(bundleContext, Porcupine.LIBRARY_PATH);
+        String bundleLibraryPath = Porcupine.LIBRARY_PATH;
+        if (bundleLibraryPath == null) {
+            throw new PorcupineException("Unsupported environment, ensure Porcupine is supported by your system");
+        }
+        String libraryPath = prepareLib(bundleContext, bundleLibraryPath);
         String alternativeModelPath = getAlternativeModelPath(bundleContext, locale);
         String modelPath = alternativeModelPath != null ? alternativeModelPath
                 : prepareLib(bundleContext, Porcupine.MODEL_PATH);
