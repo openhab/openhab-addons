@@ -138,11 +138,11 @@ public class GoogleSTTService implements STTService {
     public Set<AudioFormat> getSupportedFormats() {
         return Set.of(
                 new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, null, null, 8000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, null, null, 12000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, null, null, 16000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, null, null, 24000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, null, null, 48000L));
+                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 8000L),
+                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 12000L),
+                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 16000L),
+                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 24000L),
+                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 48000L));
     }
 
     @Override
