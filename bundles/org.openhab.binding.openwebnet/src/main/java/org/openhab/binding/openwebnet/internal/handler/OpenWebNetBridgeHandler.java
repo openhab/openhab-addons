@@ -81,9 +81,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private static final int REFRESH_ALL_DEVICES_DELAY_MSEC = 500; // Delay to wait before sending all devices refresh
                                                                    // request after a connect/reconnect
-
     private int refreshAllDevicesDelay = REFRESH_ALL_DEVICES_DELAY_MSEC;
     public static final String PROPERTY_REFRESH_DEVICE_DELAY = "refreshDelay";
+
+    private static long lastRegisteredDeviceTS = -1; // timestamp when the last device has been associated to the bridge
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.BRIDGE_SUPPORTED_THING_TYPES;
 
@@ -386,6 +387,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.warn("registering device with an existing ownId={}", ownId);
         }
         registeredDevices.put(ownId, thingHandler);
+        lastRegisteredDeviceTS = System.currentTimeMillis();
         logger.debug("registered device ownId={}, thing={}", ownId, thingHandler.getThing().getUID());
     }
 
@@ -413,23 +415,30 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     private void refreshAllDevices() {
-        logger.debug("--- --- REFRESHING all devices for bridge {}", thing.getUID());
+        logger.debug("--- --- ABOUT TO REFRESH all devices for bridge {}", thing.getUID());
         int howMany = 0;
         List<@NonNull Thing> things = getThing().getThings();
         int total = things.size();
         logger.debug("--- FOUND {} things by getThings()", total);
-        for (Thing ownThing : things) {
-            // for (Thing ownThing : getThing().getThings()) {
-            OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
-            if (hndlr != null) {
-                howMany++;
-                logger.debug("--- REFRESHING thing #{}/{}: {}", howMany, total, ownThing.getUID());
-                hndlr.refreshDevice(true);
-            } else {
-                logger.debug("--- no handler for thing {}", ownThing.getUID());
+        if (System.currentTimeMillis() - lastRegisteredDeviceTS < refreshAllDevicesDelay) {
+            // if a device has been registered with the bridge just now, let's wait for other devices: re-schedule
+            // refreshAllDevices
+            logger.debug("--- REGISTER device just called... re-scheduling refreshAllDevices()");
+            refreshSchedule = scheduler.schedule(this::refreshAllDevices, refreshAllDevicesDelay,
+                    TimeUnit.MILLISECONDS);
+        } else {
+            for (Thing ownThing : things) {
+                OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
+                if (hndlr != null) {
+                    howMany++;
+                    logger.debug("--- REFRESHING thing #{}/{}: {}", howMany, total, ownThing.getUID());
+                    hndlr.refreshDevice(true);
+                } else {
+                    logger.warn("--- no handler for thing {}", ownThing.getUID());
+                }
             }
+            logger.debug("--- --- COMPLETED Refreshing all devices for bridge {}", thing.getUID());
         }
-        logger.debug("--- --- COMPLETED Refreshing all devices for bridge {}", thing.getUID());
     }
 
     @Override
@@ -579,10 +588,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 this.updateProperty(PROPERTY_FIRMWARE_VERSION, gw.getFirmwareVersion());
                 logger.debug("gw firmware version: {}", gw.getFirmwareVersion());
             }
-
             // schedule a refresh for all devices
-            refreshSchedule = scheduler.schedule(this::refreshAllDevices, REFRESH_ALL_DEVICES_DELAY_MSEC, // TODO also
-                                                                                                          // delay here?
+            refreshSchedule = scheduler.schedule(this::refreshAllDevices, refreshAllDevicesDelay,
                     TimeUnit.MILLISECONDS);
         }
     }

@@ -26,6 +26,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openwebnet4j.communication.OWNException;
@@ -86,11 +87,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         logger.debug("requestChannelState() thingUID={} channel={}", thing.getUID(), channel.getId());
-        requestStatus(channel.getId());
+        requestState(channel.getId());
     }
 
-    /** helper method to request light status based on channel */
-    private void requestStatus(String channelId) {
+    /** helper method to request light state */
+    private void requestState(String channelId) {
         Where w = deviceWhere;
         if (w != null) {
             try {
@@ -102,20 +103,29 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
                         updateStatus(ThingStatus.ONLINE);
                     }
+                    return;
+                } else {
+                    logger.warn(
+                            "Lighting.requestState() received null or NACK response for thing {}. Setting it to OFFLINE",
+                            thing.getUID());
                 }
             } catch (OWNException e) {
-                logger.warn("requestStatus() Exception while requesting light state: {}", e.getMessage());
+                logger.warn("requestState() Exception while requesting light state: {}", e.getMessage());
             }
         } else {
-            logger.warn("Could not requestStatus(): deviceWhere is null");
+            logger.warn("Could not requestState(): deviceWhere is null");
         }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "Lighting : Could not get device status");
     }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
+        logger.debug("--- refreshDevice() : refreshing device {} (all={})", thing.getUID(), refreshAll);
         OpenWebNetBridgeHandler brH = bridgeHandler;
         if (brH != null) {
             if (brH.isBusGateway() && refreshAll) {
+                logger.debug("--- refreshDevice() : refreshing all devices... (thinUID={}", thing.getUID());
                 long now = System.currentTimeMillis();
                 if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
                     try {
@@ -125,17 +135,30 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                         logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
                     }
                 } else {
-                    logger.debug("Refresh all devices just sent...");
+                    logger.debug("--- refreshDevice() : refresh all devices just sent... ({})", thing.getUID());
                 }
+                // sometimes GENERAL refresh request does not return state, so let's schedule another single refresh
+                // device, just in case
+                // TODO assign schedule to a variable and cancel it in dispose() ??
+                scheduler.schedule(() -> {
+                    if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
+                        logger.debug("--- refreshDevice() : schedule expired ---UNKNOWN--- status for thing {}",
+                                thing.getUID());
+                        refreshDevice(false);
+                    } else {
+                        logger.debug("--- refreshDevice() : schedule expired ONLINE status for thing {}",
+                                thing.getUID());
+                    }
+                }, THING_STATE_REQ_TIMEOUT_SEC, TimeUnit.SECONDS);
             } else { // USB or BUS-single device
                 ThingTypeUID thingType = thing.getThingTypeUID();
                 if (THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS.equals(thingType)) {
                     // Unfortunately using USB Gateway OpenWebNet both switch endpoints cannot be requested at the same
                     // time using UNIT 00 because USB stick returns NACK, so we need to send a request status for both
                     // endpoints
-                    requestStatus(CHANNEL_SWITCH_02);
+                    requestState(CHANNEL_SWITCH_02);
                 }
-                requestStatus(""); // channel here does not make any difference, see {@link #toWhere()}
+                requestState(""); // channel here does not make any difference, see {@link #toWhere()}
             }
         }
     }
@@ -291,7 +314,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                     logger.debug("  $BRI 'ON' is new notification from network, scheduling requestStatus...");
                     // we must wait BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC to be sure dimmer has reached its final level
                     scheduler.schedule(() -> {
-                        requestStatus(CHANNEL_BRIGHTNESS);
+                        requestState(CHANNEL_BRIGHTNESS);
                     }, BRIGHTNESS_STATUS_REQUEST_DELAY_MSEC, TimeUnit.MILLISECONDS);
                     return;
                 } else {

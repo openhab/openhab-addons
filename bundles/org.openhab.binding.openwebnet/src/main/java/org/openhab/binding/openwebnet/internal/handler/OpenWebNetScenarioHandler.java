@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,6 +31,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
@@ -362,8 +364,10 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
+        logger.debug("--- refreshDevice() : refreshing device {} (all={})", thing.getUID(), refreshAll);
         if (isDryContactIR) {
             if (refreshAll) {
+                logger.debug("--- refreshDevice() : refreshing all devices... (thinUID={}", thing.getUID());
                 long now = System.currentTimeMillis();
                 if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
                     try {
@@ -373,13 +377,26 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                         logger.warn("Excpetion while requesting all DryContact/IR devices refresh: {}", e.getMessage());
                     }
                 } else {
-                    logger.debug("Refresh all devices just sent...");
+                    logger.debug("--- refreshDevice() : refresh all devices just sent... ({})", thing.getUID());
                 }
+                // sometimes GENERAL refresh request does not return state, so let's schedule another single refresh
+                // device, just in case
+                // TODO assign schedule to a variable and cancel it in dispose() ??
+                scheduler.schedule(() -> {
+                    if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
+                        logger.debug("--- refreshDevice() : schedule expired ---UNKNOWN--- status for thing {}",
+                                thing.getUID());
+                        refreshDevice(false);
+                    } else {
+                        logger.debug("--- refreshDevice() : schedule expired ONLINE status for thing {}",
+                                thing.getUID());
+                    }
+                }, THING_STATE_REQ_TIMEOUT_SEC, TimeUnit.SECONDS);
             } else {
                 requestState();
             }
         } else {
-            logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
+            logger.debug("CEN/CEN+ channels are trigger channels and do not have state ");
         }
     }
 
