@@ -15,6 +15,10 @@ package org.openhab.binding.hdpowerview.internal.api.responses;
 import java.util.List;
 import java.util.StringJoiner;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hdpowerview.internal.api.SurveyData;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -22,25 +26,17 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class Survey {
     @SerializedName("shade_id")
     public int shadeId;
+    @Nullable
     @SerializedName("survey")
     public List<SurveyData> surveyData;
 
-    public static class SurveyData {
-        @SerializedName("neighbor_id")
-        public int neighborId;
-        public int rssi;
-
-        @Override
-        public String toString() {
-            return String.format("{neighbor id:%d, rssi:%d}", neighborId, rssi);
-        }
-    }
-
     @Override
     public String toString() {
+        List<SurveyData> surveyData = this.surveyData;
         if (surveyData == null) {
             return "{}";
         }

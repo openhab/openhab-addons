@@ -12,11 +12,16 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Firmware information for an HD PowerView hub
  *
  * @author Jacob Laursen - Initial contribution
  */
+@NonNullByDefault
 public class FirmwareVersion {
+    @Nullable
     public FirmwareVersions firmware;
 }

@@ -82,6 +82,7 @@ All of these channels appear in the binding, but only those which have a physica
 | position       | Rollershutter            | The vertical position of the shade's rail -- see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). Up/Down commands will move the rail completely up or completely down. Percentage commands will move the rail to an intermediate position. Stop commands will halt any current movement of the rail. |
 | secondary      | Rollershutter            | The vertical position of the secondary rail (if any). Its function is similar to the `position` channel above -- but see [next chapter](#Roller-Shutter-Up/Down-Position-vs.-Open/Close-State). |
 | vane           | Dimmer                   | The degree of opening of the slats or vanes. Setting this to a non-zero value will first move the shade `position` fully down, since the slats or vanes can only have a defined state if the shade is in its down position -- see [Interdependency between Channel positions](#Interdependency-between-Channel-positions). |
+| calibrate      | Switch                   | Setting this to ON will calibrate the shade. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
 | lowBattery     | Switch                   | Indicates ON when the battery level of the shade is low, as determined by the hub's internal rules. |
 | batteryLevel   | Number                   | Battery level (10% = low, 50% = medium, 100% = high)
 | batteryVoltage | Number:ElectricPotential | Battery voltage reported by the shade. |
@@ -205,6 +206,8 @@ Rollershutter Living_Room_Shade_Secondary "Living Room Shade Secondary Position 
 Dimmer Living_Room_Shade_Vane "Living Room Shade Vane [%.0f %%]" {channel="hdpowerview:shade:g24:s50150:vane"}
 
 Switch Living_Room_Shade_Battery_Low_Alarm "Living Room Shade Battery Low Alarm [%s]" {channel="hdpowerview:shade:g24:s50150:lowBattery"}
+
+Switch Living_Room_Shade_Calibrate "Living Room Shade Calibrate" {channel="hdpowerview:shade:g24:s50150:calibrate", autoupdate="false"}
 ```
 
 Scene items:

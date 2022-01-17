@@ -97,6 +97,8 @@ public class TeslaCommandExtension extends AbstractConsoleCommandExtension {
                     printUsage(console);
                     break;
             }
+        } else {
+            printUsage(console);
         }
     }
 
