@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.androiddebugbridge.internal;
+package org.openhab.binding.androiddebugbridge.internal.discovery;
 
 import static org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeBindingConstants.*;
 
@@ -22,7 +22,6 @@ import java.net.SocketException;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -31,6 +30,10 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeBindingConfiguration;
+import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeDevice;
+import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeDeviceException;
+import org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridgeDeviceReadException;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -52,6 +55,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.androiddebugbridge")
 public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService {
+
     static final int TIMEOUT_MS = 60000;
     private static final long DISCOVERY_RESULT_TTL_SEC = 300;
     public static final String LOCAL_INTERFACE_IP = "127.0.0.1";
@@ -61,7 +65,7 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     private boolean discoveryRunning = false;
 
     @Activate
-    public AndroidDebugBridgeDiscoveryService(@Reference ConfigurationAdmin admin) {
+    public AndroidDebugBridgeDiscoveryService(final @Reference ConfigurationAdmin admin) {
         super(SUPPORTED_THING_TYPES, TIMEOUT_MS, false);
         this.admin = admin;
     }
@@ -102,7 +106,8 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
                                 int retries = 0;
                                 while (retries < MAX_RETRIES) {
                                     try {
-                                        discoverWithADB(currentIp, configuration.discoveryPort);
+                                        discoverWithADB(currentIp, configuration.discoveryPort,
+                                                new String(netint.getHardwareAddress()).toLowerCase());
                                     } catch (AndroidDebugBridgeDeviceReadException | TimeoutException e) {
                                         retries++;
                                         if (retries < MAX_RETRIES) {
@@ -126,8 +131,9 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
         }
     }
 
-    private void discoverWithADB(String ip, int port) throws InterruptedException, AndroidDebugBridgeDeviceException,
-            AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
+    private void discoverWithADB(String ip, int port, String macAddress)
+            throws InterruptedException, AndroidDebugBridgeDeviceException, AndroidDebugBridgeDeviceReadException,
+            TimeoutException, ExecutionException {
         var device = new AndroidDebugBridgeDevice(scheduler);
         device.configure(ip, port, 10, 0);
         try {
@@ -137,8 +143,8 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
             String model = device.getModel();
             String androidVersion = device.getAndroidVersion();
             String brand = device.getBrand();
-            logger.debug("discovered: {} - {} - {} - {}", model, serialNo, androidVersion, brand);
-            onDiscoverResult(serialNo, ip, port, model, androidVersion, brand);
+            logger.debug("discovered: {} - {} - {} - {} - {}", model, serialNo, androidVersion, brand, macAddress);
+            onDiscoverResult(serialNo, ip, port, model, androidVersion, brand, macAddress);
         } finally {
             device.disconnect();
         }
@@ -152,17 +158,23 @@ public class AndroidDebugBridgeDiscoveryService extends AbstractDiscoveryService
     }
 
     private void onDiscoverResult(String serialNo, String ip, int port, String model, String androidVersion,
-            String brand) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNo);
-        properties.put(PARAMETER_IP, ip);
-        properties.put(PARAMETER_PORT, port);
-        properties.put(Thing.PROPERTY_MODEL_ID, model);
-        properties.put(Thing.PROPERTY_VENDOR, brand);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, androidVersion);
-        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ANDROID_DEVICE, serialNo))
-                .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
-                .withProperties(properties).withLabel(String.format("%s (%s)", model, serialNo)).build());
+            String brand, String macAddress) {
+        String friendlyName = String.format("%s (%s)", model, ip);
+        thingDiscovered(
+                DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ANDROID_DEVICE, macAddress.replaceAll(":", ""))) //
+                        .withProperties(Map.of( //
+                                PARAMETER_IP, ip, //
+                                PARAMETER_PORT, port, //
+                                Thing.PROPERTY_MAC_ADDRESS, macAddress, //
+                                Thing.PROPERTY_SERIAL_NUMBER, serialNo, //
+                                Thing.PROPERTY_MODEL_ID, model, //
+                                Thing.PROPERTY_VENDOR, brand, //
+                                Thing.PROPERTY_FIRMWARE_VERSION, androidVersion //
+                        )) //
+                        .withLabel(friendlyName) //
+                        .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS) //
+                        .withTTL(DISCOVERY_RESULT_TTL_SEC) //
+                        .build());
     }
 
     private @Nullable AndroidDebugBridgeBindingConfiguration getConfig() {
