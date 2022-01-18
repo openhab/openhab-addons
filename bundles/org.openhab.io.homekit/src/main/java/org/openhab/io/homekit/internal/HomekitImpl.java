@@ -293,11 +293,16 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     @Override
     public void onChanged(final List<CidrAddress> list, final List<CidrAddress> list1) {
         logger.trace("restarting homekit bridge on network interface changes.");
-        stopHomekitServer();
+        networkAddressService.removeNetworkAddressChangeListener(this);
+        this.bridge.stop();
+        this.homekitServer.stop();
+        this.homekitServer = null;
+        this.bridge = null;
         try {
             startHomekitServer();
         } catch (IOException e) {
             logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
         }
+        networkAddressService.addNetworkAddressChangeListener(this);
     }
 }
