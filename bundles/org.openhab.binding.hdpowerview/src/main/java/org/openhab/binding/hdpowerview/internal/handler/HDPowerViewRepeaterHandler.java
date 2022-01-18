@@ -57,10 +57,9 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing repeater handler");
-        try {
-            repeaterId = getRepeaterId();
-        } catch (NumberFormatException e) {
+        repeaterId = getConfigAs(HDPowerViewRepeaterConfiguration.class).id;
+        logger.debug("Initializing repeater handler for repeater {}", repeaterId);
+        if (repeaterId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.invalid-id");
             return;
@@ -88,14 +87,6 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
     public void dispose() {
         logger.debug("Disposing repeater handler for repeater {}", repeaterId);
         cancelJob();
-    }
-
-    private int getRepeaterId() throws NumberFormatException {
-        String str = getConfigAs(HDPowerViewRepeaterConfiguration.class).id;
-        if (str == null) {
-            throw new NumberFormatException("null input string");
-        }
-        return Integer.parseInt(str);
     }
 
     @Override

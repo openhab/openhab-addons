@@ -75,7 +75,7 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="id" type="text" required="true">
+			<parameter name="id" type="integer" min="1" required="true">
 				<label>ID</label>
 				<description>The numeric ID of the PowerView Shade in the Hub</description>
 			</parameter>
@@ -102,7 +102,7 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="id" type="text" required="true">
+			<parameter name="id" type="integer" min="1" required="true">
 				<label>ID</label>
 				<description>The numeric ID of the PowerView Repeater in the Hub</description>
 			</parameter>
