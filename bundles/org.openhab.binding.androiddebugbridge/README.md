@@ -60,11 +60,13 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 `[{"name": "com.amazon.tv.launcher", "mode": "idle"},{"name": "org.jellyfin.androidtv", "mode": "wake_lock", "wakeLockPlayStates": [2,3]},{"name": "com.amazon.firetv.youtube", "mode": "wake_lock", "wakeLockPlayStates": [2]}]`
 
 ## Record/Send input events
+
 As the execution of key events takes a while, you can use input events as an alternative way to control your device. 
 
 They are pretty device specific, so you should use the record-input and recorded-input channels to store/send those events.
 
 An example of what you can do:
+
 * You can send the command `UP` to the `record-input` channel the binding will then capture the events you send through your remote for the defined recordDuration config for the thing, so press once the UP key on your remote and wait a while.
 * Now that you have recorded your input, you can send the `UP` command to the `recorded-input` event and it will send the recorded event to the android device.
 
