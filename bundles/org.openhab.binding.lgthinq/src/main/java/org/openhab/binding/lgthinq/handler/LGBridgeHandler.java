@@ -86,6 +86,7 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
      */
     abstract class PollingRunnable implements Runnable {
         protected final String bridgeName;
+        protected LGThinqConfiguration lgthinqConfig;
 
         PollingRunnable(String bridgeName) {
             this.bridgeName = bridgeName;
@@ -193,10 +194,9 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
         return lGDeviceRegister.get(deviceId);
     }
 
-    private final LGDevicePollingRunnable lgDevicePollingRunnable;
+    private LGDevicePollingRunnable lgDevicePollingRunnable;
 
     class LGDevicePollingRunnable extends PollingRunnable {
-
         public LGDevicePollingRunnable(String bridgeName) {
             super(bridgeName);
         }
@@ -280,6 +280,7 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
     public void initialize() {
         logger.debug("Initializing LGThinq bridge handler.");
         lgthinqConfig = getConfigAs(LGThinqConfiguration.class);
+        lgDevicePollingRunnable.lgthinqConfig = lgthinqConfig;
 
         if (lgthinqConfig.username.isEmpty() || lgthinqConfig.password.isEmpty() || lgthinqConfig.language.isEmpty()
                 || lgthinqConfig.country.isEmpty()) {

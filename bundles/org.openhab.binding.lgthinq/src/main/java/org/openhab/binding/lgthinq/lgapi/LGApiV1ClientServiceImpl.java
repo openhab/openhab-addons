@@ -27,6 +27,7 @@ import org.openhab.binding.lgthinq.api.RestUtils;
 import org.openhab.binding.lgthinq.api.TokenManager;
 import org.openhab.binding.lgthinq.api.TokenResult;
 import org.openhab.binding.lgthinq.errors.LGApiException;
+import org.openhab.binding.lgthinq.errors.LGDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.errors.LGDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.errors.RefreshTokenException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
@@ -241,7 +242,7 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
 
     @Override
     public ACSnapShot getMonitorData(String bridgeName, String deviceId, String workId)
-            throws LGApiException, IOException {
+            throws LGApiException, LGDeviceV1MonitorExpiredException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
         UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_POOL_MON_PATH);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
@@ -263,6 +264,13 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
         if (envelop.get("workList") != null
                 && ((Map<String, Object>) envelop.get("workList")).get("returnData") != null) {
             Map<String, Object> workList = ((Map<String, Object>) envelop.get("workList"));
+            if (!"0000".equals(workList.get("returnCode"))) {
+                LGDeviceV1MonitorExpiredException e = new LGDeviceV1MonitorExpiredException(
+                        String.format("Monitor for device %s has expired. Please, refresh the monitor.", deviceId));
+                logger.warn("{}", e.getMessage());
+                throw e;
+            }
+
             String jsonMonDataB64 = (String) workList.get("returnData");
             String jsonMon = new String(Base64.getDecoder().decode(jsonMonDataB64));
             ACSnapShot shot = objectMapper.readValue(jsonMon, ACSnapShotV1.class);

@@ -28,6 +28,7 @@ import org.openhab.binding.lgthinq.api.RestUtils;
 import org.openhab.binding.lgthinq.api.TokenManager;
 import org.openhab.binding.lgthinq.api.TokenResult;
 import org.openhab.binding.lgthinq.errors.LGApiException;
+import org.openhab.binding.lgthinq.errors.LGDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.errors.LGDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.errors.RefreshTokenException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
@@ -376,7 +377,7 @@ public class LGApiV2ClientServiceImpl implements LGApiClientService {
 
     @Override
     public ACSnapShot getMonitorData(String bridgeName, String deviceId, String workId)
-            throws LGApiException, IOException, RefreshTokenException {
+            throws LGApiException, LGDeviceV1MonitorExpiredException, IOException {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 }

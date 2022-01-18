@@ -56,6 +56,7 @@ class LGBridgeHandlerTest {
         LGApiClientService service1 = LGApiV1ClientServiceImpl.getInstance();
         LGApiClientService service2 = LGApiV2ClientServiceImpl.getInstance();
         try {
+            // lgthinq:401:5eb6ed5ed6:d27bdb00-7149-11d3-80b0-7440be92ac08
             String workId = service1.startMonitor("fakeBridgeId", "d27bdb00-7149-11d3-80b0-7440be92ac08");
             ACSnapShot shot = service1.getMonitorData("fakeBridgeId", "d27bdb00-7149-11d3-80b0-7440be92ac08", workId);
             System.out.println(shot);
