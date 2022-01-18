@@ -13,6 +13,7 @@
 package org.openhab.binding.androiddebugbridge.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.androiddebugbridge.internal.discovery.AndroidDebugBridgeDiscoveryService;
 
 /**
  * The {@link AndroidDebugBridgeDiscoveryService} discover Android ADB Instances in the network.
