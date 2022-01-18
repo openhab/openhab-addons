@@ -16,6 +16,7 @@ import static org.openhab.binding.androiddebugbridge.internal.AndroidDebugBridge
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -78,10 +79,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        var currentConfig = config;
-        if (currentConfig == null) {
-            return;
-        }
+        AndroidDebugBridgeConfiguration currentConfig = config;
         try {
             if (!adbConnection.isConnected()) {
                 // try reconnect
@@ -305,7 +303,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        var currentConfig = getConfigAs(AndroidDebugBridgeConfiguration.class);
+        AndroidDebugBridgeConfiguration currentConfig = getConfigAs(AndroidDebugBridgeConfiguration.class);
         config = currentConfig;
         var mediaStateJSONConfig = currentConfig.mediaStateJSONConfig;
         if (mediaStateJSONConfig != null && !mediaStateJSONConfig.isEmpty()) {
@@ -340,14 +338,12 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     public void checkConnection() {
-        var currentConfig = config;
-        if (currentConfig == null) {
-            return;
-        }
+        AndroidDebugBridgeConfiguration currentConfig = config;
         try {
             logger.debug("Refresh device {} status", currentConfig.ip);
             if (adbConnection.isConnected()) {
                 updateStatus(ThingStatus.ONLINE);
+                refreshProperties();
                 refreshStatus();
             } else {
                 try {
@@ -361,14 +357,36 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
                 }
                 if (adbConnection.isConnected()) {
                     updateStatus(ThingStatus.ONLINE);
+                    refreshProperties();
                     refreshStatus();
                 }
             }
         } catch (InterruptedException ignored) {
-        } catch (AndroidDebugBridgeDeviceException | ExecutionException e) {
+        } catch (AndroidDebugBridgeDeviceException | AndroidDebugBridgeDeviceReadException | ExecutionException e) {
             logger.debug("Connection checker error: {}", e.getMessage());
             adbConnection.disconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void refreshProperties() throws InterruptedException, AndroidDebugBridgeDeviceException,
+            AndroidDebugBridgeDeviceReadException, ExecutionException {
+        // Add some information about the device
+        try {
+            Map<String, String> editProperties = editProperties();
+            editProperties.put(Thing.PROPERTY_SERIAL_NUMBER, adbConnection.getSerialNo());
+            editProperties.put(Thing.PROPERTY_MODEL_ID, adbConnection.getModel());
+            editProperties.put(Thing.PROPERTY_FIRMWARE_VERSION, adbConnection.getAndroidVersion());
+            editProperties.put(Thing.PROPERTY_VENDOR, adbConnection.getBrand());
+            try {
+                editProperties.put(Thing.PROPERTY_MAC_ADDRESS, adbConnection.getMacAddress());
+            } catch (AndroidDebugBridgeDeviceReadException e) {
+                logger.debug("Refresh properties error: {}", e.getMessage());
+            }
+            updateProperties(editProperties);
+        } catch (TimeoutException e) {
+            logger.debug("Refresh properties error: Timeout");
+            return;
         }
     }
 
