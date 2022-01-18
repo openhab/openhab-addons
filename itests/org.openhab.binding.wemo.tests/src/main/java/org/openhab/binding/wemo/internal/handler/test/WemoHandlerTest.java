@@ -47,6 +47,8 @@ public class WemoHandlerTest {
 
     private MockWemoHandler handler;
 
+    private static final String host = "127.0.0.1";
+
     private static final String SERVICE_ID = "insight";
     private static final String PARAMS_NAME = "InsightParams";
     private WemoInsightParams insightParams;
@@ -143,7 +145,7 @@ public class WemoHandlerTest {
         String channelToWatch;
 
         public MockWemoHandler(Thing thing, String channelToWatch) {
-            super(thing, null, new WemoHttpCall());
+            super(thing, null, new WemoHttpCall(), host);
             this.channelToWatch = channelToWatch;
         }
 

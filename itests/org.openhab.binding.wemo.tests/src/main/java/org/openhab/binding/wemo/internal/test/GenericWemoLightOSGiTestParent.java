@@ -70,7 +70,6 @@ public class GenericWemoLightOSGiTestParent extends GenericWemoOSGiTest {
     @Override
     protected Thing createThing(ThingTypeUID thingTypeUID, String channelID, String itemAcceptedType) {
         Configuration configuration = new Configuration();
-        configuration.put(WemoBindingConstants.IPADDRESS, "127.0.0.1");
         configuration.put(WemoBindingConstants.DEVICE_ID, WEMO_LIGHT_ID);
 
         ThingUID thingUID = new ThingUID(thingTypeUID, TEST_THING_ID);

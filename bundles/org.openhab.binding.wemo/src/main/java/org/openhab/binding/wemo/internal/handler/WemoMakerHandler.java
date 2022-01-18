@@ -16,7 +16,6 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -68,15 +67,16 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private WemoHttpCall wemoCall;
 
-    private String host = "";
+    private String remoteHost;
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
+    public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller, String host) {
         super(thing, wemoHttpcaller);
 
         this.service = upnpIOService;
         this.wemoCall = wemoHttpcaller;
+        this.remoteHost = host;
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
     }
@@ -84,7 +84,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
-        host = (String) configuration.get(IPADDRESS);
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoMakerHandler for UDN '{}'", configuration.get("udn"));
@@ -128,10 +127,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
-                if (host.isEmpty()) {
-                    URL descriptorURL = service.getDescriptorURL(this);
-                    host = getWemoHost(descriptorURL);
-                }
                 updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
             } catch (Exception e) {
@@ -169,11 +164,9 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                             + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
                             + "</s:Envelope>";
 
-                    if (!host.isEmpty()) {
-                        String wemoURL = getWemoURL(host, "basicevent");
-                        if (wemoURL != null) {
-                            wemoCall.executeCall(wemoURL, soapHeader, content);
-                        }
+                    String wemoURL = getWemoURL(remoteHost, "basicevent");
+                    if (wemoURL != null) {
+                        wemoCall.executeCall(wemoURL, soapHeader, content);
                     }
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}' ", command, getThing().getUID(), e);
@@ -205,73 +198,68 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            if (!host.isEmpty()) {
-                String wemoURL = getWemoURL(host, actionService);
-                if (wemoURL != null) {
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        try {
-                            String stringParser = substringBetween(wemoCallResponse, "<attributeList>",
-                                    "</attributeList>");
-                            logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
-                            logger.trace("'{}'", stringParser);
+            String wemoURL = getWemoURL(remoteHost, actionService);
+            if (wemoURL != null) {
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null) {
+                    try {
+                        String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
+                        logger.trace("Escaped Maker response for device '{}' :", getThing().getUID());
+                        logger.trace("'{}'", stringParser);
 
-                            // Due to Belkins bad response formatting, we need to run this twice.
-                            stringParser = unescapeXml(stringParser);
-                            stringParser = unescapeXml(stringParser);
-                            logger.trace("Maker response '{}' for device '{}' received", stringParser,
-                                    getThing().getUID());
+                        // Due to Belkins bad response formatting, we need to run this twice.
+                        stringParser = unescapeXml(stringParser);
+                        stringParser = unescapeXml(stringParser);
+                        logger.trace("Maker response '{}' for device '{}' received", stringParser, getThing().getUID());
 
-                            stringParser = "<data>" + stringParser + "</data>";
+                        stringParser = "<data>" + stringParser + "</data>";
 
-                            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                            // see
-                            // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-                            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                            dbf.setXIncludeAware(false);
-                            dbf.setExpandEntityReferences(false);
-                            DocumentBuilder db = dbf.newDocumentBuilder();
-                            InputSource is = new InputSource();
-                            is.setCharacterStream(new StringReader(stringParser));
+                        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                        // see
+                        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                        dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                        dbf.setXIncludeAware(false);
+                        dbf.setExpandEntityReferences(false);
+                        DocumentBuilder db = dbf.newDocumentBuilder();
+                        InputSource is = new InputSource();
+                        is.setCharacterStream(new StringReader(stringParser));
 
-                            Document doc = db.parse(is);
-                            NodeList nodes = doc.getElementsByTagName("attribute");
+                        Document doc = db.parse(is);
+                        NodeList nodes = doc.getElementsByTagName("attribute");
 
-                            // iterate the attributes
-                            for (int i = 0; i < nodes.getLength(); i++) {
-                                Element element = (Element) nodes.item(i);
+                        // iterate the attributes
+                        for (int i = 0; i < nodes.getLength(); i++) {
+                            Element element = (Element) nodes.item(i);
 
-                                NodeList deviceIndex = element.getElementsByTagName("name");
-                                Element line = (Element) deviceIndex.item(0);
-                                String attributeName = getCharacterDataFromElement(line);
-                                logger.trace("attributeName: {}", attributeName);
+                            NodeList deviceIndex = element.getElementsByTagName("name");
+                            Element line = (Element) deviceIndex.item(0);
+                            String attributeName = getCharacterDataFromElement(line);
+                            logger.trace("attributeName: {}", attributeName);
 
-                                NodeList deviceID = element.getElementsByTagName("value");
-                                line = (Element) deviceID.item(0);
-                                String attributeValue = getCharacterDataFromElement(line);
-                                logger.trace("attributeValue: {}", attributeValue);
+                            NodeList deviceID = element.getElementsByTagName("value");
+                            line = (Element) deviceID.item(0);
+                            String attributeValue = getCharacterDataFromElement(line);
+                            logger.trace("attributeValue: {}", attributeValue);
 
-                                switch (attributeName) {
-                                    case "Switch":
-                                        State relayState = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
-                                        logger.debug("New relayState '{}' for device '{}' received", relayState,
-                                                getThing().getUID());
-                                        updateState(CHANNEL_RELAY, relayState);
-                                        break;
-                                    case "Sensor":
-                                        State sensorState = "1".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
-                                        logger.debug("New sensorState '{}' for device '{}' received", sensorState,
-                                                getThing().getUID());
-                                        updateState(CHANNEL_SENSOR, sensorState);
-                                        break;
-                                }
+                            switch (attributeName) {
+                                case "Switch":
+                                    State relayState = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                                    logger.debug("New relayState '{}' for device '{}' received", relayState,
+                                            getThing().getUID());
+                                    updateState(CHANNEL_RELAY, relayState);
+                                    break;
+                                case "Sensor":
+                                    State sensorState = "1".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                                    logger.debug("New sensorState '{}' for device '{}' received", sensorState,
+                                            getThing().getUID());
+                                    updateState(CHANNEL_SENSOR, sensorState);
+                                    break;
                             }
-                        } catch (Exception e) {
-                            logger.error("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(),
-                                    e);
                         }
+                    } catch (Exception e) {
+                        logger.error("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(), e);
                     }
                 }
             }
