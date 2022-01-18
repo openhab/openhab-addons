@@ -71,8 +71,6 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> connectionCheckerSchedule;
     private AndroidDebugBridgeMediaStatePackageConfig @Nullable [] packageConfigs = null;
     private boolean deviceAwake = false;
-    /** Prevent a dispose/init cycle while this flag is set. Use for property updates */
-    private boolean ignoreConfigurationUpdate;
 
     public AndroidDebugBridgeHandler(Thing thing) {
         super(thing);
@@ -80,18 +78,8 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     @Override
-    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
-        if (!ignoreConfigurationUpdate) {
-            super.handleConfigurationUpdate(configurationParameters);
-        }
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        var currentConfig = config;
-        if (currentConfig == null) {
-            return;
-        }
+        AndroidDebugBridgeConfiguration currentConfig = config;
         try {
             if (!adbConnection.isConnected()) {
                 // try reconnect
@@ -315,7 +303,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        var currentConfig = getConfigAs(AndroidDebugBridgeConfiguration.class);
+        AndroidDebugBridgeConfiguration currentConfig = getConfigAs(AndroidDebugBridgeConfiguration.class);
         config = currentConfig;
         var mediaStateJSONConfig = currentConfig.mediaStateJSONConfig;
         if (mediaStateJSONConfig != null && !mediaStateJSONConfig.isEmpty()) {
@@ -350,10 +338,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
     }
 
     public void checkConnection() {
-        var currentConfig = config;
-        if (currentConfig == null) {
-            return;
-        }
+        AndroidDebugBridgeConfiguration currentConfig = config;
         try {
             logger.debug("Refresh device {} status", currentConfig.ip);
             if (adbConnection.isConnected()) {
@@ -398,9 +383,7 @@ public class AndroidDebugBridgeHandler extends BaseThingHandler {
             } catch (AndroidDebugBridgeDeviceReadException e) {
                 logger.debug("Refresh properties error: {}", e.getMessage());
             }
-            ignoreConfigurationUpdate = true;
             updateProperties(editProperties);
-            ignoreConfigurationUpdate = false;
         } catch (TimeoutException e) {
             logger.debug("Refresh properties error: Timeout");
             return;
