@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.openhab.binding.lgthinq.errors.LGApiException;
+import org.openhab.binding.lgthinq.errors.LGDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.errors.LGDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
@@ -60,5 +61,5 @@ public interface LGApiClientService {
             throws LGThinqException, LGDeviceV1OfflineException, IOException;
 
     public ACSnapShot getMonitorData(String bridgeName, String deviceId, String workerId)
-            throws LGApiException, IOException;
+            throws LGApiException, LGDeviceV1MonitorExpiredException, IOException;
 }

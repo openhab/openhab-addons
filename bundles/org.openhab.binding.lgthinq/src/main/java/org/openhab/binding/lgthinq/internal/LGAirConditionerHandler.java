@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.errors.LGApiException;
+import org.openhab.binding.lgthinq.errors.LGDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.errors.LGDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.errors.LGThinqException;
 import org.openhab.binding.lgthinq.handler.LGBridgeHandler;
@@ -62,7 +63,6 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     private final Logger logger = LoggerFactory.getLogger(LGAirConditionerHandler.class);
     @NonNullByDefault
     private final LGApiClientService lgApiClientService;
-    private @Nullable LGThinqConfiguration config;
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     // Bridges status that this thing must top scanning for state change
     private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
@@ -189,9 +189,15 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
             thingStatePoolingJob = getLocalScheduler().scheduleWithFixedDelay(() -> {
                 try {
                     ACSnapShot shot = getSnapshotDeviceAdapter(getDeviceId());
+                    if (shot == null) {
+                        // no data to update. Maybe, the monitor stopped, then it gonna be restarted next try.
+                        return;
+                    }
                     if (!shot.isOnline()) {
                         if (getThing().getStatus() != ThingStatus.OFFLINE) {
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+                            updateState(CHANNEL_POWER_ID,
+                                    OnOffType.from(shot.getAcPowerStatus() == DevicePowerState.DV_POWER_OFF));
                         }
                         return;
                     }
@@ -280,6 +286,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
         return acCapability;
     }
 
+    @Nullable
     private ACSnapShot getSnapshotDeviceAdapter(String deviceId) throws LGApiException {
         // analise de platform version
         if (PLATFORM_TYPE_V2.equals(lgPlatfomType)) {
@@ -310,6 +317,10 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     }
                     Thread.sleep(500);
                     retries--;
+                } catch (LGDeviceV1MonitorExpiredException e) {
+                    forceStopDeviceV1Monitor(deviceId, monitorWorkId);
+                    logger.info("Monitor for device {} was expired. Forcing stop and start to next cycle.", deviceId);
+                    return null;
                 } catch (Exception e) {
                     // If can't get monitoring, then stop monitor and restart the process again in new interaction
                     // I force restart monitoring because of the errors returned (just in case)
