@@ -58,9 +58,11 @@ public class HueTlsTrustManagerProvider implements TlsTrustManagerProvider {
     public X509ExtendedTrustManager getTrustManager() {
         try {
             if (useSelfSignedCertificate) {
-                // use self-signed certificates downloaded from Hue Bridge
+                logger.trace("Use self-signed certificate downloaded from Hue Bridge.");
+                // use self-signed certificate downloaded from Hue Bridge
                 return PEMTrustManager.getInstanceFromServer("https://" + getHostName());
             } else {
+                logger.trace("Use Signify private CA Certificate for Hue Bridges from resources.");
                 // use Signify private CA Certificate for Hue Bridges from resources
                 return getInstanceFromResource(PEM_FILENAME);
             }

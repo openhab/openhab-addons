@@ -55,6 +55,7 @@ import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
@@ -137,6 +138,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
                         updateStatus(ThingStatus.ONLINE);
                     }
                 }
+            } catch (ConfigurationException e) {
+                handleConfigurationFailure(e);
             } catch (UnauthorizedException | IllegalStateException e) {
                 if (isReachable(hueBridge.getIPAddress())) {
                     lastBridgeConnectionState = false;
@@ -170,7 +173,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                 // If there is no connection, this line will fail
                 hueBridge.authenticate("invalid");
-            } catch (IOException e) {
+            } catch (ConfigurationException | IOException e) {
                 return false;
             } catch (ApiException e) {
                 String message = e.getMessage();
@@ -686,10 +689,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         ServiceRegistration<?> localServiceRegistration = serviceRegistration;
         if (localServiceRegistration != null) {
             // remove trustmanager service
-            @SuppressWarnings("unused")
-            HueTlsTrustManagerProvider tlsTrustManagerProvider = (HueTlsTrustManagerProvider) FrameworkUtil
-                    .getBundle(getClass()).getBundleContext().getService(localServiceRegistration.getReference());
             localServiceRegistration.unregister();
+            serviceRegistration = null;
         }
     }
 
@@ -714,7 +715,6 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
                 hueBridge = new HueBridge(httpClient, ip, hueBridgeConfig.getPort(), hueBridgeConfig.protocol,
                         scheduler);
-                hueBridge.setTimeout(5000);
 
                 updateStatus(ThingStatus.UNKNOWN);
 
@@ -811,6 +811,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             try {
                 hueBridge.authenticate(userName);
                 return true;
+            } catch (ConfigurationException e) {
+                handleConfigurationFailure(e);
             } catch (Exception e) {
                 logger.trace("", e);
                 handleAuthenticationFailure(e, userName);
@@ -850,6 +852,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             logger.warn("Unable to update configuration of Hue Bridge.");
             logger.warn("Please configure the user name manually.");
         }
+    }
+
+    private void handleConfigurationFailure(ConfigurationException ex) {
+        logger.warn(
+                "Invalid certificate for secured connection. You might want to enable the \"Use Self-Signed Certificate\" configuration.");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, ex.getRawMessage());
     }
 
     private void handleAuthenticationFailure(Exception ex, String userName) {
@@ -1059,7 +1067,7 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         // Check whether an IP address is provided
         hueBridgeConfig = getConfigAs(HueBridgeConfig.class);
 
-        String ip = hueBridgeConfig.getIpAddress();
+        String ip = hueBridgeConfig.ipAddress;
         if (ip == null || ip.isEmpty()) {
             return List.of(ConfigStatusMessage.Builder.error(HOST).withMessageKeySuffix(IP_ADDRESS_MISSING)
                     .withArguments(HOST).build());

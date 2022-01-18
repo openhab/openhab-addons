@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hue.internal.connection;
 
+import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -36,6 +38,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import javax.net.ssl.SSLHandshakeException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -54,7 +58,6 @@ import org.openhab.binding.hue.internal.dto.FullConfig;
 import org.openhab.binding.hue.internal.dto.FullGroup;
 import org.openhab.binding.hue.internal.dto.FullHueObject;
 import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.FullSchedule;
 import org.openhab.binding.hue.internal.dto.FullSensor;
 import org.openhab.binding.hue.internal.dto.Group;
 import org.openhab.binding.hue.internal.dto.HueObject;
@@ -75,6 +78,7 @@ import org.openhab.binding.hue.internal.exceptions.InvalidCommandException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
 import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +106,7 @@ public class HueBridge {
     private final String ip;
     private final String baseUrl;
     private @Nullable String username;
-    private int timeout = 1000;
+    private long timeout = TimeUnit.MILLISECONDS.convert(5, TimeUnit.SECONDS);
 
     private final Gson gson = new GsonBuilder().setDateFormat(DATE_FORMAT).create();
 
@@ -115,11 +119,11 @@ public class HueBridge {
     /**
      * Connect with a bridge as a new user.
      *
-     * @param httpClient
+     * @param httpClient instance of the Jetty shared client
      * @param ip ip address of bridge
      * @param port port of bridge
      * @param protocol protocol to connect to the bridge
-     * @param scheduler
+     * @param scheduler the ExecutorService to schedule commands
      */
     public HueBridge(HttpClient httpClient, String ip, int port, String protocol, ScheduledExecutorService scheduler) {
         this.httpClient = httpClient;
@@ -143,12 +147,12 @@ public class HueBridge {
      * Use the ip only constructor and authenticate() function if
      * you don't want to connect right now.
      *
-     * @param httpClient
+     * @param httpClient instance of the Jetty shared client
      * @param ip ip address of bridge
      * @param port port of bridge
      * @param protocol protocol to connect to the bridge
      * @param username username to authenticate with
-     * @param scheduler
+     * @param scheduler the ExecutorService to schedule commands
      */
     public HueBridge(HttpClient httpClient, String ip, int port, String protocol, String username,
             ScheduledExecutorService scheduler) throws IOException, ApiException {
@@ -161,7 +165,7 @@ public class HueBridge {
      *
      * @param timeout timeout in milliseconds or 0 for indefinitely
      */
-    public void setTimeout(int timeout) {
+    public void setTimeout(long timeout) {
         this.timeout = timeout;
     }
 
@@ -458,8 +462,7 @@ public class HueBridge {
         handleErrors(result);
 
         Map<String, FullGroup> groupMap = safeFromJson(result.body, FullGroup.GSON_TYPE);
-
-        ArrayList<FullGroup> groups = new ArrayList<>();
+        List<FullGroup> groups = new ArrayList<>();
         if (groupMap.get("0") == null) {
             // Group 0 is not returned, we create it as in fact it exists
             try {
@@ -699,26 +702,6 @@ public class HueBridge {
     }
 
     /**
-     * Returns detailed information for the given schedule.
-     *
-     * @param schedule schedule
-     * @return detailed schedule information
-     * @throws UnauthorizedException thrown if the user no longer exists
-     * @throws EntityNotAvailableException thrown if the specified schedule no longer exists
-     */
-    public FullSchedule getSchedule(Schedule schedule) throws IOException, ApiException {
-        requireAuthentication();
-
-        HueResult result = get(getRelativeURL("schedules/" + enc(schedule.getId())));
-
-        handleErrors(result);
-
-        FullSchedule fullSchedule = safeFromJson(result.body, FullSchedule.class);
-        fullSchedule.setId(schedule.getId());
-        return fullSchedule;
-    }
-
-    /**
      * Changes a schedule.
      *
      * @param schedule schedule
@@ -796,6 +779,8 @@ public class HueBridge {
         try {
             this.username = username;
             getLights();
+        } catch (ConfigurationException e) {
+            throw e;
         } catch (Exception e) {
             this.username = null;
             throw new UnauthorizedException(e.toString());
@@ -1010,7 +995,7 @@ public class HueBridge {
         logger.trace("Hue request: {} - URL = '{}'", requestMethod, address);
         try {
             final Request request = httpClient.newRequest(address).method(requestMethod).timeout(timeout,
-                    TimeUnit.SECONDS);
+                    TimeUnit.MILLISECONDS);
 
             if (body != null) {
                 logger.trace("Hue request body: '{}'", body);
@@ -1023,10 +1008,25 @@ public class HueBridge {
             final String content = contentResponse.getContentAsString();
             logger.trace("Hue response: status = {}, content = '{}'", httpStatus, content);
             return new HueResult(content, httpStatus);
-        } catch (ExecutionException | InterruptedException | TimeoutException e) {
-            String message = String.format("Exception occurred during execution: {}", e.getMessage());
-            logger.debug("Exception occurred during execution: {}", message, e);
-            throw new CommunicationException(message, e.getCause());
+        } catch (ExecutionException e) {
+            String message = e.getMessage();
+            if (e.getCause() instanceof SSLHandshakeException) {
+                logger.debug("SSLHandshakeException occurred during execution: {}", message, e);
+                throw new ConfigurationException(TEXT_OFFLINE_CONFIGURATION_ERROR_INVALID_SSL_CERIFICATE, e.getCause());
+            } else {
+                logger.debug("ExecutionException occurred during execution: {}", message, e);
+                throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message,
+                        e.getCause());
+            }
+        } catch (TimeoutException e) {
+            String message = e.getMessage();
+            logger.debug("TimeoutException occurred during execution: {}", message, e);
+            throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            String message = e.getMessage();
+            logger.debug("InterruptedException occurred during execution: {}", message, e);
+            throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
         }
     }
 
