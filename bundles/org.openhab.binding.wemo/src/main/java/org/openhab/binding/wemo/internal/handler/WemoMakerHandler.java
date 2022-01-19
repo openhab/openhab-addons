@@ -145,43 +145,42 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-
-        if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
-        } else if (channelUID.getId().equals(CHANNEL_RELAY)) {
-            if (command instanceof OnOffType) {
-                try {
-                    String binaryState = null;
-
-                    if (command.equals(OnOffType.ON)) {
-                        binaryState = "1";
-                    } else if (command.equals(OnOffType.OFF)) {
-                        binaryState = "0";
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, "basicevent");
+            if (wemoURL != null) {
+                if (command instanceof RefreshType) {
+                    try {
+                        updateWemoState();
+                    } catch (Exception e) {
+                        logger.debug("Exception during poll", e);
                     }
-
-                    String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-
-                    String content = "<?xml version=\"1.0\"?>"
-                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                            + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
-                            + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
-                            + "</s:Envelope>";
-
-                    if (host != null && !host.isEmpty()) {
-                        String wemoURL = getWemoURL(host, "basicevent");
-                        if (wemoURL != null) {
+                } else if (channelUID.getId().equals(CHANNEL_RELAY)) {
+                    if (command instanceof OnOffType) {
+                        try {
+                            String binaryState = null;
+                            if (command.equals(OnOffType.ON)) {
+                                binaryState = "1";
+                            } else if (command.equals(OnOffType.OFF)) {
+                                binaryState = "0";
+                            }
+                            String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+                            String content = "<?xml version=\"1.0\"?>"
+                                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                                    + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
+                                    + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>"
+                                    + "</s:Body>" + "</s:Envelope>";
                             wemoCall.executeCall(wemoURL, soapHeader, content);
+                        } catch (Exception e) {
+                            logger.error("Failed to send command '{}' for device '{}' ", command, getThing().getUID(),
+                                    e);
                         }
                     }
-                } catch (Exception e) {
-                    logger.error("Failed to send command '{}' for device '{}' ", command, getThing().getUID(), e);
                 }
             }
+        } else {
+            logger.error("Failed to send command '{}' for device '{}': IP address is missing", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -198,19 +197,17 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
      * The {@link updateWemoState} polls the actual state of a WeMo Maker.
      */
     protected void updateWemoState() {
-        String action = "GetAttributes";
         String actionService = "deviceevent";
-
-        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-
-        try {
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, actionService);
-                if (wemoURL != null) {
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, actionService);
+            if (wemoURL != null) {
+                try {
+                    String action = "GetAttributes";
+                    String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
+                            + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         try {
@@ -276,10 +273,10 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                                     e);
                         }
                     }
+                } catch (Exception e) {
+                    logger.error("Failed to get attributes for device '{}'", getThing().getUID(), e);
                 }
             }
-        } catch (Exception e) {
-            logger.error("Failed to get attributes for device '{}'", getThing().getUID(), e);
         }
     }
 

@@ -90,7 +90,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         this.wemoCall = wemoHttpCaller;
         this.service = upnpIOService;
 
-        logger.debug("Creating a WemoCoffeeHandler for thing '{}' with IP '{}'", getThing().getUID(), host);
+        logger.debug("Creating a WemoCoffeeHandler for thing '{}'", getThing().getUID());
     }
 
     @Override
@@ -164,52 +164,57 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.trace("Command '{}' received for channel '{}'", command, channelUID);
 
-        if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
-        } else if (channelUID.getId().equals(CHANNEL_STATE)) {
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, "basicevent");
+            if (wemoURL != null) {
+                if (command instanceof RefreshType) {
                     try {
-                        String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
+                        updateWemoState();
+                    } catch (Exception e) {
+                        logger.debug("Exception during poll", e);
+                    }
+                } else if (channelUID.getId().equals(CHANNEL_STATE)) {
+                    if (command instanceof OnOffType) {
+                        if (command.equals(OnOffType.ON)) {
+                            try {
+                                String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
 
-                        String content = "<?xml version=\"1.0\"?>"
-                                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                                + "<s:Body>" + "<u:SetAttributes xmlns:u=\"urn:Belkin:service:deviceevent:1\">"
-                                + "<attributeList>&lt;attribute&gt;&lt;name&gt;Brewed&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;"
-                                + "&lt;attribute&gt;&lt;name&gt;LastCleaned&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;"
-                                + "&lt;name&gt;ModeTime&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;Brewing&lt;/name&gt;"
-                                + "&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;TimeRemaining&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;"
-                                + "&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;WaterLevelReached&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;"
-                                + "attribute&gt;&lt;name&gt;Mode&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;CleanAdvise&lt;/name&gt;"
-                                + "&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;FilterAdvise&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;"
-                                + "&lt;attribute&gt;&lt;name&gt;Cleaning&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;</attributeList>"
-                                + "</u:SetAttributes>" + "</s:Body>" + "</s:Envelope>";
+                                String content = "<?xml version=\"1.0\"?>"
+                                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                                        + "<s:Body>" + "<u:SetAttributes xmlns:u=\"urn:Belkin:service:deviceevent:1\">"
+                                        + "<attributeList>&lt;attribute&gt;&lt;name&gt;Brewed&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;"
+                                        + "&lt;attribute&gt;&lt;name&gt;LastCleaned&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;"
+                                        + "&lt;name&gt;ModeTime&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;Brewing&lt;/name&gt;"
+                                        + "&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;TimeRemaining&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;"
+                                        + "&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;WaterLevelReached&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;"
+                                        + "attribute&gt;&lt;name&gt;Mode&lt;/name&gt;&lt;value&gt;4&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;CleanAdvise&lt;/name&gt;"
+                                        + "&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;&lt;attribute&gt;&lt;name&gt;FilterAdvise&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;"
+                                        + "&lt;attribute&gt;&lt;name&gt;Cleaning&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;</attributeList>"
+                                        + "</u:SetAttributes>" + "</s:Body>" + "</s:Envelope>";
 
-                        if (host != null && !host.isEmpty()) {
-                            String wemoURL = getWemoURL(host, "basicevent");
-                            if (wemoURL != null) {
                                 String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                                 if (wemoCallResponse != null) {
                                     updateState(CHANNEL_STATE, OnOffType.ON);
                                     State newMode = new StringType("Brewing");
                                     updateState(CHANNEL_COFFEEMODE, newMode);
                                 }
+                            } catch (Exception e) {
+                                logger.error("Failed to send command '{}' for device '{}': {}", command,
+                                        getThing().getUID(), e.getMessage());
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                             }
                         }
-                    } catch (Exception e) {
-                        logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
-                                e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        // if command.equals(OnOffType.OFF) we do nothing because WeMo Coffee Maker cannot be switched
+                        // off
+                        // remotely
+                        updateStatus(ThingStatus.ONLINE);
                     }
                 }
-                // if command.equals(OnOffType.OFF) we do nothing because WeMo Coffee Maker cannot be switched off
-                // remotely
-                updateStatus(ThingStatus.ONLINE);
             }
+        } else {
+            logger.error("Failed to send command '{}' for device '{}': IP address is missing", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -274,19 +279,18 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
      * The {@link updateWemoState} polls the actual state of a WeMo CoffeeMaker.
      */
     protected void updateWemoState() {
-        String action = "GetAttributes";
         String actionService = "deviceevent";
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, actionService);
+            if (wemoURL != null) {
+                try {
+                    String action = "GetAttributes";
+                    String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
+                            + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
-        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-
-        try {
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, actionService);
-                if (wemoURL != null) {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         try {
@@ -423,10 +427,10 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                                     this.getThing().getUID(), e);
                         }
                     }
+                } catch (Exception e) {
+                    logger.error("Failed to get attributes for device '{}'", getThing().getUID(), e);
                 }
             }
-        } catch (Exception e) {
-            logger.error("Failed to get attributes for device '{}'", getThing().getUID(), e);
         }
     }
 

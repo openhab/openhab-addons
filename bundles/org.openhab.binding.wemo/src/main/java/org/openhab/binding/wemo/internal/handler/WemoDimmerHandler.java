@@ -90,7 +90,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         this.service = upnpIOService;
         this.wemoCall = wemoHttpCaller;
 
-        logger.debug("Creating a WemoDimmerHandler for thing '{}' with IP '{}'", getThing().getUID(), host);
+        logger.debug("Creating a WemoDimmerHandler for thing '{}'", getThing().getUID());
     }
 
     @Override
@@ -493,19 +493,19 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
      *
      */
     protected void updateWemoState() {
-        String action = "GetBinaryState";
-        String variable = null;
-        String actionService = "basicevent";
-        String value = null;
-        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-        try {
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, "basicevent");
-                if (wemoURL != null) {
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, "basicevent");
+            if (wemoURL != null) {
+                String action = "GetBinaryState";
+                String variable = null;
+                String actionService = "basicevent";
+                String value = null;
+                String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+                String content = "<?xml version=\"1.0\"?>"
+                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                        + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
+                        + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
+                try {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
@@ -523,25 +523,20 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                         logger.trace("New fader value '{}' for device '{}' received", value, getThing().getUID());
                         this.onValueReceived(variable, value, actionService + "1");
                     }
+                } catch (Exception e) {
+                    logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
-            }
-        } catch (Exception e) {
-            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-        updateStatus(ThingStatus.ONLINE);
-        action = "GetNightModeConfiguration";
-        variable = null;
-        value = null;
-        soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-        try {
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, "basicevent");
-                if (wemoURL != null) {
+                updateStatus(ThingStatus.ONLINE);
+                action = "GetNightModeConfiguration";
+                variable = null;
+                value = null;
+                soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+                content = "<?xml version=\"1.0\"?>"
+                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                        + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
+                        + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
+                try {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         logger.trace("GetNightModeConfiguration response '{}' for device '{}' received",
@@ -564,12 +559,12 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                                 getThing().getUID());
                         this.onValueReceived(variable, value, actionService + "1");
                     }
+                } catch (Exception e) {
+                    logger.debug("Failed to get actual NightMode state for device '{}': {}", getThing().getUID(),
+                            e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }
-        } catch (Exception e) {
-            logger.debug("Failed to get actual NightMode state for device '{}': {}", getThing().getUID(),
-                    e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         updateStatus(ThingStatus.ONLINE);
     }
@@ -612,17 +607,20 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
 
     public void setTimerStart(String action, String argument, String value) {
         try {
-            String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + value
-                    + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
-
             if (host != null && !host.isEmpty()) {
                 String wemoURL = getWemoURL(host, "basicevent");
                 if (wemoURL != null) {
+                    String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + value
+                            + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
                     wemoCall.executeCall(wemoURL, soapHeader, content);
                 }
+            } else {
+                logger.debug("Failed to set timerStart '{}' for device '{}': IP address is missing", value,
+                        getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         } catch (Exception e) {
             logger.debug("Failed to set timerStart '{}' for device '{}': {}", value, getThing().getUID(),

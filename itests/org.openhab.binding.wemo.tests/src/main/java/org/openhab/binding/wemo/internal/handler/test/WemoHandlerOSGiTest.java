@@ -71,6 +71,7 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
     public void assertThatThingHandlesOnOffCommandCorrectly()
             throws MalformedURLException, URISyntaxException, ValidationException {
         Command command = OnOffType.OFF;
+        String host = "127.0.0.1";
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 
@@ -107,6 +108,7 @@ public class WemoHandlerOSGiTest extends GenericWemoOSGiTest {
     public void assertThatThingHandlesREFRESHCommandCorrectly()
             throws MalformedURLException, URISyntaxException, ValidationException {
         Command command = RefreshType.REFRESH;
+        String host = "127.0.0.1";
 
         Thing thing = createThing(THING_TYPE_UID, DEFAULT_TEST_CHANNEL, DEFAULT_TEST_CHANNEL_TYPE);
 

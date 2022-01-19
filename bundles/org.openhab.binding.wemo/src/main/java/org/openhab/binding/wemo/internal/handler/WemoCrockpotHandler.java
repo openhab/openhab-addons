@@ -76,7 +76,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
         this.wemoCall = wemoHttpCaller;
         this.service = upnpIOService;
 
-        logger.debug("Creating a WemoCrockpotHandler for thing '{}' with IP '{}'", getThing().getUID(), host);
+        logger.debug("Creating a WemoCrockpotHandler for thing '{}'", getThing().getUID());
     }
 
     @Override
@@ -148,48 +148,50 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-        String mode = "0";
-        String time = null;
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, "basicevent");
+            if (wemoURL != null) {
+                String mode = "0";
+                String time = null;
 
-        if (command instanceof RefreshType) {
-            updateWemoState();
-        } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
-            String commandString = command.toString();
-            switch (commandString) {
-                case "OFF":
-                    mode = "0";
-                    time = "0";
-                    break;
-                case "WARM":
-                    mode = "50";
-                    break;
-                case "LOW":
-                    mode = "51";
-                    break;
-                case "HIGH":
-                    mode = "52";
-                    break;
-            }
-            try {
-                String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-                String content = "<?xml version=\"1.0\"?>"
-                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                        + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<mode>"
-                        + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
-                        + "</s:Envelope>";
-
-                if (host != null && !host.isEmpty()) {
-                    String wemoURL = getWemoURL(host, "basicevent");
-                    if (wemoURL != null) {
-                        wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (command instanceof RefreshType) {
+                    updateWemoState();
+                } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
+                    String commandString = command.toString();
+                    switch (commandString) {
+                        case "OFF":
+                            mode = "0";
+                            time = "0";
+                            break;
+                        case "WARM":
+                            mode = "50";
+                            break;
+                        case "LOW":
+                            mode = "51";
+                            break;
+                        case "HIGH":
+                            mode = "52";
+                            break;
                     }
+                    try {
+                        String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+                        String content = "<?xml version=\"1.0\"?>"
+                                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                                + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
+                                + "<mode>" + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>"
+                                + "</s:Body>" + "</s:Envelope>";
+                        wemoCall.executeCall(wemoURL, soapHeader, content);
+                    } catch (RuntimeException e) {
+                        logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    }
+                    updateStatus(ThingStatus.ONLINE);
                 }
-            } catch (RuntimeException e) {
-                logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-            updateStatus(ThingStatus.ONLINE);
+        } else {
+            logger.error("Failed to send command '{}' for device '{}': IP address is missing", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -265,19 +267,17 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
      *
      */
     protected void updateWemoState() {
-        String action = "GetCrockpotState";
         String actionService = "basicevent";
-
-        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-
-        try {
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, actionService);
-                if (wemoURL != null) {
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, actionService);
+            if (wemoURL != null) {
+                try {
+                    String action = "GetCrockpotState";
+                    String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
+                            + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
@@ -311,13 +311,14 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                         updateState(CHANNEL_COOKMODE, newMode);
                         updateState(CHANNEL_COOKEDTIME, newCoockedTime);
                     }
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(),
+                            e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
+                updateStatus(ThingStatus.ONLINE);
             }
-        } catch (RuntimeException e) {
-            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

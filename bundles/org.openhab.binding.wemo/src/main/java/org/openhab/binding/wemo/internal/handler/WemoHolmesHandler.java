@@ -93,7 +93,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
         this.service = upnpIOService;
         this.wemoCall = wemoHttpCaller;
 
-        logger.debug("Creating a WemoHolmesHandler for thing '{}' with IP '{}'", getThing().getUID(), host);
+        logger.debug("Creating a WemoHolmesHandler for thing '{}'", getThing().getUID());
     }
 
     @Override
@@ -163,127 +163,128 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, "deviceevent");
+            if (wemoURL != null) {
+                String attribute = null;
+                String value = null;
 
-        String attribute = null;
-        String value = null;
-
-        if (command instanceof RefreshType) {
-            updateWemoState();
-        } else if (CHANNEL_PURIFIERMODE.equals(channelUID.getId())) {
-            attribute = "Mode";
-            String commandString = command.toString();
-            switch (commandString) {
-                case "OFF":
-                    value = "0";
-                    break;
-                case "LOW":
-                    value = "1";
-                    break;
-                case "MED":
-                    value = "2";
-                    break;
-                case "HIGH":
-                    value = "3";
-                    break;
-                case "AUTO":
-                    value = "4";
-                    break;
-            }
-        } else if (CHANNEL_IONIZER.equals(channelUID.getId())) {
-            attribute = "Ionizer";
-            if (OnOffType.ON.equals(command)) {
-                value = "1";
-            } else if (OnOffType.OFF.equals(command)) {
-                value = "0";
-            }
-        } else if (CHANNEL_HUMIDIFIERMODE.equals(channelUID.getId())) {
-            attribute = "FanMode";
-            String commandString = command.toString();
-            switch (commandString) {
-                case "OFF":
-                    value = "0";
-                    break;
-                case "MIN":
-                    value = "1";
-                    break;
-                case "LOW":
-                    value = "2";
-                    break;
-                case "MED":
-                    value = "3";
-                    break;
-                case "HIGH":
-                    value = "4";
-                    break;
-                case "MAX":
-                    value = "5";
-                    break;
-            }
-        } else if (CHANNEL_DESIREDHUMIDITY.equals(channelUID.getId())) {
-            attribute = "DesiredHumidity";
-            String commandString = command.toString();
-            switch (commandString) {
-                case "45":
-                    value = "0";
-                    break;
-                case "50":
-                    value = "1";
-                    break;
-                case "55":
-                    value = "2";
-                    break;
-                case "60":
-                    value = "3";
-                    break;
-                case "100":
-                    value = "4";
-                    break;
-            }
-        } else if (CHANNEL_HEATERMODE.equals(channelUID.getId())) {
-            attribute = "Mode";
-            String commandString = command.toString();
-            switch (commandString) {
-                case "OFF":
-                    value = "0";
-                    break;
-                case "FROSTPROTECT":
-                    value = "1";
-                    break;
-                case "HIGH":
-                    value = "2";
-                    break;
-                case "LOW":
-                    value = "3";
-                    break;
-                case "ECO":
-                    value = "4";
-                    break;
-            }
-        } else if (CHANNEL_TARGETTEMP.equals(channelUID.getId())) {
-            attribute = "SetTemperature";
-            value = command.toString();
-        }
-        try {
-            String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:SetAttributes xmlns:u=\"urn:Belkin:service:deviceevent:1\">"
-                    + "<attributeList>&lt;attribute&gt;&lt;name&gt;" + attribute + "&lt;/name&gt;&lt;value&gt;" + value
-                    + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
-                    + "</s:Envelope>";
-
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, "deviceevent");
-                if (wemoURL != null) {
-                    wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (command instanceof RefreshType) {
+                    updateWemoState();
+                } else if (CHANNEL_PURIFIERMODE.equals(channelUID.getId())) {
+                    attribute = "Mode";
+                    String commandString = command.toString();
+                    switch (commandString) {
+                        case "OFF":
+                            value = "0";
+                            break;
+                        case "LOW":
+                            value = "1";
+                            break;
+                        case "MED":
+                            value = "2";
+                            break;
+                        case "HIGH":
+                            value = "3";
+                            break;
+                        case "AUTO":
+                            value = "4";
+                            break;
+                    }
+                } else if (CHANNEL_IONIZER.equals(channelUID.getId())) {
+                    attribute = "Ionizer";
+                    if (OnOffType.ON.equals(command)) {
+                        value = "1";
+                    } else if (OnOffType.OFF.equals(command)) {
+                        value = "0";
+                    }
+                } else if (CHANNEL_HUMIDIFIERMODE.equals(channelUID.getId())) {
+                    attribute = "FanMode";
+                    String commandString = command.toString();
+                    switch (commandString) {
+                        case "OFF":
+                            value = "0";
+                            break;
+                        case "MIN":
+                            value = "1";
+                            break;
+                        case "LOW":
+                            value = "2";
+                            break;
+                        case "MED":
+                            value = "3";
+                            break;
+                        case "HIGH":
+                            value = "4";
+                            break;
+                        case "MAX":
+                            value = "5";
+                            break;
+                    }
+                } else if (CHANNEL_DESIREDHUMIDITY.equals(channelUID.getId())) {
+                    attribute = "DesiredHumidity";
+                    String commandString = command.toString();
+                    switch (commandString) {
+                        case "45":
+                            value = "0";
+                            break;
+                        case "50":
+                            value = "1";
+                            break;
+                        case "55":
+                            value = "2";
+                            break;
+                        case "60":
+                            value = "3";
+                            break;
+                        case "100":
+                            value = "4";
+                            break;
+                    }
+                } else if (CHANNEL_HEATERMODE.equals(channelUID.getId())) {
+                    attribute = "Mode";
+                    String commandString = command.toString();
+                    switch (commandString) {
+                        case "OFF":
+                            value = "0";
+                            break;
+                        case "FROSTPROTECT":
+                            value = "1";
+                            break;
+                        case "HIGH":
+                            value = "2";
+                            break;
+                        case "LOW":
+                            value = "3";
+                            break;
+                        case "ECO":
+                            value = "4";
+                            break;
+                    }
+                } else if (CHANNEL_TARGETTEMP.equals(channelUID.getId())) {
+                    attribute = "SetTemperature";
+                    value = command.toString();
                 }
+                try {
+                    String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:SetAttributes xmlns:u=\"urn:Belkin:service:deviceevent:1\">"
+                            + "<attributeList>&lt;attribute&gt;&lt;name&gt;" + attribute + "&lt;/name&gt;&lt;value&gt;"
+                            + value + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>"
+                            + "</s:Body>" + "</s:Envelope>";
+                    wemoCall.executeCall(wemoURL, soapHeader, content);
+                } catch (RuntimeException e) {
+                    logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                }
+                updateStatus(ThingStatus.ONLINE);
             }
-        } catch (RuntimeException e) {
-            logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        } else {
+            logger.error("Failed to send command '{}' for device '{}': IP address is missing", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -357,19 +358,17 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
      *
      */
     protected void updateWemoState() {
-        String action = "GetAttributes";
         String actionService = "deviceevent";
-
-        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
-
-        try {
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, actionService);
-                if (wemoURL != null) {
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, actionService);
+            if (wemoURL != null) {
+                try {
+                    String action = "GetAttributes";
+                    String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
+                            + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
@@ -577,13 +576,13 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                             }
                         }
                     }
+                } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
+                    logger.debug("Failed to get actual state for device '{}':", getThing().getUID(), e);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
+                updateStatus(ThingStatus.ONLINE);
             }
-        } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
-            logger.debug("Failed to get actual state for device '{}':", getThing().getUID(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     public static String getCharacterDataFromElement(Element e) {

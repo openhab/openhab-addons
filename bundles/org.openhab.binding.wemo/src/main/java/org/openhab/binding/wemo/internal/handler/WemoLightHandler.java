@@ -91,7 +91,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         this.service = upnpIOService;
         this.wemoCall = wemoHttpcaller;
 
-        logger.debug("Creating a WemoLightHandler for thing '{}' with IP '{}'", getThing().getUID(), host);
+        logger.debug("Creating a WemoLightHandler for thing '{}'", getThing().getUID());
     }
 
     @Override
@@ -264,21 +264,21 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     break;
             }
             try {
-                String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
-                String content = "<?xml version=\"1.0\"?>"
-                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                        + "<s:Body>" + "<u:SetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">"
-                        + "<DeviceStatusList>"
-                        + "&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;DeviceID&gt;"
-                        + wemoLightID
-                        + "&lt;/DeviceID&gt;&lt;IsGroupAction&gt;NO&lt;/IsGroupAction&gt;&lt;CapabilityID&gt;"
-                        + capability + "&lt;/CapabilityID&gt;&lt;CapabilityValue&gt;" + value
-                        + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
-                        + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
-
                 if (host != null && !host.isEmpty()) {
                     String wemoURL = getWemoURL(host, "bridge");
                     if (wemoURL != null && capability != null && value != null) {
+                        String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
+                        String content = "<?xml version=\"1.0\"?>"
+                                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                                + "<s:Body>" + "<u:SetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">"
+                                + "<DeviceStatusList>"
+                                + "&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;DeviceID&gt;"
+                                + wemoLightID
+                                + "&lt;/DeviceID&gt;&lt;IsGroupAction&gt;NO&lt;/IsGroupAction&gt;&lt;CapabilityID&gt;"
+                                + capability + "&lt;/CapabilityID&gt;&lt;CapabilityValue&gt;" + value
+                                + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
+                                + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
+
                         String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                         if (wemoCallResponse != null) {
                             if ("10008".equals(capability)) {
@@ -288,6 +288,10 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                             }
                         }
                     }
+                } else {
+                    logger.error("Failed to send command '{}' for device '{}': IP address is missing", command,
+                            getThing().getUID());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } catch (Exception e) {
                 throw new IllegalStateException("Could not send command to WeMo Bridge", e);
@@ -310,17 +314,17 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
      * channel states.
      */
     public void getDeviceState() {
-        logger.debug("Request actual state for LightID '{}'", wemoLightID);
-        try {
-            String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
-                    + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
+        if (host != null && !host.isEmpty()) {
+            logger.debug("Request actual state for LightID '{}'", wemoLightID);
+            String wemoURL = getWemoURL(host, "bridge");
+            if (wemoURL != null) {
+                try {
+                    String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
+                            + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, "bridge");
-                if (wemoURL != null) {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         wemoCallResponse = unescapeXml(wemoCallResponse);
@@ -344,10 +348,10 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                             }
                         }
                     }
+                } catch (Exception e) {
+                    throw new IllegalStateException("Could not retrieve new Wemo light state", e);
                 }
             }
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not retrieve new Wemo light state", e);
         }
     }
 

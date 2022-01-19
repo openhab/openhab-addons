@@ -166,46 +166,45 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.trace("Command '{}' received for channel '{}'", command, channelUID);
-
-        if (command instanceof RefreshType) {
-            try {
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll", e);
-            }
-        } else if (channelUID.getId().equals(CHANNEL_STATE)) {
-            if (command instanceof OnOffType) {
-                try {
-                    String binaryState = null;
-
-                    if (command.equals(OnOffType.ON)) {
-                        binaryState = "1";
-                    } else if (command.equals(OnOffType.OFF)) {
-                        binaryState = "0";
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, "basicevent");
+            if (wemoURL != null) {
+                if (command instanceof RefreshType) {
+                    try {
+                        updateWemoState();
+                    } catch (Exception e) {
+                        logger.debug("Exception during poll", e);
                     }
+                } else if (channelUID.getId().equals(CHANNEL_STATE)) {
+                    if (command instanceof OnOffType) {
+                        try {
+                            String binaryState = null;
 
-                    String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-
-                    String content = "<?xml version=\"1.0\"?>"
-                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                            + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
-                            + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
-                            + "</s:Envelope>";
-
-                    if (host != null && !host.isEmpty()) {
-                        String wemoURL = getWemoURL(host, "basicevent");
-                        if (wemoURL != null) {
+                            if (command.equals(OnOffType.ON)) {
+                                binaryState = "1";
+                            } else if (command.equals(OnOffType.OFF)) {
+                                binaryState = "0";
+                            }
+                            String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+                            String content = "<?xml version=\"1.0\"?>"
+                                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                                    + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
+                                    + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>"
+                                    + "</s:Body>" + "</s:Envelope>";
                             wemoCall.executeCall(wemoURL, soapHeader, content);
+                        } catch (Exception e) {
+                            logger.error("Failed to send command '{}' for device '{}': {}", command,
+                                    getThing().getUID(), e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                         }
+                        updateStatus(ThingStatus.ONLINE);
                     }
-                } catch (Exception e) {
-                    logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
-                            e.getMessage());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
-                updateStatus(ThingStatus.ONLINE);
             }
+        } else {
+            logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
@@ -412,27 +411,27 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
      *
      */
     protected void updateWemoState() {
-        String action = "GetBinaryState";
-        String variable = "BinaryState";
         String actionService = "basicevent";
-        String value = null;
+        if (host != null && !host.isEmpty()) {
+            String wemoURL = getWemoURL(host, actionService);
+            if (wemoURL != null) {
+                String action = "GetBinaryState";
+                String variable = "BinaryState";
+                String value = null;
 
-        if (getThing().getThingTypeUID().getId().equals("insight")) {
-            action = "GetInsightParams";
-            variable = "InsightParams";
-            actionService = "insight";
-        }
+                if (getThing().getThingTypeUID().getId().equals("insight")) {
+                    action = "GetInsightParams";
+                    variable = "InsightParams";
+                    actionService = "insight";
+                }
 
-        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-        String content = "<?xml version=\"1.0\"?>"
-                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
-                + action + ">" + "</s:Body>" + "</s:Envelope>";
+                String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+                String content = "<?xml version=\"1.0\"?>"
+                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                        + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
+                        + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
-        try {
-            if (host != null && !host.isEmpty()) {
-                String wemoURL = getWemoURL(host, actionService);
-                if (wemoURL != null) {
+                try {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
@@ -447,10 +446,13 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                             this.onValueReceived(variable, value, actionService + "1");
                         }
                     }
+                } catch (Exception e) {
+                    logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
                 }
             }
-        } catch (Exception e) {
-            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+        } else {
+            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 
