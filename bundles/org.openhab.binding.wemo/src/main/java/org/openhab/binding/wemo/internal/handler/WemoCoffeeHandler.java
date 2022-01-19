@@ -90,7 +90,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         this.service = upnpIOService;
         this.remoteHost = host;
 
-        logger.debug("Creating a WemoCoffeeHandler for thing '{}'", getThing().getUID());
+        logger.debug("Creating a WemoCoffeeHandler for thing '{}' with IP '{}'", getThing().getUID(), remoteHost);
     }
 
     @Override

@@ -78,7 +78,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
         this.wemoCall = wemoHttpcaller;
         this.remoteHost = host;
 
-        logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
+        logger.debug("Creating a WemoMakerHandler for thing '{}' with IP '{}'", getThing().getUID(), remoteHost);
     }
 
     @Override

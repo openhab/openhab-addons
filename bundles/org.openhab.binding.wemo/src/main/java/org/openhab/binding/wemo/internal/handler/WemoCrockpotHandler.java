@@ -76,7 +76,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
         this.service = upnpIOService;
         this.remoteHost = host;
 
-        logger.debug("Creating a WemoCrockpotHandler for thing '{}'", getThing().getUID());
+        logger.debug("Creating a WemoCrockpotHandler for thing '{}' with IP '{}'", getThing().getUID(), remoteHost);
     }
 
     @Override

@@ -90,7 +90,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         this.wemoCall = wemoHttpCaller;
         this.remoteHost = host;
 
-        logger.debug("Creating a WemoDimmerHandler for thing '{}'", getThing().getUID());
+        logger.debug("Creating a WemoDimmerHandler for thing '{}' with IP '{}'", getThing().getUID(), remoteHost);
     }
 
     @Override

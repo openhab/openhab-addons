@@ -90,6 +90,8 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         this.service = upnpIOService;
         this.wemoCall = wemoHttpcaller;
         this.remoteHost = host;
+
+        logger.debug("Creating a WemoLightHandler for thing '{}' with IP '{}'", getThing().getUID(), remoteHost);
     }
 
     @Override
