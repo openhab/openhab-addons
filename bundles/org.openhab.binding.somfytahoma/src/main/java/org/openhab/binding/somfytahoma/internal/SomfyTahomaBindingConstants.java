@@ -264,7 +264,6 @@ public class SomfyTahomaBindingConstants {
     public static final String ENERGY_CONSUMPTION = "energy_consumption";
 
     // WaterHeaterSystem
-    public static final String MANUFACTURER = "manufacturer";
     public static final String MIDDLEWATER_TEMPERATURE = "middlewater_temperature";
     public static final String BOOST_MODE = "boost_mode";
     public static final String AWAY_MODE = "away_mode";
@@ -366,7 +365,6 @@ public class SomfyTahomaBindingConstants {
     public static final String BOOST_MODE_DURATION_STATE = "core:BoostModeDurationState";
     public static final String AWAY_MODE_DURATION_STATE = "io:AwayModeDurationState";
     public static final String MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState";
-    public static final String MANUFACTURER_NAME_STATE = "core:ManufacturerNameState";
     public static final String NAME_STATE = "core:NameState";
     public static final String RSSI_LEVEL_STATE = "core:RSSILevelState";
     public static final String STATUS_STATE = "core:StatusState";

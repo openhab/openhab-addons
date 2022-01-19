@@ -92,7 +92,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
             if (awayValue != null) {
                 this.awayMode = awayValue.toString().equalsIgnoreCase("on");
                 logger.debug("Away Value: {}", this.awayMode);
-                updateState(AWAY_MODE, OnOffType.from(this.boostMode));
+                updateState(AWAY_MODE, OnOffType.from(this.awayMode));
             }
         } else if (TARGET_TEMPERATURE_STATE.equals(state.getName())) {
             logger.debug("Target Temperature: {}", state.getValue());
@@ -102,20 +102,22 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
             Double temp = null;
             try {
                 temp = Double.parseDouble(state.getValue().toString());
+
+                int v = 0;
+                if (temp == 50) {
+                    v = 3;
+                } else if (temp == 54.5) {
+                    v = 4;
+                } else if (temp == 62) {
+                    v = 5;
+                }
+
+                updateState(SHOWERS, new DecimalType(v));
             } catch (NumberFormatException e) {
-                logger.warn("Unexcepted pre-defined value for Target State Temperature: {}", state.getValue());
+                logger.warn("Unexpected pre-defined value for Target State Temperature: {}", state.getValue());
                 return;
             }
-            int v = 0;
-            if (temp == 50) {
-                v = 3;
-            } else if (temp == 54.5) {
-                v = 4;
-            } else if (temp == 62) {
-                v = 5;
-            }
 
-            updateState(SHOWERS, new DecimalType(v));
         }
 
         super.updateThingChannels(state);

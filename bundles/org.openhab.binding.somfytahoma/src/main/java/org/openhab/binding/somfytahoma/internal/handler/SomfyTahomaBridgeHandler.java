@@ -672,7 +672,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * @throws TimeoutException
      * @throws InterruptedException
      */
-    private String loginCozytouch() throws InterruptedException, TimeoutException, ExecutionException {
+    private String loginCozytouch()
+            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
         String authBaseUrl = "https://" + COZYTOUCH_OAUTH2_URL;
 
         String urlParameters = "grant_type=password&username=" + urlEncode(thingConfig.getEmail()) + "&password="
@@ -710,8 +711,12 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 .header(HttpHeader.AUTHORIZATION, "Bearer " + oauth2response.getAccessToken())
                 .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).send();
 
-        String jwt = response.getContentAsString();
-        return jwt.replace("\"", "");
+        if (response.getStatus() == 200) {
+            String jwt = response.getContentAsString();
+            return jwt.replace("\"", "");
+        } else {
+            throw new ExecutionException(response.getContentAsString(), null);
+        }
     }
 
     private String getApiFullUrl(String subUrl) {

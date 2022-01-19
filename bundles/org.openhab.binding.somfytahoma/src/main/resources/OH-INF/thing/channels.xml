@@ -424,13 +424,6 @@
 		<state pattern="%.1f" readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="manufacturer">
-		<item-type>String</item-type>
-		<label>Manufacturer</label>
-		<description>Name of the device manufacturer</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="boost_mode_duration">
 		<item-type>Number</item-type>
 		<label>Boost Mode Duration</label>
