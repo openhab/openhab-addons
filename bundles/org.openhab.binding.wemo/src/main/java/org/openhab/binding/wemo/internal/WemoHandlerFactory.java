@@ -105,58 +105,69 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
 
         if (upnpService != null) {
             RemoteDevice device = upnpService.getRegistry().getRemoteDevice(remoteUDN, true);
-            URL descriptorURL = device.getIdentity().getDescriptorURL();
-            host = descriptorURL.getHost();
+            if (device != null) {
+                URL descriptorURL = device.getIdentity().getDescriptorURL();
+                if (descriptorURL != null) {
+                    host = descriptorURL.getHost();
+                }
+            }
         }
 
         WemoHttpCallFactory wemoHttpCallFactory = this.wemoHttpCallFactory;
         WemoHttpCall wemoHttpcaller = wemoHttpCallFactory == null ? new WemoHttpCall()
                 : wemoHttpCallFactory.createHttpCall();
 
-        if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_BRIDGE)) {
-            logger.debug("Creating a WemoBridgeHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get(UDN));
-            WemoBridgeHandler handler = new WemoBridgeHandler((Bridge) thing);
-            registerDeviceDiscoveryService(handler, wemoHttpcaller);
-            return handler;
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MAKER)) {
-            logger.debug("Creating a WemoMakerHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get(UDN));
-            return new WemoMakerHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (WemoBindingConstants.SUPPORTED_DEVICE_THING_TYPES.contains(thing.getThingTypeUID())) {
-            logger.debug("Creating a WemoHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get(UDN));
-            return new WemoHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_COFFEE)) {
-            logger.debug("Creating a WemoCoffeeHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get(UDN));
-            return new WemoCoffeeHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_DIMMER)) {
-            logger.debug("Creating a WemoDimmerHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get("udn"));
-            return new WemoDimmerHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_CROCKPOT)) {
-            logger.debug("Creating a WemoCockpotHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get("udn"));
-            return new WemoCrockpotHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_PURIFIER)) {
-            logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get("udn"));
-            return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HUMIDIFIER)) {
-            logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get("udn"));
-            return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HEATER)) {
-            logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get("udn"));
-            return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller, host);
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MZ100)) {
-            return new WemoLightHandler(thing, upnpIOService, wemoHttpcaller, host);
+        if (host != null) {
+            if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_BRIDGE)) {
+                logger.debug("Creating a WemoBridgeHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get(UDN));
+                WemoBridgeHandler handler = new WemoBridgeHandler((Bridge) thing);
+                registerDeviceDiscoveryService(handler, wemoHttpcaller);
+                return handler;
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MAKER)) {
+                logger.debug("Creating a WemoMakerHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get(UDN));
+                return new WemoMakerHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (WemoBindingConstants.SUPPORTED_DEVICE_THING_TYPES.contains(thing.getThingTypeUID())) {
+                logger.debug("Creating a WemoHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get(UDN));
+                return new WemoHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_COFFEE)) {
+                logger.debug("Creating a WemoCoffeeHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get(UDN));
+                return new WemoCoffeeHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_DIMMER)) {
+                logger.debug("Creating a WemoDimmerHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoDimmerHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_CROCKPOT)) {
+                logger.debug("Creating a WemoCockpotHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoCrockpotHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_PURIFIER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HUMIDIFIER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_HEATER)) {
+                logger.debug("Creating a WemoHolmesHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                        thing.getConfiguration().get("udn"));
+                return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MZ100)) {
+                return new WemoLightHandler(thing, upnpIOService, wemoHttpcaller, host);
+            } else {
+                logger.warn("ThingHandler not found for {}", thingTypeUID);
+                return null;
+            }
         } else {
-            logger.warn("ThingHandler not found for {}", thingTypeUID);
+            logger.warn("ThingHandler for '{}' not created, IP address not found", thingTypeUID);
             return null;
+
         }
+
     }
 
     @Override
