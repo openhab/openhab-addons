@@ -68,7 +68,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private WemoHttpCall wemoCall;
 
-    private @Nullable String host;
+    private String host = "";
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
@@ -119,7 +119,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             try {
                 logger.debug("Polling job");
 
-                if (host == null) {
+                if (host == null || host.isEmpty()) {
                     if (service != null) {
                         URL descriptorURL = service.getDescriptorURL(this);
                         if (descriptorURL != null) {
@@ -172,7 +172,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                             + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
                             + "</s:Envelope>";
 
-                    if (host != null) {
+                    if (host != null && !host.isEmpty()) {
                         String wemoURL = getWemoURL(host, "basicevent");
                         if (wemoURL != null) {
                             wemoCall.executeCall(wemoURL, soapHeader, content);
@@ -208,7 +208,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            if (host != null) {
+            if (host != null && !host.isEmpty()) {
                 String wemoURL = getWemoURL(host, actionService);
                 if (wemoURL != null) {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);

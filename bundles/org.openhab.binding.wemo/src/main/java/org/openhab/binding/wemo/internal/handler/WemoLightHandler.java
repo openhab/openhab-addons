@@ -63,7 +63,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private @Nullable WemoBridgeHandler wemoBridgeHandler;
 
-    private @Nullable String host;
+    private String host = "";
 
     private @Nullable String wemoLightID;
 
@@ -161,7 +161,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             try {
                 logger.debug("Polling job");
 
-                if (host == null) {
+                if (host == null || host.isEmpty()) {
                     if (service != null) {
                         URL descriptorURL = service.getDescriptorURL(this);
                         if (descriptorURL != null) {
@@ -276,7 +276,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                         + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                         + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                if (host != null) {
+                if (host != null && !host.isEmpty()) {
                     String wemoURL = getWemoURL(host, "bridge");
                     if (wemoURL != null && capability != null && value != null) {
                         String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
@@ -318,7 +318,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            if (host != null) {
+            if (host != null && !host.isEmpty()) {
                 String wemoURL = getWemoURL(host, "bridge");
                 if (wemoURL != null) {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);

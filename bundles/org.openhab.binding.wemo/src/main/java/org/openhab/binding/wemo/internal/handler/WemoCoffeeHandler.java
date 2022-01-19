@@ -78,7 +78,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
 
     private WemoHttpCall wemoCall;
 
-    private @Nullable String host;
+    private String host = "";
 
     private Map<String, Boolean> subscriptionState = new HashMap<>();
 
@@ -132,7 +132,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
             try {
                 logger.debug("Polling job");
 
-                if (host == null) {
+                if (host == null || host.isEmpty()) {
                     if (service != null) {
                         URL descriptorURL = service.getDescriptorURL(this);
                         if (descriptorURL != null) {
@@ -189,7 +189,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                                 + "&lt;attribute&gt;&lt;name&gt;Cleaning&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;</attributeList>"
                                 + "</u:SetAttributes>" + "</s:Body>" + "</s:Envelope>";
 
-                        if (host != null) {
+                        if (host != null && !host.isEmpty()) {
                             String wemoURL = getWemoURL(host, "basicevent");
                             if (wemoURL != null) {
                                 String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
@@ -284,7 +284,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            if (host != null) {
+            if (host != null && !host.isEmpty()) {
                 String wemoURL = getWemoURL(host, actionService);
                 if (wemoURL != null) {
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
