@@ -14,18 +14,15 @@ package org.openhab.binding.wemo.internal.handler.test;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.handler.WemoHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -48,11 +45,7 @@ public class WemoHandlerTest {
     private static final ThingTypeUID THING_TYPE = WemoBindingConstants.THING_TYPE_INSIGHT;
     private static final String THING_ID = "test";
 
-    protected @Nullable UpnpIOService upnpIOService;
-
     private MockWemoHandler handler;
-
-    private static final String host = "127.0.0.1";
 
     private static final String SERVICE_ID = "insight";
     private static final String PARAMS_NAME = "InsightParams";
@@ -75,7 +68,6 @@ public class WemoHandlerTest {
         when(thing.getUID()).thenReturn(new ThingUID(THING_TYPE, THING_ID));
         when(thing.getThingTypeUID()).thenReturn(THING_TYPE);
         when(thing.getStatus()).thenReturn(ThingStatus.ONLINE);
-        when(upnpIOService.isRegistered(any())).thenReturn(true);
     }
 
     @AfterEach
@@ -151,7 +143,7 @@ public class WemoHandlerTest {
         String channelToWatch;
 
         public MockWemoHandler(Thing thing, String channelToWatch) {
-            super(thing, upnpIOService, new WemoHttpCall(), host);
+            super(thing, null, new WemoHttpCall());
             this.channelToWatch = channelToWatch;
         }
 

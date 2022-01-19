@@ -17,6 +17,7 @@ import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -79,20 +80,19 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
     private WemoHttpCall wemoCall;
 
-    private String remoteHost;
-
     private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller, String host) {
+    private @Nullable String host;
+
+    public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, wemoHttpCaller);
 
         this.service = upnpIOService;
         this.wemoCall = wemoHttpCaller;
-        this.remoteHost = host;
 
-        logger.debug("Creating a WemoHandler for thing '{}' with IP '{}'", getThing().getUID(), remoteHost);
+        logger.debug("Creating a WemoHandler for thing '{}'", getThing().getUID());
     }
 
     @Override
@@ -136,7 +136,15 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             try {
                 logger.debug("Polling job");
 
-                // First check if the Wemo device is set in the UPnP service registry
+                if (host == null) {
+                    if (service != null) {
+                        URL descriptorURL = service.getDescriptorURL(this);
+                        if (descriptorURL != null) {
+                            host = descriptorURL.getHost();
+                        }
+                    }
+                }
+                // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -185,9 +193,11 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                             + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
                             + "</s:Envelope>";
 
-                    String wemoURL = getWemoURL(remoteHost, "basicevent");
-                    if (wemoURL != null) {
-                        wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (host != null) {
+                        String wemoURL = getWemoURL(host, "basicevent");
+                        if (wemoURL != null) {
+                            wemoCall.executeCall(wemoURL, soapHeader, content);
+                        }
                     }
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
@@ -420,20 +430,22 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 + action + ">" + "</s:Body>" + "</s:Envelope>";
 
         try {
-            String wemoURL = getWemoURL(remoteHost, actionService);
-
-            if (wemoURL != null) {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
-                    if ("InsightParams".equals(variable)) {
-                        value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
-                    } else {
-                        value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                    }
-                    if (value.length() != 0) {
-                        logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                        this.onValueReceived(variable, value, actionService + "1");
+            if (host != null) {
+                String wemoURL = getWemoURL(host, actionService);
+                if (wemoURL != null) {
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
+                                getThing().getUID());
+                        if ("InsightParams".equals(variable)) {
+                            value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
+                        } else {
+                            value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
+                        }
+                        if (value.length() != 0) {
+                            logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                            this.onValueReceived(variable, value, actionService + "1");
+                        }
                     }
                 }
             }

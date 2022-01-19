@@ -77,7 +77,6 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
 
     // Thing information
     protected static final String TEST_THING_ID = "TestThing";
-    protected static final String HOST = "127.0.0.1";
 
     // UPnP Device information
     public static final String DEVICE_UDN = "Test-1_0-22124";
@@ -94,7 +93,6 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
 
     protected ManagedThingProvider managedThingProvider;
     protected UpnpIOService upnpIOService;
-    protected UpnpService upnpService;
     protected ThingRegistry thingRegistry;
 
     protected WemoHttpCall mockCaller;
@@ -123,8 +121,6 @@ public abstract class GenericWemoOSGiTest extends JavaOSGiTest {
         // UPnP IO Service is required from the WemoDiscoveryService and WemoHandlerFactory
         upnpIOService = getService(UpnpIOService.class);
         assertThat(upnpIOService, is(notNullValue()));
-        upnpService = getService(UpnpService.class);
-        assertThat(upnpService, is(notNullValue()));
 
         mockCaller = Mockito.spy(new WemoHttpCall());
         WemoHttpCallFactory wemoHttpCallFactory = () -> mockCaller;

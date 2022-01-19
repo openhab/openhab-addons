@@ -15,6 +15,7 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -62,7 +63,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private @Nullable WemoBridgeHandler wemoBridgeHandler;
 
-    private String remoteHost;
+    private @Nullable String host;
 
     private @Nullable String wemoLightID;
 
@@ -84,14 +85,13 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller, String host) {
+    public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
         super(thing, wemoHttpcaller);
 
         this.service = upnpIOService;
         this.wemoCall = wemoHttpcaller;
-        this.remoteHost = host;
 
-        logger.debug("Creating a WemoLightHandler for thing '{}' with IP '{}'", getThing().getUID(), remoteHost);
+        logger.debug("Creating a WemoLightHandler for thing '{}' with IP '{}'", getThing().getUID(), host);
     }
 
     @Override
@@ -161,7 +161,15 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             try {
                 logger.debug("Polling job");
 
-                // First check if the Wemo device is set in the UPnP service registry
+                if (host == null) {
+                    if (service != null) {
+                        URL descriptorURL = service.getDescriptorURL(this);
+                        if (descriptorURL != null) {
+                            host = descriptorURL.getHost();
+                        }
+                    }
+                }
+                // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
@@ -268,15 +276,16 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                         + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                         + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                String wemoURL = getWemoURL(remoteHost, "bridge");
-
-                if (wemoURL != null && capability != null && value != null) {
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        if ("10008".equals(capability)) {
-                            OnOffType binaryState = null;
-                            binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
-                            updateState(CHANNEL_STATE, binaryState);
+                if (host != null) {
+                    String wemoURL = getWemoURL(host, "bridge");
+                    if (wemoURL != null && capability != null && value != null) {
+                        String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                        if (wemoCallResponse != null) {
+                            if ("10008".equals(capability)) {
+                                OnOffType binaryState = null;
+                                binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+                                updateState(CHANNEL_STATE, binaryState);
+                            }
                         }
                     }
                 }
@@ -309,29 +318,30 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            String wemoURL = getWemoURL(remoteHost, "bridge");
-
-            if (wemoURL != null) {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    wemoCallResponse = unescapeXml(wemoCallResponse);
-                    String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
-                    logger.trace("wemoNewLightState = {}", response);
-                    String[] splitResponse = response.split(",");
-                    if (splitResponse[0] != null) {
-                        OnOffType binaryState = null;
-                        binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
-                        updateState(CHANNEL_STATE, binaryState);
-                    }
-                    if (splitResponse[1] != null) {
-                        String splitBrightness[] = splitResponse[1].split(":");
-                        if (splitBrightness[0] != null) {
-                            int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
-                            int newBrightness = Math.round(newBrightnessValue * 100 / 255);
-                            logger.trace("newBrightness = {}", newBrightness);
-                            State newBrightnessState = new PercentType(newBrightness);
-                            updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
-                            currentBrightness = newBrightness;
+            if (host != null) {
+                String wemoURL = getWemoURL(host, "bridge");
+                if (wemoURL != null) {
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        wemoCallResponse = unescapeXml(wemoCallResponse);
+                        String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
+                        logger.trace("wemoNewLightState = {}", response);
+                        String[] splitResponse = response.split(",");
+                        if (splitResponse[0] != null) {
+                            OnOffType binaryState = null;
+                            binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
+                            updateState(CHANNEL_STATE, binaryState);
+                        }
+                        if (splitResponse[1] != null) {
+                            String splitBrightness[] = splitResponse[1].split(":");
+                            if (splitBrightness[0] != null) {
+                                int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
+                                int newBrightness = Math.round(newBrightnessValue * 100 / 255);
+                                logger.trace("newBrightness = {}", newBrightness);
+                                State newBrightnessState = new PercentType(newBrightness);
+                                updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
+                                currentBrightness = newBrightness;
+                            }
                         }
                     }
                 }
