@@ -144,7 +144,7 @@ public class SomfyTahomaWaterHeatingSystemHandler extends SomfyTahomaBaseThingHa
             if (BOOST_MODE_DURATION.equals(channelUID.getId())) {
                 int duration = 0;
                 try {
-                    Integer.parseInt(command.toString());
+                    duration = Integer.parseInt(command.toString());
                 } catch (NumberFormatException e) {
                     logger.debug("Invalid value received for boost mode duration: {}", command);
                     return;
