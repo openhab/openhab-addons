@@ -154,8 +154,10 @@ public class WebInterface implements AtomicReferenceTrait {
                 };
 
                 SolarEdgeCommand command = commandQueue.poll();
-                command.setListener(statusUpdater);
-                command.performAction(httpClient);
+                if (command != null) {
+                    command.setListener(statusUpdater);
+                    command.performAction(httpClient);
+                }
             }
         }
     }
