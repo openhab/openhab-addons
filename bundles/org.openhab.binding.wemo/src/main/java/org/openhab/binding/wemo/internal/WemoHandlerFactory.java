@@ -80,7 +80,7 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
-    public WemoHandlerFactory(final @Reference UpnpIOService upnpIOService, @Reference UpnpService upnpService) {
+    public WemoHandlerFactory(final @Reference UpnpIOService upnpIOService, final @Reference UpnpService upnpService) {
         this.upnpIOService = upnpIOService;
         this.upnpService = upnpService;
     }
@@ -99,10 +99,15 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("Trying to create a handler for ThingType '{}", thingTypeUID);
 
+        String host = null;
+
         UDN remoteUDN = new UDN((thing.getConfiguration().get(UDN).toString()));
-        RemoteDevice device = upnpService.getRegistry().getRemoteDevice(remoteUDN, true);
-        URL descriptorURL = device.getIdentity().getDescriptorURL();
-        String host = descriptorURL.getHost();
+
+        if (upnpService != null) {
+            RemoteDevice device = upnpService.getRegistry().getRemoteDevice(remoteUDN, true);
+            URL descriptorURL = device.getIdentity().getDescriptorURL();
+            host = descriptorURL.getHost();
+        }
 
         WemoHttpCallFactory wemoHttpCallFactory = this.wemoHttpCallFactory;
         WemoHttpCall wemoHttpcaller = wemoHttpCallFactory == null ? new WemoHttpCall()
