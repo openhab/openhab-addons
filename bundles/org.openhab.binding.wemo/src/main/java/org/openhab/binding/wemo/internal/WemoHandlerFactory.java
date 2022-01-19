@@ -167,7 +167,6 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
             return null;
 
         }
-
     }
 
     @Override
