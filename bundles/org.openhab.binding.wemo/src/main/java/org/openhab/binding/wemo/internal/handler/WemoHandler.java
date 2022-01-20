@@ -166,45 +166,44 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (host != null && !host.isEmpty()) {
-            String wemoURL = getWemoURL(host, "basicevent");
-            if (wemoURL != null) {
-                if (command instanceof RefreshType) {
-                    try {
-                        updateWemoState();
-                    } catch (Exception e) {
-                        logger.debug("Exception during poll", e);
-                    }
-                } else if (channelUID.getId().equals(CHANNEL_STATE)) {
-                    if (command instanceof OnOffType) {
-                        try {
-                            String binaryState = null;
-
-                            if (command.equals(OnOffType.ON)) {
-                                binaryState = "1";
-                            } else if (command.equals(OnOffType.OFF)) {
-                                binaryState = "0";
-                            }
-                            String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-                            String content = "<?xml version=\"1.0\"?>"
-                                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                                    + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
-                                    + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>"
-                                    + "</s:Body>" + "</s:Envelope>";
-                            wemoCall.executeCall(wemoURL, soapHeader, content);
-                        } catch (Exception e) {
-                            logger.error("Failed to send command '{}' for device '{}': {}", command,
-                                    getThing().getUID(), e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        }
-                        updateStatus(ThingStatus.ONLINE);
-                    }
-                }
-            }
-        } else {
+        if (host == null || host.isEmpty()) {
             logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        String wemoURL = getWemoURL(host, "basicevent");
+        if (wemoURL == null) {
+            logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        if (command instanceof RefreshType) {
+            try {
+                updateWemoState();
+            } catch (Exception e) {
+                logger.debug("Exception during poll", e);
+            }
+        } else if (CHANNEL_STATE.equals(channelUID.getId())) {
+            if (command instanceof OnOffType) {
+                try {
+                    String binaryState = OnOffType.ON.equals(command) ? "1" : "0";
+
+                    String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
+                            + "<BinaryState>" + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>"
+                            + "</s:Envelope>";
+                    wemoCall.executeCall(wemoURL, soapHeader, content);
+                } catch (Exception e) {
+                    logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
+                            e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
     }
 
@@ -329,7 +328,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
                 if (getThing().getThingTypeUID().getId().equals("motion")) {
                     updateState(CHANNEL_MOTIONDETECTION, state);
-                    if (state.equals(OnOffType.ON)) {
+                    if (OnOffType.ON.equals(state)) {
                         State lastMotionDetected = new DateTimeType();
                         updateState(CHANNEL_LASTMOTIONDETECTED, lastMotionDetected);
                     }
@@ -355,7 +354,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     subscriptionState.put(subscription, true);
                 }
 
-                if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
+                if (THING_TYPE_INSIGHT.equals(thingTypeUID)) {
                     subscription = "insight1";
                     if (subscriptionState.get(subscription) == null) {
                         logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
@@ -383,7 +382,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     service.removeSubscription(this, subscription);
                 }
 
-                if (thingTypeUID.equals(THING_TYPE_INSIGHT)) {
+                if (THING_TYPE_INSIGHT.equals(thingTypeUID)) {
                     subscription = "insight1";
                     if (subscriptionState.get(subscription) != null) {
                         logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
@@ -412,47 +411,49 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
      */
     protected void updateWemoState() {
         String actionService = "basicevent";
-        if (host != null && !host.isEmpty()) {
-            String wemoURL = getWemoURL(host, actionService);
-            if (wemoURL != null) {
-                String action = "GetBinaryState";
-                String variable = "BinaryState";
-                String value = null;
-
-                if (getThing().getThingTypeUID().getId().equals("insight")) {
-                    action = "GetInsightParams";
-                    variable = "InsightParams";
-                    actionService = "insight";
-                }
-
-                String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-                String content = "<?xml version=\"1.0\"?>"
-                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                        + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
-                        + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
-
-                try {
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
-                                getThing().getUID());
-                        if ("InsightParams".equals(variable)) {
-                            value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
-                        } else {
-                            value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                        }
-                        if (value.length() != 0) {
-                            logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                            this.onValueReceived(variable, value, actionService + "1");
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
-                }
-            }
-        } else {
+        if (host == null || host.isEmpty()) {
             logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        String wemoURL = getWemoURL(host, "basicevent");
+        if (wemoURL == null) {
+            logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        String action = "GetBinaryState";
+        String variable = "BinaryState";
+        String value = null;
+
+        if ("insight".equals(getThing().getThingTypeUID().getId())) {
+            action = "GetInsightParams";
+            variable = "InsightParams";
+            actionService = "insight";
+        }
+
+        String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+        String content = "<?xml version=\"1.0\"?>"
+                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
+                + action + ">" + "</s:Body>" + "</s:Envelope>";
+
+        try {
+            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            if (wemoCallResponse != null) {
+                logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
+                if ("InsightParams".equals(variable)) {
+                    value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
+                } else {
+                    value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
+                }
+                if (value.length() != 0) {
+                    logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                    this.onValueReceived(variable, value, actionService + "1");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
         }
     }
 
