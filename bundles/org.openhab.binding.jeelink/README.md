@@ -28,10 +28,11 @@ Configuration of the binding is not needed.
 
 Only sensor discovery is supported, the thing for the USB receiver / LaCrosseGateway has to be created manually. Pay attention to use the correct serial port, as otherwise the binding may interfere with other bindings accessing serial ports.
 
-Afterwards, discovery reads from the USB receiver / LaCrosseGateways to find out which sensors are currently connected.
-It then creates a thing for every unknown sensor and puts it in the Inbox.
+Afterwards, sensor discovery can be triggered using the `Scan` button in `Things` &rarr; `+` &rarr; `JeeLink Binding`.
+Discovery only detects sensors that actually send a value during discovery.
+These will show up in your inbox.
 
-Discovery only creates things for sensors that actually send a value during discovery. LaCrosse temperature sensors send values every few seconds, so that they are normally caught by the discovery. In rare cases, a second discovery run is needed.
+LaCrosse temperature sensors send values every few seconds, so that they are normally caught by the discovery. In rare cases, a second discovery run is needed.
 
 PCA301 sockets are polled every 120 seconds by default. This results in sockets not being found by the discovery. In order to make sure the socket is discovered, press the button on the socket during discovery (and make sure you have paired the socket to the USB stick / LaCrosseGateway before by pressing the button for 3 seconds while the receiver is powered).
 

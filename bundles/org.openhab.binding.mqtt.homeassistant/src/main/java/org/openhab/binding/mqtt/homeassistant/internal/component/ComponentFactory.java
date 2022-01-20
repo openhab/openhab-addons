@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +37,7 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ComponentFactory {
-    private static final Logger logger = LoggerFactory.getLogger(ComponentFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComponentFactory.class);
 
     /**
      * Create a HA MQTT component. The configuration JSon string is required.
@@ -48,40 +50,38 @@ public class ComponentFactory {
      * @param updateListener A channel state update listener
      * @return A HA MQTT Component
      */
-    public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID,
-            String channelConfigurationJSON, ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
-            ScheduledExecutorService scheduler, Gson gson,
-            TransformationServiceProvider transformationServiceProvider) {
+    public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
+            ChannelStateUpdateListener updateListener, AvailabilityTracker tracker, ScheduledExecutorService scheduler,
+            Gson gson, TransformationServiceProvider transformationServiceProvider) throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
                 channelConfigurationJSON, gson, updateListener, tracker, scheduler)
                         .transformationProvider(transformationServiceProvider);
-        try {
-            switch (haID.component) {
-                case "alarm_control_panel":
-                    return new AlarmControlPanel(componentConfiguration);
-                case "binary_sensor":
-                    return new BinarySensor(componentConfiguration);
-                case "camera":
-                    return new Camera(componentConfiguration);
-                case "cover":
-                    return new Cover(componentConfiguration);
-                case "fan":
-                    return new Fan(componentConfiguration);
-                case "climate":
-                    return new Climate(componentConfiguration);
-                case "light":
-                    return new Light(componentConfiguration);
-                case "lock":
-                    return new Lock(componentConfiguration);
-                case "sensor":
-                    return new Sensor(componentConfiguration);
-                case "switch":
-                    return new Switch(componentConfiguration);
-            }
-        } catch (UnsupportedOperationException e) {
-            logger.warn("Not supported", e);
+        switch (haID.component) {
+            case "alarm_control_panel":
+                return new AlarmControlPanel(componentConfiguration);
+            case "binary_sensor":
+                return new BinarySensor(componentConfiguration);
+            case "camera":
+                return new Camera(componentConfiguration);
+            case "cover":
+                return new Cover(componentConfiguration);
+            case "fan":
+                return new Fan(componentConfiguration);
+            case "climate":
+                return new Climate(componentConfiguration);
+            case "light":
+                return new Light(componentConfiguration);
+            case "lock":
+                return new Lock(componentConfiguration);
+            case "sensor":
+                return new Sensor(componentConfiguration);
+            case "switch":
+                return new Switch(componentConfiguration);
+            case "vacuum":
+                return new Vacuum(componentConfiguration);
+            default:
+                throw new UnsupportedComponentException("Component '" + haID + "' is unsupported!");
         }
-        return null;
     }
 
     protected static class ComponentConfiguration {

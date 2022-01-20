@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.miio.internal;
 
+import static org.openhab.binding.miio.internal.MiIoBindingConstants.BINDING_USERDATA_PATH;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.NoSuchFileException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.slf4j.Logger;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
@@ -103,6 +108,27 @@ public final class Utils {
             JsonElement jsonElement = JsonParser.parseReader(reader);
             jsonObject = jsonElement.getAsJsonObject();
             return jsonObject;
+        }
+    }
+
+    /**
+     * Saves string to file in userdata folder
+     *
+     * @param filename
+     * @param string with content
+     * @param logger
+     */
+    public static void saveToFile(String filename, String data, Logger logger) {
+        File folder = new File(BINDING_USERDATA_PATH);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        File dataFile = new File(folder, filename);
+        try (FileWriter writer = new FileWriter(dataFile)) {
+            writer.write(data);
+            logger.debug("Saved to {}", dataFile.getAbsolutePath());
+        } catch (IOException e) {
+            logger.debug("Failed to write file '{}': {}", dataFile.getName(), e.getMessage());
         }
     }
 

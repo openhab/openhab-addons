@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,6 +147,13 @@ class LxControlTest {
         testChannel(itemType, namePostFix, null, null, null, null, null, null, null);
     }
 
+    void testNoChannel(String namePostFix) {
+        LxControl ctrl = getControl(controlUuid);
+        assertNotNull(ctrl);
+        Channel c = getChannel(getExpectedName(ctrl.getLabel(), ctrl.getRoom().getName(), namePostFix), ctrl);
+        assertNull(c);
+    }
+
     void testChannel(String itemType, String namePostFix, Set<String> tags) {
         testChannel(itemType, namePostFix, null, null, null, null, null, null, tags);
     }
@@ -249,8 +256,10 @@ class LxControlTest {
     private Channel getChannel(String name, LxControl c) {
         List<Channel> channels = c.getChannels();
         List<Channel> filtered = channels.stream().filter(a -> name.equals(a.getLabel())).collect(Collectors.toList());
-        assertEquals(1, filtered.size());
-        return filtered.get(0);
+        if (filtered.size() == 1) {
+            return filtered.get(0);
+        }
+        return null;
     }
 
     private <T> long numberOfControls(Class<T> c) {

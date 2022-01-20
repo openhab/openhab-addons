@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,20 +107,23 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
                         "subscribeToActivePowerChanges() Refreshing subscription for the next {}min for WHERE={} to active power changes notification",
                         ENERGY_SUBSCRIPTION_PERIOD, deviceWhere);
             }
-
-            try {
-                bridgeHandler.gateway.send(EnergyManagement.setActivePowerNotificationsTime(deviceWhere.value(),
-                        ENERGY_SUBSCRIPTION_PERIOD));
-                isFirstSchedulerLaunch = false;
-            } catch (Exception e) {
-                if (isFirstSchedulerLaunch) {
-                    logger.warn(
-                            "subscribeToActivePowerChanges() For WHERE={} could not subscribe to active power changes notifications. Exception={}",
-                            deviceWhere, e.getMessage());
-                } else {
-                    logger.warn(
-                            "subscribeToActivePowerChanges() Unable to refresh subscription to active power changes notifications for WHERE={}. Exception={}",
-                            deviceWhere, e.getMessage());
+            Where w = deviceWhere;
+            if (w == null) {
+                logger.warn("subscribeToActivePowerChanges() WHERE=null. Skipping");
+            } else {
+                try {
+                    send(EnergyManagement.setActivePowerNotificationsTime(w.value(), ENERGY_SUBSCRIPTION_PERIOD));
+                    isFirstSchedulerLaunch = false;
+                } catch (Exception e) {
+                    if (isFirstSchedulerLaunch) {
+                        logger.warn(
+                                "subscribeToActivePowerChanges() For WHERE={} could not subscribe to active power changes notifications. Exception={}",
+                                w, e.getMessage());
+                    } else {
+                        logger.warn(
+                                "subscribeToActivePowerChanges() Unable to refresh subscription to active power changes notifications for WHERE={}. Exception={}",
+                                w, e.getMessage());
+                    }
                 }
             }
         }, 0, ENERGY_SUBSCRIPTION_PERIOD - 1, TimeUnit.MINUTES);
@@ -129,9 +132,9 @@ public class OpenWebNetEnergyHandler extends OpenWebNetThingHandler {
     @Override
     public void dispose() {
         if (notificationSchedule != null) {
+            ScheduledFuture<?> ns = notificationSchedule;
+            ns.cancel(false);
             logger.debug("dispose() scheduler stopped.");
-
-            notificationSchedule.cancel(false);
         }
         super.dispose();
     }

@@ -28,15 +28,21 @@ Configure a Callback URL when the Chromecast cannot connect using the Primary Ad
 
 ## Discovery
 
-Chromecast devices are discovered on the network using UPnP.
+Chromecast devices are discovered on the network using mDNS.
 No authentication is required for accessing the devices on the network.
+Auto-discovery is enabled by default.
+To disable it, you can add the following line to `<openHAB-conf>/services/runtime.cfg`:
+
+```
+discovery.chromecast:background=false
+```
 
 ## Thing Configuration
 
 Chromecast devices can also be manually added.
 The only configuration parameter is the `ipAddress`.
 For an audio group also the port is necessary.
-The autodiscovery process finds the port automatically.
+The auto-discovery process finds the port automatically.
 With manual thing configuration the parameter `port` must be determined manually.
 
 Example for audio group:
@@ -49,7 +55,7 @@ Thing chromecast:audiogroup:bathroom  [ ipAddress="192.168.0.23", port=42139]
 
 | Channel Type ID | Item Type   | Description                                                                                                                                                                           |
 |-----------------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| control         | Player      | Player control; currently only supports play/pause and does not correctly update, if the state changes on the device itself                                                           |
+| control         | Player      | Player control; currently only supports play/pause/next and does not correctly update, if the state changes on the device itself                                                           |
 | stop            | Switch      | Send `ON` to this channel: Stops the Chromecast. If this channel is `ON`, the Chromecast is stopped, otherwise it is in another state (see control channel)                           |
 | volume          | Dimmer      | Control the volume, this is also updated if the volume is changed by another app                                                                                                      |
 | mute            | Switch      | Mute the audio                                                                                                                                                                        |

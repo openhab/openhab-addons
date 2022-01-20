@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,15 +14,18 @@ package org.openhab.binding.digitalstrom.internal.lib.structure.devices.impl;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.ApplicationGroup;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputChannelEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.util.JsonModel;
@@ -148,6 +151,24 @@ class DeviceImplTest {
         JsonObject jsonObject = createJsonObject(OutputModeEnum.POSITION_CON, MIXED_SHADE_CHANNEL);
         DeviceImpl deviceImpl = new DeviceImpl(jsonObject);
         assertThat(deviceImpl.isBlind(), is(true));
+    }
+
+    @Test
+    @DisplayName("No functional color group set, expect a null value returned")
+    void noFunctionalColorGroupSet() {
+        DeviceImpl deviceImpl = new DeviceImpl(new JsonObject());
+        ApplicationGroup functionalColorGroup = deviceImpl.getFunctionalColorGroup();
+        assertNull(functionalColorGroup);
+    }
+
+    @Test
+    @DisplayName("Multiple functional color groups set, expect the first group returned which had previously been added")
+    void multipleFunctionalColorGroupSet() {
+        DeviceImpl deviceImpl = new DeviceImpl(new JsonObject());
+        deviceImpl.addGroup(ApplicationGroup.JOKER.getId());
+        deviceImpl.addGroup(ApplicationGroup.ACCESS.getId());
+
+        assertThat(deviceImpl.getFunctionalColorGroup(), is(ApplicationGroup.JOKER));
     }
 
     private static JsonObject createJsonObject(OutputModeEnum outputMode, List<OutputChannel> channels) {

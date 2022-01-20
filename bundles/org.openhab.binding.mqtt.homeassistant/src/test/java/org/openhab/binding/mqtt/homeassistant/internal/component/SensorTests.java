@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -63,18 +64,20 @@ public class SensorTests extends AbstractComponentTests {
         assertThat(component.getName(), is("sensor1"));
         assertThat(component.getGroupUID().getId(), is("sn1"));
 
-        assertChannel(component, Sensor.sensorChannelID, "zigbee2mqtt/sensor/state", "", "sensor1", NumberValue.class);
+        assertChannel(component, Sensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "sensor1",
+                NumberValue.class);
 
         publishMessage("zigbee2mqtt/sensor/state", "10");
-        assertState(component, Sensor.sensorChannelID, DecimalType.valueOf("10"));
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(10, Units.WATT));
         publishMessage("zigbee2mqtt/sensor/state", "20");
-        assertState(component, Sensor.sensorChannelID, DecimalType.valueOf("20"));
-        assertThat(component.getChannel(Sensor.sensorChannelID).getState().getCache().createStateDescription(true)
-                .build().getPattern(), is("%s W"));
+        assertState(component, Sensor.SENSOR_CHANNEL_ID, new QuantityType<>(20, Units.WATT));
+        assertThat(component.getChannel(Sensor.SENSOR_CHANNEL_ID).getState().getCache().createStateDescription(true)
+                .build().getPattern(), is("%s %unit%"));
 
-        waitForAssert(() -> assertState(component, Sensor.sensorChannelID, UnDefType.UNDEF), 10000, 200);
+        waitForAssert(() -> assertState(component, Sensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 10000, 200);
     }
 
+    @Override
     protected Set<String> getConfigTopics() {
         return Set.of(CONFIG_TOPIC);
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -718,11 +718,14 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         }
 
         if (valueTypeBitCount >= 16 && readSubIndex.isPresent()) {
-            String errmsg = String
-                    .format("readStart=X.Y is not allowed to be used with value types larger than 16bit!");
+            String errmsg = String.format(
+                    "readStart=X.Y notation is not allowed to be used with value types larger than 16bit! Use readStart=X instead.");
             throw new ModbusConfigurationException(errmsg);
         } else if (!bitQuery && valueTypeBitCount < 16 && !readSubIndex.isPresent()) {
-            String errmsg = String.format("readStart=X.Y must be used with value types less than 16bit!");
+            // User has specified value type which is less than register width (16 bits).
+            // readStart=X.Y notation must be used to define which data to extract from the 16 bit register.
+            String errmsg = String
+                    .format("readStart=X.Y must be used with value types (readValueType) less than 16bit!");
             throw new ModbusConfigurationException(errmsg);
         } else if (readSubIndex.isPresent() && (readSubIndex.get() + 1) * valueTypeBitCount > 16) {
             // the sub index Y (in X.Y) is above the register limits

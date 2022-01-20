@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,10 +30,13 @@ import org.slf4j.LoggerFactory;
  * The {@link DanfossAirUnitCommunicationController} class does the actual network communication with the air unit.
  *
  * @author Robert Bach - initial contribution
+ * @author Jacob Laursen - Refactoring, bugfixes and enhancements
  */
 
 @NonNullByDefault
-public class DanfossAirUnitCommunicationController {
+public class DanfossAirUnitCommunicationController implements CommunicationController {
+
+    private static final int SOCKET_TIMEOUT_MILLISECONDS = 5_000;
 
     private final Logger logger = LoggerFactory.getLogger(DanfossAirUnitCommunicationController.class);
 
@@ -41,8 +44,8 @@ public class DanfossAirUnitCommunicationController {
     private final int port;
     private boolean connected = false;
     private @Nullable Socket socket;
-    private @Nullable OutputStream oStream;
-    private @Nullable InputStream iStream;
+    private @Nullable OutputStream outputStream;
+    private @Nullable InputStream inputStream;
 
     public DanfossAirUnitCommunicationController(InetAddress inetAddr, int port) {
         this.inetAddr = inetAddr;
@@ -53,9 +56,11 @@ public class DanfossAirUnitCommunicationController {
         if (connected) {
             return;
         }
-        socket = new Socket(inetAddr, port);
-        oStream = socket.getOutputStream();
-        iStream = socket.getInputStream();
+        Socket localSocket = new Socket(inetAddr, port);
+        localSocket.setSoTimeout(SOCKET_TIMEOUT_MILLISECONDS);
+        this.outputStream = localSocket.getOutputStream();
+        this.inputStream = localSocket.getInputStream();
+        this.socket = localSocket;
         connected = true;
     }
 
@@ -64,15 +69,16 @@ public class DanfossAirUnitCommunicationController {
             return;
         }
         try {
-            if (socket != null) {
-                socket.close();
+            Socket localSocket = this.socket;
+            if (localSocket != null) {
+                localSocket.close();
             }
         } catch (IOException ioe) {
             logger.debug("Connection to air unit could not be closed gracefully. {}", ioe.getMessage());
         } finally {
-            socket = null;
-            iStream = null;
-            oStream = null;
+            this.socket = null;
+            this.inputStream = null;
+            this.outputStream = null;
         }
         connected = false;
     }
@@ -98,21 +104,27 @@ public class DanfossAirUnitCommunicationController {
     }
 
     private synchronized byte[] sendRequestInternal(byte[] request) throws IOException {
+        OutputStream localOutputStream = this.outputStream;
 
-        if (oStream == null) {
+        if (localOutputStream == null) {
             throw new IOException(
                     String.format("Output stream is null while sending request: %s", Arrays.toString(request)));
         }
-        oStream.write(request);
-        oStream.flush();
+        localOutputStream.write(request);
+        localOutputStream.flush();
 
         byte[] result = new byte[63];
-        if (iStream == null) {
+        InputStream localInputStream = this.inputStream;
+        if (localInputStream == null) {
             throw new IOException(
                     String.format("Input stream is null while sending request: %s", Arrays.toString(request)));
         }
-        // noinspection ResultOfMethodCallIgnored
-        iStream.read(result, 0, 63);
+
+        int bytesRead = localInputStream.read(result, 0, 63);
+        if (bytesRead < 63) {
+            throw new IOException(String.format(
+                    "Error reading from stream, read returned %d as number of bytes read into the buffer", bytesRead));
+        }
 
         return result;
     }

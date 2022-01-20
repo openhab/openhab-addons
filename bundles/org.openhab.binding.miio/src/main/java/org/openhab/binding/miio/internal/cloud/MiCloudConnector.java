@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -237,7 +237,7 @@ public class MiCloudConnector {
     public String getDeviceString(String country) {
         String resp;
         try {
-            resp = request("/home/device_list_page", country, "{\"getVirtualModel\":false,\"getHuamiDevices\":1}");
+            resp = request("/home/device_list_page", country, "{\"getVirtualModel\":true,\"getHuamiDevices\":1}");
             logger.trace("Get devices response: {}", resp);
             if (resp.length() > 2) {
                 CloudUtil.saveDeviceInfoFile(resp, country, logger);

@@ -32,7 +32,9 @@ Once an account has been added, garage doors and lamps will automatically be dis
 |---------------|---------------|------------------|--------------------------------------------------------|
 | status        | String        | garagedoor       | opening, closed, closing, stopped, transition, unknown |
 | rollershutter | Rollershutter | garagedoor       | UP, DOWN, 0%, 100%                                     |
-| switch        | Switch        | garagedoor, lamp | ON (open), OFF (closed)
+| closeError    | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)               |
+| openError     | Switch        | garagedoor       | ON (has error), OFF (doesn't have error)               |
+| switch        | Switch        | garagedoor, lamp | ON (open), OFF (closed)                                |
 
 ## Full Example
 
@@ -50,6 +52,8 @@ Bridge myq:account:home "MyQ Account" [ username="foo@bar.com", password="secret
 ```xtend
 String MyQGarageDoor1Status "Door Status [%s]" {channel = "myq:garagedoor:home:abcd12345:status"}
 Switch MyQGarageDoor1Switch "Door Switch [%s]" {channel = "myq:garagedoor:home:abcd12345:switch"}
+Switch MyQGarageDoor1CloseError "Door Close Error [%s]" {channel = "myq:garagedoor:home:abcd12345:closeError"}
+Switch MyQGarageDoor1OpenError "Door OpenError [%s]" {channel = "myq:garagedoor:home:abcd12345:openError"}
 Rollershutter MyQGarageDoor1Rollershutter "Door Rollershutter [%s]" {channel = "myq:garagedoor:home:abcd12345:rollershutter"}
 Switch MyQGarageDoorLamp "Lamp [%s]" {channel = "myq:lamp:home:efgh6789:switch"}
 }

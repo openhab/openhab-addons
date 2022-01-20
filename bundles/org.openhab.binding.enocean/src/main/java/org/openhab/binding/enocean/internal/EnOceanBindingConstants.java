@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,11 +127,15 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_INDOORAIRANALYSIS = "indoorAirAnalysis";
 
     public static final String CHANNEL_PUSHBUTTON = "pushButton";
+    public static final String CHANNEL_PUSHBUTTON2 = "pushButton2";
     public static final String CHANNEL_DOUBLEPRESS = "doublePress";
     public static final String CHANNEL_LONGPRESS = "longPress";
 
     public static final String CHANNEL_ROCKERSWITCH_CHANNELA = "rockerswitchA";
     public static final String CHANNEL_ROCKERSWITCH_CHANNELB = "rockerswitchB";
+    public static final String CHANNEL_ROCKERSWITCH_ACTION = "rockerSwitchAction";
+    public static final ChannelTypeUID CHANNELTYPE_ROCKERSWITCH_ACTION_UID = new ChannelTypeUID(BINDING_ID,
+            CHANNEL_ROCKERSWITCH_ACTION);
 
     public static final String CHANNEL_VIRTUALSWITCHA = "virtualSwitchA";
     public static final String CHANNEL_VIRTUALROLLERSHUTTERA = "virtualRollershutterA";
@@ -145,6 +149,8 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_WINDOWCALIBRATIONSTATE = "windowCalibrationState";
     public static final String CHANNEL_WINDOWCALIBRATIONSTEP = "windowCalibrationStep";
     public static final String CHANNEL_WINDOWBREACHEVENT = "windowBreachEvent";
+    public static final String CHANNEL_PROTECTIONPLUSEVENT = "protectionPlusEvent";
+    public static final String CHANNEL_VACATIONMODETOGGLEEVENT = "vacationModeToggleEvent";
     public static final String CHANNEL_CONTACT = "contact";
     public static final String CHANNEL_TEACHINCMD = "teachInCMD";
     public static final String CHANNEL_INSTANTPOWER = "instantpower";
@@ -322,6 +328,12 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_WINDOWBREACHEVENT,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_WINDOWBREACHEVENT), null, null,
                             false, true)),
+            Map.entry(CHANNEL_PROTECTIONPLUSEVENT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_PROTECTIONPLUSEVENT), null,
+                            null, false, true)),
+            Map.entry(CHANNEL_VACATIONMODETOGGLEEVENT,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VACATIONMODETOGGLEEVENT), null,
+                            null, false, true)),
             Map.entry(
                     CHANNEL_BATTERY_VOLTAGE,
                     new EnOceanChannelDescription(
@@ -344,6 +356,9 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_PUSHBUTTON,
                     new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), null,
                             "Push button", false, true)),
+            Map.entry(CHANNEL_PUSHBUTTON2,
+                    new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), null,
+                            "Push button 2", false, true)),
             Map.entry(CHANNEL_DOUBLEPRESS,
                     new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON.getUID(), null,
                             "Double press", false, true)),
@@ -357,6 +372,9 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_ROCKERSWITCH_CHANNELB,
                     new EnOceanChannelDescription(DefaultSystemChannelTypeProvider.SYSTEM_RAWROCKER.getUID(), null,
                             "Rocker Switch - Channel B", false, false)),
+            Map.entry(CHANNEL_ROCKERSWITCH_ACTION,
+                    new EnOceanChannelDescription(CHANNELTYPE_ROCKERSWITCH_ACTION_UID, null, "Rocker Switch Action",
+                            false, false)),
 
             Map.entry(CHANNEL_VIRTUALSWITCHA,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VIRTUALSWITCHA),

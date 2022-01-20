@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,7 +148,9 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             SerialPort commPort = portIdentifier.open("org.openhab.binding.teleinfo", 5000);
             serialPort = commPort;
 
-            commPort.setSerialPortParams(1200, SerialPort.DATABITS_7, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
+            TeleinfoTicMode ticMode = TeleinfoTicMode.valueOf(config.ticMode);
+            commPort.setSerialPortParams(ticMode.getBitrate(), SerialPort.DATABITS_7, SerialPort.STOPBITS_1,
+                    SerialPort.PARITY_EVEN);
             try {
                 commPort.enableReceiveThreshold(1);
             } catch (UnsupportedCommOperationException e) {
@@ -161,7 +163,7 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             }
             logger.debug("Starting receive thread");
             TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
-                    config.autoRepairInvalidADPSgroupLine);
+                    config.autoRepairInvalidADPSgroupLine, ticMode, config.verifyChecksum);
             this.receiveThread = receiveThread;
             receiveThread.start();
 

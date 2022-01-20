@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,7 +96,7 @@ public class Ffmpeg {
     }
 
     private class IpCameraFfmpegThread extends Thread {
-        private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
+        private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(1);
         public int countOfMotions;
 
         IpCameraFfmpegThread() {
@@ -171,7 +171,7 @@ public class Ffmpeg {
                     }
                 }
             } catch (IOException e) {
-                logger.warn("An error occured trying to process the messages from FFmpeg.");
+                logger.warn("An IO error occured trying to start FFmpeg:{}", e.getMessage());
             } finally {
                 switch (format) {
                     case GIF:
@@ -190,7 +190,12 @@ public class Ffmpeg {
     public void startConverting() {
         if (!ipCameraFfmpegThread.isAlive()) {
             ipCameraFfmpegThread = new IpCameraFfmpegThread();
-            logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand.replaceAll(password, "********"));
+            if (!password.isEmpty()) {
+                logger.debug("Starting ffmpeg with this command now:{}",
+                        ffmpegCommand.replaceAll(password, "********"));
+            } else {
+                logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand);
+            }
             ipCameraFfmpegThread.start();
             if (format.equals(FFmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
@@ -215,6 +220,7 @@ public class Ffmpeg {
             Process localProcess = process;
             if (localProcess != null) {
                 localProcess.destroyForcibly();
+                process = null;
             }
             if (format.equals(FFmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.OFF);

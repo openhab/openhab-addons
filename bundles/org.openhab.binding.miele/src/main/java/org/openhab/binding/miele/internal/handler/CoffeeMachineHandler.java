@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,10 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_COFFEE_SYSTEM;
 
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -30,13 +33,15 @@ import com.google.gson.JsonElement;
  *
  * @author Stephan Esch - Initial contribution
  * @author Martin Lepsy - fixed handling of empty JSON results
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
  */
 public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(CoffeeMachineHandler.class);
 
-    public CoffeeMachineHandler(Thing thing) {
-        super(thing, CoffeeMachineChannelSelector.class, "CoffeeSystem");
+    public CoffeeMachineHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+        super(thing, i18nProvider, localeProvider, CoffeeMachineChannelSelector.class,
+                MIELE_DEVICE_CLASS_COFFEE_SYSTEM);
     }
 
     @Override
@@ -44,7 +49,7 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
         CoffeeMachineChannelSelector selector = (CoffeeMachineChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -54,9 +59,9 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
                 switch (selector) {
                     case SWITCH: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOn");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOn");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "switchOff");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "switchOff");
                         }
                         break;
                     }
@@ -69,7 +74,7 @@ public class CoffeeMachineHandler extends MieleApplianceHandler<CoffeeMachineCha
                 }
             }
             // process result
-            if (isResultProcessable(result)) {
+            if (result != null && isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {

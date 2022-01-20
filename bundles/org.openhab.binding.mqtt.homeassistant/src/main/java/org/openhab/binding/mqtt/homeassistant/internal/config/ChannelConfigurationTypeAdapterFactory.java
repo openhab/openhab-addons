@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +25,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Device;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -37,7 +39,7 @@ import com.google.gson.stream.JsonWriter;
  * that abbreviated names are replaces with their long versions during the read.
  *
  * <p>
- * In elements, whose name end in'_topic' '~' replacement is performed.
+ * In elements, whose JSON name end in'_topic' '~' replacement is performed.
  *
  * <p>
  * The adapters also handle {@link Device}
@@ -46,6 +48,7 @@ import com.google.gson.stream.JsonWriter;
  */
 @NonNullByDefault
 public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactory {
+    private static final String MQTT_TOPIC_FIELD_SUFFIX = "_topic";
 
     @Override
     @Nullable
@@ -113,35 +116,45 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
     private void expandTidleInTopics(AbstractChannelConfiguration config) {
         Class<?> type = config.getClass();
 
-        String tilde = config.getTilde();
+        String parentTopic = config.getParentTopic();
 
         while (type != Object.class) {
-            Field[] fields = type.getDeclaredFields();
+            Arrays.stream(type.getDeclaredFields()).filter(this::isMqttTopicField)
+                    .forEach(field -> replacePlaceholderByParentTopic(config, field, parentTopic));
+            type = type.getSuperclass();
+        }
+    }
 
-            for (Field field : fields) {
-                if (String.class.isAssignableFrom(field.getType()) && field.getName().endsWith("_topic")) {
-                    field.setAccessible(true);
+    private boolean isMqttTopicField(Field field) {
+        if (String.class.isAssignableFrom(field.getType())) {
+            final var serializedNameAnnotation = field.getAnnotation(SerializedName.class);
+            if (serializedNameAnnotation != null && serializedNameAnnotation.value() != null
+                    && serializedNameAnnotation.value().endsWith(MQTT_TOPIC_FIELD_SUFFIX)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-                    try {
-                        final String oldValue = (String) field.get(config);
+    private void replacePlaceholderByParentTopic(AbstractChannelConfiguration config, Field field, String parentTopic) {
+        field.setAccessible(true);
 
-                        String newValue = oldValue;
-                        if (oldValue != null && !oldValue.isBlank()) {
-                            if (oldValue.charAt(0) == '~') {
-                                newValue = tilde + oldValue.substring(1);
-                            } else if (oldValue.charAt(oldValue.length() - 1) == '~') {
-                                newValue = oldValue.substring(0, oldValue.length() - 1) + tilde;
-                            }
-                        }
+        try {
+            final String oldValue = (String) field.get(config);
 
-                        field.set(config, newValue);
-                    } catch (IllegalArgumentException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
+            String newValue = oldValue;
+            if (oldValue != null && !oldValue.isBlank()) {
+                if (oldValue.charAt(0) == AbstractChannelConfiguration.PARENT_TOPIC_PLACEHOLDER) {
+                    newValue = parentTopic + oldValue.substring(1);
+                } else if (oldValue
+                        .charAt(oldValue.length() - 1) == AbstractChannelConfiguration.PARENT_TOPIC_PLACEHOLDER) {
+                    newValue = oldValue.substring(0, oldValue.length() - 1) + parentTopic;
                 }
             }
 
-            type = type.getSuperclass();
+            field.set(config, newValue);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 }

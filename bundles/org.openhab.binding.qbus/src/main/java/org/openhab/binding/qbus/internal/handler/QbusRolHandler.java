@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -218,7 +218,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
             } else if (command instanceof PercentType) {
                 PercentType p = (PercentType) command;
                 int pp = p.intValue();
-                if (p == PercentType.ZERO) {
+                if (PercentType.ZERO.equals(p)) {
                     qRol.execute(0, snr);
                 } else {
                     qRol.execute(pp, snr);
@@ -264,7 +264,7 @@ public class QbusRolHandler extends QbusGlobalHandler {
                 }
             } else if (command instanceof PercentType) {
                 int percentToInt = ((PercentType) command).intValue();
-                if (command == PercentType.ZERO) {
+                if (PercentType.ZERO.equals(command)) {
                     qRol.executeSlats(0, snr);
                 } else {
                     qRol.executeSlats(percentToInt, snr);

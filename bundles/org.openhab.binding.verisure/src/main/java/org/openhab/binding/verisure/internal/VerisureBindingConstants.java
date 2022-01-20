@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,22 +131,23 @@ public class VerisureBindingConstants {
     // REST URI constants
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
-    public static final String BASEURL = "https://mypages.verisure.com";
-    public static final String LOGON_SUF = BASEURL + "/j_spring_security_check?locale=en_GB";
-    public static final String ALARM_COMMAND = BASEURL + "/remotecontrol/armstatechange.cmd";
-    public static final String SMARTLOCK_LOCK_COMMAND = BASEURL + "/remotecontrol/lockunlock.cmd";
-    public static final String SMARTLOCK_SET_COMMAND = BASEURL + "/overview/setdoorlock.cmd";
-    public static final String SMARTLOCK_AUTORELOCK_COMMAND = BASEURL + "/settings/setautorelock.cmd";
-    public static final String SMARTLOCK_VOLUME_COMMAND = BASEURL + "/settings/setvolume.cmd";
+    public static final String BASE_URL = "https://mypages.verisure.com";
+    public static final String LOGON_SUF = BASE_URL + "/j_spring_security_check?locale=en_GB";
+    public static final String ALARM_COMMAND = BASE_URL + "/remotecontrol/armstatechange.cmd";
+    public static final String SMARTLOCK_LOCK_COMMAND = BASE_URL + "/remotecontrol/lockunlock.cmd";
+    public static final String SMARTLOCK_SET_COMMAND = BASE_URL + "/overview/setdoorlock.cmd";
+    public static final String SMARTLOCK_AUTORELOCK_COMMAND = BASE_URL + "/settings/setautorelock.cmd";
+    public static final String SMARTLOCK_VOLUME_COMMAND = BASE_URL + "/settings/setvolume.cmd";
 
-    public static final String SMARTPLUG_COMMAND = BASEURL + "/settings/smartplug/onoffplug.cmd";
+    public static final String SMARTPLUG_COMMAND = BASE_URL + "/settings/smartplug/onoffplug.cmd";
     public static final String START_REDIRECT = "/uk/start.html";
-    public static final String START_SUF = BASEURL + START_REDIRECT;
+    public static final String START_SUF = BASE_URL + START_REDIRECT;
 
     // GraphQL constants
-    public static final String STATUS = BASEURL + "/uk/status";
-    public static final String SETTINGS = BASEURL + "/uk/settings.html?giid=";
-    public static final String SET_INSTALLATION = BASEURL + "/setinstallation?giid=";
+    public static final String STATUS = BASE_URL + "/uk/status";
+    public static final String EXTEND = BASE_URL + "/session/extend";
+    public static final String SETTINGS = BASE_URL + "/uk/settings.html?giid=";
+    public static final String SET_INSTALLATION = BASE_URL + "/setinstallation?giid=";
     public static final String BASEURL_API = "https://m-api02.verisure.com";
     public static final String START_GRAPHQL = "/graphql";
     public static final String AUTH_TOKEN = "/auth/token";

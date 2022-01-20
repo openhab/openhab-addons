@@ -157,6 +157,13 @@ The port number of the HMIP server (default = 2010)
 - **cuxdPort**
 The port number of the CUxD daemon (default = 8701)
 
+- **groupPort**
+The port number of the Group daemon (default = 9292)
+
+- **callbackRegTimeout**
+Maximum time in seconds for callback registration in the Homematic gateway (default = 120s).
+For a CCU2, the value may need to be increased to 180s.
+
 - **installModeDuration**
 Time in seconds that the controller will be in install mode when a device discovery is initiated (default = 60)
 
@@ -343,16 +350,17 @@ A virtual datapoint (String) to simulate a key press, available on all channels 
 
 Available values:
 
-- `SHORT_PRESS`: triggered on a short key press
-- `LONG_PRESS`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
-- `DOUBLE_PRESS`: triggered on a short key press but only if the latest `SHORT_PRESS` or `DOUBLE_PRESS` event is not older than 2.0 s (not related to `DBL_PRESS_TIME` configuration, which is more like a key lock because if it is other than `0.0` single presses are not notified anymore)
+- `SHORT_PRESSED`: triggered on a short key press
+- `LONG_PRESSED`: triggered on a key press longer than `LONG_PRESS_TIME` (variable configuration per key, default is 0.4 s)
+- `LONG_REPEATED`: triggered on long key press repetition, that is, in `LONG_PRESS_TIME` intervals as long as key is held
+- `LONG_RELEASED`: triggered when a key is released after being long pressed
 
 **Example:** to capture a short key press on the 19 button remote control in a rule
 
 ```javascript
 rule "example trigger rule"
 when
-    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESS
+    Channel 'homematic:HM-RC-19-B:ccu:KEQ0012345:1#BUTTON' triggered SHORT_PRESSED
 then
     ...
 end
@@ -674,6 +682,13 @@ Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
 |---------|------|--------|
 | openHAB | 0%   | 100%   |
 | CCU     | 100% | 0%     |
+
+** The binding does not receive any status changes from the Homematic gateway**
+
+First of all, make sure that none of the ports needed to receive status changes from the gateway are blocked by firewall settings.
+
+If the computer running openHAB has more than one IP address, a wrong one may have been set as receiver for status changes.
+In this case change the setting for `callbackHost` to the correct address.
 
 ### Debugging and Tracing
 

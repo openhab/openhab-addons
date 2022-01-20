@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -29,6 +28,7 @@ import java.net.SocketException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -90,9 +90,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
 
     // IR transaction counter
     private AtomicInteger irCounter;
-
-    // Character set to use for URL encoding & decoding
-    private String CHARSET = "ISO-8859-1";
 
     public GlobalCacheHandler(@NonNull Thing gcDevice, String ipv4Address) {
         super(gcDevice);
@@ -578,7 +575,8 @@ public class GlobalCacheHandler extends BaseThingHandler {
             }
 
             byte[] deviceCommand;
-            deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), CHARSET).getBytes(CHARSET);
+            deviceCommand = URLDecoder.decode(requestMessage.getDeviceCommand(), StandardCharsets.ISO_8859_1)
+                    .getBytes(StandardCharsets.ISO_8859_1);
 
             logger.debug("Writing decoded deviceCommand byte array: {}", getAsHexString(deviceCommand));
             out.write(deviceCommand);
@@ -912,14 +910,8 @@ public class GlobalCacheHandler extends BaseThingHandler {
                 String endOfMessageString = (String) thing.getConfiguration().get(endOfMessageDelimiterConfig);
                 if (endOfMessageString != null && !endOfMessageString.isEmpty()) {
                     logger.debug("End of message is {} for thing {} {}", endOfMessageString, thingID(), serialDevice);
-                    byte[] endOfMessage;
-                    try {
-                        endOfMessage = URLDecoder.decode(endOfMessageString, CHARSET).getBytes(CHARSET);
-                    } catch (UnsupportedEncodingException e) {
-                        logger.info("Unable to decode end of message delimiter {} for thing {} {}", endOfMessageString,
-                                thingID(), serialDevice);
-                        return null;
-                    }
+                    byte[] endOfMessage = URLDecoder.decode(endOfMessageString, StandardCharsets.ISO_8859_1)
+                            .getBytes(StandardCharsets.ISO_8859_1);
 
                     // Start the serial reader using the above end-of-message delimiter
                     SerialPortReader serialPortReader = new SerialPortReader(serialDevice, getSerialIn(serialDevice),
@@ -1003,9 +995,6 @@ public class GlobalCacheHandler extends BaseThingHandler {
                     logger.debug("Rcv data from {} at {}:{}: {}", thingID(), getIP(), serialPort,
                             getAsHexString(buffer));
                     updateFeedbackChannel(buffer);
-                } catch (UnsupportedEncodingException e) {
-                    logger.info("Unsupported encoding exception: {}", e.getMessage(), e);
-                    continue;
                 } catch (IOException e) {
                     logger.debug("Serial Reader got IOException: {}", e.getMessage());
                     break;
@@ -1071,13 +1060,10 @@ public class GlobalCacheHandler extends BaseThingHandler {
             Channel channel = getThing().getChannel(channelId);
             if (channel != null && isLinked(channelId)) {
                 logger.debug("Updating feedback channel for port {}", serialPort);
-                try {
-                    String encodedReply = URLEncoder.encode(new String(buffer, CHARSET), CHARSET);
-                    logger.debug("encodedReply='{}'", encodedReply);
-                    updateState(channel.getUID(), new StringType(encodedReply));
-                } catch (UnsupportedEncodingException e) {
-                    logger.warn("Exception while encoding data read from serial device: {}", e.getMessage());
-                }
+                String encodedReply = URLEncoder.encode(new String(buffer, StandardCharsets.ISO_8859_1),
+                        StandardCharsets.ISO_8859_1);
+                logger.debug("encodedReply='{}'", encodedReply);
+                updateState(channel.getUID(), new StringType(encodedReply));
             }
         }
     }

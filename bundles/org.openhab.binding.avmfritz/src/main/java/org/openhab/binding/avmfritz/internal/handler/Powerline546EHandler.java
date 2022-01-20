@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -225,7 +225,7 @@ public class Powerline546EHandler extends AVMFritzBaseBridgeHandler implements F
         ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, getThingTypeId(device).concat("_Solo"));
         String ipAddress = getConfigAs(AVMFritzBoxConfiguration.class).ipAddress;
 
-        if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
+        if (POWERLINE546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
             String thingName = "fritz.powerline".equals(ipAddress) ? ipAddress
                     : ipAddress.replaceAll(INVALID_PATTERN, "_");
             return new ThingUID(thingTypeUID, thingName);

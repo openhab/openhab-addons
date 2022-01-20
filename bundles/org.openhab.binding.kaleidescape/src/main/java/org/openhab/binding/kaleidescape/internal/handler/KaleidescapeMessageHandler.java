@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,9 +57,19 @@ public enum KaleidescapeMessageHandler {
         }
     },
     HIGHLIGHTED_SELECTION {
+        private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
+
         @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             handler.updateChannel(KaleidescapeBindingConstants.HIGHLIGHTED_SELECTION, new StringType(message));
+
+            if (handler.isLoadHighlightedDetails) {
+                try {
+                    handler.connector.sendCommand(GET_CONTENT_DETAILS + message + ":");
+                } catch (KaleidescapeException e) {
+                    logger.debug("GET_CONTENT_DETAILS - exception loading content details for handle: {}", message);
+                }
+            }
         }
     },
     DEVICE_POWER_STATE {
@@ -273,6 +283,15 @@ public enum KaleidescapeMessageHandler {
                 handler.updateChannel(MUSIC_ALBUM_HANDLE, new StringType(matcher.group(5)));
 
                 handler.updateChannel(MUSIC_NOWPLAY_HANDLE, new StringType(matcher.group(6)));
+
+                if (handler.isLoadAlbumDetails) {
+                    try {
+                        handler.connector.sendCommand(GET_CONTENT_DETAILS + matcher.group(5) + ":");
+                    } catch (KaleidescapeException e) {
+                        logger.debug("GET_CONTENT_DETAILS - exception loading album details for handle: {}",
+                                matcher.group(5));
+                    }
+                }
             } else {
                 logger.debug("MUSIC_TITLE - no match on message: {}", message);
             }

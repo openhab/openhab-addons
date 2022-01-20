@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,10 @@
 package org.openhab.binding.miele.internal.handler;
 
 import static org.openhab.binding.miele.internal.MieleBindingConstants.APPLIANCE_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_HOOD;
 
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -30,13 +33,14 @@ import com.google.gson.JsonElement;
  * @author Karel Goderis - Initial contribution
  * @author Kai Kreuzer - fixed handling of REFRESH commands
  * @author Martin Lepsy - fixed handling of empty JSON results
- */
+ * @author Jacob Laursen - Fixed multicast and protocol support (ZigBee/LAN)
+ **/
 public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
 
     private final Logger logger = LoggerFactory.getLogger(HoodHandler.class);
 
-    public HoodHandler(Thing thing) {
-        super(thing, HoodChannelSelector.class, "Hood");
+    public HoodHandler(Thing thing, TranslationProvider i18nProvider, LocaleProvider localeProvider) {
+        super(thing, i18nProvider, localeProvider, HoodChannelSelector.class, MIELE_DEVICE_CLASS_HOOD);
     }
 
     @Override
@@ -44,7 +48,7 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
         super.handleCommand(channelUID, command);
 
         String channelID = channelUID.getId();
-        String uid = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
+        String applianceId = (String) getThing().getConfiguration().getProperties().get(APPLIANCE_ID);
 
         HoodChannelSelector selector = (HoodChannelSelector) getValueSelectorFromChannelID(channelID);
         JsonElement result = null;
@@ -54,15 +58,15 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
                 switch (selector) {
                     case LIGHT: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "startLighting");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "startLighting");
                         } else if (command.equals(OnOffType.OFF)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stopLighting");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stopLighting");
                         }
                         break;
                     }
                     case STOP: {
                         if (command.equals(OnOffType.ON)) {
-                            result = bridgeHandler.invokeOperation(uid, modelID, "stop");
+                            result = bridgeHandler.invokeOperation(applianceId, modelID, "stop");
                         }
                         break;
                     }
@@ -73,7 +77,7 @@ public class HoodHandler extends MieleApplianceHandler<HoodChannelSelector> {
                 }
             }
             // process result
-            if (isResultProcessable(result)) {
+            if (result != null && isResultProcessable(result)) {
                 logger.debug("Result of operation is {}", result.getAsString());
             }
         } catch (IllegalArgumentException e) {

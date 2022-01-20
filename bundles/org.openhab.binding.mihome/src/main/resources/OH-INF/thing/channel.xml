@@ -29,7 +29,8 @@
 			light on and off.</description>
 		<category>DimmableLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 		<state max="100" min="0" step="1" pattern="%d %%" readOnly="false"></state>
 	</channel-type>
@@ -49,7 +50,8 @@
 		<description>Control the color of light.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 
@@ -58,6 +60,7 @@
 		<label>Color Temperature</label>
 		<description>Allows to control the color temperature of light.</description>
 		<tags>
+			<tag>Control</tag>
 			<tag>ColorTemperature</tag>
 		</tags>
 		<state pattern="%d K"/>

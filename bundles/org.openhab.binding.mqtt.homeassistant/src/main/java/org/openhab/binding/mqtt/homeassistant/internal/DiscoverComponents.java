@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,8 @@ import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.thing.ThingUID;
@@ -97,18 +99,27 @@ public class DiscoverComponents implements MqttMessageSubscriber {
         AbstractComponent<?> component = null;
 
         if (config.length() > 0) {
-            component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler,
-                    gson, transformationServiceProvider);
-        }
-        if (component != null) {
-            component.setConfigSeen();
+            try {
+                component = ComponentFactory.createComponent(thingUID, haID, config, updateListener, tracker, scheduler,
+                        gson, transformationServiceProvider);
+                component.setConfigSeen();
 
-            logger.trace("Found HomeAssistant thing {} component {}", haID.objectID, haID.component);
-            if (discoveredListener != null) {
-                discoveredListener.componentDiscovered(haID, component);
+                logger.trace("Found HomeAssistant thing {} component {}", haID.objectID, haID.component);
+
+                if (discoveredListener != null) {
+                    discoveredListener.componentDiscovered(haID, component);
+                }
+            } catch (UnsupportedComponentException e) {
+                logger.warn("HomeAssistant discover error: thing {} component type is unsupported: {}", haID.objectID,
+                        haID.component);
+            } catch (ConfigurationException e) {
+                logger.warn("HomeAssistant discover error: invalid configuration of thing {} component {}: {}",
+                        haID.objectID, haID.component, e.getMessage());
+            } catch (Exception e) {
+                logger.warn("HomeAssistant discover error: {}", e.getMessage());
             }
         } else {
-            logger.debug("Configuration of HomeAssistant thing {} invalid: {}", haID.objectID, config);
+            logger.warn("Configuration of HomeAssistant thing {} is empty", haID.objectID);
         }
     }
 

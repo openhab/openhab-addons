@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,8 +25,6 @@ import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOneCallConfiguration;
-import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
-import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
 import org.openhab.binding.openweathermap.internal.dto.onecall.Alert;
 import org.openhab.binding.openweathermap.internal.dto.onecall.FeelsLike;
@@ -34,6 +32,8 @@ import org.openhab.binding.openweathermap.internal.dto.onecall.OpenWeatherMapOne
 import org.openhab.binding.openweathermap.internal.dto.onecall.Rain;
 import org.openhab.binding.openweathermap.internal.dto.onecall.Snow;
 import org.openhab.binding.openweathermap.internal.dto.onecall.Temp;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
@@ -215,14 +215,14 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     @Override
     protected boolean requestData(OpenWeatherMapConnection connection)
-            throws OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
+            throws CommunicationException, ConfigurationException {
         logger.debug("Update weather and forecast data of thing '{}'.", getThing().getUID());
         try {
             weatherData = connection.getOneCallAPIData(location, forecastMinutes == 0, forecastHours == 0,
                     forecastDays == 0, numberOfAlerts == 0);
             return true;
         } catch (JsonSyntaxException e) {
-            logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
+            logger.debug("JsonSyntaxException occurred during execution: {}", e.getMessage(), e);
             return false;
         }
     }
@@ -382,7 +382,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     channelGroupId);
             return;
         }
-        if (localWeatherData != null && localWeatherData.getMinutely().size() > count) {
+        if (localWeatherData != null && localWeatherData.getMinutely() != null
+                && localWeatherData.getMinutely().size() > count) {
             org.openhab.binding.openweathermap.internal.dto.onecall.Minutely forecastData = localWeatherData
                     .getMinutely().get(count);
             State state = UnDefType.UNDEF;

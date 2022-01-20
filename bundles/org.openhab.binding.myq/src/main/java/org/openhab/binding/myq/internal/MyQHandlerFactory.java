@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.myq.internal.handler.MyQAccountHandler;
 import org.openhab.binding.myq.internal.handler.MyQGarageDoorHandler;
 import org.openhab.binding.myq.internal.handler.MyQLampHandler;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -41,10 +42,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.myq", service = ThingHandlerFactory.class)
 public class MyQHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
+    private OAuthFactory oAuthFactory;
 
     @Activate
-    public MyQHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
+    public MyQHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
+            final @Reference OAuthFactory oAuthFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.oAuthFactory = oAuthFactory;
     }
 
     @Override
@@ -57,7 +61,7 @@ public class MyQHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ACCOUNT.equals(thingTypeUID)) {
-            return new MyQAccountHandler((Bridge) thing, httpClient);
+            return new MyQAccountHandler((Bridge) thing, httpClient, oAuthFactory);
         }
 
         if (THING_TYPE_GARAGEDOOR.equals(thingTypeUID)) {

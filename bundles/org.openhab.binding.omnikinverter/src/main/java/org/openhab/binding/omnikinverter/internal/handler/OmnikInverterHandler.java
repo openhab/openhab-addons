@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,10 +60,9 @@ public class OmnikInverterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (OmnikInverterBindingConstants.CHANNEL_POWER.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                updateData();
-            }
+        // All channels depend on data gotten from `updateData()`
+        if (command instanceof RefreshType) {
+            updateData();
         }
     }
 
@@ -93,6 +94,33 @@ public class OmnikInverterHandler extends BaseThingHandler {
 
                 QuantityType<Power> powerQuantity = new QuantityType<>(message.getPower(), Units.WATT);
                 updateState(OmnikInverterBindingConstants.CHANNEL_POWER, powerQuantity);
+
+                QuantityType<Power> powerQuantity1 = new QuantityType<>(message.getPowerAC1(), Units.WATT);
+                updateState(OmnikInverterBindingConstants.CHANNEL_POWER_AC1, powerQuantity1);
+
+                QuantityType<Power> powerQuantity2 = new QuantityType<>(message.getPowerAC2(), Units.WATT);
+                updateState(OmnikInverterBindingConstants.CHANNEL_POWER_AC2, powerQuantity2);
+
+                QuantityType<Power> powerQuantity3 = new QuantityType<>(message.getPowerAC3(), Units.WATT);
+                updateState(OmnikInverterBindingConstants.CHANNEL_POWER_AC3, powerQuantity3);
+
+                QuantityType<ElectricCurrent> pvAmp1 = new QuantityType<>(message.getCurrentPV1(), Units.AMPERE);
+                updateState(OmnikInverterBindingConstants.CHANNEL_CURRENT_PV1, pvAmp1);
+
+                QuantityType<ElectricCurrent> pvAmp2 = new QuantityType<>(message.getCurrentPV2(), Units.AMPERE);
+                updateState(OmnikInverterBindingConstants.CHANNEL_CURRENT_PV2, pvAmp2);
+
+                QuantityType<ElectricCurrent> pvAmp3 = new QuantityType<>(message.getCurrentPV3(), Units.AMPERE);
+                updateState(OmnikInverterBindingConstants.CHANNEL_CURRENT_PV3, pvAmp3);
+
+                QuantityType<ElectricPotential> pvVoltage1 = new QuantityType<>(message.getVoltagePV1(), Units.VOLT);
+                updateState(OmnikInverterBindingConstants.CHANNEL_VOLTAGE_PV1, pvVoltage1);
+
+                QuantityType<ElectricPotential> pvVoltage2 = new QuantityType<>(message.getVoltagePV2(), Units.VOLT);
+                updateState(OmnikInverterBindingConstants.CHANNEL_VOLTAGE_PV2, pvVoltage2);
+
+                QuantityType<ElectricPotential> pvVoltage3 = new QuantityType<>(message.getVoltagePV3(), Units.VOLT);
+                updateState(OmnikInverterBindingConstants.CHANNEL_VOLTAGE_PV3, pvVoltage3);
 
                 updateState(OmnikInverterBindingConstants.CHANNEL_ENERGY_TODAY,
                         new QuantityType<>(message.getEnergyToday(), Units.KILOWATT_HOUR));

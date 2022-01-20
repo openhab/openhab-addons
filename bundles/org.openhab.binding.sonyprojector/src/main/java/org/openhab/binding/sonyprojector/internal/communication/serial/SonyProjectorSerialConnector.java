@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,17 +15,17 @@ package org.openhab.binding.sonyprojector.internal.communication.serial;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.TooManyListenersException;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorConnector;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorItem;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConnectionException;
 import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
@@ -91,14 +91,13 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
     }
 
     @Override
-    public synchronized void open() throws SonyProjectorException {
+    public synchronized void open() throws ConnectionException {
         if (!connected) {
             logger.debug("Opening serial connection on port {}", serialPortName);
             try {
                 SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
                 if (portIdentifier == null) {
-                    logger.debug("Opening serial connection failed: No Such Port: {}", serialPortName);
-                    throw new SonyProjectorException("Opening serial connection failed: No Such Port");
+                    throw new ConnectionException("@text/exception.invalid-serial-port", serialPortName);
                 }
 
                 SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
@@ -139,20 +138,8 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
                 connected = true;
 
                 logger.debug("Serial connection opened");
-            } catch (PortInUseException e) {
-                logger.debug("Opening serial connection failed: Port in Use Exception: {}", e.getMessage(), e);
-                throw new SonyProjectorException("Opening serial connection failed: Port in Use Exception");
-            } catch (UnsupportedCommOperationException e) {
-                logger.debug("Opening serial connection failed: Unsupported Comm Operation Exception: {}",
-                        e.getMessage(), e);
-                throw new SonyProjectorException(
-                        "Opening serial connection failed: Unsupported Comm Operation Exception");
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("Opening serial connection failed: Unsupported Encoding Exception: {}", e.getMessage(), e);
-                throw new SonyProjectorException("Opening serial connection failed: Unsupported Encoding Exception");
-            } catch (IOException e) {
-                logger.debug("Opening serial connection failed: IO Exception: {}", e.getMessage(), e);
-                throw new SonyProjectorException("Opening serial connection failed: IO Exception");
+            } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
+                throw new ConnectionException("@text/exception.opening-serial-connection-failed", e);
             }
         }
     }
@@ -189,7 +176,7 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
     }
 
     @Override
-    protected synchronized byte[] readResponse() throws SonyProjectorException {
+    protected synchronized byte[] readResponse() throws CommunicationException {
         logger.debug("readResponse (timeout = {} ms)...", READ_TIMEOUT_MS);
         byte[] message = new byte[8];
         boolean startCodeReached = false;
@@ -221,7 +208,7 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
         }
         if (!endCodeReached && timeout) {
             logger.debug("readResponse timeout: only {} bytes read after {} ms", index, READ_TIMEOUT_MS);
-            throw new SonyProjectorException("readResponse failed: timeout");
+            throw new CommunicationException("readResponse failed: timeout");
         }
         logger.debug("readResponse: {}", HexUtils.bytesToHex(message));
 
@@ -229,31 +216,31 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
     }
 
     @Override
-    protected void validateResponse(byte[] responseMessage, SonyProjectorItem item) throws SonyProjectorException {
+    protected void validateResponse(byte[] responseMessage, SonyProjectorItem item) throws CommunicationException {
         if (responseMessage.length != 8) {
             logger.debug("Unexpected response data length: {}", responseMessage.length);
-            throw new SonyProjectorException("Unexpected response data length");
+            throw new CommunicationException("Unexpected response data length");
         }
 
         // Check START CODE
         if (responseMessage[0] != START_CODE) {
             logger.debug("Unexpected message START CODE in response: {} rather than {}",
                     Integer.toHexString(responseMessage[0] & 0x000000FF), Integer.toHexString(START_CODE & 0x000000FF));
-            throw new SonyProjectorException("Unexpected message START CODE in response");
+            throw new CommunicationException("Unexpected message START CODE in response");
         }
 
         // Check END CODE
         if (responseMessage[7] != END_CODE) {
             logger.debug("Unexpected  message END CODE in response: {} rather than {}",
                     Integer.toHexString(responseMessage[7] & 0x000000FF), Integer.toHexString(END_CODE & 0x000000FF));
-            throw new SonyProjectorException("Unexpected message END CODE in response");
+            throw new CommunicationException("Unexpected message END CODE in response");
         }
 
         byte checksum = computeCheckSum(responseMessage);
         if (responseMessage[6] != checksum) {
             logger.debug("Invalid check sum in response: {} rather than {}",
                     Integer.toHexString(responseMessage[6] & 0x000000FF), Integer.toHexString(checksum & 0x000000FF));
-            throw new SonyProjectorException("Invalid check sum in response");
+            throw new CommunicationException("Invalid check sum in response");
         }
 
         if (responseMessage[3] == TYPE_ITEM) {
@@ -262,7 +249,7 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
             if (!Arrays.equals(itemResponseMsg, item.getCode())) {
                 logger.debug("Unexpected item number in response: {} rather than {}",
                         HexUtils.bytesToHex(itemResponseMsg), HexUtils.bytesToHex(item.getCode()));
-                throw new SonyProjectorException("Unexpected item number in response");
+                throw new CommunicationException("Unexpected item number in response");
             }
         } else if (responseMessage[3] == TYPE_ACK) {
             // ACK
@@ -272,14 +259,14 @@ public class SonyProjectorSerialConnector extends SonyProjectorConnector impleme
                 try {
                     SonyProjectorSerialError error = SonyProjectorSerialError.getFromDataCode(errorCode);
                     msg = error.getMessage();
-                } catch (SonyProjectorException e) {
+                } catch (CommunicationException e) {
                 }
                 logger.debug("{} received in response", msg);
-                throw new SonyProjectorException(msg + " received in response");
+                throw new CommunicationException(msg + " received in response");
             }
         } else {
             logger.debug("Unexpected TYPE in response: {}", Integer.toHexString(responseMessage[3] & 0x000000FF));
-            throw new SonyProjectorException("Unexpected TYPE in response");
+            throw new CommunicationException("Unexpected TYPE in response");
         }
     }
 

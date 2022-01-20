@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public abstract class UniFiClient {
     @Override
     public String toString() {
         return String.format(
-                "UniFiClient{mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, blocked: %b, device: %s}",
-                mac, ip, hostname, alias, isWired(), blocked, getDevice());
+                "UniFiClient{id: '%s', mac: '%s', ip: '%s', hostname: '%s', alias: '%s', wired: %b, blocked: %b, device: %s}",
+                id, mac, ip, hostname, alias, isWired(), blocked, getDevice());
     }
 }

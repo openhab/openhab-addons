@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:altona:hdmimatrix">
+	<config-description uri="thing-type:atlona:hdmimatrix">
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>IP or Host Name</label>

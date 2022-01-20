@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.ANO
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -33,9 +34,11 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -73,23 +76,34 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         troubleshootFingerprint = Optional.empty();
         updateStatus(ThingStatus.UNKNOWN);
         ConnectedDriveConfiguration config = getConfigAs(ConnectedDriveConfiguration.class);
+        logger.debug("Prefer MyBMW API {}", config.preferMyBmw);
         if (!checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
             proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, config));
             // give the system some time to create all predefined Vehicles
             // check with API call if bridge is online
-            initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS));
+            initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 2, TimeUnit.SECONDS));
+            Bridge b = super.getThing();
+            List<Thing> children = b.getThings();
+            logger.debug("Update {} things", children.size());
+            children.forEach(entry -> {
+                ThingHandler th = entry.getHandler();
+                if (th != null) {
+                    th.dispose();
+                    th.initialize();
+                } else {
+                    logger.debug("Handler is null");
+                }
+            });
         }
     }
 
     public static boolean checkConfiguration(ConnectedDriveConfiguration config) {
         if (Constants.EMPTY.equals(config.userName) || Constants.EMPTY.equals(config.password)) {
             return false;
-        } else if (BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region)) {
-            return true;
         } else {
-            return false;
+            return BimmerConstants.AUTH_SERVER_MAP.containsKey(config.region);
         }
     }
 
@@ -102,6 +116,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         proxy.ifPresent(prox -> prox.requestVehicles(this));
     }
 
+    // https://www.bmw-connecteddrive.de/api/me/vehicles/v2?all=true&brand=BM
     public String getDiscoveryFingerprint() {
         return troubleshootFingerprint.map(fingerprint -> {
             VehiclesContainer container = null;
@@ -127,6 +142,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                             });
                             return Converter.getGson().toJson(container);
                         }
+                    } else {
+                        logger.debug("container.vehicles is null");
                     }
                 }
             } catch (JsonParseException jpe) {
@@ -172,7 +189,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                                 }
                             });
                         }
-                        return Converter.getGson().toJson(container);
+                    } else {
+                        troubleshootFingerprint = Optional.of(Constants.EMPTY_JSON);
                     }
                 } catch (JsonParseException jpe) {
                     logger.debug("Fingerprint parse exception {}", jpe.getMessage());

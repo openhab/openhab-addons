@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.myq.internal.dto;
 
-import java.util.List;
-
 /**
  * The {@link DeviceStateDTO} entity from the MyQ API
  *
@@ -23,34 +21,16 @@ public class DeviceStateDTO {
 
     public Boolean gdoLockConnected;
     public Boolean attachedWorkLightErrorPresent;
-    public String doorState;
+    public String learnStatus;
+    public Boolean hasCamera;
     public String lampState;
-    public String open;
-    public String close;
+    public String batteryBackupState;
+    public String doorState;
     public String lastUpdate;
-    public String passthroughInterval;
-    public String doorAjarInterval;
-    public String invalidCredentialWindow;
-    public String invalidShutoutPeriod;
     public Boolean isUnattendedOpenAllowed;
     public Boolean isUnattendedCloseAllowed;
-    public String auxRelayDelay;
-    public Boolean useAuxRelay;
-    public String auxRelayBehavior;
-    public Boolean rexFiresDoor;
-    public Boolean commandChannelReportStatus;
-    public Boolean controlFromBrowser;
-    public Boolean reportForced;
-    public Boolean reportAjar;
-    public Integer maxInvalidAttempts;
+    public Integer serviceCycleCount;
+    public Integer absoluteCycleCount;
     public Boolean online;
     public String lastStatus;
-    public String firmwareVersion;
-    public Boolean homekitCapable;
-    public Boolean homekitEnabled;
-    public String learn;
-    public Boolean learnMode;
-    public String updatedDate;
-    public List<String> physicalDevices = null;
-    public Boolean pendingBootloadAbandoned;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,7 +107,7 @@ class BoschHttpClientTest {
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET);
         // Null pointer exception is expected, because localhost will not answer request
         assertThrows(NullPointerException.class, () -> {
-            httpClient.sendRequest(request, SubscribeResult.class);
+            httpClient.sendRequest(request, SubscribeResult.class, SubscribeResult::isValid, null);
         });
     }
 }

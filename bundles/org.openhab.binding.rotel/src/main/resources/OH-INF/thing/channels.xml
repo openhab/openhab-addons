@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-group-type id="mainZoneType1">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -22,8 +22,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType2">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -37,8 +37,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType3">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -53,8 +53,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType4">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -70,8 +70,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="mainZoneType5">
-		<label>Main Zone</label>
-		<description>The controls of the main zone</description>
+		<label>@text/channel-group.mainZone.label</label>
+		<description>@text/channel-group.mainZone.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -86,8 +86,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="zone2type1">
-		<label>Zone 2</label>
-		<description>The controls of the zone 2</description>
+		<label>@text/channel-group.zone2.label</label>
+		<description>@text/channel-group.zone2.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -97,8 +97,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="zone2type2">
-		<label>Zone 2</label>
-		<description>The controls of the zone 2</description>
+		<label>@text/channel-group.zone2.label</label>
+		<description>@text/channel-group.zone2.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -107,8 +107,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="zone3">
-		<label>Zone 3</label>
-		<description>The controls of the zone 3</description>
+		<label>@text/channel-group.zone3.label</label>
+		<description>@text/channel-group.zone3.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -118,8 +118,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="zone4">
-		<label>Zone 4</label>
-		<description>The controls of the zone 4</description>
+		<label>@text/channel-group.zone4.label</label>
+		<description>@text/channel-group.zone4.description</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>

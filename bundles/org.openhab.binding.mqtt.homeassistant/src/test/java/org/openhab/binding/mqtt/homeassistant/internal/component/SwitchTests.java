@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,17 +50,17 @@ public class SwitchTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        assertChannel(component, Switch.switchChannelID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock", "state",
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "zigbee2mqtt/th1/set/auto_lock", "state",
                 OnOffValue.class);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
-        assertState(component, Switch.switchChannelID, OnOffType.OFF);
+        assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.OFF);
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"AUTO\"}");
-        assertState(component, Switch.switchChannelID, OnOffType.ON);
+        assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.ON);
 
-        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.OFF);
+        component.getChannel(Switch.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "MANUAL");
-        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.ON);
+        component.getChannel(Switch.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "AUTO");
     }
 
@@ -82,12 +82,12 @@ public class SwitchTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        assertChannel(component, Switch.switchChannelID, "zigbee2mqtt/th1", "", "state", OnOffValue.class);
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "zigbee2mqtt/th1", "", "state", OnOffValue.class);
 
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"MANUAL\"}");
-        assertState(component, Switch.switchChannelID, OnOffType.OFF);
+        assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.OFF);
         publishMessage("zigbee2mqtt/th1", "{\"auto_lock\": \"AUTO\"}");
-        assertState(component, Switch.switchChannelID, OnOffType.ON);
+        assertState(component, Switch.SWITCH_CHANNEL_ID, OnOffType.ON);
     }
 
     @Test
@@ -108,12 +108,12 @@ public class SwitchTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("th1 auto lock"));
 
-        assertChannel(component, Switch.switchChannelID, "", "zigbee2mqtt/th1/set/auto_lock", "state",
+        assertChannel(component, Switch.SWITCH_CHANNEL_ID, "", "zigbee2mqtt/th1/set/auto_lock", "state",
                 OnOffValue.class);
 
-        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.OFF);
+        component.getChannel(Switch.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "MANUAL");
-        component.getChannel(Switch.switchChannelID).getState().publishValue(OnOffType.ON);
+        component.getChannel(Switch.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/th1/set/auto_lock", "AUTO");
     }
 

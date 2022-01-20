@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.unifi.internal.api.model;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,11 +42,14 @@ import com.google.gson.GsonBuilder;
  *
  * @author Matthew Bowman - Initial contribution
  * @author Patrik Wimnell - Blocking / Unblocking client support
+ * @author Jacob Laursen - Fix online/blocked channels (broken by UniFi Controller 5.12.35)
  */
 @NonNullByDefault
 public class UniFiController {
 
     private final Logger logger = LoggerFactory.getLogger(UniFiController.class);
+
+    private Map<String, String> cidToIdCache = new ConcurrentHashMap<String, String>();
 
     private UniFiSiteCache sitesCache = new UniFiSiteCache();
 
@@ -172,18 +177,22 @@ public class UniFiController {
 
     // Client API
 
-    public @Nullable UniFiClient getClient(@Nullable String id) {
+    public @Nullable UniFiClient getClient(@Nullable String cid) {
         UniFiClient client = null;
-        if (id != null && !id.isBlank()) {
+        if (cid != null && !cid.isBlank()) {
+            // Prefer lookups through _id, until initialized use cid.
+            String id = cidToIdCache.get(cid);
             synchronized (this) {
                 // mgb: first check active clients and fallback to insights if not found
-                client = clientsCache.get(id);
+                client = clientsCache.get(id != null ? id : cid);
                 if (client == null) {
-                    client = insightsCache.get(id);
+                    client = insightsCache.get(id != null ? id : cid);
                 }
             }
             if (client == null) {
-                logger.debug("Could not find a matching client for id = {}", id);
+                logger.debug("Could not find a matching client for cid = {}", cid);
+            } else {
+                cidToIdCache.put(cid, client.id);
             }
         }
         return client;

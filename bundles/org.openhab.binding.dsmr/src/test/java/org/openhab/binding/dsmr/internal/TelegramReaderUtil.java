@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.dsmr.internal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,7 +50,7 @@ public final class TelegramReaderUtil {
                 fail("Could not find telegram file with name:" + telegramName + TELEGRAM_EXT);
             }
             return is.readAllBytes();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new AssertionError("IOException reading telegram data: ", e);
         }
     }
@@ -61,9 +63,9 @@ public final class TelegramReaderUtil {
      * @return a P1Telegram object
      */
     public static P1Telegram readTelegram(String telegramName, TelegramState expectedTelegramState) {
-        AtomicReference<P1Telegram> p1Telegram = new AtomicReference<>();
-        byte[] telegram = readRawTelegram(telegramName);
-        P1TelegramParser parser = new P1TelegramParser(p1Telegram::set);
+        final AtomicReference<P1Telegram> p1Telegram = new AtomicReference<>();
+        final byte[] telegram = readRawTelegram(telegramName);
+        final P1TelegramParser parser = new P1TelegramParser(p1Telegram::set, true);
 
         parser.setLenientMode(true);
         parser.parse(telegram, telegram.length);

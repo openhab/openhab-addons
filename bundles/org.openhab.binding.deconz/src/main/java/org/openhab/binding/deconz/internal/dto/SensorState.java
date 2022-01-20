@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,10 @@ public class SensorState {
     public @Nullable Boolean vibration;
     /** carbonmonoxide sensors provide a boolean value. */
     public @Nullable Boolean carbonmonoxide;
+    /** airquality sensors provide a string value. */
+    public @Nullable String airquality;
+    /** airquality sensors provide a integer value. */
+    public @Nullable Integer airqualityppb;
     /** Pressure sensors provide a hPa value. */
     public @Nullable Integer pressure;
     /** Presence sensors provide this boolean. */
@@ -88,10 +92,11 @@ public class SensorState {
         return "SensorState{" + "dark=" + dark + ", daylight=" + daylight + ", lightlevel=" + lightlevel + ", lux="
                 + lux + ", temperature=" + temperature + ", humidity=" + humidity + ", open=" + open + ", fire=" + fire
                 + ", water=" + water + ", alarm=" + alarm + ", tampered=" + tampered + ", vibration=" + vibration
-                + ", carbonmonoxide=" + carbonmonoxide + ", pressure=" + pressure + ", presence=" + presence
-                + ", power=" + power + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage
-                + ", current=" + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture="
-                + gesture + ", valve=" + valve + ", windowopen='" + windowopen + '\'' + ", lastupdated='" + lastupdated
-                + '\'' + ", xy=" + Arrays.toString(xy) + '}';
+                + ", carbonmonoxide=" + carbonmonoxide + ", airquality=" + airquality + ", airqualityppb="
+                + airqualityppb + ", pressure=" + pressure + ", presence=" + presence + ", power=" + power
+                + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage + ", current="
+                + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture=" + gesture + ", valve="
+                + valve + ", windowopen='" + windowopen + '\'' + ", lastupdated='" + lastupdated + '\'' + ", xy="
+                + Arrays.toString(xy) + '}';
     }
 }

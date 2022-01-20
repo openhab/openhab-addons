@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -235,7 +235,7 @@ public abstract class CaddxBaseThingHandler extends BaseThingHandler {
         List<Channel> channels = getThing().getChannels();
 
         for (Channel ch : channels) {
-            if (channelUID == ch.getUID()) {
+            if (channelUID.equals(ch.getUID())) {
                 channel = ch;
                 break;
             }

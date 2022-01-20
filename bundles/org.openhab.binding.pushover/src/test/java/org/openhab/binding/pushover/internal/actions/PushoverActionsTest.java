@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
 public class PushoverActionsTest {
@@ -47,7 +48,6 @@ public class PushoverActionsTest {
     private static final String URL_TITLE = "Some Link";
     private static final String RECEIPT = "12345";
 
-    @NonNullByDefault
     private final ThingActions thingActionsStub = new ThingActions() {
         @Override
         public void setThingHandler(ThingHandler handler) {
@@ -59,9 +59,8 @@ public class PushoverActionsTest {
         }
     };
 
-    private @Mock PushoverAccountHandler mockPushoverAccountHandler;
-
-    private PushoverActions pushoverThingActions;
+    private @NonNullByDefault({}) @Mock PushoverAccountHandler mockPushoverAccountHandler;
+    private @NonNullByDefault({}) PushoverActions pushoverThingActions;
 
     @BeforeEach
     public void setUp() {

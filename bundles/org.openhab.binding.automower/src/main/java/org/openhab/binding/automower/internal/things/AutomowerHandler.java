@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.automower.internal.AutomowerBindingConstants.*
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -34,12 +35,14 @@ import org.openhab.binding.automower.internal.actions.AutomowerActions;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridge;
 import org.openhab.binding.automower.internal.bridge.AutomowerBridgeHandler;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
+import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Position;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.RestrictedReason;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.State;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -313,6 +316,16 @@ public class AutomowerHandler extends BaseThingHandler {
 
             updateState(CHANNEL_CALENDAR_TASKS,
                     new StringType(gson.toJson(mower.getAttributes().getCalendar().getTasks())));
+
+            updateState(LAST_POSITION,
+                    new PointType(new DecimalType(mower.getAttributes().getLastPosition().getLatitude()),
+                            new DecimalType(mower.getAttributes().getLastPosition().getLongitude())));
+            ArrayList<Position> positions = mower.getAttributes().getPositions();
+            for (int i = 0; i < positions.size(); i++) {
+                updateState(CHANNEL_POSITIONS.get(i), new PointType(new DecimalType(positions.get(i).getLatitude()),
+                        new DecimalType(positions.get(i).getLongitude())));
+
+            }
         }
     }
 

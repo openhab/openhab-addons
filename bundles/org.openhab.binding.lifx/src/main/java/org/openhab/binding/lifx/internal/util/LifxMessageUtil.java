@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,6 +100,16 @@ public final class LifxMessageUtil {
         value = value.min(HUNDRED);
         value = value.max(ZERO);
         return new PercentType(value);
+    }
+
+    public static int commandToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
+        return temperature instanceof PercentType ? percentTypeToKelvin((PercentType) temperature, temperatureRange)
+                : decimalTypeToKelvin(temperature, temperatureRange);
+    }
+
+    public static int decimalTypeToKelvin(DecimalType temperature, TemperatureRange temperatureRange) {
+        return Math.round(Math.min(Math.max(temperature.intValue(), temperatureRange.getMinimum()),
+                temperatureRange.getMaximum()));
     }
 
     public static int percentTypeToKelvin(PercentType temperature, TemperatureRange temperatureRange) {

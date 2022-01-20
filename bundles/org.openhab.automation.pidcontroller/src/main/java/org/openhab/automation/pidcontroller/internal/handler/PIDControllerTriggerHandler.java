@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -72,10 +72,12 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
     private @Nullable String iInspector;
     private @Nullable String dInspector;
     private @Nullable String eInspector;
+    private ItemRegistry itemRegistry;
 
     public PIDControllerTriggerHandler(Trigger module, ItemRegistry itemRegistry, EventPublisher eventPublisher,
             BundleContext bundleContext) {
         super(module);
+        this.itemRegistry = itemRegistry;
         this.eventPublisher = eventPublisher;
 
         Configuration config = module.getConfiguration();
@@ -154,14 +156,14 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
         try {
             input = getItemValueAsNumber(inputItem);
         } catch (PIDException e) {
-            logger.warn("Input item: {}", e.getMessage());
+            logger.warn("Input item: {}: {}", inputItem.getName(), e.getMessage());
             return;
         }
 
         try {
             setpoint = getItemValueAsNumber(setpointItem);
         } catch (PIDException e) {
-            logger.warn("Setpoint item: {}", e.getMessage());
+            logger.warn("Setpoint item: {}: {}", setpointItem.getName(), e.getMessage());
             return;
         }
 
@@ -180,7 +182,12 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
 
     private void updateItem(@Nullable String itemName, double value) {
         if (itemName != null) {
-            eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, new DecimalType(value)));
+            try {
+                itemRegistry.getItem(itemName);
+                eventPublisher.post(ItemEventFactory.createCommandEvent(itemName, new DecimalType(value)));
+            } catch (ItemNotFoundException e) {
+                logger.warn("Item doesn't exist: {}", itemName);
+            }
         }
     }
 
@@ -209,8 +216,7 @@ public class PIDControllerTriggerHandler extends BaseTriggerModuleHandler implem
                 // nothing
             }
         }
-        throw new PIDException(
-                "Item type is not a number: " + setpointState.getClass().getSimpleName() + ": " + setpointState);
+        throw new PIDException("Not a number: " + setpointState.getClass().getSimpleName() + ": " + setpointState);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,8 +146,10 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
             refreshJob = null;
         }
         updateStatus(ThingStatus.OFFLINE);
-        bridgeHandler.unregisterDeviceStatusListener(this);
-        bridgeHandler = null;
+        if (bridgeHandler != null) {
+            bridgeHandler.unregisterDeviceStatusListener(this);
+            bridgeHandler = null;
+        }
         logger.trace("Thing {} {} disposed.", getThing().getUID(), name);
         super.dispose();
 
@@ -231,24 +233,28 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                     // refresh to get the current volume level
                     bridge.getClient().update();
                     device = bridge.getDevice(name);
-                    savedVolume = device.getVolume();
+                    int oldVolume = device.getVolume();
+                    int newVolume = oldVolume;
                     if (command.equals(IncreaseDecreaseType.INCREASE)) {
-                        savedVolume = Math.min(100, savedVolume + 5);
+                        newVolume = Math.min(100, oldVolume + 5);
                     }
                     if (command.equals(IncreaseDecreaseType.DECREASE)) {
-                        savedVolume = Math.max(0, savedVolume - 5);
+                        newVolume = Math.max(0, oldVolume - 5);
                     }
-                    bridge.getClient().setVolumePercent(device, savedVolume);
-                    updateState = new PercentType(savedVolume);
+                    bridge.getClient().setVolumePercent(device, newVolume);
+                    updateState = new PercentType(newVolume);
+                    savedVolume = newVolume;
                 } else if (command instanceof PercentType) {
                     DecimalType volume = (DecimalType) command;
                     bridge.getClient().setVolumePercent(device, volume.intValue());
                     updateState = (PercentType) command;
+                    savedVolume = volume.intValue();
                 } else if (command instanceof DecimalType) {
                     // set volume
                     DecimalType volume = (DecimalType) command;
                     bridge.getClient().setVolume(device, volume.intValue());
                     updateState = (DecimalType) command;
+                    savedVolume = volume.intValue();
                 }
             } else if (channelUID.getId().equals(MUTE_CHANNEL)) {
                 if (command instanceof OnOffType) {
@@ -318,6 +324,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
         AbstractAudioDeviceConfig device = bridge.getDevice(name);
         bridge.getClient().setVolumePercent(device, volume);
         updateState(VOLUME_CHANNEL, new PercentType(volume));
+        savedVolume = volume;
     }
 
     @Override

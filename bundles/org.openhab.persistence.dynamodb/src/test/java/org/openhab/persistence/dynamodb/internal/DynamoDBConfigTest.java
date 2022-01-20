@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,12 +22,14 @@ import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import software.amazon.awssdk.core.retry.RetryMode;
+import software.amazon.awssdk.core.retry.RetryPolicy;
 import software.amazon.awssdk.regions.Region;
 
 /**
@@ -77,7 +79,7 @@ public class DynamoDBConfigTest {
         assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
         assertEquals(1, fromConfig.getReadCapacityUnits());
         assertEquals(1, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
     }
 
@@ -97,7 +99,7 @@ public class DynamoDBConfigTest {
         assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
         assertEquals(1, fromConfig.getReadCapacityUnits());
         assertEquals(1, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
     }
 
@@ -117,7 +119,7 @@ public class DynamoDBConfigTest {
         assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
         assertEquals(1, fromConfig.getReadCapacityUnits());
         assertEquals(1, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.LEGACY, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.of(RetryMode.LEGACY), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
     }
 
@@ -161,7 +163,7 @@ public class DynamoDBConfigTest {
         assertEquals("foobie-", fromConfig.getTablePrefixLegacy());
         assertEquals(1, fromConfig.getReadCapacityUnits());
         assertEquals(1, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.LEGACY, fromConfig.getTableRevision());
         assertNull(fromConfig.getExpireDays()); // not supported with legacy
     }
@@ -177,7 +179,7 @@ public class DynamoDBConfigTest {
         assertEquals("mytable", fromConfig.getTable());
         assertEquals(1, fromConfig.getReadCapacityUnits());
         assertEquals(1, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.NEW, fromConfig.getTableRevision());
         assertEquals(105, fromConfig.getExpireDays());
     }
@@ -193,7 +195,7 @@ public class DynamoDBConfigTest {
         assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
         assertEquals(5, fromConfig.getReadCapacityUnits());
         assertEquals(1, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
         assertEquals(105, fromConfig.getExpireDays());
     }
@@ -209,7 +211,7 @@ public class DynamoDBConfigTest {
         assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
         assertEquals(1, fromConfig.getReadCapacityUnits());
         assertEquals(5, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
         assertNull(fromConfig.getExpireDays()); // default is null
     }
@@ -225,7 +227,7 @@ public class DynamoDBConfigTest {
         assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
         assertEquals(3, fromConfig.getReadCapacityUnits());
         assertEquals(5, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
     }
 
@@ -241,7 +243,7 @@ public class DynamoDBConfigTest {
         assertEquals("openhab-", fromConfig.getTablePrefixLegacy());
         assertEquals(3, fromConfig.getReadCapacityUnits());
         assertEquals(5, fromConfig.getWriteCapacityUnits());
-        assertEquals(RetryMode.STANDARD, fromConfig.getRetryPolicy().retryMode());
+        assertEquals(Optional.empty(), fromConfig.getRetryPolicy().map(RetryPolicy::retryMode));
         assertEquals(ExpectedTableSchema.MAYBE_LEGACY, fromConfig.getTableRevision());
     }
 }

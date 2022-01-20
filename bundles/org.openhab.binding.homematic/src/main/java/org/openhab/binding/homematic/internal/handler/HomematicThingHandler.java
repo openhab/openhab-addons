@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,10 +147,52 @@ public class HomematicThingHandler extends BaseThingHandler {
         }
         updateConfiguration(config);
 
+        boolean channelsChanged = false;
+
         // update thing channel list for reconfigurable channels (relies on the new value of the
         // CHANNEL_FUNCTION datapoint fetched during configuration update)
         List<Channel> thingChannels = new ArrayList<>(getThing().getChannels());
+
+        if (thingChannels.isEmpty()) {
+            for (HmChannel channel : device.getChannels()) {
+                for (HmDatapoint dp : channel.getDatapoints()) {
+                    if (HomematicTypeGeneratorImpl.isIgnoredDatapoint(dp)
+                            || dp.getParamsetType() != HmParamsetType.VALUES) {
+                        continue;
+                    }
+                    ChannelUID channelUID = UidUtils.generateChannelUID(dp, getThing().getUID());
+                    if (containsChannel(thingChannels, channelUID)) {
+                        // Channel is already present
+                        continue;
+                    }
+
+                    ChannelTypeUID channelTypeUID = UidUtils.generateChannelTypeUID(dp);
+                    ChannelType channelType = channelTypeProvider.getInternalChannelType(channelTypeUID);
+                    if (channelType == null) {
+                        channelType = HomematicTypeGeneratorImpl.createChannelType(dp, channelTypeUID);
+                        channelTypeProvider.addChannelType(channelType);
+                    }
+
+                    Channel thingChannel = ChannelBuilder.create(channelUID, MetadataUtils.getItemType(dp))
+                            .withLabel(MetadataUtils.getLabel(dp))
+                            .withDescription(MetadataUtils.getDatapointDescription(dp)).withType(channelType.getUID())
+                            .build();
+                    thingChannels.add(thingChannel);
+
+                    logger.debug(
+                            "Updated value datapoints for channel {} of device '{}' (function {}), now has {} datapoints",
+                            channel, channel.getDevice().getAddress(), channel.getCurrentFunction(),
+                            channel.getDatapoints().size());
+                }
+            }
+            channelsChanged = true;
+        }
+
         if (updateDynamicChannelList(device, thingChannels)) {
+            channelsChanged = true;
+        }
+
+        if (channelsChanged) {
             updateThing(editThing().withChannels(thingChannels).build());
         }
 
@@ -384,8 +426,9 @@ public class HomematicThingHandler extends BaseThingHandler {
     private void updateChannelState(final HmDatapoint dp, Channel channel)
             throws IOException, GatewayNotAvailableException, ConverterException {
         if (dp.isTrigger()) {
-            if (dp.getValue() != null) {
-                triggerChannel(channel.getUID(), dp.getValue() == null ? "" : dp.getValue().toString());
+            final Object value = dp.getValue();
+            if (value != null && !value.equals(dp.getPreviousValue())) {
+                triggerChannel(channel.getUID(), value.toString());
             }
         } else if (isLinked(channel)) {
             loadHomematicChannelValues(dp.getChannel());

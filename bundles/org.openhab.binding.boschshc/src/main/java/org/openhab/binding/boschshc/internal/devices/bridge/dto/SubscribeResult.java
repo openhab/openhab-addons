@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,5 +29,9 @@ public class SubscribeResult {
 
     public String getJsonrpc() {
         return this.jsonrpc;
+    }
+
+    public static Boolean isValid(SubscribeResult obj) {
+        return obj != null && obj.result != null && obj.jsonrpc != null;
     }
 }

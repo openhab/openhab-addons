@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,26 +19,35 @@ package org.openhab.binding.venstarthermostat.internal.dto;
  * @author Matthew Davies - added VenstarAwayMode to include away mode in binding
  */
 public class VenstarInfoData {
-    double cooltemp;
-    double heattemp;
+    private double cooltemp;
+    private double heattemp;
 
-    VenstarSystemState state;
-    VenstarSystemMode mode;
-    VenstarAwayMode away;
-    int tempunits;
+    private VenstarSystemState state;
+    private VenstarSystemMode mode;
+    private VenstarAwayMode away;
+    private VenstarFanMode fan;
+    private VenstarFanState fanstate;
+    private VenstarScheduleMode schedule;
+    private VenstarSchedulePart schedulepart;
+    private int tempunits;
 
     public VenstarInfoData() {
         super();
     }
 
     public VenstarInfoData(double cooltemp, double heattemp, VenstarSystemState state, VenstarSystemMode mode,
-            VenstarAwayMode away) {
+            VenstarAwayMode away, VenstarFanMode fan, VenstarFanState fanstate, VenstarScheduleMode schedule,
+            VenstarSchedulePart schedulepart) {
         super();
         this.cooltemp = cooltemp;
         this.heattemp = heattemp;
         this.state = state;
         this.mode = mode;
         this.away = away;
+        this.fan = fan;
+        this.fanstate = fanstate;
+        this.schedule = schedule;
+        this.schedulepart = schedulepart;
     }
 
     public double getCooltemp() {
@@ -57,19 +66,19 @@ public class VenstarInfoData {
         this.heattemp = heattemp;
     }
 
-    public VenstarSystemState getState() {
+    public VenstarSystemState getSystemState() {
         return state;
     }
 
-    public void setState(VenstarSystemState state) {
+    public void setSystemState(VenstarSystemState state) {
         this.state = state;
     }
 
-    public VenstarSystemMode getMode() {
+    public VenstarSystemMode getSystemMode() {
         return mode;
     }
 
-    public void setMode(VenstarSystemMode mode) {
+    public void setSystemMode(VenstarSystemMode mode) {
         this.mode = mode;
     }
 
@@ -81,11 +90,43 @@ public class VenstarInfoData {
         this.tempunits = tempunits;
     }
 
-    public VenstarAwayMode getAway() {
+    public VenstarAwayMode getAwayMode() {
         return away;
     }
 
     public void setAwayMode(VenstarAwayMode away) {
         this.away = away;
+    }
+
+    public VenstarFanMode getFanMode() {
+        return fan;
+    }
+
+    public void setFanMode(VenstarFanMode fan) {
+        this.fan = fan;
+    }
+
+    public VenstarFanState getFanState() {
+        return fanstate;
+    }
+
+    public void setFanState(VenstarFanState fanstate) {
+        this.fanstate = fanstate;
+    }
+
+    public VenstarScheduleMode getScheduleMode() {
+        return schedule;
+    }
+
+    public void setScheduleMode(VenstarScheduleMode schedule) {
+        this.schedule = schedule;
+    }
+
+    public VenstarSchedulePart getSchedulePart() {
+        return schedulepart;
+    }
+
+    public void setSchedulePart(VenstarSchedulePart schedulepart) {
+        this.schedulepart = schedulepart;
     }
 }

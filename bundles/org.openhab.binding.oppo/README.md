@@ -279,7 +279,8 @@ M3D 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu
 SEH Display the Picture Adjustment menu  
 DRB Display the Darbee Adjustment menu  
 
-#### Extra buttons on UDP models:  
+#### Extra buttons on UDP models:
+
 HDR Display the HDR selection menu  
 INH Show on-screen detailed information  
 RLH Set resolution to Auto  

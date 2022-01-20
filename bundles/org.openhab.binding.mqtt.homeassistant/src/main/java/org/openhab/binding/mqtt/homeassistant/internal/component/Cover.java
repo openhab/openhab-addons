@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT Cover component, following the https://www.home-assistant.io/components/cover.mqtt/ specification.
  *
@@ -26,7 +28,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
  */
 @NonNullByDefault
 public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
-    public static final String switchChannelID = "cover"; // Randomly chosen channel "ID"
+    public static final String SWITCH_CHANNEL_ID = "cover"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
@@ -36,23 +38,29 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
             super("MQTT Cover");
         }
 
-        protected @Nullable String state_topic;
-        protected @Nullable String command_topic;
-        protected String payload_open = "OPEN";
-        protected String payload_close = "CLOSE";
-        protected String payload_stop = "STOP";
+        @SerializedName("state_topic")
+        protected @Nullable String stateTopic;
+        @SerializedName("command_topic")
+        protected @Nullable String commandTopic;
+        @SerializedName("payload_open")
+        protected String payloadOpen = "OPEN";
+        @SerializedName("payload_close")
+        protected String payloadClose = "CLOSE";
+        @SerializedName("payload_stop")
+        protected String payloadStop = "STOP";
     }
 
     public Cover(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        RollershutterValue value = new RollershutterValue(channelConfiguration.payload_open,
-                channelConfiguration.payload_close, channelConfiguration.payload_stop);
+        RollershutterValue value = new RollershutterValue(channelConfiguration.payloadOpen,
+                channelConfiguration.payloadClose, channelConfiguration.payloadStop);
 
-        buildChannel(switchChannelID, value, channelConfiguration.getName(), componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
-                .build();
+        buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(),
+                componentConfiguration.getUpdateListener())
+                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                                channelConfiguration.getQos())
+                        .build();
     }
 }

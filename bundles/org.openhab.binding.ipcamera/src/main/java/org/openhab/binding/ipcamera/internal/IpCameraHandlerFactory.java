@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.http.HttpService;
 
 /**
  * The {@link IpCameraHandlerFactory} is responsible for creating things and thing
@@ -40,12 +41,15 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
     private final @Nullable String openhabIpAddress;
     private final GroupTracker groupTracker = new GroupTracker();
     private final IpCameraDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final HttpService httpService;
 
     @Activate
     public IpCameraHandlerFactory(final @Reference NetworkAddressService networkAddressService,
-            final @Reference IpCameraDynamicStateDescriptionProvider stateDescriptionProvider) {
+            final @Reference IpCameraDynamicStateDescriptionProvider stateDescriptionProvider,
+            final @Reference HttpService httpService) {
         openhabIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.httpService = httpService;
     }
 
     @Override
@@ -58,9 +62,9 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new IpCameraHandler(thing, openhabIpAddress, groupTracker, stateDescriptionProvider);
+            return new IpCameraHandler(thing, openhabIpAddress, groupTracker, stateDescriptionProvider, httpService);
         } else if (GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new IpCameraGroupHandler(thing, openhabIpAddress, groupTracker);
+            return new IpCameraGroupHandler(thing, openhabIpAddress, groupTracker, httpService);
         }
         return null;
     }

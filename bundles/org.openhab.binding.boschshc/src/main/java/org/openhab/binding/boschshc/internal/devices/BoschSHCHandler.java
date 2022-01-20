@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
@@ -117,16 +117,34 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-        this.config = getConfigAs(BoschSHCConfiguration.class);
+        var config = this.config = getConfigAs(BoschSHCConfiguration.class);
 
+        String deviceId = config.id;
+        if (deviceId == null || deviceId.isEmpty()) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error.empty-device-id");
+            return;
+        }
+
+        // Try to get device info to make sure the device exists
+        try {
+            var bridgeHandler = this.getBridgeHandler();
+            var info = bridgeHandler.getDeviceInfo(deviceId);
+            logger.trace("Device initialized:\n{}", info.toString());
+        } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
+
+        // Initialize device services
         try {
             this.initializeServices();
-
-            // Mark immediately as online - if the bridge is online, the thing is too.
-            this.updateStatus(ThingStatus.ONLINE);
         } catch (BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
         }
+
+        this.updateStatus(ThingStatus.ONLINE);
     }
 
     /**
@@ -142,18 +160,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             // Refresh state of services that affect the channel
             for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
                 if (deviceService.affectedChannels.contains(channelUID.getIdWithoutGroup())) {
-                    try {
-                        deviceService.service.refreshState();
-                    } catch (TimeoutException | ExecutionException | BoschSHCException e) {
-                        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                String.format("Error when trying to refresh state from service %s: %s",
-                                        deviceService.service.getServiceName(), e.getMessage()));
-                    } catch (InterruptedException e) {
-                        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                                String.format("Interrupted refresh state from service %s: %s",
-                                        deviceService.service.getServiceName(), e.getMessage()));
-                        Thread.currentThread().interrupt();
-                    }
+                    this.refreshServiceState(deviceService.service);
                 }
             }
         }
@@ -187,14 +194,16 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @return Bridge handler for this thing handler. Null if no or an invalid bridge was set in the configuration.
      * @throws BoschSHCException If bridge for handler is not set or an invalid bridge is set.
      */
-    protected BoschSHCBridgeHandler getBridgeHandler() throws BoschSHCException {
+    protected BridgeHandler getBridgeHandler() throws BoschSHCException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            throw new BoschSHCException(String.format("No valid bridge set for %s", this.getThing()));
+            throw new BoschSHCException(String.format("No valid bridge set for %s (%s)", this.getThing().getLabel(),
+                    this.getThing().getUID().getAsString()));
         }
-        BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
+        BridgeHandler bridgeHandler = (BridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            throw new BoschSHCException(String.format("Bridge of %s has no valid bridge handler", this.getThing()));
+            throw new BoschSHCException(String.format("Bridge of %s (%s) has no valid bridge handler",
+                    this.getThing().getLabel(), this.getThing().getUID().getAsString()));
         }
         return bridgeHandler;
     }
@@ -213,7 +222,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             return null;
         }
         try {
-            BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+            BridgeHandler bridgeHandler = this.getBridgeHandler();
             return bridgeHandler.getState(deviceId, stateName, classOfT);
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -264,7 +273,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
             TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
             throws BoschSHCException {
-        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+        BridgeHandler bridgeHandler = this.getBridgeHandler();
 
         String deviceId = this.getBoschID();
         if (deviceId == null) {
@@ -295,6 +304,54 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         } catch (InterruptedException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
                     .format("Interrupted update state for service %s: %s", service.getServiceName(), e.getMessage()));
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Lets a service handle a received command.
+     * Sets the status of the device to offline if handling the command fails.
+     *
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service which should handle command.
+     * @param command Command to handle.
+     */
+    protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void handleServiceCommand(
+            TService service, Command command) {
+        try {
+            if (command instanceof RefreshType) {
+                this.refreshServiceState(service);
+            } else {
+                TState state = service.handleCommand(command);
+                this.updateServiceState(service, state);
+            }
+        } catch (BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error when service %s should handle command %s: %s", service.getServiceName(),
+                            command.getClass().getName(), e.getMessage()));
+        }
+    }
+
+    /**
+     * Requests a service to refresh its state.
+     * Sets the device offline if request fails.
+     * 
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service to refresh state for.
+     */
+    private <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void refreshServiceState(
+            TService service) {
+        try {
+            service.refreshState();
+        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error when trying to refresh state from service %s: %s", service.getServiceName(),
+                            e.getMessage()));
+        } catch (InterruptedException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+                    .format("Interrupted refresh state from service %s: %s", service.getServiceName(), e.getMessage()));
             Thread.currentThread().interrupt();
         }
     }

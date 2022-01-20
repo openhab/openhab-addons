@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,14 +12,9 @@
  */
 package org.openhab.binding.astro.internal.handler;
 
-import static org.openhab.binding.astro.internal.AstroBindingConstants.THING_TYPE_SUN;
-
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,7 +29,6 @@ import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The SunHandler is responsible for updating calculated sun data.
@@ -44,8 +38,6 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class SunHandler extends AstroThingHandler {
-
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_SUN));
 
     private final String[] positionalChannelIds = new String[] { "position#azimuth", "position#elevation",
             "radiation#direct", "radiation#diffuse", "radiation#total" };

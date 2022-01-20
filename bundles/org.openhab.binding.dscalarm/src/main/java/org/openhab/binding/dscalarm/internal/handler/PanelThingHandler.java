@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -257,19 +257,11 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
      * @param timeStamp
      */
     private void setTimeStampState(String timeStamp) {
-        int state = 0;
-        ChannelUID channelUID = new ChannelUID(getThing().getUID(), PANEL_TIME_STAMP);
-
-        boolean isTimeStamp = timeStamp != "";
-
-        if ((timeStamp == "" && !isTimeStamp) || (timeStamp != "" && isTimeStamp)) {
-            logger.debug("setTimeStampState(): Already Set: {}", timeStamp);
-            return;
-        } else if (timeStamp != "") {
-            state = 1;
+        if (timeStamp != null) {
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), PANEL_TIME_STAMP);
+            int state = timeStamp.isEmpty() ? 0 : 1;
+            updateChannel(channelUID, state, "");
         }
-
-        updateChannel(channelUID, state, "");
     }
 
     /**
@@ -391,19 +383,15 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
         String channel;
         ChannelUID channelUID = null;
 
+        int bitCount = 8;
         int bitField = Integer.decode("0x" + dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA));
         int[] masks = { 1, 2, 4, 8, 16, 32, 64, 128 };
-        int[] bits = new int[8];
+        int[] bits = new int[bitCount];
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < bitCount; i++) {
+            channelUID = new ChannelUID(getThing().getUID(), channelTypes[i]);
             bits[i] = bitField & masks[i];
-
-            channel = channelTypes[i];
-
-            if (channel != "") {
-                channelUID = new ChannelUID(getThing().getUID(), channel);
-                updateChannel(channelUID, bits[i] != 0 ? 1 : 0, "");
-            }
+            updateChannel(channelUID, bits[i] != 0 ? 1 : 0, "");
         }
     }
 
@@ -436,6 +424,7 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
         if (thing != null) {
             DSCAlarmEvent dscAlarmEvent = (DSCAlarmEvent) event;

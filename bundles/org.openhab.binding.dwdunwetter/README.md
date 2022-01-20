@@ -63,12 +63,7 @@ For rules that need to fire if a new warning occurs, there is the trigger channe
 That trigger channel fires an event whenever a warning is sent for the first time.
 It also triggers if a warning is replaced by another.
 
-More explanations about the specific values of the channels can be found in the documentation of the DWD at: 
-
-[CAP DWD Profile 1.2](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_dwd_profile_de_pdf_1_10.html)
-
-[CAP DWD Profil zum Common Alerting Protocol v1.2 (PDF)](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_dwd_profile_de_pdf_1_10.pdf?__blob=publicationFile&v=4)
-
+More explanations about the specific values of the channels can be found in the PDF documentation of the DWD at: [CAP DWD Profile 1.2](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_dwd_profile_en_pdf_1_12.html)
 
 ## Full Example
 
@@ -80,7 +75,7 @@ dwdunwetter:dwdwarnings:cologne "Warnings Cologne" [ cellId="105315000", refresh
 
 e.g.
 
-to get two warnings like in the item example, set warningCount=2 in things file
+to get two warnings like in the item example, set `warningCount=2` in things file
 
 ```
 dwdunwetter:dwdwarnings:cologne "Warnings Cologne" [ cellId="105315000", refresh=15, warningCount=2

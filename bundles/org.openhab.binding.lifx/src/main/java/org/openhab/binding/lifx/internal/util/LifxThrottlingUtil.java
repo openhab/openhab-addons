@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public final class LifxThrottlingUtil {
 
     private static Map<MACAddress, LifxLightCommunicationTracker> macTrackerMapping = new ConcurrentHashMap<>();
 
-    public static void lock(@Nullable MACAddress mac) {
+    public static void lock(@Nullable MACAddress mac) throws InterruptedException {
         if (mac != null) {
             LifxLightCommunicationTracker tracker = getOrCreateTracker(mac);
             tracker.lock();
@@ -108,14 +108,10 @@ public final class LifxThrottlingUtil {
         return tracker;
     }
 
-    private static void waitForNextPacketInterval(long timestamp) {
+    private static void waitForNextPacketInterval(long timestamp) throws InterruptedException {
         long timeToWait = Math.max(PACKET_INTERVAL - (System.currentTimeMillis() - timestamp), 0);
         if (timeToWait > 0) {
-            try {
-                Thread.sleep(timeToWait);
-            } catch (InterruptedException e) {
-                LOGGER.error("An exception occurred while putting the thread to sleep : '{}'", e.getMessage());
-            }
+            Thread.sleep(timeToWait);
         }
     }
 
@@ -130,7 +126,7 @@ public final class LifxThrottlingUtil {
         }
     }
 
-    public static void lock() {
+    public static void lock() throws InterruptedException {
         long lastStamp = 0;
         for (LifxLightCommunicationTracker tracker : trackers) {
             tracker.lock();

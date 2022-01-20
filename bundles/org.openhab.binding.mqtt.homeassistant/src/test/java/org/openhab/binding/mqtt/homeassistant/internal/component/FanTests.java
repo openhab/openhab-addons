@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,21 +60,21 @@ public class FanTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("fan"));
 
-        assertChannel(component, Fan.switchChannelID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state", "fan",
+        assertChannel(component, Fan.SWITCH_CHANNEL_ID, "zigbee2mqtt/fan/state", "zigbee2mqtt/fan/set/state", "fan",
                 OnOffValue.class);
 
         publishMessage("zigbee2mqtt/fan/state", "ON_");
-        assertState(component, Fan.switchChannelID, OnOffType.ON);
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/fan/state", "ON_");
-        assertState(component, Fan.switchChannelID, OnOffType.ON);
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/fan/state", "OFF_");
-        assertState(component, Fan.switchChannelID, OnOffType.OFF);
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.OFF);
         publishMessage("zigbee2mqtt/fan/state", "ON_");
-        assertState(component, Fan.switchChannelID, OnOffType.ON);
+        assertState(component, Fan.SWITCH_CHANNEL_ID, OnOffType.ON);
 
-        component.getChannel(Fan.switchChannelID).getState().publishValue(OnOffType.OFF);
+        component.getChannel(Fan.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/fan/set/state", "OFF_");
-        component.getChannel(Fan.switchChannelID).getState().publishValue(OnOffType.ON);
+        component.getChannel(Fan.SWITCH_CHANNEL_ID).getState().publishValue(OnOffType.ON);
         assertPublished("zigbee2mqtt/fan/set/state", "ON_");
     }
 

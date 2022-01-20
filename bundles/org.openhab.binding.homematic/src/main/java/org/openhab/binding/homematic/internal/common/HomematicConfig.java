@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.homematic.internal.common;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmGatewayInfo;
 import org.openhab.binding.homematic.internal.model.HmInterface;
@@ -22,9 +25,6 @@ import org.openhab.binding.homematic.internal.model.HmInterface;
  * @author Gerhard Riegler - Initial contribution
  */
 public class HomematicConfig {
-    private static final String ISO_ENCODING = "ISO-8859-1";
-    private static final String UTF_ENCODING = "UTF-8";
-
     private static final String GATEWAY_TYPE_AUTO = "AUTO";
     private static final String GATEWAY_TYPE_CCU = "CCU";
     private static final String GATEWAY_TYPE_NOCCU = "NOCCU";
@@ -58,6 +58,8 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
+    private int callbackRegistrationRetries;
+    private int callbackRegTimeout;
 
     /**
      * Returns the Homematic gateway address.
@@ -113,6 +115,20 @@ public class HomematicConfig {
      */
     public void setBinCallbackPort(int binCallbackPort) {
         this.binCallbackPort = binCallbackPort;
+    }
+
+    /**
+     * Sets timeout for callback registration.
+     */
+    public void setCallbackRegTimeout(int timeout) {
+        this.callbackRegTimeout = timeout;
+    }
+
+    /**
+     * Returns timeout for callback registrations.
+     */
+    public int getCallbackRegTimeout() {
+        return callbackRegTimeout;
     }
 
     /**
@@ -347,11 +363,11 @@ public class HomematicConfig {
     /**
      * Returns the encoding that is suitable on requests to & responds from the Homematic gateway.
      */
-    public String getEncoding() {
+    public Charset getEncoding() {
         if (gatewayInfo != null && gatewayInfo.isHomegear()) {
-            return UTF_ENCODING;
+            return StandardCharsets.UTF_8;
         } else {
-            return ISO_ENCODING;
+            return StandardCharsets.ISO_8859_1;
         }
     }
 

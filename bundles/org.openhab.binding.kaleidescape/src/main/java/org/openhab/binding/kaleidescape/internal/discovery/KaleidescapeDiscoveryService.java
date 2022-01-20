@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,26 +14,30 @@ package org.openhab.binding.kaleidescape.internal.discovery;
 
 import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -50,7 +54,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Graham - Initial contribution
  * @author Michael Lobstein - Adapted for the Kaleidescape binding
- * 
+ *
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.kaleidescape")
@@ -59,6 +63,29 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_PLAYER, THING_TYPE_CINEMA_ONE, THING_TYPE_ALTO, THING_TYPE_STRATO)
                     .collect(Collectors.toSet()));
+
+    private static final int K_HEARTBEAT_PORT = 1443;
+
+    // Component Types
+    private static final String PLAYER = "Player";
+    private static final String CINEMA_ONE = "Cinema One";
+    private static final String ALTO = "Alto";
+    private static final String STRATO = "Strato";
+    private static final String STRATO_S = "Strato S";
+    private static final String DISC_VAULT = "Disc Vault";
+
+    private static final Set<String> ALLOWED_DEVICES = new HashSet<String>(
+            Arrays.asList(PLAYER, CINEMA_ONE, ALTO, STRATO, STRATO_S, DISC_VAULT));
+
+    @Nullable
+    private ExecutorService executorService = null;
+
+    /**
+     * Whether we are currently scanning or not
+     */
+    private boolean scanning;
+
+    private Set<String> foundIPs = new HashSet<String>();
 
     @Activate
     public KaleidescapeDiscoveryService() {
@@ -70,27 +97,194 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
         return SUPPORTED_THING_TYPES_UIDS;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Starts the scan. This discovery will:
+     * <ul>
+     * <li>Create a listening thread that opens up a broadcast {@link DatagramSocket} on port {@link #K_HEARTBEAT_PORT}
+     * and will receive any {@link DatagramPacket} that comes in</li>
+     * <li>The source IP address of the {@link DatagramPacket} is interrogated to verify it is a Kaleidescape component
+     * and will create a new thing from it</li>
+     * </ul>
+     * The process will continue until {@link #stopScan()} is called.
+     */
     @Override
     protected void startScan() {
         logger.debug("Starting discovery of Kaleidescape components.");
 
-        try {
-            List<String> ipList = getIpAddressScanList();
-
-            ExecutorService discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE,
-                    new NamedThreadFactory("OH-binding-discovery.kaleidescape", true));
-
-            for (String ip : ipList) {
-                discoverySearchPool.execute(new KaleidescapeDiscoveryJob(this, ip));
-            }
-
-            discoverySearchPool.shutdown();
-        } catch (Exception exp) {
-            logger.debug("Kaleidescape discovery service encountered an error while scanning for components: {}",
-                    exp.getMessage());
+        if (executorService != null) {
+            stopScan();
         }
 
-        logger.debug("Completed discovery of Kaleidescape components.");
+        final ExecutorService service = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE,
+                new NamedThreadFactory("OH-binding-discovery.kaleidescape", true));
+        executorService = service;
+
+        scanning = true;
+        foundIPs.clear();
+
+        service.execute(() -> {
+            try {
+                DatagramSocket dSocket = new DatagramSocket(K_HEARTBEAT_PORT);
+                dSocket.setSoTimeout(DISCOVERY_DEFAULT_TIMEOUT_RATE_MS);
+                dSocket.setBroadcast(true);
+
+                while (scanning) {
+                    DatagramPacket receivePacket = new DatagramPacket(new byte[1], 1);
+                    try {
+                        dSocket.receive(receivePacket);
+
+                        if (!foundIPs.contains(receivePacket.getAddress().getHostAddress())) {
+                            String foundIp = receivePacket.getAddress().getHostAddress();
+                            logger.debug("RECEIVED Kaleidescape packet from: {}", foundIp);
+                            foundIPs.add(foundIp);
+                            isKaleidescapeDevice(foundIp);
+                        }
+                    } catch (SocketTimeoutException e) {
+                        // ignore
+                        continue;
+                    }
+                }
+
+                dSocket.close();
+            } catch (IOException e) {
+                logger.debug("KaleidescapeDiscoveryService IOException: {}", e.getMessage(), e);
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Stops the discovery scan. We set {@link #scanning} to false (allowing the listening thread to end naturally
+     * within {@link #TIMEOUT) * 5 time then shutdown the {@link #executorService}
+     */
+    @Override
+    protected synchronized void stopScan() {
+        super.stopScan();
+        ExecutorService service = executorService;
+        if (service == null) {
+            return;
+        }
+
+        scanning = false;
+
+        try {
+            service.awaitTermination(DISCOVERY_DEFAULT_TIMEOUT_RATE_MS * 5, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+        }
+        service.shutdown();
+        executorService = null;
+    }
+
+    /**
+     * Tries to establish a connection to the specified ip address and then interrogate the component,
+     * creates a discovery result if a valid component is found.
+     *
+     * @param ipAddress IP address to connect to
+     */
+    private void isKaleidescapeDevice(String ipAddress) {
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(ipAddress, DEFAULT_API_PORT), DISCOVERY_DEFAULT_IP_TIMEOUT_RATE_MS);
+
+            OutputStream output = socket.getOutputStream();
+            PrintWriter writer = new PrintWriter(output, true);
+
+            // query the component to see if it has video zones, the device type, friendly name, and serial number
+            writer.println("01/1/GET_NUM_ZONES:");
+            writer.println("01/1/GET_DEVICE_TYPE_NAME:");
+            writer.println("01/1/GET_FRIENDLY_NAME:");
+            writer.println("01/1/GET_DEVICE_INFO:");
+
+            InputStream input = socket.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+
+            ThingTypeUID thingTypeUid = THING_TYPE_PLAYER;
+            String friendlyName = EMPTY;
+            String serialNumber = EMPTY;
+            String componentType = EMPTY;
+            String line;
+            String videoZone = null;
+            String audioZone = null;
+            int lineCount = 0;
+
+            while ((line = reader.readLine()) != null) {
+                String[] strArr = line.split(":");
+
+                if (strArr.length >= 4) {
+                    switch (strArr[1]) {
+                        case "NUM_ZONES":
+                            videoZone = strArr[2];
+                            audioZone = strArr[3];
+                            break;
+                        case "DEVICE_TYPE_NAME":
+                            componentType = strArr[2];
+                            break;
+                        case "FRIENDLY_NAME":
+                            friendlyName = strArr[2];
+                            break;
+                        case "DEVICE_INFO":
+                            serialNumber = strArr[3].trim(); // take off leading zeros
+                            break;
+                    }
+                } else {
+                    logger.debug("isKaleidescapeDevice() - Unable to process line: {}", line);
+                }
+
+                lineCount++;
+
+                // stop after reading four lines
+                if (lineCount > 3) {
+                    break;
+                }
+            }
+
+            // see if we have a video zone
+            if ("01".equals(videoZone)) {
+                // now check if we are one of the allowed types
+                if (ALLOWED_DEVICES.contains(componentType)) {
+                    if (STRATO_S.equals(componentType) || STRATO.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_STRATO;
+                    }
+
+                    // A 'Player' without an audio zone is really a Strato C
+                    // does not work yet, Strato C erroneously reports "01" for audio zones
+                    // so we are unable to differentiate a Strato C from a Premiere player
+                    if ("00".equals(audioZone) && PLAYER.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_STRATO;
+                    }
+
+                    // Alto
+                    if (ALTO.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_ALTO;
+                    }
+
+                    // Cinema One
+                    if (CINEMA_ONE.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_CINEMA_ONE;
+                    }
+
+                    // A Disc Vault with a video zone (the M700 vault), just call it a THING_TYPE_PLAYER
+                    if (DISC_VAULT.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_PLAYER;
+                    }
+
+                    // default THING_TYPE_PLAYER
+                    submitDiscoveryResults(thingTypeUid, ipAddress, friendlyName, serialNumber);
+                }
+            } else {
+                logger.debug("No Suitable Kaleidescape component found at IP address ({})", ipAddress);
+            }
+            reader.close();
+            input.close();
+            writer.close();
+            output.close();
+            socket.close();
+        } catch (IOException e) {
+            logger.debug("isKaleidescapeDevice() IOException: {}", e.getMessage());
+        }
     }
 
     /**
@@ -101,7 +295,8 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
      * @param friendlyName Name of Kaleidescape component as a string.
      * @param serialNumber Serial Number of Kaleidescape component as a string.
      */
-    public void submitDiscoveryResults(ThingTypeUID thingTypeUid, String ip, String friendlyName, String serialNumber) {
+    private void submitDiscoveryResults(ThingTypeUID thingTypeUid, String ip, String friendlyName,
+            String serialNumber) {
         ThingUID uid = new ThingUID(thingTypeUid, serialNumber);
 
         HashMap<String, Object> properties = new HashMap<>();
@@ -111,42 +306,5 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
         thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withRepresentationProperty("host")
                 .withLabel(friendlyName).build());
-    }
-
-    /**
-     * Provide a string list of all the IP addresses associated with the network interfaces on
-     * this machine.
-     *
-     * @return String list of IP addresses.
-     * @throws UnknownHostException
-     * @throws SocketException
-     */
-    private List<String> getIpAddressScanList() throws UnknownHostException, SocketException {
-        List<String> results = new ArrayList<>();
-
-        InetAddress localHost = InetAddress.getLocalHost();
-        NetworkInterface networkInterface = NetworkInterface.getByInetAddress(localHost);
-
-        for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
-            InetAddress ipAddress = address.getAddress();
-
-            String cidrSubnet = ipAddress.getHostAddress() + "/" + address.getNetworkPrefixLength();
-
-            /* Apache Subnet Utils only supports IP v4 for creating string list of IP's */
-            if (ipAddress instanceof Inet4Address) {
-                logger.debug("Found interface IPv4 address to scan: {}", cidrSubnet);
-
-                SubnetUtils utils = new SubnetUtils(cidrSubnet);
-
-                results.addAll(Arrays.asList(utils.getInfo().getAllAddresses())); // not sure how to do this without the
-                                                                                  // Apache libraries
-            } else if (ipAddress instanceof Inet6Address) {
-                logger.debug("Found interface IPv6 address to scan: {}, ignoring", cidrSubnet);
-            } else {
-                logger.debug("Found interface unknown IP type address to scan: {}", cidrSubnet);
-            }
-        }
-
-        return results;
     }
 }

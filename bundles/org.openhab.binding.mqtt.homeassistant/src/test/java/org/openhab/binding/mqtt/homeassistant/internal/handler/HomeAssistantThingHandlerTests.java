@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,8 +48,8 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 @SuppressWarnings({ "ConstantConditions" })
 @ExtendWith(MockitoExtension.class)
 public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
-    private final static int SUBSCRIBE_TIMEOUT = 10000;
-    private final static int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
+    private static final int SUBSCRIBE_TIMEOUT = 10000;
+    private static final int ATTRIBUTE_RECEIVE_TIMEOUT = 2000;
 
     private static final List<String> CONFIG_TOPICS = Arrays.asList("climate/0x847127fffe11dd6a_climate_zigbee2mqtt",
             "switch/0x847127fffe11dd6a_auto_lock_zigbee2mqtt",
@@ -151,5 +152,35 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         verify(channelTypeProvider, times(7)).removeChannelType(any());
         // Expect channel group types removed, 1 for each component
         verify(channelTypeProvider, times(2)).removeChannelGroupType(any());
+    }
+
+    @Test
+    public void testProcessMessageFromUnsupportedComponent() {
+        thingHandler.initialize();
+        thingHandler.discoverComponents.processMessage("homeassistant/unsupportedType/id_zigbee2mqtt/config",
+                "{}".getBytes(StandardCharsets.UTF_8));
+        // Ignore unsupported component
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+    }
+
+    @Test
+    public void testProcessMessageWithEmptyConfig() {
+        thingHandler.initialize();
+        thingHandler.discoverComponents.processMessage("homeassistant/sensor/id_zigbee2mqtt/config",
+                "".getBytes(StandardCharsets.UTF_8));
+        // Ignore component with empty config
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
+    }
+
+    @Test
+    public void testProcessMessageWithBadFormatConfig() {
+        thingHandler.initialize();
+        thingHandler.discoverComponents.processMessage("homeassistant/sensor/id_zigbee2mqtt/config",
+                "{bad format}}".getBytes(StandardCharsets.UTF_8));
+        // Ignore component with bad format config
+        thingHandler.delayedProcessing.forceProcessNow();
+        assertThat(haThing.getChannels().size(), CoreMatchers.is(0));
     }
 }

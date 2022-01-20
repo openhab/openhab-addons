@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.ipp.internal.handler;
 
+import static org.openhab.binding.ipp.internal.IppBindingConstants.*;
+
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.cups4j.CupsPrinter;
 import org.cups4j.WhichJobsEnum;
-import org.openhab.binding.ipp.internal.IppBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -46,36 +49,34 @@ import org.slf4j.LoggerFactory;
  *
  * @author Tobias Braeutigam - Initial contribution
  */
+@NonNullByDefault
 public class IppPrinterHandler extends BaseThingHandler implements DiscoveryListener {
+
+    /**
+     * Refresh interval defaults to every minute (60s)
+     */
+    private static final int DEFAULT_REFRESH_INTERVAL_IN_SECONDS = 60;
 
     private final Logger logger = LoggerFactory.getLogger(IppPrinterHandler.class);
 
-    private URL url;
-    private String name;
-    private CupsPrinter printer;
+    private @Nullable URL url;
+    private @Nullable CupsPrinter printer;
 
-    private int refresh = 60; // refresh every minute as default
-    ScheduledFuture<?> refreshJob;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
-    private DiscoveryServiceRegistry discoveryServiceRegistry;
+    private final DiscoveryServiceRegistry discoveryServiceRegistry;
 
     public IppPrinterHandler(Thing thing, DiscoveryServiceRegistry discoveryServiceRegistry) {
         super(thing);
-        if (discoveryServiceRegistry != null) {
-            this.discoveryServiceRegistry = discoveryServiceRegistry;
-        }
+        this.discoveryServiceRegistry = discoveryServiceRegistry;
     }
 
     @Override
     public void initialize() {
         Configuration config = getThing().getConfiguration();
+        String name = (String) config.get(PRINTER_PARAMETER_NAME);
         try {
-            Object obj = config.get(IppBindingConstants.PRINTER_PARAMETER_URL);
-            name = (String) config.get(IppBindingConstants.PRINTER_PARAMETER_NAME);
-            if (config.get(IppBindingConstants.PRINTER_PARAMETER_REFRESH_INTERVAL) != null) {
-                BigDecimal ref = (BigDecimal) config.get(IppBindingConstants.PRINTER_PARAMETER_REFRESH_INTERVAL);
-                refresh = ref.intValue();
-            }
+            Object obj = config.get(PRINTER_PARAMETER_URL);
             if (obj instanceof URL) {
                 url = (URL) obj;
             } else if (obj instanceof String) {
@@ -83,36 +84,45 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
             }
             printer = new CupsPrinter(url, name, false);
         } catch (MalformedURLException e) {
-            logger.error("malformed url {}, printer thing creation failed",
-                    config.get(IppBindingConstants.PRINTER_PARAMETER_URL));
+            logger.error("malformed url {}, printer thing creation failed", config.get(PRINTER_PARAMETER_URL));
         }
-        // until we get an update put the Thing offline
-        updateStatus(ThingStatus.OFFLINE);
-        deviceOnlineWatchdog();
-        if (this.discoveryServiceRegistry != null) {
-            this.discoveryServiceRegistry.addDiscoveryListener(this);
+
+        int refresh = DEFAULT_REFRESH_INTERVAL_IN_SECONDS;
+        Object obj = config.get(PRINTER_PARAMETER_REFRESH_INTERVAL);
+        if (obj != null) {
+            BigDecimal ref = (BigDecimal) obj;
+            refresh = ref.intValue();
         }
+
+        updateStatus(ThingStatus.UNKNOWN);
+        deviceOnlineWatchdog(refresh);
+        discoveryServiceRegistry.addDiscoveryListener(this);
     }
 
     @Override
     public void dispose() {
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
-        }
+        stopRefreshJob();
         logger.debug("IppPrinterHandler {} disposed.", url);
         super.dispose();
     }
 
-    private void deviceOnlineWatchdog() {
-        Runnable runnable = () -> {
+    private void deviceOnlineWatchdog(int refresh) {
+        stopRefreshJob();
+        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 onDeviceStateChanged(printer);
             } catch (Exception e) {
                 logger.debug("Exception occurred during execution: {}", e.getMessage(), e);
             }
-        };
-        refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refresh, TimeUnit.SECONDS);
+        }, 0, refresh, TimeUnit.SECONDS);
+    }
+
+    private void stopRefreshJob() {
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null && !localRefreshJob.isCancelled()) {
+            localRefreshJob.cancel(true);
+            refreshJob = null;
+        }
     }
 
     @Override
@@ -123,25 +133,24 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
         }
     }
 
-    public void onDeviceStateChanged(CupsPrinter device) {
-        if (device.getPrinterURL().equals(url)) {
+    public void onDeviceStateChanged(@Nullable CupsPrinter device) {
+        if (device != null && device.getPrinterURL().equals(url)) {
             boolean online = false;
             try {
-                updateState(new ChannelUID(getThing().getUID(), IppBindingConstants.JOBS_CHANNEL),
-                        new DecimalType(device.getJobs(WhichJobsEnum.ALL, "", false).size()));
+                updateState(JOBS_CHANNEL, new DecimalType(device.getJobs(WhichJobsEnum.ALL, "", false).size()));
                 online = true;
             } catch (Exception e) {
                 logger.debug("error updating jobs channel, reason: {}", e.getMessage());
             }
             try {
-                updateState(new ChannelUID(getThing().getUID(), IppBindingConstants.WAITING_JOBS_CHANNEL),
+                updateState(WAITING_JOBS_CHANNEL,
                         new DecimalType(device.getJobs(WhichJobsEnum.NOT_COMPLETED, "", false).size()));
                 online = true;
             } catch (Exception e) {
                 logger.debug("error updating waiting-jobs channel, reason: {}", e.getMessage());
             }
             try {
-                updateState(new ChannelUID(getThing().getUID(), IppBindingConstants.DONE_JOBS_CHANNEL),
+                updateState(DONE_JOBS_CHANNEL,
                         new DecimalType(device.getJobs(WhichJobsEnum.COMPLETED, "", false).size()));
                 online = true;
             } catch (Exception e) {
@@ -155,21 +164,21 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
 
     @Override
     public void thingDiscovered(DiscoveryService source, DiscoveryResult result) {
-        if (result.getThingUID().equals(this.getThing().getUID())) {
+        if (result.getThingUID().equals(getThing().getUID())) {
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
     @Override
     public void thingRemoved(DiscoveryService source, ThingUID thingUID) {
-        if (thingUID.equals(this.getThing().getUID())) {
+        if (thingUID.equals(getThing().getUID())) {
             updateStatus(ThingStatus.OFFLINE);
         }
     }
 
     @Override
-    public Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
-            Collection<ThingTypeUID> thingTypeUIDs, ThingUID bridgeUID) {
-        return Collections.emptyList();
+    public @Nullable Collection<ThingUID> removeOlderResults(DiscoveryService source, long timestamp,
+            @Nullable Collection<ThingTypeUID> thingTypeUIDs, @Nullable ThingUID bridgeUID) {
+        return Set.of();
     }
 }

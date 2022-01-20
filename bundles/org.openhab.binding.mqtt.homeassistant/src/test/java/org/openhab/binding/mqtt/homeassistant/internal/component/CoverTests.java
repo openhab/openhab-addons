@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,23 +62,23 @@ public class CoverTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("cover"));
 
-        assertChannel(component, Cover.switchChannelID, "zigbee2mqtt/cover/state", "zigbee2mqtt/cover/set/state",
+        assertChannel(component, Cover.SWITCH_CHANNEL_ID, "zigbee2mqtt/cover/state", "zigbee2mqtt/cover/set/state",
                 "cover", RollershutterValue.class);
 
         publishMessage("zigbee2mqtt/cover/state", "100");
-        assertState(component, Cover.switchChannelID, PercentType.HUNDRED);
+        assertState(component, Cover.SWITCH_CHANNEL_ID, PercentType.HUNDRED);
         publishMessage("zigbee2mqtt/cover/state", "0");
-        assertState(component, Cover.switchChannelID, PercentType.ZERO);
+        assertState(component, Cover.SWITCH_CHANNEL_ID, PercentType.ZERO);
 
-        component.getChannel(Cover.switchChannelID).getState().publishValue(PercentType.ZERO);
+        component.getChannel(Cover.SWITCH_CHANNEL_ID).getState().publishValue(PercentType.ZERO);
         assertPublished("zigbee2mqtt/cover/set/state", "OPEN_");
-        component.getChannel(Cover.switchChannelID).getState().publishValue(PercentType.HUNDRED);
+        component.getChannel(Cover.SWITCH_CHANNEL_ID).getState().publishValue(PercentType.HUNDRED);
         assertPublished("zigbee2mqtt/cover/set/state", "CLOSE_");
-        component.getChannel(Cover.switchChannelID).getState().publishValue(StopMoveType.STOP);
+        component.getChannel(Cover.SWITCH_CHANNEL_ID).getState().publishValue(StopMoveType.STOP);
         assertPublished("zigbee2mqtt/cover/set/state", "STOP_");
-        component.getChannel(Cover.switchChannelID).getState().publishValue(PercentType.ZERO);
+        component.getChannel(Cover.SWITCH_CHANNEL_ID).getState().publishValue(PercentType.ZERO);
         assertPublished("zigbee2mqtt/cover/set/state", "OPEN_", 2);
-        component.getChannel(Cover.switchChannelID).getState().publishValue(StopMoveType.STOP);
+        component.getChannel(Cover.SWITCH_CHANNEL_ID).getState().publishValue(StopMoveType.STOP);
         assertPublished("zigbee2mqtt/cover/set/state", "STOP_", 2);
     }
 

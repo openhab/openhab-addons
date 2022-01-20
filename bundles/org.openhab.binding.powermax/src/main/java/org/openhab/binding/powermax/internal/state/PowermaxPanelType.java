@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Used to store main characteristics of each Visonic alarm panel type in an ENUM
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public enum PowermaxPanelType {
 
     POWERMAX((byte) 0, "PowerMax", 1, 250, 8, 8, 2, 2, 8, 0, 28, 2, 0),
@@ -29,19 +32,19 @@ public enum PowermaxPanelType {
     POWERMASTER_10((byte) 7, "PowerMaster10", 3, 250, 8, 0, 8, 4, 8, 8, 29, 1, 5),
     POWERMASTER_30((byte) 8, "PowerMaster30", 3, 1000, 32, 0, 32, 8, 48, 32, 62, 2, 5);
 
-    private byte code;
-    private String label;
-    private int partitions;
-    private int events;
-    private int keyfobs;
-    private int keypads1w;
-    private int keypads2w;
-    private int sirens;
-    private int userCodes;
-    private int prontags;
-    private int wireless;
-    private int wired;
-    private int customZones;
+    private final byte code;
+    private final String label;
+    private final int partitions;
+    private final int events;
+    private final int keyfobs;
+    private final int keypads1w;
+    private final int keypads2w;
+    private final int sirens;
+    private final int userCodes;
+    private final int prontags;
+    private final int wireless;
+    private final int wired;
+    private final int customZones;
 
     private PowermaxPanelType(byte code, String label, int partitions, int events, int keyfobs, int keypads1w,
             int keypads2w, int sirens, int userCodes, int prontags, int wireless, int wired, int customZones) {

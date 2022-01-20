@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ipcamera.internal.onvif;
 
 import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -114,18 +113,18 @@ public class OnvifConnection {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
     private @Nullable Bootstrap bootstrap;
-    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
+    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup(2);
     private String ipAddress = "";
     private String user = "";
     private String password = "";
     private int onvifPort = 80;
-    private String deviceXAddr = "/onvif/device_service";
-    private String eventXAddr = "/onvif/device_service";
-    private String mediaXAddr = "/onvif/device_service";
+    private String deviceXAddr = "http://" + ipAddress + "/onvif/device_service";
+    private String eventXAddr = "http://" + ipAddress + "/onvif/device_service";
+    private String mediaXAddr = "http://" + ipAddress + "/onvif/device_service";
     @SuppressWarnings("unused")
-    private String imagingXAddr = "/onvif/device_service";
-    private String ptzXAddr = "/onvif/ptz_service";
-    private String subscriptionXAddr = "/onvif/device_service";
+    private String imagingXAddr = "http://" + ipAddress + "/onvif/device_service";
+    private String ptzXAddr = "http://" + ipAddress + "/onvif/ptz_service";
+    private String subscriptionXAddr = "http://" + ipAddress + "/onvif/device_service";
     private boolean isConnected = false;
     private int mediaProfileIndex = 0;
     private String snapshotUri = "";
@@ -231,7 +230,8 @@ public class OnvifConnection {
                     return "<GetSystemDateAndTime xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>";
                 case Subscribe:
                     return "<Subscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"><ConsumerReference><Address>http://"
-                            + ipCameraHandler.hostIp + ":" + ipCameraHandler.cameraConfig.getServerPort()
+                            + ipCameraHandler.hostIp + ":" + SERVLET_PORT + "/ipcamera/"
+                            + ipCameraHandler.getThing().getUID().getId()
                             + "/OnvifEvent</Address></ConsumerReference></Subscribe>";
                 case Unsubscribe:
                     return "<Unsubscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></Unsubscribe>";
@@ -332,10 +332,8 @@ public class OnvifConnection {
             }
         } else if (message.contains("GetEventPropertiesResponse")) {
             sendOnvifRequest(requestBuilder(RequestType.CreatePullPointSubscription, eventXAddr));
-        } else if (message.contains("SubscribeResponse")) {
-            logger.info("Onvif Subscribe appears to be working for Alarms/Events.");
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
-            subscriptionXAddr = removeIPfromUrl(Helper.fetchXML(message, "SubscriptionReference>", "Address>"));
+            subscriptionXAddr = Helper.fetchXML(message, "SubscriptionReference>", "Address>");
             logger.debug("subscriptionXAddr={}", subscriptionXAddr);
             sendOnvifRequest(requestBuilder(RequestType.PullMessages, subscriptionXAddr));
         } else if (message.contains("GetStatusResponse")) {
@@ -377,7 +375,7 @@ public class OnvifConnection {
         String getXmlCache = getXml(requestType);
         if (requestType.equals(RequestType.CreatePullPointSubscription) || requestType.equals(RequestType.PullMessages)
                 || requestType.equals(RequestType.Renew) || requestType.equals(RequestType.Unsubscribe)) {
-            headerTo = "<a:To s:mustUnderstand=\"1\">http://" + ipAddress + xAddr + "</a:To>";
+            headerTo = "<a:To s:mustUnderstand=\"1\">" + xAddr + "</a:To>";
             extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
         }
         String headers;
@@ -397,16 +395,13 @@ public class OnvifConnection {
         } else {// GetSystemDateAndTime must not be password protected as per spec.
             headers = "";
         }
-        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"), xAddr);
+        FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("POST"),
+                removeIPfromUrl(xAddr));
         String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
         request.headers().add("Content-Type",
                 "application/soap+xml; charset=utf-8; action=\"" + actionString + "/" + requestType + "\"");
         request.headers().add("Charset", "utf-8");
-        if (onvifPort != 80) {
-            request.headers().set("Host", ipAddress + ":" + onvifPort);
-        } else {
-            request.headers().set("Host", ipAddress);
-        }
+        request.headers().set("Host", extractIPportFromUrl(xAddr));
         request.headers().set("Connection", HttpHeaderValues.CLOSE);
         request.headers().set("Accept-Encoding", "gzip, deflate");
         String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
@@ -438,25 +433,35 @@ public class OnvifConnection {
         return url.substring(index);
     }
 
+    String extractIPportFromUrl(String url) {
+        int startIndex = url.indexOf("//") + 2;
+        int endIndex = url.indexOf("/", startIndex);// skip past any :port to the slash /
+        if (startIndex != -1 && endIndex != -1) {
+            return url.substring(startIndex, endIndex);
+        }
+        logger.debug("We hit an issue extracting IP:PORT from url:{}", url);
+        return "";
+    }
+
     void parseXAddr(String message) {
         // Normally I would search '<tt:XAddr>' instead but Foscam needed this work around.
-        String temp = removeIPfromUrl(Helper.fetchXML(message, "<tt:Device", "tt:XAddr"));
+        String temp = Helper.fetchXML(message, "<tt:Device", "tt:XAddr");
         if (!temp.isEmpty()) {
             deviceXAddr = temp;
             logger.debug("deviceXAddr:{}", deviceXAddr);
         }
-        temp = removeIPfromUrl(Helper.fetchXML(message, "<tt:Events", "tt:XAddr"));
+        temp = Helper.fetchXML(message, "<tt:Events", "tt:XAddr");
         if (!temp.isEmpty()) {
             subscriptionXAddr = eventXAddr = temp;
             logger.debug("eventsXAddr:{}", eventXAddr);
         }
-        temp = removeIPfromUrl(Helper.fetchXML(message, "<tt:Media", "tt:XAddr"));
+        temp = Helper.fetchXML(message, "<tt:Media", "tt:XAddr");
         if (!temp.isEmpty()) {
             mediaXAddr = temp;
             logger.debug("mediaXAddr:{}", mediaXAddr);
         }
 
-        ptzXAddr = removeIPfromUrl(Helper.fetchXML(message, "<tt:PTZ", "tt:XAddr"));
+        ptzXAddr = Helper.fetchXML(message, "<tt:PTZ", "tt:XAddr");
         if (ptzXAddr.isEmpty()) {
             ptzDevice = false;
             logger.trace("Camera must not support PTZ, it failed to give a <tt:PTZ><tt:XAddr>:{}", message);
@@ -497,10 +502,9 @@ public class OnvifConnection {
         try {
             msgDigest = MessageDigest.getInstance("SHA-1");
             msgDigest.reset();
-            msgDigest.update(beforeEncryption.getBytes("utf8"));
+            msgDigest.update(beforeEncryption.getBytes(StandardCharsets.UTF_8));
             encryptedRaw = msgDigest.digest();
         } catch (NoSuchAlgorithmException e) {
-        } catch (UnsupportedEncodingException e) {
         }
         return Base64.getEncoder().encodeToString(encryptedRaw);
     }
@@ -849,7 +853,6 @@ public class OnvifConnection {
                 logger.warn("ONVIF was not cleanly shutdown, due to being interrupted");
             } finally {
                 logger.debug("Eventloop is shutdown:{}", mainEventLoopGroup.isShutdown());
-                mainEventLoopGroup = new NioEventLoopGroup();
                 bootstrap = null;
             }
         }
@@ -857,10 +860,15 @@ public class OnvifConnection {
     }
 
     public void disconnect() {
-        if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
-            sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+        if (bootstrap != null) {
+            if (usingEvents && isConnected && !mainEventLoopGroup.isShuttingDown()) {
+                // Some cameras may continue to send events even when they can't reach a server.
+                sendOnvifRequest(requestBuilder(RequestType.Unsubscribe, subscriptionXAddr));
+            }
+            // give time for the Unsubscribe request to be sent to the camera.
+            threadPool.schedule(this::cleanup, 50, TimeUnit.MILLISECONDS);
+        } else {
+            cleanup();
         }
-        // Some cameras may continue to send event callbacks even when they cant reach a server.
-        threadPool.schedule(this::cleanup, 500, TimeUnit.MILLISECONDS);
     }
 }

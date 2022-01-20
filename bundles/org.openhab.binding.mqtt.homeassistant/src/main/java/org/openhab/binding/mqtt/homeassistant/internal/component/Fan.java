@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT Fan component, following the https://www.home-assistant.io/components/fan.mqtt/ specification.
  *
@@ -26,7 +28,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
  */
 @NonNullByDefault
 public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
-    public static final String switchChannelID = "fan"; // Randomly chosen channel "ID"
+    public static final String SWITCH_CHANNEL_ID = "fan"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
@@ -36,20 +38,25 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
             super("MQTT Fan");
         }
 
-        protected @Nullable String state_topic;
-        protected String command_topic = "";
-        protected String payload_on = "ON";
-        protected String payload_off = "OFF";
+        @SerializedName("state_topic")
+        protected @Nullable String stateTopic;
+        @SerializedName("command_topic")
+        protected String commandTopic = "";
+        @SerializedName("payload_on")
+        protected String payloadOn = "ON";
+        @SerializedName("payload_off")
+        protected String payloadOff = "OFF";
     }
 
     public Fan(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
-        buildChannel(switchChannelID, value, channelConfiguration.getName(), componentConfiguration.getUpdateListener())
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate())
-                .commandTopic(channelConfiguration.command_topic, channelConfiguration.isRetain(),
-                        channelConfiguration.getQos())
-                .build();
+        OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(),
+                componentConfiguration.getUpdateListener())
+                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                                channelConfiguration.getQos())
+                        .build();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,17 +63,17 @@ public class BinarySensorTests extends AbstractComponentTests {
         assertThat(component.getName(), is("onoffsensor"));
         assertThat(component.getGroupUID().getId(), is("sn1"));
 
-        assertChannel(component, BinarySensor.sensorChannelID, "zigbee2mqtt/sensor/state", "", "value",
+        assertChannel(component, BinarySensor.SENSOR_CHANNEL_ID, "zigbee2mqtt/sensor/state", "", "value",
                 OnOffValue.class);
 
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");
-        assertState(component, BinarySensor.sensorChannelID, OnOffType.ON);
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");
-        assertState(component, BinarySensor.sensorChannelID, OnOffType.ON);
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.ON);
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"OFF_\" }");
-        assertState(component, BinarySensor.sensorChannelID, OnOffType.OFF);
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.OFF);
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");
-        assertState(component, BinarySensor.sensorChannelID, OnOffType.ON);
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.ON);
     }
 
     @Test
@@ -107,9 +107,9 @@ public class BinarySensorTests extends AbstractComponentTests {
         // @formatter:on
 
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"ON_\" }");
-        assertState(component, BinarySensor.sensorChannelID, OnOffType.ON);
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.ON);
 
-        waitForAssert(() -> assertState(component, BinarySensor.sensorChannelID, OnOffType.OFF), 10000, 200);
+        waitForAssert(() -> assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.OFF), 10000, 200);
     }
 
     @Test
@@ -143,9 +143,9 @@ public class BinarySensorTests extends AbstractComponentTests {
         // @formatter:on
 
         publishMessage("zigbee2mqtt/sensor/state", "{ \"state\": \"OFF_\" }");
-        assertState(component, BinarySensor.sensorChannelID, OnOffType.OFF);
+        assertState(component, BinarySensor.SENSOR_CHANNEL_ID, OnOffType.OFF);
 
-        waitForAssert(() -> assertState(component, BinarySensor.sensorChannelID, UnDefType.UNDEF), 10000, 200);
+        waitForAssert(() -> assertState(component, BinarySensor.SENSOR_CHANNEL_ID, UnDefType.UNDEF), 10000, 200);
     }
 
     protected Set<String> getConfigTopics() {

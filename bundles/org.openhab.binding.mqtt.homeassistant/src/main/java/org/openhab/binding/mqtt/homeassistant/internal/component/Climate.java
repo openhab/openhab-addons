@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
@@ -27,8 +30,12 @@ import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * A MQTT climate component, following the https://www.home-assistant.io/components/climate.mqtt/ specification.
@@ -51,10 +58,28 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
     public static final String TEMPERATURE_LOW_CH_ID = "temperatureLow";
     public static final String POWER_CH_ID = "power";
 
-    private static final String CELSIUM = "C";
-    private static final String FAHRENHEIT = "F";
-    private static final float DEFAULT_CELSIUM_PRECISION = 0.1f;
-    private static final float DEFAULT_FAHRENHEIT_PRECISION = 1f;
+    public static enum TemperatureUnit {
+        @SerializedName("C")
+        CELSIUS(SIUnits.CELSIUS, new BigDecimal("0.1")),
+        @SerializedName("F")
+        FAHRENHEIT(ImperialUnits.FAHRENHEIT, BigDecimal.ONE);
+
+        private final Unit<Temperature> unit;
+        private final BigDecimal defaultPrecision;
+
+        TemperatureUnit(Unit<Temperature> unit, BigDecimal defaultPrecision) {
+            this.unit = unit;
+            this.defaultPrecision = defaultPrecision;
+        }
+
+        public Unit<Temperature> getUnit() {
+            return unit;
+        }
+
+        public BigDecimal getDefaultPrecision() {
+            return defaultPrecision;
+        }
+    }
 
     private static final String ACTION_OFF = "off";
     private static final State ACTION_OFF_STATE = new StringType(ACTION_OFF);
@@ -68,148 +93,191 @@ public class Climate extends AbstractComponent<Climate.ChannelConfiguration> {
             super("MQTT HVAC");
         }
 
-        protected @Nullable String action_template;
-        protected @Nullable String action_topic;
+        @SerializedName("action_template")
+        protected @Nullable String actionTemplate;
+        @SerializedName("action_topic")
+        protected @Nullable String actionTopic;
 
-        protected @Nullable String aux_command_topic;
-        protected @Nullable String aux_state_template;
-        protected @Nullable String aux_state_topic;
+        @SerializedName("aux_command_topic")
+        protected @Nullable String auxCommandTopic;
+        @SerializedName("aux_state_template")
+        protected @Nullable String auxStateTemplate;
+        @SerializedName("aux_state_topic")
+        protected @Nullable String auxStateTopic;
 
-        protected @Nullable String away_mode_command_topic;
-        protected @Nullable String away_mode_state_template;
-        protected @Nullable String away_mode_state_topic;
+        @SerializedName("away_mode_command_topic")
+        protected @Nullable String awayModeCommandTopic;
+        @SerializedName("away_mode_state_template")
+        protected @Nullable String awayModeStateTemplate;
+        @SerializedName("away_mode_state_topic")
+        protected @Nullable String awayModeStateTopic;
 
-        protected @Nullable String current_temperature_template;
-        protected @Nullable String current_temperature_topic;
+        @SerializedName("current_temperature_template")
+        protected @Nullable String currentTemperatureTemplate;
+        @SerializedName("current_temperature_topic")
+        protected @Nullable String currentTemperatureTopic;
 
-        protected @Nullable String fan_mode_command_template;
-        protected @Nullable String fan_mode_command_topic;
-        protected @Nullable String fan_mode_state_template;
-        protected @Nullable String fan_mode_state_topic;
-        protected List<String> fan_modes = Arrays.asList("auto", "low", "medium", "high");
+        @SerializedName("fan_mode_command_template")
+        protected @Nullable String fanModeCommandTemplate;
+        @SerializedName("fan_mode_command_topic")
+        protected @Nullable String fanModeCommandTopic;
+        @SerializedName("fan_mode_state_template")
+        protected @Nullable String fanModeStateTemplate;
+        @SerializedName("fan_mode_state_topic")
+        protected @Nullable String fanModeStateTopic;
+        @SerializedName("fan_modes")
+        protected List<String> fanModes = Arrays.asList("auto", "low", "medium", "high");
 
-        protected @Nullable String hold_command_template;
-        protected @Nullable String hold_command_topic;
-        protected @Nullable String hold_state_template;
-        protected @Nullable String hold_state_topic;
-        protected @Nullable List<String> hold_modes; // Are there default modes? Now the channel will be ignored without
-                                                     // hold modes.
+        @SerializedName("hold_command_template")
+        protected @Nullable String holdCommandTemplate;
+        @SerializedName("hold_command_topic")
+        protected @Nullable String holdCommandTopic;
+        @SerializedName("hold_state_template")
+        protected @Nullable String holdStateTemplate;
+        @SerializedName("hold_state_topic")
+        protected @Nullable String holdStateTopic;
+        @SerializedName("hold_modes")
+        protected @Nullable List<String> holdModes; // Are there default modes? Now the channel will be ignored without
+                                                    // hold modes.
 
-        protected @Nullable String json_attributes_template; // Attributes are not supported yet
-        protected @Nullable String json_attributes_topic;
+        @SerializedName("json_attributes_template")
+        protected @Nullable String jsonAttributesTemplate; // Attributes are not supported yet
+        @SerializedName("json_attributes_topic")
+        protected @Nullable String jsonAttributesTopic;
 
-        protected @Nullable String mode_command_template;
-        protected @Nullable String mode_command_topic;
-        protected @Nullable String mode_state_template;
-        protected @Nullable String mode_state_topic;
+        @SerializedName("mode_command_template")
+        protected @Nullable String modeCommandTemplate;
+        @SerializedName("mode_command_topic")
+        protected @Nullable String modeCommandTopic;
+        @SerializedName("mode_state_template")
+        protected @Nullable String modeStateTemplate;
+        @SerializedName("mode_state_topic")
+        protected @Nullable String modeStateTopic;
         protected List<String> modes = Arrays.asList("auto", "off", "cool", "heat", "dry", "fan_only");
 
-        protected @Nullable String swing_command_template;
-        protected @Nullable String swing_command_topic;
-        protected @Nullable String swing_state_template;
-        protected @Nullable String swing_state_topic;
-        protected List<String> swing_modes = Arrays.asList("on", "off");
+        @SerializedName("swing_command_template")
+        protected @Nullable String swingCommandTemplate;
+        @SerializedName("swing_command_topic")
+        protected @Nullable String swingCommandTopic;
+        @SerializedName("swing_state_template")
+        protected @Nullable String swingStateTemplate;
+        @SerializedName("swing_state_topic")
+        protected @Nullable String swingStateTopic;
+        @SerializedName("swing_modes")
+        protected List<String> swingModes = Arrays.asList("on", "off");
 
-        protected @Nullable String temperature_command_template;
-        protected @Nullable String temperature_command_topic;
-        protected @Nullable String temperature_state_template;
-        protected @Nullable String temperature_state_topic;
+        @SerializedName("temperature_command_template")
+        protected @Nullable String temperatureCommandTemplate;
+        @SerializedName("temperature_command_topic")
+        protected @Nullable String temperatureCommandTopic;
+        @SerializedName("temperature_state_template")
+        protected @Nullable String temperatureStateTemplate;
+        @SerializedName("temperature_state_topic")
+        protected @Nullable String temperatureStateTopic;
 
-        protected @Nullable String temperature_high_command_template;
-        protected @Nullable String temperature_high_command_topic;
-        protected @Nullable String temperature_high_state_template;
-        protected @Nullable String temperature_high_state_topic;
+        @SerializedName("temperature_high_command_template")
+        protected @Nullable String temperatureHighCommandTemplate;
+        @SerializedName("temperature_high_command_topic")
+        protected @Nullable String temperatureHighCommandTopic;
+        @SerializedName("temperature_high_state_template")
+        protected @Nullable String temperatureHighStateTemplate;
+        @SerializedName("temperature_high_state_topic")
+        protected @Nullable String temperatureHighStateTopic;
 
-        protected @Nullable String temperature_low_command_template;
-        protected @Nullable String temperature_low_command_topic;
-        protected @Nullable String temperature_low_state_template;
-        protected @Nullable String temperature_low_state_topic;
+        @SerializedName("temperature_low_command_template")
+        protected @Nullable String temperatureLowCommandTemplate;
+        @SerializedName("temperature_low_command_topic")
+        protected @Nullable String temperatureLowCommandTopic;
+        @SerializedName("temperature_low_state_template")
+        protected @Nullable String temperatureLowStateTemplate;
+        @SerializedName("temperature_low_state_topic")
+        protected @Nullable String temperatureLowStateTopic;
 
-        protected @Nullable String power_command_topic;
+        @SerializedName("power_command_topic")
+        protected @Nullable String powerCommandTopic;
 
         protected Integer initial = 21;
-        protected @Nullable Float max_temp;
-        protected @Nullable Float min_temp;
-        protected String temperature_unit = CELSIUM; // System unit by default
-        protected Float temp_step = 1f;
-        protected @Nullable Float precision;
-        protected Boolean send_if_off = true;
+        @SerializedName("max_temp")
+        protected @Nullable BigDecimal maxTemp;
+        @SerializedName("min_temp")
+        protected @Nullable BigDecimal minTemp;
+        @SerializedName("temperature_unit")
+        protected TemperatureUnit temperatureUnit = TemperatureUnit.CELSIUS; // System unit by default
+        @SerializedName("temp_step")
+        protected BigDecimal tempStep = BigDecimal.ONE;
+        protected @Nullable BigDecimal precision;
+        @SerializedName("send_if_off")
+        protected Boolean sendIfOff = true;
     }
 
     public Climate(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        BigDecimal minTemp = channelConfiguration.min_temp != null ? BigDecimal.valueOf(channelConfiguration.min_temp)
-                : null;
-        BigDecimal maxTemp = channelConfiguration.max_temp != null ? BigDecimal.valueOf(channelConfiguration.max_temp)
-                : null;
-        float precision = channelConfiguration.precision != null ? channelConfiguration.precision
-                : (FAHRENHEIT.equals(channelConfiguration.temperature_unit) ? DEFAULT_FAHRENHEIT_PRECISION
-                        : DEFAULT_CELSIUM_PRECISION);
+        BigDecimal precision = channelConfiguration.precision != null ? channelConfiguration.precision
+                : channelConfiguration.temperatureUnit.getDefaultPrecision();
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
         ComponentChannel actionChannel = buildOptionalChannel(ACTION_CH_ID,
                 new TextValue(ACTION_MODES.toArray(new String[0])), updateListener, null, null,
-                channelConfiguration.action_template, channelConfiguration.action_topic, null);
+                channelConfiguration.actionTemplate, channelConfiguration.actionTopic, null);
 
-        final Predicate<Command> commandFilter = channelConfiguration.send_if_off ? null
+        final Predicate<Command> commandFilter = channelConfiguration.sendIfOff ? null
                 : getCommandFilter(actionChannel);
 
-        buildOptionalChannel(AUX_CH_ID, new OnOffValue(), updateListener, null, channelConfiguration.aux_command_topic,
-                channelConfiguration.aux_state_template, channelConfiguration.aux_state_topic, commandFilter);
+        buildOptionalChannel(AUX_CH_ID, new OnOffValue(), updateListener, null, channelConfiguration.auxCommandTopic,
+                channelConfiguration.auxStateTemplate, channelConfiguration.auxStateTopic, commandFilter);
 
         buildOptionalChannel(AWAY_MODE_CH_ID, new OnOffValue(), updateListener, null,
-                channelConfiguration.away_mode_command_topic, channelConfiguration.away_mode_state_template,
-                channelConfiguration.away_mode_state_topic, commandFilter);
+                channelConfiguration.awayModeCommandTopic, channelConfiguration.awayModeStateTemplate,
+                channelConfiguration.awayModeStateTopic, commandFilter);
 
         buildOptionalChannel(CURRENT_TEMPERATURE_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(precision), channelConfiguration.temperature_unit),
-                updateListener, null, null, channelConfiguration.current_temperature_template,
-                channelConfiguration.current_temperature_topic, commandFilter);
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp, precision,
+                        channelConfiguration.temperatureUnit.getUnit()),
+                updateListener, null, null, channelConfiguration.currentTemperatureTemplate,
+                channelConfiguration.currentTemperatureTopic, commandFilter);
 
-        buildOptionalChannel(FAN_MODE_CH_ID, new TextValue(channelConfiguration.fan_modes.toArray(new String[0])),
-                updateListener, channelConfiguration.fan_mode_command_template,
-                channelConfiguration.fan_mode_command_topic, channelConfiguration.fan_mode_state_template,
-                channelConfiguration.fan_mode_state_topic, commandFilter);
+        buildOptionalChannel(FAN_MODE_CH_ID, new TextValue(channelConfiguration.fanModes.toArray(new String[0])),
+                updateListener, channelConfiguration.fanModeCommandTemplate, channelConfiguration.fanModeCommandTopic,
+                channelConfiguration.fanModeStateTemplate, channelConfiguration.fanModeStateTopic, commandFilter);
 
-        if (channelConfiguration.hold_modes != null && !channelConfiguration.hold_modes.isEmpty()) {
-            buildOptionalChannel(HOLD_CH_ID, new TextValue(channelConfiguration.hold_modes.toArray(new String[0])),
-                    updateListener, channelConfiguration.hold_command_template, channelConfiguration.hold_command_topic,
-                    channelConfiguration.hold_state_template, channelConfiguration.hold_state_topic, commandFilter);
+        if (channelConfiguration.holdModes != null && !channelConfiguration.holdModes.isEmpty()) {
+            buildOptionalChannel(HOLD_CH_ID, new TextValue(channelConfiguration.holdModes.toArray(new String[0])),
+                    updateListener, channelConfiguration.holdCommandTemplate, channelConfiguration.holdCommandTopic,
+                    channelConfiguration.holdStateTemplate, channelConfiguration.holdStateTopic, commandFilter);
         }
 
         buildOptionalChannel(MODE_CH_ID, new TextValue(channelConfiguration.modes.toArray(new String[0])),
-                updateListener, channelConfiguration.mode_command_template, channelConfiguration.mode_command_topic,
-                channelConfiguration.mode_state_template, channelConfiguration.mode_state_topic, commandFilter);
+                updateListener, channelConfiguration.modeCommandTemplate, channelConfiguration.modeCommandTopic,
+                channelConfiguration.modeStateTemplate, channelConfiguration.modeStateTopic, commandFilter);
 
-        buildOptionalChannel(SWING_CH_ID, new TextValue(channelConfiguration.swing_modes.toArray(new String[0])),
-                updateListener, channelConfiguration.swing_command_template, channelConfiguration.swing_command_topic,
-                channelConfiguration.swing_state_template, channelConfiguration.swing_state_topic, commandFilter);
+        buildOptionalChannel(SWING_CH_ID, new TextValue(channelConfiguration.swingModes.toArray(new String[0])),
+                updateListener, channelConfiguration.swingCommandTemplate, channelConfiguration.swingCommandTopic,
+                channelConfiguration.swingStateTemplate, channelConfiguration.swingStateTopic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.temp_step),
-                        channelConfiguration.temperature_unit),
-                updateListener, channelConfiguration.temperature_command_template,
-                channelConfiguration.temperature_command_topic, channelConfiguration.temperature_state_template,
-                channelConfiguration.temperature_state_topic, commandFilter);
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
+                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
+                updateListener, channelConfiguration.temperatureCommandTemplate,
+                channelConfiguration.temperatureCommandTopic, channelConfiguration.temperatureStateTemplate,
+                channelConfiguration.temperatureStateTopic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_HIGH_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.temp_step),
-                        channelConfiguration.temperature_unit),
-                updateListener, channelConfiguration.temperature_high_command_template,
-                channelConfiguration.temperature_high_command_topic,
-                channelConfiguration.temperature_high_state_template, channelConfiguration.temperature_high_state_topic,
-                commandFilter);
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
+                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
+                updateListener, channelConfiguration.temperatureHighCommandTemplate,
+                channelConfiguration.temperatureHighCommandTopic, channelConfiguration.temperatureHighStateTemplate,
+                channelConfiguration.temperatureHighStateTopic, commandFilter);
 
         buildOptionalChannel(TEMPERATURE_LOW_CH_ID,
-                new NumberValue(minTemp, maxTemp, BigDecimal.valueOf(channelConfiguration.temp_step),
-                        channelConfiguration.temperature_unit),
-                updateListener, channelConfiguration.temperature_low_command_template,
-                channelConfiguration.temperature_low_command_topic, channelConfiguration.temperature_low_state_template,
-                channelConfiguration.temperature_low_state_topic, commandFilter);
+                new NumberValue(channelConfiguration.minTemp, channelConfiguration.maxTemp,
+                        channelConfiguration.tempStep, channelConfiguration.temperatureUnit.getUnit()),
+                updateListener, channelConfiguration.temperatureLowCommandTemplate,
+                channelConfiguration.temperatureLowCommandTopic, channelConfiguration.temperatureLowStateTemplate,
+                channelConfiguration.temperatureLowStateTopic, commandFilter);
 
         buildOptionalChannel(POWER_CH_ID, new OnOffValue(), updateListener, null,
-                channelConfiguration.power_command_topic, null, null, null);
+                channelConfiguration.powerCommandTopic, null, null, null);
     }
 
     @Nullable

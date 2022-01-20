@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upb.internal.handler.UPBIoHandler.CmdStatus;
-import org.openhab.binding.upb.internal.message.MessageBuilder;
 import org.openhab.binding.upb.internal.message.MessageParseException;
 import org.openhab.binding.upb.internal.message.UPBMessage;
 import org.openhab.core.common.NamedThreadFactory;
@@ -61,7 +60,19 @@ public class SerialIoThread extends Thread {
     private final MessageListener listener;
     // Single-threaded executor for writes that serves to serialize writes.
     private final ExecutorService writeExecutor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial-writer", true));
+            new LinkedBlockingQueue<>(WRITE_QUEUE_LENGTH), new NamedThreadFactory("upb-serial-writer", true)) {
+        @Override
+        protected void beforeExecute(final @Nullable Thread t, final @Nullable Runnable r) {
+            // ensure we have prepared the PIM before allowing any writes
+            super.beforeExecute(t, r);
+            try {
+                initialized.await();
+            } catch (final InterruptedException e) {
+                t.interrupt();
+            }
+        }
+    };
+    private final CountDownLatch initialized = new CountDownLatch(1);
     private final SerialPort serialPort;
 
     private volatile @Nullable WriteRunnable currentWrite;
@@ -141,7 +152,7 @@ public class SerialIoThread extends Thread {
             return;
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("UPB Message: {}", HexUtils.bytesToHex(buf));
+            logger.debug("UPB Message: {}", formatMessage(buf));
         }
         final UPBMessage msg;
         try {
@@ -177,9 +188,13 @@ public class SerialIoThread extends Thread {
         listener.incomingMessage(msg);
     }
 
-    public CompletionStage<CmdStatus> enqueue(final MessageBuilder msg) {
+    public CompletionStage<CmdStatus> enqueue(final String msg) {
+        return enqueue(msg, 1);
+    }
+
+    private CompletionStage<CmdStatus> enqueue(final String msg, int numAttempts) {
         final CompletableFuture<CmdStatus> completion = new CompletableFuture<>();
-        final Runnable task = new WriteRunnable(msg.build(), completion);
+        final Runnable task = new WriteRunnable(msg, completion, numAttempts);
         try {
             writeExecutor.execute(task);
         } catch (final RejectedExecutionException e) {
@@ -199,6 +214,9 @@ public class SerialIoThread extends Thread {
             out.flush();
         } catch (final IOException e) {
             logger.warn("error setting message mode", e);
+        } finally {
+            // signal that writes can proceed
+            initialized.countDown();
         }
     }
 
@@ -226,29 +244,42 @@ public class SerialIoThread extends Thread {
         }
     }
 
+    // format a message for debug logging, include only printable characters
+    private static String formatMessage(byte[] buf) {
+        final int len;
+        // omit the final newline
+        if (buf[buf.length - 1] == '\r') {
+            len = buf.length - 1;
+        } else {
+            len = buf.length;
+        }
+        final String s = new String(buf, 0, len, US_ASCII);
+        if (s.chars().allMatch(c -> c >= 32 && c < 127)) {
+            return s;
+        } else {
+            // presence of non-printable characters is either noise or a misconfiguration, log it in hex
+            return HexUtils.bytesToHex(buf);
+        }
+    }
+
     private class WriteRunnable implements Runnable {
         private static final int MAX_RETRIES = 3;
 
         private final String msg;
         private final CompletableFuture<CmdStatus> completion;
         private final CountDownLatch ackLatch = new CountDownLatch(1);
+        private final int numAttempts;
 
         private @Nullable Boolean ack;
 
-        public WriteRunnable(final String msg, final CompletableFuture<CmdStatus> completion) {
+        public WriteRunnable(final String msg, final CompletableFuture<CmdStatus> completion, int numAttempts) {
             this.msg = msg;
             this.completion = completion;
+            this.numAttempts = numAttempts;
         }
 
         // called by reader thread on ACK or NAK
         public void ackReceived(final boolean ack) {
-            if (logger.isDebugEnabled()) {
-                if (ack) {
-                    logger.debug("ACK received");
-                } else {
-                    logger.debug("NAK received");
-                }
-            }
             this.ack = ack;
             ackLatch.countDown();
         }
@@ -262,25 +293,32 @@ public class SerialIoThread extends Thread {
                 if (out == null) {
                     throw new IOException("serial port is not writable");
                 }
-                for (int tries = 0; tries < MAX_RETRIES && ack == null; tries++) {
-                    out.write(0x14);
-                    out.write(msg.getBytes(US_ASCII));
-                    out.write(0x0d);
-                    out.flush();
-                    final boolean acked = ackLatch.await(ACK_TIMEOUT_MS, MILLISECONDS);
-                    if (acked) {
-                        break;
+                final CmdStatus res;
+                out.write(0x14);
+                out.write(msg.getBytes(US_ASCII));
+                out.write(0x0d);
+                out.flush();
+                final boolean latched = ackLatch.await(ACK_TIMEOUT_MS, MILLISECONDS);
+                if (latched) {
+                    final Boolean ack = this.ack;
+                    if (ack == null) {
+                        logger.debug("write not acked, attempt {}", numAttempts);
+                        res = CmdStatus.WRITE_FAILED;
+                    } else if (ack) {
+                        completion.complete(CmdStatus.ACK);
+                        return;
+                    } else {
+                        logger.debug("NAK received, attempt {}", numAttempts);
+                        res = CmdStatus.NAK;
                     }
-                    logger.debug("ack timed out, retrying ({} of {})", tries + 1, MAX_RETRIES);
-                }
-                final Boolean ack = this.ack;
-                if (ack == null) {
-                    logger.debug("write not acked");
-                    completion.complete(CmdStatus.WRITE_FAILED);
-                } else if (ack) {
-                    completion.complete(CmdStatus.ACK);
                 } else {
-                    completion.complete(CmdStatus.NAK);
+                    logger.debug("ack timed out, attempt {}", numAttempts);
+                    res = CmdStatus.WRITE_FAILED;
+                }
+                if (numAttempts < MAX_RETRIES) {
+                    enqueue(msg, numAttempts + 1).thenAccept(completion::complete);
+                } else {
+                    completion.complete(res);
                 }
             } catch (final IOException | InterruptedException e) {
                 logger.warn("error writing message", e);

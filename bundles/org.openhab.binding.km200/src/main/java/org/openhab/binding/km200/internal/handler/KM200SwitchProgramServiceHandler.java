@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.km200.internal.KM200Device;
 import org.openhab.binding.km200.internal.KM200ServiceObject;
@@ -68,11 +67,10 @@ public class KM200SwitchProgramServiceHandler {
     private static List<String> days = new ArrayList<>(Arrays.asList(TYPE_MONDAY, TYPE_TUESDAY, TYPE_WEDNESDAY,
             TYPE_THURSDAY, TYPE_FRIDAY, TYPE_SATURDAY, TYPE_SUNDAY));
 
-    public static List<@NonNull StateOption> daysList = new ArrayList<>(
-            Arrays.asList(new StateOption(TYPE_MONDAY, "Monday"), new StateOption(TYPE_TUESDAY, "Tuesday"),
-                    new StateOption(TYPE_WEDNESDAY, "Wednesday"), new StateOption(TYPE_THURSDAY, "Thursday"),
-                    new StateOption(TYPE_FRIDAY, "Friday"), new StateOption(TYPE_SATURDAY, "Saturday"),
-                    new StateOption(TYPE_SUNDAY, "Sunday")));
+    public static List<StateOption> daysList = List.of(new StateOption(TYPE_MONDAY, "Monday"),
+            new StateOption(TYPE_TUESDAY, "Tuesday"), new StateOption(TYPE_WEDNESDAY, "Wednesday"),
+            new StateOption(TYPE_THURSDAY, "Thursday"), new StateOption(TYPE_FRIDAY, "Friday"),
+            new StateOption(TYPE_SATURDAY, "Saturday"), new StateOption(TYPE_SUNDAY, "Sunday"));
 
     /* List with setpoints */
     private List<String> setpoints = new ArrayList<>();
@@ -118,9 +116,13 @@ public class KM200SwitchProgramServiceHandler {
             initWeeklist(setpoint);
             weekMap = switchMap.get(setpoint);
         }
-        List<Integer> dayList = weekMap.get(day);
-        dayList.add(time);
-        Collections.sort(dayList);
+        if (weekMap != null) {
+            List<Integer> dayList = weekMap.get(day);
+            if (dayList != null) {
+                dayList.add(time);
+                Collections.sort(dayList);
+            }
+        }
     }
 
     /**
@@ -484,12 +486,20 @@ public class KM200SwitchProgramServiceHandler {
         synchronized (switchMap) {
             Map<String, List<Integer>> weekP = switchMap.get(getPositiveSwitch());
             Map<String, List<Integer>> weekN = switchMap.get(getNegativeSwitch());
-            if (weekP.isEmpty() && weekN.isEmpty()) {
+            if (weekP != null && weekN != null) {
+                if (weekP.isEmpty() && weekN.isEmpty()) {
+                    return 0;
+                }
+                List<Integer> daysListP = weekP.get(getActiveDay());
+                List<Integer> daysListN = weekN.get(getActiveDay());
+                if (daysListP != null && daysListN != null) {
+                    return Math.min(daysListP.size(), daysListN.size());
+                } else {
+                    return 0;
+                }
+            } else {
                 return 0;
             }
-            List<Integer> daysListP = weekP.get(getActiveDay());
-            List<Integer> daysListN = weekN.get(getActiveDay());
-            return Math.min(daysListP.size(), daysListN.size());
         }
     }
 
@@ -515,7 +525,7 @@ public class KM200SwitchProgramServiceHandler {
             Map<String, List<Integer>> week = switchMap.get(getPositiveSwitch());
             if (week != null) {
                 List<Integer> daysList = week.get(getActiveDay());
-                if (!daysList.isEmpty()) {
+                if (daysList != null && !daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
                     if (cycl <= daysList.size()) {
                         return (daysList.get(getActiveCycle() - 1));
@@ -534,7 +544,7 @@ public class KM200SwitchProgramServiceHandler {
             Map<String, List<Integer>> week = switchMap.get(getNegativeSwitch());
             if (week != null) {
                 List<Integer> daysList = week.get(getActiveDay());
-                if (!daysList.isEmpty()) {
+                if (daysList != null && !daysList.isEmpty()) {
                     Integer cycl = getActiveCycle();
                     if (cycl <= daysList.size()) {
                         return (daysList.get(getActiveCycle() - 1));

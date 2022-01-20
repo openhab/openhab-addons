@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.irobot.internal.dto;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
@@ -35,13 +34,20 @@ public class MQTTProtocol {
         public int ordered;
         @SerializedName("pmap_id")
         public String pmapId;
+        @SerializedName("user_pmapv_id")
+        public String userPmapvId;
         public List<Region> regions;
 
-        public CleanRoomsRequest(String cmd, String mapId, String[] regions) {
+        public CleanRoomsRequest(String cmd, String mapId, String[] pregions, String[] types, String userPmapvId) {
             super(cmd);
             ordered = 1;
             pmapId = mapId;
-            this.regions = Arrays.stream(regions).map(i -> new Region(i)).collect(Collectors.toList());
+            this.userPmapvId = userPmapvId;
+
+            regions = new ArrayList<Region>();
+            for (int i = 0; (i < pregions.length) && (i < types.length); i++) {
+                regions.add(new Region(pregions[i], types[i]));
+            }
         }
 
         public static class Region {
@@ -49,9 +55,9 @@ public class MQTTProtocol {
             public String regionId;
             public String type;
 
-            public Region(String id) {
+            public Region(String id, String type) {
                 this.regionId = id;
-                this.type = "rid";
+                this.type = type;
             }
         }
     }

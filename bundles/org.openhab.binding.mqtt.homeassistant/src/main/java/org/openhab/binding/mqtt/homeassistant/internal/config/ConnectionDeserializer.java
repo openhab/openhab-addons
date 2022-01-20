@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,8 @@ package org.openhab.binding.mqtt.homeassistant.internal.config;
 
 import java.lang.reflect.Type;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.Connection;
 
 import com.google.gson.JsonArray;
@@ -29,11 +31,25 @@ import com.google.gson.JsonParseException;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class ConnectionDeserializer implements JsonDeserializer<Connection> {
-    @Override
-    public Connection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public @Nullable Connection deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        JsonArray list = json.getAsJsonArray();
+        JsonArray list;
+        if (json == null) {
+            throw new JsonParseException("JSON element is null, but must be connection definition.");
+        }
+        try {
+            list = json.getAsJsonArray();
+        } catch (IllegalStateException e) {
+            throw new JsonParseException("Cannot parse JSON array. Each connection must be defined as array with two "
+                    + "elements: connection_type, connection identifier. For example: \"connections\": [[\"mac\", "
+                    + "\"02:5b:26:a8:dc:12\"]]", e);
+        }
+        if (list.size() != 2) {
+            throw new JsonParseException("Connection information must be a tuple, but has " + list.size()
+                    + " elements! For example: " + "\"connections\": [[\"mac\", \"02:5b:26:a8:dc:12\"]]");
+        }
         return new Connection(list.get(0).getAsString(), list.get(1).getAsString());
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -198,7 +198,8 @@ public class NetworkHandler extends BaseThingHandler
         presenceDetection.setRefreshInterval(handlerConfiguration.refreshInterval.longValue());
         presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
-        wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress);
+        wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress,
+                handlerConfiguration.hostname, handlerConfiguration.port);
 
         updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);
@@ -241,11 +242,16 @@ public class NetworkHandler extends BaseThingHandler
         return Collections.singletonList(NetworkActions.class);
     }
 
-    public void sendWakeOnLanPacket() {
+    public void sendWakeOnLanPacketViaIp() {
+        // Hostname can't be null
+        wakeOnLanPacketSender.sendWakeOnLanPacketViaIp();
+    }
+
+    public void sendWakeOnLanPacketViaMac() {
         if (handlerConfiguration.macAddress.isEmpty()) {
             throw new IllegalStateException(
                     "Cannot send WoL packet because the 'macAddress' is not configured for " + thing.getUID());
         }
-        wakeOnLanPacketSender.sendPacket();
+        wakeOnLanPacketSender.sendWakeOnLanPacketViaMac();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.spotify.internal.api;
 
-import static org.eclipse.jetty.http.HttpMethod.*;
-import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.*;
+import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.eclipse.jetty.http.HttpMethod.PUT;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_PLAYER_URL;
+import static org.openhab.binding.spotify.internal.SpotifyBindingConstants.SPOTIFY_API_URL;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,6 +28,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -48,6 +52,8 @@ import org.openhab.core.library.types.OnOffType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * Class to handle Spotify Web Api calls.
  *
@@ -62,8 +68,8 @@ public class SpotifyApi {
     private static final char AMP = '&';
     private static final char QSM = '?';
     private static final CurrentlyPlayingContext EMPTY_CURRENTLYPLAYINGCONTEXT = new CurrentlyPlayingContext();
-    private static final String PLAY_TRACK_URIS = "{\"uris\":[%s],\"offset\":{\"position\":0}}";
-    private static final String PLAY_TRACK_CONTEXT_URI = "{\"context_uri\":\"%s\",\"offset\":{\"position\":0}}";
+    private static final String PLAY_TRACK_URIS = "{\"uris\":[%s],\"offset\":{\"position\":%d},\"position_ms\":%d}";
+    private static final String PLAY_TRACK_CONTEXT_URI = "{\"context_uri\":\"%s\",\"offset\":{\"position\":%d},\"position_ms\":%d}}";
     private static final String TRANSFER_PLAY = "{\"device_ids\":[\"%s\"],\"play\":%b}";
 
     private final Logger logger = LoggerFactory.getLogger(SpotifyApi.class);
@@ -87,9 +93,7 @@ public class SpotifyApi {
      * @return Returns the Spotify user information
      */
     public Me getMe() {
-        final ContentResponse response = request(GET, SPOTIFY_API_URL, "");
-
-        return Objects.requireNonNull(ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Me.class));
+        return Objects.requireNonNull(request(GET, SPOTIFY_API_URL, "", Me.class));
     }
 
     /**
@@ -98,17 +102,20 @@ public class SpotifyApi {
      *
      * @param deviceId device to play on or empty if play on the active device
      * @param trackId id of the track to play
+     * @param offset offset
+     * @param positionMs position in ms
      */
-    public void playTrack(String deviceId, String trackId) {
+    public void playTrack(String deviceId, String trackId, int offset, int positionMs) {
         final String url = "play" + optionalDeviceId(deviceId, QSM);
         final String play;
         if (trackId.contains(":track:")) {
-            play = String.format(PLAY_TRACK_URIS, Arrays.asList(trackId.split(",")).stream().map(t -> '"' + t + '"')
-                    .collect(Collectors.joining(",")));
+            play = String.format(PLAY_TRACK_URIS,
+                    Arrays.asList(trackId.split(",")).stream().map(t -> '"' + t + '"').collect(Collectors.joining(",")),
+                    offset, positionMs);
         } else {
-            play = String.format(PLAY_TRACK_CONTEXT_URI, trackId);
+            play = String.format(PLAY_TRACK_CONTEXT_URI, trackId, offset, positionMs);
         }
-        requestPlayer(PUT, url, play);
+        requestPlayer(PUT, url, play, String.class);
     }
 
     /**
@@ -127,7 +134,7 @@ public class SpotifyApi {
      * @param play if true transfers and starts to play, else transfers but pauses.
      */
     public void transferPlay(String deviceId, boolean play) {
-        requestPlayer(PUT, "", String.format(TRANSFER_PLAY, deviceId, play));
+        requestPlayer(PUT, "", String.format(TRANSFER_PLAY, deviceId, play), String.class);
     }
 
     /**
@@ -174,7 +181,7 @@ public class SpotifyApi {
      * active device.
      *
      * @param deviceId device to set repeat state on or empty if set repeat on the active device
-     * @param repeateState set the spotify repeat state
+     * @param repeateState set the Spotify repeat state
      */
     public void setRepeatState(String deviceId, String repeateState) {
         requestPlayer(PUT, String.format("repeat?state=%s", repeateState) + optionalDeviceId(deviceId, AMP));
@@ -208,8 +215,7 @@ public class SpotifyApi {
      * @return Calls Spotify Api and returns the list of device or an empty list if nothing was returned
      */
     public List<Device> getDevices() {
-        final ContentResponse response = requestPlayer(GET, "devices");
-        final Devices deviceList = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Devices.class);
+        final Devices deviceList = requestPlayer(GET, "devices", "", Devices.class);
 
         return deviceList == null || deviceList.getDevices() == null ? Collections.emptyList()
                 : deviceList.getDevices();
@@ -218,9 +224,9 @@ public class SpotifyApi {
     /**
      * @return Returns the playlists of the user.
      */
-    public List<Playlist> getPlaylists() {
-        final ContentResponse response = request(GET, SPOTIFY_API_URL + "/playlists", "");
-        final Playlists playlists = ModelUtil.gsonInstance().fromJson(response.getContentAsString(), Playlists.class);
+    public List<Playlist> getPlaylists(int offset, int limit) {
+        final Playlists playlists = request(GET, SPOTIFY_API_URL + "/playlists?offset" + offset + "&limit=" + limit, "",
+                Playlists.class);
 
         return playlists == null || playlists.getItems() == null ? Collections.emptyList() : playlists.getItems();
     }
@@ -230,9 +236,7 @@ public class SpotifyApi {
      *         returned by Spotify
      */
     public CurrentlyPlayingContext getPlayerInfo() {
-        final ContentResponse response = requestPlayer(GET, "");
-        final CurrentlyPlayingContext context = ModelUtil.gsonInstance().fromJson(response.getContentAsString(),
-                CurrentlyPlayingContext.class);
+        final CurrentlyPlayingContext context = requestPlayer(GET, "", "", CurrentlyPlayingContext.class);
 
         return context == null ? EMPTY_CURRENTLYPLAYINGCONTEXT : context;
     }
@@ -242,11 +246,10 @@ public class SpotifyApi {
      * Spotify.
      *
      * @param method Http method to perform
-     * @param url url path to call to spotify
-     * @return the response give by Spotify
+     * @param url url path to call to Spotify
      */
-    private ContentResponse requestPlayer(HttpMethod method, String url) {
-        return requestPlayer(method, url, "");
+    private void requestPlayer(HttpMethod method, String url) {
+        requestPlayer(method, url, "", String.class);
     }
 
     /**
@@ -254,23 +257,42 @@ public class SpotifyApi {
      * Spotify.
      *
      * @param method Http method to perform
-     * @param url url path to call to spotify
+     * @param url url path to call to Spotify
      * @param requestData data to pass along with the call as content
+     * @param clazz data type of return data, if null no data is expected to be returned.
      * @return the response give by Spotify
      */
-    private ContentResponse requestPlayer(HttpMethod method, String url, String requestData) {
-        return request(method, SPOTIFY_API_PLAYER_URL + (url.isEmpty() ? "" : ('/' + url)), requestData);
+    private <T> @Nullable T requestPlayer(HttpMethod method, String url, String requestData, Class<T> clazz) {
+        return request(method, SPOTIFY_API_PLAYER_URL + (url.isEmpty() ? "" : ('/' + url)), requestData, clazz);
+    }
+
+    /**
+     * Parses the Spotify returned json.
+     *
+     * @param <T> z data type to return
+     * @param content json content to parse
+     * @param clazz data type to return
+     * @throws SpotifyException throws a {@link SpotifyException} in case the json could not be parsed.
+     * @return parsed json.
+     */
+    private static <T> @Nullable T fromJson(String content, Class<T> clazz) {
+        try {
+            return (T) ModelUtil.gsonInstance().fromJson(content, clazz);
+        } catch (final JsonSyntaxException e) {
+            throw new SpotifyException("Unknown Spotify response:" + content, e);
+        }
     }
 
     /**
      * Calls the Spotify Web Api with the given method and given url as parameters of the call to Spotify.
      *
      * @param method Http method to perform
-     * @param url url path to call to spotify
+     * @param url url path to call to Spotify
      * @param requestData data to pass along with the call as content
+     * @param clazz data type of return data, if null no data is expected to be returned.
      * @return the response give by Spotify
      */
-    private ContentResponse request(HttpMethod method, String url, String requestData) {
+    private <T> @Nullable T request(HttpMethod method, String url, String requestData, Class<T> clazz) {
         logger.debug("Request: ({}) {} - {}", method, url, requestData);
         final Function<HttpClient, Request> call = httpClient -> httpClient.newRequest(url).method(method)
                 .header("Accept", CONTENT_TYPE).content(new StringContentProvider(requestData), CONTENT_TYPE);
@@ -280,11 +302,13 @@ public class SpotifyApi {
 
             if (accessToken == null || accessToken.isEmpty()) {
                 throw new SpotifyAuthorizationException(
-                        "No spotify accesstoken. Did you authorize spotify via /connectspotify ?");
+                        "No Spotify accesstoken. Did you authorize Spotify via /connectspotify ?");
             } else {
-                return requestWithRetry(call, accessToken);
+                final String response = requestWithRetry(call, accessToken).getContentAsString();
+
+                return clazz == String.class ? (@Nullable T) response : fromJson(response, clazz);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new SpotifyException(e.getMessage(), e);
         } catch (OAuthException | OAuthResponseException e) {
             throw new SpotifyAuthorizationException(e.getMessage(), e);
@@ -295,7 +319,7 @@ public class SpotifyApi {
             throws OAuthException, IOException, OAuthResponseException {
         try {
             return connector.request(call, BEARER + accessToken);
-        } catch (SpotifyTokenExpiredException e) {
+        } catch (final SpotifyTokenExpiredException e) {
             // Retry with new access token
             return connector.request(call, BEARER + oAuthClientService.refreshToken().getAccessToken());
         }

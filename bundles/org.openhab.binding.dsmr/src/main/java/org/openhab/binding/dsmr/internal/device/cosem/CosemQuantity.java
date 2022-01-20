@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,7 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
     public static final CosemQuantity<Power> WATT = new CosemQuantity<>(Units.WATT);
     public static final CosemQuantity<Power> KILO_VAR = new CosemQuantity<>(Units.KILOVAR);
     public static final CosemQuantity<Energy> KILO_VAR_HOUR = new CosemQuantity<>(Units.KILOVAR_HOUR);
+    public static final CosemQuantity<Power> KILO_VA = new CosemQuantity<>(MetricPrefix.KILO(Units.VOLT_AMPERE));
 
     /**
      * Pattern to convert a cosem value to a value that can be parsed by {@link QuantityType}.
@@ -100,13 +101,14 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
     @Override
     protected QuantityType<Q> getStateValue(String cosemValue) throws ParseException {
         try {
-            QuantityType<Q> qt = new QuantityType<>(prepare(cosemValue));
+            final QuantityType<Q> it = new QuantityType<>(prepare(cosemValue));
+            final @Nullable QuantityType<Q> qt = it.toUnit(unit);
 
-            if (!unit.equals(qt.getUnit())) {
+            if (qt == null) {
                 throw new ParseException("Failed to parse value '" + cosemValue + "' as unit " + unit, 0);
             }
             return qt;
-        } catch (IllegalArgumentException nfe) {
+        } catch (final IllegalArgumentException nfe) {
             throw new ParseException("Failed to parse value '" + cosemValue + "' as unit " + unit, 0);
         }
     }
@@ -123,7 +125,7 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
      * We also support unit that do not follow the exact case.
      */
     private String prepare(String cosemValue) {
-        Matcher matcher = COSEM_VALUE_WITH_UNIT_PATTERN.matcher(cosemValue.replace("m3", "m³"));
+        final Matcher matcher = COSEM_VALUE_WITH_UNIT_PATTERN.matcher(cosemValue.replace("m3", "m³"));
         if (!matcher.find()) {
             return cosemValue;
         }
@@ -131,7 +133,7 @@ class CosemQuantity<Q extends @Nullable Quantity<Q>> extends CosemValueDescripto
         try {
             Integer.parseInt(matcher.group(2));
             return cosemValue;
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             return matcher.group(1) + ' ' + matcher.group(2);
         }
     }

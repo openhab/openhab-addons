@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,6 +90,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     protected int volume = 0;
     protected boolean volumeEnabled = false;
     protected boolean isMuted = false;
+    protected boolean isLoadHighlightedDetails = false;
+    protected boolean isLoadAlbumDetails = false;
     protected String friendlyName = EMPTY;
     protected Object sequenceLock = new Object();
 
@@ -124,6 +126,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         final String host = config.host;
         final Integer port = config.port;
         final Integer updatePeriod = config.updatePeriod;
+        this.isLoadHighlightedDetails = config.loadHighlightedDetails;
+        this.isLoadAlbumDetails = config.loadAlbumDetails;
 
         if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "undefined serialPort and host configuration settings; please set one of them";
@@ -166,10 +170,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
+
         scheduleReconnectJob();
         schedulePollingJob();
-
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override

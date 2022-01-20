@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -153,7 +153,8 @@ public class InputWithPresetControlXML extends AbstractInputControlXML implement
                 // special handling for RX-V3900, where 'A1' becomes 101 and 'B2' becomes 202 preset
                 if (presetValue.length() >= 2) {
                     Character presetAlpha = presetValue.charAt(0);
-                    if (Character.isLetter(presetAlpha) && Character.isUpperCase(presetAlpha)) {
+                    if (Character.isLetter(presetAlpha) && Character.isUpperCase(presetAlpha)
+                            && Character.isDigit(presetValue.charAt(1))) {
                         int presetNumber = Integer.parseInt(presetValue.substring(1));
                         return (ArrayUtils.indexOf(LETTERS, presetAlpha) + 1) * 100 + presetNumber;
                     }

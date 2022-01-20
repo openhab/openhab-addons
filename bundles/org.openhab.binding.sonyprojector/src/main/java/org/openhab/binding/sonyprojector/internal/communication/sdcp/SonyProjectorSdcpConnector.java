@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,8 @@ import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorConnector;
 import org.openhab.binding.sonyprojector.internal.communication.SonyProjectorItem;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConnectionException;
 import org.openhab.core.util.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +116,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
     }
 
     @Override
-    public synchronized void open() throws SonyProjectorException {
+    public synchronized void open() throws ConnectionException {
         if (!connected) {
             logger.debug("Opening SDCP connection IP {} port {}", this.address, this.port);
             try {
@@ -130,8 +132,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
 
                 logger.debug("SDCP connection opened");
             } catch (IOException | SecurityException | IllegalArgumentException e) {
-                logger.debug("Opening SDCP connection failed: {}", e.getMessage());
-                throw new SonyProjectorException("Opening SDCP connection failed: " + e.getMessage());
+                throw new ConnectionException("@text/exception.opening-sdcp-connection-failed", e);
             }
         }
     }
@@ -181,15 +182,15 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
      * @param dataBuffer the buffer into which the data is read.
      * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
      *         stream has been reached.
-     * @throws SonyProjectorException - If the input stream is null, if the first byte cannot be read for any reason
+     * @throws CommunicationException if the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
      */
     @Override
-    protected int readInput(byte[] dataBuffer) throws SonyProjectorException {
+    protected int readInput(byte[] dataBuffer) throws CommunicationException {
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
-            throw new SonyProjectorException("readInput failed: input stream is null");
+            throw new CommunicationException("readInput failed: input stream is null");
         }
         try {
             return dataIn.read(dataBuffer);
@@ -197,12 +198,12 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
             return 0;
         } catch (IOException e) {
             logger.debug("readInput failed: {}", e.getMessage());
-            throw new SonyProjectorException("readInput failed: " + e.getMessage());
+            throw new CommunicationException("readInput failed", e);
         }
     }
 
     @Override
-    protected synchronized byte[] readResponse() throws SonyProjectorException {
+    protected synchronized byte[] readResponse() throws CommunicationException {
         logger.debug("readResponse (timeout = {} ms)...", READ_TIMEOUT_MS);
         byte[] message = new byte[MSG_MAX_SIZE];
         boolean timeout = false;
@@ -222,22 +223,22 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         }
         if ((count < MSG_MIN_SIZE) && timeout) {
             logger.debug("readResponse timeout: only {} bytes read after {} ms", count, READ_TIMEOUT_MS);
-            throw new SonyProjectorException("readResponse failed: timeout");
+            throw new CommunicationException("readResponse failed: timeout");
         }
         logger.debug("readResponse: {}", HexUtils.bytesToHex(message));
         if (count < MSG_MIN_SIZE) {
             logger.debug("readResponse: unexpected response data length: {}", count);
-            throw new SonyProjectorException("Unexpected response data length");
+            throw new CommunicationException("Unexpected response data length");
         }
         return message;
     }
 
     @Override
-    protected void validateResponse(byte[] responseMessage, SonyProjectorItem item) throws SonyProjectorException {
+    protected void validateResponse(byte[] responseMessage, SonyProjectorItem item) throws CommunicationException {
         // Check response size
         if (responseMessage.length < MSG_MIN_SIZE) {
             logger.debug("Unexpected response data length: {}", responseMessage.length);
-            throw new SonyProjectorException("Unexpected response data length");
+            throw new CommunicationException("Unexpected response data length");
         }
 
         // Header should be a sony projector header
@@ -245,7 +246,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         if (!Arrays.equals(headerMsg, HEADER)) {
             logger.debug("Unexpected HEADER in response: {} rather than {}", HexUtils.bytesToHex(headerMsg),
                     HexUtils.bytesToHex(HEADER));
-            throw new SonyProjectorException("Unexpected HEADER in response");
+            throw new CommunicationException("Unexpected HEADER in response");
         }
 
         // Community should be the same as used for sending
@@ -253,7 +254,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         if (!Arrays.equals(communityResponseMsg, community.getBytes())) {
             logger.debug("Unexpected community in response: {} rather than {}",
                     HexUtils.bytesToHex(communityResponseMsg), HexUtils.bytesToHex(community.getBytes()));
-            throw new SonyProjectorException("Unexpected community in response");
+            throw new CommunicationException("Unexpected community in response");
         }
 
         // Item number should be the same as used for sending
@@ -261,14 +262,14 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
         if (!Arrays.equals(itemResponseMsg, item.getCode())) {
             logger.debug("Unexpected item number in response: {} rather than {}", HexUtils.bytesToHex(itemResponseMsg),
                     HexUtils.bytesToHex(item.getCode()));
-            throw new SonyProjectorException("Unexpected item number in response");
+            throw new CommunicationException("Unexpected item number in response");
         }
 
         // Check response size
         int dataLength = responseMessage[9] & 0x000000FF;
         if (responseMessage.length < (10 + dataLength)) {
             logger.debug("Unexpected response data length: {}", dataLength);
-            throw new SonyProjectorException("Unexpected response data length");
+            throw new CommunicationException("Unexpected response data length");
         }
 
         // byte 7 is expected to be 1, which indicates that the request was successful
@@ -279,11 +280,11 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
                 try {
                     SonyProjectorSdcpError error = SonyProjectorSdcpError.getFromDataCode(errorCode);
                     msg = error.getMessage();
-                } catch (SonyProjectorException e) {
+                } catch (CommunicationException e) {
                 }
             }
             logger.debug("{} received in response", msg);
-            throw new SonyProjectorException(msg + " received in response");
+            throw new CommunicationException(msg + " received in response");
         }
     }
 
@@ -303,7 +304,7 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
      *
      * @return the model name
      *
-     * @throws SonyProjectorException - In case of any problem
+     * @throws SonyProjectorException in case of any problem
      */
     public String getModelName() throws SonyProjectorException {
         return new String(getSetting(SonyProjectorItem.MODEL_NAME), StandardCharsets.UTF_8);

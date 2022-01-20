@@ -17,6 +17,8 @@
 			<channel id="apply_template" typeId="apply_template"/>
 		</channels>
 
+		<representation-property>ipAddress</representation-property>
+
 		<config-description-ref uri="bridge-type:avmfritz:fritzbox"/>
 	</bridge-type>
 
@@ -33,6 +35,8 @@
 			<channel id="power" typeId="power"/>
 			<channel id="outlet" typeId="outlet"/>
 		</channels>
+
+		<representation-property>ipAddress</representation-property>
 
 		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline"/>
 	</bridge-type>

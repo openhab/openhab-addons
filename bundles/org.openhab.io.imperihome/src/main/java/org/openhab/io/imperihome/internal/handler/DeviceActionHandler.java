@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.io.imperihome.internal.handler;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DeviceActionHandler {
 
-    private static final String CHARSET = "UTF-8";
-
     private final Logger logger = LoggerFactory.getLogger(DeviceActionHandler.class);
 
     private final DeviceRegistry deviceRegistry;
@@ -42,17 +40,13 @@ public class DeviceActionHandler {
 
     public void handle(HttpServletRequest req, Matcher urlMatcher) {
         String deviceId, action, value;
-        try {
-            deviceId = URLDecoder.decode(urlMatcher.group(1), CHARSET);
-            action = URLDecoder.decode(urlMatcher.group(2), CHARSET);
+        deviceId = URLDecoder.decode(urlMatcher.group(1), StandardCharsets.UTF_8);
+        action = URLDecoder.decode(urlMatcher.group(2), StandardCharsets.UTF_8);
 
-            if (urlMatcher.group(3) == null) {
-                value = null;
-            } else {
-                value = URLDecoder.decode(urlMatcher.group(3), CHARSET);
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Could not decode request params", e);
+        if (urlMatcher.group(3) == null) {
+            value = null;
+        } else {
+            value = URLDecoder.decode(urlMatcher.group(3), StandardCharsets.UTF_8);
         }
 
         logger.debug("Action request for device {}: [{}] [{}]", deviceId, action, value);

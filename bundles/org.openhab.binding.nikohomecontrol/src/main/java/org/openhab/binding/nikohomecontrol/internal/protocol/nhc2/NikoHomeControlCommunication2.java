@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -362,7 +362,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     .orElse(null);
         }
 
-        if ("action".equals(device.type)) {
+        if ("action".equals(device.type) || "virtual".equals(device.type)) {
             if (!actions.containsKey(device.uuid)) {
                 logger.debug("adding action device {}, {}", device.uuid, device.name);
 
@@ -382,6 +382,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     case "socket":
                     case "switched-generic":
                     case "switched-fan":
+                    case "flag":
                         actionType = ActionType.RELAY;
                         break;
                     case "dimmer":
@@ -395,7 +396,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         break;
                     default:
                         actionType = ActionType.GENERIC;
-                        logger.debug("device type {} not recognised, default to GENERIC action", device.type);
+                        logger.debug("device model {} not recognised, default to GENERIC action", device.model);
                 }
 
                 NhcAction2 nhcAction = new NhcAction2(device.uuid, device.name, device.model, device.technology,
@@ -480,22 +481,26 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             booleanState = basicStateProperty.get().basicState;
         }
 
-        if (booleanState != null) {
-            if (NHCON.equals(booleanState)) {
-                action.setBooleanState(true);
-                logger.debug("setting action {} internally to ON", action.getId());
-            } else if (NHCOFF.equals(booleanState)) {
-                action.setBooleanState(false);
-                logger.debug("setting action {} internally to OFF", action.getId());
-            }
+        if (NHCOFF.equals(booleanState) || NHCFALSE.equals(booleanState)) {
+            action.setBooleanState(false);
+            logger.debug("setting action {} internally to OFF", action.getId());
         }
 
         if (dimmerProperty.isPresent()) {
             String brightness = dimmerProperty.get().brightness;
             if (brightness != null) {
-                action.setState(Integer.parseInt(brightness));
-                logger.debug("setting action {} internally to {}", action.getId(), dimmerProperty.get().brightness);
+                try {
+                    action.setState(Integer.parseInt(brightness));
+                    logger.debug("setting action {} internally to {}", action.getId(), dimmerProperty.get().brightness);
+                } catch (NumberFormatException e) {
+                    logger.debug("received invalid brightness value {} for dimmer {}", brightness, action.getId());
+                }
             }
+        }
+
+        if (NHCON.equals(booleanState) || NHCTRUE.equals(booleanState)) {
+            action.setBooleanState(true);
+            logger.debug("setting action {} internally to ON", action.getId());
         }
     }
 
@@ -505,7 +510,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 action.setState(Integer.parseInt(position));
                 logger.debug("setting action {} internally to {}", action.getId(), position);
             } catch (NumberFormatException e) {
-                logger.trace("received empty rollershutter {} position info", action.getId());
+                logger.trace("received empty or invalid rollershutter {} position info {}", action.getId(), position);
             }
         });
     }
@@ -615,6 +620,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         switch (action.getType()) {
             case GENERIC:
             case TRIGGER:
+                if (!NHCON.equals(value)) {
+                    // Only trigger for ON
+                    return;
+                }
                 property.basicState = NHCTRIGGERED;
                 break;
             case RELAY:
@@ -627,6 +636,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 } else if (NHCOFF.equals(value)) {
                     property.status = value;
                 } else {
+                    try {
+                        action.setState(Integer.parseInt(value)); // set cached state to new brightness value to avoid
+                                                                  // switching on with old brightness value before
+                                                                  // updating
+                                                                  // to new value
+                    } catch (NumberFormatException e) {
+                        logger.debug("internal error, trying to set invalid brightness value {} for dimmer {}", value,
+                                action.getId());
+                        return;
+                    }
+
                     // If the light is off, turn the light on before sending the brightness value, needs to happen
                     // in 2 separate messages.
                     if (!action.booleanState()) {
@@ -643,8 +663,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 } else if (NHCDOWN.equals(value)) {
                     property.position = "0";
                 } else {
-                    int position = Integer.parseInt(value);
-                    property.position = String.valueOf(position);
+                    property.position = value;
                 }
                 break;
         }
@@ -778,8 +797,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             mqttConnection.connectionPublish(topic, gsonMessage);
 
         } catch (MqttException e) {
-            String message = e.getMessage();
-            message = (message != null) ? message : "Communication error";
+            String message = e.getLocalizedMessage();
 
             logger.debug("sending command failed, trying to restart communication");
             restartCommunication();
@@ -791,12 +809,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                     logger.debug("failed to restart communication");
                 }
             } catch (MqttException e1) {
-                message = e1.getMessage();
-                message = (message != null) ? message : "Communication error";
+                message = e1.getLocalizedMessage();
 
                 logger.debug("error resending device command");
             }
             if (!communicationActive()) {
+                message = (message != null) ? message : "@text/offline.communication-error";
                 connectionLost(message);
             }
         }
@@ -862,8 +880,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         if (error != null) {
             logger.debug("Connection state: {}", state, error);
-            String message = error.getMessage();
-            message = (message != null) ? message : "Error communicating with the controller";
+            String message = error.getLocalizedMessage();
+            message = (message != null) ? message : "@text/offline.communication-error";
             if (!MqttConnectionState.CONNECTING.equals(state)) {
                 // This is a connection loss, try to restart
                 restartCommunication();

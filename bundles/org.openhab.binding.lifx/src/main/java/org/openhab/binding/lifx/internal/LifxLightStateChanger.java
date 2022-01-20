@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,13 +34,16 @@ import org.openhab.binding.lifx.internal.dto.AcknowledgementResponse;
 import org.openhab.binding.lifx.internal.dto.ApplicationRequest;
 import org.openhab.binding.lifx.internal.dto.Effect;
 import org.openhab.binding.lifx.internal.dto.GetColorZonesRequest;
+import org.openhab.binding.lifx.internal.dto.GetHevCycleRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.dto.GetLightPowerRequest;
 import org.openhab.binding.lifx.internal.dto.GetRequest;
+import org.openhab.binding.lifx.internal.dto.HevCycleState;
 import org.openhab.binding.lifx.internal.dto.Packet;
 import org.openhab.binding.lifx.internal.dto.PowerState;
 import org.openhab.binding.lifx.internal.dto.SetColorRequest;
 import org.openhab.binding.lifx.internal.dto.SetColorZonesRequest;
+import org.openhab.binding.lifx.internal.dto.SetHevCycleRequest;
 import org.openhab.binding.lifx.internal.dto.SetLightInfraredRequest;
 import org.openhab.binding.lifx.internal.dto.SetLightPowerRequest;
 import org.openhab.binding.lifx.internal.dto.SetPowerRequest;
@@ -309,6 +312,17 @@ public class LifxLightStateChanger implements LifxLightStateListener {
     }
 
     @Override
+    public void handleHevCycleStateChange(@Nullable HevCycleState oldHevCycleState, HevCycleState newHevCycleState) {
+        // The change should be ignored when both the old and new state are disabled regardless of the cycle duration
+        if (!newHevCycleState.equals(oldHevCycleState)
+                && (oldHevCycleState == null || oldHevCycleState.isEnable() || newHevCycleState.isEnable())) {
+            SetHevCycleRequest packet = new SetHevCycleRequest(newHevCycleState.isEnable(),
+                    newHevCycleState.getDuration());
+            replacePacketsInMap(packet);
+        }
+    }
+
+    @Override
     public void handleInfraredChange(@Nullable PercentType oldInfrared, PercentType newInfrared) {
         PercentType infrared = pendingLightState.getInfrared();
         if (infrared != null) {
@@ -325,7 +339,7 @@ public class LifxLightStateChanger implements LifxLightStateListener {
 
     @Override
     public void handleTileEffectChange(@Nullable Effect oldEffect, Effect newEffect) {
-        if (oldEffect == null || !oldEffect.equals(newEffect)) {
+        if (!newEffect.equals(oldEffect)) {
             SetTileEffectRequest packet = new SetTileEffectRequest(newEffect);
             replacePacketsInMap(packet);
         }
@@ -360,6 +374,13 @@ public class LifxLightStateChanger implements LifxLightStateListener {
                     getZonesIfZonesAreSet();
                 } else if (sentPacket instanceof SetColorZonesRequest) {
                     getZonesIfZonesAreSet();
+                } else if (sentPacket instanceof SetHevCycleRequest) {
+                    scheduler.schedule(() -> {
+                        GetHevCycleRequest hevCyclePacket = new GetHevCycleRequest();
+                        communicationHandler.sendPacket(hevCyclePacket);
+                        GetLightPowerRequest powerPacket = new GetLightPowerRequest();
+                        communicationHandler.sendPacket(powerPacket);
+                    }, 600, TimeUnit.MILLISECONDS);
                 } else if (sentPacket instanceof SetLightInfraredRequest) {
                     GetLightInfraredRequest infraredPacket = new GetLightInfraredRequest();
                     communicationHandler.sendPacket(infraredPacket);

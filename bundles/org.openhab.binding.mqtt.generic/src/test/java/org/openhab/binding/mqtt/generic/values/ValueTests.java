@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,8 +26,11 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.TypeParser;
 
@@ -158,6 +161,39 @@ public class ValueTests {
         v.update(new StringType("fancyON"));
         assertThat(v.getMQTTpublishValue(null), is("fancyON"));
         assertThat(v.getChannelState(), is(OpenClosedType.OPEN));
+    }
+
+    @Test
+    public void numberUpdate() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.WATT);
+
+        // Test with command with units
+        v.update(new QuantityType<>(20, Units.WATT));
+        assertThat(v.getMQTTpublishValue(null), is("20"));
+        assertThat(v.getChannelState(), is(new QuantityType<>(20, Units.WATT)));
+        v.update(new QuantityType<>(20, MetricPrefix.KILO(Units.WATT)));
+        assertThat(v.getMQTTpublishValue(null), is("20000"));
+        assertThat(v.getChannelState(), is(new QuantityType<>(20, MetricPrefix.KILO(Units.WATT))));
+
+        // Test with command without units
+        v.update(new QuantityType<>("20"));
+        assertThat(v.getMQTTpublishValue(null), is("20"));
+        assertThat(v.getChannelState(), is(new QuantityType<>(20, Units.WATT)));
+    }
+
+    @Test
+    public void numberPercentageUpdate() {
+        NumberValue v = new NumberValue(null, null, new BigDecimal(10), Units.PERCENT);
+
+        // Test with command with units
+        v.update(new QuantityType<>(20, Units.PERCENT));
+        assertThat(v.getMQTTpublishValue(null), is("20"));
+        assertThat(v.getChannelState(), is(new QuantityType<>(20, Units.PERCENT)));
+
+        // Test with command without units
+        v.update(new QuantityType<>("20"));
+        assertThat(v.getMQTTpublishValue(null), is("20"));
+        assertThat(v.getChannelState(), is(new QuantityType<>(20, Units.PERCENT)));
     }
 
     @Test

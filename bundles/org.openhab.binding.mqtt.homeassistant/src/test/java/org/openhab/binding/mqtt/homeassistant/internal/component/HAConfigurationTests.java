@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -98,8 +99,8 @@ public class HAConfigurationTests {
                 Switch.ChannelConfiguration.class);
 
         assertThat(config.getAvailabilityTopic(), is("D/E"));
-        assertThat(config.state_topic, is("O/D/"));
-        assertThat(config.command_topic, is("P~Q"));
+        assertThat(config.stateTopic, is("O/D/"));
+        assertThat(config.commandTopic, is("P~Q"));
         assertThat(config.getDevice(), is(notNullValue()));
 
         Device device = config.getDevice();
@@ -158,35 +159,35 @@ public class HAConfigurationTests {
         assertThat(config.getDevice().getName(), is("th1"));
         assertThat(config.getDevice().getSwVersion(), is("Zigbee2MQTT 1.18.2"));
 
-        assertThat(config.action_template, is(
+        assertThat(config.actionTemplate, is(
                 "{% set values = {'idle':'off','heat':'heating','cool':'cooling','fan only':'fan'} %}{{ values[value_json.running_state] }}"));
-        assertThat(config.action_topic, is("zigbee2mqtt/th1"));
-        assertThat(config.away_mode_command_topic, is("zigbee2mqtt/th1/set/away_mode"));
-        assertThat(config.away_mode_state_template, is("{{ value_json.away_mode }}"));
-        assertThat(config.away_mode_state_topic, is("zigbee2mqtt/th1"));
-        assertThat(config.current_temperature_template, is("{{ value_json.local_temperature }}"));
-        assertThat(config.current_temperature_topic, is("zigbee2mqtt/th1"));
-        assertThat(config.hold_command_topic, is("zigbee2mqtt/th1/set/preset"));
-        assertThat(config.hold_modes, is(List.of("schedule", "manual", "boost", "complex", "comfort", "eco")));
-        assertThat(config.hold_state_template, is("{{ value_json.preset }}"));
-        assertThat(config.hold_state_topic, is("zigbee2mqtt/th1"));
-        assertThat(config.json_attributes_topic, is("zigbee2mqtt/th1"));
-        assertThat(config.max_temp, is(35f));
-        assertThat(config.min_temp, is(5f));
-        assertThat(config.mode_command_topic, is("zigbee2mqtt/th1/set/system_mode"));
-        assertThat(config.mode_state_template, is("{{ value_json.system_mode }}"));
-        assertThat(config.mode_state_topic, is("zigbee2mqtt/th1"));
+        assertThat(config.actionTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.awayModeCommandTopic, is("zigbee2mqtt/th1/set/away_mode"));
+        assertThat(config.awayModeStateTemplate, is("{{ value_json.away_mode }}"));
+        assertThat(config.awayModeStateTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.currentTemperatureTemplate, is("{{ value_json.local_temperature }}"));
+        assertThat(config.currentTemperatureTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.holdCommandTopic, is("zigbee2mqtt/th1/set/preset"));
+        assertThat(config.holdModes, is(List.of("schedule", "manual", "boost", "complex", "comfort", "eco")));
+        assertThat(config.holdStateTemplate, is("{{ value_json.preset }}"));
+        assertThat(config.holdStateTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.jsonAttributesTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.maxTemp, is(new BigDecimal(35)));
+        assertThat(config.minTemp, is(new BigDecimal(5)));
+        assertThat(config.modeCommandTopic, is("zigbee2mqtt/th1/set/system_mode"));
+        assertThat(config.modeStateTemplate, is("{{ value_json.system_mode }}"));
+        assertThat(config.modeStateTopic, is("zigbee2mqtt/th1"));
         assertThat(config.modes, is(List.of("heat", "auto", "off")));
         assertThat(config.getName(), is("th1"));
-        assertThat(config.temp_step, is(0.5f));
-        assertThat(config.temperature_command_topic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
-        assertThat(config.temperature_state_template, is("{{ value_json.current_heating_setpoint }}"));
-        assertThat(config.temperature_state_topic, is("zigbee2mqtt/th1"));
-        assertThat(config.temperature_unit, is("C"));
+        assertThat(config.tempStep, is(new BigDecimal("0.5")));
+        assertThat(config.temperatureCommandTopic, is("zigbee2mqtt/th1/set/current_heating_setpoint"));
+        assertThat(config.temperatureStateTemplate, is("{{ value_json.current_heating_setpoint }}"));
+        assertThat(config.temperatureStateTopic, is("zigbee2mqtt/th1"));
+        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.CELSIUS));
         assertThat(config.getUniqueId(), is("0x847127fffe11dd6a_climate_zigbee2mqtt"));
 
         assertThat(config.initial, is(21));
-        assertThat(config.send_if_off, is(true));
+        assertThat(config.sendIfOff, is(true));
     }
 
     @Test
@@ -194,57 +195,57 @@ public class HAConfigurationTests {
         String json = readTestJson("configClimate.json");
         Climate.ChannelConfiguration config = AbstractChannelConfiguration.fromString(json, gson,
                 Climate.ChannelConfiguration.class);
-        assertThat(config.action_template, is("a"));
-        assertThat(config.action_topic, is("b"));
-        assertThat(config.aux_command_topic, is("c"));
-        assertThat(config.aux_state_template, is("d"));
-        assertThat(config.aux_state_topic, is("e"));
-        assertThat(config.away_mode_command_topic, is("f"));
-        assertThat(config.away_mode_state_template, is("g"));
-        assertThat(config.away_mode_state_topic, is("h"));
-        assertThat(config.current_temperature_template, is("i"));
-        assertThat(config.current_temperature_topic, is("j"));
-        assertThat(config.fan_mode_command_template, is("k"));
-        assertThat(config.fan_mode_command_topic, is("l"));
-        assertThat(config.fan_mode_state_template, is("m"));
-        assertThat(config.fan_mode_state_topic, is("n"));
-        assertThat(config.fan_modes, is(List.of("p1", "p2")));
-        assertThat(config.hold_command_template, is("q"));
-        assertThat(config.hold_command_topic, is("r"));
-        assertThat(config.hold_state_template, is("s"));
-        assertThat(config.hold_state_topic, is("t"));
-        assertThat(config.hold_modes, is(List.of("u1", "u2", "u3")));
-        assertThat(config.json_attributes_template, is("v"));
-        assertThat(config.json_attributes_topic, is("w"));
-        assertThat(config.mode_command_template, is("x"));
-        assertThat(config.mode_command_topic, is("y"));
-        assertThat(config.mode_state_template, is("z"));
-        assertThat(config.mode_state_topic, is("A"));
+        assertThat(config.actionTemplate, is("a"));
+        assertThat(config.actionTopic, is("b"));
+        assertThat(config.auxCommandTopic, is("c"));
+        assertThat(config.auxStateTemplate, is("d"));
+        assertThat(config.auxStateTopic, is("e"));
+        assertThat(config.awayModeCommandTopic, is("f"));
+        assertThat(config.awayModeStateTemplate, is("g"));
+        assertThat(config.awayModeStateTopic, is("h"));
+        assertThat(config.currentTemperatureTemplate, is("i"));
+        assertThat(config.currentTemperatureTopic, is("j"));
+        assertThat(config.fanModeCommandTemplate, is("k"));
+        assertThat(config.fanModeCommandTopic, is("l"));
+        assertThat(config.fanModeStateTemplate, is("m"));
+        assertThat(config.fanModeStateTopic, is("n"));
+        assertThat(config.fanModes, is(List.of("p1", "p2")));
+        assertThat(config.holdCommandTemplate, is("q"));
+        assertThat(config.holdCommandTopic, is("r"));
+        assertThat(config.holdStateTemplate, is("s"));
+        assertThat(config.holdStateTopic, is("t"));
+        assertThat(config.holdModes, is(List.of("u1", "u2", "u3")));
+        assertThat(config.jsonAttributesTemplate, is("v"));
+        assertThat(config.jsonAttributesTopic, is("w"));
+        assertThat(config.modeCommandTemplate, is("x"));
+        assertThat(config.modeCommandTopic, is("y"));
+        assertThat(config.modeStateTemplate, is("z"));
+        assertThat(config.modeStateTopic, is("A"));
         assertThat(config.modes, is(List.of("B1", "B2")));
-        assertThat(config.swing_command_template, is("C"));
-        assertThat(config.swing_command_topic, is("D"));
-        assertThat(config.swing_state_template, is("E"));
-        assertThat(config.swing_state_topic, is("F"));
-        assertThat(config.swing_modes, is(List.of("G1")));
-        assertThat(config.temperature_command_template, is("H"));
-        assertThat(config.temperature_command_topic, is("I"));
-        assertThat(config.temperature_state_template, is("J"));
-        assertThat(config.temperature_state_topic, is("K"));
-        assertThat(config.temperature_high_command_template, is("L"));
-        assertThat(config.temperature_high_command_topic, is("N"));
-        assertThat(config.temperature_high_state_template, is("O"));
-        assertThat(config.temperature_high_state_topic, is("P"));
-        assertThat(config.temperature_low_command_template, is("Q"));
-        assertThat(config.temperature_low_command_topic, is("R"));
-        assertThat(config.temperature_low_state_template, is("S"));
-        assertThat(config.temperature_low_state_topic, is("T"));
-        assertThat(config.power_command_topic, is("U"));
+        assertThat(config.swingCommandTemplate, is("C"));
+        assertThat(config.swingCommandTopic, is("D"));
+        assertThat(config.swingStateTemplate, is("E"));
+        assertThat(config.swingStateTopic, is("F"));
+        assertThat(config.swingModes, is(List.of("G1")));
+        assertThat(config.temperatureCommandTemplate, is("H"));
+        assertThat(config.temperatureCommandTopic, is("I"));
+        assertThat(config.temperatureStateTemplate, is("J"));
+        assertThat(config.temperatureStateTopic, is("K"));
+        assertThat(config.temperatureHighCommandTemplate, is("L"));
+        assertThat(config.temperatureHighCommandTopic, is("N"));
+        assertThat(config.temperatureHighStateTemplate, is("O"));
+        assertThat(config.temperatureHighStateTopic, is("P"));
+        assertThat(config.temperatureLowCommandTemplate, is("Q"));
+        assertThat(config.temperatureLowCommandTopic, is("R"));
+        assertThat(config.temperatureLowStateTemplate, is("S"));
+        assertThat(config.temperatureLowStateTopic, is("T"));
+        assertThat(config.powerCommandTopic, is("U"));
         assertThat(config.initial, is(10));
-        assertThat(config.max_temp, is(40f));
-        assertThat(config.min_temp, is(0f));
-        assertThat(config.temperature_unit, is("F"));
-        assertThat(config.temp_step, is(1f));
-        assertThat(config.precision, is(0.5f));
-        assertThat(config.send_if_off, is(false));
+        assertThat(config.maxTemp, is(new BigDecimal(40)));
+        assertThat(config.minTemp, is(BigDecimal.ZERO));
+        assertThat(config.temperatureUnit, is(Climate.TemperatureUnit.FAHRENHEIT));
+        assertThat(config.tempStep, is(BigDecimal.ONE));
+        assertThat(config.precision, is(new BigDecimal("0.5")));
+        assertThat(config.sendIfOff, is(false));
     }
 }

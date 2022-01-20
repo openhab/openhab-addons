@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,11 +88,10 @@ public class RemoteopenhabDiscoveryParticipant implements MDNSDiscoveryParticipa
         String restPath = service.getPropertyString("uri");
         ThingUID thingUID = getThingUID(service);
         if (thingUID != null && ip != null && restPath != null) {
-            String label = "openHAB server";
             logger.debug("Create a DiscoveryResult for remote openHAB server {} with IP {}", thingUID, ip);
             Map<String, Object> properties = Map.of(HOST, ip, REST_PATH, restPath);
             result = DiscoveryResultBuilder.create(thingUID).withProperties(properties).withRepresentationProperty(HOST)
-                    .withLabel(label).build();
+                    .withLabel("@text/discovery.server.label").build();
         }
         return result;
     }

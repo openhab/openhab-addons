@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,8 +44,10 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
     }
 
     @Test
-    public void testChannelUpdatesForNullValues() {
+    public void testChannelUpdatesForNullValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(HOB_DEVICE_THING_UID.getId());
         when(deviceState.getStateType()).thenReturn(Optional.empty());
@@ -78,8 +80,10 @@ public class HobDeviceThingHandlerTest extends AbstractMieleThingHandlerTest {
     }
 
     @Test
-    public void testChannelUpdatesForValidValues() {
+    public void testChannelUpdatesForValidValues() throws Exception {
         // given:
+        setUpBridgeAndThing();
+
         DeviceState deviceState = mock(DeviceState.class);
         when(deviceState.getDeviceIdentifier()).thenReturn(HOB_DEVICE_THING_UID.getId());
         when(deviceState.getStateType()).thenReturn(Optional.of(StateType.RUNNING));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonyprojector.internal.handler.SonyProjectorHandler;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -49,12 +50,15 @@ public class SonyProjectorHandlerFactory extends BaseThingHandlerFactory {
     private final SerialPortManager serialPortManager;
 
     private final SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
+    private final TranslationProvider i18nProvider;
 
     @Activate
     public SonyProjectorHandlerFactory(final @Reference SerialPortManager serialPortManager,
-            final @Reference SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider) {
+            final @Reference SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider,
+            final @Reference TranslationProvider i18nProvider) {
         this.serialPortManager = serialPortManager;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -67,7 +71,7 @@ public class SonyProjectorHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new SonyProjectorHandler(thing, stateDescriptionProvider, serialPortManager);
+            return new SonyProjectorHandler(thing, stateDescriptionProvider, serialPortManager, i18nProvider);
         }
 
         return null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,20 +40,20 @@ import org.osgi.service.component.annotations.Component;
 public class NotificationActionTypeProvider implements ModuleTypeProvider {
 
     private static final ModuleType SEND_NOTIFICATION_ACTION = new ActionType(SendNotificationActionHandler.TYPE_ID,
-            getSendNotificationConfig(false, null), "send a notificaton",
+            getSendNotificationConfig(false, null), "send a notification",
             "Sends a notification to a specific cloud user.", null, Visibility.VISIBLE, null, null);
     private static final ModuleType SEND_EXTENDED_NOTIFICATION_ACTION = new ActionType(
             SendNotificationActionHandler.EXTENDED_TYPE_ID, getSendNotificationConfig(true, null),
-            "send a notificaton with icon and severity",
+            "send a notification with icon and severity",
             "Sends a notification to a specific cloud user. Optionally add an icon or the severity.", null,
             Visibility.VISIBLE, null, null);
     private static final ModuleType SEND_BROADCAST_NOTIFICATION_ACTION = new ActionType(
             SendBroadcastNotificationActionHandler.TYPE_ID, getNotificationConfig(false, null),
-            "broadcast a notificaton", "Sends a notification to all devices of all users.", null, Visibility.VISIBLE,
+            "broadcast a notification", "Sends a notification to all devices of all users.", null, Visibility.VISIBLE,
             null, null);
     private static final ModuleType SEND_EXRENDED_BROADCAST_NOTIFICATION_ACTION = new ActionType(
             SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID, getNotificationConfig(true, null),
-            "broadcast a notificaton with icon and severity",
+            "broadcast a notification with icon and severity",
             "Sends a notification to all devices of all users. Optionally add an icon or the severity.", null,
             Visibility.VISIBLE, null, null);
     private static final ModuleType SEND_LOG_NOTIFICATION_ACTION = new ActionType(

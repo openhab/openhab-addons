@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.upnpcontrol.internal.handler;
 
 import static org.openhab.binding.upnpcontrol.internal.UpnpControlBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -411,22 +410,18 @@ public class UpnpRendererHandler extends UpnpHandler {
      */
     public void setCurrentURI(String URI, String URIMetaData) {
         String uri = "";
-        try {
-            uri = URLDecoder.decode(URI.trim(), StandardCharsets.UTF_8.name());
-            // Some renderers don't send a URI Last Changed event when the same URI is requested, so don't wait for it
-            // before starting to play
-            if (!uri.equals(nowPlayingUri) && !playingNotification) {
-                CompletableFuture<Boolean> settingURI = isSettingURI;
-                if (settingURI != null) {
-                    settingURI.complete(false);
-                }
-                isSettingURI = new CompletableFuture<Boolean>(); // set this so we don't start playing when not finished
-                                                                 // setting URI
-            } else {
-                logger.debug("New URI {} is same as previous on renderer {}", nowPlayingUri, thing.getLabel());
+        uri = URLDecoder.decode(URI.trim(), StandardCharsets.UTF_8);
+        // Some renderers don't send a URI Last Changed event when the same URI is requested, so don't wait for it
+        // before starting to play
+        if (!uri.equals(nowPlayingUri) && !playingNotification) {
+            CompletableFuture<Boolean> settingURI = isSettingURI;
+            if (settingURI != null) {
+                settingURI.complete(false);
             }
-        } catch (UnsupportedEncodingException ignore) {
-            uri = URI;
+            isSettingURI = new CompletableFuture<Boolean>(); // set this so we don't start playing when not finished
+                                                             // setting URI
+        } else {
+            logger.debug("New URI {} is same as previous on renderer {}", nowPlayingUri, thing.getLabel());
         }
 
         Map<String, String> inputs = new HashMap<>();
@@ -1244,18 +1239,14 @@ public class UpnpRendererHandler extends UpnpHandler {
         String uri = "";
         String currentUri = "";
         String nextUri = "";
-        try {
-            if (value != null) {
-                uri = URLDecoder.decode(value.trim(), StandardCharsets.UTF_8.name());
-            }
-            if (current != null) {
-                currentUri = URLDecoder.decode(current.getRes().trim(), StandardCharsets.UTF_8.name());
-            }
-            if (next != null) {
-                nextUri = URLDecoder.decode(next.getRes(), StandardCharsets.UTF_8.name());
-            }
-        } catch (UnsupportedEncodingException ignore) {
-            // If not valid current URI, we assume there is none
+        if (value != null) {
+            uri = URLDecoder.decode(value.trim(), StandardCharsets.UTF_8);
+        }
+        if (current != null) {
+            currentUri = URLDecoder.decode(current.getRes().trim(), StandardCharsets.UTF_8);
+        }
+        if (next != null) {
+            nextUri = URLDecoder.decode(next.getRes(), StandardCharsets.UTF_8);
         }
 
         if (playingNotification && uri.equals(notificationUri)) {
@@ -1635,15 +1626,9 @@ public class UpnpRendererHandler extends UpnpHandler {
             String mediaRes = media.getRes().trim();
             String entryRes = (entry != null) ? entry.getRes().trim() : "";
 
-            try {
-                String mediaUrl = URLDecoder.decode(mediaRes, StandardCharsets.UTF_8.name());
-                String entryUrl = URLDecoder.decode(entryRes, StandardCharsets.UTF_8.name());
-                isCurrent = mediaUrl.equals(entryUrl);
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("Renderer {} unsupported encoding for new {} or current {} res URL, trying string compare",
-                        thing.getLabel(), mediaRes, entryRes);
-                isCurrent = mediaRes.equals(entryRes);
-            }
+            String mediaUrl = URLDecoder.decode(mediaRes, StandardCharsets.UTF_8);
+            String entryUrl = URLDecoder.decode(entryRes, StandardCharsets.UTF_8);
+            isCurrent = mediaUrl.equals(entryUrl);
 
             logger.trace("Current queue res: {}", entryRes);
             logger.trace("Updated media res: {}", mediaRes);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * MQTT topic subscribed to receive availability (online/offline) updates. Must not be used together with
  * availability_topic
@@ -19,16 +21,18 @@ package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
  * @author Anton Kharuzhy - Initial contribution
  */
 public class Availability {
-    protected String payload_available = "online";
-    protected String payload_not_available = "offline";
+    @SerializedName("payload_available")
+    protected String payloadAvailable = "online";
+    @SerializedName("payload_not_available")
+    protected String payloadNotAvailable = "offline";
     protected String topic;
 
-    public String getPayload_available() {
-        return payload_available;
+    public String getPayloadAvailable() {
+        return payloadAvailable;
     }
 
-    public String getPayload_not_available() {
-        return payload_not_available;
+    public String getPayloadNotAvailable() {
+        return payloadNotAvailable;
     }
 
     public String getTopic() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.nanoleaf.internal.model;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,9 +25,9 @@ import com.google.gson.annotations.SerializedName;
 public class AuthToken {
 
     @SerializedName("auth_token")
-    private @Nullable String authToken;
+    private String authToken = "";
 
-    public @Nullable String getAuthToken() {
+    public String getAuthToken() {
         return authToken;
     }
 

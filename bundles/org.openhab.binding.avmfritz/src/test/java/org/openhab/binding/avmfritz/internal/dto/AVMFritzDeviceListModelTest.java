@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,6 +85,30 @@ public class AVMFritzDeviceListModelTest {
                     + "        <unittype>262</unittype>\n"
                     + "        <interfaces>512</interfaces>\n"
                     + "    </etsiunitinfo>\n"
+                    + "</device>"
+                    + "<device identifier=\"12701 0027533-1\" id=\"2002\" functionbitmask=\"237572\" fwversion=\"0.0\" manufacturer=\"0x319d\" productname=\"HAN-FUN\">\n"
+                    + "    <present>0</present>\n"
+                    + "    <txbusy>0</txbusy>\n"
+                    + "    <name>SmartHome LED-Lampe #1</name>\n"
+                    + "    <simpleonoff>\n"
+                    + "        <state>0</state>\n"
+                    + "    </simpleonoff>\n"
+                    + "    <levelcontrol>\n"
+                    + "       <level>26</level>\n"
+                    + "       <levelpercentage>10</levelpercentage>\n"
+                    + "    </levelcontrol>\n"
+                    + "    <colorcontrol supported_modes=\"0\" current_mode=\"\" fullcolorsupport=\"0\" mapped=\"0\">\n"
+                    + "        <hue>254</hue>\n"
+                    + "        <saturation>100</saturation>\n"
+                    + "        <unmapped_hue></unmapped_hue>\n"
+                    + "        <unmapped_saturation></unmapped_saturation>\n"
+                    + "        <temperature>2700</temperature>\n"
+                    + "    </colorcontrol>\n"
+                    + "    <etsiunitinfo>\n"
+                    + "        <etsideviceid>407</etsideviceid>\n"
+                    + "        <unittype>278</unittype>\n"
+                    + "        <interfaces>512,514,513</interfaces>\n"
+                    + "    </etsiunitinfo>\n"
                     + "</device>" +
                 "</devicelist>";
         //@formatter:on
@@ -96,7 +120,7 @@ public class AVMFritzDeviceListModelTest {
     @Test
     public void validateDeviceListModel() {
         assertNotNull(devices);
-        assertEquals(16, devices.getDevicelist().size());
+        assertEquals(17, devices.getDevicelist().size());
         assertEquals("1", devices.getXmlApiVersion());
     }
 
@@ -137,7 +161,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -184,7 +208,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -231,7 +255,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -394,7 +418,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -464,7 +488,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -506,7 +530,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -549,7 +573,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -592,7 +616,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test
@@ -611,15 +635,21 @@ public class AVMFritzDeviceListModelTest {
         assertEquals(1, device.getPresent());
         assertEquals("Rollotron 1213 #1", device.getName());
 
-        assertFalse(device.isButton());
+        assertFalse(device.isHANFUNDevice());
         assertFalse(device.isHANFUNButton());
         assertTrue(device.isHANFUNAlarmSensor());
-        assertFalse(device.isDectRepeater());
+        assertFalse(device.isButton());
         assertFalse(device.isSwitchableOutlet());
         assertFalse(device.isTemperatureSensor());
         assertFalse(device.isHumiditySensor());
         assertFalse(device.isPowermeter());
+        assertFalse(device.isDectRepeater());
         assertFalse(device.isHeatingThermostat());
+        assertFalse(device.hasMicrophone());
+        assertTrue(device.isHANFUNUnit());
+        assertTrue(device.isHANFUNOnOff());
+        assertTrue(device.isDimmableLight());
+        assertFalse(device.isColorLight());
         assertTrue(device.isHANFUNBlinds());
 
         assertTrue(device.getButtons().isEmpty());
@@ -635,10 +665,67 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        LevelcontrolModel levelcontrol = device.getLevelcontrol();
+        LevelControlModel levelcontrol = device.getLevelControlModel();
         assertNotNull(levelcontrol);
         assertEquals(BigDecimal.valueOf(26L), levelcontrol.getLevel());
         assertEquals(BigDecimal.valueOf(10L), levelcontrol.getLevelPercentage());
+    }
+
+    @Test
+    public void validateHANFUNColorLightModel() {
+        Optional<AVMFritzBaseModel> optionalDevice = findModelByIdentifier("127010027533-1");
+        assertTrue(optionalDevice.isPresent());
+        assertTrue(optionalDevice.get() instanceof DeviceModel);
+
+        DeviceModel device = (DeviceModel) optionalDevice.get();
+        assertEquals("HAN-FUN", device.getProductName());
+        assertEquals("127010027533-1", device.getIdentifier());
+        assertEquals("2002", device.getDeviceId());
+        assertEquals("0.0", device.getFirmwareVersion());
+        assertEquals("0x319d", device.getManufacturer());
+
+        assertEquals(0, device.getPresent());
+        assertEquals("SmartHome LED-Lampe #1", device.getName());
+
+        assertFalse(device.isHANFUNDevice());
+        assertFalse(device.isHANFUNButton());
+        assertFalse(device.isHANFUNAlarmSensor());
+        assertFalse(device.isButton());
+        assertFalse(device.isSwitchableOutlet());
+        assertFalse(device.isTemperatureSensor());
+        assertFalse(device.isHumiditySensor());
+        assertFalse(device.isPowermeter());
+        assertFalse(device.isDectRepeater());
+        assertFalse(device.isHeatingThermostat());
+        assertFalse(device.hasMicrophone());
+        assertTrue(device.isHANFUNUnit());
+        assertTrue(device.isHANFUNOnOff());
+        assertTrue(device.isDimmableLight());
+        assertTrue(device.isColorLight());
+        assertFalse(device.isHANFUNBlinds());
+
+        assertTrue(device.getButtons().isEmpty());
+
+        assertNull(device.getAlert());
+
+        assertNull(device.getSwitch());
+
+        assertNull(device.getTemperature());
+
+        assertNull(device.getPowermeter());
+
+        assertNull(device.getHkr());
+
+        LevelControlModel levelcontrol = device.getLevelControlModel();
+        assertNotNull(levelcontrol);
+        assertEquals(BigDecimal.valueOf(26L), levelcontrol.getLevel());
+        assertEquals(BigDecimal.valueOf(10L), levelcontrol.getLevelPercentage());
+
+        ColorControlModel colorModel = device.getColorControlModel();
+        assertNotNull(colorModel);
+        assertEquals(254, colorModel.hue);
+        assertEquals(100, colorModel.saturation);
+        assertEquals(2700, colorModel.temperature);
     }
 
     @Test
@@ -687,7 +774,7 @@ public class AVMFritzDeviceListModelTest {
 
         assertNull(device.getHkr());
 
-        assertNull(device.getLevelcontrol());
+        assertNull(device.getLevelControlModel());
     }
 
     @Test

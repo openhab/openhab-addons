@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,24 +75,6 @@ public class ExpiringDayCache<V> {
             logger.debug("getValue from cache \"{}\" is returning a cached value", name);
         }
         return Optional.ofNullable(cachedValue);
-    }
-
-    /**
-     * Puts a new value into the cache.
-     *
-     * @param value the new value
-     */
-    public final synchronized void putValue(@Nullable V value) {
-        this.value = value;
-        expiresAt = calcNextExpiresAt();
-    }
-
-    /**
-     * Invalidates the value in the cache.
-     */
-    public final synchronized void invalidateValue() {
-        value = null;
-        expiresAt = calcAlreadyExpired();
     }
 
     /**

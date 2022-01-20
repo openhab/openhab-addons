@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,7 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -42,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
     // Thing for local weather created during discovery
     private static final String LOCAL = "local";
-    private static final String LOCAL_WEATHER = "Local Forecast";
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 4;
     private static final int DISCOVERY_INTERVAL_SECONDS = 1200;
@@ -50,7 +50,6 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(WeatherCompanyDiscoveryService.class);
 
     private final LocationProvider locationProvider;
-    private final LocaleProvider localeProvider;
     private final WeatherCompanyBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
@@ -59,11 +58,12 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
      * Creates a WeatherCompanyDiscoveryService with discovery enabled
      */
     public WeatherCompanyDiscoveryService(WeatherCompanyBridgeHandler bridgeHandler, LocationProvider locationProvider,
-            LocaleProvider localeProvider) {
+            LocaleProvider localeProvider, TranslationProvider i18nProvider) {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, true);
         this.bridgeHandler = bridgeHandler;
         this.locationProvider = locationProvider;
         this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
     }
 
     @Override
@@ -119,7 +119,7 @@ public class WeatherCompanyDiscoveryService extends AbstractDiscoveryService {
         properties.put(CONFIG_LANGUAGE, WeatherCompanyAbstractHandler.lookupLanguage(localeProvider.getLocale()));
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER_FORECAST, bridgeUID, LOCAL);
-        thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withBridge(bridgeUID).withLabel(LOCAL_WEATHER)
-                .withProperties(properties).build());
+        thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withBridge(bridgeUID)
+                .withLabel("@text/discovery.weather-forecast.local.label").withProperties(properties).build());
     }
 }

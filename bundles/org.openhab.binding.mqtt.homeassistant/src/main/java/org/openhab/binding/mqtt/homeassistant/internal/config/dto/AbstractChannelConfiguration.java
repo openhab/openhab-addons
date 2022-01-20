@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,14 +14,15 @@ package org.openhab.binding.mqtt.homeassistant.internal.config.dto;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.util.UIDUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -31,18 +32,26 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public abstract class AbstractChannelConfiguration {
+    public static final char PARENT_TOPIC_PLACEHOLDER = '~';
+
     protected String name;
 
     protected String icon = "";
     protected int qos; // defaults to 0 according to HA specification
     protected boolean retain; // defaults to false according to HA specification
-    protected @Nullable String value_template;
-    protected @Nullable String unique_id;
+    @SerializedName("value_template")
+    protected @Nullable String valueTemplate;
+    @SerializedName("unique_id")
+    protected @Nullable String uniqueId;
 
-    protected AvailabilityMode availability_mode = AvailabilityMode.LATEST;
-    protected @Nullable String availability_topic;
-    protected String payload_available = "online";
-    protected String payload_not_available = "offline";
+    @SerializedName("availability_mode")
+    protected AvailabilityMode availabilityMode = AvailabilityMode.LATEST;
+    @SerializedName("availability_topic")
+    protected @Nullable String availabilityTopic;
+    @SerializedName("payload_available")
+    protected String payloadAvailable = "online";
+    @SerializedName("payload_not_available")
+    protected String payloadNotAvailable = "offline";
 
     /**
      * A list of MQTT topics subscribed to receive availability (online/offline) updates. Must not be used together with
@@ -51,7 +60,7 @@ public abstract class AbstractChannelConfiguration {
     protected @Nullable List<Availability> availability;
 
     @SerializedName(value = "~")
-    protected String tilde = "";
+    protected String parentTopic = "";
 
     protected @Nullable Device device;
 
@@ -68,10 +77,6 @@ public abstract class AbstractChannelConfiguration {
 
     protected AbstractChannelConfiguration(String defaultName) {
         this.name = defaultName;
-    }
-
-    public @Nullable String expand(@Nullable String value) {
-        return value == null ? null : value.replaceAll("~", tilde);
     }
 
     public String getThingName() {
@@ -92,27 +97,27 @@ public abstract class AbstractChannelConfiguration {
             result = this.device.getId();
         }
         if (result == null) {
-            result = unique_id;
+            result = uniqueId;
         }
         return UIDUtils.encode(result != null ? result : defaultId);
     }
 
     public Map<String, Object> appendToProperties(Map<String, Object> properties) {
-        final Device device_ = device;
-        if (device_ == null) {
+        final Device d = device;
+        if (d == null) {
             return properties;
         }
-        final String manufacturer = device_.manufacturer;
+        final String manufacturer = d.manufacturer;
         if (manufacturer != null) {
             properties.put(Thing.PROPERTY_VENDOR, manufacturer);
         }
-        final String model = device_.model;
+        final String model = d.model;
         if (model != null) {
             properties.put(Thing.PROPERTY_MODEL_ID, model);
         }
-        final String sw_version = device_.swVersion;
-        if (sw_version != null) {
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, sw_version);
+        final String swVersion = d.swVersion;
+        if (swVersion != null) {
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, swVersion);
         }
         return properties;
     }
@@ -135,25 +140,25 @@ public abstract class AbstractChannelConfiguration {
 
     @Nullable
     public String getValueTemplate() {
-        return value_template;
+        return valueTemplate;
     }
 
     @Nullable
     public String getUniqueId() {
-        return unique_id;
+        return uniqueId;
     }
 
     @Nullable
     public String getAvailabilityTopic() {
-        return availability_topic;
+        return availabilityTopic;
     }
 
     public String getPayloadAvailable() {
-        return payload_available;
+        return payloadAvailable;
     }
 
     public String getPayloadNotAvailable() {
-        return payload_not_available;
+        return payloadNotAvailable;
     }
 
     @Nullable
@@ -166,12 +171,12 @@ public abstract class AbstractChannelConfiguration {
         return availability;
     }
 
-    public String getTilde() {
-        return tilde;
+    public String getParentTopic() {
+        return parentTopic;
     }
 
     public AvailabilityMode getAvailabilityMode() {
-        return availability_mode;
+        return availabilityMode;
     }
 
     /**
@@ -195,6 +200,15 @@ public abstract class AbstractChannelConfiguration {
      */
     public static <C extends AbstractChannelConfiguration> C fromString(final String configJSON, final Gson gson,
             final Class<C> clazz) {
-        return Objects.requireNonNull(gson.fromJson(configJSON, clazz));
+        try {
+            @Nullable
+            final C config = gson.fromJson(configJSON, clazz);
+            if (config == null) {
+                throw new ConfigurationException("Channel configuration is empty");
+            }
+            return config;
+        } catch (JsonSyntaxException e) {
+            throw new ConfigurationException("Cannot parse channel configuration JSON", e);
+        }
     }
 }

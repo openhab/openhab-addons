@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -40,6 +41,11 @@ public class MailBuilderTest {
 
     private static final String TEST_STRING = "test";
     private static final String TEST_EMAIL = "foo@bar.zinga";
+
+    private static final String HEADER_1_KEY = "key_one";
+    private static final String HEADER_1_VAL = "value_one";
+    private static final String HEADER_2_KEY = "key_two";
+    private static final String HEADER_2_VAL = "value_two";
 
     @Test
     public void illegalToAddressThrowsException() {
@@ -90,5 +96,17 @@ public class MailBuilderTest {
 
         assertEquals(TEST_EMAIL, builder.build().getToAddresses().get(0).getAddress());
         assertEquals(2, builder.withRecipients(TEST_EMAIL).build().getToAddresses().size());
+    }
+
+    @Test
+    public void withHeaders() throws EmailException, MessagingException, IOException {
+        MailBuilder builder = new MailBuilder(TEST_EMAIL);
+        Email mail = builder.withHeader(HEADER_1_KEY, HEADER_1_VAL).withHeader(HEADER_2_KEY, HEADER_2_VAL).build();
+
+        Map<String, String> headers = mail.getHeaders();
+
+        assertEquals(2, headers.size());
+        assertEquals(HEADER_2_VAL, headers.get(HEADER_2_KEY));
+        assertEquals(HEADER_1_VAL, headers.get(HEADER_1_KEY));
     }
 }

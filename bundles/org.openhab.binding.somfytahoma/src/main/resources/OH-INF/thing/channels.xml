@@ -416,4 +416,12 @@
 			</options>
 		</state>
 	</channel-type>
+
+	<channel-type id="rssi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Relative received signal strength state</description>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+
 </thing:thing-descriptions>

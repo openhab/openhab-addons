@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,18 @@ package org.openhab.binding.powermax.internal.state;
 
 import static org.openhab.binding.powermax.internal.PowermaxBindingConstants.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.powermax.internal.message.PowermaxMessageConstants;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxState extends PowermaxStateContainer {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxState.class);
@@ -43,51 +50,94 @@ public class PowermaxState extends PowermaxStateContainer {
     public BooleanValue alarmActive = new BooleanValue(this, ALARM_ACTIVE);
     public BooleanValue trouble = new BooleanValue(this, TROUBLE);
     public BooleanValue alertInMemory = new BooleanValue(this, ALERT_IN_MEMORY);
+    public BooleanValue ringing = new BooleanValue(this, RINGING);
+    public DateTimeValue ringingSince = new DateTimeValue(this, "_ringing_since");
     public StringValue statusStr = new StringValue(this, SYSTEM_STATUS);
     public StringValue armMode = new StringValue(this, "_arm_mode");
     public BooleanValue downloadSetupRequired = new BooleanValue(this, "_download_setup_required");
     public DateTimeValue lastKeepAlive = new DateTimeValue(this, "_last_keepalive");
-    public DateTimeValue lastMessageReceived = new DateTimeValue(this, "_last_message_received");
-    public StringValue panelStatus = new StringValue(this, "_panel_status");
-    public StringValue alarmType = new StringValue(this, "_alarm_type");
-    public StringValue troubleType = new StringValue(this, "_trouble_type");
+    public DateTimeValue lastMessageTime = new DateTimeValue(this, LAST_MESSAGE_TIME);
 
     public DynamicValue<Boolean> isArmed = new DynamicValue<>(this, SYSTEM_ARMED, () -> {
         return isArmed();
     }, () -> {
-        return isArmed() ? OnOffType.ON : OnOffType.OFF;
+        Boolean isArmed = isArmed();
+        if (isArmed == null) {
+            return UnDefType.NULL;
+        }
+        return isArmed ? OnOffType.ON : OnOffType.OFF;
     });
 
     public DynamicValue<String> panelMode = new DynamicValue<>(this, MODE, () -> {
         return getPanelMode();
     }, () -> {
-        return new StringType(getPanelMode());
+        String mode = getPanelMode();
+        if (mode == null) {
+            return UnDefType.NULL;
+        }
+        return new StringType(mode);
     });
 
     public DynamicValue<String> shortArmMode = new DynamicValue<>(this, ARM_MODE, () -> {
         return getShortArmMode();
     }, () -> {
-        return new StringType(getShortArmMode());
+        String mode = getShortArmMode();
+        if (mode == null) {
+            return UnDefType.NULL;
+        }
+        return new StringType(mode);
+    });
+
+    public DynamicValue<String> activeAlerts = new DynamicValue<>(this, ACTIVE_ALERTS, () -> {
+        return getActiveAlerts();
+    }, () -> {
+        return new StringType(getActiveAlerts());
     });
 
     public DynamicValue<Boolean> pgmStatus = new DynamicValue<>(this, PGM_STATUS, () -> {
         return getPGMX10DeviceStatus(0);
     }, () -> {
-        return getPGMX10DeviceStatus(0) ? OnOffType.ON : OnOffType.OFF;
+        Boolean status = getPGMX10DeviceStatus(0);
+        if (status == null) {
+            return UnDefType.NULL;
+        }
+        return status ? OnOffType.ON : OnOffType.OFF;
     });
 
+    private PowermaxPanelSettings panelSettings;
     private PowermaxZoneState[] zones;
     private Boolean[] pgmX10DevicesStatus;
-    private byte[] updateSettings;
-    private String[] eventLog;
+    private byte @Nullable [] updateSettings;
+    private String @Nullable [] eventLog;
     private Map<Integer, Byte> updatedZoneNames;
     private Map<Integer, Integer> updatedZoneInfos;
+    private List<PowermaxActiveAlert> activeAlertList;
+    private List<PowermaxActiveAlert> activeAlertQueue;
+
+    private enum PowermaxAlertAction {
+        ADD,
+        CLEAR,
+        CLEAR_ALL
+    }
+
+    private class PowermaxActiveAlert {
+        public final @Nullable PowermaxAlertAction action;
+        public final int zone;
+        public final int code;
+
+        public PowermaxActiveAlert(@Nullable PowermaxAlertAction action, int zone, int code) {
+            this.action = action;
+            this.zone = zone;
+            this.code = code;
+        }
+    }
 
     /**
      * Constructor (default values)
      */
     public PowermaxState(PowermaxPanelSettings panelSettings, TimeZoneProvider timeZoneProvider) {
         super(timeZoneProvider);
+        this.panelSettings = panelSettings;
 
         zones = new PowermaxZoneState[panelSettings.getNbZones()];
         for (int i = 0; i < panelSettings.getNbZones(); i++) {
@@ -96,6 +146,15 @@ public class PowermaxState extends PowermaxStateContainer {
         pgmX10DevicesStatus = new Boolean[panelSettings.getNbPGMX10Devices()];
         updatedZoneNames = new HashMap<>();
         updatedZoneInfos = new HashMap<>();
+        activeAlertList = new ArrayList<>();
+        activeAlertQueue = new ArrayList<>();
+
+        // Most fields will get populated by the initial download, but we set
+        // the ringing indicator in response to an alarm message. We have no
+        // other way to know if the siren is ringing so we'll initialize it to
+        // false.
+
+        this.ringing.setValue(false);
     }
 
     /**
@@ -123,7 +182,7 @@ public class PowermaxState extends PowermaxStateContainer {
      *
      * @return the status (true or false)
      */
-    public Boolean getPGMX10DeviceStatus(int device) {
+    public @Nullable Boolean getPGMX10DeviceStatus(int device) {
         return ((device < 0) || (device >= pgmX10DevicesStatus.length)) ? null : pgmX10DevicesStatus[device];
     }
 
@@ -133,7 +192,7 @@ public class PowermaxState extends PowermaxStateContainer {
      * @param device the index of the PGM/X10 device (0 s for PGM; for X10 device is index 1)
      * @param status true or false
      */
-    public void setPGMX10DeviceStatus(int device, Boolean status) {
+    public void setPGMX10DeviceStatus(int device, @Nullable Boolean status) {
         if ((device >= 0) && (device < pgmX10DevicesStatus.length)) {
             this.pgmX10DevicesStatus[device] = status;
         }
@@ -144,7 +203,7 @@ public class PowermaxState extends PowermaxStateContainer {
      *
      * @return the raw buffer as a table of bytes
      */
-    public byte[] getUpdateSettings() {
+    public byte @Nullable [] getUpdateSettings() {
         return updateSettings;
     }
 
@@ -163,7 +222,8 @@ public class PowermaxState extends PowermaxStateContainer {
      * @return the number of entries
      */
     public int getEventLogSize() {
-        return (eventLog == null) ? 0 : eventLog.length;
+        String @Nullable [] localEventLog = eventLog;
+        return (localEventLog == null) ? 0 : localEventLog.length;
     }
 
     /**
@@ -182,8 +242,10 @@ public class PowermaxState extends PowermaxStateContainer {
      *
      * @return the entry value (event)
      */
-    public String getEventLog(int index) {
-        return ((index < 1) || (index > getEventLogSize())) ? null : eventLog[index - 1];
+    public @Nullable String getEventLog(int index) {
+        String @Nullable [] localEventLog = eventLog;
+        return ((localEventLog == null) || (index < 1) || (index > getEventLogSize())) ? null
+                : localEventLog[index - 1];
     }
 
     /**
@@ -193,8 +255,9 @@ public class PowermaxState extends PowermaxStateContainer {
      * @param event the entry value (event)
      */
     public void setEventLog(int index, String event) {
-        if ((index >= 1) && (index <= getEventLogSize())) {
-            this.eventLog[index - 1] = event;
+        String @Nullable [] localEventLog = eventLog;
+        if ((localEventLog != null) && (index >= 1) && (index <= getEventLogSize())) {
+            localEventLog[index - 1] = event;
         }
     }
 
@@ -214,12 +277,82 @@ public class PowermaxState extends PowermaxStateContainer {
         this.updatedZoneInfos.put(zoneIdx, zoneInfo);
     }
 
+    // This is an attempt to add persistence to an otherwise (mostly) stateless class.
+    // All of the other values are either present or null, and it's easy to build a
+    // delta state based only on which values are non-null. But these system events
+    // are different because each event can be set by one message and cleared by a
+    // later message. So to preserve the semantics of the state class, we'll keep a
+    // queue of incoming changes, and apply them only when the delta state is resolved.
+
+    public boolean hasActiveAlertsQueued() {
+        return !activeAlertQueue.isEmpty();
+    }
+
+    public String getActiveAlerts() {
+        if (activeAlertList.isEmpty()) {
+            return "None";
+        }
+
+        List<String> alerts = new ArrayList<>();
+
+        activeAlertList.forEach(e -> {
+            String message = PowermaxMessageConstants.getSystemEvent(e.code).toString();
+            String alert = e.zone == 0 ? message
+                    : String.format("%s (%s)", message, panelSettings.getZoneOrUserName(e.zone));
+
+            alerts.add(alert);
+        });
+
+        return String.join(", ", alerts);
+    }
+
+    public void addActiveAlert(int zoneIdx, int code) {
+        PowermaxActiveAlert alert = new PowermaxActiveAlert(PowermaxAlertAction.ADD, zoneIdx, code);
+        activeAlertQueue.add(alert);
+    }
+
+    public void clearActiveAlert(int zoneIdx, int code) {
+        PowermaxActiveAlert alert = new PowermaxActiveAlert(PowermaxAlertAction.CLEAR, zoneIdx, code);
+        activeAlertQueue.add(alert);
+    }
+
+    public void clearAllActiveAlerts() {
+        PowermaxActiveAlert alert = new PowermaxActiveAlert(PowermaxAlertAction.CLEAR_ALL, 0, 0);
+        activeAlertQueue.add(alert);
+    }
+
+    public void resolveActiveAlerts(@Nullable PowermaxState previousState) {
+        copyActiveAlertsFrom(previousState);
+
+        activeAlertQueue.forEach(alert -> {
+            if (alert.action == PowermaxAlertAction.CLEAR_ALL) {
+                activeAlertList.clear();
+            } else {
+                activeAlertList.removeIf(e -> e.zone == alert.zone && e.code == alert.code);
+
+                if (alert.action == PowermaxAlertAction.ADD) {
+                    activeAlertList.add(new PowermaxActiveAlert(null, alert.zone, alert.code));
+                }
+            }
+        });
+    }
+
+    private void copyActiveAlertsFrom(@Nullable PowermaxState state) {
+        activeAlertList = new ArrayList<>();
+
+        if (state != null) {
+            state.activeAlertList.forEach(alert -> {
+                activeAlertList.add(new PowermaxActiveAlert(null, alert.zone, alert.code));
+            });
+        }
+    }
+
     /**
      * Get the panel mode
      *
      * @return either Download or Powerlink or Standard
      */
-    public String getPanelMode() {
+    public @Nullable String getPanelMode() {
         String mode = null;
         if (Boolean.TRUE.equals(downloadMode.getValue())) {
             mode = "Download";
@@ -236,7 +369,7 @@ public class PowermaxState extends PowermaxStateContainer {
      *
      * @return true or false
      */
-    public Boolean isArmed() {
+    public @Nullable Boolean isArmed() {
         return isArmed(armMode.getValue());
     }
 
@@ -247,7 +380,7 @@ public class PowermaxState extends PowermaxStateContainer {
      *
      * @return true or false; null if mode is unexpected
      */
-    private static Boolean isArmed(String armMode) {
+    private static @Nullable Boolean isArmed(@Nullable String armMode) {
         Boolean result = null;
         if (armMode != null) {
             try {
@@ -265,7 +398,7 @@ public class PowermaxState extends PowermaxStateContainer {
      *
      * @return the short description
      */
-    public String getShortArmMode() {
+    public @Nullable String getShortArmMode() {
         return getShortArmMode(armMode.getValue());
     }
 
@@ -276,7 +409,7 @@ public class PowermaxState extends PowermaxStateContainer {
      *
      * @return the short name or null if mode is unexpected
      */
-    private static String getShortArmMode(String armMode) {
+    private static @Nullable String getShortArmMode(@Nullable String armMode) {
         String result = null;
         if (armMode != null) {
             try {
@@ -310,8 +443,8 @@ public class PowermaxState extends PowermaxStateContainer {
         }
 
         for (int i = 0; i < pgmX10DevicesStatus.length; i++) {
-            if ((getPGMX10DeviceStatus(i) != null)
-                    && getPGMX10DeviceStatus(i).equals(otherState.getPGMX10DeviceStatus(i))) {
+            Boolean status = getPGMX10DeviceStatus(i);
+            if ((status != null) && status.equals(otherState.getPGMX10DeviceStatus(i))) {
                 setPGMX10DeviceStatus(i, null);
             }
         }
@@ -323,6 +456,10 @@ public class PowermaxState extends PowermaxStateContainer {
             if ((thisValue.getValue() != null) && thisValue.getValue().equals(otherValue.getValue())) {
                 thisValue.setValue(null);
             }
+        }
+
+        if (hasActiveAlertsQueued()) {
+            resolveActiveAlerts(otherState);
         }
     }
 
@@ -348,8 +485,9 @@ public class PowermaxState extends PowermaxStateContainer {
         }
 
         for (int i = 0; i < pgmX10DevicesStatus.length; i++) {
-            if (update.getPGMX10DeviceStatus(i) != null) {
-                setPGMX10DeviceStatus(i, update.getPGMX10DeviceStatus(i));
+            Boolean status = update.getPGMX10DeviceStatus(i);
+            if (status != null) {
+                setPGMX10DeviceStatus(i, status);
             }
         }
 
@@ -366,9 +504,14 @@ public class PowermaxState extends PowermaxStateContainer {
             setEventLogSize(update.getEventLogSize());
         }
         for (int i = 1; i <= getEventLogSize(); i++) {
-            if (update.getEventLog(i) != null) {
-                setEventLog(i, update.getEventLog(i));
+            String log = update.getEventLog(i);
+            if (log != null) {
+                setEventLog(i, log);
             }
+        }
+
+        if (update.hasActiveAlertsQueued()) {
+            copyActiveAlertsFrom(update);
         }
     }
 
@@ -377,34 +520,35 @@ public class PowermaxState extends PowermaxStateContainer {
         String str = "Bridge state:";
 
         for (Value<?> value : getValues()) {
-            if ((value.getChannel() != null) && (value.getValue() != null)) {
+            if (value.getValue() != null) {
                 String channel = value.getChannel();
-                String v_str = value.getValue().toString();
+                String vStr = value.getValue().toString();
                 String state = value.getState().toString();
 
-                str += "\n - " + channel + " = " + v_str;
-                if (!v_str.equals(state)) {
+                str += "\n - " + channel + " = " + vStr;
+                if (!vStr.equals(state)) {
                     str += " (" + state + ")";
                 }
             }
         }
 
         for (int i = 0; i < pgmX10DevicesStatus.length; i++) {
-            if (getPGMX10DeviceStatus(i) != null) {
+            Boolean status = getPGMX10DeviceStatus(i);
+            if (status != null) {
                 str += String.format("\n - %s status = %s", (i == 0) ? "PGM device" : String.format("X10 device %d", i),
-                        getPGMX10DeviceStatus(i) ? "ON" : "OFF");
+                        status ? "ON" : "OFF");
             }
         }
 
         for (int i = 1; i <= zones.length; i++) {
             for (Value<?> value : zones[i - 1].getValues()) {
-                if ((value.getChannel() != null) && (value.getValue() != null)) {
+                if (value.getValue() != null) {
                     String channel = value.getChannel();
-                    String v_str = value.getValue().toString();
+                    String vStr = value.getValue().toString();
                     String state = value.getState().toString();
 
-                    str += String.format("\n - sensor zone %d %s = %s", i, channel, v_str);
-                    if (!v_str.equals(state)) {
+                    str += String.format("\n - sensor zone %d %s = %s", i, channel, vStr);
+                    if (!vStr.equals(state)) {
                         str += " (" + state + ")";
                     }
                 }
@@ -412,10 +556,13 @@ public class PowermaxState extends PowermaxStateContainer {
         }
 
         for (int i = 1; i <= getEventLogSize(); i++) {
-            if (getEventLog(i) != null) {
-                str += "\n - event log " + i + " = " + getEventLog(i);
+            String log = getEventLog(i);
+            if (log != null) {
+                str += "\n - event log " + i + " = " + log;
             }
         }
+
+        str += "\n - active alarms/alerts = " + getActiveAlerts();
 
         return str;
     }

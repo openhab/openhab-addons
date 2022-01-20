@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class AstroThingConfig {
+    public static final String GEOLOCATION = "geolocation";
+    public static final String USE_METEOROLOGICAL_SEASON = "useMeteorologicalSeason";
     public @Nullable String geolocation;
     public @Nullable Double altitude;
     public @Nullable Double latitude;
@@ -35,12 +37,11 @@ public class AstroThingConfig {
     public void parseGeoLocation() {
         if (geolocation != null) {
             String[] geoParts = geolocation.split(",");
-            if (geoParts.length == 2) {
+            if (geoParts.length >= 2) {
                 latitude = toDouble(geoParts[0]);
                 longitude = toDouble(geoParts[1]);
-            } else if (geoParts.length == 3) {
-                latitude = toDouble(geoParts[0]);
-                longitude = toDouble(geoParts[1]);
+            }
+            if (geoParts.length == 3) {
                 altitude = toDouble(geoParts[2]);
             }
         }

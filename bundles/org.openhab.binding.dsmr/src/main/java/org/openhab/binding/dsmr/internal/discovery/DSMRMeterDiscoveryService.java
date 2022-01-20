@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.dsmr.internal.discovery;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
@@ -101,7 +100,7 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
         if (logger.isDebugEnabled()) {
             logger.debug("Detect meters from #{} objects", telegram.getCosemObjects().size());
         }
-        final Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> detectedMeters = meterDetector
+        final Entry<Collection<DSMRMeterDescriptor>, List<CosemObject>> detectedMeters = meterDetector
                 .detectMeters(telegram);
         verifyUnregisteredCosemObjects(telegram, detectedMeters.getValue());
         validateConfiguredMeters(dsmrBridgeHandler.getThing().getThings(),
@@ -109,17 +108,16 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
         detectedMeters.getKey().forEach(m -> meterDiscovered(m, dsmrBridgeHandler.getThing().getUID()));
     }
 
-    protected void verifyUnregisteredCosemObjects(P1Telegram telegram,
-            Map<CosemObjectType, CosemObject> undetectedCosemObjects) {
-        if (!undetectedCosemObjects.isEmpty()) {
-            if (undetectedCosemObjects.entrySet().stream()
-                    .anyMatch(e -> e.getKey() == CosemObjectType.METER_EQUIPMENT_IDENTIFIER
-                            && e.getValue().getCosemValues().entrySet().stream().anyMatch(
+    protected void verifyUnregisteredCosemObjects(P1Telegram telegram, List<CosemObject> list) {
+        if (!list.isEmpty()) {
+            if (list.stream()
+                    .anyMatch(e -> e.getType() == CosemObjectType.METER_EQUIPMENT_IDENTIFIER
+                            && e.getCosemValues().entrySet().stream().anyMatch(
                                     cv -> cv.getValue() instanceof StringType && cv.getValue().toString().isEmpty()))) {
                 // Unregistered meter detected. log to the user.
                 reportUnregisteredMeters();
             } else {
-                reportUnrecognizedCosemObjects(undetectedCosemObjects);
+                reportUnrecognizedCosemObjects(list);
                 logger.info("There are unrecognized cosem values in the data received from the meter,"
                         + " which means some meters might not be detected. Please report your raw data as reference: {}",
                         telegram.getRawTelegram());
@@ -138,11 +136,10 @@ public class DSMRMeterDiscoveryService extends DSMRDiscoveryService implements P
     /**
      * Called when Unrecognized cosem objects where found. This can be a bug or a new meter not yet supported.
      *
-     * @param unidentifiedCosemObjects Map with the unrecognized.
+     * @param list Map with the unrecognized.
      */
-    protected void reportUnrecognizedCosemObjects(Map<CosemObjectType, CosemObject> unidentifiedCosemObjects) {
-        unidentifiedCosemObjects
-                .forEach((k, v) -> logger.info("Unrecognized cosem object '{}' found in the data: {}", k, v));
+    protected void reportUnrecognizedCosemObjects(List<CosemObject> list) {
+        list.forEach(c -> logger.info("Unrecognized cosem object '{}' found in the data: {}", c.getType(), c));
     }
 
     /**

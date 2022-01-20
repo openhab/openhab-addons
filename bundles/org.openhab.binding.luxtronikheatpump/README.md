@@ -247,6 +247,38 @@ The following channels are holding read only values:
 | temperatureRoomTarget | Number:Temperature | x | Room temperature set point |
 | temperatureHotWaterTop | Number:Temperature | x | Temperature domestic water top |
 | frequencyCompressor | Number:Frequency | x | Compressor frequency |
+| channel232 | Number | x | Channel 232 |
+| channel233 | Number | x | Channel 233 |
+| channel234 | Number | x | Channel 234 |
+| channel235 | Number | x | Channel 235 |
+| frequencyCompressorTarget | Number:Frequency | x | Compressor Target Frequency |
+| channel237 | Number | x | Channel 237 |
+| channel238 | Number | x | Channel 238 |
+| channel239 | Number | x | Channel 239 |
+| channel240 | Number | x | Channel 240 |
+| channel241 | Number | x | Channel 241 |
+| channel242 | Number | x | Channel 242 |
+| channel243 | Number | x | Channel 243 |
+| channel244 | Number | x | Channel 244 |
+| channel245 | Number | x | Channel 245 |
+| channel246 | Number | x | Channel 246 |
+| channel247 | Number | x | Channel 247 |
+| channel248 | Number | x | Channel 248 |
+| channel249 | Number | x | Channel 249 |
+| channel250 | Number | x | Channel 250 |
+| channel251 | Number | x | Channel 251 |
+| channel252 | Number | x | Channel 252 |
+| channel253 | Number | x | Channel 253 |
+| flowRateHeatSource2 | Number:VolumetricFlowRate | x | Flow Rate Heat Source |
+| channel255 | Number | x | Channel 255 |
+| channel256 | Number | x | Channel 256 |
+| heatingPowerActualValue | Number:Power | x | Heating Power Actual Value |
+| channel258 | Number | x | Channel 258 |
+| channel259 | Number | x | Channel 259 |
+| channel260 | Number | x | Channel 260 |
+
+The usage of the numbered channels above is currently unknown. If you are able to directly match one of the values to any value reported by your heat pump, feel free to report back on the forum, so we are able to give the channel a proper name instead.
+
 
 The following channels are also writable:
 | channel  | type   | advanced | description                  |
@@ -266,6 +298,7 @@ The following channels are also writable:
 | comfortCoolingMode | Number |   | Comfort cooling mode |
 | temperatureComfortCoolingATRelease | Number:Temperature |   | Comfort cooling AT release |
 | temperatureComfortCoolingATReleaseTarget | Number:Temperature |   | Comfort cooling AT release target |
+| temperatureHeatingLimit | Number:Temperature |   | Temperature Heating Limit |
 | comfortCoolingATExcess | Number:Time |   | AT Excess |
 | comfortCoolingATUndercut | Number:Time |   | AT undercut |
 

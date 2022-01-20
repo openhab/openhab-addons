@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,13 +56,14 @@ public class FritzAhaContentExchange extends BufferingResponseListener
 
     @Override
     public void onFailure(@NonNullByDefault({}) Response response, @NonNullByDefault({}) Throwable failure) {
-        logger.debug("response failed: {}", failure.getLocalizedMessage(), failure);
+        logger.debug("{} response failed: {}", response.getRequest().getMethod(), failure.getLocalizedMessage(),
+                failure);
     }
 
     @Override
     public void onComplete(@NonNullByDefault({}) Result result) {
         String content = getContentAsString();
-        logger.debug("response complete: {}", content);
+        logger.debug("{} response complete: {}", result.getRequest().getMethod(), content);
         callback.execute(result.getResponse().getStatus(), content);
     }
 }

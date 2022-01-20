@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,6 +76,24 @@ public class JavaScriptTransformationServiceTest {
             } catch (IOException e) {
             }
         });
+    }
+
+    @Test
+    public void testInlineScript() throws Exception {
+        final String DATA = "100";
+        final String SCRIPT = "| input / 10";
+
+        String transformedResponse = processor.transform(SCRIPT, DATA);
+        assertEquals("10.0", transformedResponse);
+    }
+
+    @Test
+    public void testInlineScriptIncludingPipe() throws Exception {
+        final String DATA = "1";
+        final String SCRIPT = "| false || (input == '1')";
+
+        String transformedResponse = processor.transform(SCRIPT, DATA);
+        assertEquals("true", transformedResponse);
     }
 
     @Test

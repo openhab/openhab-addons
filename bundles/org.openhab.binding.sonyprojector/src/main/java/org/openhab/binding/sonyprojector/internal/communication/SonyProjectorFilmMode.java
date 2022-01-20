@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.util.HexUtils;
@@ -33,21 +32,20 @@ public enum SonyProjectorFilmMode {
     // Category 1: VW70, VW260, VW270, VW285, VW295, VW300, VW315, VW320, VW328, VW350, VW365, VW385, VW500, VW515,
     // VW520, VW528, VW550, VW570, VW600, VW665, VW675, VW695, VW760, VW870, VW885, VW995, HW10, HW15, HW20, HW45ES,
     // HW60, HW65, HW68
-    CAT1_AUTO(1, "Auto", null, new byte[] { 0x00, 0x02 }),
-    CAT1_OFF(1, "Off", null, new byte[] { 0x00, 0x00 }),
+    CAT1_AUTO(1, "Auto", new byte[] { 0x00, 0x02 }),
+    CAT1_OFF(1, "Off", new byte[] { 0x00, 0x00 }),
 
     // Category 2: VW80, VW85, VW90, VW95, VW200, VW1000ES, VW1100ES, HW30ES, HW40ES, HW50ES, HW55ES, HW58ES
-    CAT2_AUTO1(2, "Auto1", "Auto 1", new byte[] { 0x00, 0x01 }),
-    CAT2_AUTO2(2, "Auto2", "Auto 2", new byte[] { 0x00, 0x02 }),
-    CAT2_OFF(2, "Off", null, new byte[] { 0x00, 0x00 }),
+    CAT2_AUTO1(2, "Auto1", new byte[] { 0x00, 0x01 }),
+    CAT2_AUTO2(2, "Auto2", new byte[] { 0x00, 0x02 }),
+    CAT2_OFF(2, "Off", new byte[] { 0x00, 0x00 }),
 
     // Category 3: VW100
-    CAT3_AUTO(3, "Auto", null, new byte[] { 0x00, 0x00 }),
-    CAT3_OFF(3, "Off", null, new byte[] { 0x00, 0x01 });
+    CAT3_AUTO(3, "Auto", new byte[] { 0x00, 0x00 }),
+    CAT3_OFF(3, "Off", new byte[] { 0x00, 0x01 });
 
     private int category;
     private String name;
-    private @Nullable String label;
     private byte[] dataCode;
 
     /**
@@ -55,13 +53,11 @@ public enum SonyProjectorFilmMode {
      *
      * @param category a category of projector models for which the film mode is available
      * @param name the name of the film mode
-     * @param label the label of the film mode; can be null when the label is identical to the name
      * @param dataCode the data code identifying the film mode
      */
-    private SonyProjectorFilmMode(int category, String name, @Nullable String label, byte[] dataCode) {
+    private SonyProjectorFilmMode(int category, String name, byte[] dataCode) {
         this.category = category;
         this.name = name;
-        this.label = label;
         this.dataCode = dataCode;
     }
 
@@ -81,15 +77,6 @@ public enum SonyProjectorFilmMode {
      */
     public byte[] getDataCode() {
         return dataCode;
-    }
-
-    /**
-     * Get the label of the current film mode
-     *
-     * @return the label
-     */
-    public @Nullable String getLabel() {
-        return label;
     }
 
     /**
@@ -114,8 +101,7 @@ public enum SonyProjectorFilmMode {
         List<StateOption> options = new ArrayList<>();
         for (SonyProjectorFilmMode value : SonyProjectorFilmMode.values()) {
             if (value.getCategory() == category) {
-                options.add(new StateOption(value.getName(),
-                        value.getLabel() != null ? value.getLabel() : value.getName()));
+                options.add(new StateOption(value.getName(), value.getName()));
             }
         }
         return options;

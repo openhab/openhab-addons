@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,9 @@ import org.openhab.binding.openuv.internal.config.BridgeConfiguration;
 import org.openhab.binding.openuv.internal.discovery.OpenUVDiscoveryService;
 import org.openhab.binding.openuv.internal.json.OpenUVResponse;
 import org.openhab.binding.openuv.internal.json.OpenUVResult;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
@@ -61,13 +63,18 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
     private final Properties header = new Properties();
     private final Gson gson;
     private final LocationProvider locationProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     private @Nullable ScheduledFuture<?> reconnectJob;
 
-    public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, Gson gson) {
+    public OpenUVBridgeHandler(Bridge bridge, LocationProvider locationProvider, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider, Gson gson) {
         super(bridge);
         this.gson = gson;
         this.locationProvider = locationProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -76,7 +83,7 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
         BridgeConfiguration config = getConfigAs(BridgeConfiguration.class);
         if (config.apikey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Parameter 'apikey' must be configured.");
+                    "@text/offline.config-error-unknown-apikey");
             return;
         }
         header.put("x-access-token", config.apikey);
@@ -127,9 +134,8 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
                 LocalDate tomorrow = today.plusDays(1);
                 LocalDateTime tomorrowMidnight = tomorrow.atStartOfDay().plusMinutes(2);
 
-                String message = "Quota Exceeded, going OFFLINE for today, will retry at : "
-                        + tomorrowMidnight.toString();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, String
+                        .format("@text/offline.comm-error-quota-exceeded [ \"%s\" ]", tomorrowMidnight.toString()));
 
                 reconnectJob = scheduler.schedule(this::initiateConnexion,
                         Duration.between(LocalDateTime.now(), tomorrowMidnight).toMinutes(), TimeUnit.MINUTES);
@@ -149,5 +155,13 @@ public class OpenUVBridgeHandler extends BaseBridgeHandler {
 
     public @Nullable PointType getLocation() {
         return locationProvider.getLocation();
+    }
+
+    public TranslationProvider getI18nProvider() {
+        return i18nProvider;
+    }
+
+    public LocaleProvider getLocaleProvider() {
+        return localeProvider;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,27 +64,27 @@ public class AlarmControlPanelTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(4));
         assertThat(component.getName(), is("alarm"));
 
-        assertChannel(component, AlarmControlPanel.stateChannelID, "zigbee2mqtt/alarm/state", "", "alarm",
+        assertChannel(component, AlarmControlPanel.STATE_CHANNEL_ID, "zigbee2mqtt/alarm/state", "", "alarm",
                 TextValue.class);
-        assertChannel(component, AlarmControlPanel.switchDisarmChannelID, "", "zigbee2mqtt/alarm/set/state", "alarm",
+        assertChannel(component, AlarmControlPanel.SWITCH_DISARM_CHANNEL_ID, "", "zigbee2mqtt/alarm/set/state", "alarm",
                 TextValue.class);
-        assertChannel(component, AlarmControlPanel.switchArmAwayChannelID, "", "zigbee2mqtt/alarm/set/state", "alarm",
-                TextValue.class);
-        assertChannel(component, AlarmControlPanel.switchArmHomeChannelID, "", "zigbee2mqtt/alarm/set/state", "alarm",
-                TextValue.class);
+        assertChannel(component, AlarmControlPanel.SWITCH_ARM_AWAY_CHANNEL_ID, "", "zigbee2mqtt/alarm/set/state",
+                "alarm", TextValue.class);
+        assertChannel(component, AlarmControlPanel.SWITCH_ARM_HOME_CHANNEL_ID, "", "zigbee2mqtt/alarm/set/state",
+                "alarm", TextValue.class);
 
         publishMessage("zigbee2mqtt/alarm/state", "armed_home");
-        assertState(component, AlarmControlPanel.stateChannelID, new StringType("armed_home"));
+        assertState(component, AlarmControlPanel.STATE_CHANNEL_ID, new StringType("armed_home"));
         publishMessage("zigbee2mqtt/alarm/state", "armed_away");
-        assertState(component, AlarmControlPanel.stateChannelID, new StringType("armed_away"));
+        assertState(component, AlarmControlPanel.STATE_CHANNEL_ID, new StringType("armed_away"));
 
-        component.getChannel(AlarmControlPanel.switchDisarmChannelID).getState()
+        component.getChannel(AlarmControlPanel.SWITCH_DISARM_CHANNEL_ID).getState()
                 .publishValue(new StringType("DISARM_"));
         assertPublished("zigbee2mqtt/alarm/set/state", "DISARM_");
-        component.getChannel(AlarmControlPanel.switchArmAwayChannelID).getState()
+        component.getChannel(AlarmControlPanel.SWITCH_ARM_AWAY_CHANNEL_ID).getState()
                 .publishValue(new StringType("ARM_AWAY_"));
         assertPublished("zigbee2mqtt/alarm/set/state", "ARM_AWAY_");
-        component.getChannel(AlarmControlPanel.switchArmHomeChannelID).getState()
+        component.getChannel(AlarmControlPanel.SWITCH_ARM_HOME_CHANNEL_ID).getState()
                 .publishValue(new StringType("ARM_HOME_"));
         assertPublished("zigbee2mqtt/alarm/set/state", "ARM_HOME_");
     }

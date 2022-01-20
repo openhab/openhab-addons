@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,10 +50,6 @@ public class XmlRpcClient extends RpcClient<String> {
     }
 
     @Override
-    public void dispose() {
-    }
-
-    @Override
     public RpcRequest<String> createRpcRequest(String methodName) {
         return new XmlRpcRequest(methodName);
     }
@@ -87,10 +83,13 @@ public class XmlRpcClient extends RpcClient<String> {
                 throw new IOException(ex);
             } catch (IOException ex) {
                 reason = ex;
-                if ("init".equals(request.getMethodName())) { // no retries for "init" request
+                // no retries for "init" request or if connection is refused
+                if ("init".equals(request.getMethodName())
+                        || ex.getCause() != null && ex.getCause() instanceof ExecutionException) {
                     break;
                 }
-                logger.debug("XmlRpcMessage failed, sending message again {}/{}", rpcRetryCounter, MAX_RPC_RETRY);
+                logger.debug("XmlRpcMessage failed({}), sending message again {}/{}", ex.getMessage(), rpcRetryCounter,
+                        MAX_RPC_RETRY);
             }
         }
         throw reason;

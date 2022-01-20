@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,10 +125,11 @@ public class ComponentChannel {
         private final String label;
         private final ChannelStateUpdateListener channelStateUpdateListener;
 
-        private @Nullable String state_topic;
-        private @Nullable String command_topic;
+        private @Nullable String stateTopic;
+        private @Nullable String commandTopic;
         private boolean retain;
         private boolean trigger;
+        private boolean isAdvanced;
         private @Nullable Integer qos;
         private @Nullable Predicate<Command> commandFilter;
 
@@ -141,17 +142,18 @@ public class ComponentChannel {
             this.channelID = channelID;
             this.valueState = valueState;
             this.label = label;
+            this.isAdvanced = false;
             this.channelStateUpdateListener = channelStateUpdateListener;
         }
 
-        public Builder stateTopic(@Nullable String state_topic) {
-            this.state_topic = state_topic;
+        public Builder stateTopic(@Nullable String stateTopic) {
+            this.stateTopic = stateTopic;
             return this;
         }
 
-        public Builder stateTopic(@Nullable String state_topic, @Nullable String... templates) {
-            this.state_topic = state_topic;
-            if (state_topic != null && !state_topic.isBlank()) {
+        public Builder stateTopic(@Nullable String stateTopic, @Nullable String... templates) {
+            this.stateTopic = stateTopic;
+            if (stateTopic != null && !stateTopic.isBlank()) {
                 for (String template : templates) {
                     if (template != null && !template.isBlank()) {
                         this.templateIn = template;
@@ -164,27 +166,26 @@ public class ComponentChannel {
 
         /**
          * @deprecated use commandTopic(String, boolean, int)
-         * @param command_topic topic
+         * @param commandTopic topic
          * @param retain retain
          * @return this
          */
         @Deprecated
-        public Builder commandTopic(@Nullable String command_topic, boolean retain) {
-            this.command_topic = command_topic;
+        public Builder commandTopic(@Nullable String commandTopic, boolean retain) {
+            this.commandTopic = commandTopic;
             this.retain = retain;
             return this;
         }
 
-        public Builder commandTopic(@Nullable String command_topic, boolean retain, int qos) {
-            return commandTopic(command_topic, retain, qos, null);
+        public Builder commandTopic(@Nullable String commandTopic, boolean retain, int qos) {
+            return commandTopic(commandTopic, retain, qos, null);
         }
 
-        public Builder commandTopic(@Nullable String command_topic, boolean retain, int qos,
-                @Nullable String template) {
-            this.command_topic = command_topic;
+        public Builder commandTopic(@Nullable String commandTopic, boolean retain, int qos, @Nullable String template) {
+            this.commandTopic = commandTopic;
             this.retain = retain;
             this.qos = qos;
-            if (command_topic != null && !command_topic.isBlank()) {
+            if (commandTopic != null && !commandTopic.isBlank()) {
                 this.templateOut = template;
             }
             return this;
@@ -192,6 +193,11 @@ public class ComponentChannel {
 
         public Builder trigger(boolean trigger) {
             this.trigger = trigger;
+            return this;
+        }
+
+        public Builder isAdvanced(boolean advanced) {
+            this.isAdvanced = advanced;
             return this;
         }
 
@@ -215,19 +221,20 @@ public class ComponentChannel {
             channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new HomeAssistantChannelState(
-                    ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(state_topic)
-                            .withCommandTopic(command_topic).makeTrigger(trigger).build(),
+                    ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(stateTopic)
+                            .withCommandTopic(commandTopic).makeTrigger(trigger).build(),
                     channelUID, valueState, channelStateUpdateListener, commandFilter);
 
-            String localStateTopic = state_topic;
+            String localStateTopic = stateTopic;
             if (localStateTopic == null || localStateTopic.isBlank() || this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
-                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
+                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
+                        .isAdvanced(isAdvanced).build();
             } else {
-                StateDescriptionFragment description = valueState.createStateDescription(command_topic == null).build();
+                StateDescriptionFragment description = valueState.createStateDescription(commandTopic == null).build();
                 type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescriptionFragment(description).build();
+                        .withStateDescriptionFragment(description).isAdvanced(isAdvanced).build();
             }
 
             Configuration configuration = new Configuration();

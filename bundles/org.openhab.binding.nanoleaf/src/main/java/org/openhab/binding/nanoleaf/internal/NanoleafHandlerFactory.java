@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.nanoleaf.internal;
 
-import static org.openhab.binding.nanoleaf.internal.NanoleafBindingConstants.*;
-
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,7 +19,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafControllerHandler;
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafPanelHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -48,35 +45,35 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.nanoleaf", service = ThingHandlerFactory.class)
 public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_LIGHT_PANEL, THING_TYPE_CONTROLLER).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            Stream.of(NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL, NanoleafBindingConstants.THING_TYPE_CONTROLLER)
+                    .collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(NanoleafHandlerFactory.class);
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public NanoleafHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
+    public NanoleafHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
     }
 
-    @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
-    @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
+    @Nullable
+    protected ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
-            NanoleafControllerHandler handler = new NanoleafControllerHandler((Bridge) thing, httpClient);
+        if (NanoleafBindingConstants.THING_TYPE_CONTROLLER.equals(thingTypeUID)) {
+            NanoleafControllerHandler handler = new NanoleafControllerHandler((Bridge) thing, this.httpClientFactory);
             logger.debug("Nanoleaf controller handler created.");
             return handler;
-        } else if (THING_TYPE_LIGHT_PANEL.equals(thingTypeUID)) {
-            NanoleafPanelHandler handler = new NanoleafPanelHandler(thing, httpClient);
+        } else if (NanoleafBindingConstants.THING_TYPE_LIGHT_PANEL.equals(thingTypeUID)) {
+            NanoleafPanelHandler handler = new NanoleafPanelHandler(thing, this.httpClientFactory);
             logger.debug("Nanoleaf panel handler created.");
             return handler;
+        } else {
+            return null;
         }
-        return null;
     }
 }

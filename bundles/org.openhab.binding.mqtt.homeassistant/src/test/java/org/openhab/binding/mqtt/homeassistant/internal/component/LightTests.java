@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class LightTests extends AbstractComponentTests {
         assertThat(component.channels.size(), is(1));
         assertThat(component.getName(), is("light"));
 
-        assertChannel(component, Light.colorChannelID, "zigbee2mqtt/light/rgb", "zigbee2mqtt/light/set/rgb", "light",
+        assertChannel(component, Light.COLOR_CHANNEL_ID, "zigbee2mqtt/light/rgb", "zigbee2mqtt/light/set/rgb", "light",
                 ColorValue.class);
 
         assertChannel(component.switchChannel, "zigbee2mqtt/light/state", "zigbee2mqtt/light/set/state", "light",
@@ -77,9 +77,9 @@ public class LightTests extends AbstractComponentTests {
                 "light", ColorValue.class);
 
         publishMessage("zigbee2mqtt/light/rgb", "{\"rgb\": \"255,255,255\"}");
-        assertState(component, Light.colorChannelID, HSBType.fromRGB(255, 255, 255));
+        assertState(component, Light.COLOR_CHANNEL_ID, HSBType.fromRGB(255, 255, 255));
         publishMessage("zigbee2mqtt/light/rgb", "{\"rgb\": \"10,20,30\"}");
-        assertState(component, Light.colorChannelID, HSBType.fromRGB(10, 20, 30));
+        assertState(component, Light.COLOR_CHANNEL_ID, HSBType.fromRGB(10, 20, 30));
 
         component.switchChannel.getState().publishValue(OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "0,0,0");

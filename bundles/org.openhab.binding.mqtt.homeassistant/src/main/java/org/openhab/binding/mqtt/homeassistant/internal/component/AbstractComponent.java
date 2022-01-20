@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,9 +86,9 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
         this.configSeen = false;
 
-        String availability_topic = this.channelConfiguration.getAvailabilityTopic();
-        if (availability_topic != null) {
-            componentConfiguration.getTracker().addAvailabilityTopic(availability_topic,
+        String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
+        if (availabilityTopic != null) {
+            componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                     this.channelConfiguration.getPayloadAvailable(),
                     this.channelConfiguration.getPayloadNotAvailable());
         }
@@ -180,7 +180,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     /**
      * Return a components channel. A HomeAssistant MQTT component consists of multiple functions
      * and those are mapped to one or more channels. The channel IDs are constants within the
-     * derived Component, like the {@link Switch#switchChannelID}.
+     * derived Component, like the {@link Switch#SWITCH_CHANNEL_ID}.
      *
      * @param channelID The channel ID
      * @return A components channel

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.powermax.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxDeniedMessage extends PowermaxBaseMessage {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxDeniedMessage.class);
@@ -36,14 +39,15 @@ public class PowermaxDeniedMessage extends PowermaxBaseMessage {
     }
 
     @Override
-    protected PowermaxState handleMessageInternal(PowermaxCommManager commManager) {
+    protected @Nullable PowermaxState handleMessageInternal(@Nullable PowermaxCommManager commManager) {
         if (commManager == null) {
             return null;
         }
 
         PowermaxState updatedState = null;
 
-        PowermaxSendType lastSendType = commManager.getLastSendMsg().getSendType();
+        PowermaxBaseMessage lastSendMsg = commManager.getLastSendMsg();
+        PowermaxSendType lastSendType = lastSendMsg == null ? null : lastSendMsg.getSendType();
         if (lastSendType == PowermaxSendType.EVENTLOG || lastSendType == PowermaxSendType.ARM
                 || lastSendType == PowermaxSendType.BYPASS) {
             logger.debug("Powermax alarm binding: invalid PIN code");

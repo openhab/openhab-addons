@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -100,40 +100,34 @@ public class KeypadThingHandler extends DSCAlarmBaseThingHandler {
         String[] channelTypes = { KEYPAD_READY_LED, KEYPAD_ARMED_LED, KEYPAD_MEMORY_LED, KEYPAD_BYPASS_LED,
                 KEYPAD_TROUBLE_LED, KEYPAD_PROGRAM_LED, KEYPAD_FIRE_LED, KEYPAD_BACKLIGHT_LED };
 
-        String channel;
-        ChannelUID channelUID = null;
         DSCAlarmCode dscAlarmCode = DSCAlarmCode
                 .getDSCAlarmCodeValue(dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.CODE));
 
+        int bitCount = 8;
         int bitField = Integer.decode("0x" + dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA));
         int[] masks = { 1, 2, 4, 8, 16, 32, 64, 128 };
-        int[] bits = new int[8];
+        int[] bits = new int[bitCount];
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < bitCount; i++) {
             bits[i] = bitField & masks[i];
-
-            channel = channelTypes[i];
-
-            if (channel != "") {
-                channelUID = new ChannelUID(getThing().getUID(), channel);
-
-                switch (dscAlarmCode) {
-                    case KeypadLEDState: /* 510 */
-                        updateChannel(channelUID, bits[i] != 0 ? 1 : 0, "");
-                        break;
-                    case KeypadLEDFlashState: /* 511 */
-                        if (bits[i] != 0) {
-                            updateChannel(channelUID, 2, "");
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelTypes[i]);
+            switch (dscAlarmCode) {
+                case KeypadLEDState: /* 510 */
+                    updateChannel(channelUID, bits[i] != 0 ? 1 : 0, "");
+                    break;
+                case KeypadLEDFlashState: /* 511 */
+                    if (bits[i] != 0) {
+                        updateChannel(channelUID, 2, "");
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void dscAlarmEventReceived(EventObject event, Thing thing) {
         if (thing != null) {
             if (getThing() == thing) {

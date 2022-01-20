@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.loxone.internal.security;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -86,6 +85,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     private class LxResponseKeySalt {
         String key;
         String salt;
+        String hashAlg;
     }
 
     /**
@@ -148,6 +148,7 @@ class LxWsSecurityToken extends LxWsSecurity {
     private int tokenRefreshRetryCount;
     private ScheduledFuture<?> tokenRefreshTimer;
     private final Lock tokenRefreshLock = new ReentrantLock();
+    private boolean sha256 = false;
 
     private final byte[] initVector = new byte[IV_LENGTH_BYTES];
     private final Logger logger = LoggerFactory.getLogger(LxWsSecurityToken.class);
@@ -236,11 +237,7 @@ class LxWsSecurityToken extends LxWsSecurity {
         try {
             String encrypted = Base64.getEncoder()
                     .encodeToString(aesEncryptCipher.doFinal(str.getBytes(StandardCharsets.UTF_8)));
-            try {
-                encrypted = URLEncoder.encode(encrypted, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                logger.warn("[{}] Unsupported encoding for encrypted command conversion to URL.", debugId);
-            }
+            encrypted = URLEncoder.encode(encrypted, StandardCharsets.UTF_8);
             return CMD_ENCRYPT_CMD + encrypted;
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             logger.warn("[{}] Command encryption failed: {}", debugId, e.getMessage());
@@ -258,7 +255,7 @@ class LxWsSecurityToken extends LxWsSecurity {
         try {
             byte[] bytes = Base64.getDecoder().decode(string);
             bytes = aesDecryptCipher.doFinal(bytes);
-            string = new String(bytes, "UTF-8");
+            string = new String(bytes, StandardCharsets.UTF_8);
             string = string.replaceAll("\0+.*$", "");
             string = string.replaceFirst("^salt/[^/]*/", "");
             string = string.replaceFirst("^nextSalt/[^/]*/[^/]*/", "");
@@ -267,8 +264,6 @@ class LxWsSecurityToken extends LxWsSecurity {
             logger.debug("[{}] Failed to decode base64 string: {}", debugId, string);
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             logger.warn("[{}] Command decryption failed: {}", debugId, e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("[{}] Unsupported encoding for decrypted bytes to string conversion.", debugId);
         }
         return string;
     }
@@ -352,14 +347,14 @@ class LxWsSecurityToken extends LxWsSecurity {
         }
     }
 
-    private String hashCredentials(LxResponseKeySalt keySalt) {
+    private String hashCredentials(LxResponseKeySalt keySalt, boolean sha256) {
         try {
-            MessageDigest msgDigest = MessageDigest.getInstance("SHA-1");
+            MessageDigest msgDigest = MessageDigest.getInstance(sha256 ? "SHA-256" : "SHA-1");
             String pwdHashStr = password + ":" + keySalt.salt;
             byte[] rawData = msgDigest.digest(pwdHashStr.getBytes(StandardCharsets.UTF_8));
             String pwdHash = HexUtils.bytesToHex(rawData).toUpperCase();
             logger.debug("[{}] PWDHASH: {}", debugId, pwdHash);
-            return hashString(user + ":" + pwdHash, keySalt.key);
+            return hashString(user + ":" + pwdHash, keySalt.key, sha256);
         } catch (NoSuchAlgorithmException e) {
             logger.debug("[{}] Error hashing token credentials: {}", debugId, e.getMessage());
             return null;
@@ -376,10 +371,12 @@ class LxWsSecurityToken extends LxWsSecurity {
         if (keySalt == null) {
             return setError(null, "Error parsing hash key/salt json: " + resp.getValueAsString());
         }
-
+        if ("SHA256".equals(keySalt.hashAlg)) {
+            sha256 = true;
+        }
         logger.debug("[{}] Hash key: {}, salt: {}", debugId, keySalt.key, keySalt.salt);
         // Hash user name, password, key and salt
-        String hash = hashCredentials(keySalt);
+        String hash = hashCredentials(keySalt, sha256);
         if (hash == null) {
             return false;
         }
@@ -436,7 +433,7 @@ class LxWsSecurityToken extends LxWsSecurity {
         try {
             String hashKey = resp.getValueAsString();
             // here is a difference to the API spec, which says the string to hash is "user:token", but this is "token"
-            String hash = hashString(token, hashKey);
+            String hash = hashString(token, hashKey, sha256);
             if (hash == null) {
                 setError(null, "Error hashing token.");
             }
@@ -540,11 +537,7 @@ class LxWsSecurityToken extends LxWsSecurity {
         byte[] bytes = new byte[SALT_BYTES];
         secureRandom.nextBytes(bytes);
         String salt = HexUtils.bytesToHex(bytes);
-        try {
-            salt = URLEncoder.encode(salt, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("[{}] Unsupported encoding for salt conversion to URL.", debugId);
-        }
+        salt = URLEncoder.encode(salt, StandardCharsets.UTF_8);
         saltTimeStamp = timeElapsedInSeconds();
         saltUseCount = 0;
         logger.debug("[{}] Generated salt: {}", debugId, salt);

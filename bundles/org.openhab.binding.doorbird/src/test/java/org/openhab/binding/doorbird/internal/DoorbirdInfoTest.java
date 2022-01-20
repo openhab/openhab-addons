@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public class DoorbirdInfoTest {
     public void testGetControllerId() {
         DoorbirdInfo info = new DoorbirdInfo(infoWithControllerId);
 
-        assertEquals("gggaaa", info.getControllerId());
+        assertEquals("gggaaa", info.getControllerId(null));
 
         assertTrue(info.getRelays().contains("gggaaa@1"));
         assertTrue(info.getRelays().contains("gggaaa@2"));
@@ -92,6 +92,6 @@ public class DoorbirdInfoTest {
     public void testControllerIdIsNull() {
         DoorbirdInfo info = new DoorbirdInfo(infoWithoutControllerId);
 
-        assertNull(info.getControllerId());
+        assertNull(info.getControllerId(null));
     }
 }

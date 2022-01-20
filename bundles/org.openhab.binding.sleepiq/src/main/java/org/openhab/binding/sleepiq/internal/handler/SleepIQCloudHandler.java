@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import javax.ws.rs.client.ClientBuilder;
 
 import org.openhab.binding.sleepiq.api.Configuration;
 import org.openhab.binding.sleepiq.api.LoginException;
@@ -67,8 +69,11 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
 
     private SleepIQ cloud;
 
-    public SleepIQCloudHandler(final Bridge bridge) {
+    private ClientBuilder clientBuilder;
+
+    public SleepIQCloudHandler(final Bridge bridge, ClientBuilder clientBuilder) {
         super(bridge);
+        this.clientBuilder = clientBuilder;
     }
 
     @Override
@@ -100,6 +105,8 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
     /**
      * Create a new SleepIQ cloud service connection. If a connection already exists, it will be lost.
      *
+     * @param clientBuilder2
+     *
      * @throws LoginException if there is an error while authenticating to the service
      */
     private void createCloudConnection() throws LoginException {
@@ -109,7 +116,7 @@ public class SleepIQCloudHandler extends ConfigStatusBridgeHandler {
         logger.debug("Creating SleepIQ client");
         Configuration cloudConfig = new Configuration().withUsername(bindingConfig.username)
                 .withPassword(bindingConfig.password).withLogging(logger.isDebugEnabled());
-        cloud = SleepIQ.create(cloudConfig);
+        cloud = SleepIQ.create(cloudConfig, clientBuilder);
 
         logger.debug("Authenticating at the SleepIQ cloud service");
         cloud.login();

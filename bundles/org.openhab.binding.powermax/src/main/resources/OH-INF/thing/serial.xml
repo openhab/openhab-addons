@@ -17,8 +17,11 @@
 			<channel id="with_zones_bypassed" typeId="with_zones_bypassed"/>
 			<channel id="trouble" typeId="trouble"/>
 			<channel id="alert_in_memory" typeId="alert_in_memory"/>
+			<channel id="ringing" typeId="ringing"/>
 			<channel id="pgm_status" typeId="pgm_status"/>
 			<channel id="mode" typeId="mode"/>
+			<channel id="last_message_time" typeId="last_message_time"/>
+			<channel id="active_alerts" typeId="active_alerts"/>
 			<channel id="event_log_1" typeId="event_log"/>
 			<channel id="event_log_2" typeId="event_log"/>
 			<channel id="event_log_3" typeId="event_log"/>
@@ -46,54 +49,53 @@
 					and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>
 			</parameter>
 			<parameter name="motionOffDelay" type="integer" min="1" unit="min" required="false">
-				<label>Motion Reset Delay</label>
-				<description>The delay in minutes to reset a motion detection.</description>
+				<label>@text/config.motionOffDelay.label</label>
+				<description>@text/config.motionOffDelay.description</description>
 				<default>3</default>
 			</parameter>
 			<parameter name="allowArming" type="boolean" required="false">
-				<label>Allow Arming</label>
-				<description>Enable or disable arming the alarm system from openHAB.</description>
+				<label>@text/config.allowArming.label</label>
+				<description>@text/config.allowArming.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="allowDisarming" type="boolean" required="false">
-				<label>Allow Disarming</label>
-				<description>Enable or disable disarming the alarm system from openHAB.</description>
+				<label>@text/config.allowDisarming.label</label>
+				<description>@text/config.allowDisarming.description</description>
 				<default>false</default>
 			</parameter>
 			<parameter name="pinCode" type="text" required="false">
 				<context>password</context>
-				<label>PIN Code</label>
-				<description>The PIN code to use for arming/disarming the alarm system from openHAB. Not required except when
-					Powerlink mode cannot be used.</description>
+				<label>@text/config.pinCode.label</label>
+				<description>@text/config.pinCode.description</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="forceStandardMode" type="boolean" required="false">
-				<label>Force Standard Mode</label>
-				<description>Force the standard mode rather than trying using the Powerlink mode.</description>
+				<label>@text/config.forceStandardMode.label</label>
+				<description>@text/config.forceStandardMode.description</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="panelType" type="text" required="false">
-				<label>Panel Type</label>
-				<description>Define the panel type. Only required when forcing the standard mode.</description>
+				<label>@text/config.panelType.label</label>
+				<description>@text/config.panelType.description</description>
 				<limitToOptions>true</limitToOptions>
 				<options>
-					<option value="PowerMax">PowerMax</option>
-					<option value="PowerMax+">PowerMax+</option>
-					<option value="PowerMaxPro">PowerMax Pro</option>
-					<option value="PowerMaxComplete">PowerMax Complete</option>
-					<option value="PowerMaxProPart">PowerMax Pro Part</option>
-					<option value="PowerMaxCompletePart">PowerMax Complete Part</option>
-					<option value="PowerMaxExpress">PowerMax Express</option>
-					<option value="PowerMaster10">PowerMaster 10</option>
-					<option value="PowerMaster30">PowerMaster 30</option>
+					<option value="PowerMax">@text/config.panelType.option.PowerMax</option>
+					<option value="PowerMax+">@text/config.panelType.option.PowerMaxPlus</option>
+					<option value="PowerMaxPro">@text/config.panelType.option.PowerMaxPro</option>
+					<option value="PowerMaxComplete">@text/config.panelType.option.PowerMaxComplete</option>
+					<option value="PowerMaxProPart">@text/config.panelType.option.PowerMaxProPart</option>
+					<option value="PowerMaxCompletePart">@text/config.panelType.option.PowerMaxCompletePart</option>
+					<option value="PowerMaxExpress">@text/config.panelType.option.PowerMaxExpress</option>
+					<option value="PowerMaster10">@text/config.panelType.option.PowerMaster10</option>
+					<option value="PowerMaster30">@text/config.panelType.option.PowerMaster30</option>
 				</options>
 				<default>PowerMaxPro</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="autoSyncTime" type="boolean" required="false">
-				<label>Sync Time</label>
-				<description>Automatic sync time at openHAB startup.</description>
+				<label>@text/config.autoSyncTime.label</label>
+				<description>@text/config.autoSyncTime.description</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>

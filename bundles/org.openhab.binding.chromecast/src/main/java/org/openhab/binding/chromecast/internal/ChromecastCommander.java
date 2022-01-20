@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -134,13 +134,6 @@ public class ChromecastCommander {
 
     private void handleControl(final Command command) {
         try {
-            if (command instanceof NextPreviousType) {
-                // I can't find a way to control next/previous from the API. The Google app doesn't seem to
-                // allow it either, so I suspect there isn't a way.
-                logger.info("{} command not yet implemented", command);
-                return;
-            }
-
             Application app = chromeCast.getRunningApp();
             statusUpdater.updateStatus(ThingStatus.ONLINE);
             if (app == null) {
@@ -166,6 +159,23 @@ public class ChromecastCommander {
                     logger.info("{} command not supported by current media", command);
                 }
             }
+
+            if (command instanceof NextPreviousType) {
+                // Next is implemented by seeking to the end of the current media
+                if (command == NextPreviousType.NEXT) {
+
+                    Double duration = statusUpdater.getLastDuration();
+                    if (duration != null) {
+                        chromeCast.seek(duration.doubleValue() - 5);
+                    } else {
+                        logger.info("{} command failed - unknown media duration", command);
+                    }
+                } else {
+                    logger.info("{} command not yet implemented", command);
+                    return;
+                }
+            }
+
         } catch (final IOException e) {
             logger.debug("{} command failed: {}", command, e.getMessage());
             statusUpdater.updateStatus(ThingStatus.OFFLINE, COMMUNICATION_ERROR, e.getMessage());

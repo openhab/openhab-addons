@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,8 @@ public abstract class MetricsExporter {
 
     private final Logger logger = LoggerFactory.getLogger(MetricsExporter.class);
     private boolean active = false;
-    protected @Nullable CompositeMeterRegistry meterRegistry = null;
-    protected @Nullable MetricsConfiguration config = null;
+    protected @Nullable CompositeMeterRegistry meterRegistry;
+    protected @Nullable MetricsConfiguration config;
 
     protected abstract void start(CompositeMeterRegistry meterRegistry, MetricsConfiguration metricsConfiguration);
 

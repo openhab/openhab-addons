@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,4 +83,7 @@ public class NuvoBindingConstants {
     public static final String NAME_QUOTE = "NAME\"";
     public static final String MUTE = "MUTE";
     public static final String VOL = "VOL";
+
+    // MPS4
+    public static final String TYPE_PING = "PING";
 }

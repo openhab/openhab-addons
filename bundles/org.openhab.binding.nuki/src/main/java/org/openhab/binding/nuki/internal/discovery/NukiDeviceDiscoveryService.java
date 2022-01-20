@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.nuki.internal.discovery;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -56,27 +57,41 @@ public class NukiDeviceDiscoveryService extends AbstractDiscoveryService impleme
         scheduler.execute(() -> {
             bridgeHandler.withHttpClient(client -> {
                 BridgeListResponse list = client.getList();
-                list.getDevices().stream()
-                        .filter(device -> NukiBindingConstants.SUPPORTED_DEVICES.contains(device.getDeviceType()))
-                        .map(device -> createDiscoveryResult(device, bridgeHandler)).forEach(this::thingDiscovered);
+                list.getDevices().stream().map(device -> createDiscoveryResult(device, bridgeHandler))
+                        .flatMap(Optional::stream).forEach(this::thingDiscovered);
             });
         });
     }
 
-    private DiscoveryResult createDiscoveryResult(BridgeApiListDeviceDto device, NukiBridgeHandler bridgeHandler) {
-        return DiscoveryResultBuilder.create(getUid(device.getNukiId(), device.getDeviceType(), bridgeHandler))
-                .withBridge(bridgeHandler.getThing().getUID()).withLabel(device.getName())
-                .withRepresentationProperty(NukiBindingConstants.PROPERTY_NUKI_ID)
-                .withProperty(NukiBindingConstants.PROPERTY_NAME, device.getName())
-                .withProperty(NukiBindingConstants.PROPERTY_NUKI_ID, device.getNukiId())
-                .withProperty(NukiBindingConstants.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion()).build();
+    private Optional<DiscoveryResult> createDiscoveryResult(BridgeApiListDeviceDto device,
+            NukiBridgeHandler bridgeHandler) {
+        ThingUID uid = getUid(device.getNukiId(), device.getDeviceType(), bridgeHandler);
+        if (uid == null) {
+            logger.warn("Failed to create UID for device '{}' - deviceType '{}' is not supported", device,
+                    device.getDeviceType());
+            return Optional.empty();
+        } else {
+            return Optional.of(DiscoveryResultBuilder.create(uid).withBridge(bridgeHandler.getThing().getUID())
+                    .withLabel(device.getName()).withRepresentationProperty(NukiBindingConstants.PROPERTY_NUKI_ID)
+                    .withProperty(NukiBindingConstants.PROPERTY_NAME, device.getName())
+                    .withProperty(NukiBindingConstants.PROPERTY_NUKI_ID, device.getNukiId())
+                    .withProperty(NukiBindingConstants.PROPERTY_DEVICE_TYPE, device.getDeviceType())
+                    .withProperty(NukiBindingConstants.PROPERTY_FIRMWARE_VERSION, device.getFirmwareVersion()).build());
+        }
     }
 
+    @Nullable
     private ThingUID getUid(String nukiId, int deviceType, NukiBridgeHandler bridgeHandler) {
-        if (deviceType == NukiBindingConstants.DEVICE_OPENER) {
-            return new ThingUID(NukiBindingConstants.THING_TYPE_OPENER, bridgeHandler.getThing().getUID(), nukiId);
-        } else {
-            return new ThingUID(NukiBindingConstants.THING_TYPE_SMARTLOCK, bridgeHandler.getThing().getUID(), nukiId);
+        switch (deviceType) {
+            case NukiBindingConstants.DEVICE_OPENER:
+                return new ThingUID(NukiBindingConstants.THING_TYPE_OPENER, bridgeHandler.getThing().getUID(), nukiId);
+            case NukiBindingConstants.DEVICE_SMART_LOCK:
+            case NukiBindingConstants.DEVICE_SMART_DOOR:
+            case NukiBindingConstants.DEVICE_SMART_LOCK_3:
+                return new ThingUID(NukiBindingConstants.THING_TYPE_SMARTLOCK, bridgeHandler.getThing().getUID(),
+                        nukiId);
+            default:
+                return null;
         }
     }
 

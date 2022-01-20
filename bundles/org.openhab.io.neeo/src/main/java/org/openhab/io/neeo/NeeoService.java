@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import javax.ws.rs.client.ClientBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.binding.BindingInfoRegistry;
+import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventPublisher;
@@ -70,9 +71,8 @@ import org.slf4j.LoggerFactory;
  * @author Tim Roberts - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = EventSubscriber.class, property = { "service.pid=org.openhab.io.neeo.NeeoService",
-        "service.config.description.uri=io:neeo", "service.config.label=NEEO Integration",
-        "service.config.category=io" })
+@Component(service = EventSubscriber.class, property = { "service.pid=org.openhab.io.neeo.NeeoService" })
+@ConfigurableService(category = "io", label = "NEEO Integration", description_uri = "io:neeo")
 public class NeeoService implements EventSubscriber, NetworkAddressChangeListener {
 
     /** The logger */

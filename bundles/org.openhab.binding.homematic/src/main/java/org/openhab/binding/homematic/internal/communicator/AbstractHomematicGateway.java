@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.communicator;
 
+import static org.openhab.binding.homematic.internal.HomematicBindingConstants.*;
 import static org.openhab.binding.homematic.internal.misc.HomematicConstants.*;
 
 import java.io.IOException;
@@ -87,8 +88,8 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractHomematicGateway implements RpcEventListener, HomematicGateway, VirtualGateway {
     private final Logger logger = LoggerFactory.getLogger(AbstractHomematicGateway.class);
     public static final double DEFAULT_DISABLE_DELAY = 2.0;
+    private static final long RESTART_DELAY = 30;
     private static final long CONNECTION_TRACKER_INTERVAL_SECONDS = 15;
-    private static final String GATEWAY_POOL_NAME = "homematicGateway";
 
     private final Map<TransferMode, RpcClient<?>> rpcClients = new HashMap<>();
     private final Map<TransferMode, RpcServer> rpcServers = new HashMap<>();
@@ -189,6 +190,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         logger.debug("Used Homematic transfer modes: {}", sb.toString());
         startClients();
         startServers();
+        registerCallbacks();
 
         if (!config.getGatewayInfo().isHomegear()) {
             // delay the newDevice event handling at startup, reduces some API calls
@@ -211,7 +213,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
         stopWatchdogs();
         sendDelayedExecutor.stop();
         receiveDelayedExecutor.stop();
-        stopServers();
+        stopServers(true);
         stopClients();
         devices.clear();
         echoEvents.clear();
@@ -253,25 +255,29 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 rpcServer.start();
             }
         }
+    }
+
+    private void registerCallbacks() throws IOException {
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
-            getRpcClient(hmInterface).init(hmInterface, hmInterface.toString() + "-" + id);
+            getRpcClient(hmInterface).init(hmInterface);
         }
     }
 
     /**
      * Stops the Homematic RPC server.
      */
-    private synchronized void stopServers() {
-        for (HmInterface hmInterface : availableInterfaces.keySet()) {
-            try {
-                getRpcClient(hmInterface).release(hmInterface);
-            } catch (IOException ex) {
-                // recoverable exception, therefore only debug
-                logger.debug("Unable to release the connection to the gateway with id '{}': {}", id, ex.getMessage(),
-                        ex);
+    private synchronized void stopServers(boolean releaseConnection) {
+        if (releaseConnection) {
+            for (HmInterface hmInterface : availableInterfaces.keySet()) {
+                try {
+                    getRpcClient(hmInterface).release(hmInterface);
+                } catch (IOException ex) {
+                    // recoverable exception, therefore only debug
+                    logger.debug("Unable to release the connection to the gateway with id '{}': {}", id,
+                            ex.getMessage(), ex);
+                }
             }
         }
-
         for (TransferMode mode : rpcServers.keySet()) {
             rpcServers.get(mode).shutdown();
         }
@@ -896,10 +902,14 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
      */
     private class ConnectionTrackerThread implements Runnable {
         private boolean connectionLost;
+        private boolean reStartPending = false;
 
         @Override
         public void run() {
             try {
+                if (reStartPending) {
+                    return;
+                }
                 ListBidcosInterfacesParser parser = getRpcClient(getDefaultInterface())
                         .listBidcosInterfaces(getDefaultInterface());
                 Integer dutyCycleRatio = parser.getDutyCycleRatio();
@@ -920,6 +930,11 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
             if (connectionLost) {
                 connectionLost = false;
                 logger.info("Connection resumed on gateway '{}'", id);
+                try {
+                    registerCallbacks();
+                } catch (IOException e) {
+                    logger.warn("Connection only partially restored. It is recommended to restart the binding");
+                }
                 gatewayAdapter.onConnectionResumed();
             }
         }
@@ -930,10 +945,19 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
                 logger.warn("Connection lost on gateway '{}', cause: \"{}\"", id, cause);
                 gatewayAdapter.onConnectionLost();
             }
-            stopServers();
+            stopServers(false);
             stopClients();
-            startClients();
-            startServers();
+            reStartPending = true;
+            logger.debug("Waiting {}s until restart attempt", RESTART_DELAY);
+            scheduler.schedule(() -> {
+                try {
+                    startClients();
+                    startServers();
+                } catch (IOException e) {
+                    logger.debug("Restart failed: {}", e.getMessage());
+                }
+                reStartPending = false;
+            }, RESTART_DELAY, TimeUnit.SECONDS);
         }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChanne
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateStateListener;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * A MQTT BinarySensor, following the https://www.home-assistant.io/components/binary_sensor.mqtt/ specification.
  *
@@ -30,7 +32,7 @@ import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateSt
  */
 @NonNullByDefault
 public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfiguration> {
-    public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
+    public static final String SENSOR_CHANNEL_ID = "sensor"; // Randomly chosen channel "ID"
 
     /**
      * Configuration class for MQTT component
@@ -40,39 +42,49 @@ public class BinarySensor extends AbstractComponent<BinarySensor.ChannelConfigur
             super("MQTT Binary Sensor");
         }
 
-        protected @Nullable String device_class;
-        protected boolean force_update = false;
-        protected @Nullable Integer expire_after;
-        protected @Nullable Integer off_delay;
+        @SerializedName("device_class")
+        protected @Nullable String deviceClass;
+        @SerializedName("force_update")
+        protected boolean forceUpdate = false;
+        @SerializedName("expire_after")
+        protected @Nullable Integer expireAfter;
+        @SerializedName("off_delay")
+        protected @Nullable Integer offDelay;
 
-        protected String state_topic = "";
-        protected String payload_on = "ON";
-        protected String payload_off = "OFF";
+        @SerializedName("state_topic")
+        protected String stateTopic = "";
+        @SerializedName("payload_on")
+        protected String payloadOn = "ON";
+        @SerializedName("payload_off")
+        protected String payloadOff = "OFF";
 
-        protected @Nullable String json_attributes_topic;
-        protected @Nullable String json_attributes_template;
-        protected @Nullable List<String> json_attributes;
+        @SerializedName("json_attributes_topic")
+        protected @Nullable String jsonAttributesTopic;
+        @SerializedName("json_attributes_template")
+        protected @Nullable String jsonAttributesTemplate;
+        @SerializedName("json_attributes")
+        protected @Nullable List<String> jsonAttributes;
     }
 
     public BinarySensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
+        OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
 
-        buildChannel(sensorChannelID, value, "value", getListener(componentConfiguration, value))
-                .stateTopic(channelConfiguration.state_topic, channelConfiguration.getValueTemplate()).build();
+        buildChannel(SENSOR_CHANNEL_ID, value, "value", getListener(componentConfiguration, value))
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate()).build();
     }
 
     private ChannelStateUpdateListener getListener(ComponentFactory.ComponentConfiguration componentConfiguration,
             Value value) {
         ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
-        if (channelConfiguration.expire_after != null) {
-            updateListener = new ExpireUpdateStateListener(updateListener, channelConfiguration.expire_after, value,
+        if (channelConfiguration.expireAfter != null) {
+            updateListener = new ExpireUpdateStateListener(updateListener, channelConfiguration.expireAfter, value,
                     componentConfiguration.getTracker(), componentConfiguration.getScheduler());
         }
-        if (channelConfiguration.off_delay != null) {
-            updateListener = new OffDelayUpdateStateListener(updateListener, channelConfiguration.off_delay, value,
+        if (channelConfiguration.offDelay != null) {
+            updateListener = new OffDelayUpdateStateListener(updateListener, channelConfiguration.offDelay, value,
                     componentConfiguration.getScheduler());
         }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,26 +13,24 @@
 package org.openhab.binding.airquality.internal.discovery;
 
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
-import static org.openhab.binding.airquality.internal.AirQualityConfiguration.LOCATION;
+import static org.openhab.binding.airquality.internal.config.AirQualityConfiguration.LOCATION;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.airquality.internal.handler.AirQualityBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,80 +41,60 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = DiscoveryService.class, configurationPid = "discovery.airquality")
 @NonNullByDefault
-public class AirQualityDiscoveryService extends AbstractDiscoveryService {
+public class AirQualityDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+    private static final int DISCOVER_TIMEOUT_SECONDS = 2;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_STATION);
+
     private final Logger logger = LoggerFactory.getLogger(AirQualityDiscoveryService.class);
 
-    private static final int DISCOVER_TIMEOUT_SECONDS = 10;
-    private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
-
-    private final LocationProvider locationProvider;
-    private @Nullable ScheduledFuture<?> discoveryJob;
-    private @Nullable PointType previousLocation;
+    private @Nullable LocationProvider locationProvider;
+    private @Nullable AirQualityBridgeHandler bridgeHandler;
 
     /**
      * Creates a AirQualityDiscoveryService with enabled autostart.
      */
-    @Activate
-    public AirQualityDiscoveryService(@Reference LocationProvider locationProvider) {
-        super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
-        this.locationProvider = locationProvider;
+    public AirQualityDiscoveryService() {
+        super(SUPPORTED_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
-    protected void activate(@Nullable Map<String, Object> configProperties) {
-        super.activate(configProperties);
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof AirQualityBridgeHandler) {
+            final AirQualityBridgeHandler bridgeHandler = (AirQualityBridgeHandler) handler;
+            this.bridgeHandler = bridgeHandler;
+            this.locationProvider = bridgeHandler.getLocationProvider();
+        }
     }
 
     @Override
-    @Modified
-    protected void modified(@Nullable Map<String, Object> configProperties) {
-        super.modified(configProperties);
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting Air Quality discovery scan");
-        PointType location = locationProvider.getLocation();
-        if (location == null) {
-            logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
-            return;
-        }
-        createResults(location);
-    }
-
-    @Override
-    protected void startBackgroundDiscovery() {
-        if (discoveryJob == null) {
-            discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
-                PointType currentLocation = locationProvider.getLocation();
-                if (currentLocation != null && !Objects.equals(currentLocation, previousLocation)) {
-                    logger.debug("Location has been changed from {} to {}: Creating new discovery results",
-                            previousLocation, currentLocation);
-                    createResults(currentLocation);
-                    previousLocation = currentLocation;
-                }
-            }, 0, LOCATION_CHANGED_CHECK_INTERVAL, TimeUnit.SECONDS);
-            logger.debug("Scheduled Air Qualitylocation-changed job every {} seconds", LOCATION_CHANGED_CHECK_INTERVAL);
-        }
-    }
-
-    public void createResults(PointType location) {
-        ThingUID localAirQualityThing = new ThingUID(THING_TYPE_AQI, LOCAL);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
-        thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
-                .withProperties(properties).build());
-    }
-
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("Stopping Air Quality background discovery");
-        ScheduledFuture<?> job = this.discoveryJob;
-        if (job != null && !job.isCancelled()) {
-            if (job.cancel(true)) {
-                discoveryJob = null;
-                logger.debug("Stopped Air Quality background discovery");
+        LocationProvider provider = locationProvider;
+        if (provider != null) {
+            PointType location = provider.getLocation();
+            AirQualityBridgeHandler bridge = this.bridgeHandler;
+            if (location == null || bridge == null) {
+                logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
+                return;
             }
+            createResults(location, bridge.getThing().getUID());
         }
+    }
+
+    public void createResults(PointType location, ThingUID bridgeUID) {
+        ThingUID localAirQualityThing = new ThingUID(THING_TYPE_STATION, bridgeUID, LOCAL);
+        thingDiscovered(DiscoveryResultBuilder.create(localAirQualityThing).withLabel("Local Air Quality")
+                .withProperty(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()))
+                .withBridge(bridgeUID).build());
     }
 }

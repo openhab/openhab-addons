@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,11 +41,13 @@ import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.socket.backo.Backoff;
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
+import io.socket.thread.EventThread;
 
 /**
  * This class provides communication between openHAB and the openHAB Cloud service.
@@ -123,6 +125,11 @@ public class CloudClient {
     private Set<String> exposedItems;
 
     /**
+     * Back-off strategy for reconnecting when manual reconnection is needed
+     */
+    private final Backoff reconnectBackoff = new Backoff();
+
+    /**
      * Constructor of CloudClient
      *
      * @param uuid openHAB's UUID to connect to the openHAB Cloud
@@ -139,6 +146,9 @@ public class CloudClient {
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
         this.jettyClient = httpClient;
+        reconnectBackoff.setMin(1000);
+        reconnectBackoff.setMax(30_000);
+        reconnectBackoff.setJitter(0.5);
     }
 
     /**
@@ -174,6 +184,25 @@ public class CloudClient {
                     }
                 });
             }
+        }).on(Manager.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                if (args.length > 0) {
+                    if (args[0] instanceof Exception) {
+                        Exception e = (Exception) args[0];
+                        logger.debug(
+                                "Error connecting to the openHAB Cloud instance: {} {}. Should reconnect automatically.",
+                                e.getClass().getSimpleName(), e.getMessage());
+                    } else {
+                        logger.debug(
+                                "Error connecting to the openHAB Cloud instance: {}. Should reconnect automatically.",
+                                args[0]);
+                    }
+                } else {
+                    logger.debug("Error connecting to the openHAB Cloud instance. Should reconnect automatically.");
+                }
+            }
         });
         socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
@@ -182,20 +211,86 @@ public class CloudClient {
                 isConnected = true;
                 onConnect();
             }
+        }).on(Socket.EVENT_CONNECTING, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                logger.debug("Socket.IO connecting");
+            }
+        }).on(Socket.EVENT_RECONNECTING, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                logger.debug("Socket.IO re-connecting (attempt {})", args[0]);
+            }
+        }).on(Socket.EVENT_RECONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                logger.debug("Socket.IO re-connected successfully (attempt {})", args[0]);
+            }
+        }).on(Socket.EVENT_RECONNECT_ERROR, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                if (args[0] instanceof Exception) {
+                    Exception e = (Exception) args[0];
+                    logger.debug("Socket.IO re-connect attempt error: {} {}", e.getClass().getSimpleName(),
+                            e.getMessage());
+                } else {
+                    logger.debug("Socket.IO re-connect attempt error: {}", args[0]);
+                }
+            }
+        }).on(Socket.EVENT_RECONNECT_FAILED, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                logger.debug("Socket.IO re-connect attempts failed. Stopping reconnection.");
+            }
         }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                logger.debug("Socket.IO disconnected");
+                if (args.length > 0) {
+                    logger.debug("Socket.IO disconnected: {}", args[0]);
+                } else {
+                    logger.debug("Socket.IO disconnected");
+                }
                 isConnected = false;
                 onDisconnect();
             }
         }).on(Socket.EVENT_ERROR, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                if (logger.isDebugEnabled()) {
-                    logger.error("Error connecting to the openHAB Cloud instance: {}", args[0]);
+                if (CloudClient.this.socket.connected()) {
+                    if (logger.isDebugEnabled() && args.length > 0) {
+                        logger.error("Error during communication: {}", args[0]);
+                    } else {
+                        logger.error("Error during communication");
+                    }
                 } else {
-                    logger.error("Error connecting to the openHAB Cloud instance");
+                    // We are not connected currently, manual reconnection is needed to keep trying to (re-)establish
+                    // connection.
+                    //
+                    // Socket.IO 1.x java client: 'error' event is emitted from Socket on connection errors that are not
+                    // retried, but also with error that are automatically retried. If we
+                    //
+                    // Note how this is different in Socket.IO 2.x java client, Socket emits 'connect_error' event.
+                    // OBS: Don't get confused with Socket IO 2.x docs online, in 1.x connect_error is emitted also on
+                    // errors that are retried by the library automatically!
+                    long delay = reconnectBackoff.duration();
+                    // Try reconnecting on connection errors
+                    if (logger.isDebugEnabled() && args.length > 0) {
+                        if (args[0] instanceof Exception) {
+                            Exception e = (Exception) args[0];
+                            logger.error(
+                                    "Error connecting to the openHAB Cloud instance: {} {}. Reconnecting after {} ms.",
+                                    e.getClass().getSimpleName(), e.getMessage(), delay);
+                        } else {
+                            logger.error(
+                                    "Error connecting to the openHAB Cloud instance: {}. Reconnecting after {} ms.",
+                                    args[0], delay);
+                        }
+                    } else {
+                        logger.error("Error connecting to the openHAB Cloud instance. Reconnecting.");
+                    }
+                    socket.close();
+                    sleepSocketIO(delay);
+                    socket.connect();
                 }
             }
         }).on("request", new Emitter.Listener() {
@@ -224,6 +319,7 @@ public class CloudClient {
 
     public void onConnect() {
         logger.info("Connected to the openHAB Cloud service (UUID = {}, base URL = {})", this.uuid, this.localBaseUrl);
+        reconnectBackoff.reset();
         isConnected = true;
     }
 
@@ -577,5 +673,15 @@ public class CloudClient {
             logger.warn("Error forming response headers: {}", e.getMessage());
         }
         return headersJSON;
+    }
+
+    private void sleepSocketIO(long delay) {
+        EventThread.exec(() -> {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+
+            }
+        });
     }
 }
