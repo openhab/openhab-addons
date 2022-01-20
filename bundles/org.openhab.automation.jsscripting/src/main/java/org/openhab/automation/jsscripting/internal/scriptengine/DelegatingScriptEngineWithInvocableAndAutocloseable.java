@@ -28,11 +28,11 @@ import javax.script.ScriptException;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-public abstract class DelegatingScriptEngineWithInvocable<T extends ScriptEngine & Invocable>
-        implements ScriptEngine, Invocable {
+public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T extends ScriptEngine & Invocable & AutoCloseable>
+        implements ScriptEngine, Invocable, AutoCloseable {
     protected T delegate;
 
-    public DelegatingScriptEngineWithInvocable(T delegate) {
+    public DelegatingScriptEngineWithInvocableAndAutocloseable(T delegate) {
         this.delegate = delegate;
     }
 
@@ -124,5 +124,10 @@ public abstract class DelegatingScriptEngineWithInvocable<T extends ScriptEngine
     @Override
     public <T> T getInterface(Object o, Class<T> aClass) {
         return delegate.getInterface(o, aClass);
+    }
+
+    @Override
+    public void close() throws Exception {
+        delegate.close();
     }
 }

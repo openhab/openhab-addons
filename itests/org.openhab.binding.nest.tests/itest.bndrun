@@ -49,8 +49,6 @@ Fragment-Host: org.openhab.binding.nest
 	tech.units.indriya;version='[2.1.2,2.1.3)',\
 	uom-lib-common;version='[2.1.0,2.1.1)',\
 	org.apache.felix.configadmin;version='[1.9.22,1.9.23)',\
-	org.apache.xbean.bundleutils;version='[4.19.0,4.19.1)',\
-	org.apache.xbean.finder;version='[4.19.0,4.19.1)',\
 	xstream;version='[1.4.18,1.4.19)',\
 	org.eclipse.jetty.client;version='[9.4.43,9.4.44)',\
 	org.eclipse.jetty.http;version='[9.4.43,9.4.44)',\
@@ -86,7 +84,6 @@ Fragment-Host: org.openhab.binding.nest
 	biz.aQute.tester.junit-platform;version='[6.1.0,6.1.1)',\
 	org.apache.aries.jax.rs.whiteboard;version='[2.0.0,2.0.1)',\
 	org.apache.felix.scr;version='[2.1.30,2.1.31)',\
-	org.ops4j.pax.logging.pax-logging-api;version='[2.0.12,2.0.13)',\
 	org.ops4j.pax.web.pax-web-api;version='[7.3.23,7.3.24)',\
 	org.ops4j.pax.web.pax-web-jetty;version='[7.3.23,7.3.24)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.3.23,7.3.24)',\
@@ -104,4 +101,7 @@ Fragment-Host: org.openhab.binding.nest
 	org.openhab.core.io.net;version='[3.3.0,3.3.1)',\
 	org.openhab.core.test;version='[3.3.0,3.3.1)',\
 	org.openhab.core.thing;version='[3.3.0,3.3.1)',\
-	org.openhab.core.thing.xml;version='[3.3.0,3.3.1)'
+	org.openhab.core.thing.xml;version='[3.3.0,3.3.1)',\
+	org.apache.xbean.bundleutils;version='[4.20.0,4.20.1)',\
+	org.apache.xbean.finder;version='[4.20.0,4.20.1)',\
+	org.ops4j.pax.logging.pax-logging-api;version='[2.0.14,2.0.15)'

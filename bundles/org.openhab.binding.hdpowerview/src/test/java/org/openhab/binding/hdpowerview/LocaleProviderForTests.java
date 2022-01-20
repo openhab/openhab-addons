@@ -10,25 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.requests;
+package org.openhab.binding.hdpowerview;
+
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.core.i18n.LocaleProvider;
 
 /**
- * The position of a shade to set
+ * Locale provider for unit tests.
  *
- * @author Andy Lintner - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-class ShadeIdPosition {
-
-    int id;
-    public @Nullable ShadePosition positions;
-
-    public ShadeIdPosition(int id, ShadePosition position) {
-        this.id = id;
-        this.positions = position;
+public class LocaleProviderForTests implements LocaleProvider {
+    public Locale getLocale() {
+        return Locale.ENGLISH;
     }
 }

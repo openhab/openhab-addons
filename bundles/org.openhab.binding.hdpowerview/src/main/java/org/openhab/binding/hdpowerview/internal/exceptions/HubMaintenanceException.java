@@ -10,24 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.api.requests;
+package org.openhab.binding.hdpowerview.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The motion "stop" directive for a shade
+ * The {@link HubMaintenanceException} is a custom exception for the HD PowerView hub
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-class ShadeIdStop {
+public class HubMaintenanceException extends HubException {
 
-    int id;
-    public @Nullable String motion;
+    private static final long serialVersionUID = -708582495003057343L;
 
-    public ShadeIdStop(int id) {
-        this.id = id;
-        this.motion = "stop";
+    public HubMaintenanceException(String message) {
+        super(message);
     }
 }

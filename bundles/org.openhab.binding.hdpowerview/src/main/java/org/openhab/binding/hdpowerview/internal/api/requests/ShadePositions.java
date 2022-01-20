@@ -10,21 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal;
+package org.openhab.binding.hdpowerview.internal.api.requests;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 
 /**
- * The {@link HubMaintenanceException} is a custom exception for the HD PowerView hub
+ * The position of a shade to set
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Andy Lintner - Initial contribution
  */
 @NonNullByDefault
-public class HubMaintenanceException extends Exception {
+class ShadePositions {
 
-    private static final long serialVersionUID = -708582495003057343L;
+    public ShadePosition positions;
 
-    public HubMaintenanceException(String message) {
-        super(message);
+    public ShadePositions(ShadePosition position) {
+        this.positions = position;
     }
 }
