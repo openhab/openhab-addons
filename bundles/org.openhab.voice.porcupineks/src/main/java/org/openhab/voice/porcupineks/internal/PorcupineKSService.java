@@ -98,10 +98,9 @@ public class PorcupineKSService implements KSService {
 
     @Activate
     protected void activate(ComponentContext componentContext, Map<String, Object> config) {
-        PorcupineKSConfiguration serviceConfig = new Configuration(config).as(PorcupineKSConfiguration.class);
-        this.config = serviceConfig;
+        this.config = new Configuration(config).as(PorcupineKSConfiguration.class);
         this.bundleContext = componentContext.getBundleContext();
-        if (serviceConfig.apiKey.isBlank()) {
+        if (this.config.apiKey.isBlank()) {
             logger.warn("Missing pico voice api key to use Porcupine Keyword Spotter");
         }
     }
@@ -181,10 +180,17 @@ public class PorcupineKSService implements KSService {
             throw new KSException(e);
         }
         Future<?> scheduledTask = executor.submit(() -> processInBackground(porcupine, ksListener, audioStream));
-        return () -> {
-            loop = false;
-            scheduledTask.cancel(true);
-            porcupine.delete();
+        return new KSServiceHandle() {
+            @Override
+            public void abort() {
+                logger.debug("stopping service");
+                loop = false;
+                try {
+                    Thread.sleep(0);
+                } catch (InterruptedException e) {
+                }
+                scheduledTask.cancel(true);
+            }
         };
     }
 
@@ -296,6 +302,9 @@ public class PorcupineKSService implements KSService {
             try {
                 // read a buffer of audio
                 numBytesRead = audioStream.read(captureBuffer.array(), 0, captureBuffer.capacity());
+                if (!loop) {
+                    break;
+                }
                 // don't pass to porcupine if we don't have a full buffer
                 if (numBytesRead != frameLength * 2) {
                     Thread.sleep(100);
@@ -314,5 +323,7 @@ public class PorcupineKSService implements KSService {
                 ksListener.ksEventReceived(new KSErrorEvent(errorMessage != null ? errorMessage : "Unexpected error"));
             }
         }
+        porcupine.delete();
+        logger.debug("Porcupine stopped");
     }
 }
