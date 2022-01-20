@@ -148,50 +148,54 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (host != null && !host.isEmpty()) {
-            String wemoURL = getWemoURL(host, "basicevent");
-            if (wemoURL != null) {
-                String mode = "0";
-                String time = null;
-
-                if (command instanceof RefreshType) {
-                    updateWemoState();
-                } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
-                    String commandString = command.toString();
-                    switch (commandString) {
-                        case "OFF":
-                            mode = "0";
-                            time = "0";
-                            break;
-                        case "WARM":
-                            mode = "50";
-                            break;
-                        case "LOW":
-                            mode = "51";
-                            break;
-                        case "HIGH":
-                            mode = "52";
-                            break;
-                    }
-                    try {
-                        String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
-                        String content = "<?xml version=\"1.0\"?>"
-                                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                                + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">"
-                                + "<mode>" + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>"
-                                + "</s:Body>" + "</s:Envelope>";
-                        wemoCall.executeCall(wemoURL, soapHeader, content);
-                    } catch (RuntimeException e) {
-                        logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                    }
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            }
-        } else {
-            logger.error("Failed to send command '{}' for device '{}': IP address is missing", command,
+        if (host == null || host.isEmpty()) {
+            logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        String wemoURL = getWemoURL(host, "basicevent");
+        if (wemoURL == null) {
+            logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        String mode = "0";
+        String time = null;
+
+        if (command instanceof RefreshType) {
+            updateWemoState();
+        } else if (CHANNEL_COOKMODE.equals(channelUID.getId())) {
+            String commandString = command.toString();
+            switch (commandString) {
+                case "OFF":
+                    mode = "0";
+                    time = "0";
+                    break;
+                case "WARM":
+                    mode = "50";
+                    break;
+                case "LOW":
+                    mode = "51";
+                    break;
+                case "HIGH":
+                    mode = "52";
+                    break;
+            }
+            try {
+                String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
+                String content = "<?xml version=\"1.0\"?>"
+                        + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                        + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<mode>"
+                        + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
+                        + "</s:Envelope>";
+                wemoCall.executeCall(wemoURL, soapHeader, content);
+            } catch (RuntimeException e) {
+                logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -268,57 +272,60 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
      */
     protected void updateWemoState() {
         String actionService = "basicevent";
-        if (host != null && !host.isEmpty()) {
-            String wemoURL = getWemoURL(host, actionService);
-            if (wemoURL != null) {
-                try {
-                    String action = "GetCrockpotState";
-                    String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
-                    String content = "<?xml version=\"1.0\"?>"
-                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                            + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">"
-                            + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        logger.trace("State response '{}' for device '{}' received", wemoCallResponse,
-                                getThing().getUID());
-                        String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
-                        String time = substringBetween(wemoCallResponse, "<time>", "</time>");
-                        String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");
-
-                        State newMode = new StringType(mode);
-                        State newCoockedTime = DecimalType.valueOf(coockedTime);
-                        switch (mode) {
-                            case "0":
-                                newMode = new StringType("OFF");
-                                break;
-                            case "50":
-                                newMode = new StringType("WARM");
-                                State warmTime = DecimalType.valueOf(time);
-                                updateState(CHANNEL_WARMCOOKTIME, warmTime);
-                                break;
-                            case "51":
-                                newMode = new StringType("LOW");
-                                State lowTime = DecimalType.valueOf(time);
-                                updateState(CHANNEL_LOWCOOKTIME, lowTime);
-                                break;
-                            case "52":
-                                newMode = new StringType("HIGH");
-                                State highTime = DecimalType.valueOf(time);
-                                updateState(CHANNEL_HIGHCOOKTIME, highTime);
-                                break;
-                        }
-                        updateState(CHANNEL_COOKMODE, newMode);
-                        updateState(CHANNEL_COOKEDTIME, newCoockedTime);
-                    }
-                } catch (RuntimeException e) {
-                    logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(),
-                            e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
-                updateStatus(ThingStatus.ONLINE);
-            }
+        if (host == null || host.isEmpty()) {
+            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
         }
+        String wemoURL = getWemoURL(host, actionService);
+        if (wemoURL == null) {
+            logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        try {
+            String action = "GetCrockpotState";
+            String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
+            String content = createStateRequestContent(action, actionService);
+            if (content != null) {
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null) {
+                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
+                    String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
+                    String time = substringBetween(wemoCallResponse, "<time>", "</time>");
+                    String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");
+
+                    State newMode = new StringType(mode);
+                    State newCoockedTime = DecimalType.valueOf(coockedTime);
+                    switch (mode) {
+                        case "0":
+                            newMode = new StringType("OFF");
+                            break;
+                        case "50":
+                            newMode = new StringType("WARM");
+                            State warmTime = DecimalType.valueOf(time);
+                            updateState(CHANNEL_WARMCOOKTIME, warmTime);
+                            break;
+                        case "51":
+                            newMode = new StringType("LOW");
+                            State lowTime = DecimalType.valueOf(time);
+                            updateState(CHANNEL_LOWCOOKTIME, lowTime);
+                            break;
+                        case "52":
+                            newMode = new StringType("HIGH");
+                            State highTime = DecimalType.valueOf(time);
+                            updateState(CHANNEL_HIGHCOOKTIME, highTime);
+                            break;
+                    }
+                    updateState(CHANNEL_COOKMODE, newMode);
+                    updateState(CHANNEL_COOKEDTIME, newCoockedTime);
+                }
+            }
+        } catch (RuntimeException e) {
+            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override

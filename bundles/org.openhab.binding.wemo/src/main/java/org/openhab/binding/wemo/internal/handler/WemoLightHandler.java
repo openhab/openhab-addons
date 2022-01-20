@@ -263,35 +263,34 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     }
                     break;
             }
+            if (host == null || host.isEmpty()) {
+                logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                return;
+            }
             try {
-                if (host != null && !host.isEmpty()) {
-                    String wemoURL = getWemoURL(host, "bridge");
-                    if (wemoURL != null && capability != null && value != null) {
-                        String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
-                        String content = "<?xml version=\"1.0\"?>"
-                                + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                                + "<s:Body>" + "<u:SetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">"
-                                + "<DeviceStatusList>"
-                                + "&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;DeviceID&gt;"
-                                + wemoLightID
-                                + "&lt;/DeviceID&gt;&lt;IsGroupAction&gt;NO&lt;/IsGroupAction&gt;&lt;CapabilityID&gt;"
-                                + capability + "&lt;/CapabilityID&gt;&lt;CapabilityValue&gt;" + value
-                                + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
-                                + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
+                String wemoURL = getWemoURL(host, "bridge");
+                if (wemoURL != null && capability != null && value != null) {
+                    String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
+                    String content = "<?xml version=\"1.0\"?>"
+                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                            + "<s:Body>" + "<u:SetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">"
+                            + "<DeviceStatusList>"
+                            + "&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;DeviceStatus&gt;&lt;DeviceID&gt;"
+                            + wemoLightID
+                            + "&lt;/DeviceID&gt;&lt;IsGroupAction&gt;NO&lt;/IsGroupAction&gt;&lt;CapabilityID&gt;"
+                            + capability + "&lt;/CapabilityID&gt;&lt;CapabilityValue&gt;" + value
+                            + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
+                            + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                        String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                        if (wemoCallResponse != null) {
-                            if ("10008".equals(capability)) {
-                                OnOffType binaryState = null;
-                                binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
-                                updateState(CHANNEL_STATE, binaryState);
-                            }
+                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    if (wemoCallResponse != null) {
+                        if ("10008".equals(capability)) {
+                            OnOffType binaryState = null;
+                            binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+                            updateState(CHANNEL_STATE, binaryState);
                         }
                     }
-                } else {
-                    logger.error("Failed to send command '{}' for device '{}': IP address is missing", command,
-                            getThing().getUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
             } catch (Exception e) {
                 throw new IllegalStateException("Could not send command to WeMo Bridge", e);
@@ -314,44 +313,50 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
      * channel states.
      */
     public void getDeviceState() {
-        if (host != null && !host.isEmpty()) {
-            logger.debug("Request actual state for LightID '{}'", wemoLightID);
-            String wemoURL = getWemoURL(host, "bridge");
-            if (wemoURL != null) {
-                try {
-                    String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
-                    String content = "<?xml version=\"1.0\"?>"
-                            + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                            + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
-                            + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
+        if (host == null || host.isEmpty()) {
+            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        logger.debug("Request actual state for LightID '{}'", wemoLightID);
+        String wemoURL = getWemoURL(host, "bridge");
+        if (wemoURL == null) {
+            logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
+        try {
+            String soapHeader = "\"urn:Belkin:service:bridge:1#GetDeviceStatus\"";
+            String content = "<?xml version=\"1.0\"?>"
+                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
+                    + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
+                    + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        wemoCallResponse = unescapeXml(wemoCallResponse);
-                        String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
-                        logger.trace("wemoNewLightState = {}", response);
-                        String[] splitResponse = response.split(",");
-                        if (splitResponse[0] != null) {
-                            OnOffType binaryState = null;
-                            binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
-                            updateState(CHANNEL_STATE, binaryState);
-                        }
-                        if (splitResponse[1] != null) {
-                            String splitBrightness[] = splitResponse[1].split(":");
-                            if (splitBrightness[0] != null) {
-                                int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
-                                int newBrightness = Math.round(newBrightnessValue * 100 / 255);
-                                logger.trace("newBrightness = {}", newBrightness);
-                                State newBrightnessState = new PercentType(newBrightness);
-                                updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
-                                currentBrightness = newBrightness;
-                            }
-                        }
+            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            if (wemoCallResponse != null) {
+                wemoCallResponse = unescapeXml(wemoCallResponse);
+                String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
+                logger.trace("wemoNewLightState = {}", response);
+                String[] splitResponse = response.split(",");
+                if (splitResponse[0] != null) {
+                    OnOffType binaryState = null;
+                    binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
+                    updateState(CHANNEL_STATE, binaryState);
+                }
+                if (splitResponse[1] != null) {
+                    String splitBrightness[] = splitResponse[1].split(":");
+                    if (splitBrightness[0] != null) {
+                        int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
+                        int newBrightness = Math.round(newBrightnessValue * 100 / 255);
+                        logger.trace("newBrightness = {}", newBrightness);
+                        State newBrightnessState = new PercentType(newBrightness);
+                        updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
+                        currentBrightness = newBrightness;
                     }
-                } catch (Exception e) {
-                    throw new IllegalStateException("Could not retrieve new Wemo light state", e);
                 }
             }
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not retrieve new Wemo light state", e);
         }
     }
 
