@@ -145,6 +145,7 @@ public class WemoHandlerTest {
         public MockWemoHandler(Thing thing, String channelToWatch) {
             super(thing, null, new WemoHttpCall());
             this.channelToWatch = channelToWatch;
+            assertThat(handler.getHost(), is("127.0.0.1"));
         }
 
         @Override
