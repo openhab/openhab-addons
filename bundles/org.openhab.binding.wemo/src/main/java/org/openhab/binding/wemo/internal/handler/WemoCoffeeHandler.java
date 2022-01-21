@@ -69,10 +69,12 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COFFEE);
 
-    private final UpnpIOService service;
-
     private final Object upnpLock = new Object();
     private final Object jobLock = new Object();
+
+    private final String DEVICEEVENT = "deviceevent";
+
+    private @Nullable UpnpIOService service;
 
     private WemoHttpCall wemoCall;
 
@@ -96,8 +98,10 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         Configuration configuration = getConfig();
 
         if (configuration.get(UDN) != null) {
-            logger.debug("Initializing WemoCoffeeHandler for UDN '{}'", configuration.get("udn"));
-            service.registerParticipant(this);
+            logger.debug("Initializing WemoCoffeeHandler for UDN '{}'", configuration.get(UDN));
+            if (service != null) {
+                service.registerParticipant(this);
+            }
 
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
@@ -119,7 +123,10 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         }
         this.pollingJob = null;
         removeSubscription();
-        service.unregisterParticipant(this);
+
+        if (service != null) {
+            service.unregisterParticipant(this);
+        }
     }
 
     private void poll() {
@@ -139,10 +146,10 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                     }
                 }
                 // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
+                // If not, set the thing state to OFFLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
@@ -163,14 +170,16 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         if (host.isEmpty()) {
             logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
                     getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(host, "basicevent");
         if (wemoURL == null) {
             logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-url");
             return;
         }
         if (command instanceof RefreshType) {
@@ -234,19 +243,23 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
 
     private synchronized void addSubscription() {
         synchronized (upnpLock) {
-            if (service.isRegistered(this)) {
-                logger.debug("Checking WeMo GENA subscription for '{}'", this);
+            UpnpIOService localservice = service;
+            if (localservice != null) {
+                if (localservice.isRegistered(this)) {
+                    logger.debug("Checking WeMo GENA subscription for '{}'", this);
 
-                String subscription = "deviceevent1";
-                if (subscriptionState.get(subscription) == null) {
-                    logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                            subscription);
-                    service.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
-                    subscriptionState.put(subscription, true);
+                    String subscription = DEVICEEVENT + "1";
+                    if (subscriptionState.get(subscription) == null) {
+                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
+                                subscription);
+                        localservice.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
+                        subscriptionState.put(subscription, true);
+                    }
+                } else {
+                    logger.debug(
+                            "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
+                            getThing().getUID());
                 }
-            } else {
-                logger.debug("Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                        this);
             }
         }
     }
@@ -254,20 +267,26 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
     private synchronized void removeSubscription() {
         logger.debug("Removing WeMo GENA subscription for '{}'", this);
         synchronized (upnpLock) {
-            if (service.isRegistered(this)) {
-                String subscription = "deviceevent1";
-                if (subscriptionState.get(subscription) != null) {
-                    logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                    service.removeSubscription(this, subscription);
+            UpnpIOService localservice = service;
+            if (localservice != null) {
+                if (localservice.isRegistered(this)) {
+                    String subscription = DEVICEEVENT + "1";
+                    if (subscriptionState.get(subscription) != null) {
+                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
+                        localservice.removeSubscription(this, subscription);
+                    }
+                    subscriptionState = new HashMap<>();
+                    localservice.unregisterParticipant(this);
                 }
-                subscriptionState = new HashMap<>();
-                service.unregisterParticipant(this);
             }
         }
     }
 
     private boolean isUpnpDeviceRegistered() {
-        return service.isRegistered(this);
+        if (service != null) {
+            return service.isRegistered(this);
+        }
+        return false;
     }
 
     @Override
@@ -279,157 +298,156 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
      * The {@link updateWemoState} polls the actual state of a WeMo CoffeeMaker.
      */
     protected void updateWemoState() {
-        String actionService = "deviceevent";
+        String actionService = DEVICEEVENT;
         if (host.isEmpty()) {
             logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(host, actionService);
         if (wemoURL == null) {
             logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-url");
             return;
         }
         try {
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            if (content != null) {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    try {
-                        String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
+            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            if (wemoCallResponse != null) {
+                try {
+                    String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 
-                        // Due to Belkins bad response formatting, we need to run this twice.
-                        stringParser = unescapeXml(stringParser);
-                        stringParser = unescapeXml(stringParser);
+                    // Due to Belkins bad response formatting, we need to run this twice.
+                    stringParser = unescapeXml(stringParser);
+                    stringParser = unescapeXml(stringParser);
 
-                        logger.trace("CoffeeMaker response '{}' for device '{}' received", stringParser,
-                                getThing().getUID());
+                    logger.trace("CoffeeMaker response '{}' for device '{}' received", stringParser,
+                            getThing().getUID());
 
-                        stringParser = "<data>" + stringParser + "</data>";
+                    stringParser = "<data>" + stringParser + "</data>";
 
-                        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                        // see
-                        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-                        dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                        dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                        dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                        dbf.setXIncludeAware(false);
-                        dbf.setExpandEntityReferences(false);
-                        DocumentBuilder db = dbf.newDocumentBuilder();
-                        InputSource is = new InputSource();
-                        is.setCharacterStream(new StringReader(stringParser));
+                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+                    // see
+                    // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                    dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                    dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    dbf.setXIncludeAware(false);
+                    dbf.setExpandEntityReferences(false);
+                    DocumentBuilder db = dbf.newDocumentBuilder();
+                    InputSource is = new InputSource();
+                    is.setCharacterStream(new StringReader(stringParser));
 
-                        Document doc = db.parse(is);
-                        NodeList nodes = doc.getElementsByTagName("attribute");
+                    Document doc = db.parse(is);
+                    NodeList nodes = doc.getElementsByTagName("attribute");
 
-                        // iterate the attributes
-                        for (int i = 0; i < nodes.getLength(); i++) {
-                            Element element = (Element) nodes.item(i);
+                    // iterate the attributes
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        Element element = (Element) nodes.item(i);
 
-                            NodeList deviceIndex = element.getElementsByTagName("name");
-                            Element line = (Element) deviceIndex.item(0);
-                            String attributeName = getCharacterDataFromElement(line);
-                            logger.trace("attributeName: {}", attributeName);
+                        NodeList deviceIndex = element.getElementsByTagName("name");
+                        Element line = (Element) deviceIndex.item(0);
+                        String attributeName = getCharacterDataFromElement(line);
+                        logger.trace("attributeName: {}", attributeName);
 
-                            NodeList deviceID = element.getElementsByTagName("value");
-                            line = (Element) deviceID.item(0);
-                            String attributeValue = getCharacterDataFromElement(line);
-                            logger.trace("attributeValue: {}", attributeValue);
+                        NodeList deviceID = element.getElementsByTagName("value");
+                        line = (Element) deviceID.item(0);
+                        String attributeValue = getCharacterDataFromElement(line);
+                        logger.trace("attributeValue: {}", attributeValue);
 
-                            switch (attributeName) {
-                                case "Mode":
-                                    State newMode = new StringType("Brewing");
-                                    State newAttributeValue;
+                        switch (attributeName) {
+                            case "Mode":
+                                State newMode = new StringType("Brewing");
+                                State newAttributeValue;
 
-                                    switch (attributeValue) {
-                                        case "0":
-                                            updateState(CHANNEL_STATE, OnOffType.ON);
-                                            newMode = new StringType("Refill");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "1":
-                                            updateState(CHANNEL_STATE, OnOffType.OFF);
-                                            newMode = new StringType("PlaceCarafe");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "2":
-                                            updateState(CHANNEL_STATE, OnOffType.OFF);
-                                            newMode = new StringType("RefillWater");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "3":
-                                            updateState(CHANNEL_STATE, OnOffType.OFF);
-                                            newMode = new StringType("Ready");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "4":
-                                            updateState(CHANNEL_STATE, OnOffType.ON);
-                                            newMode = new StringType("Brewing");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "5":
-                                            updateState(CHANNEL_STATE, OnOffType.OFF);
-                                            newMode = new StringType("Brewed");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "6":
-                                            updateState(CHANNEL_STATE, OnOffType.OFF);
-                                            newMode = new StringType("CleaningBrewing");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "7":
-                                            updateState(CHANNEL_STATE, OnOffType.OFF);
-                                            newMode = new StringType("CleaningSoaking");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                        case "8":
-                                            updateState(CHANNEL_STATE, OnOffType.OFF);
-                                            newMode = new StringType("BrewFailCarafeRemoved");
-                                            updateState(CHANNEL_COFFEEMODE, newMode);
-                                            break;
-                                    }
-                                    break;
-                                case "ModeTime":
-                                    newAttributeValue = new DecimalType(attributeValue);
-                                    updateState(CHANNEL_MODETIME, newAttributeValue);
-                                    break;
-                                case "TimeRemaining":
-                                    newAttributeValue = new DecimalType(attributeValue);
-                                    updateState(CHANNEL_TIMEREMAINING, newAttributeValue);
-                                    break;
-                                case "WaterLevelReached":
-                                    newAttributeValue = new DecimalType(attributeValue);
-                                    updateState(CHANNEL_WATERLEVELREACHED, newAttributeValue);
-                                    break;
-                                case "CleanAdvise":
-                                    newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
-                                    updateState(CHANNEL_CLEANADVISE, newAttributeValue);
-                                    break;
-                                case "FilterAdvise":
-                                    newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
-                                    updateState(CHANNEL_FILTERADVISE, newAttributeValue);
-                                    break;
-                                case "Brewed":
-                                    newAttributeValue = getDateTimeState(attributeValue);
-                                    if (newAttributeValue != null) {
-                                        updateState(CHANNEL_BREWED, newAttributeValue);
-                                    }
-                                    break;
-                                case "LastCleaned":
-                                    newAttributeValue = getDateTimeState(attributeValue);
-                                    if (newAttributeValue != null) {
-                                        updateState(CHANNEL_LASTCLEANED, newAttributeValue);
-                                    }
-                                    break;
-                            }
+                                switch (attributeValue) {
+                                    case "0":
+                                        updateState(CHANNEL_STATE, OnOffType.ON);
+                                        newMode = new StringType("Refill");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "1":
+                                        updateState(CHANNEL_STATE, OnOffType.OFF);
+                                        newMode = new StringType("PlaceCarafe");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "2":
+                                        updateState(CHANNEL_STATE, OnOffType.OFF);
+                                        newMode = new StringType("RefillWater");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "3":
+                                        updateState(CHANNEL_STATE, OnOffType.OFF);
+                                        newMode = new StringType("Ready");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "4":
+                                        updateState(CHANNEL_STATE, OnOffType.ON);
+                                        newMode = new StringType("Brewing");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "5":
+                                        updateState(CHANNEL_STATE, OnOffType.OFF);
+                                        newMode = new StringType("Brewed");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "6":
+                                        updateState(CHANNEL_STATE, OnOffType.OFF);
+                                        newMode = new StringType("CleaningBrewing");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "7":
+                                        updateState(CHANNEL_STATE, OnOffType.OFF);
+                                        newMode = new StringType("CleaningSoaking");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                    case "8":
+                                        updateState(CHANNEL_STATE, OnOffType.OFF);
+                                        newMode = new StringType("BrewFailCarafeRemoved");
+                                        updateState(CHANNEL_COFFEEMODE, newMode);
+                                        break;
+                                }
+                                break;
+                            case "ModeTime":
+                                newAttributeValue = new DecimalType(attributeValue);
+                                updateState(CHANNEL_MODETIME, newAttributeValue);
+                                break;
+                            case "TimeRemaining":
+                                newAttributeValue = new DecimalType(attributeValue);
+                                updateState(CHANNEL_TIMEREMAINING, newAttributeValue);
+                                break;
+                            case "WaterLevelReached":
+                                newAttributeValue = new DecimalType(attributeValue);
+                                updateState(CHANNEL_WATERLEVELREACHED, newAttributeValue);
+                                break;
+                            case "CleanAdvise":
+                                newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                                updateState(CHANNEL_CLEANADVISE, newAttributeValue);
+                                break;
+                            case "FilterAdvise":
+                                newAttributeValue = "0".equals(attributeValue) ? OnOffType.OFF : OnOffType.ON;
+                                updateState(CHANNEL_FILTERADVISE, newAttributeValue);
+                                break;
+                            case "Brewed":
+                                newAttributeValue = getDateTimeState(attributeValue);
+                                if (newAttributeValue != null) {
+                                    updateState(CHANNEL_BREWED, newAttributeValue);
+                                }
+                                break;
+                            case "LastCleaned":
+                                newAttributeValue = getDateTimeState(attributeValue);
+                                if (newAttributeValue != null) {
+                                    updateState(CHANNEL_LASTCLEANED, newAttributeValue);
+                                }
+                                break;
                         }
-                    } catch (Exception e) {
-                        logger.error("Failed to parse attributeList for WeMo CoffeMaker '{}'", this.getThing().getUID(),
-                                e);
                     }
+                } catch (Exception e) {
+                    logger.error("Failed to parse attributeList for WeMo CoffeMaker '{}'", this.getThing().getUID(), e);
                 }
             }
         } catch (Exception e) {

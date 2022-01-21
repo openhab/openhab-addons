@@ -61,14 +61,14 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
 
-    private final UpnpIOService service;
-
     private final Object upnpLock = new Object();
     private final Object jobLock = new Object();
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private final String BASICEVENT = "basicevent";
+
+    private @Nullable UpnpIOService service;
 
     private WemoHttpCall wemoCall;
 
@@ -100,8 +100,10 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         Configuration configuration = getConfig();
 
         if (configuration.get(UDN) != null) {
-            logger.debug("Initializing WemoDimmerHandler for UDN '{}'", configuration.get("udn"));
-            service.registerParticipant(this);
+            logger.debug("Initializing WemoDimmerHandler for UDN '{}'", configuration.get(UDN));
+            if (service != null) {
+                service.registerParticipant(this);
+            }
 
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
@@ -124,7 +126,9 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         this.pollingJob = null;
 
         removeSubscription();
-        service.unregisterParticipant(this);
+        if (service != null) {
+            service.unregisterParticipant(this);
+        }
     }
 
     private void poll() {
@@ -144,10 +148,10 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                     }
                 }
                 // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
+                // If not, set the thing state to OFFLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {
                     logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     synchronized (upnpLock) {
                         subscriptionState = new HashMap<>();
@@ -453,35 +457,45 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     }
 
     private synchronized void addSubscription() {
-        if (service.isRegistered(this)) {
-            logger.debug("Checking WeMo GENA subscription for '{}'", this);
-            String subscription = "basicevent1";
-            if (subscriptionState.get(subscription) == null) {
-                logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(), subscription);
-                service.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
-                subscriptionState.put(subscription, true);
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            if (localservice.isRegistered(this)) {
+                logger.debug("Checking WeMo GENA subscription for '{}'", this);
+                String subscription = BASICEVENT + "1";
+                if (subscriptionState.get(subscription) == null) {
+                    logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
+                            subscription);
+                    localservice.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
+                    subscriptionState.put(subscription, true);
+                }
+            } else {
+                logger.debug("Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
+                        getThing().getUID());
             }
-        } else {
-            logger.debug("Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                    this);
         }
     }
 
     private synchronized void removeSubscription() {
         logger.debug("Removing WeMo GENA subscription for '{}'", this);
-        if (service.isRegistered(this)) {
-            String subscription = "basicevent1";
-            if (subscriptionState.get(subscription) != null) {
-                logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                service.removeSubscription(this, subscription);
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            if (localservice.isRegistered(this)) {
+                String subscription = BASICEVENT + "1";
+                if (subscriptionState.get(subscription) != null) {
+                    logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
+                    localservice.removeSubscription(this, subscription);
+                }
+                subscriptionState = new HashMap<>();
+                localservice.unregisterParticipant(this);
             }
-            subscriptionState = new HashMap<>();
-            service.unregisterParticipant(this);
         }
     }
 
     private boolean isUpnpDeviceRegistered() {
-        return service.isRegistered(this);
+        if (service != null) {
+            return service.isRegistered(this);
+        }
+        return false;
     }
 
     @Override
@@ -497,13 +511,15 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     protected void updateWemoState() {
         if (host.isEmpty()) {
             logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(host, "basicevent");
         if (wemoURL == null) {
             logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-url");
             return;
         }
         String action = "GetBinaryState";
@@ -512,65 +528,61 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         String value = null;
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         String content = createStateRequestContent(action, actionService);
-        if (content != null) {
-            try {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
-                    value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                    variable = "BinaryState";
-                    logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<brightness>", "</brightness>");
-                    variable = "brightness";
-                    logger.trace("New brightness '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<fader>", "</fader>");
-                    variable = "fader";
-                    logger.trace("New fader value '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } catch (Exception e) {
-                logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        try {
+            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            if (wemoCallResponse != null) {
+                logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
+                value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
+                variable = "BinaryState";
+                logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
+                value = substringBetween(wemoCallResponse, "<brightness>", "</brightness>");
+                variable = "brightness";
+                logger.trace("New brightness '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
+                value = substringBetween(wemoCallResponse, "<fader>", "</fader>");
+                variable = "fader";
+                logger.trace("New fader value '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
+                updateStatus(ThingStatus.ONLINE);
             }
+        } catch (Exception e) {
+            logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         action = "GetNightModeConfiguration";
         variable = null;
         value = null;
         soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         content = createStateRequestContent(action, actionService);
-        if (content != null) {
-            try {
-                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null) {
-                    logger.trace("GetNightModeConfiguration response '{}' for device '{}' received", wemoCallResponse,
-                            getThing().getUID());
-                    value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
-                    variable = "startTime";
-                    logger.trace("New startTime '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<endTime>", "</endTime>");
-                    variable = "endTime";
-                    logger.trace("New endTime '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<nightMode>", "</nightMode>");
-                    variable = "nightMode";
-                    logger.trace("New nightMode state '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    value = substringBetween(wemoCallResponse, "<nightModeBrightness>", "</nightModeBrightness>");
-                    variable = "nightModeBrightness";
-                    logger.trace("New nightModeBrightness  '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                    updateStatus(ThingStatus.ONLINE);
+        try {
+            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            if (wemoCallResponse != null) {
+                logger.trace("GetNightModeConfiguration response '{}' for device '{}' received", wemoCallResponse,
+                        getThing().getUID());
+                value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
+                variable = "startTime";
+                logger.trace("New startTime '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
+                value = substringBetween(wemoCallResponse, "<endTime>", "</endTime>");
+                variable = "endTime";
+                logger.trace("New endTime '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
+                value = substringBetween(wemoCallResponse, "<nightMode>", "</nightMode>");
+                variable = "nightMode";
+                logger.trace("New nightMode state '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
+                value = substringBetween(wemoCallResponse, "<nightModeBrightness>", "</nightModeBrightness>");
+                variable = "nightModeBrightness";
+                logger.trace("New nightModeBrightness  '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
+                updateStatus(ThingStatus.ONLINE);
 
-                }
-            } catch (Exception e) {
-                logger.debug("Failed to get actual NightMode state for device '{}': {}", getThing().getUID(),
-                        e.getMessage());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
+        } catch (Exception e) {
+            logger.debug("Failed to get actual NightMode state for device '{}': {}", getThing().getUID(),
+                    e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -592,13 +604,15 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     public void setBinaryState(String action, String argument, String value) {
         if (host.isEmpty()) {
             logger.error("Failed to set binary state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(host, BASICEVENT);
         if (wemoURL == null) {
             logger.error("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-url");
             return;
         }
         try {
@@ -619,13 +633,15 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     public void setTimerStart(String action, String argument, String value) {
         if (host.isEmpty()) {
             logger.error("Failed to set timerStart for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(host, BASICEVENT);
         if (wemoURL == null) {
             logger.error("Failed to set timerStart for device '{}': URL cannot be created", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-url");
             return;
         }
         try {

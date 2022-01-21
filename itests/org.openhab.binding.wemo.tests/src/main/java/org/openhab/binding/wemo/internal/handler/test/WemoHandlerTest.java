@@ -51,8 +51,6 @@ public class WemoHandlerTest {
     private static final String PARAMS_NAME = "InsightParams";
     private WemoInsightParams insightParams;
 
-    private String host = "127.0.0.1";
-
     /** Used for all tests, where expected value is time in seconds **/
     private static final int TIME_PARAM = 4702;
 
@@ -133,7 +131,7 @@ public class WemoHandlerTest {
     }
 
     private void testOnValueReceived(String expectedChannel, State expectedState, String insightParams) {
-        handler = new MockWemoHandler(thing, expectedChannel, host);
+        handler = new MockWemoHandler(thing, expectedChannel);
 
         handler.onValueReceived(PARAMS_NAME, insightParams, SERVICE_ID);
         assertThat(handler.channelState, is(notNullValue()));
@@ -144,7 +142,7 @@ public class WemoHandlerTest {
         State channelState;
         String channelToWatch;
 
-        public MockWemoHandler(Thing thing, String channelToWatch, String host) {
+        public MockWemoHandler(Thing thing, String channelToWatch) {
             super(thing, null, new WemoHttpCall());
             this.channelToWatch = channelToWatch;
         }

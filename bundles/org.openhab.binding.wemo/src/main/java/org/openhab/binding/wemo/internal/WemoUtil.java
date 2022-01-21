@@ -157,15 +157,16 @@ public class WemoUtil {
         return entities;
     }
 
-    public static @Nullable String createBinaryStateContent(String binaryState) {
+    public static String createBinaryStateContent(boolean binaryState) {
+        String binary = binaryState == true ? "1" : "0";
         String content = "<?xml version=\"1.0\"?>"
                 + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
                 + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<BinaryState>"
-                + binaryState + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
+                + binary + "</BinaryState>" + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
         return content;
     }
 
-    public static @Nullable String createStateRequestContent(String action, String actionService) {
+    public static String createStateRequestContent(String action, String actionService) {
         String content = "<?xml version=\"1.0\"?>"
                 + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
                 + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:" + actionService + ":1\">" + "</u:"
