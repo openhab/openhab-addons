@@ -239,7 +239,9 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 String[] splitInsightParams = insightParams.split("\\|");
 
                 if (splitInsightParams[0] != null) {
-                    OnOffType binaryState = splitInsightParams[0].equals("0") ? OnOffType.OFF : OnOffType.ON;
+                    logger.trace("New raw InsightParam binaryState '{}' for device '{}' received",
+                            splitInsightParams[0], getThing().getUID());
+                    OnOffType binaryState = "0".equals(splitInsightParams[0]) ? OnOffType.OFF : OnOffType.ON;
                     logger.trace("New InsightParam binaryState '{}' for device '{}' received", binaryState,
                             getThing().getUID());
                     updateState(CHANNEL_STATE, binaryState);
