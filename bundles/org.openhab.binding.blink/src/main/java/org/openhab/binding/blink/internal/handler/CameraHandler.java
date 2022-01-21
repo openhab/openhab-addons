@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.blink.internal.handler;
 
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
-
 import java.io.IOException;
 import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.CameraConfiguration;
@@ -41,8 +38,9 @@ import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
+
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 /**
  * The {@link CameraHandler} is responsible for initializing camera thing and handling commands, which are
@@ -155,8 +153,8 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
 
         if (config.cameraType.equals(CameraConfiguration.CameraType.OWL)) {
             ThingBuilder thingBuilder = editThing();
-            thingBuilder.withoutChannel(new ChannelUID(CHANNEL_CAMERA_BATTERY));
-            thingBuilder.withoutChannel(new ChannelUID(CHANNEL_CAMERA_TEMPERATURE));
+            thingBuilder.withoutChannel(new ChannelUID(this.thing.getUID(), CHANNEL_CAMERA_BATTERY));
+            thingBuilder.withoutChannel(new ChannelUID(this.thing.getUID(), CHANNEL_CAMERA_TEMPERATURE));
             updateThing(thingBuilder.build());
         }
 
