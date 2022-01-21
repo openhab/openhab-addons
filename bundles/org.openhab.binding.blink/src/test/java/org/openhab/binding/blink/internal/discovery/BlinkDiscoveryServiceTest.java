@@ -82,6 +82,7 @@ class BlinkDiscoveryServiceTest {
         BlinkHomescreen homescreen = new BlinkHomescreen();
         homescreen.cameras = new ArrayList<>();
         homescreen.networks = new ArrayList<>();
+        homescreen.owls = new ArrayList<>();
         return homescreen;
     }
 
@@ -92,6 +93,18 @@ class BlinkDiscoveryServiceTest {
         BlinkCamera camera = new BlinkCamera(123L, 234L);
         camera.name = "Testcam1";
         homescreen.cameras.add(camera);
+        doReturn(homescreen).when(accountHandler).getDevices(false);
+        discoveryService.discover();
+        verify(discoveryService).thingDiscovered(any());
+    }
+
+    @Test
+    void testDiscoverOneOwl() {
+        doReturn(bridge).when(accountHandler).getThing();
+        BlinkHomescreen homescreen = testHomescreen();
+        BlinkCamera camera = new BlinkCamera(123L, 234L);
+        camera.name = "Testcam1";
+        homescreen.owls.add(camera);
         doReturn(homescreen).when(accountHandler).getDevices(false);
         discoveryService.discover();
         verify(discoveryService).thingDiscovered(any());
@@ -125,8 +138,11 @@ class BlinkDiscoveryServiceTest {
         camera = new BlinkCamera(567L, 789L);
         camera.name = "Testcam2";
         homescreen.cameras.add(camera);
+        camera = new BlinkCamera(890L, 567L);
+        camera.name = "TestMini1";
+        homescreen.owls.add(camera);
         doReturn(homescreen).when(accountHandler).getDevices(false);
         discoveryService.discover();
-        verify(discoveryService, times(4)).thingDiscovered(any());
+        verify(discoveryService, times(5)).thingDiscovered(any());
     }
 }

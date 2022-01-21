@@ -153,7 +153,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 // do 2FA if necessary
                 if (blinkAccount.account.client_verification_required) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "Waiting for 2 Factor Authentication. Please go to <youropenhab>" + validationUrl
+                            "Waiting for 2 Factor Authentication. Please go to " + validationUrl
                                     + " to enter the PIN you received via SMS or email");
                 } else {
                     setOnline();

@@ -39,10 +39,12 @@ public class BlinkBindingConstants {
     public static final String CHANNEL_NETWORK_ARMED = "armed";
     // List of property names
     public static final String PROPERTY_CAMERA_ID = "cameraId";
-
+    public static final String PROPERTY_CAMERA_TYPE = "cameraType";
     public static final String PROPERTY_ACCOUNT_ID = "accountId";
     public static final String PROPERTY_CLIENT_ID = "clientId";
     public static final String PROPERTY_TIER = "tier";
     public static final String PROPERTY_TOKEN = "token";
     public static final String PROPERTY_NETWORK_ID = "networkId";
+
+    ;
 }

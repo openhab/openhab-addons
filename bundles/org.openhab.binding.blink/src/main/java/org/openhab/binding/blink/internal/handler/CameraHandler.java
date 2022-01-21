@@ -35,6 +35,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.osgi.service.http.HttpService;
@@ -150,6 +151,13 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
             } catch (IllegalStateException e) {
                 logger.warn("Failed to create account servlet", e);
             }
+        }
+
+        if (config.cameraType.equals(CameraConfiguration.CameraType.OWL)) {
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withoutChannel(new ChannelUID(CHANNEL_CAMERA_BATTERY));
+            thingBuilder.withoutChannel(new ChannelUID(CHANNEL_CAMERA_TEMPERATURE));
+            updateThing(thingBuilder.build());
         }
 
         updateStatus(ThingStatus.ONLINE);

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.dto.BlinkHomescreen;
 import org.openhab.binding.blink.internal.handler.AccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
@@ -96,6 +97,15 @@ public class BlinkDiscoveryService extends AbstractDiscoveryService implements T
             ThingUID uid = new ThingUID(THING_TYPE_CAMERA, bridgeUID, Long.toString(camera.id));
             DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withLabel(camera.name).withBridge(bridgeUID)
                     .withProperty(PROPERTY_CAMERA_ID, camera.id).withProperty(PROPERTY_NETWORK_ID, camera.network_id)
+                    .withProperty(PROPERTY_CAMERA_TYPE, CameraConfiguration.CameraType.CAMERA)
+                    .withRepresentationProperty(PROPERTY_CAMERA_ID);
+            thingDiscovered(dr.build());
+        });
+        homescreen.owls.forEach(camera -> {
+            ThingUID uid = new ThingUID(THING_TYPE_CAMERA, bridgeUID, Long.toString(camera.id));
+            DiscoveryResultBuilder dr = DiscoveryResultBuilder.create(uid).withLabel(camera.name).withBridge(bridgeUID)
+                    .withProperty(PROPERTY_CAMERA_ID, camera.id).withProperty(PROPERTY_NETWORK_ID, camera.network_id)
+                    .withProperty(PROPERTY_CAMERA_TYPE, CameraConfiguration.CameraType.OWL)
                     .withRepresentationProperty(PROPERTY_CAMERA_ID);
             thingDiscovered(dr.build());
         });

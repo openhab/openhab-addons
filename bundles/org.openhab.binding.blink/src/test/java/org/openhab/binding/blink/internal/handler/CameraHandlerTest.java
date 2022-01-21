@@ -115,6 +115,7 @@ public class CameraHandlerTest {
         Configuration config = new Configuration();
         config.put("cameraId", CAMERA_ID);
         config.put("networkId", NETWORK_ID);
+        config.put("cameraType", CameraConfiguration.CameraType.CAMERA);
         when(thing.getConfiguration()).thenReturn(config);
         doReturn(accountHandler).when(account).getHandler();
         cameraHandler = spy(
@@ -134,6 +135,7 @@ public class CameraHandlerTest {
         assertThat(cameraHandler.config, is(notNullValue()));
         assertThat(cameraHandler.config.cameraId, is(Long.parseLong(CAMERA_ID)));
         assertThat(cameraHandler.config.networkId, is(Long.parseLong(NETWORK_ID)));
+        assertThat(cameraHandler.config.cameraType, is(CameraConfiguration.CameraType.CAMERA));
         ArgumentCaptor<ThingStatusInfo> statusCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusCaptor.capture());
         assertThat(statusCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));

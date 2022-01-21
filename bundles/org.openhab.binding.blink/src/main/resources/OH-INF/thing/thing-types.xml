@@ -63,6 +63,11 @@
 				<label>ID</label>
 				<description>Internal ID of network (please use auto-discovery).</description>
 			</parameter>
+			<parameter name="cameraType" type="text" required="true">
+				<label>Type</label>
+				<description>Camera type, either CAMERA or OWL (for blink minis) (please use auto-discovery).
+				</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>

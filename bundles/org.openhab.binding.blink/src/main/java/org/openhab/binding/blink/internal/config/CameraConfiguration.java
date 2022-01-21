@@ -24,4 +24,11 @@ public class CameraConfiguration {
 
     public Long cameraId = 0L;
     public Long networkId = 0L;
+    public CameraType cameraType = CameraType.CAMERA;
+
+    // camera types
+    public enum CameraType {
+        CAMERA,
+        OWL
+    }
 }

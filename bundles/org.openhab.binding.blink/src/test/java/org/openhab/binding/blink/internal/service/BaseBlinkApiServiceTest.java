@@ -16,6 +16,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -156,6 +157,8 @@ class BaseBlinkApiServiceTest {
         @Nullable
         public String iam;
         public int age;
+        @Nullable
+        public String unset;
     }
 
     @Test
@@ -170,6 +173,7 @@ class BaseBlinkApiServiceTest {
         assertThat(result.iam, is(notNullValue()));
         assertThat(result.iam, is("old"));
         assertThat(result.age, is(90));
+        assertThat(result.unset, is(nullValue()));
     }
 
     @Test
