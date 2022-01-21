@@ -232,7 +232,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             this.stateMap.put(variable, value);
         }
 
-        if ("insight".equals(getThing().getThingTypeUID().getId())) {
+        if ("insight1".equals(service)) {
             String insightParams = stateMap.get("InsightParams");
 
             if (insightParams != null) {

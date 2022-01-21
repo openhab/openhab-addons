@@ -35,6 +35,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
@@ -112,6 +113,10 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
 
         waitForAssert(() -> {
             assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+        });
+
+        waitForAssert(() -> {
+            assertThat(thing.getStatusInfo().getStatusDetail(), not(ThingStatusDetail.CONFIGURATION_PENDING));
         });
 
         // The Device is registered as UPnP Device after the initialization, this will ensure that the polling job will

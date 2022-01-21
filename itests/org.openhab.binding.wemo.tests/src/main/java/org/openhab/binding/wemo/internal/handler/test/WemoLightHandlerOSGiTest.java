@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.handler.test;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +37,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
@@ -160,6 +161,10 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
         waitForAssert(() -> {
             assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
+        });
+
+        waitForAssert(() -> {
+            assertThat(thing.getStatusInfo().getStatusDetail(), not(ThingStatusDetail.CONFIGURATION_PENDING));
         });
 
         // The device is registered as UPnP Device after the initialization, this will ensure that the polling job will
