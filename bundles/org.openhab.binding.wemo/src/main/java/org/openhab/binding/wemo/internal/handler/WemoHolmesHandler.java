@@ -77,6 +77,8 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
+    private final String DEVICEEVENT = "deviceevent";
+
     private WemoHttpCall wemoCall;
 
     private String host = "";
@@ -131,7 +133,7 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
             try {
                 logger.debug("Polling job");
 
-                if (host == null || host.isEmpty()) {
+                if (host.isEmpty()) {
                     if (service != null) {
                         URL descriptorURL = service.getDescriptorURL(this);
                         if (descriptorURL != null) {
@@ -161,13 +163,13 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (host == null || host.isEmpty()) {
+        if (host.isEmpty()) {
             logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
-        String wemoURL = getWemoURL(host, "deviceevent");
+        String wemoURL = getWemoURL(host, DEVICEEVENT);
         if (wemoURL == null) {
             logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
@@ -360,8 +362,8 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
      *
      */
     protected void updateWemoState() {
-        String actionService = "deviceevent";
-        if (host == null || host.isEmpty()) {
+        String actionService = DEVICEEVENT;
+        if (host.isEmpty()) {
             logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;

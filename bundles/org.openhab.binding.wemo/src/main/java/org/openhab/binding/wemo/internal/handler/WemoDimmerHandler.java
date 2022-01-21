@@ -68,6 +68,8 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
+    private final String BASICEVENT = "basicevent";
+
     private WemoHttpCall wemoCall;
 
     private String host = "";
@@ -133,7 +135,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             try {
                 logger.debug("Polling job");
 
-                if (host == null || host.isEmpty()) {
+                if (host.isEmpty()) {
                     if (service != null) {
                         URL descriptorURL = service.getDescriptorURL(this);
                         if (descriptorURL != null) {
@@ -493,7 +495,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
      *
      */
     protected void updateWemoState() {
-        if (host == null || host.isEmpty()) {
+        if (host.isEmpty()) {
             logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
@@ -506,7 +508,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         }
         String action = "GetBinaryState";
         String variable = null;
-        String actionService = "basicevent";
+        String actionService = BASICEVENT;
         String value = null;
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         String content = createStateRequestContent(action, actionService);
@@ -588,12 +590,12 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     }
 
     public void setBinaryState(String action, String argument, String value) {
-        if (host == null || host.isEmpty()) {
+        if (host.isEmpty()) {
             logger.error("Failed to set binary state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
-        String wemoURL = getWemoURL(host, "basicevent");
+        String wemoURL = getWemoURL(host, BASICEVENT);
         if (wemoURL == null) {
             logger.error("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -615,12 +617,12 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     }
 
     public void setTimerStart(String action, String argument, String value) {
-        if (host == null || host.isEmpty()) {
+        if (host.isEmpty()) {
             logger.error("Failed to set timerStart for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
-        String wemoURL = getWemoURL(host, "basicevent");
+        String wemoURL = getWemoURL(host, BASICEVENT);
         if (wemoURL == null) {
             logger.error("Failed to set timerStart for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

@@ -118,7 +118,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
             try {
                 logger.debug("Polling job");
 
-                if (host == null || host.isEmpty()) {
+                if (host.isEmpty()) {
                     if (service != null) {
                         URL descriptorURL = service.getDescriptorURL(this);
                         if (descriptorURL != null) {
@@ -148,7 +148,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (host == null || host.isEmpty()) {
+        if (host.isEmpty()) {
             logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -272,7 +272,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
      */
     protected void updateWemoState() {
         String actionService = "basicevent";
-        if (host == null || host.isEmpty()) {
+        if (host.isEmpty()) {
             logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;

@@ -137,7 +137,6 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
             return new WemoHolmesHandler(thing, upnpIOService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MZ100)) {
             return new WemoLightHandler(thing, upnpIOService, wemoHttpcaller);
-
         } else {
             logger.warn("ThingHandler not found for {}", thingTypeUID);
             return null;

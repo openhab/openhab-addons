@@ -161,7 +161,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             try {
                 logger.debug("Polling job");
 
-                if (host == null || host.isEmpty()) {
+                if (host.isEmpty()) {
                     if (service != null) {
                         URL descriptorURL = service.getDescriptorURL(this);
                         if (descriptorURL != null) {
@@ -263,7 +263,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     }
                     break;
             }
-            if (host == null || host.isEmpty()) {
+            if (host.isEmpty()) {
                 logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 return;
@@ -313,7 +313,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
      * channel states.
      */
     public void getDeviceState() {
-        if (host == null || host.isEmpty()) {
+        if (host.isEmpty()) {
             logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
