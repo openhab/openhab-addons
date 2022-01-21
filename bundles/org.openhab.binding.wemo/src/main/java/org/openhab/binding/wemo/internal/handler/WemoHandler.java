@@ -143,7 +143,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 logger.debug("Polling job");
 
                 if (host.isEmpty()) {
-                    getHost();
+                    host = getHost();
                 }
                 // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
@@ -422,8 +422,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         if (localservice != null) {
             URL descriptorURL = localservice.getDescriptorURL(this);
             if (descriptorURL != null) {
-                host = descriptorURL.getHost();
-                return host;
+                return descriptorURL.getHost();
             }
         }
         return host;
