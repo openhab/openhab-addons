@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.AccountConfiguration;
@@ -54,6 +55,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.gson.Gson;
 
 /**
@@ -204,8 +206,8 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     boolean ensureBlinkAccount() {
-        boolean refreshToken = (blinkAccount != null &&
-                Instant.now().isAfter(blinkAccount.lastTokenRefresh.plus(TOKEN_TTL, ChronoUnit.HOURS)));
+        boolean refreshToken = (blinkAccount != null
+                && Instant.now().isAfter(blinkAccount.lastTokenRefresh.plus(TOKEN_TTL, ChronoUnit.HOURS)));
         if (blinkAccount != null && !refreshToken) {
             return true;
         }
@@ -315,8 +317,8 @@ public class AccountHandler extends BaseBridgeHandler {
         if (devices == null) {
             throw new IOException("No cameras found for account");
         }
-        List<BlinkCamera> cameras = (camera.cameraType == CameraConfiguration.CameraType.CAMERA) ?
-                devices.cameras : devices.owls;
+        List<BlinkCamera> cameras = (camera.cameraType == CameraConfiguration.CameraType.CAMERA) ? devices.cameras
+                : devices.owls;
         if (cameras == null || cameras.isEmpty()) {
             logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("No cameras found for account");

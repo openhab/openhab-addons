@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.blink.internal.dto;
 
+import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.openhab.binding.blink.internal.BlinkBindingConstants.*;
 
 /**
  * The {@link BlinkAccount} class is the DTO for the login api call.
@@ -31,8 +31,8 @@ public class BlinkAccount {
     public Account account;
     public Auth auth;
     public Instant lastTokenRefresh;
-    public DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(
-            ZoneId.from(ZoneOffset.UTC));
+    public DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+            .withZone(ZoneId.from(ZoneOffset.UTC));
 
     public static class Auth {
         public String token;

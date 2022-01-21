@@ -55,6 +55,24 @@ public class CameraService extends BaseBlinkApiService {
     }
 
     /**
+     * Call motion detection endpoints do enable/disable motion detection for the given camera.
+     *
+     * @param account blink account
+     * @param camera blink camera
+     * @param enable enable/disable
+     * @return blink async command ID
+     */
+    public String motionDetectionOwl(@Nullable BlinkAccount account, @Nullable CameraConfiguration camera,
+            boolean enable) throws IOException {
+        if (account == null || account.account == null || camera == null)
+            throw new IllegalArgumentException("Cannot call motion detection api without account or camera");
+        String command = "{\"enabled\": " + enable + "}";
+        String uri = "/api/v1/accounts/" + account.account.account_id + "/networks/" + camera.networkId + "/owls/"
+                + camera.cameraId + "/config";
+        return request(account.account.tier, uri, HttpMethod.POST, account.auth.token, null, command);
+    }
+
+    /**
      * Call thumbnail endpoint to create a thumbnail for the given camera.
      *
      * @param account blink account

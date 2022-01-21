@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
@@ -68,15 +69,15 @@ public class BaseBlinkApiService {
 
     protected <T> T apiRequest(String tier, String uri, HttpMethod method, @Nullable String token,
             @Nullable Map<String, String> params, Class<T> classOfT) throws IOException {
-        String json = request(tier, uri, method, token, params);
+        String json = request(tier, uri, method, token, params, null);
         return gson.fromJson(json, classOfT);
     }
 
     String request(String tier, String uri, HttpMethod method, @Nullable String token,
-            @Nullable Map<String, String> params) throws IOException {
+            @Nullable Map<String, String> params, @Nullable String content) throws IOException {
         String url = createUrl(tier, uri);
         try {
-            ContentResponse contentResponse = createRequestAndSend(url, method, token, params, true);
+            ContentResponse contentResponse = createRequestAndSend(url, method, token, params, content, true);
             return contentResponse.getContentAsString();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Error calling Blink API. Reason: {}", e.getMessage());
@@ -88,7 +89,7 @@ public class BaseBlinkApiService {
             @Nullable Map<String, String> params) throws IOException {
         String url = createUrl(tier, uri);
         try {
-            ContentResponse contentResponse = createRequestAndSend(url, method, token, params, false);
+            ContentResponse contentResponse = createRequestAndSend(url, method, token, params, null, false);
             return contentResponse.getContent();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.error("Error calling Blink API. Reason: {}", e.getMessage());
@@ -102,7 +103,7 @@ public class BaseBlinkApiService {
     }
 
     private ContentResponse createRequestAndSend(String url, HttpMethod method, @Nullable String token,
-            @Nullable Map<String, String> params, boolean json)
+            @Nullable Map<String, String> params, @Nullable String content, boolean json)
             throws InterruptedException, TimeoutException, ExecutionException, IOException {
         final Request request = httpClient.newRequest(url).method(method.toString());
         if (params != null)
@@ -111,6 +112,8 @@ public class BaseBlinkApiService {
             request.header(HttpHeader.ACCEPT, CONTENT_TYPE_JSON);
         if (token != null)
             request.header(HEADER_TOKEN_AUTH, token);
+        if (content != null)
+            request.content(new StringContentProvider(content));
         ContentResponse contentResponse = request.send();
         if (contentResponse.getStatus() != 200) {
             throw new IOException("Blink API Call unsuccessful <Status " + contentResponse.getStatus() + ">");

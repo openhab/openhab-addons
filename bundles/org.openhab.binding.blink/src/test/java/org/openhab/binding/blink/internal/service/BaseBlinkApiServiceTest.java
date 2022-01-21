@@ -92,7 +92,7 @@ class BaseBlinkApiServiceTest {
         String expected = "resultString";
         when(response.getContentAsString()).thenReturn(expected);
         doReturn(response).when(request).send();
-        String result = apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null);
+        String result = apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null, null);
         verify(httpClient).newRequest("https://rest-abc.immedia-semi.com/api/v1/hurz");
         assertThat(result, is(expected));
     }
@@ -115,7 +115,7 @@ class BaseBlinkApiServiceTest {
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn("");
         doReturn(response).when(request).send();
-        apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, "mytoken", params);
+        apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, "mytoken", params, null);
         verify(request).header(HttpHeader.ACCEPT, "application/json; charset=UTF-8");
         verify(request).header("token-auth", "mytoken");
         verify(request, times(params.size())).param(anyString(), anyString());
@@ -128,7 +128,7 @@ class BaseBlinkApiServiceTest {
         when(response.getStatus()).thenReturn(500);
         doReturn(response).when(request).send();
         IOException exception = assertThrows(IOException.class,
-                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null));
+                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null, null));
         assertThat(exception.getMessage(), is("Blink API Call unsuccessful <Status 500>"));
     }
 
@@ -138,18 +138,18 @@ class BaseBlinkApiServiceTest {
         IOException exception;
         doThrow(InterruptedException.class).when(request).send();
         exception = assertThrows(IOException.class,
-                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null));
+                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null, null));
         assertThat(exception.getCause(), is(notNullValue()));
         // assertThat(exception.getCause().getClass(), is(InterruptedException.class));
         // would like to check if cause is a InterruptedException.class, but I'm in @NotNull @Nullable hell because of
         // assertThrows
         doThrow(TimeoutException.class).when(request).send();
         exception = assertThrows(IOException.class,
-                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null));
+                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null, null));
         assertThat(exception.getCause(), is(notNullValue()));
         doThrow(ExecutionException.class).when(request).send();
         exception = assertThrows(IOException.class,
-                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null));
+                () -> apiService.request("abc", "/api/v1/hurz", HttpMethod.GET, null, null, null));
         assertThat(exception.getCause(), is(notNullValue()));
     }
 
