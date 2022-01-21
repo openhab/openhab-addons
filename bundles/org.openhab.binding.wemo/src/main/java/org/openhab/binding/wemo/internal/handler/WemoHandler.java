@@ -101,14 +101,13 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     @Override
     public void initialize() {
         Configuration configuration = getConfig();
-        String udn = (String) configuration.get(UDN);
 
-        if (udn != null && !udn.isEmpty()) {
-            logger.debug("Initializing WemoHandler for UDN '{}'", udn);
-            if (service != null) {
-                service.registerParticipant(this);
+        if (configuration.get(UDN) != null) {
+            logger.debug("Initializing WemoHandler for UDN '{}'", configuration.get(UDN));
+            UpnpIOService localservice = service;
+            if (localservice != null) {
+                localservice.registerParticipant(this);
             }
-
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
@@ -128,10 +127,10 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             job.cancel(true);
         }
         this.pollingJob = null;
-
         removeSubscription();
-        if (service != null) {
-            service.unregisterParticipant(this);
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            localservice.unregisterParticipant(this);
         }
     }
 
@@ -144,8 +143,9 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 logger.debug("Polling job");
 
                 if (host.isEmpty()) {
-                    if (service != null) {
-                        URL descriptorURL = service.getDescriptorURL(this);
+                    UpnpIOService localservice = service;
+                    if (localservice != null) {
+                        URL descriptorURL = localservice.getDescriptorURL(this);
                         if (descriptorURL != null) {
                             host = descriptorURL.getHost();
                         }
@@ -409,8 +409,9 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     }
 
     private boolean isUpnpDeviceRegistered() {
-        if (service != null) {
-            return service.isRegistered(this);
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            return localservice.isRegistered(this);
         }
         return false;
     }

@@ -101,8 +101,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            if (service != null) {
-                service.registerParticipant(this);
+            UpnpIOService localservice = service;
+            if (localservice != null) {
+                localservice.registerParticipant(this);
             }
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, DEFAULT_REFRESH_INITIAL_DELAY,
                     DEFAULT_REFRESH_INTERVALL_SECONDS, TimeUnit.SECONDS);
@@ -136,6 +137,10 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         }
         this.pollingJob = null;
         removeSubscription();
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            localservice.unregisterParticipant(this);
+        }
     }
 
     private synchronized @Nullable WemoBridgeHandler getWemoBridgeHandler() {
@@ -163,8 +168,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                 logger.debug("Polling job");
 
                 if (host.isEmpty()) {
-                    if (service != null) {
-                        URL descriptorURL = service.getDescriptorURL(this);
+                    UpnpIOService localservice = service;
+                    if (localservice != null) {
+                        URL descriptorURL = localservice.getDescriptorURL(this);
                         if (descriptorURL != null) {
                             host = descriptorURL.getHost();
                         }
@@ -438,8 +444,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     }
 
     private boolean isUpnpDeviceRegistered() {
-        if (service != null) {
-            return service.isRegistered(this);
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            return localservice.isRegistered(this);
         }
         return false;
     }

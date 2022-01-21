@@ -103,8 +103,9 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoHolmesHandler for UDN '{}'", configuration.get(UDN));
-            if (service != null) {
-                service.registerParticipant(this);
+            UpnpIOService localservice = service;
+            if (localservice != null) {
+                localservice.registerParticipant(this);
             }
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
@@ -126,6 +127,10 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
         }
         this.pollingJob = null;
         removeSubscription();
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            localservice.unregisterParticipant(this);
+        }
     }
 
     private void poll() {
@@ -137,8 +142,9 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
                 logger.debug("Polling job");
 
                 if (host.isEmpty()) {
-                    if (service != null) {
-                        URL descriptorURL = service.getDescriptorURL(this);
+                    UpnpIOService localservice = service;
+                    if (localservice != null) {
+                        URL descriptorURL = localservice.getDescriptorURL(this);
                         if (descriptorURL != null) {
                             host = descriptorURL.getHost();
                         }
@@ -360,8 +366,9 @@ public class WemoHolmesHandler extends AbstractWemoHandler implements UpnpIOPart
     }
 
     private boolean isUpnpDeviceRegistered() {
-        if (service != null) {
-            return service.isRegistered(this);
+        UpnpIOService localservice = service;
+        if (localservice != null) {
+            return localservice.isRegistered(this);
         }
         return false;
     }
