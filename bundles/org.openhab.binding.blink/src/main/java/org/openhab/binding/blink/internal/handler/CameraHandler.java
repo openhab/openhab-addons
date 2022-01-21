@@ -23,6 +23,7 @@ import org.openhab.binding.blink.internal.config.CameraConfiguration;
 import org.openhab.binding.blink.internal.dto.BlinkEvents;
 import org.openhab.binding.blink.internal.service.CameraService;
 import org.openhab.binding.blink.internal.servlet.ThumbnailServlet;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -133,6 +134,11 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
 
     @Override
     public void initialize() {
+        Configuration configuration = editConfiguration();
+        if (!configuration.containsKey(PROPERTY_CAMERA_TYPE)) {
+            configuration.put(PROPERTY_CAMERA_TYPE, CameraConfiguration.CameraType.CAMERA);
+            updateConfiguration(configuration);
+        }
         config = getConfigAs(CameraConfiguration.class);
 
         @Nullable
@@ -172,6 +178,8 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
 
     @Override
     public void handleHomescreenUpdate() {
+        if (config == null)
+            return;
         logger.debug("Updating camera state for camera {}", config.cameraId);
         try {
             updateState(CHANNEL_CAMERA_TEMPERATURE,

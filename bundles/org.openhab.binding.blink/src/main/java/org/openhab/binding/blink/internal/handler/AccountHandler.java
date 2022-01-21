@@ -206,8 +206,8 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     boolean ensureBlinkAccount() {
-        boolean refreshToken = (blinkAccount != null
-                && Instant.now().isAfter(blinkAccount.lastTokenRefresh.plus(TOKEN_TTL, ChronoUnit.HOURS)));
+        boolean refreshToken = (blinkAccount != null && (blinkAccount.lastTokenRefresh == null
+                || Instant.now().isAfter(blinkAccount.lastTokenRefresh.plus(TOKEN_TTL, ChronoUnit.HOURS))));
         if (blinkAccount != null && !refreshToken) {
             return true;
         }
@@ -317,8 +317,8 @@ public class AccountHandler extends BaseBridgeHandler {
         if (devices == null) {
             throw new IOException("No cameras found for account");
         }
-        List<BlinkCamera> cameras = (camera.cameraType == CameraConfiguration.CameraType.CAMERA) ? devices.cameras
-                : devices.owls;
+        List<BlinkCamera> cameras = (camera.cameraType == null
+                || camera.cameraType == CameraConfiguration.CameraType.CAMERA) ? devices.cameras : devices.owls;
         if (cameras == null || cameras.isEmpty()) {
             logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("No cameras found for account");
