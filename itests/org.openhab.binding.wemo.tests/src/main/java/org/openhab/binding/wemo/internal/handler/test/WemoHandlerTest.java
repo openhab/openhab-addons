@@ -78,7 +78,6 @@ public class WemoHandlerTest {
 
     @Test
     public void assertThatChannelSTATEisUpdatedOnReceivedValue() {
-        assertThat(handler.getHost(), is("127.0.0.1"));
         insightParams.state = STATE_PARAM;
         State expectedStateType = OnOffType.ON;
         String expectedChannel = CHANNEL_STATE;
@@ -88,7 +87,6 @@ public class WemoHandlerTest {
 
     @Test
     public void assertThatChannelLASTONFORIsUpdatedOnReceivedValue() {
-        assertThat(handler.getHost(), is("127.0.0.1"));
         insightParams.lastOnFor = TIME_PARAM;
         State expectedStateType = new DecimalType(TIME_PARAM);
         String expectedChannel = CHANNEL_LASTONFOR;
@@ -107,7 +105,6 @@ public class WemoHandlerTest {
 
     @Test
     public void assertThatChannelONTOTALIsUpdatedOnReceivedValue() {
-        assertThat(handler.getHost(), is("127.0.0.1"));
         insightParams.onTotal = TIME_PARAM;
         State expectedStateType = new DecimalType(TIME_PARAM);
         String expectedChannel = CHANNEL_ONTOTAL;
@@ -117,7 +114,6 @@ public class WemoHandlerTest {
 
     @Test
     public void assertThatChannelTIMESPANIsUpdatedOnReceivedValue() {
-        assertThat(handler.getHost(), is("127.0.0.1"));
         insightParams.timespan = TIME_PARAM;
         State expectedStateType = new DecimalType(TIME_PARAM);
         String expectedChannel = CHANNEL_TIMESPAN;
@@ -127,7 +123,6 @@ public class WemoHandlerTest {
 
     @Test
     public void assertThatChannelAVERAGEPOWERIsUpdatedOnReceivedValue() {
-        assertThat(handler.getHost(), is("127.0.0.1"));
         insightParams.avgPower = POWER_PARAM;
         State expectedStateType = new QuantityType<>(POWER_PARAM, Units.WATT);
         String expectedChannel = CHANNEL_AVERAGEPOWER;
@@ -137,7 +132,6 @@ public class WemoHandlerTest {
 
     private void testOnValueReceived(String expectedChannel, State expectedState, String insightParams) {
         handler = new MockWemoHandler(thing, expectedChannel);
-        assertThat(handler.getHost(), is("127.0.0.1"));
 
         handler.onValueReceived(PARAMS_NAME, insightParams, SERVICE_ID);
         assertThat(handler.channelState, is(notNullValue()));

@@ -226,7 +226,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             this.stateMap.put(variable, value);
         }
 
-        if ("insight1".equals(service)) {
+        if ("insight".equals(getThing().getThingTypeUID())) {
             String insightParams = stateMap.get("InsightParams");
 
             if (insightParams != null) {
@@ -359,7 +359,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     }
 
                     if (THING_TYPE_INSIGHT.equals(thingTypeUID)) {
-                        subscription = INSIGHTEVENT;
+                        subscription = INSIGHTEVENT + "1";
                         if (subscriptionState.get(subscription) == null) {
                             logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
                                     subscription);
