@@ -76,6 +76,7 @@ public class ShadeCapabilitiesDatabase {
             new Type(55).capabilities(3).text("Vertical Slats Right Stack"),
             new Type(56).capabilities(3).text("Vertical Slats Split Stack"),
             new Type(62).capabilities(2).text("Venetian"),
+            new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(69).capabilities(3).text("Curtain Left Stack"),
             new Type(70).capabilities(3).text("Curtain Right Stack"),
             new Type(71).capabilities(3).text("Curtain Split Stack"),
