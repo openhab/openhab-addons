@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +27,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.blink.internal.config.AccountConfiguration;
@@ -54,7 +54,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.service.http.HttpService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 
 /**
@@ -70,6 +69,7 @@ public class AccountHandler extends BaseBridgeHandler {
 
     public static final String GENERATED_CLIENT_ID = "generatedClientId";
     private static final OffsetDateTime EPOCH_UTC = Instant.EPOCH.atOffset(ZoneOffset.UTC);
+    private static final int TOKEN_TTL = 12; // hours
     private final Logger logger = LoggerFactory.getLogger(AccountHandler.class);
     BundleContext bundleContext;
 
@@ -142,6 +142,7 @@ public class AccountHandler extends BaseBridgeHandler {
             try {
                 // call login api
                 blinkAccount = blinkService.login(config, generatedClientId, start2FA);
+                blinkAccount.lastTokenRefresh = Instant.now();
                 properties.putAll(blinkAccount.toAccountProperties());
                 // don't know how to get scheme and port from openhab, right now it's hardcoded...
                 String scheme = "http://";
@@ -203,19 +204,27 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     boolean ensureBlinkAccount() {
-        if (blinkAccount != null) {
+        boolean refreshToken = (blinkAccount != null &&
+                Instant.now().isAfter(blinkAccount.lastTokenRefresh.plus(TOKEN_TTL, ChronoUnit.HOURS)));
+        if (blinkAccount != null && !refreshToken) {
             return true;
         }
         try {
+            if (refreshToken)
+                logger.debug("Refreshing blink security token");
+            else
+                logger.debug("blink security token lost. Getting new one.");
             Map<String, String> properties = editProperties();
             blinkAccount = blinkService.login(config, generatedClientId, false);
+            blinkAccount.lastTokenRefresh = Instant.now();
             properties.putAll(blinkAccount.toAccountProperties());
             updateProperties(properties);
             updateStatus(ThingStatus.ONLINE);
             return true;
         } catch (IOException e) {
-            // not calling setOffline since we're already offline
             logger.error("Could not update blink security token.", e);
+            if (refreshToken)
+                setOffline(e);
             return false;
         }
     }
@@ -303,20 +312,25 @@ public class AccountHandler extends BaseBridgeHandler {
             logger.error("Blink Account not set in bridge");
             throw new IOException("Blink Account not set in bridge");
         }
-        if (devices == null || devices.cameras == null || devices.cameras.isEmpty()) {
+        if (devices == null) {
+            throw new IOException("No cameras found for account");
+        }
+        List<BlinkCamera> cameras = (camera.cameraType == CameraConfiguration.CameraType.CAMERA) ?
+                devices.cameras : devices.owls;
+        if (cameras == null || cameras.isEmpty()) {
             logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("No cameras found for account");
         }
-        List<BlinkCamera> cameras = devices.cameras.stream().filter(c -> Objects.equals(c.network_id, camera.networkId))
+        List<BlinkCamera> foundCameras = cameras.stream().filter(c -> Objects.equals(c.network_id, camera.networkId))
                 .filter(c -> Objects.equals(c.id, cameraId)).collect(Collectors.toUnmodifiableList());
-        if (cameras.size() > 1) {
+        if (foundCameras.size() > 1) {
             logger.error("More than one camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("More than one camera found for id " + cameraId);
-        } else if (cameras.isEmpty()) {
+        } else if (foundCameras.isEmpty()) {
             logger.error("Unknown camera {} for account {}", cameraId, blinkAccount.account.account_id);
             throw new IOException("Unknown camera");
         }
-        return cameras.get(0);
+        return foundCameras.get(0);
     }
 
     BlinkNetwork getNetworkState(String networkId, boolean refresh) throws IOException {

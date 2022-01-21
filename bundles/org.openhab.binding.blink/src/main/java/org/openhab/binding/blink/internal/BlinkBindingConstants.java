@@ -44,6 +44,7 @@ public class BlinkBindingConstants {
     public static final String PROPERTY_CLIENT_ID = "clientId";
     public static final String PROPERTY_TIER = "tier";
     public static final String PROPERTY_TOKEN = "token";
+    public static final String PROPERTY_LAST_TOKEN_REFRESH = "lastTokenRefresh";
     public static final String PROPERTY_NETWORK_ID = "networkId";
 
     ;
