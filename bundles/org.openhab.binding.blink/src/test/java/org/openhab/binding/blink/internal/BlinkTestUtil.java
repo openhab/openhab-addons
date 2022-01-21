@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.blink.internal;
 
+import java.time.Instant;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.blink.internal.dto.BlinkAccount;
 
@@ -31,6 +33,7 @@ public class BlinkTestUtil {
         blinkAccount.account.client_id = 987L;
         blinkAccount.auth = new BlinkAccount.Auth();
         blinkAccount.auth.token = "abc";
+        blinkAccount.lastTokenRefresh = Instant.now();
         return blinkAccount;
     }
 }

@@ -115,7 +115,7 @@ public class CameraHandlerTest {
         Configuration config = new Configuration();
         config.put("cameraId", CAMERA_ID);
         config.put("networkId", NETWORK_ID);
-        config.put("cameraType", CameraConfiguration.CameraType.CAMERA);
+        config.put("cameraType", CameraConfiguration.CameraType.CAMERA.toString());
         when(thing.getConfiguration()).thenReturn(config);
         doReturn(accountHandler).when(account).getHandler();
         cameraHandler = spy(
