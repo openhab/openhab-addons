@@ -126,8 +126,8 @@ class AccountVerificationServletTest {
         doReturn(bundle).when(bundleContext).getBundle();
         servlet.generateVerificationPage(outputStream, false);
         outputStream.close();
-        String expected = "<body>\n<div>\n  \n</div>\n</body>";
-        MatcherAssert.assertThat(outputStream.toString(StandardCharsets.UTF_8), is(expected));
+        String expected = "<body>\n<div>  </div>\n</body>";
+        MatcherAssert.assertThat(outputStream.toString(StandardCharsets.UTF_8), equalToCompressingWhiteSpace(expected));
     }
 
     @Test
@@ -138,11 +138,11 @@ class AccountVerificationServletTest {
         doReturn(bundle).when(bundleContext).getBundle();
         servlet.generateVerificationPage(outputStream, true);
         outputStream.close();
-        String errorMessage = "  <div class=\"error\"><b>Invalid 2 factor verification PIN code.</b><br/>\n"
-                + "    The code is only valid for a 40 minute period. Please try disabling and enabling the blink Account Thing\n"
+        String errorMessage = "  <div class=\"error\"><b>Invalid 2 factor verification PIN code.</b><br/>"
+                + "    The code is only valid for a 40 minute period. Please try disabling and enabling the blink Account Thing"
                 + "    to generate a new PIN code if you think that might be the problem.</div>";
         String expected = "<body>\n<div>\n" + errorMessage + "\n</div>\n</body>";
-        MatcherAssert.assertThat(outputStream.toString(StandardCharsets.UTF_8), is(expected));
+        MatcherAssert.assertThat(outputStream.toString(StandardCharsets.UTF_8), equalToCompressingWhiteSpace(expected));
     }
 
     @Test
