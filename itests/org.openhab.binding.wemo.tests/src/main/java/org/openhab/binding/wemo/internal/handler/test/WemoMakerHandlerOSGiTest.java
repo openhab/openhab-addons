@@ -35,9 +35,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -85,8 +83,9 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         addUpnpDevice(BASIC_EVENT_SERVICE_ID, SERVICE_NUMBER, MODEL);
 
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
-        ThingHandler handler = thing.getHandler();
+        WemoMakerHandler handler = (WemoMakerHandler) thing.getHandler();
         assertNotNull(handler);
+        assertThat(handler.getHost(), is("127.0.0.1"));
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);
@@ -115,17 +114,14 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
             assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
         });
 
-        waitForAssert(() -> {
-            assertThat(thing.getStatusInfo().getStatusDetail(), not(ThingStatusDetail.CONFIGURATION_PENDING));
-        });
-
         // The Device is registered as UPnP Device after the initialization, this will ensure that the polling job will
         // not start
         addUpnpDevice(BASIC_EVENT_SERVICE_ID, SERVICE_NUMBER, MODEL);
 
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
-        ThingHandler handler = thing.getHandler();
+        WemoMakerHandler handler = (WemoMakerHandler) thing.getHandler();
         assertNotNull(handler);
+        assertThat(handler.getHost(), is("127.0.0.1"));
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.handler.test;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,9 +37,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -163,18 +161,15 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
             assertThat(thing.getStatus(), is(ThingStatus.ONLINE));
         });
 
-        waitForAssert(() -> {
-            assertThat(thing.getStatusInfo().getStatusDetail(), not(ThingStatusDetail.CONFIGURATION_PENDING));
-        });
-
         // The device is registered as UPnP Device after the initialization, this will ensure that the polling job will
         // not start
         addUpnpDevice(SERVICE_ID, SERVICE_NUMBER, DEVICE_MODEL_NAME);
 
         ThingUID thingUID = new ThingUID(THING_TYPE_UID, TEST_THING_ID);
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
-        ThingHandler handler = thing.getHandler();
+        WemoLightHandler handler = (WemoLightHandler) thing.getHandler();
         assertNotNull(handler);
+        assertThat(handler.getHost(), is("127.0.0.1"));
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);
