@@ -68,7 +68,6 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
             throws MalformedURLException, URISyntaxException, ValidationException {
         Command command = OnOffType.ON;
         String channelID = WemoBindingConstants.CHANNEL_BRIGHTNESS;
-        String host = "127.0.0.1";
 
         // Command ON for this channel sends the following data to the device
         String action = SET_ACTION;
@@ -100,7 +99,6 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
         // The value is increased by 5 Percents by default
         Command command = IncreaseDecreaseType.INCREASE;
         String channelID = WemoBindingConstants.CHANNEL_BRIGHTNESS;
-        String host = "127.0.0.1";
 
         String action = SET_ACTION;
         // 5 Percents brightness is equal to a brightness value of 12
@@ -116,7 +114,6 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
         // The value can not be decreased below 0
         Command command = IncreaseDecreaseType.DECREASE;
         String channelID = WemoBindingConstants.CHANNEL_BRIGHTNESS;
-        String host = "127.0.0.1";
 
         String action = SET_ACTION;
         String value = "0:0";
@@ -129,7 +126,6 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
     public void handleOnCommandForSTATEChannel() throws MalformedURLException, URISyntaxException, ValidationException {
         Command command = OnOffType.ON;
         String channelID = WemoBindingConstants.CHANNEL_STATE;
-        String host = "127.0.0.1";
 
         // Command ON for this channel sends the following data to the device
         String action = SET_ACTION;
@@ -144,7 +140,6 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
             throws MalformedURLException, URISyntaxException, ValidationException {
         Command command = RefreshType.REFRESH;
         String channelID = WemoBindingConstants.CHANNEL_STATE;
-        String host = "127.0.0.1";
 
         String action = GET_ACTION;
         String value = null;
