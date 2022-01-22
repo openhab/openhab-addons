@@ -45,7 +45,7 @@ The default audio format can be overriden with the value "mp3" or "ogg".
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `pollytts.cfg`
 
-It's contents should look similar to:
+Its contents should look similar to:
 
 ```
 org.openhab.voice.pollytts:accessKey=ACCESS_KEY
