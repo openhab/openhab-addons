@@ -52,6 +52,9 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     public static final String DEFAULT_VOICE = "default";
 
+    public static final String API_URL = "https://api.voicerss.org/?key=%s&hl=%s&c=%s&f=%s&src=%s";
+    public static final String API_URL_WITH_VOICE = API_URL + "&v=%s";
+
     private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
 
     private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = Set.of(
@@ -285,12 +288,12 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
     private String createURL(String apiKey, String text, String locale, String voice, String audioCodec,
             String audioFormat) {
         String encodedMsg = URLEncoder.encode(text, StandardCharsets.UTF_8);
-        String url = "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioCodec + "&f="
-                + audioFormat;
+        String url;
         if (!DEFAULT_VOICE.equals(voice)) {
-            url += "&v=" + voice;
+            url = String.format(API_URL_WITH_VOICE, apiKey, locale, audioCodec, audioFormat, encodedMsg, voice);
+        } else {
+            url = String.format(API_URL, apiKey, locale, audioCodec, audioFormat, encodedMsg);
         }
-        url += "&src=" + encodedMsg;
         return url;
     }
 }
