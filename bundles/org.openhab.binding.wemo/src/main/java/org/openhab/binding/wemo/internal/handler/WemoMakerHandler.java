@@ -91,6 +91,8 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             UpnpIOService localservice = service;
             if (localservice != null) {
                 localservice.registerParticipant(this);
+                host = getHost();
+
             }
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
