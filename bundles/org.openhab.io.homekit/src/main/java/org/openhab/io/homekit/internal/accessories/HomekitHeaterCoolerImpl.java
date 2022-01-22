@@ -108,9 +108,12 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     public CompletableFuture<Double> getCurrentTemperature() {
         final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
                 DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue())
+        return CompletableFuture.completedFuture(state != null
+                ? HomekitCharacteristicFactory.convertToCelsius(state.doubleValue())
                 : getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                        BigDecimal.valueOf(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue());
+                        BigDecimal.valueOf(HomekitCharacteristicFactory
+                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
+                                        .doubleValue());
     }
 
     @Override
@@ -151,7 +154,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
     public CompletableFuture<TemperatureDisplayUnitEnum> getTemperatureDisplayUnit() {
         return CompletableFuture
-                .completedFuture(getSettings().useFahrenheitTemperature ? TemperatureDisplayUnitEnum.FAHRENHEIT
+                .completedFuture(HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
                         : TemperatureDisplayUnitEnum.CELSIUS);
     }
 

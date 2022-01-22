@@ -119,6 +119,7 @@ public class OppoBindingConstants {
     public static final String QHD = "QHD";
     public static final String QHR = "QHR";
 
+    public static final String UNKNOW_DISC = "UNKNOW-DISC";
     public static final String NO_DISC = "NO DISC";
     public static final String LOADING = "LOADING";
     public static final String OPEN = "OPEN";
