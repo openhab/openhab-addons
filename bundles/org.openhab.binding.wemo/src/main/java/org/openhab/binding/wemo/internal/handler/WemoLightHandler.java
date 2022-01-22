@@ -267,10 +267,14 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     break;
             }
             if (host.isEmpty()) {
-                logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
-                return;
+                if (service != null) {
+                    host = getHost();
+                } else {
+                    logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/config-status.error.missing-ip");
+                    return;
+                }
             }
             try {
                 String wemoURL = getWemoURL(host, "bridge");
@@ -318,10 +322,14 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
      */
     public void getDeviceState() {
         if (host.isEmpty()) {
-            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
+            if (service != null) {
+                host = getHost();
+            } else {
+                logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+                return;
+            }
         }
         logger.debug("Request actual state for LightID '{}'", wemoLightID);
         String wemoURL = getWemoURL(host, "bridge");

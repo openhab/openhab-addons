@@ -171,11 +171,15 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (host.isEmpty()) {
-            logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
-                    getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
+            if (service != null) {
+                host = getHost();
+            } else {
+                logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
+                        getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+                return;
+            }
         }
         String wemoURL = getWemoURL(host, BASICACTION);
         if (wemoURL == null) {
@@ -437,10 +441,14 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
     protected void updateWemoState() {
         String actionService = BASICACTION;
         if (host.isEmpty()) {
-            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
+            if (service != null) {
+                host = getHost();
+            } else {
+                logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+                return;
+            }
         }
         String wemoURL = getWemoURL(host, actionService);
         if (wemoURL == null) {
