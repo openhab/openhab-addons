@@ -43,7 +43,7 @@ org.openhab.voice.voicerss:apiKey=1234567890
 
 ## Voices
 
-It actually supports the following voices (depending on language):
+It supports the following voices (depending on language):
 
 * Oda (Arabic - Egypt)
 * Salim (Arabic - Saudi Arabia)
@@ -157,7 +157,7 @@ You can setup your preferred default voice in the UI:
 
 ## Supported Audio Formats
 
-It actually supports the following audio formats: MP3, OGG, AAC and WAV.
+It supports the following audio formats: MP3, OGG, AAC and WAV.
 
 ## Caching
 
