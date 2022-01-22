@@ -43,7 +43,7 @@ Some channels may not work depending on your car and MyRenault account. The "Adv
 | plugstatus             | String             | Status of charging plug                         | Yes       |
 | estimatedrange         | Number:Length      | Estimated range of the car                      | Yes       |
 | odometer               | Number:Length      | Total distance travelled                        | Yes       |
-| hvacstatus             | String             | HVAC status HVAC Status (ON | OFF | PENDING)    | No        |
+| hvacstatus             | String             | HVAC status HVAC Status (ON, OFF, PENDING)      | No        |
 | hvactargettemperature  | Number:Temperature | HVAC target temperature (19 to 21)              | No        |
 | externaltemperature    | Number:Temperature | Temperature outside of the car                  | Yes       |
 | image                  | String             | Image URL of MyRenault                          | Yes       |
@@ -77,10 +77,10 @@ sitemap renaultcar label="Renault Car" {
 ![Sitemap](doc/sitemap.png)
 
 If you do not have a smart charger and want to limit the charge of the battery you can 
-set up an actuated 15 minute charge schedule in the MyRenault App. Then create 
+set up an active 15 minute charge schedule in the MyRenault App. Then create 
 a Dimmer item "RenaultCar_ChargeLimit" and set it to 80% for example. This rule 
 will change the RenaultCar_ChargingMode to schedule_mode when the limit is reached.
-This stops the the charging after the battery level reaches this charge limit.
+This stops charging after the battery level reaches the charge limit.
 
 ChargeRenaultCarLimit Code
 
