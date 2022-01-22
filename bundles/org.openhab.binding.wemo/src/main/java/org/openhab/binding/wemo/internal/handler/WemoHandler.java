@@ -195,7 +195,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             if (command instanceof OnOffType) {
                 try {
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
-                    String soapHeader = "\"urn:Belkin:service:BASICACTION:1#SetBinaryState\"";
+                    String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
                     wemoCall.executeCall(wemoURL, soapHeader, content);
                 } catch (Exception e) {
