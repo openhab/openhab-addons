@@ -102,8 +102,8 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
             UpnpIOService localService = service;
             if (localService != null) {
                 localService.registerParticipant(this);
-                host = getHost();
             }
+            host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
@@ -505,14 +505,10 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     protected void updateWemoState() {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            if (service != null) {
-                localHost = getHost();
-            } else {
-                logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
-                return;
-            }
+            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+            return;
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
@@ -605,14 +601,10 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     public void setBinaryState(String action, String argument, String value) {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            if (service != null) {
-                localHost = getHost();
-            } else {
-                logger.error("Failed to set binary state for device '{}': IP address missing", getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
-                return;
-            }
+            logger.error("Failed to set binary state for device '{}': IP address missing", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+            return;
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
@@ -645,14 +637,10 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     public void setTimerStart(String action, String argument, String value) {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            if (service != null) {
-                localHost = getHost();
-            } else {
-                logger.error("Failed to set timerStart for device '{}': IP address missing", getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
-                return;
-            }
+            logger.error("Failed to set timerStart for device '{}': IP address missing", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+            return;
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
@@ -693,7 +681,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
                 return descriptorURL.getHost();
             }
         }
-        return localHost;
+        return "";
     }
 
     @Override

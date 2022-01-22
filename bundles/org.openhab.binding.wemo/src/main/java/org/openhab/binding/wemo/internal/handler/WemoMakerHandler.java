@@ -88,9 +88,8 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             UpnpIOService localService = service;
             if (localService != null) {
                 localService.registerParticipant(this);
-                host = getHost();
-
             }
+            host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
@@ -147,15 +146,11 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     public void handleCommand(ChannelUID channelUID, Command command) {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            if (service != null) {
-                localHost = getHost();
-            } else {
-                logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
-                        getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
-                return;
-            }
+            logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+            return;
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
@@ -211,14 +206,10 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
     protected void updateWemoState() {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            if (service != null) {
-                localHost = getHost();
-            } else {
-                logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/config-status.error.missing-ip");
-                return;
-            }
+            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-ip");
+            return;
         }
         String actionService = DEVICEACTION;
         String wemoURL = getWemoURL(localHost, actionService);
@@ -317,7 +308,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                 return descriptorURL.getHost();
             }
         }
-        return localHost;
+        return "";
     }
 
     @Override
