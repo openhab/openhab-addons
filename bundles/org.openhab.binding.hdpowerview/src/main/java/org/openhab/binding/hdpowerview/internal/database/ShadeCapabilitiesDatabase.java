@@ -64,6 +64,7 @@ public class ShadeCapabilitiesDatabase {
             new Type( 7).capabilities(6).text("Top Down"),
             new Type( 8).capabilities(7).text("Duette Top Down Bottom Up"),
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
+            new Type(18).capabilities(1).text("Silhouette"),
             new Type(23).capabilities(1).text("Silhouette"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
@@ -75,6 +76,7 @@ public class ShadeCapabilitiesDatabase {
             new Type(55).capabilities(3).text("Vertical Slats Right Stack"),
             new Type(56).capabilities(3).text("Vertical Slats Split Stack"),
             new Type(62).capabilities(2).text("Venetian"),
+            new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(69).capabilities(3).text("Curtain Left Stack"),
             new Type(70).capabilities(3).text("Curtain Right Stack"),
             new Type(71).capabilities(3).text("Curtain Split Stack"),
@@ -91,7 +93,7 @@ public class ShadeCapabilitiesDatabase {
         protected int intValue = -1;
         protected String text = "-- not in database --";
 
-        protected Integer getValue() {
+        public Integer getValue() {
             return intValue;
         }
 
