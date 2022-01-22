@@ -30,11 +30,11 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class Car {
 
-    final public static String CHARGING_MODE_SCHEDULE = "schedule_mode";
-    final public static String CHARGING_MODE_ALWAYS = "always_charging";
-    final public static String HVAC_STATUS_ON = "ON";
-    final public static String HVAC_STATUS_OFF = "OFF";
-    final public static String HVAC_STATUS_PENDING = "PENDING";
+    public static final String CHARGING_MODE_SCHEDULE = "schedule_mode";
+    public static final String CHARGING_MODE_ALWAYS = "always_charging";
+    public static final String HVAC_STATUS_ON = "ON";
+    public static final String HVAC_STATUS_OFF = "OFF";
+    public static final String HVAC_STATUS_PENDING = "PENDING";
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 

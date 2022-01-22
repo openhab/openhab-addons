@@ -107,9 +107,10 @@
 		<label>Charging Mode</label>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
-		<item-type>Number:</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Charging Time Remaining</label>
-		<state readOnly="true"></state>
+		<category>Time</category>
+		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="estimatedrange">
 		<item-type>Number:Length</item-type>
@@ -156,10 +157,9 @@
 	</channel-type>
 	<channel-type id="locationupdated">
 		<item-type>DateTime</item-type>
-		<label>Location update</label>
+		<label>Location Update</label>
 		<description>Timestamp of the last location update</description>
 		<state readOnly="true"></state>
 	</channel-type>
-
 
 </thing:thing-descriptions>

@@ -15,12 +15,14 @@ package org.openhab.binding.renault.internal.handler;
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.METRE;
+import static org.openhab.core.library.unit.Units.MINUTE;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -287,7 +289,8 @@ public class RenaultHandler extends BaseThingHandler {
                 }
                 Integer chargingRemainingTime = car.getChargingRemainingTime();
                 if (chargingRemainingTime != null) {
-                    updateState(CHANNEL_CHARGING_REMAINING_TIME, new DecimalType(chargingRemainingTime.doubleValue()));
+                    updateState(CHANNEL_CHARGING_REMAINING_TIME,
+                            new QuantityType<Time>(chargingRemainingTime.doubleValue(), MINUTE));
                 }
             } catch (RenaultNotImplementedException e) {
                 car.setDisableBattery(true);
