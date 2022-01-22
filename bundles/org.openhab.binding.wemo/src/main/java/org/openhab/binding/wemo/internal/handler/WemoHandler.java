@@ -113,7 +113,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             }
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
-            updateStatus(ThingStatus.UNKNOWN);
+            updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/config-status.error.missing-udn");
@@ -347,7 +347,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             UpnpIOService localservice = service;
             if (localservice != null) {
                 if (localservice.isRegistered(this)) {
-                    logger.debug("Checking WeMo GENA subscription for '{}'", this);
+                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
 
                     ThingTypeUID thingTypeUID = thing.getThingTypeUID();
                     String subscription = BASICEVENT;
@@ -382,7 +382,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
             UpnpIOService localservice = service;
             if (localservice != null) {
                 if (localservice.isRegistered(this)) {
-                    logger.debug("Removing WeMo GENA subscription for '{}'", this);
+                    logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
                     ThingTypeUID thingTypeUID = thing.getThingTypeUID();
                     String subscription = BASICEVENT;
 

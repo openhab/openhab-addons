@@ -461,7 +461,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
         UpnpIOService localservice = service;
         if (localservice != null) {
             if (localservice.isRegistered(this)) {
-                logger.debug("Checking WeMo GENA subscription for '{}'", this);
+                logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
                 String subscription = BASICEVENT + "1";
                 if (subscriptionState.get(subscription) == null) {
                     logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
@@ -477,7 +477,7 @@ public class WemoDimmerHandler extends AbstractWemoHandler implements UpnpIOPart
     }
 
     private synchronized void removeSubscription() {
-        logger.debug("Removing WeMo GENA subscription for '{}'", this);
+        logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
         UpnpIOService localservice = service;
         if (localservice != null) {
             if (localservice.isRegistered(this)) {

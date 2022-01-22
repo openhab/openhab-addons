@@ -233,7 +233,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
             UpnpIOService localservice = service;
             if (localservice != null) {
                 if (localservice.isRegistered(this)) {
-                    logger.debug("Checking WeMo GENA subscription for '{}'", this);
+                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
 
                     String subscription = BASICEVENT + "1";
 
@@ -257,7 +257,7 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
             UpnpIOService localservice = service;
             if (localservice != null) {
                 if (localservice.isRegistered(this)) {
-                    logger.debug("Removing WeMo GENA subscription for '{}'", this);
+                    logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
                     String subscription = BASICEVENT + "1";
 
                     if (subscriptionState.get(subscription) != null) {
