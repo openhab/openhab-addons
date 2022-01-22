@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,17 +56,17 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
         }
     }
 
-    public File getTextToSpeechAsFile(String apiKey, String text, String locale, String voice, String audioFormat)
-            throws IOException {
-        String fileNameInCache = getUniqueFilenameForText(text, locale, voice);
+    public File getTextToSpeechAsFile(String apiKey, String text, String locale, String voice, String audioCodec,
+            String audioFormat) throws IOException {
+        String fileNameInCache = getUniqueFilenameForText(text, locale, voice, audioFormat);
         // check if in cache
-        File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioFormat.toLowerCase());
+        File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioCodec.toLowerCase());
         if (audioFileInCache.exists()) {
             return audioFileInCache;
         }
 
         // if not in cache, get audio data and put to cache
-        try (InputStream is = super.getTextToSpeech(apiKey, text, locale, voice, audioFormat);
+        try (InputStream is = super.getTextToSpeech(apiKey, text, locale, voice, audioCodec, audioFormat);
                 FileOutputStream fos = new FileOutputStream(audioFileInCache)) {
             copyStream(is, fos);
             // write text to file for transparency too
@@ -85,11 +86,12 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
 
     /**
      * Gets a unique filename for a give text, by creating a MD5 hash of it. It
-     * will be preceded by the locale.
+     * will be preceded by the locale and suffixed by the format if it is not the
+     * default of "44khz_16bit_mono".
      *
      * Sample: "en-US_00a2653ac5f77063bc4ea2fee87318d3"
      */
-    private String getUniqueFilenameForText(String text, String locale, String voice) {
+    private String getUniqueFilenameForText(String text, String locale, String voice, String format) {
         try {
             byte[] bytesOfMessage = text.getBytes(StandardCharsets.UTF_8);
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -106,6 +108,9 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
                 filename += voice + "_";
             }
             filename += hashtext;
+            if (!Objects.equals(format, "44khz_16bit_mono")) {
+                filename += "_" + format;
+            }
             return filename;
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
