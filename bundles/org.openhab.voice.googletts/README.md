@@ -12,7 +12,7 @@ You can find pricing information on the [documentation page](https://cloud.googl
 <!-- MarkdownTOC -->
 
 * [Obtaining Credentials](#obtaining-credentials)
-* [Service Configuration](#service-configuration)
+* [Configuration](#configuration)
 * [Voice Configuration](#voice-configuration)
 
 <!-- /MarkdownTOC -->
@@ -30,7 +30,7 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
   * Select application type "TV and Limited Input" and enter a name into the "Name" field.
   * Click Create. A pop-up appears, showing your "client ID" and "client secret".
 
-## Service Configuration
+## Configuration
 
 Using your favorite configuration UI to edit **Settings / Other Services - Google Cloud Text-to-Speech** and set:
 
@@ -49,6 +49,20 @@ It is recommended to clear this configuration parameter afterwards.
 
 When enabled the cache is purged once.
 Make sure to disable this setting again so the cache is maintained after restarts.
+
+In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `googletts.cfg`
+
+Its contents should look similar to:
+
+```
+org.openhab.voice.googletts:clientId=ID
+org.openhab.voice.googletts:clientSecret=SECRET
+org.openhab.voice.googletts:authcode=XXXXX
+org.openhab.voice.googletts:pitch=0
+org.openhab.voice.googletts:volumeGain=0
+org.openhab.voice.googletts:speakingRate=1
+org.openhab.voice.googletts:purgeCache=false
+```
 
 ## Voice Configuration
 
