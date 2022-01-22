@@ -186,7 +186,7 @@ public class PorcupineKSService implements KSService {
                 logger.debug("stopping service");
                 loop = false;
                 try {
-                    Thread.sleep(0);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                 }
                 scheduledTask.cancel(true);
