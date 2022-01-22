@@ -85,7 +85,8 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
     private void scheduleTokenRefresh() {
         if (ondusService != null) {
             Instant expiresAt = ondusService.authorizationExpiresAt();
-            Duration between = Duration.between(Instant.now(), expiresAt.minus(2, ChronoUnit.MINUTES));
+            // Refresh 1 hour before expiry
+            Duration between = Duration.between(Instant.now(), expiresAt.minus(1, ChronoUnit.HOURS));
             refreshTokenFuture = scheduler.schedule(() -> {
                 OndusService ondusService = this.ondusService;
                 if (ondusService == null) {
