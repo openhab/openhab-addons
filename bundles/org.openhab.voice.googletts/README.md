@@ -52,7 +52,7 @@ Make sure to disable this setting again so the cache is maintained after restart
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `googletts.cfg`
 
-It's contents should look similar to:
+Its contents should look similar to:
 
 ```
 org.openhab.voice.googletts:clientId=ID
