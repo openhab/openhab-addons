@@ -50,6 +50,20 @@ public class VoiceRSSTTSService implements TTSService {
 
     // API Key comes from ConfigAdmin
     private static final String CONFIG_API_KEY = "apiKey";
+
+    /**
+     * Map from openHAB AudioFormat Codec to VoiceRSS API Audio Codec
+     */
+    private static final Map<String, String> CODEC_MAP = Map.of(AudioFormat.CODEC_PCM_SIGNED, "WAV",
+            AudioFormat.CODEC_PCM_UNSIGNED, "WAV", AudioFormat.CODEC_PCM_ALAW, "WAV", AudioFormat.CODEC_PCM_ULAW, "WAV",
+            AudioFormat.CODEC_MP3, "MP3", AudioFormat.CODEC_VORBIS, "OGG", AudioFormat.CODEC_AAC, "AAC");
+
+    /**
+     * Map from openHAB AudioFormat Frequency to VoiceRSS API Audio Frequency
+     */
+    private static final Map<Long, String> FREQUENCY_MAP = Map.of(8_000L, "8khz", 11_025L, "11khz", 12_000L, "12khz",
+            16_000L, "16khz", 22_050L, "22khz", 24_000L, "24khz", 32_000L, "32khz", 44_100L, "44khz", 48_000L, "48khz");
+
     private String apiKey;
 
     private final Logger logger = LoggerFactory.getLogger(VoiceRSSTTSService.class);
@@ -121,22 +135,12 @@ public class VoiceRSSTTSService implements TTSService {
         if (!voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
         }
-        boolean isAudioFormatSupported = false;
-        for (AudioFormat currentAudioFormat : audioFormats) {
-            if (currentAudioFormat.isCompatible(requestedFormat)) {
-                isAudioFormatSupported = true;
-                break;
-            }
-        }
-        if (!isAudioFormatSupported) {
-            throw new TTSException("The passed AudioFormat is unsupported");
-        }
 
-        // now create the input stream for given text, locale, format. There is
-        // only a default voice
+        // now create the input stream for given text, locale, voice, codec and format.
         try {
             File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(apiKey, trimmedText,
-                    voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioFormat(requestedFormat));
+                    voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioCodec(requestedFormat),
+                    getApiAudioFormat(requestedFormat));
             if (cacheAudioFile == null) {
                 throw new TTSException("Could not read from VoiceRSS service");
             }
@@ -169,46 +173,53 @@ public class VoiceRSSTTSService implements TTSService {
      * @return The audio formats of this instance
      */
     private Set<AudioFormat> initAudioFormats() {
-        Set<AudioFormat> audioFormats = new HashSet<>();
-        for (String format : voiceRssImpl.getAvailableAudioFormats()) {
-            audioFormats.add(getAudioFormat(format));
-        }
-        return audioFormats;
+        return voiceRssImpl.getAvailableAudioFormats();
     }
 
-    private AudioFormat getAudioFormat(String apiFormat) {
-        Boolean bigEndian = null;
-        Integer bitDepth = 16;
-        Integer bitRate = null;
-        Long frequency = 44100L;
+    /**
+     * Map {@link AudioFormat#getCodec() codec} to VoiceRSS API codec.
+     *
+     * @throws TTSException if {@code format} is not supported
+     */
+    private String getApiAudioCodec(AudioFormat format) throws TTSException {
+        final String internalCodec = format.getCodec();
+        final String apiCodec = CODEC_MAP.get(internalCodec != null ? internalCodec : AudioFormat.CODEC_PCM_SIGNED);
 
-        if ("MP3".equals(apiFormat)) {
-            // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
-            bitRate = 64000;
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
-                    frequency);
-        } else if ("OGG".equals(apiFormat)) {
-            // we use by default: OGG, 44khz_16bit_mono
-            return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, bigEndian, bitDepth, bitRate,
-                    frequency);
-        } else if ("AAC".equals(apiFormat)) {
-            // we use by default: AAC, 44khz_16bit_mono
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, bigEndian, bitDepth, bitRate,
-                    frequency);
-        } else {
-            throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
+        if (apiCodec == null) {
+            throw new TTSException("Unsupported audio format: " + format);
         }
+
+        return apiCodec;
     }
 
-    private String getApiAudioFormat(AudioFormat format) {
-        if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
-            return "MP3";
-        } else if (format.getCodec().equals(AudioFormat.CODEC_VORBIS)) {
-            return "OGG";
-        } else if (format.getCodec().equals(AudioFormat.CODEC_AAC)) {
-            return "AAC";
-        } else {
-            throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
+    /**
+     * Map {@link AudioFormat#getBitDepth() bit depth} and {@link AudioFormat#getFrequency() frequency} to VoiceRSS API
+     * format.
+     *
+     * @throws TTSException if {@code format} is not supported
+     */
+    private String getApiAudioFormat(AudioFormat format) throws TTSException {
+        final int bitDepth = format.getBitDepth() != null ? format.getBitDepth() : 16;
+        final Long frequency = format.getFrequency() != null ? format.getFrequency() : 44_100L;
+        final String apiFrequency = FREQUENCY_MAP.get(frequency);
+
+        if (apiFrequency == null || (bitDepth != 8 && bitDepth != 16)) {
+            throw new TTSException("Unsupported audio format: " + format);
+        }
+
+        switch (format.getCodec() != null ? format.getCodec() : AudioFormat.CODEC_PCM_SIGNED) {
+            case AudioFormat.CODEC_PCM_ALAW:
+                return "alaw_" + apiFrequency + "_mono";
+            case AudioFormat.CODEC_PCM_ULAW:
+                return "ulaw_" + apiFrequency + "_mono";
+            case AudioFormat.CODEC_PCM_SIGNED:
+            case AudioFormat.CODEC_PCM_UNSIGNED:
+            case AudioFormat.CODEC_MP3:
+            case AudioFormat.CODEC_VORBIS:
+            case AudioFormat.CODEC_AAC:
+                return apiFrequency + "_" + bitDepth + "_mono";
+            default:
+                throw new TTSException("Unsupported audio format: " + format);
         }
     }
 
