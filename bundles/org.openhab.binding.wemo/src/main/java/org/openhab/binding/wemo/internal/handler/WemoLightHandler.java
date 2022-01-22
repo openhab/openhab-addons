@@ -101,9 +101,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            UpnpIOService localservice = service;
-            if (localservice != null) {
-                localservice.registerParticipant(this);
+            UpnpIOService localService = service;
+            if (localService != null) {
+                localService.registerParticipant(this);
                 host = getHost();
 
             }
@@ -139,9 +139,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         }
         this.pollingJob = null;
         removeSubscription();
-        UpnpIOService localservice = service;
-        if (localservice != null) {
-            localservice.unregisterParticipant(this);
+        UpnpIOService localService = service;
+        if (localService != null) {
+            localService.unregisterParticipant(this);
         }
     }
 
@@ -194,6 +194,26 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String localHost = getHost();
+        if (localHost.isEmpty()) {
+            if (service != null) {
+                localHost = getHost();
+            } else {
+                logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
+                        getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+                return;
+            }
+        }
+        String wemoURL = getWemoURL(localHost, BASICACTION);
+        if (wemoURL == null) {
+            logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
+                    getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/config-status.error.missing-url");
+            return;
+        }
         if (command instanceof RefreshType) {
             try {
                 getDeviceState();
@@ -266,19 +286,8 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     }
                     break;
             }
-            if (host.isEmpty()) {
-                if (service != null) {
-                    host = getHost();
-                } else {
-                    logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/config-status.error.missing-ip");
-                    return;
-                }
-            }
             try {
-                String wemoURL = getWemoURL(host, "bridge");
-                if (wemoURL != null && capability != null && value != null) {
+                if (capability != null && value != null) {
                     String soapHeader = "\"urn:Belkin:service:bridge:1#SetDeviceStatus\"";
                     String content = "<?xml version=\"1.0\"?>"
                             + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
@@ -293,6 +302,14 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
                     String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
+                            logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader,
+                                    getThing().getUID());
+                            logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
+                            logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse,
+                                    getThing().getUID());
+                        }
                         if ("10008".equals(capability)) {
                             OnOffType binaryState = null;
                             binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
@@ -321,9 +338,10 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
      * channel states.
      */
     public void getDeviceState() {
-        if (host.isEmpty()) {
+        String localHost = getHost();
+        if (localHost.isEmpty()) {
             if (service != null) {
-                host = getHost();
+                localHost = getHost();
             } else {
                 logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -332,7 +350,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             }
         }
         logger.debug("Request actual state for LightID '{}'", wemoLightID);
-        String wemoURL = getWemoURL(host, "bridge");
+        String wemoURL = getWemoURL(localHost, BRIDGEACTION);
         if (wemoURL == null) {
             logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -348,6 +366,12 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
             String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
             if (wemoCallResponse != null) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
+                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
+                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
+                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
+                }
                 wemoCallResponse = unescapeXml(wemoCallResponse);
                 String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
                 logger.trace("wemoNewLightState = {}", response);
@@ -409,15 +433,15 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private synchronized void addSubscription() {
         synchronized (upnpLock) {
-            UpnpIOService localservice = service;
-            if (localservice != null) {
-                if (localservice.isRegistered(this)) {
+            UpnpIOService localService = service;
+            if (localService != null) {
+                if (localService.isRegistered(this)) {
                     logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
 
                     if (subscriptionState.get(SUBSCRIPTION) == null) {
                         logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
                                 SUBSCRIPTION);
-                        localservice.addSubscription(this, SUBSCRIPTION, SUBSCRIPTION_DURATION_SECONDS);
+                        localService.addSubscription(this, SUBSCRIPTION, SUBSCRIPTION_DURATION_SECONDS);
                         subscriptionState.put(SUBSCRIPTION, true);
                     }
                 } else {
@@ -431,38 +455,42 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private synchronized void removeSubscription() {
         synchronized (upnpLock) {
-            UpnpIOService localservice = service;
-            if (localservice != null) {
-                if (localservice.isRegistered(this)) {
+            UpnpIOService localService = service;
+            if (localService != null) {
+                if (localService.isRegistered(this)) {
                     logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
 
                     if (subscriptionState.get(SUBSCRIPTION) != null) {
                         logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), SUBSCRIPTION);
-                        localservice.removeSubscription(this, SUBSCRIPTION);
+                        localService.removeSubscription(this, SUBSCRIPTION);
                     }
                     subscriptionState = new HashMap<>();
-                    localservice.unregisterParticipant(this);
+                    localService.unregisterParticipant(this);
                 }
             }
         }
     }
 
     private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localservice = service;
-        if (localservice != null) {
-            return localservice.isRegistered(this);
+        UpnpIOService localService = service;
+        if (localService != null) {
+            return localService.isRegistered(this);
         }
         return false;
     }
 
     public String getHost() {
-        UpnpIOService localservice = service;
-        if (localservice != null) {
-            URL descriptorURL = localservice.getDescriptorURL(this);
+        String localHost = host;
+        if (!localHost.isEmpty()) {
+            return localHost;
+        }
+        UpnpIOService localService = service;
+        if (localService != null) {
+            URL descriptorURL = localService.getDescriptorURL(this);
             if (descriptorURL != null) {
                 return descriptorURL.getHost();
             }
         }
-        return host;
+        return localHost;
     }
 }

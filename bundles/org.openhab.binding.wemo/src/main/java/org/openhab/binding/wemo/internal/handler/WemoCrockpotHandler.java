@@ -58,8 +58,6 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
     private final Object upnpLock = new Object();
     private final Object jobLock = new Object();
 
-    private final String BASICEVENT = "basicevent";
-
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private @Nullable UpnpIOService service;
@@ -87,9 +85,10 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoCrockpotHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService localservice = service;
-            if (localservice != null) {
-                localservice.registerParticipant(this);
+            UpnpIOService localService = service;
+            if (localService != null) {
+                localService.registerParticipant(this);
+                host = getHost();
             }
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
                     TimeUnit.SECONDS);
@@ -110,9 +109,9 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
         }
         this.pollingJob = null;
         removeSubscription();
-        UpnpIOService localservice = service;
-        if (localservice != null) {
-            localservice.unregisterParticipant(this);
+        UpnpIOService localService = service;
+        if (localService != null) {
+            localService.unregisterParticipant(this);
         }
     }
 
@@ -123,15 +122,8 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
             }
             try {
                 logger.debug("Polling job");
-
                 if (host.isEmpty()) {
-                    UpnpIOService localservice = service;
-                    if (localservice != null) {
-                        URL descriptorURL = localservice.getDescriptorURL(this);
-                        if (descriptorURL != null) {
-                            host = descriptorURL.getHost();
-                        }
-                    }
+                    host = getHost();
                 }
                 // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
@@ -155,14 +147,19 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (host.isEmpty()) {
-            logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
-                    getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
+        String localHost = getHost();
+        if (localHost.isEmpty()) {
+            if (service != null) {
+                localHost = getHost();
+            } else {
+                logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
+                        getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+                return;
+            }
         }
-        String wemoURL = getWemoURL(host, BASICEVENT);
+        String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
             logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
@@ -199,7 +196,13 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
                         + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<mode>"
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
-                wemoCall.executeCall(wemoURL, soapHeader, content);
+                String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                if (wemoCallResponse != null && logger.isTraceEnabled()) {
+                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
+                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
+                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
+                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
+                }
             } catch (RuntimeException e) {
                 logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -230,17 +233,17 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     private synchronized void addSubscription() {
         synchronized (upnpLock) {
-            UpnpIOService localservice = service;
-            if (localservice != null) {
-                if (localservice.isRegistered(this)) {
+            UpnpIOService localService = service;
+            if (localService != null) {
+                if (localService.isRegistered(this)) {
                     logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
 
-                    String subscription = BASICEVENT + "1";
+                    String subscription = BASICEVENT;
 
                     if (subscriptionState.get(subscription) == null) {
                         logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
                                 subscription);
-                        localservice.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
+                        localService.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
                         subscriptionState.put(subscription, true);
                     }
                 } else {
@@ -254,27 +257,27 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     private synchronized void removeSubscription() {
         synchronized (upnpLock) {
-            UpnpIOService localservice = service;
-            if (localservice != null) {
-                if (localservice.isRegistered(this)) {
+            UpnpIOService localService = service;
+            if (localService != null) {
+                if (localService.isRegistered(this)) {
                     logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
-                    String subscription = BASICEVENT + "1";
+                    String subscription = BASICEVENT;
 
                     if (subscriptionState.get(subscription) != null) {
                         logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                        localservice.removeSubscription(this, subscription);
+                        localService.removeSubscription(this, subscription);
                     }
                     subscriptionState.remove(subscription);
-                    localservice.unregisterParticipant(this);
+                    localService.unregisterParticipant(this);
                 }
             }
         }
     }
 
     private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localservice = service;
-        if (localservice != null) {
-            return localservice.isRegistered(this);
+        UpnpIOService localService = service;
+        if (localService != null) {
+            return localService.isRegistered(this);
         }
         return false;
     }
@@ -290,14 +293,19 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
      *
      */
     protected void updateWemoState() {
-        String actionService = BASICEVENT;
-        if (host.isEmpty()) {
-            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/config-status.error.missing-ip");
-            return;
+        String localHost = getHost();
+        if (localHost.isEmpty()) {
+            if (service != null) {
+                localHost = getHost();
+            } else {
+                logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/config-status.error.missing-ip");
+                return;
+            }
         }
-        String wemoURL = getWemoURL(host, actionService);
+        String actionService = BASICEVENT;
+        String wemoURL = getWemoURL(localHost, actionService);
         if (wemoURL == null) {
             logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -310,7 +318,12 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
             String content = createStateRequestContent(action, actionService);
             String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
             if (wemoCallResponse != null) {
-                logger.trace("State response '{}' for device '{}' received", wemoCallResponse, getThing().getUID());
+                if (logger.isTraceEnabled()) {
+                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
+                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
+                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
+                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
+                }
                 String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
                 String time = substringBetween(wemoCallResponse, "<time>", "</time>");
                 String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");
@@ -349,5 +362,20 @@ public class WemoCrockpotHandler extends AbstractWemoHandler implements UpnpIOPa
 
     @Override
     public void onStatusChanged(boolean status) {
+    }
+
+    public String getHost() {
+        String localHost = host;
+        if (!localHost.isEmpty()) {
+            return localHost;
+        }
+        UpnpIOService localService = service;
+        if (localService != null) {
+            URL descriptorURL = localService.getDescriptorURL(this);
+            if (descriptorURL != null) {
+                return descriptorURL.getHost();
+            }
+        }
+        return localHost;
     }
 }
