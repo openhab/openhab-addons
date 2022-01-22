@@ -12,13 +12,10 @@
  */
 package org.openhab.voice.googlestt.internal;
 
-import static org.openhab.voice.googlestt.internal.GoogleSTTBindingConstants.*;
+import static org.openhab.voice.googlestt.internal.GoogleSTTConstants.*;
 
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -28,18 +25,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.auth.client.oauth2.OAuthClientService;
-import org.openhab.core.auth.client.oauth2.OAuthException;
-import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.core.auth.client.oauth2.*;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.voice.*;
 import org.osgi.framework.Constants;
-import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,21 +45,14 @@ import com.google.api.gax.rpc.StreamController;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.OAuth2Credentials;
-import com.google.cloud.speech.v1.RecognitionConfig;
-import com.google.cloud.speech.v1.SpeechClient;
-import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
-import com.google.cloud.speech.v1.SpeechSettings;
-import com.google.cloud.speech.v1.StreamingRecognitionConfig;
-import com.google.cloud.speech.v1.StreamingRecognizeRequest;
-import com.google.cloud.speech.v1.StreamingRecognizeResponse;
+import com.google.cloud.speech.v1.*;
 import com.google.protobuf.ByteString;
 
 import io.grpc.LoadBalancerRegistry;
 import io.grpc.internal.PickFirstLoadBalancerProvider;
 
 /**
- * The {@link GoogleSTTService} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link GoogleSTTService} class is a service implementation to use Google Cloud Speech-to-Text features.
  *
  * @author Miguel Álvarez - Initial contribution
  */
@@ -97,20 +85,15 @@ public class GoogleSTTService implements STTService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        var serviceConfig = new org.openhab.core.config.core.Configuration(config).as(GoogleSTTConfiguration.class);
-        this.config = serviceConfig;
-        executor.submit(() -> GoogleSTTLocale.loadLocales(serviceConfig.refreshSupportedLocales));
-        String clientId = serviceConfig.clientId;
-        String clientSecret = serviceConfig.clientSecret;
-        if (!clientId.isEmpty() && !clientSecret.isEmpty()) {
-            var oAuthService = oAuthFactory.createOAuthClientService(SERVICE_PID, GCP_TOKEN_URI, GCP_AUTH_URI, clientId,
-                    clientSecret, GCP_SCOPE, false);
-            this.oAuthService = oAuthService;
-            if (!serviceConfig.oauthCode.isEmpty()) {
-                getAccessToken(oAuthService, serviceConfig.oauthCode);
-                deleteAuthCode();
-            }
-        }
+        this.config = new Configuration(config).as(GoogleSTTConfiguration.class);
+        executor.submit(() -> GoogleSTTLocale.loadLocales(this.config.refreshSupportedLocales));
+        updateConfig();
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
+        this.config = new Configuration(config).as(GoogleSTTConfiguration.class);
+        updateConfig();
     }
 
     @Override
@@ -142,8 +125,35 @@ public class GoogleSTTService implements STTService {
     @Override
     public STTServiceHandle recognize(STTListener sttListener, AudioStream audioStream, Locale locale,
             Set<String> set) {
-        var scheduledTask = backgroundRecognize(sttListener, audioStream, locale, set);
-        return () -> scheduledTask.cancel(true);
+        AtomicBoolean keepStreaming = new AtomicBoolean(true);
+        Future scheduledTask = backgroundRecognize(sttListener, audioStream, keepStreaming, locale, set);
+        return new STTServiceHandle() {
+            @Override
+            public void abort() {
+                keepStreaming.set(false);
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                scheduledTask.cancel(true);
+            }
+        };
+    }
+
+    private void updateConfig() {
+        String clientId = this.config.clientId;
+        String clientSecret = this.config.clientSecret;
+        if (!clientId.isBlank() && !clientSecret.isBlank()) {
+            var oAuthService = oAuthFactory.createOAuthClientService(SERVICE_PID, GCP_TOKEN_URI, GCP_AUTH_URI, clientId,
+                    clientSecret, GCP_SCOPE, false);
+            this.oAuthService = oAuthService;
+            if (!this.config.oauthCode.isEmpty()) {
+                getAccessToken(oAuthService, this.config.oauthCode);
+                deleteAuthCode();
+            }
+        } else {
+            logger.warn("Missing authentication configuration to access Google Cloud STT API.");
+        }
     }
 
     private void getAccessToken(OAuthClientService oAuthService, String oauthCode) {
@@ -151,36 +161,39 @@ public class GoogleSTTService implements STTService {
         try {
             oAuthService.getAccessTokenResponseByAuthorizationCode(oauthCode, GCP_REDIRECT_URI);
         } catch (OAuthException | OAuthResponseException e) {
-            logger.debug("Error fetching access token: {}", e.getMessage(), e);
-            logger.error("Error fetching access token. Invalid oauth code? Please generate a new one.");
+            if (logger.isDebugEnabled()) {
+                logger.debug("Error fetching access token: {}", e.getMessage(), e);
+            } else {
+                logger.warn("Error fetching access token. Invalid oauth code? Please generate a new one.");
+            }
         } catch (IOException e) {
-            logger.error("An unexpected IOException occurred: {}", e.getMessage());
+            logger.warn("An unexpected IOException occurred when fetching access token: {}", e.getMessage());
         }
     }
 
     private void deleteAuthCode() {
         try {
-            Configuration serviceConfig = configAdmin.getConfiguration(SERVICE_PID);
-            var configProperties = serviceConfig.getProperties();
+            org.osgi.service.cm.Configuration serviceConfig = configAdmin.getConfiguration(SERVICE_PID);
+            Dictionary<String, Object> configProperties = serviceConfig.getProperties();
             if (configProperties != null) {
                 configProperties.put("oauthCode", "");
                 serviceConfig.update(configProperties);
             }
         } catch (IOException e) {
-            logger.error("Failed to delete current oauth code, please delete it manually.");
+            logger.warn("Failed to delete current oauth code, please delete it manually.");
         }
     }
 
-    private Future<?> backgroundRecognize(STTListener sttListener, AudioStream audioStream, Locale locale,
-            Set<String> set) {
-        var credentials = getCredentials();
+    private Future<?> backgroundRecognize(STTListener sttListener, AudioStream audioStream, AtomicBoolean keepStreaming,
+            Locale locale, Set<String> set) {
+        Credentials credentials = getCredentials();
         return executor.submit(() -> {
             logger.debug("Background recognize starting");
             ClientStream<StreamingRecognizeRequest> clientStream = null;
             try (SpeechClient client = SpeechClient
                     .create(SpeechSettings.newBuilder().setCredentialsProvider(() -> credentials).build())) {
-                AtomicBoolean keepStreaming = new AtomicBoolean(true);
-                var responseObserver = new TranscriptionListener(sttListener, config, (t) -> keepStreaming.set(false));
+                TranscriptionListener responseObserver = new TranscriptionListener(sttListener, config,
+                        (t) -> keepStreaming.set(false));
                 clientStream = client.streamingRecognizeCallable().splitCall(responseObserver);
                 streamAudio(clientStream, audioStream, responseObserver, keepStreaming, locale);
                 clientStream.closeSend();
@@ -189,7 +202,7 @@ public class GoogleSTTService implements STTService {
                 if (clientStream != null && clientStream.isSendReady()) {
                     clientStream.closeSendWithError(e);
                 } else if (!config.errorMessage.isBlank()) {
-                    logger.error("Error running speech to text: {}", e.getMessage());
+                    logger.warn("Error running speech to text: {}", e.getMessage());
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
                 }
             }
@@ -199,7 +212,7 @@ public class GoogleSTTService implements STTService {
     private void streamAudio(ClientStream<StreamingRecognizeRequest> clientStream, AudioStream audioStream,
             TranscriptionListener responseObserver, AtomicBoolean keepStreaming, Locale locale) throws IOException {
         // Gather stream info and send config
-        var streamFormat = audioStream.getFormat();
+        AudioFormat streamFormat = audioStream.getFormat();
         RecognitionConfig.AudioEncoding streamEncoding;
         if (AudioFormat.WAV.isCompatible(streamFormat)) {
             streamEncoding = RecognitionConfig.AudioEncoding.LINEAR16;
@@ -225,7 +238,7 @@ public class GoogleSTTService implements STTService {
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
         while (keepStreaming.get()) {
             byte[] data = new byte[6400];
-            var dataN = audioStream.read(data);
+            int dataN = audioStream.read(data);
             if (!keepStreaming.get() || isExpiredInterval(maxTranscriptionMillis, startTime)) { // 60 seconds
                 logger.debug("Stops listening, max transcription time reached");
                 break;
@@ -235,7 +248,8 @@ public class GoogleSTTService implements STTService {
                 logger.debug("Stops listening, max silence time reached");
                 break;
             }
-            var dataRequest = StreamingRecognizeRequest.newBuilder().setAudioContent(ByteString.copyFrom(data)).build();
+            StreamingRecognizeRequest dataRequest = StreamingRecognizeRequest.newBuilder()
+                    .setAudioContent(ByteString.copyFrom(data)).build();
             logger.debug("Sending audio data {}", dataN);
             clientStream.send(dataRequest);
         }
@@ -258,15 +272,15 @@ public class GoogleSTTService implements STTService {
     private @Nullable Credentials getCredentials() {
         String accessToken = null;
         try {
-            var oAuthService = this.oAuthService;
+            OAuthClientService oAuthService = this.oAuthService;
             if (oAuthService != null) {
-                var response = oAuthService.getAccessTokenResponse();
+                AccessTokenResponse response = oAuthService.getAccessTokenResponse();
                 if (response != null) {
                     accessToken = response.getAccessToken();
                 }
             }
         } catch (OAuthException | IOException | OAuthResponseException e) {
-            logger.error("Access token error: {}", e.getMessage());
+            logger.warn("Access token error: {}", e.getMessage());
         }
         if (accessToken == null) {
             logger.warn("Missed google cloud access token");
@@ -303,14 +317,14 @@ public class GoogleSTTService implements STTService {
 
         public void onResponse(StreamingRecognizeResponse response) {
             lastInputTime = System.currentTimeMillis();
-            var results = response.getResultsList();
+            List<StreamingRecognitionResult> results = response.getResultsList();
             logger.debug("Got {} results", response.getResultsList().size());
             if (results.isEmpty()) {
                 logger.debug("No results");
                 return;
             }
             results.forEach(result -> {
-                var alternatives = result.getAlternativesList();
+                List<SpeechRecognitionAlternative> alternatives = result.getAlternativesList();
                 logger.debug("Got {} alternatives", alternatives.size());
                 SpeechRecognitionAlternative alternative = alternatives.stream()
                         .min(Comparator.comparing(SpeechRecognitionAlternative::getConfidence)).orElse(null);
@@ -335,7 +349,7 @@ public class GoogleSTTService implements STTService {
         public void onComplete() {
             sttListener.sttEventReceived(new SpeechStopEvent());
             float averageConfidence = confidenceSum / (float) responseCount;
-            var transcript = transcriptBuilder.toString();
+            String transcript = transcriptBuilder.toString();
             if (!transcript.isBlank()) {
                 sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
             } else {
@@ -348,7 +362,7 @@ public class GoogleSTTService implements STTService {
         }
 
         public void onError(@Nullable Throwable t) {
-            logger.error("Recognition error: ", t);
+            logger.warn("Recognition error: ", t);
             completeListener.accept(t);
             sttListener.sttEventReceived(new SpeechStopEvent());
             if (!config.errorMessage.isBlank()) {

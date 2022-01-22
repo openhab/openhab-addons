@@ -15,13 +15,13 @@ package org.openhab.voice.googlestt.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link GoogleSTTBindingConstants} class defines common constants, which are
+ * The {@link GoogleSTTConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Miguel Álvarez - Initial contribution
  */
 @NonNullByDefault
-public class GoogleSTTBindingConstants {
+public class GoogleSTTConstants {
     /**
      * Service name
      */

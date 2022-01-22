@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link GoogleSTTLocale} is responsible for loading supported locales.
+ * The {@link GoogleSTTLocale} is responsible for loading supported locales for the Google Cloud Speech-to-Text service.
  *
  * @author Miguel Álvarez - Initial contribution
  */

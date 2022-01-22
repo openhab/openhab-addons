@@ -33,7 +33,7 @@
 		</parameter>
 		<parameter name="singleUtteranceMode" type="boolean" groupName="stt">
 			<label>Single Utterance Mode</label>
-			<description>When enabled Google Cloud Platform is responsible for detect when to stop listening after a single
+			<description>When enabled Google Cloud Platform is responsible for detecting when to stop listening after a single
 				utterance. (Recommended)</description>
 			<default>true</default>
 		</parameter>
@@ -44,13 +44,13 @@
 		</parameter>
 		<parameter name="maxSilenceSeconds" type="integer" unit="s" groupName="stt">
 			<label>Max Silence Seconds</label>
-			<description>Only works when singleUtteranceMode is disabled, max seconds without get new transcriptions to stop
+			<description>Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop
 				listening.</description>
 			<default>5</default>
 		</parameter>
 		<parameter name="refreshSupportedLocales" type="boolean" groupName="stt">
 			<label>Refresh Supported Locales</label>
-			<description>Try to load supported locales from the documentation page.</description>
+			<description>Try loading supported locales from the documentation page.</description>
 			<default>false</default>
 		</parameter>
 		<parameter name="noResultsMessage" type="text" groupName="messages">
