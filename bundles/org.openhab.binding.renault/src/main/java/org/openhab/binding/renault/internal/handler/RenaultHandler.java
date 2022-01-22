@@ -34,7 +34,6 @@ import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplemented
 import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -118,7 +117,7 @@ public class RenaultHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
-                if (command instanceof RefreshType) {
+                if (command instanceof RefreshType && !car.isDisableHvac()) {
                     updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
                             car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
                 } else if (command instanceof QuantityType) {
@@ -128,16 +127,19 @@ public class RenaultHandler extends BaseThingHandler {
                 }
                 break;
             case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
-                if (command instanceof OnOffType) {
-                    MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                // We can only trigger pre-conditioning of the car.
+                if (command instanceof StringType && command.toString().equals(Car.HVAC_STATUS_ON)
+                        && !car.isDisableHvac()) {
+                    final MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
                     try {
+                        updateState(CHANNEL_HVAC_STATUS, new StringType("PENDING"));
+                        car.resetHVACStatus();
                         httpSession.initSesssion(car);
-                        if (command == OnOffType.ON) {
-                            httpSession.actionHvacOn(car.getHvacTargetTemperature());
-                        }
-                        updateHvacStatus(httpSession);
+                        httpSession.actionHvacOn(car.getHvacTargetTemperature());
+                        scheduler.schedule(() -> {
+                            updateHvacStatus(httpSession);
+                        }, config.updateDelay, TimeUnit.SECONDS);
                     } catch (Exception e) {
-                        httpSession = null;
                         logger.warn("Error My Renault Http Session.", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
@@ -202,8 +204,12 @@ public class RenaultHandler extends BaseThingHandler {
             try {
                 httpSession.getHvacStatus(car);
                 Boolean hvacstatus = car.getHvacstatus();
-                if (hvacstatus != null) {
-                    updateState(CHANNEL_HVAC_STATUS, OnOffType.from(hvacstatus.booleanValue()));
+                if (hvacstatus == null) {
+                    updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_PENDING));
+                } else if (hvacstatus.booleanValue()) {
+                    updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_ON));
+                } else {
+                    updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_OFF));
                 }
                 Double externalTemperature = car.getExternalTemperature();
                 if (externalTemperature != null) {

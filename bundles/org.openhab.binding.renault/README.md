@@ -20,17 +20,18 @@ No discovery
 
 You require your MyRenault credential, locale and VIN for your MyRenault registered car.
 
-| Parameter         | Description                            | Required |
-|-------------------|----------------------------------------|----------|
-| myRenaultUsername | MyRenault Username.                    | yes      |
-| myRenaultPassword | MyRenault Password.                    | yes      |
-| locale            | MyRenault Location (language_country). | yes      |
-| vin               | Vehicle Identification Number.         | yes      |
-| refreshInterval   | Interval the car is polled in minutes. | no       |
+| Parameter         | Description                                                                | Required |
+|-------------------|----------------------------------------------------------------------------|----------|
+| myRenaultUsername | MyRenault Username.                                                        | yes      |
+| myRenaultPassword | MyRenault Password.                                                        | yes      |
+| locale            | MyRenault Location (language_country).                                     | yes      |
+| vin               | Vehicle Identification Number.                                             | yes      |
+| refreshInterval   | Interval the car is polled in minutes.                                     | no       |
+| updateDelay       | How long to wait for commands to reach car and update to server in seconds.| no       |
 
 ## Channels
 
-Some channels may not work depending on your car and MyRenault account.
+Some channels may not work depending on your car and MyRenault account. The "Advanced" channels are especially likely to cause confusion and problems.
 
 | Channel ID             | Type               | Description                                     | Read Only |
 |------------------------|--------------------|-------------------------------------------------|-----------|
@@ -42,8 +43,8 @@ Some channels may not work depending on your car and MyRenault account.
 | plugstatus             | String             | Status of charging plug                         | Yes       |
 | estimatedrange         | Number:Length      | Estimated range of the car                      | Yes       |
 | odometer               | Number:Length      | Total distance travelled                        | Yes       |
-| hvacstatus             | Switch             | HVAC status switch                              | No        |
-| hvactargettemperature  | Number:Temperature | HVAC thermostat target temperature              | No        |
+| hvacstatus             | String             | HVAC status HVAC Status (ON | OFF | PENDING)    | No        |
+| hvactargettemperature  | Number:Temperature | HVAC target temperature (19 to 21)              | No        |
 | externaltemperature    | Number:Temperature | Temperature outside of the car                  | Yes       |
 | image                  | String             | Image URL of MyRenault                          | Yes       |
 | location               | Location           | The GPS position of the vehicle                 | Yes       |

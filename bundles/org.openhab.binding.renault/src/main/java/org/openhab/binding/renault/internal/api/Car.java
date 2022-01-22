@@ -32,6 +32,9 @@ public class Car {
 
     final public static String CHARGING_MODE_SCHEDULE = "schedule_mode";
     final public static String CHARGING_MODE_ALWAYS = "always_charging";
+    final public static String HVAC_STATUS_ON = "ON";
+    final public static String HVAC_STATUS_OFF = "OFF";
+    final public static String HVAC_STATUS_PENDING = "PENDING";
 
     private final Logger logger = LoggerFactory.getLogger(Car.class);
 
@@ -82,6 +85,10 @@ public class Car {
         } catch (IllegalStateException | ClassCastException e) {
             logger.warn("Error {} parsing Battery Status: {}", e.getMessage(), responseJson);
         }
+    }
+
+    public void resetHVACStatus() {
+        this.hvacstatus = null;
     }
 
     public void setHVACStatus(JsonObject responseJson) {
