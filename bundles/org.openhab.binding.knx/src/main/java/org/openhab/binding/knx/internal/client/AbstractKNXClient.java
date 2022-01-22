@@ -54,6 +54,8 @@ import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
 import tuwien.auto.calimero.process.ProcessEvent;
 import tuwien.auto.calimero.process.ProcessListener;
+import tuwien.auto.calimero.secure.SecureApplicationLayer;
+import tuwien.auto.calimero.secure.Security;
 
 /**
  * KNX Client which encapsulates the communication with the KNX bus via the calimero libary.
@@ -192,7 +194,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             processCommunicator.addProcessListener(processListener);
             this.processCommunicator = processCommunicator;
 
-            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link, null);
+            ProcessCommunicationResponder responseCommunicator = new ProcessCommunicationResponder(link,
+                    new SecureApplicationLayer(link, Security.defaultInstallation()));
             this.responseCommunicator = responseCommunicator;
 
             link.addLinkListener(this);
