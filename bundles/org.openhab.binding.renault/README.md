@@ -1,8 +1,9 @@
 # Renault Binding
 
-This binding allow MyRenault App. users to get battery status and other data from their cars.
+This binding allows MyRenault App. users to get battery status and other data from their cars. 
+They can also heat their cars by turning ON the HVAC status and toggle the car's charging mode.
 
-A binding that translates the [python based renault-api](https://renault-api.readthedocs.io/en/latest/) in an easy to use binding. 
+The binding translates the [python based renault-api](https://renault-api.readthedocs.io/en/latest/) in an easy to use openHAB java binding. 
 
 
 ## Supported Things
@@ -16,6 +17,7 @@ This binding can only retrieve information that is available in the the MyRenaul
 
 No discovery
 
+
 ## Thing Configuration
 
 You require your MyRenault credential, locale and VIN for your MyRenault registered car.
@@ -28,6 +30,7 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 | vin               | Vehicle Identification Number.                                             | yes      |
 | refreshInterval   | Interval the car is polled in minutes.                                     | no       |
 | updateDelay       | How long to wait for commands to reach car and update to server in seconds.| no       |
+
 
 ## Channels
 
@@ -49,6 +52,7 @@ Some channels may not work depending on your car and MyRenault account. The "Adv
 | image                  | String             | Image URL of MyRenault                          | Yes       |
 | location               | Location           | The GPS position of the vehicle                 | Yes       |
 | locationupdated        | DateTime           | Timestamp of the last location update           | Yes       |
+
 
 ## Example
 
