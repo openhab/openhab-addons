@@ -1,0 +1,58 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.light.aqcn02",
+			"ikea.light.led1545g12",
+			"ikea.light.led1546g12",
+			"ikea.light.led1536g5",
+			"ikea.light.led1537r6",
+			"ikea.light.led1623g12",
+			"ikea.light.led1650r5",
+			"ikea.light.led1649c5"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 3,
+		"channels": [
+			{
+				"property": "power_status",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "light_level",
+				"friendlyName": "Brightness",
+				"channel": "brightness",
+				"type": "Dimmer",
+				"refresh": true,
+				"actions": [],
+				"category": "lightbulb",
+				"tags": [
+					"Setpoint",
+					"Light"
+				]
+			},
+			{
+				"property": "colour_temperature",
+				"friendlyName": "Color Temperature",
+				"channel": "colour_temperature",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"category": "colorlight",
+				"tags": [
+					"Setpoint",
+					"Temperature"
+				]
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"experimental": true
+	}
+}

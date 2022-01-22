@@ -4,34 +4,16 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:miio:config">
-		<parameter name="host" type="text" required="true">
-			<context>network-address</context>
-			<label>IP Address</label>
-		</parameter>
-		<parameter name="token" type="text" pattern="^([A-Fa-f0-9]{96}|[A-Fa-f0-9]{32}|.{16})$" required="true">
-			<label>Token</label>
-			<description>Token for communication (in Hex)</description>
-		</parameter>
+	<config-description uri="thing-type:miio:configGatewayDevices">
 		<parameter name="deviceId" type="text" required="true">
 			<label>Device ID</label>
-			<description>Device ID number for communication</description>
-			<advanced>true</advanced>
+			<description>Device ID number for communication (in Hex)</description>
+			<advanced>false</advanced>
 		</parameter>
 		<parameter name="model" type="text" required="false">
 			<label>Device Model String</label>
 			<description>Device model string, used to determine the subtype.</description>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="communication" type="text" required="false">
-			<default>direct</default>
-			<label>Communication Method</label>
-			<description>Determines how the binding communicates with this device</description>
-			<options>
-				<option value="direct">Direct (Default)</option>
-				<option value="cloud">Cloud</option>
-			</options>
-			<advanced>true</advanced>
+			<advanced>false</advanced>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" min="0" max="9999" required="false">
 			<label>Refresh Interval</label>
