@@ -379,6 +379,7 @@
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW
 /bundles/org.openhab.voice.pollytts/ @hillmanr
+/bundles/org.openhab.voice.porcupineks/ @GiviMAD
 /bundles/org.openhab.voice.voicerss/ @JochenHiller
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
