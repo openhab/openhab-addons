@@ -217,7 +217,7 @@ public class VoiceRSSTTSService implements TTSService {
             case AudioFormat.CODEC_MP3:
             case AudioFormat.CODEC_VORBIS:
             case AudioFormat.CODEC_AAC:
-                return apiFrequency + "_" + bitDepth + "_mono";
+                return apiFrequency + "_" + bitDepth + "bit_mono";
             default:
                 throw new TTSException("Unsupported audio format: " + format);
         }
