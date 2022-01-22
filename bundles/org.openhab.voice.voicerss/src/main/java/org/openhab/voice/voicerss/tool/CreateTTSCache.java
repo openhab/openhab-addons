@@ -106,7 +106,7 @@ public class CreateTTSCache {
             return;
         }
         CachedVoiceRSSCloudImpl impl = new CachedVoiceRSSCloudImpl(cacheDir);
-        File cachedFile = impl.getTextToSpeechAsFile(apiKey, trimmedMsg, locale, voice, "MP3");
+        File cachedFile = impl.getTextToSpeechAsFile(apiKey, trimmedMsg, locale, voice, "MP3", null);
         System.out.println(
                 "Created cached audio for locale='" + locale + "', msg='" + trimmedMsg + "' to file=" + cachedFile);
     }

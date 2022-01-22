@@ -10,21 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal;
+package org.openhab.voice.porcupineks.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link HubMaintenanceException} is a custom exception for the HD PowerView hub
+ * The {@link PorcupineKSConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Miguel Álvarez - Initial contribution
  */
 @NonNullByDefault
-public class HubMaintenanceException extends Exception {
+public class PorcupineKSConfiguration {
 
-    private static final long serialVersionUID = -708582495003057343L;
-
-    public HubMaintenanceException(String message) {
-        super(message);
-    }
+    /**
+     * Api key to use porcupine
+     */
+    public String apiKey = "";
+    /**
+     * A higher sensitivity reduces miss rate at cost of increased false alarm rate
+     */
+    public float sensitivity = 0.5f;
 }

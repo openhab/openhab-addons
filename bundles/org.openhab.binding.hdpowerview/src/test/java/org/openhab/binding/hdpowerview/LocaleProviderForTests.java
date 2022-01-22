@@ -10,21 +10,21 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal;
+package org.openhab.binding.hdpowerview;
+
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.i18n.LocaleProvider;
 
 /**
- * The {@link HubProcessingException} is a custom exception for the HD PowerView hub
+ * Locale provider for unit tests.
  *
- * @author Andrew Fiddian-Green - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class HubProcessingException extends Exception {
-
-    private static final long serialVersionUID = 4307088023775166450L;
-
-    public HubProcessingException(String message) {
-        super(message);
+public class LocaleProviderForTests implements LocaleProvider {
+    public Locale getLocale() {
+        return Locale.ENGLISH;
     }
 }

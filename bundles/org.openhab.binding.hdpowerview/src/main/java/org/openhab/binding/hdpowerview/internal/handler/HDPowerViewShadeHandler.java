@@ -25,17 +25,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
-import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
-import org.openhab.binding.hdpowerview.internal.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;
 import org.openhab.binding.hdpowerview.internal.api.Firmware;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
-import org.openhab.binding.hdpowerview.internal.api.responses.Shade;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Survey;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -53,8 +54,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.JsonParseException;
 
 /**
  * Handles commands for an HD PowerView Shade
@@ -171,21 +170,26 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         try {
             handleShadeCommand(channelId, command, webTargets, shadeId);
-        } catch (JsonParseException e) {
-            logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
-        } catch (HubProcessingException e) {
+        } catch (HubInvalidResponseException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
+            } else {
+                logger.warn("Bridge returned a bad JSON response: {} -> {}", e.getMessage(), cause.getMessage());
+            }
+        } catch (HubMaintenanceException e) {
+            // exceptions are logged in HDPowerViewWebTargets
+        } catch (HubException e) {
             // ScheduledFutures will be cancelled by dispose(), naturally causing InterruptedException in invoke()
             // for any ongoing requests. Logging this would only cause confusion.
             if (!isDisposing) {
                 logger.warn("Unexpected error: {}", e.getMessage());
             }
-        } catch (HubMaintenanceException e) {
-            // exceptions are logged in HDPowerViewWebTargets
         }
     }
 
     private void handleShadeCommand(String channelId, Command command, HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         switch (channelId) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
@@ -417,53 +421,36 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private void moveShade(CoordinateSystem coordSys, int newPercent, HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubProcessingException, HubMaintenanceException {
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         ShadePosition newPosition = null;
         // (try to) read the positions from the hub
-        Shade shade = webTargets.getShade(shadeId);
-        if (shade != null) {
-            ShadeData shadeData = shade.shade;
-            if (shadeData != null) {
-                updateCapabilities(shadeData);
-                newPosition = shadeData.positions;
-            }
-        }
+        ShadeData shadeData = webTargets.getShade(shadeId);
+        updateCapabilities(shadeData);
+        newPosition = shadeData.positions;
         // if no positions returned, then create a new position
         if (newPosition == null) {
             newPosition = new ShadePosition();
         }
         Capabilities capabilities = getCapabilitiesOrDefault();
         // set the new position value, and write the positions to the hub
-        shade = webTargets.moveShade(shadeId, newPosition.setPosition(capabilities, coordSys, newPercent));
-        if (shade != null) {
-            updateShadePositions(shade);
-        }
+        shadeData = webTargets.moveShade(shadeId, newPosition.setPosition(capabilities, coordSys, newPercent));
+        updateShadePositions(shadeData);
     }
 
     private void stopShade(HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubProcessingException, HubMaintenanceException {
-        Shade shade = webTargets.stopShade(shadeId);
-        if (shade != null) {
-            updateShadePositions(shade);
-        }
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        updateShadePositions(webTargets.stopShade(shadeId));
         // Positions in response from stop motion is not updated to to actual positions yet,
         // so we need to request hard refresh.
         requestRefreshShadePosition();
     }
 
     private void calibrateShade(HDPowerViewWebTargets webTargets, int shadeId)
-            throws HubProcessingException, HubMaintenanceException {
-        Shade shade = webTargets.calibrateShade(shadeId);
-        if (shade != null) {
-            updateShadePositions(shade);
-        }
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        updateShadePositions(webTargets.calibrateShade(shadeId));
     }
 
-    private void updateShadePositions(Shade shade) {
-        ShadeData shadeData = shade.shade;
-        if (shadeData == null) {
-            return;
-        }
+    private void updateShadePositions(ShadeData shadeData) {
         ShadePosition shadePosition = shadeData.positions;
         if (shadePosition == null) {
             return;
@@ -532,44 +519,46 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             if (webTargets == null) {
                 throw new HubProcessingException("Web targets not initialized");
             }
-            Shade shade;
+            ShadeData shadeData;
             switch (kind) {
                 case POSITION:
-                    shade = webTargets.refreshShadePosition(shadeId);
+                    shadeData = webTargets.refreshShadePosition(shadeId);
                     break;
                 case SURVEY:
                     Survey survey = webTargets.getShadeSurvey(shadeId);
-                    if (survey != null && survey.surveyData != null) {
+                    if (survey.surveyData != null) {
                         logger.debug("Survey response for shade {}: {}", survey.shadeId, survey.toString());
                     } else {
                         logger.warn("No response from shade {} survey", shadeId);
                     }
                     return;
                 case BATTERY_LEVEL:
-                    shade = webTargets.refreshShadeBatteryLevel(shadeId);
+                    shadeData = webTargets.refreshShadeBatteryLevel(shadeId);
                     break;
                 default:
                     throw new NotSupportedException("Unsupported refresh kind " + kind.toString());
             }
-            if (shade != null) {
-                ShadeData shadeData = shade.shade;
-                if (shadeData != null) {
-                    if (Boolean.TRUE.equals(shadeData.timedOut)) {
-                        logger.warn("Shade {} wireless refresh time out", shadeId);
-                    } else if (kind == RefreshKind.POSITION) {
-                        updateShadePositions(shade);
-                        updateHardProperties(shadeData);
-                    }
-                }
+            if (Boolean.TRUE.equals(shadeData.timedOut)) {
+                logger.warn("Shade {} wireless refresh time out", shadeId);
+            } else if (kind == RefreshKind.POSITION) {
+                updateShadePositions(shadeData);
+                updateHardProperties(shadeData);
             }
-        } catch (HubProcessingException e) {
+        } catch (HubInvalidResponseException e) {
+            Throwable cause = e.getCause();
+            if (cause == null) {
+                logger.warn("Bridge returned a bad JSON response: {}", e.getMessage());
+            } else {
+                logger.warn("Bridge returned a bad JSON response: {} -> {}", e.getMessage(), cause.getMessage());
+            }
+        } catch (HubMaintenanceException e) {
+            // exceptions are logged in HDPowerViewWebTargets
+        } catch (HubException e) {
             // ScheduledFutures will be cancelled by dispose(), naturally causing InterruptedException in invoke()
             // for any ongoing requests. Logging this would only cause confusion.
             if (!isDisposing) {
                 logger.warn("Unexpected error: {}", e.getMessage());
             }
-        } catch (HubMaintenanceException e) {
-            // exceptions are logged in HDPowerViewWebTargets
         }
     }
 }
