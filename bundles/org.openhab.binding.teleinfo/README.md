@@ -216,6 +216,30 @@ Number:Energy TLInfoEDF_HCHP "HCHP" <energy> {channel="teleinfo:cbemm_evolution_
 String TLInfoEDF_HHPHC "HHPHC" <energy> {channel="teleinfo:cbemm_evolution_icc_hc_electricitymeter:teleinfoUSB:myElectricityMeter:hhphc"}
 ```
 
+### Standard TIC mode
+
+The following `things` file declare a serial USB controller on `/dev/ttyUSB0` for a Linky Single-phase Electricity meter in standard TIC mode and adsc `031528042289` :
+
+```
+Bridge teleinfo:serialcontroller:teleinfoUSB [ serialport="/dev/ttyUSB0", ticMode="STANDARD" ]{
+    Thing lsmm_electricitymeter myElectricityMeter [ adco="031528042289"]
+}
+```
+
+This `items` file links some supported channels to items:
+
+```
+Number:Power TLInfoEDF_SINSTS "SINSTS" <energy> ["Measurement","Power"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#sinsts"}
+Number:ElectricCurrent TLInfoEDF_PREF "PREF" <energy> ["Measurement","Power"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#pref"}
+String TLInfoEDF_LTARF "LTARF" <energy> ["Status"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#ltarf"}
+Number:ElectricCurrent TLInfoEDF_SMAXSN "SMAXSN" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#smaxsn"}
+Number:ElectricCurrent TLInfoEDF_IRMS1 "IRMS1" <energy> ["Measurement","Current"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#irms1"}
+Number:Energy TLInfoEDF_EASF01 "EASF01" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#easf01"}
+Number:Energy TLInfoEDF_EASF02 "EASF02" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#easf02"}
+String TLInfoEDF_NGTF "NGTF" <energy> ["Status"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#ngtf"}
+DateTime TLInfoEDF_SMAXSN_DATE "SMAXSN_DATE" <energy> ["Measurement","Energy"] {channel="teleinfo:lsmm_electricitymeter:teleinfoUSB:myElectricityMeter:commonLSMGroup#smaxsnDate"}
+```
+
 ## Tested hardware
 
 The Teleinfo binding has been successfully validated with below hardware configuration:
