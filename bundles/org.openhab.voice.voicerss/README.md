@@ -6,11 +6,11 @@ VoiceRSS is an Internet based TTS service hosted at <https://api.voicerss.org>.
 You must obtain an API Key to get access to this service.
 The free version allows you to make up to 350 requests per day; for more you may need a commercial subscription.
 
-For more information, see <http://www.voicerss.org/>.
+For more information, see <https://www.voicerss.org>.
 
 ## Obtaining Credentials
 
-Before you can integrate this service, you need to register to http://www.voicerss.org with at least a free account to get an API key.
+Before you can integrate this service, you need to register to https://www.voicerss.org with at least a free account to get an API key.
 
 ## Samples
 
@@ -31,7 +31,7 @@ https://api.voicerss.org/?key=API_KEY&hl=de-de&f=44khz_16bit_mono&src=Hallo%20We
 
 The following configurations can be edited using the "VoiceRSS Text-to-Speech" settings in the UI:
 
-* **VoiceRSS API Key** - The API Key to get access to http://www.voicerss.org.
+* **VoiceRSS API Key** - The API Key to get access to https://www.voicerss.org.
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `voicerss.cfg`
 
