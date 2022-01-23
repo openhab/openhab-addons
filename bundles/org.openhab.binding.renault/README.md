@@ -108,9 +108,13 @@ actions:
       script: >-
         if ( RenaultCar_PlugStatus.state.toString == 'PLUGGED' ) {
           if ( RenaultCar_BatteryLevel.state as Number >= RenaultCar_ChargeLimit.state as Number ) {
-            RenaultCar_ChargingMode.sendCommand("schedule_mode")
+            if (RenaultCar_ChargingMode.state.toString == 'always_charging' ) {
+              RenaultCar_ChargingMode.sendCommand("schedule_mode")
+            }
           } else {
-            RenaultCar_ChargingMode.sendCommand("always_charging")
+            if (RenaultCar_ChargingMode.state.toString == 'schedule_mode' ) {
+              RenaultCar_ChargingMode.sendCommand("always_charging")
+            }
           }
         }
     type: script.ScriptAction
