@@ -560,7 +560,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertTrue(UnDefType.UNDEF.equals(pos));
+        assertTrue(PercentType.ZERO.equals(pos));
 
         // front shade 50% down
         test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 50);
@@ -569,7 +569,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(50, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertTrue(UnDefType.UNDEF.equals(pos));
+        assertTrue(PercentType.ZERO.equals(pos));
 
         // front shade 100% down, back shade 0% down
         test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100);
@@ -578,8 +578,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertEquals(PercentType.class, pos.getClass());
-        assertEquals(0, ((PercentType) pos).intValue());
+        assertTrue(PercentType.ZERO.equals(pos));
 
         // front shade 100% down, back shade 0% down (ALTERNATE)
         test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 0);
@@ -588,8 +587,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertEquals(PercentType.class, pos.getClass());
-        assertEquals(0, ((PercentType) pos).intValue());
+        assertTrue(PercentType.ZERO.equals(pos));
 
         // front shade 100% down, back shade 50% down
         test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 50);
@@ -632,7 +630,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertTrue(UnDefType.UNDEF.equals(pos));
+        assertTrue(PercentType.ZERO.equals(pos));
 
         // front shade 50% down, tilt 30%
         test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 50).setPosition(capabilities,
@@ -642,7 +640,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(50, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertTrue(UnDefType.UNDEF.equals(pos));
+        assertTrue(PercentType.ZERO.equals(pos));
         pos = test.getState(capabilities, VANE_TILT_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(30, ((PercentType) pos).intValue());
@@ -655,8 +653,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertEquals(PercentType.class, pos.getClass());
-        assertEquals(0, ((PercentType) pos).intValue());
+        assertTrue(PercentType.ZERO.equals(pos));
         pos = test.getState(capabilities, VANE_TILT_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(30, ((PercentType) pos).intValue());
@@ -669,8 +666,7 @@ public class HDPowerViewJUnitTests {
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
         pos = test.getState(capabilities, SECONDARY_POSITION);
-        assertEquals(PercentType.class, pos.getClass());
-        assertEquals(0, ((PercentType) pos).intValue());
+        assertTrue(PercentType.ZERO.equals(pos));
         pos = test.getState(capabilities, VANE_TILT_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(30, ((PercentType) pos).intValue());

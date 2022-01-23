@@ -159,7 +159,7 @@ public class ShadePosition {
                     return new PercentType((int) Math.round((double) position1 / MAX_SHADE * 100));
                 }
                 if (PRIMARY_POSITION.equals(posKind1) && shadeCapabilities.supportsBlackoutShade()) {
-                    return position1 != 0 ? UnDefType.UNDEF : PercentType.ZERO;
+                    return PercentType.ZERO;
                 }
                 break;
 
