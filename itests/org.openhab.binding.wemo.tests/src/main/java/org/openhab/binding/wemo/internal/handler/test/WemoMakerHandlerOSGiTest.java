@@ -86,6 +86,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
         ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
+
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);
@@ -121,6 +122,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
         ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
+
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);

@@ -116,6 +116,15 @@ public class WemoBindingConstants {
     public static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
     public static final String HTTP_CALL_CONTENT_HEADER = "text/xml; charset=utf-8";
 
+    public static final String BASICACTION = "basicevent";
+    public static final String BASICEVENT = "basicevent1";
+    public static final String BRIDGEACTION = "bridge";
+    public static final String BRIDGEEVENT = "bridge1";
+    public static final String DEVICEACTION = "deviceevent";
+    public static final String DEVICEEVENT = "deviceevent1";
+    public static final String INSIGHTACTION = "insight";
+    public static final String INSIGHTEVENT = "insight1";
+
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
 
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_THING_TYPES = Collections.singleton(THING_TYPE_MZ100);
