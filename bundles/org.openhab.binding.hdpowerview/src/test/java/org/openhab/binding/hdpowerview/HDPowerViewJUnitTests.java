@@ -192,14 +192,14 @@ public class HDPowerViewJUnitTests {
                     if (positions != null && capabilitiesValue != null) {
                         Capabilities capabilities = db.getCapabilities(capabilitiesValue.intValue());
 
-                        State pos = positions.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+                        State pos = positions.getState(capabilities, PRIMARY_POSITION);
                         assertEquals(PercentType.class, pos.getClass());
 
                         int position = ((PercentType) pos).intValue();
                         position = position + ((position <= 10) ? 5 : -5);
 
-                        ShadePosition targetPosition = new ShadePosition().setPosition(capabilities,
-                                PRIMARY_ZERO_IS_CLOSED, position);
+                        ShadePosition targetPosition = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION,
+                                position);
                         assertNotNull(targetPosition);
 
                         if (allowShadeMovementCommands) {
@@ -209,8 +209,8 @@ public class HDPowerViewJUnitTests {
                             ShadePosition actualPosition = newData.positions;
                             assertNotNull(actualPosition);
                             if (actualPosition != null) {
-                                assertEquals(targetPosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED),
-                                        actualPosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED));
+                                assertEquals(targetPosition.getState(capabilities, PRIMARY_POSITION),
+                                        actualPosition.getState(capabilities, PRIMARY_POSITION));
                             }
                         }
                     }
@@ -257,12 +257,12 @@ public class HDPowerViewJUnitTests {
     @Test
     public void testShadePositionParsingFullyUp() {
         Capabilities capabilities = db.getCapabilities(0);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 0);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
         assertNotNull(test);
-        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_TILT_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
         assertTrue(UnDefType.UNDEF.equals(pos));
     }
 
@@ -273,12 +273,12 @@ public class HDPowerViewJUnitTests {
     @Test
     public void testShadePositionParsingShadeFullyDown1() {
         Capabilities capabilities = db.getCapabilities(0);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 100);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100);
         assertNotNull(test);
-        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_TILT_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
     }
@@ -290,12 +290,12 @@ public class HDPowerViewJUnitTests {
     @Test
     public void testShadePositionParsingShadeFullyDown2() {
         Capabilities capabilities = db.getCapabilities(0);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 0);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 0);
         assertNotNull(test);
-        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_TILT_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(0, ((PercentType) pos).intValue());
     }
@@ -307,12 +307,12 @@ public class HDPowerViewJUnitTests {
     @Test
     public void testShadePositionParsingShadeFullyDownVaneOpen() {
         Capabilities capabilities = db.getCapabilities(0);
-        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_COORDS, 100);
+        ShadePosition test = new ShadePosition().setPosition(capabilities, VANE_TILT_POSITION, 100);
         assertNotNull(test);
-        State pos = test.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+        State pos = test.getState(capabilities, PRIMARY_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
-        pos = test.getState(capabilities, VANE_TILT_COORDS);
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
     }
@@ -412,15 +412,15 @@ public class HDPowerViewJUnitTests {
 
                         Capabilities capabilities = db.getCapabilities(capabilitiesValue);
 
-                        State pos = shadePos.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+                        State pos = shadePos.getState(capabilities, PRIMARY_POSITION);
                         assertEquals(PercentType.class, pos.getClass());
                         assertEquals(59, ((PercentType) pos).intValue());
 
-                        pos = shadePos.getState(capabilities, SECONDARY_ZERO_IS_OPEN);
+                        pos = shadePos.getState(capabilities, SECONDARY_POSITION);
                         assertEquals(PercentType.class, pos.getClass());
                         assertEquals(35, ((PercentType) pos).intValue());
 
-                        pos = shadePos.getState(capabilities, VANE_TILT_COORDS);
+                        pos = shadePos.getState(capabilities, VANE_TILT_POSITION);
                         assertEquals(UnDefType.class, pos.getClass());
 
                         assertEquals(3, shadeData.batteryStatus);
@@ -442,18 +442,18 @@ public class HDPowerViewJUnitTests {
                         assertNotNull(shadePosition);
                         if (shadePosition != null) {
                             // ==== position2 ====
-                            State position2Old = shadePosition.getState(capabilities, SECONDARY_ZERO_IS_OPEN);
-                            shadePosition.setPosition(capabilities, PRIMARY_ZERO_IS_CLOSED, 99);
-                            State position2New = shadePosition.getState(capabilities, SECONDARY_ZERO_IS_OPEN);
+                            State position2Old = shadePosition.getState(capabilities, SECONDARY_POSITION);
+                            shadePosition.setPosition(capabilities, PRIMARY_POSITION, 99);
+                            State position2New = shadePosition.getState(capabilities, SECONDARY_POSITION);
                             assertEquals(PercentType.class, position2Old.getClass());
                             assertEquals(PercentType.class, position2New.getClass());
                             assertEquals(((PercentType) position2Old).intValue(),
                                     ((PercentType) position2New).intValue());
 
                             // ==== position2 ====
-                            State position1Old = shadePosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
-                            shadePosition.setPosition(capabilities, SECONDARY_ZERO_IS_OPEN, 99);
-                            State position1New = shadePosition.getState(capabilities, PRIMARY_ZERO_IS_CLOSED);
+                            State position1Old = shadePosition.getState(capabilities, PRIMARY_POSITION);
+                            shadePosition.setPosition(capabilities, SECONDARY_POSITION, 99);
+                            State position1New = shadePosition.getState(capabilities, PRIMARY_POSITION);
                             assertEquals(PercentType.class, position1Old.getClass());
                             assertEquals(PercentType.class, position1New.getClass());
                             assertEquals(((PercentType) position1Old).intValue(),
@@ -502,42 +502,112 @@ public class HDPowerViewJUnitTests {
         Capabilities caps = db.getCapabilities(7);
 
         // ==== OK !! primary at bottom, secondary at top ====
-        shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0);
-        assertEquals(PercentType.HUNDRED, shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-        assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
+        shade.setPosition(caps, PRIMARY_POSITION, 100).setPosition(caps, SECONDARY_POSITION, 0);
+        assertEquals(PercentType.HUNDRED, shade.getState(caps, PRIMARY_POSITION));
+        assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_POSITION));
 
         // ==== OK !! primary at middle, secondary at top ====
-        shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 50).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0);
-        assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-        assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
+        shade.setPosition(caps, PRIMARY_POSITION, 50).setPosition(caps, SECONDARY_POSITION, 0);
+        assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_POSITION));
+        assertEquals(PercentType.ZERO, shade.getState(caps, SECONDARY_POSITION));
 
         // ==== OK !! primary at middle, secondary at middle ====
-        shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 50).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 50);
-        assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-        assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
+        shade.setPosition(caps, PRIMARY_POSITION, 50).setPosition(caps, SECONDARY_POSITION, 50);
+        assertEquals(new PercentType(50), shade.getState(caps, PRIMARY_POSITION));
+        assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_POSITION));
 
         // ==== IMPOSSIBLE !! secondary at middle, primary above => test the constraining code ====
-        shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
-        shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 40).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 25);
-        assertEquals(new PercentType(40), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
-        assertEquals(new PercentType(40), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
+        shade.setPosition(caps, SECONDARY_POSITION, 0).setPosition(caps, PRIMARY_POSITION, 100);
+        shade.setPosition(caps, SECONDARY_POSITION, 40).setPosition(caps, PRIMARY_POSITION, 25);
+        assertEquals(new PercentType(40), shade.getState(caps, SECONDARY_POSITION));
+        assertEquals(new PercentType(40), shade.getState(caps, PRIMARY_POSITION));
 
         // ==== OK !! secondary at middle, primary below ====
-        shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
-        shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 50).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 75);
-        assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
-        assertEquals(new PercentType(75), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
+        shade.setPosition(caps, SECONDARY_POSITION, 0).setPosition(caps, PRIMARY_POSITION, 100);
+        shade.setPosition(caps, SECONDARY_POSITION, 50).setPosition(caps, PRIMARY_POSITION, 75);
+        assertEquals(new PercentType(50), shade.getState(caps, SECONDARY_POSITION));
+        assertEquals(new PercentType(75), shade.getState(caps, PRIMARY_POSITION));
 
         // ==== IMPOSSIBLE !! primary at middle, secondary below => test the constraining code ====
-        shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
-        shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 60).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 75);
-        assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-        assertEquals(new PercentType(60), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
+        shade.setPosition(caps, SECONDARY_POSITION, 0).setPosition(caps, PRIMARY_POSITION, 100);
+        shade.setPosition(caps, PRIMARY_POSITION, 60).setPosition(caps, SECONDARY_POSITION, 75);
+        assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_POSITION));
+        assertEquals(new PercentType(60), shade.getState(caps, SECONDARY_POSITION));
 
         // ==== OK !! primary at middle, secondary above ====
-        shade.setPosition(caps, SECONDARY_ZERO_IS_OPEN, 0).setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 100);
-        shade.setPosition(caps, PRIMARY_ZERO_IS_CLOSED, 60).setPosition(caps, SECONDARY_ZERO_IS_OPEN, 25);
-        assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_ZERO_IS_CLOSED));
-        assertEquals(new PercentType(25), shade.getState(caps, SECONDARY_ZERO_IS_OPEN));
+        shade.setPosition(caps, SECONDARY_POSITION, 0).setPosition(caps, PRIMARY_POSITION, 100);
+        shade.setPosition(caps, PRIMARY_POSITION, 60).setPosition(caps, SECONDARY_POSITION, 25);
+        assertEquals(new PercentType(60), shade.getState(caps, PRIMARY_POSITION));
+        assertEquals(new PercentType(25), shade.getState(caps, SECONDARY_POSITION));
+    }
+
+    /**
+     * Test parsing of DuoLite shades having a secondary blackout shade.
+     *
+     */
+    @Test
+    public void testDuoliteShadePositionParsing() {
+        // blackout shades have capabilities:8
+        Capabilities capabilities = db.getCapabilities(8);
+        ShadePosition test;
+        State pos;
+
+        // both shades up
+        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(0, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertTrue(UnDefType.UNDEF.equals(pos));
+
+        // front shade 50% down
+        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 50);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(50, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertTrue(UnDefType.UNDEF.equals(pos));
+
+        // front shade 100% down, back shade 0% down
+        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(0, ((PercentType) pos).intValue());
+
+        // front shade 100% down, back shade 0% down (ALTERNATE)
+        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 0);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(0, ((PercentType) pos).intValue());
+
+        // front shade 100% down, back shade 50% down
+        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 50);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(50, ((PercentType) pos).intValue());
+
+        // front shade 100% down, back shade 100% down
+        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 100);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
     }
 }
