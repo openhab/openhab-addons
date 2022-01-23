@@ -140,17 +140,26 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         }
     }
 
-    protected @Nullable <T extends State> T getStateAs(HomekitCharacteristicType characteristic, Class<T> type) {
+    protected @Nullable State getState(HomekitCharacteristicType characteristic) {
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(characteristic);
         if (taggedItem.isPresent()) {
-            final State state = taggedItem.get().getItem().getStateAs(type);
-            if (state != null) {
-                return state.as(type);
-            }
+            return taggedItem.get().getItem().getState();
         }
         logger.debug("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
                 accessory.getName());
         return null;
+    }
+
+    protected @Nullable <T extends State> T getStateAs(HomekitCharacteristicType characteristic, Class<T> type) {
+        final State state = getState(characteristic);
+        if (state != null) {
+            return state.as(type);
+        }
+        return null;
+    }
+
+    protected @Nullable Double getStateAsTemperature(HomekitCharacteristicType characteristic) {
+        return HomekitCharacteristicFactory.stateAsTemperature(getState(characteristic));
     }
 
     @NonNullByDefault
