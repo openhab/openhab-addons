@@ -31,9 +31,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import javax.measure.quantity.Volume;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -123,7 +124,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
         }
     }
 
-    private State sumWaterCosumptionSinceMidnight(Data dataPoint) {
+    private QuantityType<Volume> sumWaterCosumptionSinceMidnight(Data dataPoint) {
         ZonedDateTime earliestWithdrawal = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime latestWithdrawal = earliestWithdrawal.plus(1, ChronoUnit.DAYS);
 
@@ -131,13 +132,13 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                 .filter(e -> earliestWithdrawal.isBefore(e.starttime.toInstant().atZone(ZoneId.systemDefault()))
                         && latestWithdrawal.isAfter(e.starttime.toInstant().atZone(ZoneId.systemDefault())))
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new DecimalType(waterConsumption);
+        return new QuantityType<>(waterConsumption, Units.LITRE);
     }
 
-    private DecimalType sumWaterCosumption(Data dataPoint) {
+    private QuantityType<Volume> sumWaterCosumption(Data dataPoint) {
         Double waterConsumption = dataPoint.getWithdrawals().stream()
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new DecimalType(waterConsumption);
+        return new QuantityType(waterConsumption, Units.LITRE);
     }
 
     private Measurement getLastMeasurement(Data dataPoint) {

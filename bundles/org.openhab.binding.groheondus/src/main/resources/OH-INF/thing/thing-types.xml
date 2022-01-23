@@ -7,7 +7,8 @@
 	<bridge-type id="account">
 		<label>GROHE ONDUS Account</label>
 		<description>This is an interface to the GROHE ONDUS Account as it is used by the app. If username and password are
-			not set, you can configure to use a `refreshToken` to login. Read the README to get more info.</description>
+			not set, you can configure to use a `refreshToken` to login. Read the README to get more info.
+		</description>
 
 		<config-description>
 			<parameter name="username" type="text" required="false">
@@ -57,7 +58,8 @@
 			<parameter name="pollingInterval" type="integer" required="false">
 				<label>Polling Interval</label>
 				<description>The interval in seconds used to poll the API for new data. Defaults to the configuration of the
-					appliance itself as retrieved from the API, usually 15 minutes.</description>
+					appliance itself as retrieved from the API, usually 15 minutes.
+				</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -133,10 +135,10 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="waterconsumption">
-		<item-type>Number</item-type>
+		<item-type>Number:Volume</item-type>
 		<label>Water Consumption</label>
-		<description>The amount of water consumed in the given time period.</description>
-		<state readOnly="true"/>
+		<description>The amount of water consumed in the given time period in liters.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 		<config-description>
 			<parameter name="timeframe" type="integer" min="1" max="90" step="1" required="true">
 				<label>Timeframe</label>
@@ -146,9 +148,9 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="waterconsumption_since_midnight">
-		<item-type>Number</item-type>
+		<item-type>Number:Volume</item-type>
 		<label>Water Consumption Since Midnight</label>
-		<description>The amount of water consumed since midnight</description>
-		<state readOnly="true"/>
+		<description>The amount of water consumed since midnight in liters</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 </thing:thing-descriptions>
