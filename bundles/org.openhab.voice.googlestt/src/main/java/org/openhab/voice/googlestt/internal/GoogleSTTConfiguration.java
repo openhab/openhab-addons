@@ -46,7 +46,8 @@ public class GoogleSTTConfiguration {
      */
     public int maxTranscriptionSeconds = 60;
     /**
-     * Only works when singleUtteranceMode is disabled, max seconds without get new transcriptions to stop listening.
+     * Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop
+     * listening.
      */
     public int maxSilenceSeconds = 5;
     /**
@@ -54,7 +55,7 @@ public class GoogleSTTConfiguration {
      */
     public boolean singleUtteranceMode = true;
     /**
-     * Try to load supported locales from the documentation page.
+     * Try loading supported locales from the documentation page.
      */
     public boolean refreshSupportedLocales = false;
 }
