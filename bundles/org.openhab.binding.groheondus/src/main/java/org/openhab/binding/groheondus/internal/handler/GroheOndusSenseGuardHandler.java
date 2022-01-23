@@ -23,11 +23,11 @@ import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -124,14 +124,12 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     }
 
     private State sumWaterCosumptionSinceMidnight(Data dataPoint) {
-        Instant start = Instant.now().truncatedTo(ChronoUnit.DAYS);
-        Instant end = start.plus(1, ChronoUnit.DAYS);
-
-        Date earliestWithdrawal = new Date(start.toEpochMilli());
-        Date latestWithdrawal = new Date(end.toEpochMilli());
+        ZonedDateTime earliestWithdrawal = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
+        ZonedDateTime latestWithdrawal = earliestWithdrawal.plus(1, ChronoUnit.DAYS);
 
         Double waterConsumption = dataPoint.getWithdrawals().stream()
-                .filter(e -> e.starttime.after(earliestWithdrawal) && e.starttime.before(latestWithdrawal))
+                .filter(e -> earliestWithdrawal.isBefore(e.starttime.toInstant().atZone(ZoneId.systemDefault()))
+                        && latestWithdrawal.isAfter(e.starttime.toInstant().atZone(ZoneId.systemDefault())))
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
         return new DecimalType(waterConsumption);
     }
