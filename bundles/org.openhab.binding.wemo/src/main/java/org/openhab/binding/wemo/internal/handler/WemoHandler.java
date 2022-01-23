@@ -227,7 +227,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
         updateStatus(ThingStatus.ONLINE);
 
-        if ("EnergyPerUnitCost".equals(variable)) {
+        if (!"BinaryState".equals(variable) && !"InsightParams".equals(variable)) {
             return;
         }
 
