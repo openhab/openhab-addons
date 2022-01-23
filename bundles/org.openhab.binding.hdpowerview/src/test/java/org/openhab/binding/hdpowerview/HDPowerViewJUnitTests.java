@@ -547,10 +547,11 @@ public class HDPowerViewJUnitTests {
      */
     @Test
     public void testDuoliteShadePositionParsing() {
-        // blackout shades have capabilities:8
-        Capabilities capabilities = db.getCapabilities(8);
         ShadePosition test;
         State pos;
+
+        // blackout shades have capabilities 8
+        Capabilities capabilities = db.getCapabilities(8);
 
         // both shades up
         test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0);
@@ -609,5 +610,97 @@ public class HDPowerViewJUnitTests {
         pos = test.getState(capabilities, SECONDARY_POSITION);
         assertEquals(PercentType.class, pos.getClass());
         assertEquals(100, ((PercentType) pos).intValue());
+    }
+
+    /**
+     * Test parsing of DuoLite shades having both a secondary blackout shade, and tilt anywhere functionality.
+     *
+     */
+    @Test
+    public void testDuoliteTiltShadePositionParsing() {
+        ShadePosition test;
+        State pos;
+
+        // blackout shades with tilt have capabilities 9
+        Capabilities capabilities = db.getCapabilities(9);
+
+        // both shades up, tilt 0%
+        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 0).setPosition(capabilities,
+                VANE_TILT_POSITION, 0);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(0, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertTrue(UnDefType.UNDEF.equals(pos));
+
+        // front shade 50% down, tilt 30%
+        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 50).setPosition(capabilities,
+                VANE_TILT_POSITION, 30);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(50, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertTrue(UnDefType.UNDEF.equals(pos));
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(30, ((PercentType) pos).intValue());
+
+        // front shade 100% down, back shade 0% down, tilt 30%
+        test = new ShadePosition().setPosition(capabilities, PRIMARY_POSITION, 100).setPosition(capabilities,
+                VANE_TILT_POSITION, 30);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(0, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(30, ((PercentType) pos).intValue());
+
+        // front shade 100% down, back shade 0% down, tilt 30% (ALTERNATE)
+        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 0).setPosition(capabilities,
+                VANE_TILT_POSITION, 30);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(0, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(30, ((PercentType) pos).intValue());
+
+        // front shade 100% down, back shade 50% down, tilt 30%
+        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 50).setPosition(capabilities,
+                VANE_TILT_POSITION, 30);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(50, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(30, ((PercentType) pos).intValue());
+
+        // front shade 100% down, back shade 100% down, tilt 70%
+        test = new ShadePosition().setPosition(capabilities, SECONDARY_POSITION, 100).setPosition(capabilities,
+                VANE_TILT_POSITION, 70);
+        assertNotNull(test);
+        pos = test.getState(capabilities, PRIMARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, SECONDARY_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(100, ((PercentType) pos).intValue());
+        pos = test.getState(capabilities, VANE_TILT_POSITION);
+        assertEquals(PercentType.class, pos.getClass());
+        assertEquals(70, ((PercentType) pos).intValue());
     }
 }
