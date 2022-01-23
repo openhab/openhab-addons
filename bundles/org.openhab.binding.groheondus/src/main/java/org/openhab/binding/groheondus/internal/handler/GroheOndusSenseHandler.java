@@ -147,8 +147,9 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
 
     private @Nullable ApplianceData getApplianceData(Appliance appliance) {
         // Dates are stripped of time part inside library
-        Instant yesterday = Instant.now().minus(1, ChronoUnit.DAYS);
-        Instant tomorrow = Instant.now().plus(1, ChronoUnit.DAYS);
+        Instant now = Instant.now();
+        Instant yesterday = now.minus(1, ChronoUnit.DAYS);
+        Instant tomorrow = now.plus(1, ChronoUnit.DAYS);
         OndusService service = getOndusService();
         if (service == null) {
             return null;
