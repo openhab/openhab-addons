@@ -310,7 +310,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                         getThing().getUID());
                 updateState(CHANNEL_ENERGYTOTAL, energyTotal);
 
-                if (variable != "BinaryState") {
+                if (!"BinaryState".equals(variable)) {
                     BigDecimal standByLimitMW = new BigDecimal(splitInsightParams[10]);
                     State standByLimit = new QuantityType<>(
                             standByLimitMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP), Units.WATT); // recalculate
