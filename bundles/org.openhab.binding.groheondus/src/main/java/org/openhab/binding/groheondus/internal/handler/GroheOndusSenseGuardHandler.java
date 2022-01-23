@@ -163,8 +163,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             return null;
         }
         if (commandOptional.get().getType() != Appliance.TYPE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Thing is not a GROHE SENSE Guard device.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsenseguard");
             return null;
         }
         return ((ApplianceCommand) commandOptional.get()).getCommand().getValveOpen() ? OnOffType.ON : OnOffType.OFF;
@@ -173,14 +172,13 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     @Override
     protected Data getLastDataPoint(Appliance appliance) {
         if (getOndusService() == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
             return new Data();
         }
 
         ApplianceData applianceData = getApplianceData(appliance);
         if (applianceData == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not load data from API.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
             return new Data();
         }
         Data data = applianceData.getData();
@@ -204,14 +202,14 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             if (applianceData != null) {
                 if (applianceData.getType() != Appliance.TYPE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Thing is not a GROHE SENSE Guard device.");
+                            "@text/error.notsenseguard");
                     return null;
                 }
                 return (ApplianceData) applianceData;
             } else {
                 logger.debug("Could not load appliance data for thing {}", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to find applicance data");
+                        "@text/error.failedtoloaddata");
             }
         } catch (IOException e) {
             logger.debug("Could not load appliance data for {}", thing.getUID(), e);

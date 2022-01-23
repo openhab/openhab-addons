@@ -136,7 +136,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
         if ((config.username == null || config.password == null) && !this.hasRefreshToken()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Need username/password or refreshToken");
+                    "@text/error.login.missing.credentials");
             return false;
         }
 
@@ -153,7 +153,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
             return true;
         } catch (LoginException e) {
             logger.debug("Grohe api login failed", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Login failed");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.login.failed");
         } catch (IOException e) {
             logger.debug("Communication error while logging into the grohe api", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
