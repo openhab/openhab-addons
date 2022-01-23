@@ -170,6 +170,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
         ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
+
         handler.handleCommand(channelUID, command);
 
         ArgumentCaptor<String> captur = ArgumentCaptor.forClass(String.class);

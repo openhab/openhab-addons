@@ -65,8 +65,9 @@ public class WemoDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting UPnP RootDevice search...");
-        if (upnpService != null) {
-            upnpService.getControlPoint().search(new RootDeviceHeader());
+        UpnpService localService = upnpService;
+        if (localService != null) {
+            localService.getControlPoint().search(new RootDeviceHeader());
         } else {
             logger.debug("upnpService not set");
         }
