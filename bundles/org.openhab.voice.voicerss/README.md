@@ -6,7 +6,11 @@ VoiceRSS is an Internet based TTS service hosted at <https://api.voicerss.org>.
 You must obtain an API Key to get access to this service.
 The free version allows you to make up to 350 requests per day; for more you may need a commercial subscription.
 
-For more information, see <http://www.voicerss.org/>.
+For more information, see <https://www.voicerss.org>.
+
+## Obtaining Credentials
+
+Before you can integrate this service, you need to register to https://www.voicerss.org with at least a free account to get an API key.
 
 ## Samples
 
@@ -25,13 +29,135 @@ https://api.voicerss.org/?key=API_KEY&hl=de-de&f=44khz_16bit_mono&src=Hallo%20We
 
 ## Configuration
 
-You must add your API_KEY to your configuration by adding a file "voicerss.cfg" to the services folder, with this entry:
+The following configurations can be edited using the "VoiceRSS Text-to-Speech" settings in the UI:
+
+* **VoiceRSS API Key** - The API Key to get access to https://www.voicerss.org.
+
+In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `voicerss.cfg`
+
+Its contents should look similar to:
 
 ```
-apiKey=1234567890
+org.openhab.voice.voicerss:apiKey=1234567890
 ```
 
-It actually supports only one voice: "voicerss:default", which is configured to use 44kHz, mono, 16 bit sampling quality.
+## Voices
+
+It supports the following voices (depending on language):
+
+* Oda (Arabic - Egypt)
+* Salim (Arabic - Saudi Arabia)
+* Dimo (Bulgarian)
+* Rut (Catalan)
+* Luli (Chinese - China)
+* Shu (Chinese - China)
+* Chow (Chinese - China)
+* Wang (Chinese - China)
+* Jia (Chinese - Hong Kong)
+* Xia (Chinese - Hong Kong)
+* Chen (Chinese - Hong Kong)
+* Akemi (Chinese - Taiwan)
+* Lin (Chinese - Taiwan)
+* Lee (Chinese - Taiwan)
+* Nikola (Croatian)
+* Josef (Czech)
+* Freja (Danish)
+* Daan (Dutch - Belgium)
+* Lotte (Dutch - Netherlands)
+* Bram (Dutch - Netherlands)
+* Zoe (English - Australia)
+* Isla (English - Australia)
+* Evie (English - Australia)
+* Jack (English - Australia)
+* Rose (English - Canada)
+* Clara (English - Canada)
+* Emma (English - Canada)
+* Mason (English - Canada)
+* Alice (English - Great Britain)
+* Nancy (English - Great Britain)
+* Lily (English - Great Britain)
+* Harry (English - Great Britain)
+* Eka (English - India)
+* Jai (English - India)
+* Ajit (English - India)
+* Oran (English - Ireland)
+* Linda (English - United States)
+* Amy (English - United States)
+* Mary (English - United States)
+* John (English - United States)
+* Mike (English - United States)
+* Aada (Finnish)
+* Emile (French - Canada)
+* Olivia (French - Canada)
+* Logan (French - Canada)
+* Felix (French - Canada)
+* Bette (French - France)
+* Iva (French - France)
+* Zola (French - France)
+* Axel (French - France)
+* Theo (French - Switzerland)
+* Lukas (German - Austria)
+* Hanna (German - Germany)
+* Lina (German - Germany)
+* Jonas (German - Germany)
+* Tim (German - Switzerland)
+* Neo (Greek)
+* Rami (Hebrew)
+* Puja (Hindi)
+* Kabir (Hindi)
+* Mate (Hungarian)
+* Intan (Indonesian)
+* Bria (Italian)
+* Mia (Italian)
+* Pietro (Italian)
+* Hina (Japanese)
+* Airi (Japanese)
+* Fumi (Japanese)
+* Akira (Japanese)
+* Nari (Korean)
+* Aqil (Malay)
+* Marte (Norwegian)
+* Erik (Norwegian)
+* Julia (Polish)
+* Jan (Polish)
+* Marcia (Portuguese - Brazil)
+* Ligia (Portuguese - Brazil)
+* Yara (Portuguese - Brazil)
+* Dinis (Portuguese - Brazil)
+* Leonor (Portuguese - Portugal)
+* Doru (Romanian)
+* Olga (Russian)
+* Marina (Russian)
+* Peter (Russian)
+* Beda (Slovak)
+* Vid (Slovenian)
+* Juana (Spanish - Mexico)
+* Silvia (Spanish - Mexico)
+* Teresa (Spanish - Mexico)
+* Jose (Spanish - Mexico)
+* Camila (Spanish - Spain)
+* Sofia (Spanish - Spain)
+* Luna (Spanish - Spain)
+* Diego (Spanish - Spain)
+* Molly (Swedish)
+* Hugo (Swedish)
+* Sai (Tamil)
+* Ukrit (Thai)
+* Omer (Turkish)
+* Chi (Vietnamese)
+
+### Voice Configuration
+
+You can setup your preferred default voice in the UI:
+
+* Go to **Settings**.
+* Edit **System Services - Voice**.
+* Set **VoiceRSS** as **Default Text-to-Speech**.
+* Choose your preferred **Default Voice** for your setup.
+
+## Supported Audio Formats
+
+It supports the following audio formats: MP3, OGG, AAC and WAV.
 
 ## Caching
 
@@ -57,6 +183,4 @@ Sample: java org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890
 
 ## Open Issues
 
-*   add all media formats
-*   add all supported languages
-*   do not log API-Key in plain text
+* do not log API-Key in plain text
