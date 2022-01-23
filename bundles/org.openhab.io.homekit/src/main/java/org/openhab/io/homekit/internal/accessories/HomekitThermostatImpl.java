@@ -106,10 +106,8 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE, DecimalType.class);
-        return CompletableFuture
-                .completedFuture(state != null ? HomekitCharacteristicFactory.convertToCelsius(state.doubleValue())
-                        : getMinCurrentTemperature());
+        Double state = getStateAsTemperature(HomekitCharacteristicType.CURRENT_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state : getMinCurrentTemperature());
     }
 
     @Override
@@ -160,9 +158,8 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public CompletableFuture<Double> getTargetTemperature() {
-        DecimalType state = getStateAs(HomekitCharacteristicType.TARGET_TEMPERATURE, DecimalType.class);
-        return CompletableFuture.completedFuture(
-                state != null ? HomekitCharacteristicFactory.convertToCelsius(state.doubleValue()) : 0.0);
+        Double state = getStateAsTemperature(HomekitCharacteristicType.TARGET_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state : 0.0);
     }
 
     @Override
