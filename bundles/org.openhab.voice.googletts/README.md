@@ -64,11 +64,18 @@ org.openhab.voice.googletts:speakingRate=1
 org.openhab.voice.googletts:purgeCache=false
 ```
 
-## Voice Configuration
+### Default Text-to-Speech and Voice Configuration
 
-Using your favorite configuration UI:
+You can setup your preferred default Text-to-Speech and default voice in the UI:
 
 * Go to **Settings**.
 * Edit **System Services - Voice**.
 * Set **Google Cloud** as **Default Text-to-Speech**.
 * Choose your preferred **Default Voice** for your setup.
+
+In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+
+```
+org.openhab.voice:defaultTTS=googletts
+org.openhab.voice:defaultVoice=googletts:XXX
+```

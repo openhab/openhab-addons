@@ -146,14 +146,21 @@ It supports the following voices (depending on language):
 * Omer (Turkish)
 * Chi (Vietnamese)
 
-### Voice Configuration
+### Default Text-to-Speech and Voice Configuration
 
-You can setup your preferred default voice in the UI:
+You can setup your preferred default Text-to-Speech and default voice in the UI:
 
 * Go to **Settings**.
 * Edit **System Services - Voice**.
 * Set **VoiceRSS** as **Default Text-to-Speech**.
 * Choose your preferred **Default Voice** for your setup.
+
+In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+
+```
+org.openhab.voice:defaultTTS=voicerss
+org.openhab.voice:defaultVoice=voicerss:frFR_Zola
+```
 
 ## Supported Audio Formats
 
