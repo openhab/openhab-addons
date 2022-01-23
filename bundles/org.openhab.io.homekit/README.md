@@ -102,7 +102,7 @@ org.openhab.homekit:name=openHAB
 | blockUserDeletion        | Blocks HomeKit user deletion in openHAB and as result unpairing of devices. If you experience an issue with accessories becoming non-responsive after some time, try to enable this setting. You can also enable this setting if your HomeKit setup is done and you will not re-pair ios devices.                                              | false         |
 | pin                      | Pin code used for pairing with iOS devices. Apparently, pin codes are provided by Apple and represent specific device types, so they cannot be chosen freely. The pin code 031-45-154 is used in sample applications and known to work. | 031-45-154    |
 | startDelay               | HomeKit start delay in seconds in case the number of accessories is lower than last time. This helps to avoid resetting home app in case not all items have been initialised properly before HomeKit integration start.                 | 30            |
-| useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees.                                                                                                                                                                 | false         |
+| useFahrenheitTemperature | Set to true to use Fahrenheit degrees, or false to use Celsius degrees. Note if an item has a QuantityType as its state, this configuration is ignored and it's always converted properly.                                              | false         |
 | thermostatTargetModeCool | Word used for activating the cooling mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | CoolOn        |
 | thermostatTargetModeHeat | Word used for activating the heating mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                                | HeatOn        |
 | thermostatTargetModeAuto | Word used for activating the automatic mode of the device (if applicable). It can be overwritten at item level.                                                                                                                                                               | Auto          |
@@ -170,8 +170,8 @@ e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, T
 Following are equal configuration:
 
 ```xtend
-Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCovering"}
-Rollershutter 	window_covering 	"Window Rollershutter"  	{homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
+Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering"}
+Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
 ```
 
 If the shorthand version has only a characteristic then it must be a part of a group which has a HomeKit accessory type.
@@ -216,7 +216,7 @@ However, some dimmer devices for example do not expect brightness on "ON" event,
 In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration.
 
 ```xtend
-Dimmer dimmer_light	"Dimmer Light" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
+Dimmer dimmer_light   "Dimmer Light"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
 ```
 
 Following modes are supported:
@@ -229,9 +229,9 @@ Following modes are supported:
 Examples:
 
  ```xtend
- Dimmer dimmer_light_1	"Dimmer Light 1" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
- Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
- Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
+ Dimmer dimmer_light_1   "Dimmer Light 1"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
+ Dimmer dimmer_light_2   "Dimmer Light 2"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
+ Dimmer dimmer_light_3   "Dimmer Light 3"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
  ```
 
 ### Windows Covering (Blinds) / Window / Door
@@ -246,10 +246,10 @@ These characteristics can be mapped to a single openHAB rollershutter item. In s
 As discussed above, one can use full or shorthand definition. Following two definitions are equal:
 
 ```xtend
-Rollershutter 	window 		            "Window"  	                {homekit = "Window"}
-Rollershutter 	door		            "Door"  	                {homekit = "Door"}
-Rollershutter   window_covering         "Window Rollershutter"      {homekit = "WindowCovering"}
-Rollershutter 	window_covering_long 	"Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
+Rollershutter    window                "Window"                    {homekit = "Window"}
+Rollershutter    door                  "Door"                      {homekit = "Door"}
+Rollershutter   window_covering        "Window Rollershutter"      {homekit = "WindowCovering"}
+Rollershutter    window_covering_long  "Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
  ```
 
 openHAB Rollershutter is defined by default as:
@@ -267,8 +267,8 @@ In case you need to disable this logic you can do it with configuration paramete
 
 ```xtend
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted="false"]}
-Rollershutter window		   "Window"  	         {homekit = "Window" [inverted="false"]}
-Rollershutter door		       "Door"  	         {homekit = "Door" [inverted="false"]}
+Rollershutter window          "Window"               {homekit = "Window" [inverted="false"]}
+Rollershutter door            "Door"                 {homekit = "Door" [inverted="false"]}
 
  ```
 
@@ -277,7 +277,7 @@ If your blind supports tilt, and you want to control tilt via HomeKit you need t
 e.g.
 
 ```xtend
-Group           gBlind    			    "Blind with tilt"       						{homekit = "WindowCovering"}
+Group           gBlind                  "Blind with tilt"                               {homekit = "WindowCovering"}
 Rollershutter   window_covering         "Blind"                         (gBlind)        {homekit = "WindowCovering"}
 Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "WindowCovering.CurrentHorizontalTiltAngle, WindowCovering.TargetHorizontalTiltAngle"}
 Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)        {homekit = "WindowCovering.CurrentVerticalTiltAngle, WindowCovering.TargetVerticalTiltAngle"}
@@ -287,7 +287,7 @@ Current and Target Position characteristics can be linked to Rollershutter but a
 e.g.
 
 ```xtend
-Group           gBlind   "Blinds"       		         {homekit = "WindowCovering"}
+Group           gBlind   "Blinds"                        {homekit = "WindowCovering"}
 Dimmer          blind_current_position    (gBlind)       {homekit = "CurrentPosition"}
 Number          blind_target_position     (gBlind)       {homekit = "TargetPosition"}
 String          blind_position            (gBlind)       {homekit = "PositionState"}
@@ -306,24 +306,24 @@ In order to define a thermostat you need to create a group with at least these 4
 Example:
 
 ```xtend
-Group  			gThermostat    				"Thermostat"       										 	{homekit = "Thermostat"}
-Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature"}
-Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature"}  
-String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
-String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
+Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"  (gThermostat)       {homekit = "CurrentTemperature"}
+Number          thermostat_target_temp     "Thermostat Target Temp [%.1f °C]"   (gThermostat)       {homekit = "TargetTemperature"}  
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
+String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
 ```
 
 In addition, thermostat can have thresholds for cooling and heating modes.
 Example with thresholds:
 
 ```xtend
-Group  			gThermostat    				"Thermostat"       										 	{homekit = "Thermostat"}
-Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature"}
-Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature"}  
-String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat)       {homekit = "CurrentHeatingCoolingMode"}          
-String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat)       {homekit = "TargetHeatingCoolingMode"}           
-Number 			thermostat_cool_thrs 	    "Thermostat Cool Threshold Temp [%.1f C]"  	(gThermostat)  	{homekit = "CoolingThresholdTemperature"}
-Number 			thermostat_heat_thrs 	    "Thermostat Heat Threshold Temp [%.1f C]"  	(gThermostat)  	{homekit = "HeatingThresholdTemperature"}
+Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"        (gThermostat) {homekit = "CurrentTemperature"}
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"          (gThermostat) {homekit = "TargetTemperature"}  
+String          thermostat_current_mode    "Thermostat Current Mode"                  (gThermostat) {homekit = "CurrentHeatingCoolingMode"}          
+String          thermostat_target_mode     "Thermostat Target Mode"                   (gThermostat) {homekit = "TargetHeatingCoolingMode"}           
+Number          thermostat_cool_thrs       "Thermostat Cool Threshold Temp [%.1f °C]" (gThermostat) {homekit = "CoolingThresholdTemperature"}
+Number          thermostat_heat_thrs       "Thermostat Heat Threshold Temp [%.1f °C]" (gThermostat) {homekit = "HeatingThresholdTemperature"}
 ```
 
 #### Min / max temperatures
@@ -331,14 +331,14 @@ Number 			thermostat_heat_thrs 	    "Thermostat Heat Threshold Temp [%.1f C]"  	
 Current  and target temperatures have default min and max values. Any values below or above max limits will be replaced with min or max limits.
 Default limits are:
 
-- current temperature: min value = 0 C, max value = 100 C
-- target temperature: min value = 10 C, max value = 38 C
+- current temperature: min value = 0 °C, max value = 100 °C
+- target temperature: min value = 10 °C, max value = 38 °C
 
 You can overwrite default values using minValue and maxValue configuration at item level, e.g.
 
 ```xtend
-Number 			thermostat_current_temp 	"Thermostat Current Temp [%.1f C]"  	(gThermostat)  		{homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
-Number 			thermostat_target_temp   	"Thermostat Target Temp[%.1f C]" 		(gThermostat) 		{homekit = "TargetTemperature" [minValue=10.5, maxValue=27]} 
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"     (gThermostat)       {homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"       (gThermostat)       {homekit = "TargetTemperature" [minValue=10.5, maxValue=27]} 
 ```
 
 If "useFahrenheitTemperature" is set to true, the min and max temperature must be provided in Fahrenheit.
@@ -354,7 +354,7 @@ These modes are mapped to string values of openHAB items using either global con
 e.g. if your current mode item can have following values: "OFF", "HEATING", "COOLING" then you need following mapping at item level
 
 ```xtend
-String 			thermostat_current_mode  	"Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]} 
+String          thermostat_current_mode     "Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]} 
 ```
 
 You can provide mapping for target mode in similar way.
@@ -364,8 +364,8 @@ The custom mapping at item level can be also used to reduce number of modes show
 Example: if your thermostat does not support cooling, then you need to limit mapping  to OFF and HEAT values only:
 
 ```xtend
-String 			thermostat_current_mode  	"Thermostat Current Mode" 				(gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}          
-String 			thermostat_target_mode  	"Thermostat Target Mode" 				(gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
+String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}          
+String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 ```
 
 The mapping using main UI looks like following:
@@ -390,18 +390,18 @@ configuration for these two cases looks as follow:
 - valve with timer:
 
 ```xtend
-Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation"]}
-Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
-Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration"}
-Number 			valve_remaining_duration "Valve remaining duration" (gValve) 		{homekit = "Valve.RemainingDuration"}
+Group           gValve                   "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation"]}
+Switch          valve_active             "Valve active"             (gValve)       {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number          valve_duration           "Valve duration"           (gValve)       {homekit = "Valve.Duration"}
+Number          valve_remaining_duration "Valve remaining duration" (gValve)       {homekit = "Valve.RemainingDuration"}
 ```
 
 - valve without timer (no item for remaining duration required)
 
 ```xtend
-Group  			gValve    			"Valve Group"       						 	{homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true]}
-Switch 			valve_active 		"Valve active"				    (gValve) 		{homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
-Number 			valve_duration 		"Valve duration" 				(gValve) 		{homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
+Group           gValve             "Valve Group"                             {homekit="Valve"  [homekitValveType="Irrigation", homekitTimer="true]}
+Switch          valve_active       "Valve active"               (gValve)     {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
+Number          valve_duration     "Valve duration"             (gValve)     {homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
 ```
 
 ### Sensors
@@ -425,14 +425,14 @@ Sensors without optional characteristics:
 
 ```xtend
 Switch  leaksensor_single    "Leak Sensor"                   {homekit="LeakSensor"}
-Number  light_sensor 	     "Light Sensor"                  {homekit="LightSensor"}
-Number  temperature_sensor 	 "Temperature Sensor [%.1f C]"   {homekit="TemperatureSensor"}
+Number  light_sensor         "Light Sensor"                  {homekit="LightSensor"}
+Number  temperature_sensor   "Temperature Sensor [%.1f °C]"  {homekit="TemperatureSensor"}
 Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor"}
 Contact contact_sensor       "Contact Sensor"                {homekit="ContactSensor" [inverted="true"]}
 
 Switch  occupancy_sensor     "Occupancy Sensor"              {homekit="OccupancyDetectedState"}
 Switch  motion_sensor        "Motion Sensor"                 {homekit="MotionSensor"}
-Number  humidity_sensor 	 "Humidity Sensor"			     {homekit="HumiditySensor"}
+Number  humidity_sensor      "Humidity Sensor"               {homekit="HumiditySensor"}
 ```
 
 Sensors with optional characteristics:
@@ -645,80 +645,80 @@ or using UI
 See the sample below for example items:
 
 ```xtend
-Color           color_light_single         "Color Light Single"                                      {homekit="Lighting"}
-Color           color_light_dimmable       "Legacy Color Light Dimmable"                             {homekit="Lighting, Lighting.Brightness"}
-Color           color_light_hue            "Legacy Color Light Hue"                                  {homekit="Lighting, Lighting.Hue, Lighting.Brightness, Lighting.Saturation"}
+Color           color_light_single         "Color Light Single"                                        {homekit="Lighting"}
+Color           color_light_dimmable       "Legacy Color Light Dimmable"                               {homekit="Lighting, Lighting.Brightness"}
+Color           color_light_hue            "Legacy Color Light Hue"                                    {homekit="Lighting, Lighting.Hue, Lighting.Brightness, Lighting.Saturation"}
 
-Rollershutter   window_covering            "Window Rollershutter"                                    {homekit="WindowCovering"}
-Rollershutter   window_covering_long       "Window Rollershutter long"                               {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
+Rollershutter   window_covering            "Window Rollershutter"                                      {homekit="WindowCovering"}
+Rollershutter   window_covering_long       "Window Rollershutter long"                                 {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
 
-Switch          leaksensor_single          "Leak Sensor single"                                      {homekit="LeakSensor"}
-Switch          lock                       "Lock single"                                             {homekit="Lock"}
-Switch          valve_single               "Valve single"                                            {homekit="Valve" [homekitValveType="Shower"]}
+Switch          leaksensor_single          "Leak Sensor single"                                        {homekit="LeakSensor"}
+Switch          lock                       "Lock single"                                               {homekit="Lock"}
+Switch          valve_single               "Valve single"                                              {homekit="Valve" [homekitValveType="Shower"]}
 
-Number 			temperature_sensor 	        "Temperature Sensor [%.1f C]"  			                 {homekit="TemperatureSensor" [minValue=10.5, maxValue=27] }
-Number          light_sensor 	            "Light Sensor"                                           {homekit="LightSensor"}
+Number          temperature_sensor         "Temperature Sensor [%.1f °C]"                              {homekit="TemperatureSensor" [minValue=10.5, maxValue=27] }
+Number          light_sensor               "Light Sensor"                                              {homekit="LightSensor"}
 
-Group           gValve                     "Valve Group"                                             {homekit="Valve"  [homekitValveType="Irrigation"]}
-Switch          valve_active               "Valve active"                       (gValve)             {homekit="Valve.ActiveStatus, Valve.InUseStatus"}
-Number          valve_duration             "Valve duration"                     (gValve)             {homekit="Valve.Duration"}
-Number          valve_remaining_duration   "Valve remaining duration"           (gValve)             {homekit="Valve.RemainingDuration"}
+Group           gValve                     "Valve Group"                                               {homekit="Valve"  [homekitValveType="Irrigation"]}
+Switch          valve_active               "Valve active"                         (gValve)             {homekit="Valve.ActiveStatus, Valve.InUseStatus"}
+Number          valve_duration             "Valve duration"                       (gValve)             {homekit="Valve.Duration"}
+Number          valve_remaining_duration   "Valve remaining duration"             (gValve)             {homekit="Valve.RemainingDuration"}
 
-Group           gThermostat                "Thermostat"                                              {homekit="Thermostat"}
-Number          thermostat_current_temp    "Thermostat Current Temp [%.1f C]"   (gThermostat)        {homekit="Thermostat.CurrentTemperature" [minValue=0, maxValue=40]}
-Number          thermostat_target_temp     "Thermostat Target Temp[%.1f C]"     (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}
-String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}
-String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}
+Group           gThermostat                "Thermostat"                                                {homekit="Thermostat"}
+Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"    (gThermostat)        {homekit="Thermostat.CurrentTemperature" [minValue=0, maxValue=40]}
+Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"      (gThermostat)        {homekit="Thermostat.TargetTemperature"  [minValue=10.5, maxValue=27]}
+String          thermostat_current_mode    "Thermostat Current Mode"              (gThermostat)        {homekit="Thermostat.CurrentHeatingCoolingMode"}
+String          thermostat_target_mode     "Thermostat Target Mode"               (gThermostat)        {homekit="Thermostat.TargetHeatingCoolingMode"}
 
-Group           gLeakSensor                "Leak Sensor Group"                                       {homekit="LeakSensor"}
-Switch          leaksensor                 "Leak Sensor"                        (gLeakSensor)        {homekit="LeakDetectedState"}
-String          leaksensor_name            "Leak Sensor Name"                   (gLeakSensor)        {homekit="Name"}
-Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus"}
-Switch          leaksensor_active          "Leak Sensor Active"                 (gLeakSensor)        {homekit="ActiveStatus"}
-Switch          leaksensor_fault           "Leak Sensor Fault"                  (gLeakSensor)        {homekit="FaultStatus"}
-Switch          leaksensor_tampered        "Leak Sensor Tampered"               (gLeakSensor)        {homekit="TamperedStatus"}
+Group           gLeakSensor                "Leak Sensor Group"                                         {homekit="LeakSensor"}
+Switch          leaksensor                 "Leak Sensor"                          (gLeakSensor)        {homekit="LeakDetectedState"}
+String          leaksensor_name            "Leak Sensor Name"                     (gLeakSensor)        {homekit="Name"}
+Switch          leaksensor_bat             "Leak Sensor Battery"                  (gLeakSensor)        {homekit="BatteryLowStatus"}
+Switch          leaksensor_active          "Leak Sensor Active"                   (gLeakSensor)        {homekit="ActiveStatus"}
+Switch          leaksensor_fault           "Leak Sensor Fault"                    (gLeakSensor)        {homekit="FaultStatus"}
+Switch          leaksensor_tampered        "Leak Sensor Tampered"                 (gLeakSensor)        {homekit="TamperedStatus"}
 
-Group           gMotionSensor              "Motion Sensor Group"                                     {homekit="MotionSensor"}
-Switch          motionsensor               "Motion Sensor"                      (gMotionSensor)      {homekit="MotionSensor.MotionDetectedState"}
-Switch          motionsensor_bat           "Motion Sensor Battery"              (gMotionSensor)      {homekit="MotionSensor.BatteryLowStatus"}
-Switch          motionsensor_active        "Motion Sensor Active"               (gMotionSensor)      {homekit="MotionSensor.ActiveStatus"}
-Switch          motionsensor_fault         "Motion Sensor Fault"                (gMotionSensor)      {homekit="MotionSensor.FaultStatus"}
-Switch          motionsensor_tampered      "Motion Sensor Tampered"             (gMotionSensor)      {homekit="MotionSensor.TamperedStatus"}
+Group           gMotionSensor              "Motion Sensor Group"                                       {homekit="MotionSensor"}
+Switch          motionsensor               "Motion Sensor"                        (gMotionSensor)      {homekit="MotionSensor.MotionDetectedState"}
+Switch          motionsensor_bat           "Motion Sensor Battery"                (gMotionSensor)      {homekit="MotionSensor.BatteryLowStatus"}
+Switch          motionsensor_active        "Motion Sensor Active"                 (gMotionSensor)      {homekit="MotionSensor.ActiveStatus"}
+Switch          motionsensor_fault         "Motion Sensor Fault"                  (gMotionSensor)      {homekit="MotionSensor.FaultStatus"}
+Switch          motionsensor_tampered      "Motion Sensor Tampered"               (gMotionSensor)      {homekit="MotionSensor.TamperedStatus"}
 
-Group           gOccupancySensor           "Occupancy Sensor Group"                                  {homekit="OccupancySensor"}
-Switch          occupancysensor            "Occupancy Sensor"                   (gOccupancySensor)   {homekit="OccupancyDetectedState"}
-Switch          occupancysensor_bat        "Occupancy Sensor Battery"           (gOccupancySensor)   {homekit="BatteryLowStatus"}
-Switch          occupancysensor_active     "Occupancy Sensor Active"            (gOccupancySensor)   {homekit="OccupancySensor.ActiveStatus"}
-Switch          occupancysensor_fault      "Occupancy Sensor Fault"             (gOccupancySensor)   {homekit="OccupancySensor.FaultStatus"}
-Switch          occupancysensor_tampered   "Occupancy Sensor Tampered"          (gOccupancySensor)   {homekit="OccupancySensor.TamperedStatus"}
+Group           gOccupancySensor           "Occupancy Sensor Group"                                    {homekit="OccupancySensor"}
+Switch          occupancysensor            "Occupancy Sensor"                     (gOccupancySensor)   {homekit="OccupancyDetectedState"}
+Switch          occupancysensor_bat        "Occupancy Sensor Battery"             (gOccupancySensor)   {homekit="BatteryLowStatus"}
+Switch          occupancysensor_active     "Occupancy Sensor Active"              (gOccupancySensor)   {homekit="OccupancySensor.ActiveStatus"}
+Switch          occupancysensor_fault      "Occupancy Sensor Fault"               (gOccupancySensor)   {homekit="OccupancySensor.FaultStatus"}
+Switch          occupancysensor_tampered   "Occupancy Sensor Tampered"            (gOccupancySensor)   {homekit="OccupancySensor.TamperedStatus"}
 
-Group           gContactSensor             "Contact Sensor Group"                                    {homekit="ContactSensor"}
-Contact         contactsensor              "Contact Sensor"                     (gContactSensor)     {homekit="ContactSensor.ContactSensorState"}
-Switch          contactsensor_bat          "Contact Sensor Battery"             (gContactSensor)     {homekit="ContactSensor.BatteryLowStatus"}
-Switch          contactsensor_active       "Contact Sensor Active"              (gContactSensor)     {homekit="ContactSensor.ActiveStatus"}
-Switch          contactsensor_fault        "Contact Sensor Fault"               (gContactSensor)     {homekit="ContactSensor.FaultStatus"}
-Switch          contactsensor_tampered     "Contact Sensor Tampered"            (gContactSensor)     {homekit="ContactSensor.TamperedStatus"}
+Group           gContactSensor             "Contact Sensor Group"                                      {homekit="ContactSensor"}
+Contact         contactsensor              "Contact Sensor"                       (gContactSensor)     {homekit="ContactSensor.ContactSensorState"}
+Switch          contactsensor_bat          "Contact Sensor Battery"               (gContactSensor)     {homekit="ContactSensor.BatteryLowStatus"}
+Switch          contactsensor_active       "Contact Sensor Active"                (gContactSensor)     {homekit="ContactSensor.ActiveStatus"}
+Switch          contactsensor_fault        "Contact Sensor Fault"                 (gContactSensor)     {homekit="ContactSensor.FaultStatus"}
+Switch          contactsensor_tampered     "Contact Sensor Tampered"              (gContactSensor)     {homekit="ContactSensor.TamperedStatus"}
 
-Group           gAirQualitySensor    	    "Air Quality Sensor"      				                 {homekit="AirQualitySensor"}
-String          airquality                  "Air Quality"						(gAirQualitySensor)  {homekit="AirQuality"}
-Number          ozone                       "Ozone Density"						(gAirQualitySensor)  {homekit="OzoneDensity"}
-Number          voc                         "VOC Density"						(gAirQualitySensor)  {homekit="VOCDensity"}
-Number          nitrogen                    "Nitrogen Density"					(gAirQualitySensor)  {homekit="NitrogenDioxideDensity"}
-Number          sulphur                     "Sulphur Density"					(gAirQualitySensor)  {homekit="SulphurDioxideDensity"}
-Number          pm25                        "PM25 Density"						(gAirQualitySensor)  {homekit="PM25Density"}
-Number          pm10                        "PM10 Density"						(gAirQualitySensor)  {homekit="PM10Density"}
+Group           gAirQualitySensor           "Air Quality Sensor"                                       {homekit="AirQualitySensor"}
+String          airquality                  "Air Quality"                         (gAirQualitySensor)  {homekit="AirQuality"}
+Number          ozone                       "Ozone Density"                       (gAirQualitySensor)  {homekit="OzoneDensity"}
+Number          voc                         "VOC Density"                         (gAirQualitySensor)  {homekit="VOCDensity"}
+Number          nitrogen                    "Nitrogen Density"                    (gAirQualitySensor)  {homekit="NitrogenDioxideDensity"}
+Number          sulphur                     "Sulphur Density"                     (gAirQualitySensor)  {homekit="SulphurDioxideDensity"}
+Number          pm25                        "PM25 Density"                        (gAirQualitySensor)  {homekit="PM25Density"}
+Number          pm10                        "PM10 Density"                        (gAirQualitySensor)  {homekit="PM10Density"}
 
-Group           gSecuritySystem            "Security System Group"                                   {homekit="SecuritySystem"}
-String          security_current_state     "Security Current State"             (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
-String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
+Group           gSecuritySystem            "Security System Group"                                     {homekit="SecuritySystem"}
+String          security_current_state     "Security Current State"               (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
+String          security_target_state      "Security Target State"                (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 
-Group  			gCooler    			        "Cooler Group"       				 	                {homekit="HeaterCooler"}
-Switch          cooler_active 				"Cooler Active" 				    (gCooler) 		    {homekit="ActiveStatus"}
-Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooler)  	        {homekit="CurrentTemperature"}
-String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}
-String 			cooler_target_mode  	    "Cooler Target Mode" 				(gCooler)           {homekit="TargetHeaterCoolerState"}
-Number 			cooler_cool_thrs 	        "Cooler Cool Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
-Number 			cooler_heat_thrs 	        "Cooler Heat Threshold Temp [%.1f C]"  	(gCooler)  	    {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
+Group           gCooler                    "Cooler Group"                                              {homekit="HeaterCooler"}
+Switch          cooler_active              "Cooler Active"                        (gCooler)            {homekit="ActiveStatus"}
+Number          cooler_current_temp        "Cooler Current Temp [%.1f °C]"        (gCooler)            {homekit="CurrentTemperature"}
+String          cooler_current_mode        "Cooler Current Mode"                  (gCooler)            {homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}
+String          cooler_target_mode         "Cooler Target Mode"                   (gCooler)            {homekit="TargetHeaterCoolerState"}
+Number          cooler_cool_thrs           "Cooler Cool Threshold Temp [%.1f °C]" (gCooler)            {homekit="CoolingThresholdTemperature" [minValue=10.5, maxValue=50]}
+Number          cooler_heat_thrs           "Cooler Heat Threshold Temp [%.1f °C]" (gCooler)            {homekit="HeatingThresholdTemperature" [minValue=0.5, maxValue=20]}
 ```
 
 ## Additional Notes
