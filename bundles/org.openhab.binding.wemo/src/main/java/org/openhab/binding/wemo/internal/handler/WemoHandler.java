@@ -310,19 +310,21 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                         getThing().getUID());
                 updateState(CHANNEL_ENERGYTOTAL, energyTotal);
 
-                BigDecimal standByLimitMW = new BigDecimal(splitInsightParams[10]);
-                State standByLimit = new QuantityType<>(
-                        standByLimitMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP), Units.WATT); // recalculate
-                // mW to W
-                logger.trace("New InsightParam standByLimit '{}' for device '{}' received", standByLimit,
-                        getThing().getUID());
-                updateState(CHANNEL_STANDBYLIMIT, standByLimit);
+                if (variable != "BinaryState") {
+                    BigDecimal standByLimitMW = new BigDecimal(splitInsightParams[10]);
+                    State standByLimit = new QuantityType<>(
+                            standByLimitMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP), Units.WATT); // recalculate
+                    // mW to W
+                    logger.trace("New InsightParam standByLimit '{}' for device '{}' received", standByLimit,
+                            getThing().getUID());
+                    updateState(CHANNEL_STANDBYLIMIT, standByLimit);
 
-                if (currentMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue() > standByLimitMW
-                        .divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue()) {
-                    updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
-                } else {
-                    updateState(CHANNEL_ONSTANDBY, OnOffType.ON);
+                    if (currentMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue() > standByLimitMW
+                            .divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue()) {
+                        updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
+                    } else {
+                        updateState(CHANNEL_ONSTANDBY, OnOffType.ON);
+                    }
                 }
             }
         } else {
