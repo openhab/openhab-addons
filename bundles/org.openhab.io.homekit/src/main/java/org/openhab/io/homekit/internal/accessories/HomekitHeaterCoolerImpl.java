@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -106,10 +105,8 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
-                DecimalType.class);
-        return CompletableFuture.completedFuture(state != null
-                ? HomekitCharacteristicFactory.convertToCelsius(state.doubleValue())
+        final @Nullable Double state = getStateAsTemperature(HomekitCharacteristicType.CURRENT_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state
                 : getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
                         BigDecimal.valueOf(HomekitCharacteristicFactory
                                 .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
