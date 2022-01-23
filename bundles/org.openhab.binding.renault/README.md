@@ -95,6 +95,10 @@ triggers:
     configuration:
       itemName: RenaultCar_BatteryLevel
     type: core.ItemStateUpdateTrigger
+  - id: "3"
+    configuration:
+      itemName: RenaultCar_ChargeLimit
+    type: core.ItemStateUpdateTrigger
 conditions: []
 actions:
   - inputs: {}
@@ -110,4 +114,5 @@ actions:
           }
         }
     type: script.ScriptAction
+
 ```

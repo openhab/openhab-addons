@@ -159,7 +159,7 @@
 		<item-type>DateTime</item-type>
 		<label>Location Update</label>
 		<description>Timestamp of the last location update</description>
-		<state readOnly="true"></state>
+		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>
