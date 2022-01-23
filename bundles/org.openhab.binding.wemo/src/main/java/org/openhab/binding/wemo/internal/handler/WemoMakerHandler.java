@@ -122,10 +122,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             }
             try {
                 logger.debug("Polling job");
-
-                if (host.isEmpty()) {
-                    host = getHost();
-                }
+                host = getHost();
                 // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {

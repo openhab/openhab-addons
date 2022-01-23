@@ -121,10 +121,6 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         }
         this.pollingJob = null;
         removeSubscription();
-        UpnpIOService localService = service;
-        if (localService != null) {
-            localService.unregisterParticipant(this);
-        }
     }
 
     private void poll() {
@@ -135,9 +131,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
             try {
                 logger.debug("Polling job");
 
-                if (host.isEmpty()) {
-                    host = getHost();
-                }
+                host = getHost();
                 // Check if the Wemo device is set in the UPnP service registry
                 // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
                 if (!isUpnpDeviceRegistered()) {

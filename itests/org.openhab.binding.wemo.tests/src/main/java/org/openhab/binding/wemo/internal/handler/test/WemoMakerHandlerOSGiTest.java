@@ -36,6 +36,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -83,7 +84,7 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         addUpnpDevice(BASIC_EVENT_SERVICE_ID, SERVICE_NUMBER, MODEL);
 
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
-        WemoMakerHandler handler = (WemoMakerHandler) thing.getHandler();
+        ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
 
         handler.handleCommand(channelUID, command);
@@ -119,12 +120,8 @@ public class WemoMakerHandlerOSGiTest extends GenericWemoOSGiTest {
         addUpnpDevice(BASIC_EVENT_SERVICE_ID, SERVICE_NUMBER, MODEL);
 
         ChannelUID channelUID = new ChannelUID(thing.getUID(), DEFAULT_TEST_CHANNEL);
-        WemoMakerHandler handler = (WemoMakerHandler) thing.getHandler();
+        ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
-
-        waitForAssert(() -> {
-            assertThat(handler.getHost(), is("127.0.0.1"));
-        });
 
         handler.handleCommand(channelUID, command);
 

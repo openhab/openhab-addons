@@ -38,6 +38,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -167,7 +168,7 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
 
         ThingUID thingUID = new ThingUID(THING_TYPE_UID, TEST_THING_ID);
         ChannelUID channelUID = new ChannelUID(thingUID, channelID);
-        WemoLightHandler handler = (WemoLightHandler) thing.getHandler();
+        ThingHandler handler = thing.getHandler();
         assertNotNull(handler);
 
         handler.handleCommand(channelUID, command);
