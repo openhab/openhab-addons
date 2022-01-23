@@ -274,10 +274,6 @@ public class ShadePosition {
 
             /*
              * Vane angle of the primary rail of a bottom-up single action shade: => NOT INVERTED
-             *
-             * note: sometimes the hub may return a value of position1 > MAX_VANE (seems to
-             * be a bug in the hub) so we avoid an out of range exception via the Math.min()
-             * function below..
              */
             case VANE_TILT_POSITION:
                 if (posKindCoords.equals(posKind2)) {
