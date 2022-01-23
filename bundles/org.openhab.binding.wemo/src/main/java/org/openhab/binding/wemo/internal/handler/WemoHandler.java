@@ -227,13 +227,16 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
         updateStatus(ThingStatus.ONLINE);
 
+        if ("EnergyPerUnitCost".equals(variable)) {
+            return;
+        }
+
         String oldValue = this.stateMap.get(variable);
         if (variable != null && value != null) {
             this.stateMap.put(variable, value);
         }
 
-        if (("InsightParams".equals(variable) || "BinaryState".equals(variable)) && value != null
-                && value.length() > 1) {
+        if (value != null && value.length() > 1) {
             String insightParams = stateMap.get(variable);
 
             if (insightParams != null) {
@@ -328,7 +331,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     }
                 }
             }
-        } else if ("BinaryState".equals(variable) && value != null && value.length() == 1) {
+        } else if (value != null && value.length() == 1) {
             String binaryState = stateMap.get("BinaryState");
             if (binaryState != null) {
                 if (oldValue == null || !oldValue.equals(binaryState)) {
