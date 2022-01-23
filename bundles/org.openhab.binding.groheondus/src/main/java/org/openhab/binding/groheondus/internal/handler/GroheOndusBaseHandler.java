@@ -60,15 +60,14 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
     protected void schedulePolling() {
         OndusService ondusService = getOndusService();
         if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
             return;
         }
 
         @Nullable
         T appliance = getAppliance(ondusService);
         if (appliance == null) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR, "Could not load appliance");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.empty.response");
             return;
         }
         int pollingInterval = getPollingInterval(appliance);
@@ -100,8 +99,7 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
         logger.debug("Updating channels for appliance {}", thing.getUID());
         OndusService ondusService = getOndusService();
         if (ondusService == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
-                    "No initialized OndusService available from bridge.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "@text/error.noservice");
             // Update channels to UNDEF
 
             return;
@@ -115,9 +113,12 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
         }
 
         M measurement = getLastDataPoint(appliance);
-        getThing().getChannels().forEach(channel -> updateChannel(channel.getUID(), appliance, measurement));
-
-        updateStatus(ThingStatus.ONLINE);
+        if (measurement != null) {
+            getThing().getChannels().forEach(channel -> updateChannel(channel.getUID(), appliance, measurement));
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.failedtoloaddata");
+        }
     }
 
     protected abstract M getLastDataPoint(T appliance);
@@ -154,15 +155,14 @@ public abstract class GroheOndusBaseHandler<T extends BaseAppliance, M> extends 
             BaseAppliance appliance = ondusService.getAppliance(getRoom(), config.applianceId).orElse(null);
             if (appliance != null) {
                 if (appliance.getType() != getType()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Thing is not a GROHE SENSE Guard device.");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.wrongtype");
                     return null;
                 }
                 return (T) appliance;
             } else {
                 logger.debug("getAppliance for thing {} returned null", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error retrieving appliance data from service");
+                        "@text/error.failedtoloaddata");
                 getThing().getChannels().forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
             }
 
