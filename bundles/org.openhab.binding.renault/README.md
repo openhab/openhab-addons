@@ -10,7 +10,7 @@ The binding translates the [python based renault-api](https://renault-api.readth
 
 Supports MyRenault registered cars with an active Connected-Services account.
 
-This binding can only retrieve information that is available in the the MyRenault App.
+This binding can only retrieve information that is available in the MyRenault App.
 
 
 ## Discovery
@@ -98,6 +98,10 @@ triggers:
   - id: "3"
     configuration:
       itemName: RenaultCar_ChargeLimit
+    type: core.ItemStateUpdateTrigger
+  - id: "4"
+    configuration:
+      itemName: RenaultCar_PlugStatus
     type: core.ItemStateUpdateTrigger
 conditions: []
 actions:
