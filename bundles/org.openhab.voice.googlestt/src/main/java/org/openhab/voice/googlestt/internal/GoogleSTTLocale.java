@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,13 +64,13 @@ public class GoogleSTTLocale {
                 loadLocalesFromLocal();
                 return;
             }
-            var html = new String(con.getInputStream().readAllBytes());
-            var pattern = Pattern.compile("\\<td\\>(?<lang>[a-z]{2})\\-(?<country>[A-Z]{2})\\<\\/td\\>",
+            String html = new String(con.getInputStream().readAllBytes());
+            Pattern pattern = Pattern.compile("\\<td\\>(?<lang>[a-z]{2})\\-(?<country>[A-Z]{2})\\<\\/td\\>",
                     Pattern.MULTILINE);
-            var matcher = pattern.matcher(html);
+            Matcher matcher = pattern.matcher(html);
             Locale lastLocale = null;
             while (matcher.find()) {
-                var locale = new Locale(matcher.group("lang"), matcher.group("country"));
+                Locale locale = new Locale(matcher.group("lang"), matcher.group("country"));
                 if (lastLocale == null || !lastLocale.equals(locale)) {
                     lastLocale = locale;
                     SUPPORTED_LOCALES.add(locale);
@@ -77,14 +78,14 @@ public class GoogleSTTLocale {
                 }
             }
         } catch (IOException e) {
-            logger.error("Error  loading supported locales: {}", e.getMessage());
+            logger.warn("Error loading supported locales: {}", e.getMessage());
             loadLocalesFromLocal();
         }
     }
 
     private static void loadLocalesFromLocal() {
         Arrays.stream(LOCAL_COPY.split(",")).map((localeTag) -> {
-            var localeTagParts = localeTag.split("-");
+            String[] localeTagParts = localeTag.split("-");
             return new Locale(localeTagParts[0], localeTagParts[1]);
         }).forEach(SUPPORTED_LOCALES::add);
     }
