@@ -20,19 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CommandExecutionSpecification {
     private final String command;
-    private final boolean addExtraSendPermit; // some commands do not receive an ACK -> therefore we must add extra
-                                              // send permits
 
-    public CommandExecutionSpecification(String command, boolean addExtraSendPermit) {
+    public CommandExecutionSpecification(String command) {
         this.command = command;
-        this.addExtraSendPermit = addExtraSendPermit;
     }
 
     public String getCommand() {
         return command;
-    }
-
-    public boolean isAddExtraSendPermit() {
-        return addExtraSendPermit;
     }
 }

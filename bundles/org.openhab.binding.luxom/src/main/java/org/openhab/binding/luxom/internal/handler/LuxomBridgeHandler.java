@@ -55,9 +55,12 @@ import org.slf4j.LoggerFactory;
  *         - introduced TCP flow control : do not flood controller with messages. One command at a time, keeping in mind
  *         that not al things reply with ACK
  *         1.08 :
- *         - commands are being processed by synchronized methode, this to prevent that dimmer commands are separated
+ *         - commands are being processed by synchronized method, this to prevent that dimmer commands are separated
  *         1.09 :
+ *         - rollback version 1.08 changes
  *         - openhab 3 conversion
+ *         1.10 :
+ *         - TCP flow removed
  */
 @NonNullByDefault
 public class LuxomBridgeHandler extends BaseBridgeHandler {
@@ -69,19 +72,17 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(LuxomBridgeHandler.class);
 
     private @Nullable LuxomBridgeConfig config;
-    private final boolean useTcpFlowControl = true;
     private final AtomicInteger nrOfSendPermits = new AtomicInteger(0);
     private int reconnectInterval;
 
     private @Nullable LuxomCommand previousCommand = null;
     private final LuxomCommunication communication;
-    private final BlockingQueue<String> sendQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<List<CommandExecutionSpecification>> sendQueue = new LinkedBlockingQueue<>();
 
     private @Nullable Thread messageSender;
     private @Nullable ScheduledFuture<?> heartBeat;
     private @Nullable ScheduledFuture<?> heartBeatTimeoutTask;
     private @Nullable ScheduledFuture<?> connectRetryJob;
-    private @Nullable ScheduledFuture<?> makeSendPossibleAfterTcpFlowTimeoutTask;
 
     @Nullable
     public LuxomBridgeConfig getIPBridgeConfig() {
@@ -93,7 +94,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
         this.systemInfo = new LuxomSystemInfo();
         this.communication = new LuxomCommunication(this);
-        logger.info("luxom bridge 1.08 started");
+        logger.info("luxom bridge 1.10 started");
     }
 
     @Override
@@ -169,60 +170,27 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         logger.info("Starting send commands thread...");
         try {
             while (!Thread.currentThread().isInterrupted()) {
-                if (canSend()) {
-                    logger.debug("waiting for command to send...");
-                    String command = sendQueue.take();
+                logger.debug("waiting for command to send...");
+                List<CommandExecutionSpecification> commands = sendQueue.take();
 
-                    try {
-                        communication.sendMessage(command);
-                        if (useTcpFlowControl) {
-                            logger.trace("scheduling TCP Flow control timeout task with interval 2 seconds");
-                            // we must unlock send after a set timeframe, because it's possible an ACK was not received
-                            // we assume that 2 seconds is OK
-                            makeSendPossibleAfterTcpFlowTimeoutTask = scheduler.schedule(() -> {
-                                if (noMoreSendPermits()) {
-                                    logger.warn("Timeout: extra permit needed !");
-                                    addSendPermit();
-                                }
-                            }, 2, TimeUnit.SECONDS);
-                        }
-                    } catch (IOException e) {
-                        logger.error("Communication error while sending, will try to reconnect. Error: {}",
-                                e.getMessage());
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-
-                        sendQueue.add(command); // Requeue command (to improve, should be at front of queue !)
-
-                        reconnect();
-
-                        // reconnect() will start a new thread; terminate this one
-                        break;
+                try {
+                    for (CommandExecutionSpecification commandExecutionSpecification : commands) {
+                        communication.sendMessage(commandExecutionSpecification.getCommand());
                     }
-                } else {
-                    logger.debug("no send permit");
-                    // noinspection BusyWait
-                    Thread.sleep(50L);
+                } catch (IOException e) {
+                    logger.error("Communication error while sending, will try to reconnect. Error: {}",
+                            e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+
+                    reconnect();
+
+                    // reconnect() will start a new thread; terminate this one
+                    break;
                 }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-    }
-
-    private boolean canSend() {
-        if (!useTcpFlowControl)
-            return true;
-
-        if (nrOfSendPermits.get() > 0) {
-            nrOfSendPermits.getAndDecrement();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean noMoreSendPermits() {
-        return nrOfSendPermits.get() == 0;
     }
 
     public void addSendPermit() {
@@ -241,7 +209,6 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         }
 
         cancelCheckAliveTimeoutTask();
-        stopTcpFlowTimeoutTask();
 
         if (messageSender != null && messageSender.isAlive()) {
             messageSender.interrupt();
@@ -266,14 +233,8 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         connect();
     }
 
-    public synchronized void sendCommands(List<CommandExecutionSpecification> commands) {
-        for (CommandExecutionSpecification commandSpecification : commands) {
-            if (commandSpecification.isAddExtraSendPermit()) {
-                logger.debug("will add preconfigured extra permit to send");
-                addSendPermit();
-            }
-            this.sendQueue.add(commandSpecification.getCommand());
-        }
+    public void sendCommands(List<CommandExecutionSpecification> commands) {
+        this.sendQueue.add(commands);
     }
 
     @Nullable
@@ -312,8 +273,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         // Reconnect if no response is received within KEEPALIVE_TIMEOUT_SECONDS.
         heartBeatTimeoutTask = scheduler.schedule(() -> this.reconnect(true), HEARTBEAT_ACK_TIMEOUT_SECONDS,
                 TimeUnit.SECONDS);
-        sendCommands(Collections
-                .singletonList(new CommandExecutionSpecification(LuxomAction.HEARTBEAT.getCommand(), false)));
+        sendCommands(Collections.singletonList(new CommandExecutionSpecification(LuxomAction.HEARTBEAT.getCommand())));
     }
 
     @Override
@@ -366,18 +326,14 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                 startProcessing();
             }
         } else if (luxomCommand.getAction() == LuxomAction.ACKNOWLEDGE) {
-            stopTcpFlowTimeoutTask();
             addSendPermit(); // based on : ACK acknowledges a 'send' command
-        } else if (luxomCommand.getAction() == LuxomAction.DATA
-                || luxomCommand.getAction() == LuxomAction.DATA_RESPONSE) {
+        } else if (luxomCommand.getAction() == LuxomAction.DATA_RESPONSE) {
             previousCommand = luxomCommand;
         } else if (luxomCommand.getAction() != LuxomAction.INVALID_ACTION) {
-            if (luxomCommand.getAction() == LuxomAction.DATA_BYTE
-                    || luxomCommand.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
+            if (luxomCommand.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
                 // data for previous command if it needs it
                 if (previousCommand != null && previousCommand.getAction().isNeedsData()) {
-                    previousCommand.setData(luxomCommand.getData());
-                    luxomCommand = previousCommand;
+                    luxomCommand.setAddress(previousCommand.getAddress());
                     previousCommand = null;
                 }
             }
@@ -393,12 +349,6 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             logger.debug("Luxom: not handled {}", luxomMessage);
         }
         logger.trace("nrOfPermits after receive: {}", nrOfSendPermits.get());
-    }
-
-    private void stopTcpFlowTimeoutTask() {
-        if (makeSendPossibleAfterTcpFlowTimeoutTask != null) {
-            makeSendPossibleAfterTcpFlowTimeoutTask.cancel(false);
-        }
     }
 
     private void cancelCheckAliveTimeoutTask() {

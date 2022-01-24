@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.luxom.internal.handler;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -84,7 +86,8 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("dimmer received command {} for {}", command.toFullString(), channelUID);
+        logger.debug("dimmer at address {} received command {} for {}", this.getAddress(), command.toFullString(),
+                channelUID);
         if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)) {
             if (command.equals(OnOffType.ON)) {
                 set();
@@ -94,6 +97,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         } else if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_BRIGHTNESS) && config != null) {
             if (command instanceof Number) {
                 int level = ((Number) command).intValue();
+                logger.trace("dimmer at address {} just setting dimmer level", this.getAddress());
                 dim(level);
             } else if (command instanceof IncreaseDecreaseType) {
                 IncreaseDecreaseType s = (IncreaseDecreaseType) command;
@@ -103,11 +107,13 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
                     newValue = currentValue + config.stepPercentage;
                     // round down to step multiple
                     newValue = newValue - newValue % config.stepPercentage;
+                    logger.trace("dimmer at address {} just increasing dimmer level", this.getAddress());
                     dim(newValue);
                 } else {
                     newValue = currentValue - config.stepPercentage;
                     // round up to step multiple
                     newValue = newValue + newValue % config.stepPercentage;
+                    logger.trace("dimmer at address {} just increasing dimmer level", this.getAddress());
                     dim(Math.max(newValue, 0));
                 }
             } else if (command.equals(OnOffType.ON)) {
@@ -125,11 +131,11 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
     @Override
     public void handleCommandCommingFromBridge(LuxomCommand command) {
         updateStatus(ThingStatus.ONLINE);
-        if (command.getAction() == LuxomAction.CLEAR || command.getAction() == LuxomAction.CLEAR_RESPONSE) {
+        if (command.getAction() == LuxomAction.CLEAR_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
-        } else if (command.getAction() == LuxomAction.SET || command.getAction() == LuxomAction.SET_RESPONSE) {
+        } else if (command.getAction() == LuxomAction.SET_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
-        } else if (command.getAction() == LuxomAction.DATA || command.getAction() == LuxomAction.DATA_RESPONSE) {
+        } else if (command.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
             int percentage = PercentageConvertor.getPercentage(command.getData());
 
             if (percentage > 0) {
@@ -144,6 +150,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
+        logger.debug("dimmer at address {} linked to channel {}", getAddress(), channelUID);
         if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)
                 || channelUID.getId().equals(LuxomBindingConstants.CHANNEL_BRIGHTNESS)) {
             // Refresh state when new item is linked.
@@ -151,5 +158,23 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
                 ping();
             }
         }
+    }
+
+    /**
+     * example : *A,0,2,2B;*Z,057;
+     */
+    private void dim(int percentage) {
+        logger.debug("dimming dimmer at address {} to {} %", this.getAddress(), percentage);
+        List<CommandExecutionSpecification> commands = new ArrayList<>(3);
+        if (percentage == 0) {
+            commands.add(new CommandExecutionSpecification(LuxomAction.CLEAR.getCommand() + ",0," + getAddress()));
+        } else {
+            commands.add(new CommandExecutionSpecification(LuxomAction.SET.getCommand() + ",0," + getAddress()));
+        }
+        commands.add(new CommandExecutionSpecification(LuxomAction.DATA.getCommand() + ",0," + getAddress()));
+        commands.add(new CommandExecutionSpecification(
+                LuxomAction.DATA_BYTE.getCommand() + ",0" + PercentageConvertor.getHexRepresentation(percentage)));
+
+        sendCommands(commands);
     }
 }

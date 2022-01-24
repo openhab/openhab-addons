@@ -27,7 +27,7 @@ public class LuxomBridgeConfig {
     public int port;
 
     /**
-     * reconnect afte X minutes when disconnected
+     * reconnect after X minutes when disconnected
      */
     public int reconnectInterval;
     public int aliveCheckInterval;

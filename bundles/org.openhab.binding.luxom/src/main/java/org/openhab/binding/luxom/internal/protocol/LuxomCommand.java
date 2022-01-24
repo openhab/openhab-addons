@@ -25,7 +25,7 @@ public class LuxomCommand {
     private final LuxomAction action;
 
     @Nullable
-    private final String address;
+    private String address; // must for data byte commands be set after construction
     @Nullable
     private String data;
 
@@ -96,6 +96,10 @@ public class LuxomCommand {
     @Nullable
     public String getAddress() {
         return address;
+    }
+
+    public void setAddress(@Nullable String address) {
+        this.address = address;
     }
 
     public void setData(@Nullable String data) {

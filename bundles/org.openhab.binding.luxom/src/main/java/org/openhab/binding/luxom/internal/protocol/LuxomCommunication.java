@@ -201,7 +201,7 @@ public class LuxomCommunication {
             luxomOut.print(message + ";");
             luxomOut.flush();
             if (luxomOut.checkError()) {
-                throw new IOException("luxom communication error when sending message: " + message);
+                throw new IOException(String.format("luxom communication error when sending message: %s", message));
             }
         }
     }

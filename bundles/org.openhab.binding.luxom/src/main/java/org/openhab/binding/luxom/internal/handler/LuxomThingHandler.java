@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.luxom.internal.handler;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.luxom.internal.handler.util.PercentageConvertor;
 import org.openhab.binding.luxom.internal.protocol.LuxomAction;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommand;
 import org.openhab.core.thing.Bridge;
@@ -31,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Base type for all Lutron thing handlers.
+ * Base type for all Luxom thing handlers.
  *
  * @author Kris Jespers - Initial contribution
  *
@@ -97,7 +95,7 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
         }
     }
 
-    private void sendCommands(List<CommandExecutionSpecification> commands) {
+    protected void sendCommands(List<CommandExecutionSpecification> commands) {
         @Nullable
         LuxomBridgeHandler bridgeHandler = getBridgeHandler();
 
@@ -114,41 +112,22 @@ public abstract class LuxomThingHandler extends BaseThingHandler {
      */
     protected void ping() {
         sendCommands(Collections.singletonList(
-                new CommandExecutionSpecification(LuxomAction.PING.getCommand() + ",0," + getAddress(), false)));
+                new CommandExecutionSpecification(LuxomAction.PING.getCommand() + ",0," + getAddress())));
     }
 
     /**
      * example : *S,0,1,21;
      */
     protected void set() {
-        sendCommands(Collections.singletonList(
-                new CommandExecutionSpecification(LuxomAction.SET.getCommand() + ",0," + getAddress(), false)));
+        sendCommands(Collections
+                .singletonList(new CommandExecutionSpecification(LuxomAction.SET.getCommand() + ",0," + getAddress())));
     }
 
     /**
-     * example : *S,0,1,21;
+     * example : *C,0,1,21;
      */
     protected void clear() {
         sendCommands(Collections.singletonList(
-                new CommandExecutionSpecification(LuxomAction.CLEAR.getCommand() + ",0," + getAddress(), false)));
-    }
-
-    /**
-     * example : *A,0,2,2B;*Z,057;
-     */
-    protected void dim(int percentage) {
-        List<CommandExecutionSpecification> commands = new ArrayList<>(3);
-        if (percentage == 0) {
-            commands.add(
-                    new CommandExecutionSpecification(LuxomAction.CLEAR.getCommand() + ",0," + getAddress(), false));
-        } else {
-            commands.add(new CommandExecutionSpecification(LuxomAction.SET.getCommand() + ",0," + getAddress(), false));
-        }
-        commands.add(new CommandExecutionSpecification(LuxomAction.DATA.getCommand() + ",0," + getAddress(), true));
-        commands.add(new CommandExecutionSpecification(
-                LuxomAction.DATA_BYTE.getCommand() + ",0" + PercentageConvertor.getHexRepresentation(percentage),
-                true));
-
-        sendCommands(commands);
+                new CommandExecutionSpecification(LuxomAction.CLEAR.getCommand() + ",0," + getAddress())));
     }
 }

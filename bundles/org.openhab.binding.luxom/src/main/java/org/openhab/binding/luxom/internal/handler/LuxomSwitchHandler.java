@@ -66,7 +66,8 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.debug("switch received command {} for {}", command.toFullString(), channelUID);
+        logger.debug("switch at address {} received command {} for {}", this.getAddress(), command.toFullString(),
+                channelUID);
         if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)) {
             if (command.equals(OnOffType.ON)) {
                 set();
@@ -80,10 +81,10 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
 
     @Override
     public void handleCommandCommingFromBridge(LuxomCommand command) {
-        if (command.getAction() == LuxomAction.CLEAR || command.getAction() == LuxomAction.CLEAR_RESPONSE) {
+        if (command.getAction() == LuxomAction.CLEAR_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
             updateStatus(ThingStatus.ONLINE);
-        } else if (command.getAction() == LuxomAction.SET || command.getAction() == LuxomAction.SET_RESPONSE) {
+        } else if (command.getAction() == LuxomAction.SET_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
             updateStatus(ThingStatus.ONLINE);
         }
@@ -91,7 +92,7 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        logger.debug("switch linked to channel {}", channelUID);
+        logger.debug("switch at address {} linked to channel {}", getAddress(), channelUID);
         if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)
                 || channelUID.getId().equals(LuxomBindingConstants.CHANNEL_BRIGHTNESS)) {
             // Refresh state when new item is linked.
