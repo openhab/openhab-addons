@@ -21,12 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewBindingConstants;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
+import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades;
 import org.openhab.binding.hdpowerview.internal.api.responses.Shades.ShadeData;
+import org.openhab.binding.hdpowerview.internal.config.HDPowerViewRepeaterConfiguration;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewShadeConfiguration;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
@@ -42,15 +45,15 @@ import org.slf4j.LoggerFactory;
  * @author Andy Lintner - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
+public class HDPowerViewDeviceDiscoveryService extends AbstractDiscoveryService {
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewDeviceDiscoveryService.class);
     private final HDPowerViewHubHandler hub;
     private final Runnable scanner;
     private @Nullable ScheduledFuture<?> backgroundFuture;
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
-    public HDPowerViewShadeDiscoveryService(HDPowerViewHubHandler hub) {
+    public HDPowerViewDeviceDiscoveryService(HDPowerViewHubHandler hub) {
         super(Collections.singleton(HDPowerViewBindingConstants.THING_TYPE_SHADE), 600, true);
         this.hub = hub;
         this.scanner = createScanner();
@@ -87,34 +90,8 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
                 if (webTargets == null) {
                     throw new HubProcessingException("Web targets not initialized");
                 }
-                Shades shades = webTargets.getShades();
-                if (shades.shadeData != null) {
-                    ThingUID bridgeUID = hub.getThing().getUID();
-                    List<ShadeData> shadesData = shades.shadeData;
-                    if (shadesData != null) {
-                        for (ShadeData shadeData : shadesData) {
-                            if (shadeData.id != 0) {
-                                String id = Integer.toString(shadeData.id);
-                                ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE,
-                                        bridgeUID, id);
-                                Integer caps = shadeData.capabilities;
-                                Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
-
-                                DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID)
-                                        .withLabel(shadeData.getName()).withBridge(bridgeUID)
-                                        .withProperty(HDPowerViewShadeConfiguration.ID, id)
-                                        .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
-                                                db.getType(shadeData.type).toString())
-                                        .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES,
-                                                capabilities.toString())
-                                        .withRepresentationProperty(HDPowerViewShadeConfiguration.ID);
-
-                                logger.debug("Hub discovered shade '{}'", id);
-                                thingDiscovered(builder.build());
-                            }
-                        }
-                    }
-                }
+                discoverShades(webTargets);
+                discoverRepeaters(webTargets);
             } catch (HubMaintenanceException e) {
                 // exceptions are logged in HDPowerViewWebTargets
             } catch (HubException e) {
@@ -122,5 +99,57 @@ public class HDPowerViewShadeDiscoveryService extends AbstractDiscoveryService {
             }
             stopScan();
         };
+    }
+
+    private void discoverShades(HDPowerViewWebTargets webTargets)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        Shades shades = webTargets.getShades();
+        List<ShadeData> shadesData = shades.shadeData;
+        if (shadesData == null) {
+            return;
+        }
+        ThingUID bridgeUid = hub.getThing().getUID();
+        for (ShadeData shadeData : shadesData) {
+            if (shadeData.id == 0) {
+                continue;
+            }
+            String id = Integer.toString(shadeData.id);
+            ThingUID thingUID = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_SHADE, bridgeUid, id);
+            Integer caps = shadeData.capabilities;
+            Capabilities capabilities = db.getCapabilities((caps != null) ? caps.intValue() : -1);
+
+            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withLabel(shadeData.getName())
+                    .withBridge(bridgeUid).withProperty(HDPowerViewShadeConfiguration.ID, id)
+                    .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_TYPE,
+                            db.getType(shadeData.type).toString())
+                    .withProperty(HDPowerViewBindingConstants.PROPERTY_SHADE_CAPABILITIES, capabilities.toString())
+                    .withRepresentationProperty(HDPowerViewShadeConfiguration.ID);
+
+            logger.debug("Hub discovered shade '{}'", id);
+            thingDiscovered(builder.build());
+        }
+    }
+
+    private void discoverRepeaters(HDPowerViewWebTargets webTargets)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        List<RepeaterData> repeaters = webTargets.getRepeaters().repeaterData;
+        if (repeaters == null) {
+            return;
+        }
+        ThingUID bridgeUid = hub.getThing().getUID();
+        for (RepeaterData repeaterData : repeaters) {
+            if (repeaterData.id == 0) {
+                continue;
+            }
+            String id = Integer.toString(repeaterData.id);
+            ThingUID thingUid = new ThingUID(HDPowerViewBindingConstants.THING_TYPE_REPEATER, bridgeUid, id);
+
+            DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUid).withLabel(repeaterData.getName())
+                    .withBridge(bridgeUid).withProperty(HDPowerViewRepeaterConfiguration.ID, id)
+                    .withRepresentationProperty(HDPowerViewRepeaterConfiguration.ID);
+
+            logger.debug("Hub discovered repeater '{}'", id);
+            thingDiscovered(builder.build());
+        }
     }
 }

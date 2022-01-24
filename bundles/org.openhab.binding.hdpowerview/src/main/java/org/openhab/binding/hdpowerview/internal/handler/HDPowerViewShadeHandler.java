@@ -86,11 +86,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing shade handler");
         isDisposing = false;
-        try {
-            shadeId = getShadeId();
-        } catch (NumberFormatException e) {
+        shadeId = getConfigAs(HDPowerViewShadeConfiguration.class).id;
+        logger.debug("Initializing shade handler for shade {}", shadeId);
+        if (shadeId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.invalid-id");
             return;
@@ -457,14 +456,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         updateCapabilities(shadeData);
         updatePositionStates(shadePosition);
-    }
-
-    private int getShadeId() throws NumberFormatException {
-        String str = getConfigAs(HDPowerViewShadeConfiguration.class).id;
-        if (str == null) {
-            throw new NumberFormatException("null input string");
-        }
-        return Integer.parseInt(str);
     }
 
     /**
