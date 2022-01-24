@@ -162,7 +162,7 @@
 
 	<channel-type id="repeater-blinking-enabled">
 		<item-type>Switch</item-type>
-		<label>Blinking enabled</label>
+		<label>Blinking Enabled</label>
 		<description>Blink during commands</description>
 	</channel-type>
 
