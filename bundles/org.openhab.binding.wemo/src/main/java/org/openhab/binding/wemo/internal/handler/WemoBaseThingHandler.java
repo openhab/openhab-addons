@@ -22,6 +22,7 @@ import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 
 /**
@@ -31,14 +32,16 @@ import org.openhab.core.types.Command;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class WemoBaseThingHandler extends AbstractWemoHandler implements UpnpIOParticipant {
+public class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOParticipant {
 
     protected @Nullable UpnpIOService service;
+    protected WemoHttpCall wemoHttpCaller;
     protected String host = "";
 
     public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, wemoHttpCaller);
+        super(thing);
         this.service = upnpIOService;
+        this.wemoHttpCaller = wemoHttpCaller;
     }
 
     @Override
