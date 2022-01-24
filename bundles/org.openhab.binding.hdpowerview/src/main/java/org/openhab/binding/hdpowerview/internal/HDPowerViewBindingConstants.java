@@ -13,7 +13,6 @@
 package org.openhab.binding.hdpowerview.internal;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Andy Lintner - Initial contribution
  * @author Andrew Fiddian-Green - Added support for secondary rail positions
- * @author Jacob Laursen - Add support for scene groups and automations
+ * @author Jacob Laursen - Added support for scene groups, automations and repeaters
  */
 @NonNullByDefault
 public class HDPowerViewBindingConstants {
@@ -36,6 +35,7 @@ public class HDPowerViewBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HUB = new ThingTypeUID(BINDING_ID, "hub");
     public static final ThingTypeUID THING_TYPE_SHADE = new ThingTypeUID(BINDING_ID, "shade");
+    public static final ThingTypeUID THING_TYPE_REPEATER = new ThingTypeUID(BINDING_ID, "repeater");
 
     // List of all Channel ids
     public static final String CHANNEL_SHADE_POSITION = "position";
@@ -46,6 +46,9 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_BATTERY_LEVEL = "batteryLevel";
     public static final String CHANNEL_SHADE_BATTERY_VOLTAGE = "batteryVoltage";
     public static final String CHANNEL_SHADE_SIGNAL_STRENGTH = "signalStrength";
+
+    public static final String CHANNEL_REPEATER_IDENTIFY = "identify";
+    public static final String CHANNEL_REPEATER_BLINKING_ENABLED = "blinkingEnabled";
 
     public static final String CHANNEL_GROUP_SCENES = "scenes";
     public static final String CHANNEL_GROUP_SCENE_GROUPS = "sceneGroups";
@@ -68,10 +71,6 @@ public class HDPowerViewBindingConstants {
 
     public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
-
-    static {
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_HUB);
-        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHADE);
-    }
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HUB, THING_TYPE_SHADE,
+            THING_TYPE_REPEATER);
 }
