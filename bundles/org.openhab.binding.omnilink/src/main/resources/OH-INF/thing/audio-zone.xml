@@ -13,10 +13,19 @@
 		<description>An audio zone configured in the controller.</description>
 		<channels>
 			<channel id="zone_power" typeId="audio_zone_power"/>
-			<channel id="zone_mute" typeId="system.mute"/>
-			<channel id="zone_volume" typeId="system.volume"/>
+			<channel id="zone_mute" typeId="system.mute">
+				<label>Audio Zone Mute</label>
+				<description>Mute status of this audio zone.</description>
+			</channel>
+			<channel id="zone_volume" typeId="system.volume">
+				<label>Audio Zone Volume</label>
+				<description>Volume level of this audio zone.</description>
+			</channel>
 			<channel id="zone_source" typeId="audio_zone_source"/>
-			<channel id="zone_control" typeId="system.media-control"/>
+			<channel id="zone_control" typeId="system.media-control">
+				<label>Control</label>
+				<description>Control the audio zone, e.g. start/stop/next/previous.</description>
+			</channel>
 		</channels>
 		<properties>
 			<property name="name"/>

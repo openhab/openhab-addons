@@ -588,7 +588,10 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
             SystemInformation systemInformation = reqSystemInformation();
             Map<String, String> properties = editProperties();
             properties.put(Thing.PROPERTY_MODEL_ID, Integer.toString(systemInformation.getModel()));
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, Integer.toString(systemInformation.getMajor()) + "." + Integer.toString(systemInformation.getMinor()) + "." + Integer.toString(systemInformation.getRevision()));
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION,
+                    Integer.toString(systemInformation.getMajor()) + "."
+                            + Integer.toString(systemInformation.getMinor()) + "."
+                            + Integer.toString(systemInformation.getRevision()));
             properties.put(THING_PROPERTIES_PHONE_NUMBER, systemInformation.getPhone());
             updateProperties(properties);
         } catch (OmniInvalidResponseException | OmniUnknownMessageTypeException | BridgeOfflineException e) {

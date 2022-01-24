@@ -16,7 +16,10 @@
 			<channel id="comm_failure" typeId="thermostat_comm_failure"/>
 			<channel id="status" typeId="thermostat_status"/>
 			<channel id="temperature" typeId="thermostat_temperature"/>
-			<channel id="outdoor_temperature" typeId="system.outdoor-temperature"/>
+			<channel id="outdoor_temperature" typeId="system.outdoor-temperature">
+				<label>Outdoor Temperature</label>
+				<description>The current outdoor temperature detected by this thermostat.</description>
+			</channel>
 			<channel id="heat_setpoint" typeId="thermostat_heat_setpoint"/>
 			<channel id="cool_setpoint" typeId="thermostat_cool_setpoint"/>
 			<channel id="humidity" typeId="thermostat_humidity"/>
@@ -26,10 +29,6 @@
 			<channel id="fan_mode" typeId="thermostat_fan_mode"/>
 			<channel id="hold_status" typeId="thermostat_hold_status"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-			<property name="area"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">

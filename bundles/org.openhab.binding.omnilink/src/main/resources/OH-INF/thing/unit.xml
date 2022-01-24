@@ -12,8 +12,14 @@
 		<label>Unit</label>
 		<description>A basic unit configured in the controller.</description>
 		<channels>
-			<channel id="level" typeId="system.brightness"/>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="level" typeId="system.brightness">
+				<label>Unit Level</label>
+				<description>Increase/Decrease the level of this unit.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<label>Unit Switch</label>
+				<description>Turn this unit on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -21,10 +27,6 @@
 			<channel id="on_for_hours" typeId="on_for_hours"/>
 			<channel id="off_for_hours" typeId="off_for_hours"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-			<property name="area"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">

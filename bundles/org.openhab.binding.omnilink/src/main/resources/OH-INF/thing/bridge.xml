@@ -26,13 +26,6 @@
 			<channel id="upb_link_activated_event" typeId="upb_link_activated_event"/>
 			<channel id="upb_link_deactivated_event" typeId="upb_link_deactivated_event"/>
 		</channels>
-		<properties>
-			<property name="modelNumber"/>
-			<property name="majorVersion"/>
-			<property name="minorVersion"/>
-			<property name="revision"/>
-			<property name="phoneNumber"/>
-		</properties>
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<context>network-address</context>
