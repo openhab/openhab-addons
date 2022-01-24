@@ -15,7 +15,6 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -25,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -50,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Hans-Jörg Merk - Initial contribution
  */
 @NonNullByDefault
-public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParticipant {
+public class WemoLightHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoLightHandler.class);
 
@@ -61,15 +59,9 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private @Nullable WemoBridgeHandler wemoBridgeHandler;
 
-    private @Nullable UpnpIOService service;
-
-    private String host = "";
-
     private @Nullable String wemoLightID;
 
     private int currentBrightness;
-
-    private WemoHttpCall wemoCall;
 
     /**
      * Set dimming stepsize to 5%
@@ -86,10 +78,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
     private @Nullable ScheduledFuture<?> pollingJob;
 
     public WemoLightHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, wemoHttpcaller);
-
-        this.service = upnpIOService;
-        this.wemoCall = wemoHttpcaller;
+        super(thing, upnpIOService, wemoHttpcaller);
 
         logger.debug("Creating a WemoLightHandler for thing '{}'", getThing().getUID());
     }
@@ -107,7 +96,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
             }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, DEFAULT_REFRESH_INITIAL_DELAY,
-                    DEFAULT_REFRESH_INTERVALL_SECONDS, TimeUnit.SECONDS);
+                    DEFAULT_REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
@@ -288,7 +277,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                             + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                             + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null) {
                         if (logger.isTraceEnabled()) {
                             logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
@@ -348,7 +337,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                     + "<s:Body>" + "<u:GetDeviceStatus xmlns:u=\"urn:Belkin:service:bridge:1\">" + "<DeviceIDs>"
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             if (wemoCallResponse != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
@@ -411,10 +400,6 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
         }
     }
 
-    @Override
-    public void onStatusChanged(boolean status) {
-    }
-
     private synchronized void addSubscription() {
         synchronized (upnpLock) {
             UpnpIOService localService = service;
@@ -453,28 +438,5 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                 }
             }
         }
-    }
-
-    private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localService = service;
-        if (localService != null) {
-            return localService.isRegistered(this);
-        }
-        return false;
-    }
-
-    public String getHost() {
-        String localHost = host;
-        if (!localHost.isEmpty()) {
-            return localHost;
-        }
-        UpnpIOService localService = service;
-        if (localService != null) {
-            URL descriptorURL = localService.getDescriptorURL(this);
-            if (descriptorURL != null) {
-                return descriptorURL.getHost();
-            }
-        }
-        return "";
     }
 }

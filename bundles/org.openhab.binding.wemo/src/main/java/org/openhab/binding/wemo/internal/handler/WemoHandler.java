@@ -17,7 +17,6 @@ import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -34,7 +33,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -63,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * @author Mihir Patil - Added standby switch
  */
 @NonNullByDefault
-public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipant {
+public class WemoHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHandler.class);
 
@@ -76,21 +74,12 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
-    private @Nullable UpnpIOService service;
-
-    private WemoHttpCall wemoCall;
-
     private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    private String host = "";
-
     public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, wemoHttpCaller);
-
-        this.service = upnpIOService;
-        this.wemoCall = wemoHttpCaller;
+        super(thing, upnpIOService, wemoHttpCaller);
 
         logger.debug("Creating a WemoHandler for thing '{}'", getThing().getUID());
     }
@@ -106,7 +95,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                 localService.registerParticipant(this);
             }
             host = getHost();
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -186,7 +175,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null && logger.isTraceEnabled()) {
                         logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
                         logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
@@ -407,34 +396,6 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         }
     }
 
-    private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localService = service;
-        if (localService != null) {
-            return localService.isRegistered(this);
-        }
-        return false;
-    }
-
-    @Override
-    public String getUDN() {
-        return (String) this.getThing().getConfiguration().get(UDN);
-    }
-
-    public String getHost() {
-        String localHost = host;
-        if (!localHost.isEmpty()) {
-            return localHost;
-        }
-        UpnpIOService localService = service;
-        if (localService != null) {
-            URL descriptorURL = localService.getDescriptorURL(this);
-            if (descriptorURL != null) {
-                return descriptorURL.getHost();
-            }
-        }
-        return "";
-    }
-
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo device and
      * calls {@link onValueReceived} to update the statemap and channels..
@@ -467,7 +428,7 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
         String content = createStateRequestContent(action, actionService);
         try {
-            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             if (wemoCallResponse != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
@@ -488,9 +449,5 @@ public class WemoHandler extends AbstractWemoHandler implements UpnpIOParticipan
         } catch (Exception e) {
             logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
         }
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
     }
 }
