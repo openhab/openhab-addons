@@ -27,11 +27,15 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
+import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersions;
+import org.openhab.binding.hdpowerview.internal.api.responses.Repeater;
+import org.openhab.binding.hdpowerview.internal.api.responses.RepeaterData;
+import org.openhab.binding.hdpowerview.internal.api.responses.Repeaters;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections;
 import org.openhab.binding.hdpowerview.internal.api.responses.SceneCollections.SceneCollection;
 import org.openhab.binding.hdpowerview.internal.api.responses.Scenes;
@@ -83,6 +87,7 @@ public class HDPowerViewWebTargets {
     private final String sceneCollectionActivate;
     private final String sceneCollections;
     private final String scheduledEvents;
+    private final String repeaters;
 
     private final Gson gson = new Gson();
     private final HttpClient httpClient;
@@ -135,6 +140,9 @@ public class HDPowerViewWebTargets {
         sceneCollections = base + "scenecollections/";
 
         scheduledEvents = base + "scheduledevents";
+
+        repeaters = base + "repeaters/";
+
         this.httpClient = httpClient;
     }
 
@@ -383,6 +391,98 @@ public class HDPowerViewWebTargets {
         } catch (JsonParseException | IllegalStateException e) {
             throw new HubInvalidResponseException("Error parsing scheduledEvent response", e);
         }
+    }
+
+    /**
+     * Fetches a JSON package that describes all repeaters in the hub, and wraps it in
+     * a Repeaters class instance
+     *
+     * @return Repeaters class instance
+     * @throws HubInvalidResponseException if response is invalid
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public Repeaters getRepeaters()
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String json = invoke(HttpMethod.GET, repeaters, null, null);
+        try {
+            Repeaters repeaters = gson.fromJson(json, Repeaters.class);
+            if (repeaters == null) {
+                throw new HubInvalidResponseException("Missing repeaters response");
+            }
+            List<RepeaterData> repeaterData = repeaters.repeaterData;
+            if (repeaterData == null) {
+                throw new HubInvalidResponseException("Missing 'repeaters.repeaterData' element");
+            }
+            return repeaters;
+        } catch (JsonParseException e) {
+            throw new HubInvalidResponseException("Error parsing repeaters response", e);
+        }
+    }
+
+    /**
+     * Fetches a JSON package that describes a specific repeater in the hub, and wraps it
+     * in a RepeaterData class instance
+     *
+     * @param repeaterId id of the repeater to be fetched
+     * @return RepeaterData class instance
+     * @throws HubInvalidResponseException if response is invalid
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public RepeaterData getRepeater(int repeaterId)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String jsonResponse = invoke(HttpMethod.GET, repeaters + Integer.toString(repeaterId), null, null);
+        return repeaterDataFromJson(jsonResponse);
+    }
+
+    private RepeaterData repeaterDataFromJson(String json) throws HubInvalidResponseException {
+        try {
+            Repeater repeater = gson.fromJson(json, Repeater.class);
+            if (repeater == null) {
+                throw new HubInvalidResponseException("Missing repeater response");
+            }
+            RepeaterData repeaterData = repeater.repeater;
+            if (repeaterData == null) {
+                throw new HubInvalidResponseException("Missing 'repeater.repeater' element");
+            }
+            return repeaterData;
+        } catch (JsonParseException e) {
+            throw new HubInvalidResponseException("Error parsing repeater response", e);
+        }
+    }
+
+    /**
+     * Instructs the hub to identify a specific repeater by blinking
+     *
+     * @param repeaterId id of the repeater to be identified
+     * @return RepeaterData class instance
+     * @throws HubInvalidResponseException if response is invalid
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public RepeaterData identifyRepeater(int repeaterId)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String jsonResponse = invoke(HttpMethod.GET, repeaters + repeaterId,
+                Query.of("identify", Boolean.toString(true)), null);
+        return repeaterDataFromJson(jsonResponse);
+    }
+
+    /**
+     * Enables or disables blinking for a repeater
+     * 
+     * @param repeaterId id of the repeater for which to be enable or disable blinking
+     * @param enable true to enable blinking, false to disable
+     * @return RepeaterData class instance
+     * @throws HubInvalidResponseException if response is invalid
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public RepeaterData enableRepeaterBlinking(int repeaterId, boolean enable)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new RepeaterBlinking(repeaterId, enable));
+        String jsonResponse = invoke(HttpMethod.PUT, repeaters + repeaterId, null, jsonRequest);
+        return repeaterDataFromJson(jsonResponse);
     }
 
     /**
