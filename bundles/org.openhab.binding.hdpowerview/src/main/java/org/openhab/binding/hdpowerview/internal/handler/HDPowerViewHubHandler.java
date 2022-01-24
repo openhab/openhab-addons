@@ -325,17 +325,17 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.ONLINE);
         logger.debug("Received data for {} shades", shadesData.size());
 
-        Map<String, ShadeData> idShadeDataMap = getIdShadeDataMap(shadesData);
-        Map<Thing, String> thingIdMap = getThingIdMap();
-        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
+        Map<Integer, ShadeData> idShadeDataMap = getIdShadeDataMap(shadesData);
+        Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
+        for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
-            String shadeId = item.getValue();
+            int shadeId = item.getValue();
             ShadeData shadeData = idShadeDataMap.get(shadeId);
             updateShadeThing(shadeId, thing, shadeData);
         }
     }
 
-    private void updateShadeThing(String shadeId, Thing thing, @Nullable ShadeData shadeData) {
+    private void updateShadeThing(int shadeId, Thing thing, @Nullable ShadeData shadeData) {
         HDPowerViewShadeHandler thingHandler = ((HDPowerViewShadeHandler) thing.getHandler());
         if (thingHandler == null) {
             logger.debug("Shade '{}' handler not initialized", shadeId);
@@ -533,50 +533,52 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
     }
 
-    private Map<Thing, String> getThingIdMap() {
-        Map<Thing, String> ret = new HashMap<>();
-        for (Thing thing : getThing().getThings()) {
-            String id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
-            if (id != null && !id.isEmpty()) {
-                ret.put(thing, id);
-            }
-        }
+    private Map<Thing, Integer> getShadeThingIdMap() {
+        Map<Thing, Integer> ret = new HashMap<>();
+        getThing().getThings().stream()
+                .filter(thing -> HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thing.getThingTypeUID()))
+                .forEach(thing -> {
+                    int id = thing.getConfiguration().as(HDPowerViewShadeConfiguration.class).id;
+                    if (id > 0) {
+                        ret.put(thing, id);
+                    }
+                });
         return ret;
     }
 
-    private Map<String, ShadeData> getIdShadeDataMap(List<ShadeData> shadeData) {
-        Map<String, ShadeData> ret = new HashMap<>();
+    private Map<Integer, ShadeData> getIdShadeDataMap(List<ShadeData> shadeData) {
+        Map<Integer, ShadeData> ret = new HashMap<>();
         for (ShadeData shade : shadeData) {
-            if (shade.id != 0) {
-                ret.put(Integer.toString(shade.id), shade);
+            if (shade.id > 0) {
+                ret.put(shade.id, shade);
             }
         }
         return ret;
     }
 
     private void requestRefreshShadePositions() {
-        Map<Thing, String> thingIdMap = getThingIdMap();
-        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
+        Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
+        for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
             ThingHandler handler = thing.getHandler();
             if (handler instanceof HDPowerViewShadeHandler) {
                 ((HDPowerViewShadeHandler) handler).requestRefreshShadePosition();
             } else {
-                String shadeId = item.getValue();
+                int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }
     }
 
     private void requestRefreshShadeBatteryLevels() {
-        Map<Thing, String> thingIdMap = getThingIdMap();
-        for (Entry<Thing, String> item : thingIdMap.entrySet()) {
+        Map<Thing, Integer> thingIdMap = getShadeThingIdMap();
+        for (Entry<Thing, Integer> item : thingIdMap.entrySet()) {
             Thing thing = item.getKey();
             ThingHandler handler = thing.getHandler();
             if (handler instanceof HDPowerViewShadeHandler) {
                 ((HDPowerViewShadeHandler) handler).requestRefreshShadeBatteryLevel();
             } else {
-                String shadeId = item.getValue();
+                int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);
             }
         }

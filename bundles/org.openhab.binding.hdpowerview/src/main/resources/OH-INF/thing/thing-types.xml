@@ -75,9 +75,36 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="id" type="text" required="true">
+			<parameter name="id" type="integer" min="1" required="true">
 				<label>ID</label>
 				<description>The numeric ID of the PowerView Shade in the Hub</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="repeater">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub"/>
+		</supported-bridge-type-refs>
+		<label>PowerView Repeater</label>
+		<description>Hunter Douglas (Luxaflex) PowerView Repeater</description>
+
+		<channels>
+			<channel id="identify" typeId="repeater-identify"/>
+			<channel id="blinkingEnabled" typeId="repeater-blinking-enabled"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Repeater</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" required="true">
+				<label>ID</label>
+				<description>The numeric ID of the PowerView Repeater in the Hub</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -120,6 +147,23 @@
 		<label>Battery Voltage</label>
 		<description>Battery voltage reported by the shade</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="repeater-identify">
+		<item-type>String</item-type>
+		<label>Identify</label>
+		<description>Flash repeater to identify</description>
+		<command>
+			<options>
+				<option value="IDENTIFY">Identify</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="repeater-blinking-enabled">
+		<item-type>Switch</item-type>
+		<label>Blinking Enabled</label>
+		<description>Blink during commands</description>
 	</channel-type>
 
 	<channel-group-type id="scenes">
