@@ -56,6 +56,7 @@ setup). For completeness, the configuration parameters set by auto-discovery are
 | ---------         | ----------------------------------|
 | networkId         | Internal blink network ID         |
 | cameraId          | Internal blink camera ID          |
+| cameraType        | Type of camera: CAMERA or OWL (blink mini) |
 
 Besides the channels, the current thumbnail is also provided by a servlet. The url is set in the thing properties.
 ![](doc/thumbnail-url.png)
@@ -80,8 +81,8 @@ setup). For completeness, the configuration parameters set by auto-discovery are
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
 | motiondetection  | Switch | Enables/disables motion detection for this camera.  |
-| battery | LowBattery | Read-only channel, triggering ON when battery status is low |
-| temperature | Number | Read-only channel, outputting camera temperature |
+| battery | LowBattery | Read-only channel, triggering ON when battery status is low. Not available in blink minis. |
+| temperature | Number | Read-only channel, outputting camera temperature. Not available in blink minis. |
 | setThumbnail | Switch | Write-only channel, triggering taking a new snapshot as thumbnail. Also triggers a new getThumbnail state on completion. |
 | getThumbnail | Image | Read-only channel, returns the current thumbnail. Triggers a state change on new thumbnail.  |
 | motionTriggered | Trigger | Triggered when motion event is detected during account refresh. Therefore, this is linked to the refresh interval of the account and will not be in real-time.|
