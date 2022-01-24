@@ -23,7 +23,7 @@ To use the service you will need the **access key**, **secret key** and **server
 
 ## Configuration
 
-The following configurations can be edited using the "Polly Text-to-Speech" settings in the UI:
+The following settings can be edited in UI (**Settings / Other Services - Polly Text-to-Speech**):
 
 * **Access Key** - The AWS credentials access key (required).
 * **Secret Key** - The AWS credentials secret key (required).
@@ -68,7 +68,7 @@ In case you would like to setup these settings via a text file, you can edit the
 
 ```
 org.openhab.voice:defaultTTS=pollytts
-org.openhab.voice:defaultVoice=pollytts:XXX
+org.openhab.voice:defaultVoice=pollytts:Joanne
 ```
 
 ## Rule Examples
