@@ -150,9 +150,14 @@
 	</channel-type>
 
 	<channel-type id="repeater-identify">
-		<item-type>Switch</item-type>
+		<item-type>String</item-type>
 		<label>Identify</label>
 		<description>Flash repeater to identify</description>
+		<command>
+			<options>
+				<option value="IDENTIFY">Identify</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="repeater-blinking-enabled">

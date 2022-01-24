@@ -27,12 +27,14 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,8 +49,11 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewRepeaterHandler.class);
 
     private static final int REFRESH_INTERVAL_MINUTES = 5;
+    private static final int IDENTITY_PERIOD_SECONDS = 3;
+    private static final String COMMAND_IDENTIFY = "IDENTIFY";
 
     private @Nullable ScheduledFuture<?> refreshStatusFuture = null;
+    private @Nullable ScheduledFuture<?> resetIdentifyStateFuture = null;
     private int repeaterId;
 
     public HDPowerViewRepeaterHandler(Thing thing) {
@@ -80,13 +85,14 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
-        scheduleJob();
+        scheduleRefreshJob();
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing repeater handler for repeater {}", repeaterId);
-        cancelJob();
+        cancelRefreshJob();
+        cancelResetIdentifyStateJob();
     }
 
     @Override
@@ -107,8 +113,18 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
 
             switch (channelUID.getId()) {
                 case CHANNEL_REPEATER_IDENTIFY:
-                    repeaterData = webTargets.identifyRepeater(repeaterId);
-                    scheduler.submit(() -> updatePropertyAndState(repeaterData));
+                    if (command instanceof StringType) {
+                        if (COMMAND_IDENTIFY.equals(((StringType) command).toString())) {
+                            repeaterData = webTargets.identifyRepeater(repeaterId);
+                            scheduler.submit(() -> updatePropertyAndState(repeaterData));
+                            cancelResetIdentifyStateJob();
+                            resetIdentifyStateFuture = scheduler.schedule(() -> {
+                                updateState(CHANNEL_REPEATER_IDENTIFY, UnDefType.UNDEF);
+                            }, IDENTITY_PERIOD_SECONDS, TimeUnit.SECONDS);
+                        } else {
+                            logger.warn("Unsupported command: {}. Supported commands are: " + COMMAND_IDENTIFY);
+                        }
+                    }
                     break;
                 case CHANNEL_REPEATER_BLINKING_ENABLED:
                     repeaterData = webTargets.enableRepeaterBlinking(repeaterId, OnOffType.ON == command);
@@ -129,15 +145,23 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
         }
     }
 
-    private void scheduleJob() {
-        cancelJob();
+    private void cancelResetIdentifyStateJob() {
+        ScheduledFuture<?> scheduledJob = resetIdentifyStateFuture;
+        if (scheduledJob != null) {
+            scheduledJob.cancel(true);
+        }
+        resetIdentifyStateFuture = null;
+    }
+
+    private void scheduleRefreshJob() {
+        cancelRefreshJob();
         logger.debug("Scheduling poll for repeater {} now, then every {} minutes", repeaterId,
                 REFRESH_INTERVAL_MINUTES);
         this.refreshStatusFuture = scheduler.scheduleWithFixedDelay(this::poll, 0, REFRESH_INTERVAL_MINUTES,
                 TimeUnit.MINUTES);
     }
 
-    private void cancelJob() {
+    private void cancelRefreshJob() {
         ScheduledFuture<?> future = this.refreshStatusFuture;
         if (future != null) {
             future.cancel(false);

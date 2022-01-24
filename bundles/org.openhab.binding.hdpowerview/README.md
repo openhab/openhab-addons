@@ -102,7 +102,7 @@ All of these channels appear in the binding, but only those which have a physica
 
 | Channel         | Item Type | Description                   |
 |-----------------|-----------|-------------------------------|
-| identify        | Switch    | Flash repeater to identify. Setting this to ON will identify the repeater by blinking. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
+| identify        | String    | Flash repeater to identify. Valid values are: IDENTIFY |
 | blinkingEnabled | Switch    | Blink during commands.        |
 
 ### Roller Shutter Up/Down Position vs. Open/Close State
@@ -227,7 +227,7 @@ Switch Living_Room_Shade_Calibrate "Living Room Shade Calibrate" {channel="hdpow
 Repeater items:
 
 ```
-Switch Bedroom_Repeater_Identify "Bedroom Repeater Identify" {channel="hdpowerview:repeater:g24:r16384:identify", autoupdate="false"}
+String Bedroom_Repeater_Identify "Bedroom Repeater Identify" {channel="hdpowerview:repeater:g24:r16384:identify"}
 Switch Bedroom_Repeater_BlinkingEnabled "Bedroom Repeater Blinking Enabled [%s]" {channel="hdpowerview:repeater:g24:r16384:blinkingEnabled"}
 ```
 
@@ -240,8 +240,12 @@ Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> 
 ### `demo.sitemap` File
 
 ```
-Frame label="Living Room Shades" {
-  Switch item=Living_Room_Shades_Scene_Open
-  Slider item=Living_Room_Shade_1_Position 
+Frame label="Living Room Shades" {
+    Switch item=Living_Room_Shades_Scene_Open
+    Slider item=Living_Room_Shade_1_Position
+}
+Frame label="Bedroom" {
+    Switch item=Bedroom_Repeater_Identify mappings=[IDENTIFY="Identify"]
+    Switch item=Bedroom_Repeater_BlinkingEnabled
 }
 ```
