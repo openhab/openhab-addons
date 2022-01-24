@@ -79,6 +79,8 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Handling command {} {} for camera {}", channelUID.getId(), command.toFullString(),
+                thing.getUID().getAsString());
         try {
             if (CHANNEL_CAMERA_TEMPERATURE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -109,9 +111,15 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
                 if (command instanceof RefreshType) {
                     updateState(CHANNEL_CAMERA_SETTHUMBNAIL, OnOffType.OFF);
                 } else if (command == OnOffType.ON) {
-                    Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(), config);
-                    cameraService.watchCommandStatus(scheduler, accountHandler.getBlinkAccount(), config.networkId,
-                            cmdId, this::setThumbnailFinished);
+                    if (config.cameraType == CameraConfiguration.CameraType.CAMERA) {
+                        Long cmdId = cameraService.createThumbnail(accountHandler.getBlinkAccount(), config);
+                        cameraService.watchCommandStatus(scheduler, accountHandler.getBlinkAccount(), config.networkId,
+                                cmdId, this::setThumbnailFinished);
+                    } else {
+                        String result = cameraService.createThumbnailOwl(accountHandler.getBlinkAccount(), config);
+                        setThumbnailFinished(true);
+                        logger.info("Returned from owl createThumbnail: {}", result);
+                    }
                 }
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {
@@ -140,6 +148,8 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
             updateConfiguration(configuration);
         }
         config = getConfigAs(CameraConfiguration.class);
+        logger.debug("Initializing camera {}", thing.getUID().getAsString());
+        logger.debug("Read camera configuration {}", config);
 
         @Nullable
         Bridge bridge = getBridge();
@@ -152,6 +162,7 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
 
         if (thumbnailServlet == null) {
             try {
+                logger.debug("Registering thumbnail servlet");
                 thumbnailServlet = new ThumbnailServlet(httpService, this);
                 Map<String, String> properties = editProperties();
                 String scheme = "http://";
@@ -159,17 +170,18 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
                 String imageUrl = scheme + networkAddressService.getPrimaryIpv4HostAddress() + ":" + port
                         + "/blink/thumbnail/" + thing.getUID().getId();
                 properties.put("thumbnail", imageUrl);
+                logger.debug("Registered thumbnail servlet at {}", imageUrl);
                 updateProperties(properties);
             } catch (IllegalStateException e) {
-                logger.warn("Failed to create account servlet", e);
+                logger.warn("Failed to create thumbnail servlet", e);
             }
         }
 
         if (config.cameraType.equals(CameraConfiguration.CameraType.OWL)) {
+            logger.debug("Removing channels for owl");
             ThingBuilder thingBuilder = editThing();
             thingBuilder.withoutChannel(new ChannelUID(this.thing.getUID(), CHANNEL_CAMERA_BATTERY));
             thingBuilder.withoutChannel(new ChannelUID(this.thing.getUID(), CHANNEL_CAMERA_TEMPERATURE));
-            thingBuilder.withoutChannel(new ChannelUID(this.thing.getUID(), CHANNEL_CAMERA_SETTHUMBNAIL));
             updateThing(thingBuilder.build());
         }
 
@@ -178,9 +190,9 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
 
     @Override
     public void handleHomescreenUpdate() {
+        logger.debug("Homescreen update for camera {}", thing.getUID().getAsString());
         if (config == null)
             return;
-        logger.debug("Updating camera state for camera {}", config.cameraId);
         try {
             updateState(CHANNEL_CAMERA_TEMPERATURE,
                     new QuantityType<>(accountHandler.getTemperature(config), ImperialUnits.FAHRENHEIT));
@@ -209,8 +221,20 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing camera service");
         cameraService.dispose();
+        logger.debug("Trying to dispose thumbnail servlet");
+        disposeServlet();
         super.dispose();
+    }
+
+    private void disposeServlet() {
+        ThumbnailServlet servlet = this.thumbnailServlet;
+        if (servlet != null) {
+            logger.debug("Disposing thumbnail servlet");
+            servlet.dispose();
+        }
+        this.thumbnailServlet = null;
     }
 
     private void setThumbnailFinished(boolean success) {

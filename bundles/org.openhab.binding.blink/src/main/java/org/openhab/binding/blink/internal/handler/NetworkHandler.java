@@ -81,7 +81,7 @@ public class NetworkHandler extends BaseThingHandler implements EventListener {
     @Override
     public void initialize() {
         config = getConfigAs(NetworkConfiguration.class);
-
+        logger.debug("Initializing network {}", thing.getUID().getAsString());
         @Nullable
         Bridge bridge = getBridge();
         if (bridge == null || bridge.getHandler() == null) {
@@ -97,6 +97,7 @@ public class NetworkHandler extends BaseThingHandler implements EventListener {
     @Override
     public void handleHomescreenUpdate() {
         try {
+            logger.debug("Homescreen update for network {}", thing.getUID().getAsString());
             updateState(CHANNEL_NETWORK_ARMED, accountHandler.getNetworkArmed(String.valueOf(config.networkId), false));
         } catch (IOException e) {
             accountHandler.setOffline(e);
