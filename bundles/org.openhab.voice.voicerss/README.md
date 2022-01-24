@@ -29,7 +29,7 @@ https://api.voicerss.org/?key=API_KEY&hl=de-de&f=44khz_16bit_mono&src=Hallo%20We
 
 ## Configuration
 
-The following configurations can be edited using the "VoiceRSS Text-to-Speech" settings in the UI:
+The following settings can be edited in UI (**Settings / Other Services - VoiceRSS Text-to-Speech**):
 
 * **VoiceRSS API Key** - The API Key to get access to https://www.voicerss.org.
 
