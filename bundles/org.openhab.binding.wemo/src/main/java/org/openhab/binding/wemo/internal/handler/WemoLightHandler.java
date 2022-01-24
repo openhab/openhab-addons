@@ -96,7 +96,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, DEFAULT_REFRESH_INITIAL_DELAY,
-                    DEFAULT_REFRESH_INTERVALL_SECONDS, TimeUnit.SECONDS);
+                    DEFAULT_REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
