@@ -182,7 +182,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         timeoutException.getClass().getName() + ":" + timeoutException.getMessage());
             }
-        }, 0, SecondGenerationInverterConfig.REFRESHINTERVAL_SEC, TimeUnit.SECONDS);
+        }, 0, inverterConfig.refreshInterval, TimeUnit.SECONDS);
     }
 
     @Override
