@@ -192,7 +192,6 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
         } catch (HubMaintenanceException e) {
             // exceptions are logged in HDPowerViewWebTargets
         } catch (HubException e) {
-            logger.warn("Error connecting to bridge: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
         }
     }
