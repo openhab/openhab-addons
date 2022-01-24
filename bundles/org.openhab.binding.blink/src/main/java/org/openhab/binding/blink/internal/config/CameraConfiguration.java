@@ -31,4 +31,10 @@ public class CameraConfiguration {
         CAMERA,
         OWL
     }
+
+    @Override
+    public String toString() {
+        return "CameraConfiguration{" + "cameraId=" + cameraId + ", networkId=" + networkId + ", cameraType="
+                + cameraType + '}';
+    }
 }
