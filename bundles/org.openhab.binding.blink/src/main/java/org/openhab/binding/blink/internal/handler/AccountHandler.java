@@ -118,13 +118,14 @@ public class AccountHandler extends BaseBridgeHandler {
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
         // we set this upfront to reliably check status updates in unit tests.
-        updateStatus(ThingStatus.UNKNOWN);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Wait for login");
 
         scheduler.execute(() -> {
 
             // register 2FA Verification Servlet for this thing
             if (accountServlet == null) {
                 try {
+                    logger.debug("Registering 2FA servlet");
                     accountServlet = new AccountVerificationServlet(httpService, bundleContext, this, blinkService);
                 } catch (IllegalStateException e) {
                     logger.warn("Failed to create account servlet", e);
@@ -136,14 +137,17 @@ public class AccountHandler extends BaseBridgeHandler {
             Map<String, String> properties = editProperties();
             String generatedClientId = properties.get(GENERATED_CLIENT_ID);
             if (generatedClientId == null) {
+                logger.debug("Generating new Client ID, starting new 2FA process");
                 generatedClientId = blinkService.generateClientId();
                 start2FA = true;
                 properties.put(GENERATED_CLIENT_ID, generatedClientId);
             }
             this.generatedClientId = generatedClientId;
             try {
+                logger.debug("Logging in to blink servers with generated client id {}", generatedClientId);
                 // call login api
                 blinkAccount = blinkService.login(config, generatedClientId, start2FA);
+                logger.debug("Successfully logged in with account {}", blinkAccount);
                 blinkAccount.lastTokenRefresh = Instant.now();
                 properties.putAll(blinkAccount.toAccountProperties());
                 // don't know how to get scheme and port from openhab, right now it's hardcoded...
@@ -152,6 +156,7 @@ public class AccountHandler extends BaseBridgeHandler {
                 String validationUrl = scheme + networkAddressService.getPrimaryIpv4HostAddress() + ":" + port
                         + "/blink/" + thing.getUID().getId();
                 properties.put("validationUrl", validationUrl);
+                logger.debug("Updating bridge properties");
                 updateProperties(properties);
                 // do 2FA if necessary
                 if (blinkAccount.account.client_verification_required) {
@@ -170,6 +175,7 @@ public class AccountHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        logger.debug("Disposing account handler");
         disposeServlet();
         blinkService.dispose();
         cleanup();
@@ -179,6 +185,7 @@ public class AccountHandler extends BaseBridgeHandler {
     private void disposeServlet() {
         AccountVerificationServlet accountServlet = this.accountServlet;
         if (accountServlet != null) {
+            logger.debug("Disposing 2fa servlet");
             accountServlet.dispose();
         }
         this.accountServlet = null;
@@ -195,6 +202,7 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     public void setOnline() {
+        logger.debug("Setting blink account bridge online");
         refreshState(false);
         updateStatus(ThingStatus.ONLINE);
     }
@@ -388,7 +396,7 @@ public class AccountHandler extends BaseBridgeHandler {
     }
 
     private Stream<EventListener> streamEventListeners() {
-        return getThing().getThings().stream().map(Thing::getHandler).filter(Objects::nonNull)
-                .map(EventListener.class::cast);
+        return getThing().getThings().stream().filter(thing -> thing.getStatus() == ThingStatus.ONLINE)
+                .map(Thing::getHandler).filter(Objects::nonNull).map(EventListener.class::cast);
     }
 }

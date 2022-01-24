@@ -295,7 +295,8 @@ class AccountHandlerTest extends JavaTest {
     @Test
     void testLoadDevicesCallsServiceAndThings() throws IOException {
         CameraHandler cameraHandler = mock(CameraHandler.class);
-        Thing camera = new ThingImpl(CameraHandlerTest.THING_TYPE_UID, "camera");
+        Thing camera = spy(new ThingImpl(CameraHandlerTest.THING_TYPE_UID, "camera"));
+        doReturn(ThingStatus.ONLINE).when(camera).getStatus();
         camera.setHandler(cameraHandler);
         doReturn(List.of(camera)).when(bridge).getThings();
         accountHandler.blinkService = accountService;
