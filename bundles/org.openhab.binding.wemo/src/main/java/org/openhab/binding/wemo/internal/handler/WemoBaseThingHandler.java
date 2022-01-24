@@ -74,7 +74,15 @@ public class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOPart
         return (String) this.getThing().getConfiguration().get(WemoBindingConstants.UDN);
     }
 
-    public String getHost() {
+    protected boolean isUpnpDeviceRegistered() {
+        UpnpIOService service = this.service;
+        if (service != null) {
+            return service.isRegistered(this);
+        }
+        return false;
+    }
+
+    protected String getHost() {
         String localHost = host;
         if (!localHost.isEmpty()) {
             return localHost;

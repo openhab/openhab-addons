@@ -253,14 +253,6 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
         }
     }
 
-    private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localService = service;
-        if (localService != null) {
-            return localService.isRegistered(this);
-        }
-        return false;
-    }
-
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo device and
      * calls {@link onValueReceived} to update the statemap and channels..

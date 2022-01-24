@@ -439,12 +439,4 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             }
         }
     }
-
-    private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localService = service;
-        if (localService != null) {
-            return localService.isRegistered(this);
-        }
-        return false;
-    }
 }
