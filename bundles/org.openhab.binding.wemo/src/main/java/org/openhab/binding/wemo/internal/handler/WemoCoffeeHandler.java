@@ -16,7 +16,6 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
-import java.net.URL;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
@@ -34,7 +33,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -63,7 +61,7 @@ import org.xml.sax.InputSource;
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  */
 @NonNullByDefault
-public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOParticipant {
+public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoCoffeeHandler.class);
 
@@ -72,21 +70,12 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
     private final Object upnpLock = new Object();
     private final Object jobLock = new Object();
 
-    private @Nullable UpnpIOService service;
-
-    private WemoHttpCall wemoCall;
-
-    private String host = "";
-
     private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
     public WemoCoffeeHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
-        super(thing, wemoHttpCaller);
-
-        this.wemoCall = wemoHttpCaller;
-        this.service = upnpIOService;
+        super(thing, upnpIOService, wemoHttpCaller);
 
         logger.debug("Creating a WemoCoffeeHandler for thing '{}'", getThing().getUID());
     }
@@ -102,7 +91,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                 localService.registerParticipant(this);
             }
             host = getHost();
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -195,7 +184,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
                                 + "&lt;attribute&gt;&lt;name&gt;Cleaning&lt;/name&gt;&lt;value&gt;NULL&lt;/value&gt;&lt;/attribute&gt;</attributeList>"
                                 + "</u:SetAttributes>" + "</s:Body>" + "</s:Envelope>";
 
-                        String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                        String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                         if (wemoCallResponse != null) {
                             updateState(CHANNEL_STATE, OnOffType.ON);
                             State newMode = new StringType("Brewing");
@@ -279,19 +268,6 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         }
     }
 
-    private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localService = service;
-        if (localService != null) {
-            return localService.isRegistered(this);
-        }
-        return false;
-    }
-
-    @Override
-    public String getUDN() {
-        return (String) this.getThing().getConfiguration().get(UDN);
-    }
-
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo CoffeeMaker.
      */
@@ -315,7 +291,7 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             if (wemoCallResponse != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
@@ -473,24 +449,5 @@ public class WemoCoffeeHandler extends AbstractWemoHandler implements UpnpIOPart
         State dateTimeState = new DateTimeType(zoned);
         logger.trace("New attribute brewed '{}' received", dateTimeState);
         return dateTimeState;
-    }
-
-    public String getHost() {
-        String localHost = host;
-        if (!localHost.isEmpty()) {
-            return localHost;
-        }
-        UpnpIOService localService = service;
-        if (localService != null) {
-            URL descriptorURL = localService.getDescriptorURL(this);
-            if (descriptorURL != null) {
-                return descriptorURL.getHost();
-            }
-        }
-        return "";
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
     }
 }
