@@ -122,7 +122,8 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
                                 updateState(CHANNEL_REPEATER_IDENTIFY, UnDefType.UNDEF);
                             }, IDENTITY_PERIOD_SECONDS, TimeUnit.SECONDS);
                         } else {
-                            logger.warn("Unsupported command: {}. Supported commands are: " + COMMAND_IDENTIFY);
+                            logger.warn("Unsupported command: {}. Supported commands are: " + COMMAND_IDENTIFY,
+                                    command);
                         }
                     }
                     break;
