@@ -81,8 +81,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private static final int REFRESH_ALL_DEVICES_DELAY_MSEC = 500; // Delay to wait before sending all devices refresh
                                                                    // request after a connect/reconnect
-    private int refreshAllDevicesDelay = REFRESH_ALL_DEVICES_DELAY_MSEC;
-    public static final String PROPERTY_REFRESH_DEVICE_DELAY = "refreshDelay";
 
     private static long lastRegisteredDeviceTS = -1; // timestamp when the last device has been associated to the bridge
 
@@ -100,7 +98,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     public @Nullable OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
     private boolean reconnecting = false; // we are trying to reconnect to gateway
-    private @Nullable ScheduledFuture<?> refreshSchedule;
+    private @Nullable ScheduledFuture<?> refreshAllSchedule;
 
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
     private boolean discoveryByActivation;
@@ -174,20 +172,6 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     private @Nullable OpenGateway initBusGateway() {
         logger.debug("Initializing BUS gateway");
 
-        String prop = System.getProperty(PROPERTY_REFRESH_DEVICE_DELAY);
-        if (prop != null) {
-            try {
-                refreshAllDevicesDelay = Integer.parseInt(prop);
-                logger.info("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Property {}={}", PROPERTY_REFRESH_DEVICE_DELAY, prop);
-
-            } catch (NumberFormatException nfe) {
-                logger.warn("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Wrong property {}={}", PROPERTY_REFRESH_DEVICE_DELAY,
-                        refreshAllDevicesDelay);
-            }
-        } else {
-            logger.warn("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ property {} not set", PROPERTY_REFRESH_DEVICE_DELAY);
-        }
-
         OpenWebNetBusBridgeConfig busBridgeConfig = getConfigAs(OpenWebNetBusBridgeConfig.class);
         String host = busBridgeConfig.getHost();
         if (host == null || host.isEmpty()) {
@@ -220,7 +204,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return;
         } else {
             if (command instanceof RefreshType) {
-                refreshAllDevices();
+                refreshAllBridgeDevices();
             } else {
                 logger.warn("Command or channel not supported: channel={} command={}", channelUID, command);
             }
@@ -240,7 +224,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> rSc = refreshSchedule;
+        ScheduledFuture<?> rSc = refreshAllSchedule;
         if (rSc != null) {
             rSc.cancel(true);
         }
@@ -414,30 +398,60 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         return registeredDevices.get(ownId);
     }
 
-    private void refreshAllDevices() {
-        logger.debug("--- --- ABOUT TO REFRESH all devices for bridge {}", thing.getUID());
+    private void refreshAllBridgeDevices() {
+        logger.debug("--- --- ABOUT TO REFRESH ALL devices for bridge {}", thing.getUID());
         int howMany = 0;
-        List<@NonNull Thing> things = getThing().getThings();
+        final List<@NonNull Thing> things = getThing().getThings();
         int total = things.size();
         logger.debug("--- FOUND {} things by getThings()", total);
-        if (System.currentTimeMillis() - lastRegisteredDeviceTS < refreshAllDevicesDelay) {
-            // if a device has been registered with the bridge just now, let's wait for other devices: re-schedule
-            // refreshAllDevices
-            logger.debug("--- REGISTER device just called... re-scheduling refreshAllDevices()");
-            refreshSchedule = scheduler.schedule(this::refreshAllDevices, refreshAllDevicesDelay,
-                    TimeUnit.MILLISECONDS);
-        } else {
-            for (Thing ownThing : things) {
-                OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
-                if (hndlr != null) {
-                    howMany++;
-                    logger.debug("--- REFRESHING thing #{}/{}: {}", howMany, total, ownThing.getUID());
-                    hndlr.refreshDevice(true);
-                } else {
-                    logger.warn("--- no handler for thing {}", ownThing.getUID());
+        if (total > 0) {
+            if (registeredDevices.isEmpty()
+                    || (System.currentTimeMillis() - lastRegisteredDeviceTS < REFRESH_ALL_DEVICES_DELAY_MSEC)) {
+                // if a device has been registered with the bridge just now, let's wait for other devices: re-schedule
+                // refreshAllDevices
+                logger.debug(
+                        "--- REGISTER device not started or just called... re-scheduling refreshAllBridgeDevices()");
+                refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
+                        TimeUnit.MILLISECONDS);
+            } else {
+                for (Thing ownThing : things) {
+                    OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
+                    if (hndlr != null) {
+                        howMany++;
+                        logger.debug("--- REFRESHING thing #{}/{}: {}", howMany, total, ownThing.getUID());
+                        hndlr.refreshAllDevices();
+                    } else {
+                        logger.warn("--- no handler for thing {}", ownThing.getUID());
+                    }
                 }
+                logger.debug("--- --- COMPLETED REFRESH all devices for bridge {}", thing.getUID());
+
+                // set a check that all things are Online
+                refreshAllSchedule = scheduler.schedule(() -> checkAllRefreshed(things), 20, TimeUnit.SECONDS);
             }
-            logger.debug("--- --- COMPLETED Refreshing all devices for bridge {}", thing.getUID());
+        } else {
+            logger.debug("--- --- NO DEVICE to REFRESH for bridge {}", thing.getUID());
+        }
+    }
+
+    private void checkAllRefreshed(List<@NonNull Thing> things) {
+        int howMany = 0;
+        int total = things.size();
+        boolean allOnline = true;
+        for (Thing ownThing : things) {
+            howMany++;
+            ThingStatus ts = ownThing.getStatus();
+            if (ThingStatus.ONLINE == ts) {
+                logger.debug("--- CHECKED ONLINE thing #{}/{}: {}", howMany, total, ownThing.getUID());
+            } else {
+                logger.debug("--- CHECKED ^^^OFFLINE^^^ thing #{}/{}: {}", howMany, total, ownThing.getUID());
+                allOnline = false;
+            }
+        }
+        if (allOnline) {
+            logger.info("--- --- CHECK COMPLETED: ALL THINGS ONLINE for bridge {}", thing.getUID());
+        } else {
+            logger.warn("--- --- CHECKED COMPLETED: ^^^NOT ALL THINGS ONLINE^^^ for bridge {}", thing.getUID());
         }
     }
 
@@ -515,7 +529,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         updateStatus(ThingStatus.ONLINE);
         // schedule a refresh for all devices
-        refreshSchedule = scheduler.schedule(this::refreshAllDevices, refreshAllDevicesDelay, TimeUnit.MILLISECONDS);
+        refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
+                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -589,7 +604,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 logger.debug("gw firmware version: {}", gw.getFirmwareVersion());
             }
             // schedule a refresh for all devices
-            refreshSchedule = scheduler.schedule(this::refreshAllDevices, refreshAllDevicesDelay,
+            refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
                     TimeUnit.MILLISECONDS);
         }
     }
