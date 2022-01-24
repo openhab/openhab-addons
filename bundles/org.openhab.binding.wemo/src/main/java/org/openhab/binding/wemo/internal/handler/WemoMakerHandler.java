@@ -16,7 +16,6 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -29,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.transport.upnp.UpnpIOParticipant;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -54,7 +52,7 @@ import org.xml.sax.InputSource;
  * @author Hans-Jörg Merk - Initial contribution
  */
 @NonNullByDefault
-public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParticipant {
+public class WemoMakerHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoMakerHandler.class);
 
@@ -62,19 +60,10 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
 
     private final Object jobLock = new Object();
 
-    private @Nullable UpnpIOService service;
-
-    private WemoHttpCall wemoCall;
-
-    private String host = "";
-
     private @Nullable ScheduledFuture<?> pollingJob;
 
     public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
-        super(thing, wemoHttpcaller);
-
-        this.service = upnpIOService;
-        this.wemoCall = wemoHttpcaller;
+        super(thing, upnpIOService, wemoHttpcaller);
 
         logger.debug("Creating a WemoMakerHandler for thing '{}'", getThing().getUID());
     }
@@ -90,7 +79,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                 localService.registerParticipant(this);
             }
             host = getHost();
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVALL_SECONDS,
+            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         } else {
@@ -169,7 +158,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
-                    String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     if (wemoCallResponse != null && logger.isTraceEnabled()) {
                         logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
                         logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
@@ -182,19 +171,6 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
                 }
             }
         }
-    }
-
-    private boolean isUpnpDeviceRegistered() {
-        UpnpIOService localService = service;
-        if (localService != null) {
-            return localService.isRegistered(this);
-        }
-        return false;
-    }
-
-    @Override
-    public String getUDN() {
-        return (String) this.getThing().getConfiguration().get(UDN);
     }
 
     /**
@@ -220,7 +196,7 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
             String action = "GetAttributes";
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
-            String wemoCallResponse = wemoCall.executeCall(wemoURL, soapHeader, content);
+            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
             if (wemoCallResponse != null) {
                 if (logger.isTraceEnabled()) {
                     logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
@@ -291,32 +267,5 @@ public class WemoMakerHandler extends AbstractWemoHandler implements UpnpIOParti
         } catch (Exception e) {
             logger.error("Failed to get attributes for device '{}'", getThing().getUID(), e);
         }
-    }
-
-    public String getHost() {
-        String localHost = host;
-        if (!localHost.isEmpty()) {
-            return localHost;
-        }
-        UpnpIOService localService = service;
-        if (localService != null) {
-            URL descriptorURL = localService.getDescriptorURL(this);
-            if (descriptorURL != null) {
-                return descriptorURL.getHost();
-            }
-        }
-        return "";
-    }
-
-    @Override
-    public void onStatusChanged(boolean status) {
-    }
-
-    @Override
-    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-    }
-
-    @Override
-    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
     }
 }
