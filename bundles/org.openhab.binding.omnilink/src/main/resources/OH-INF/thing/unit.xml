@@ -44,8 +44,14 @@
 		<label>Dimmable Unit</label>
 		<description>A dimmable unit configured in the controller.</description>
 		<channels>
-			<channel id="level" typeId="system.brightness"/>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="level" typeId="system.brightness">
+				<label>Dimmable Level</label>
+				<description>Increase/Decrease the level of this dimmable unit.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<label>Dimmable Switch</label>
+				<description>Turn this dimmable unit on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -75,8 +81,14 @@
 		<label>UPB Unit</label>
 		<description>A UPB unit configured in the controller.</description>
 		<channels>
-			<channel id="level" typeId="system.brightness"/>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="level" typeId="system.brightness">
+				<label>UPB Level</label>
+				<description>Increase/Decrease the level of this UPB unit.</description>
+			</channel>
+			<channel id="switch" typeId="system.power">
+				<label>UPB Switch</label>
+				<description>Turn this UPB unit on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -108,7 +120,10 @@
 		<description>A flag configured in the controller.</description>
 		<channels>
 			<channel id="value" typeId="flag_value"/>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="switch" typeId="system.power">
+				<label>Flag Switch</label>
+				<description>Turn this flag on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -137,7 +152,10 @@
 		<label>Voltage Output</label>
 		<description>A voltage output configured in the controller.</description>
 		<channels>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="switch" typeId="system.power">
+				<label>Voltage Output Switch</label>
+				<description>Turn this voltage output on/off.</description>
+			</channel>
 			<channel id="on_for_seconds" typeId="on_for_seconds"/>
 			<channel id="off_for_seconds" typeId="off_for_seconds"/>
 			<channel id="on_for_minutes" typeId="on_for_minutes"/>
@@ -166,18 +184,25 @@
 		<label>Room</label>
 		<description>A room configured in the controller.</description>
 		<channels>
-			<channel id="switch" typeId="system.power"/>
+			<channel id="switch" typeId="system.power">
+				<label>Room Switch</label>
+				<description>Turn this room on/off.</description>
+			</channel>
 			<channel id="scene_a" typeId="system.power">
 				<label>Scene A</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
 			<channel id="scene_b" typeId="system.power">
 				<label>Scene B</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
 			<channel id="scene_c" typeId="system.power">
 				<label>Scene C</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
 			<channel id="scene_d" typeId="system.power">
 				<label>Scene D</label>
+				<description>Turn this scene on/off.</description>
 			</channel>
 			<channel id="state" typeId="room_state"/>
 		</channels>
