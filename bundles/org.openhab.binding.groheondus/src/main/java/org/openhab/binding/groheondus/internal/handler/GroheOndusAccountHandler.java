@@ -86,7 +86,7 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
         if (ondusService != null) {
             Instant expiresAt = ondusService.authorizationExpiresAt();
             // Refresh 1 hour before expiry
-            Duration between = Duration.between(Instant.now(), expiresAt.minus(1, ChronoUnit.HOURS));
+            Duration between = Duration.between(Instant.now(), expiresAt.minus(5, ChronoUnit.MINUTES));
             refreshTokenFuture = scheduler.schedule(() -> {
                 OndusService ondusService = this.ondusService;
                 if (ondusService == null) {
@@ -97,11 +97,10 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
                     setRefreshToken(ondusService.refreshAuthorization());
                 } catch (Exception e) {
                     logger.debug(
-                            "Could not refresh authorization for GROHE ONDUS account, scheduling another attempt in 20 minutes. Keeping original token",
+                            "Could not refresh authorization for GROHE ONDUS account, scheduling another attempt in 55 minutes. Keeping original token",
                             e);
                     // Initiate a new login
-                    storage.remove(STORAGE_KEY_REFRESH_TOKEN);
-                    scheduler.schedule(() -> login(), 20, TimeUnit.MINUTES);
+                    deleteRefreshToken();
                 }
             }, between.getSeconds(), TimeUnit.SECONDS);
         }
@@ -144,7 +143,12 @@ public class GroheOndusAccountHandler extends BaseBridgeHandler {
 
         try {
             if (storage.containsKey(STORAGE_KEY_REFRESH_TOKEN)) {
-                ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
+                try {
+                    ondusService = OndusService.login(storage.get(STORAGE_KEY_REFRESH_TOKEN));
+                } catch (LoginException e) {
+                    // refresh token invalid, try again with username and password
+                    ondusService = OndusService.loginWebform(config.username, config.password);
+                }
             } else {
                 // TODO: That's probably really inefficient, internally the loginWebform method acquires a refresh
                 // token, maybe there should be a way to obtain this token here, somehow.
