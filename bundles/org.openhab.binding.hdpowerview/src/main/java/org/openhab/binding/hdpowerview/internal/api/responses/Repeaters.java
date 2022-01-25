@@ -10,19 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hdpowerview.internal.config;
+package org.openhab.binding.hdpowerview.internal.api.responses;
+
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Basic configuration for an HD PowerView Shade
+ * Repeaters connected to an HD PowerView Hub
  *
- * @author Andy Lintner - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewShadeConfiguration {
-
-    public static final String ID = "id";
-
-    public int id;
+public class Repeaters {
+    public @Nullable List<RepeaterData> repeaterData;
+    public @Nullable List<Integer> repeaterIds;
 }

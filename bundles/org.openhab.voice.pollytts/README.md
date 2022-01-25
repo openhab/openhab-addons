@@ -23,7 +23,7 @@ To use the service you will need the **access key**, **secret key** and **server
 
 ## Configuration
 
-The following configurations can be edited using the "Polly Text-to-Speech" settings in the UI:
+The following settings can be edited in UI (**Settings / Other Services - Polly Text-to-Speech**):
 
 * **Access Key** - The AWS credentials access key (required).
 * **Secret Key** - The AWS credentials secret key (required).
@@ -45,7 +45,7 @@ The default audio format can be overriden with the value "mp3" or "ogg".
 
 In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `pollytts.cfg`
 
-It's contents should look similar to:
+Its contents should look similar to:
 
 ```
 org.openhab.voice.pollytts:accessKey=ACCESS_KEY
@@ -53,6 +53,22 @@ org.openhab.voice.pollytts:secretKey=SECRET_KEY
 org.openhab.voice.pollytts:serviceRegion=eu-west-1
 org.openhab.voice.pollytts:cacheExpiration=0
 org.openhab.voice.pollytts:audioFormat=default
+```
+
+### Default Text-to-Speech and Voice Configuration
+
+You can setup your preferred default Text-to-Speech and default voice in the UI:
+
+* Go to **Settings**.
+* Edit **System Services - Voice**.
+* Set **PollyTTS** as **Default Text-to-Speech**.
+* Choose your preferred **Default Voice** for your setup.
+
+In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+
+```
+org.openhab.voice:defaultTTS=pollytts
+org.openhab.voice:defaultVoice=pollytts:Joanne
 ```
 
 ## Rule Examples

@@ -15,12 +15,12 @@ package org.openhab.binding.hdpowerview.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Basic configuration for an HD PowerView Shade
+ * Basic configuration for an HD PowerView Repeater
  *
- * @author Andy Lintner - Initial contribution
+ * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class HDPowerViewShadeConfiguration {
+public class HDPowerViewRepeaterConfiguration {
 
     public static final String ID = "id";
 

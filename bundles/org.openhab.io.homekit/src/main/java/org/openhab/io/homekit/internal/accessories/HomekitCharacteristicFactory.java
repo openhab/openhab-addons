@@ -39,6 +39,7 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
@@ -102,6 +103,7 @@ import io.github.hapjava.characteristics.impl.windowcovering.CurrentVerticalTilt
 import io.github.hapjava.characteristics.impl.windowcovering.HoldPositionCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetHorizontalTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.TargetVerticalTiltAngleCharacteristic;
+import tech.units.indriya.unit.UnitDimension;
 
 /**
  * Creates a optional characteristics .
@@ -259,6 +261,21 @@ public class HomekitCharacteristicFactory {
         return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
+    public static @Nullable Double stateAsTemperature(@Nullable State state) {
+        if (state == null) {
+            return null;
+        }
+
+        if (state instanceof QuantityType<?>) {
+            final QuantityType<?> qt = (QuantityType<?>) state;
+            if (qt.getDimension().equals(UnitDimension.TEMPERATURE)) {
+                return qt.toUnit(SIUnits.CELSIUS).doubleValue();
+            }
+        }
+
+        return convertToCelsius(state.as(DecimalType.class).doubleValue());
+    }
+
     public static double convertToCelsius(double degrees) {
         return convertAndRound(degrees, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
     }
@@ -336,9 +353,8 @@ public class HomekitCharacteristicFactory {
     private static Supplier<CompletableFuture<Double>> getTemperatureSupplier(HomekitTaggedItem taggedItem,
             double defaultValue) {
         return () -> {
-            final @Nullable DecimalType value = taggedItem.getItem().getStateAs(DecimalType.class);
-            return CompletableFuture
-                    .completedFuture(value != null ? convertToCelsius(value.doubleValue()) : defaultValue);
+            final @Nullable Double value = stateAsTemperature(taggedItem.getItem().getState());
+            return CompletableFuture.completedFuture(value != null ? value : defaultValue);
         };
     }
 

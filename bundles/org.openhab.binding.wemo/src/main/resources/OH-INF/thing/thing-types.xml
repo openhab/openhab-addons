@@ -17,7 +17,6 @@
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
 			</parameter>
-
 		</config-description>
 	</thing-type>
 
@@ -176,7 +175,92 @@
 				<label>Unique Device Name</label>
 				<description>The UDN identifies the WeMo Device</description>
 			</parameter>
+		</config-description>
+	</thing-type>
 
+	<thing-type id="Crockpot">
+		<label>Crock-Pot Slow Cooker</label>
+		<description>Crock-Pot Smart Slow Cooker with WeMo</description>
+
+		<channels>
+			<channel id="cookMode" typeId="cookMode"/>
+			<channel id="warmCookTime" typeId="warmCookTime"/>
+			<channel id="lowCookTime" typeId="lowCookTime"/>
+			<channel id="highCookTime" typeId="highCookTime"/>
+			<channel id="cookedTime" typeId="cookedTime"/>
+		</channels>
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the WeMo Device</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="Purifier">
+		<label>Holmes Air Purifier</label>
+		<description>Holmes Smart Air Purifier with WeMo</description>
+
+		<channels>
+			<channel id="purifierMode" typeId="purifierMode"/>
+			<channel id="airQuality" typeId="airQuality"/>
+			<channel id="ionizer" typeId="ionizer"/>
+			<channel id="filterLife" typeId="filterLife"/>
+			<channel id="expiredFilterTime" typeId="expiredFilterTime"/>
+			<channel id="filterPresent" typeId="filterPresent"/>
+		</channels>
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the WeMo Device</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="Humidifier">
+		<label>Holmes Humidifier</label>
+		<description>Holmes Smart Humidifier with WeMo</description>
+
+		<channels>
+			<channel id="humidifierMode" typeId="humidifierMode"/>
+			<channel id="desiredHumidity" typeId="desiredHumidity"/>
+			<channel id="currentHumidity" typeId="currentHumidity"/>
+			<channel id="waterLEvel" typeId="waterLEvel"/>
+			<channel id="filterLife" typeId="filterLife"/>
+			<channel id="expiredFilterTime" typeId="expiredFilterTime"/>
+		</channels>
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the WeMo Device</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="Heater">
+		<label>Holmes Heater</label>
+		<description>Holmes Smart Heater with WeMo</description>
+
+		<channels>
+			<channel id="heaterMode" typeId="heaterMode"/>
+			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="targetTemperature" typeId="targetTemperature"/>
+			<channel id="autoOffTime" typeId="autoOffTime"/>
+			<channel id="heatingRemaining" typeId="heatingRemaining"/>
+		</channels>
+
+		<config-description>
+			<parameter name="udn" type="text">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the WeMo Device</description>
+				<required>true</required>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -416,6 +500,189 @@
 		<item-type>Dimmer</item-type>
 		<label>Night Mode Brightness</label>
 		<description>Allows setting the brightness of Night Mode</description>
+	</channel-type>
+
+	<channel-type id="cookMode">
+		<item-type>String</item-type>
+		<label>Cooking Mode</label>
+		<description>Shows the operation mode of a WeMo CrockPot</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not cooking</option>
+				<option value="WARM">Warming</option>
+				<option value="LOW">Low cooking</option>
+				<option value="HIGH">High cooking</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="warmCookTime">
+		<item-type>Number</item-type>
+		<label>WarmCookTime</label>
+		<description>Shows the timer settings for warm cooking mode</description>
+	</channel-type>
+
+	<channel-type id="lowCookTime">
+		<item-type>Number</item-type>
+		<label>LowCookTime</label>
+		<description>Shows the timer settings for low cooking mode</description>
+	</channel-type>
+
+	<channel-type id="highCookTime">
+		<item-type>Number</item-type>
+		<label>HighCookTime</label>
+		<description>Shows the timer settings for high cooking mode</description>
+	</channel-type>
+
+	<channel-type id="cookedTime">
+		<item-type>Number</item-type>
+		<label>CookedTime</label>
+		<description>Shows the elapsed cooking time</description>
+	</channel-type>
+
+	<channel-type id="purifierMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Shows the operation mode of a WeMo enabled Holmes Air Purifier</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not Running</option>
+				<option value="LOW">Running at low level</option>
+				<option value="MED">Running at medium level</option>
+				<option value="HIGH">Running at high level</option>
+				<option value="AUTO">Running in auto mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airQiality">
+		<item-type>String</item-type>
+		<label>Air Quality</label>
+		<description>Shows the air quality measured by a WeMo enabled Holmes Air Purifier</description>
+		<state readOnly="true">
+			<options>
+				<option value="POOR"></option>
+				<option value="MODERATE"></option>
+				<option value="GOOD"></option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ionizer">
+		<item-type>Switch</item-type>
+		<label>Ionizer</label>
+		<description>Switches ionization ON or OFF</description>
+	</channel-type>
+
+	<channel-type id="filterLife">
+		<item-type>Number</item-type>
+		<label>Filter Life</label>
+		<description>Shows the remaining lifetime percentage of the air filter</description>
+	</channel-type>
+
+	<channel-type id="filterExpired">
+		<item-type>Switch</item-type>
+		<label>Filter Time expired</label>
+		<description>Indicates whether the air Filter needs to be replaced</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="filterPresent">
+		<item-type>Switch</item-type>
+		<label>Filter is present</label>
+		<description>Indicates whether the air Filter is present</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="humidifierMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Shows the operation mode of a WeMo enabled Holmes Humidifier</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not Running</option>
+				<option value="MIN">Running at min level</option>
+				<option value="LOW">Running at low level</option>
+				<option value="MED">Running at medium level</option>
+				<option value="HIGH">Running at high level</option>
+				<option value="MAX">Running in max level</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="currentHumidity">
+		<item-type>Number</item-type>
+		<label>Current Humidity</label>
+		<description>Shows the current humidity of a WeMo enabled Holmes Humidifier</description>
+	</channel-type>
+
+	<channel-type id="desiredHumidity">
+		<item-type>Number</item-type>
+		<label>Target Humidity</label>
+		<description>Shows the target humidity of a WeMo enabled Holmes Humidifier</description>
+		<state readOnly="false">
+			<options>
+				<option value="45"></option>
+				<option value="50"></option>
+				<option value="55"></option>
+				<option value="60"></option>
+				<option value="100"></option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="waterLevel">
+		<item-type>String</item-type>
+		<label>Water Level</label>
+		<description>Shows the water levele of a WeMo enabled Holmes Humidifier</description>
+		<state readOnly="true">
+			<options>
+				<option value="EMPTY"></option>
+				<option value="LOW"></option>
+				<option value="GOOD"></option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="heaterMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Shows the operation mode of a WeMo enabled Heater</description>
+		<state readOnly="false">
+			<options>
+				<option value="OFF">Not Running</option>
+				<option value="FROSTPROTECT">Running at FrostProtect</option>
+				<option value="HIGH">Running at high level</option>
+				<option value="LOW">Running at low level</option>
+				<option value="ECO">Running in Eco mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="currentTemperature">
+		<item-type>Number</item-type>
+		<label>Current Temperature</label>
+		<description>Shows the current temperature measured by a WeMo enabled Heater</description>
+	</channel-type>
+
+	<channel-type id="targetTemperature">
+		<item-type>Number</item-type>
+		<label>Target Temperature</label>
+		<description>Shows the target temperature for a WeMo enabled Heater</description>
+	</channel-type>
+
+	<channel-type id="autoOffTime">
+		<item-type>DateTime</item-type>
+		<label>Auto OFF Time</label>
+		<description>Time when a WeMo enabled Heater should switch off</description>
+		<state pattern="%1$tR" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="heatingRemaining">
+		<item-type>Number</item-type>
+		<label>Remaining heating time</label>
+		<description>Shows the target temperature for a WeMo enabled Heater</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -51,7 +51,9 @@ public interface KodiEventListener extends EventListener {
 
     void updateConnectionState(boolean connected);
 
-    void updateScreenSaverState(boolean screenSaveActive);
+    void updateScreenSaverState(boolean screenSaverActive);
+
+    void updateInputRequestedState(boolean inputRequested);
 
     void updatePlaylistState(KodiPlaylistState playlistState);
 
