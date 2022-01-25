@@ -111,10 +111,10 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
                 }
                 break;
             case CHANNEL_WATERCONSUMPTION:
-                newState = sumWaterCosumption(dataPoint);
+                newState = sumWaterConsumption(dataPoint);
                 break;
             case CHANNEL_WATERCONSUMPTION_SINCE_MIDNIGHT:
-                newState = sumWaterCosumptionSinceMidnight(dataPoint);
+                newState = sumWaterConsumptionSinceMidnight(dataPoint);
                 break;
             default:
                 throw new IllegalArgumentException("Channel " + channelUID + " not supported.");
@@ -124,7 +124,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
         }
     }
 
-    private QuantityType<Volume> sumWaterCosumptionSinceMidnight(Data dataPoint) {
+    private QuantityType<Volume> sumWaterConsumptionSinceMidnight(Data dataPoint) {
         ZonedDateTime earliestWithdrawal = ZonedDateTime.now(ZoneId.systemDefault()).truncatedTo(ChronoUnit.DAYS);
         ZonedDateTime latestWithdrawal = earliestWithdrawal.plus(1, ChronoUnit.DAYS);
 
@@ -135,7 +135,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
         return new QuantityType<>(waterConsumption, Units.LITRE);
     }
 
-    private QuantityType<Volume> sumWaterCosumption(Data dataPoint) {
+    private QuantityType<Volume> sumWaterConsumption(Data dataPoint) {
         Double waterConsumption = dataPoint.getWithdrawals().stream()
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
         return new QuantityType(waterConsumption, Units.LITRE);
