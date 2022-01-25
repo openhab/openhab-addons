@@ -48,8 +48,8 @@ public class ShadeCapabilitiesDatabase {
             new Capabilities(5)          .tiltAnywhere().tilt180()            .text("Tilt Only 180°"),
             new Capabilities(6).primary()                                     .text("Top Down")                 .primaryStateInverted(),
             new Capabilities(7).primary()                         .secondary().text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                     .text("Duolite Lift"),
-            new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°"),
+            new Capabilities(8).primary()                                     .text("Duolite Lift")             .withBlackoutShade(),
+            new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°").withBlackoutShade(),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -148,10 +148,16 @@ public class ShadeCapabilitiesDatabase {
         private boolean supportsSecondary;
         private boolean supportsTiltOnClosed;
         private boolean supportsTiltAnywhere;
+        private boolean supportsBlackoutShade;
         private boolean primaryStateInverted;
         private boolean tilt180Degrees;
 
         public Capabilities() {
+        }
+
+        protected Capabilities withBlackoutShade() {
+            supportsBlackoutShade = true;
+            return this;
         }
 
         protected Capabilities(int capabilities) {
@@ -248,6 +254,15 @@ public class ShadeCapabilitiesDatabase {
          */
         public boolean supportsTilt180() {
             return tilt180Degrees;
+        }
+
+        /**
+         * Check if the Capabilities class instance supports a secondary 'DuoLite' blackout shade.
+         *
+         * @return true if the primary shade supports a secondary blackout shade.
+         */
+        public boolean supportsBlackoutShade() {
+            return supportsBlackoutShade;
         }
     }
 
