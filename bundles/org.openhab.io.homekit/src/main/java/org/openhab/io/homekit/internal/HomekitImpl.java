@@ -296,10 +296,16 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         removed.forEach(i -> {
             logger.trace("removed interface {}", i.getAddress().toString());
             if (i.getAddress().equals(networkInterface)) {
-                this.bridge.stop();
-                this.homekitServer.stop();
-                this.homekitServer = null;
-                this.bridge = null;
+                final @Nullable HomekitRoot bridge = this.bridge;
+                if (this.bridge != null) {
+                    this.bridge.stop();
+                    this.bridge = null;
+                }
+                final @Nullable HomekitServer homekitServer = this.homekitServer;
+                if (homekitServer != null) {
+                    this.homekitServer.stop();
+                    this.homekitServer = null;
+                }
                 logger.trace("bridge stopped");
             }
         });
