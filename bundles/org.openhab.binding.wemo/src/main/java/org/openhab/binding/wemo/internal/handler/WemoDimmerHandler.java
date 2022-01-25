@@ -15,6 +15,8 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,6 +55,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
+
+    public Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(BASICEVENT);
 
     private int currentBrightness;
     private int currentNightModeBrightness;

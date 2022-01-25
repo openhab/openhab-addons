@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -68,6 +70,8 @@ public class WemoHandler extends WemoBaseThingHandler {
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
+    public Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(BASICEVENT, INSIGHTEVENT);
+
     public WemoHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, upnpIOService, wemoHttpCaller);
 
@@ -76,7 +80,6 @@ public class WemoHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
-        super.SERVICE_SUBSCRIPTIONS.add(INSIGHTEVENT);
         super.initialize();
     }
 

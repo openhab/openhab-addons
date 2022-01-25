@@ -15,6 +15,8 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -54,6 +56,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     private @Nullable String wemoLightID;
 
+    public Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(BRIDGEEVENT);
+
     private int currentBrightness;
 
     /**
@@ -76,8 +80,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
-        super.SERVICE_SUBSCRIPTIONS.add(BRIDGEEVENT);
-        super.SERVICE_SUBSCRIPTIONS.remove(BASICEVENT);
         // initialize() is only called if the required parameter 'deviceID' is available
         wemoLightID = (String) getConfig().get(DEVICE_ID);
 

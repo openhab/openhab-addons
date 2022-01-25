@@ -16,6 +16,8 @@ import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -58,6 +60,8 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COFFEE);
 
+    public Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(DEVICEEVENT);
+
     public WemoCoffeeHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, upnpIOService, wemoHttpCaller);
 
@@ -66,8 +70,6 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
-        super.SERVICE_SUBSCRIPTIONS.add(DEVICEEVENT);
-        super.SERVICE_SUBSCRIPTIONS.remove(BASICEVENT);
         super.initialize();
     }
 

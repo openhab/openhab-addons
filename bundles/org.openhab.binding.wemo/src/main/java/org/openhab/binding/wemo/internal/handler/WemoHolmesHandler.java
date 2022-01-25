@@ -17,6 +17,8 @@ import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +68,8 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
     private static final int FILTER_LIFE_MINS = FILTER_LIFE_DAYS * 24 * 60;
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
+
+    public Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(BASICEVENT);
 
     public WemoHolmesHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, upnpIOService, wemoHttpCaller);
