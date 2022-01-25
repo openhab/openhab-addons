@@ -9,12 +9,22 @@ Important: No voice data listened by this service will be uploaded to the Cloud.
 The voice data is processed offline, locally on your openHAB server by Porcupine.
 Once in a while, access keys are validated to stay active and this requires an Internet connection.
 
-## How to use it
+## Configuration
 
-After installing, you will be able to access the addon options through the openHAB configuration page under the 'Other Services' section.
-There you will need to provide your PicoVoice Api Key.
+After installing, you will be able to access the service options through the openHAB configuration page in UI (**Settings / Other Services - Porcupine Keyword Spotter**) to edit them:
 
-After that, you can select Porcupine as your default Keyword Spotter in your 'Voice' settings.
+* **Pico Voice API Key** - API key from PicoVoice, required to use Porcupine.
+
+* **Sensitivity** - Spot sensitivity, a higher sensitivity reduces miss rate at cost of increased false alarm rate.
+
+In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `porcupineks.cfg`
+
+Its contents should look similar to:
+
+```
+org.openhab.voice.porcupineks:apiKey=KEY
+org.openhab.voice.porcupineks:sensitivity=0.5
+```
 
 ## Magic Word Configuration
 
@@ -56,3 +66,21 @@ Only the English model binary is included with the addon and will be used if the
 To get the language model files, go to the [Porcupine repo](https://github.com/Picovoice/porcupine/tree/v2.0/lib/common).
 
 Note that the keyword model you use should match the language model.
+
+## Default Keyword Spotter and Magic Word Configuration
+
+You can setup your preferred default keyword spotter and default magic word in the UI:
+
+* Go to **Settings**.
+* Edit **System Services - Voice**.
+* Set **Porcupine Keyword Spotter** as **Default Keyword Spotter**.
+* Choose your preferred **Magic Word** for your setup.
+* Choose optionally your **Listening Switch** item that will be switch ON during the period when the dialog processor has spotted the keyword and is listening for commands.
+
+In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+
+```
+org.openhab.voice:defaultKS=porcupineks
+org.openhab.voice:keyword=picovoice
+org.openhab.voice:listeningItem=myItemForDialog
+```
