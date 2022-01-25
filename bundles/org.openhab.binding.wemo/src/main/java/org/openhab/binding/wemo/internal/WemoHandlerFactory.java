@@ -64,7 +64,7 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = WemoBindingConstants.SUPPORTED_THING_TYPES;
 
-    private UpnpIOService upnpIOService;
+    private final UpnpIOService upnpIOService;
     private @Nullable WemoHttpCallFactory wemoHttpCallFactory;
 
     @Override
@@ -103,14 +103,14 @@ public class WemoHandlerFactory extends BaseThingHandlerFactory {
             WemoBridgeHandler handler = new WemoBridgeHandler((Bridge) thing);
             registerDeviceDiscoveryService(handler, wemoHttpcaller);
             return handler;
-        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MAKER)) {
-            logger.debug("Creating a WemoMakerHandler for thing '{}' with UDN '{}'", thing.getUID(),
-                    thing.getConfiguration().get(UDN));
-            return new WemoMakerHandler(thing, upnpIOService, wemoHttpcaller);
         } else if (WemoBindingConstants.SUPPORTED_DEVICE_THING_TYPES.contains(thing.getThingTypeUID())) {
             logger.debug("Creating a WemoHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get(UDN));
             return new WemoHandler(thing, upnpIOService, wemoHttpcaller);
+        } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_MAKER)) {
+            logger.debug("Creating a WemoMakerHandler for thing '{}' with UDN '{}'", thing.getUID(),
+                    thing.getConfiguration().get(UDN));
+            return new WemoMakerHandler(thing, upnpIOService, wemoHttpcaller);
         } else if (thingTypeUID.equals(WemoBindingConstants.THING_TYPE_COFFEE)) {
             logger.debug("Creating a WemoCoffeeHandler for thing '{}' with UDN '{}'", thing.getUID(),
                     thing.getConfiguration().get(UDN));
