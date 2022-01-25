@@ -104,7 +104,7 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
                     } else {
                         String result = cameraService.motionDetectionOwl(accountHandler.getBlinkAccount(), config,
                                 enable);
-                        logger.info("Returned from owl arm/disarm: {}", result);
+                        logger.debug("Returned from owl arm/disarm: {}", result); // {"id":200445162,"network_id":5xx2,"state":"done"}
                     }
                 }
             } else if (CHANNEL_CAMERA_SETTHUMBNAIL.equals(channelUID.getId())) {
@@ -118,7 +118,7 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
                     } else {
                         String result = cameraService.createThumbnailOwl(accountHandler.getBlinkAccount(), config);
                         setThumbnailFinished(true);
-                        logger.info("Returned from owl createThumbnail: {}", result);
+                        logger.debug("Returned from owl createThumbnail: {}", result); // {"id":200445162,"network_id":5xx2,"command":"thumbnail","state":"new"}
                     }
                 }
             } else if (CHANNEL_CAMERA_GETTHUMBNAIL.equals(channelUID.getId())) {
