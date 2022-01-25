@@ -145,15 +145,15 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     private @Nullable ApplianceData getApplianceData(Appliance appliance) {
         // Dates are stripped of time part inside library
         Instant now = Instant.now();
-        Instant yesterday = now.minus(1, ChronoUnit.DAYS);
+        Instant twoDaysAgo = now.minus(2, ChronoUnit.DAYS); // Devices only report once a day - at best
         Instant tomorrow = now.plus(1, ChronoUnit.DAYS);
         OndusService service = getOndusService();
         if (service == null) {
             return null;
         }
         try {
-            logger.debug("Fetching data for {} from {} to {}", thing.getUID(), yesterday, tomorrow);
-            BaseApplianceData applianceData = service.applianceData(appliance, yesterday, tomorrow).orElse(null);
+            logger.debug("Fetching data for {} from {} to {}", thing.getUID(), twoDaysAgo, tomorrow);
+            BaseApplianceData applianceData = service.applianceData(appliance, twoDaysAgo, tomorrow).orElse(null);
             if (applianceData != null) {
                 if (applianceData.getType() != Appliance.TYPE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsense");
@@ -175,7 +175,6 @@ public class GroheOndusSenseHandler<T, M> extends GroheOndusBaseHandler<Applianc
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             updateChannels();
-            return;
         }
     }
 }
