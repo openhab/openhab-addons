@@ -76,8 +76,8 @@ public class WemoHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.SERVICE_SUBSCRIPTIONS.add(INSIGHTEVENT);
         super.initialize();
-        SERVICE_SUBSCRIPTIONS.add(INSIGHTEVENT);
     }
 
     @Override

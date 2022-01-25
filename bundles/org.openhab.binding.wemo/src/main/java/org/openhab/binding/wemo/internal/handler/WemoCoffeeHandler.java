@@ -66,9 +66,9 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.SERVICE_SUBSCRIPTIONS.add(DEVICEEVENT);
+        super.SERVICE_SUBSCRIPTIONS.remove(BASICEVENT);
         super.initialize();
-        SERVICE_SUBSCRIPTIONS.add(DEVICEEVENT);
-        SERVICE_SUBSCRIPTIONS.remove(BASICEVENT);
     }
 
     @Override

@@ -61,8 +61,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
      */
     private static final int DIM_STEPSIZE = 5;
 
-    protected static final String SUBSCRIPTION = "bridge1";
-
     /**
      * The default refresh initial delay in Seconds.
      */
@@ -78,10 +76,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.SERVICE_SUBSCRIPTIONS.add(BRIDGEEVENT);
+        super.SERVICE_SUBSCRIPTIONS.remove(BASICEVENT);
         // initialize() is only called if the required parameter 'deviceID' is available
         wemoLightID = (String) getConfig().get(DEVICE_ID);
-        SERVICE_SUBSCRIPTIONS.add(BRIDGEEVENT);
-        SERVICE_SUBSCRIPTIONS.remove(BASICEVENT);
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
