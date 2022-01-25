@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,12 +52,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DIMMER);
 
-    private final Object upnpLock = new Object();
-    private final Object jobLock = new Object();
-
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
-
-    private @Nullable ScheduledFuture<?> pollingJob;
 
     private int currentBrightness;
     private int currentNightModeBrightness;

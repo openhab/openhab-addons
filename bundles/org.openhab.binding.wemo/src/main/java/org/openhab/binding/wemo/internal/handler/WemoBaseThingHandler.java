@@ -63,7 +63,7 @@ public class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOPart
     public @Nullable ScheduledFuture<?> pollingJob;
 
     public Map<String, Boolean> subscriptionState = new HashMap<>();
-    public final Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(BASICEVENT);
+    public Collection<String> SERVICE_SUBSCRIPTIONS = Arrays.asList(BASICEVENT);
 
     public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing);
