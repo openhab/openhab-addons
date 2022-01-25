@@ -298,12 +298,12 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
             if (i.getAddress().equals(networkInterface)) {
                 final @Nullable HomekitRoot bridge = this.bridge;
                 if (this.bridge != null) {
-                    this.bridge.stop();
+                    bridge.stop();
                     this.bridge = null;
                 }
                 final @Nullable HomekitServer homekitServer = this.homekitServer;
                 if (homekitServer != null) {
-                    this.homekitServer.stop();
+                    homekitServer.stop();
                     this.homekitServer = null;
                 }
                 logger.trace("bridge stopped");
