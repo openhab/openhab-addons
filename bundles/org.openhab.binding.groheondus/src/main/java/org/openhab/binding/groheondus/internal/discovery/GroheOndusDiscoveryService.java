@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.groheondus.internal.discovery;
 
-import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.*;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSE;
+import static org.openhab.binding.groheondus.internal.GroheOndusBindingConstants.THING_TYPE_SENSEGUARD;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +61,9 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
+        // Remove old results - or they will stay there forever
+        removeOlderResults(getTimestampOfLastScan(), null, bridgeHandler.getThing().getUID());
+
         OndusService service;
         try {
             service = bridgeHandler.getService();
@@ -72,7 +76,6 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
             discoveredAppliances = service.appliances();
         } catch (IOException e) {
             logger.debug("Could not discover appliances.", e);
-            return;
         }
 
         discoveredAppliances.forEach(appliance -> {
