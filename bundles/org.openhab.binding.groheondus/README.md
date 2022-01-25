@@ -81,6 +81,9 @@ Appliance things.
 | temperature              | Number:Temperature       | The ambient temperature of the appliance              |
 | battery                  | Number                   | The battery level of the appliance                    |
 
+Note: Be aware that the Sense reports data once a day (at most), and that the value posted in the channel - however the
+latest - may be up to 48 hours old.
+
 ## Full Example
 
 Things file:
