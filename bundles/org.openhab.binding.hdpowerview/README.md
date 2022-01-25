@@ -111,7 +111,7 @@ The `position` and `secondary` channels are Rollershutter types.
 For vertical shades, the binding maps the vertical position of the "rail" to the Rollershutter ▲ / ▼ commands, and its respective percent value.
 And for horizontal shades, it maps the horizontal position of the "truck" to the Rollershutter ▲ / ▼ commands, and its respective percent value.
 
-Depending on whether the shade is a top-down, bottom-up, left-right, right-left, or dual action shade, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
+Depending on whether the shade is a top-down, bottom-up, left-right, right-left, dual action shade, or, a shade with a secondary blackout panel, the `OPEN` and `CLOSED` position of the shades may differ from the ▲ / ▼ commands follows..
 
 | Type of Shade               | Channel           | Rollershutter Command | Motion direction | Shade State    | Percent           | Pebble Remote Button |
 |-----------------------------|-------------------|-----------------------|------------------|----------------|-------------------|----------------------|
@@ -127,6 +127,8 @@ Depending on whether the shade is a top-down, bottom-up, left-right, right-left,
 |                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
 | Dual action<br>(upper rail) | ***`secondary`*** | ▲                     | Up               | ***`CLOSED`*** | 0%<sup>1)</sup>   | ![](doc/right.png)   |
 |                             |                   | ▼                     | Down             | ***`OPEN`***   | 100%<sup>1)</sup> | ![](doc/left.png)    |
+| Blackout panel ('DuoLite')  | ***`secondary`*** | ▲                     | Up               | `OPEN`         | 0%                | ▲                    |
+|                             |                   | ▼                     | Down             | `CLOSED`       | 100%              | ▼                    |
 
 ***<sup>1)</sup> BUG NOTE***: In openHAB versions v3.1.x and earlier, there was a bug in the handling of the position percent value of the `secondary` shade.
 Although the RollerShutter Up/Down commands functioned properly as described in the table above, the percent state values (e.g. displayed on a slider control), did not.
@@ -158,6 +160,9 @@ So there is an interdependency between the value of `vane` and the value of `pos
 On dual action shades, the top rail cannot move below the bottom rail, nor can the bottom rail move above the top.
 So the value of `secondary` is constrained by the prior value of `position`.
 And the value of `position` is constrained by the prior value of `secondary`.
+
+On shades with a secondary blackout panel 'DuoLite', the secondary blackout panel cannot be moved unless the main shade panel is already down.
+In this case, the position of the secondary blackout panel is reported as 0%.
 
 ## Refreshing the PowerView Hub Cache
 
