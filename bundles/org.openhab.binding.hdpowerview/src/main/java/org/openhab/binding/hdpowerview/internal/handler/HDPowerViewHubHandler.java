@@ -82,6 +82,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubHandler.class);
     private final HttpClient httpClient;
     private final HDPowerViewTranslationProvider translationProvider;
+    private final ConcurrentHashMap<ThingUID, ShadeData> pendingShadeInitializations = new ConcurrentHashMap<>();
 
     private long refreshInterval;
     private long hardRefreshPositionInterval;
@@ -92,7 +93,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> hardRefreshPositionFuture;
     private @Nullable ScheduledFuture<?> hardRefreshBatteryLevelFuture;
 
-    private ConcurrentHashMap<ThingUID, ShadeData> pendingShadeInitializations = new ConcurrentHashMap<>();
     private List<Scene> sceneCache = new CopyOnWriteArrayList<>();
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
@@ -163,7 +163,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
             return;
         }
 
-        pendingShadeInitializations = new ConcurrentHashMap<>();
+        pendingShadeInitializations.clear();
         webTargets = new HDPowerViewWebTargets(httpClient, host);
         refreshInterval = config.refresh;
         hardRefreshPositionInterval = config.hardRefresh;
