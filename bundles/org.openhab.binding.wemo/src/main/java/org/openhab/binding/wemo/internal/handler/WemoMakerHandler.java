@@ -18,16 +18,12 @@ import static org.openhab.binding.wemo.internal.WemoUtil.*;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -58,10 +54,6 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_MAKER);
 
-    private final Object jobLock = new Object();
-
-    private @Nullable ScheduledFuture<?> pollingJob;
-
     public WemoMakerHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpcaller) {
         super(thing, upnpIOService, wemoHttpcaller);
 
@@ -70,62 +62,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
-        Configuration configuration = getConfig();
-
-        if (configuration.get(UDN) != null) {
-            logger.debug("Initializing WemoMakerHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService localService = service;
-            if (localService != null) {
-                localService.registerParticipant(this);
-            }
-            host = getHost();
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
-                    TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/config-status.error.missing-udn");
-            logger.debug("Cannot initalize WemoMakerHandler. UDN not set.");
-        }
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("WeMoMakerHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-        }
-        this.pollingJob = null;
-        UpnpIOService localService = service;
-        if (localService != null) {
-            localService.unregisterParticipant(this);
-        }
-    }
-
-    private void poll() {
-        synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
-            try {
-                logger.debug("Polling job");
-                host = getHost();
-                // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    return;
-                }
-                updateStatus(ThingStatus.ONLINE);
-                updateWemoState();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
-            }
-        }
+        super.initialize();
     }
 
     @Override
@@ -176,6 +113,7 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo Maker.
      */
+    @Override
     protected void updateWemoState() {
         String localHost = getHost();
         if (localHost.isEmpty()) {
@@ -267,5 +205,15 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
         } catch (Exception e) {
             logger.error("Failed to get attributes for device '{}'", getThing().getUID(), e);
         }
+    }
+
+    @Override
+    public synchronized void addSubscription() {
+        // We cannot subscribe to service events for Maker device.
+    }
+
+    @Override
+    public synchronized void removeSubscription() {
+        // We cannot subscribe to service events for Maker device.
     }
 }

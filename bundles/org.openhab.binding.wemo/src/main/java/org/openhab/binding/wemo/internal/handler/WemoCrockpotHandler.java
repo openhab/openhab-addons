@@ -19,13 +19,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -53,14 +50,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_CROCKPOT);
 
-    private final Object upnpLock = new Object();
-    private final Object jobLock = new Object();
-
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
-
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
-
-    private @Nullable ScheduledFuture<?> pollingJob;
 
     public WemoCrockpotHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing, upnpIOService, wemoHttpCaller);
@@ -70,62 +60,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
-        Configuration configuration = getConfig();
-
-        if (configuration.get(UDN) != null) {
-            logger.debug("Initializing WemoCrockpotHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService localService = service;
-            if (localService != null) {
-                localService.registerParticipant(this);
-            }
-            host = getHost();
-            pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
-                    TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/config-status.error.missing-udn");
-            logger.debug("Cannot initalize WemoCrockpotHandler. UDN not set.");
-        }
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("WeMoCrockpotHandler disposed.");
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-        }
-        this.pollingJob = null;
-        removeSubscription();
-    }
-
-    private void poll() {
-        synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
-            try {
-                logger.debug("Polling job");
-                host = getHost();
-                // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    synchronized (upnpLock) {
-                        subscriptionState = new HashMap<>();
-                    }
-                    return;
-                }
-                updateStatus(ThingStatus.ONLINE);
-                updateWemoState();
-                addSubscription();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
-            }
-        }
+        super.initialize();
     }
 
     @Override
@@ -191,15 +126,6 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
     }
 
     @Override
-    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        if (service != null) {
-            logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
-                    succeeded ? "succeeded" : "failed");
-            subscriptionState.put(service, succeeded);
-        }
-    }
-
-    @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'", variable, value, service,
                 this.getThing().getUID());
@@ -210,54 +136,12 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
         }
     }
 
-    private synchronized void addSubscription() {
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
-
-                    String subscription = BASICEVENT;
-
-                    if (subscriptionState.get(subscription) == null) {
-                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                                subscription);
-                        localService.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
-                        subscriptionState.put(subscription, true);
-                    }
-                } else {
-                    logger.debug(
-                            "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                            getThing().getUID());
-                }
-            }
-        }
-    }
-
-    private synchronized void removeSubscription() {
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
-                    String subscription = BASICEVENT;
-
-                    if (subscriptionState.get(subscription) != null) {
-                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                        localService.removeSubscription(this, subscription);
-                    }
-                    subscriptionState.remove(subscription);
-                    localService.unregisterParticipant(this);
-                }
-            }
-        }
-    }
-
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo device and
      * calls {@link onValueReceived} to update the statemap and channels..
      *
      */
+    @Override
     protected void updateWemoState() {
         String localHost = getHost();
         if (localHost.isEmpty()) {
@@ -320,5 +204,15 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
         updateStatus(ThingStatus.ONLINE);
+    }
+
+    @Override
+    public synchronized void addSubscription() {
+        // We cannot subscribe to service events for Crockpot device.
+    }
+
+    @Override
+    public synchronized void removeSubscription() {
+        // We cannot subscribe to service events for Crockpot device.
     }
 }

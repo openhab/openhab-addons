@@ -15,8 +15,6 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -52,11 +50,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoLightHandler.class);
 
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
-
-    private final Object upnpLock = new Object();
-    private final Object jobLock = new Object();
-
     private @Nullable WemoBridgeHandler wemoBridgeHandler;
 
     private @Nullable String wemoLightID;
@@ -87,6 +80,8 @@ public class WemoLightHandler extends WemoBaseThingHandler {
     public void initialize() {
         // initialize() is only called if the required parameter 'deviceID' is available
         wemoLightID = (String) getConfig().get(DEVICE_ID);
+        SERVICE_SUBSCRIPTIONS.add(BRIDGEEVENT);
+        SERVICE_SUBSCRIPTIONS.remove(BASICEVENT);
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
@@ -117,18 +112,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
         }
     }
 
-    @Override
-    public void dispose() {
-        logger.debug("WeMoLightHandler disposed.");
-
-        ScheduledFuture<?> job = this.pollingJob;
-        if (job != null && !job.isCancelled()) {
-            job.cancel(true);
-        }
-        this.pollingJob = null;
-        removeSubscription();
-    }
-
     private synchronized @Nullable WemoBridgeHandler getWemoBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
@@ -143,34 +126,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             return null;
         }
         return this.wemoBridgeHandler;
-    }
-
-    private void poll() {
-        synchronized (jobLock) {
-            if (pollingJob == null) {
-                return;
-            }
-            try {
-                logger.debug("Polling job");
-                host = getHost();
-                // Check if the Wemo device is set in the UPnP service registry
-                // If not, set the thing state to ONLINE/CONFIG-PENDING and wait for the next poll
-                if (!isUpnpDeviceRegistered()) {
-                    logger.debug("UPnP device {} not yet registered", getUDN());
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    synchronized (upnpLock) {
-                        subscriptionState = new HashMap<>();
-                    }
-                    return;
-                }
-                updateStatus(ThingStatus.ONLINE);
-                getDeviceState();
-                addSubscription();
-            } catch (Exception e) {
-                logger.debug("Exception during poll: {}", e.getMessage(), e);
-            }
-        }
     }
 
     @Override
@@ -372,10 +327,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
     }
 
     @Override
-    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-    }
-
-    @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         logger.trace("Received pair '{}':'{}' (service '{}') for thing '{}'",
                 new Object[] { variable, value, service, this.getThing().getUID() });
@@ -397,46 +348,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     currentBrightness = newBrightness;
                 }
                 break;
-        }
-    }
-
-    private synchronized void addSubscription() {
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
-
-                    if (subscriptionState.get(SUBSCRIPTION) == null) {
-                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                                SUBSCRIPTION);
-                        localService.addSubscription(this, SUBSCRIPTION, SUBSCRIPTION_DURATION_SECONDS);
-                        subscriptionState.put(SUBSCRIPTION, true);
-                    }
-                } else {
-                    logger.debug(
-                            "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                            getThing().getUID());
-                }
-            }
-        }
-    }
-
-    private synchronized void removeSubscription() {
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
-
-                    if (subscriptionState.get(SUBSCRIPTION) != null) {
-                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), SUBSCRIPTION);
-                        localService.removeSubscription(this, SUBSCRIPTION);
-                    }
-                    subscriptionState = new HashMap<>();
-                    localService.unregisterParticipant(this);
-                }
-            }
         }
     }
 }

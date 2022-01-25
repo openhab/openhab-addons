@@ -64,6 +64,11 @@ public class WemoBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
+    public void dispose() {
+        logger.debug("Handler disposed for thing {}", getThing().getUID());
+    }
+
+    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Not needed, all commands are handled in the {@link WemoLightHandler}
     }
