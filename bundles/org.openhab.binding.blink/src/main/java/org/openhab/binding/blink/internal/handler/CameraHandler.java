@@ -194,9 +194,11 @@ public class CameraHandler extends BaseThingHandler implements EventListener {
         if (config == null)
             return;
         try {
-            updateState(CHANNEL_CAMERA_TEMPERATURE,
-                    new QuantityType<>(accountHandler.getTemperature(config), ImperialUnits.FAHRENHEIT));
-            updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(config));
+            if (config.cameraType == CameraConfiguration.CameraType.CAMERA) {
+                updateState(CHANNEL_CAMERA_TEMPERATURE,
+                        new QuantityType<>(accountHandler.getTemperature(config), ImperialUnits.FAHRENHEIT));
+                updateState(CHANNEL_CAMERA_BATTERY, accountHandler.getBattery(config));
+            }
             updateState(CHANNEL_CAMERA_MOTIONDETECTION, accountHandler.getMotionDetection(config, false));
             String imagePath = accountHandler.getCameraState(config, false).thumbnail;
             if (!lastThumbnailPath.equals(imagePath)) {
