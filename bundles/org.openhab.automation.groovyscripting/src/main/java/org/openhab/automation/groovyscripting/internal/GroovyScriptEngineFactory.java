@@ -37,8 +37,8 @@ import groovy.lang.GroovyClassLoader;
 @NonNullByDefault
 public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
 
-    private final org.codehaus.groovy.jsr223.GroovyScriptEngineFactory factory = new org.codehaus.groovy.jsr223.GroovyScriptEngineFactory();
     private static final String FILE_DIRECTORY = "automation" + File.separator + "groovy";
+    private final org.codehaus.groovy.jsr223.GroovyScriptEngineFactory factory = new org.codehaus.groovy.jsr223.GroovyScriptEngineFactory();
 
     private final List<String> scriptTypes = (List<String>) Stream.of(factory.getExtensions(), factory.getMimeTypes())
             .flatMap(List::stream) //
@@ -48,7 +48,7 @@ public class GroovyScriptEngineFactory extends AbstractScriptEngineFactory {
 
     public GroovyScriptEngineFactory() {
         String scriptDir = OpenHAB.getConfigFolder() + File.separator + FILE_DIRECTORY;
-        logger.info("Adding script directory {} to the GroovyScriptEngine class path.", scriptDir);
+        logger.debug("Adding script directory {} to the GroovyScriptEngine class path.", scriptDir);
         gcl.addClasspath(scriptDir);
     }
 
