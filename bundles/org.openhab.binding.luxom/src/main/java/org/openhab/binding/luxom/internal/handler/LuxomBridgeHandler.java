@@ -178,8 +178,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                         communication.sendMessage(commandExecutionSpecification.getCommand());
                     }
                 } catch (IOException e) {
-                    logger.error("Communication error while sending, will try to reconnect. Error: {}",
-                            e.getMessage());
+                    logger.error("Communication error while sending, will try to reconnect. Error: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 
                     reconnect();
