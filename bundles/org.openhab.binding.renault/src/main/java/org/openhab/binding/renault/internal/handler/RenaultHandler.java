@@ -20,6 +20,8 @@ import static org.openhab.core.library.unit.Units.MINUTE;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
@@ -30,6 +32,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.renault.internal.RenaultBindingConstants;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
+import org.openhab.binding.renault.internal.api.Car.ChargingMode;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
@@ -39,6 +42,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -119,13 +123,24 @@ public class RenaultHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
-                if (command instanceof RefreshType && !car.isDisableHvac()) {
-                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
-                } else if (command instanceof QuantityType) {
-                    car.setHvacTargetTemperature(((QuantityType<?>) command).doubleValue());
-                    updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                            car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                if (!car.isDisableHvac()) {
+                    if (command instanceof RefreshType && !car.isDisableHvac()) {
+                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                                car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                    } else if (command instanceof DecimalType) {
+                        car.setHvacTargetTemperature(((DecimalType) command).doubleValue());
+                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                                car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                    } else if (command instanceof QuantityType && !car.isDisableHvac()) {
+                        double value = ((QuantityType<?>) command).doubleValue();
+                        Unit<?> unit = ((QuantityType<?>) command).getUnit();
+                        double celsius = (unit.equals(ImperialUnits.FAHRENHEIT))
+                                ? ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(value)
+                                : value;
+                        car.setHvacTargetTemperature(celsius);
+                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                                car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                    }
                 }
                 break;
             case RenaultBindingConstants.CHANNEL_HVAC_STATUS:
@@ -141,6 +156,9 @@ public class RenaultHandler extends BaseThingHandler {
                         scheduler.schedule(() -> {
                             updateHvacStatus(httpSession);
                         }, config.updateDelay, TimeUnit.SECONDS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        logger.warn("Error My Renault Http Session.", e);
                     } catch (Exception e) {
                         logger.warn("Error My Renault Http Session.", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -149,19 +167,28 @@ public class RenaultHandler extends BaseThingHandler {
                 break;
             case RenaultBindingConstants.CHANNEL_CHARGING_MODE:
                 if (command instanceof StringType) {
-                    car.setChargeMode(command.toString());
-                    String mode = car.getChargingMode();
-                    if (mode != null) {
-                        MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
-                        try {
-                            httpSession.initSesssion(car);
-                            httpSession.actionChargeMode(command.toString());
-                            updateState(CHANNEL_CHARGING_MODE, new StringType(mode));
-                        } catch (Exception e) {
-                            httpSession = null;
-                            logger.warn("Error My Renault Http Session.", e);
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                    try {
+                        ChargingMode newMode = Car.ChargingMode.valueOf(command.toString());
+                        if (!ChargingMode.unknown.equals(newMode)) {
+                            MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
+                            try {
+                                httpSession.initSesssion(car);
+                                httpSession.actionChargeMode(newMode);
+                                car.setChargeMode(newMode);
+                                updateState(CHANNEL_CHARGING_MODE, new StringType(newMode.toString()));
+                            } catch (InterruptedException e) {
+                                Thread.currentThread().interrupt();
+                                logger.warn("Error My Renault Http Session.", e);
+                            } catch (Exception e) {
+                                httpSession = null;
+                                logger.warn("Error My Renault Http Session.", e);
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                        e.getMessage());
+                            }
                         }
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("Invalid ChargingMode {}.", command.toString());
+                        return;
                     }
                 }
             default:
@@ -184,6 +211,9 @@ public class RenaultHandler extends BaseThingHandler {
         try {
             httpSession.initSesssion(car);
             updateStatus(ThingStatus.ONLINE);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Error My Renault Http Session.", e);
         } catch (Exception e) {
             httpSession = null;
             logger.warn("Error My Renault Http Session.", e);
@@ -284,8 +314,8 @@ public class RenaultHandler extends BaseThingHandler {
                 }
                 Double batteryAvailableEnergy = car.getBatteryAvailableEnergy();
                 if (batteryAvailableEnergy != null) {
-                    updateState(CHANNEL_BATTERY_AVAILABLE_ENERGY,
-                            new DecimalType(batteryAvailableEnergy.doubleValue()));
+                    updateState(CHANNEL_BATTERY_AVAILABLE_ENERGY, new QuantityType<Energy>(
+                            batteryAvailableEnergy.doubleValue(), org.openhab.core.library.unit.Units.KILOWATT_HOUR));
                 }
                 Integer chargingRemainingTime = car.getChargingRemainingTime();
                 if (chargingRemainingTime != null) {

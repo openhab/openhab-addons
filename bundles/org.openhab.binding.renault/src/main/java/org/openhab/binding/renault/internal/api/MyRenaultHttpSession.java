@@ -25,6 +25,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.renault.internal.RenaultConfiguration;
+import org.openhab.binding.renault.internal.api.Car.ChargingMode;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
@@ -256,12 +257,15 @@ public class MyRenaultHttpSession {
                             "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
                 }
             }
-        } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+        } catch (JsonParseException | TimeoutException | ExecutionException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
         }
     }
 
-    public void actionChargeMode(String mode) throws RenaultForbiddenException, RenaultNotImplementedException {
+    public void actionChargeMode(ChargingMode mode) throws RenaultForbiddenException, RenaultNotImplementedException {
         Request request = httpClient
                 .newRequest(this.constants.getKamereonRootUrl() + "/commerce/v1/accounts/" + kamereonaccountId
                         + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/actions/charge-mode?country="
@@ -273,7 +277,7 @@ public class MyRenaultHttpSession {
                 "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + mode + "\"}}}", "utf-8"));
         try {
             ContentResponse response = request.send();
-            logger.debug("Kamereon Response HVAC ON: {}", response.getContentAsString());
+            logger.debug("Kamereon Response set ChargeMode: {}", response.getContentAsString());
             if (HttpStatus.OK_200 != response.getStatus()) {
                 logger.warn("Kamereon Response: [{}] {} {}", response.getStatus(), response.getReason(),
                         response.getContentAsString());
@@ -285,7 +289,10 @@ public class MyRenaultHttpSession {
                             "Kamereon Service Not Implemented: [" + response.getStatus() + "] " + response.getReason());
                 }
             }
-        } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+        } catch (JsonParseException | TimeoutException | ExecutionException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
         }
     }
@@ -314,7 +321,10 @@ public class MyRenaultHttpSession {
                             "Kamereon Response Failed! Error: [" + response.getStatus() + "] " + response.getReason());
                 }
             }
-        } catch (JsonParseException | InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+        } catch (JsonParseException | TimeoutException | ExecutionException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
         }
         return null;

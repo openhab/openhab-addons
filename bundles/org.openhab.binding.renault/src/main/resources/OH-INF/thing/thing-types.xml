@@ -89,7 +89,7 @@
 	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
-		<state pattern="%.1f kWh" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
@@ -105,6 +105,13 @@
 	<channel-type id="chargingmode">
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
+		<state readOnly="false">
+			<options>
+				<option value="CHARGING_MODE_UNKNOWN">unknown</option>
+				<option value="CHARGING_MODE_SCHEDULE">schedule_mode</option>
+				<option value="CHARGING_MODE_ALWAYS">always_charging</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>

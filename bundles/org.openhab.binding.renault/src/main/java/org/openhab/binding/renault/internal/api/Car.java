@@ -47,9 +47,9 @@ public class Car {
     private @Nullable Double batteryAvailableEnergy;
     private @Nullable Integer chargingRemainingTime;
     private @Nullable String chargingStatus;
-    private @Nullable String chargingMode;
+    private ChargingMode chargingMode = ChargingMode.unknown;
     private @Nullable Boolean hvacstatus;
-    private Double hvacTargetTemperature = 20.0;
+    private double hvacTargetTemperature = 20.0;
     private @Nullable Double odometer;
     private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
@@ -58,6 +58,12 @@ public class Car {
     private @Nullable Double gpsLongitude;
     private @Nullable Double externalTemperature;
     private @Nullable String plugStatus;
+
+    public enum ChargingMode {
+        unknown,
+        schedule_mode,
+        always_charging
+    }
 
     public void setBatteryStatus(JsonObject responseJson) {
         try {
@@ -228,7 +234,7 @@ public class Car {
         return chargingStatus;
     }
 
-    public @Nullable String getChargingMode() {
+    public ChargingMode getChargingMode() {
         return chargingMode;
     }
 
@@ -264,13 +270,18 @@ public class Car {
         this.disableHvac = disableHvac;
     }
 
-    public void setChargeMode(String mode) {
+    /**
+     * Set the charging mode to a known mode.
+     * 
+     * @param mode
+     */
+    public void setChargeMode(ChargingMode mode) {
         switch (mode) {
-            case CHARGING_MODE_SCHEDULE:
-                chargingMode = CHARGING_MODE_SCHEDULE;
+            case schedule_mode:
+                chargingMode = mode;
                 break;
-            case CHARGING_MODE_ALWAYS:
-                chargingMode = CHARGING_MODE_ALWAYS;
+            case always_charging:
+                chargingMode = mode;
                 break;
             default:
                 break;
@@ -297,7 +308,7 @@ public class Car {
             case "-2147483648":
                 return "PLUG_UNKNOWN";
             default:
-                return "UNKNOWEN";
+                return "UNKNOWN";
         }
     }
 
@@ -321,7 +332,7 @@ public class Car {
             case "-1.1":
                 return "UNAVAILABLE";
             default:
-                return "UNKNOWEN";
+                return "UNKNOWN";
         }
     }
 }

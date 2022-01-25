@@ -34,7 +34,8 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 
 ## Channels
 
-Some channels may not work depending on your car and MyRenault account. The "Advanced" channels are especially likely to cause confusion and problems.
+Some channels may not work depending on your car and MyRenault account. 
+The "Advanced" channels are especially likely to cause confusion and problems.
 
 | Channel ID             | Type               | Description                                     | Read Only |
 |------------------------|--------------------|-------------------------------------------------|-----------|
@@ -80,10 +81,8 @@ sitemap renaultcar label="Renault Car" {
 
 ![Sitemap](doc/sitemap.png)
 
-If you do not have a smart charger and want to limit the charge of the battery you can 
-set up an active 15 minute charge schedule in the MyRenault App. Then create 
-a Dimmer item "RenaultCar_ChargeLimit" and set it to 80% for example. This rule 
-will change the RenaultCar_ChargingMode to schedule_mode when the limit is reached.
+If you do not have a smart charger and want to limit the charge of the battery you can set up an  active 15 minute charge schedule in the MyRenault App.
+Then create a Dimmer item "RenaultCar_ChargeLimit" and set it to 80% for example. This rule will change the RenaultCar_ChargingMode to schedule_mode when the limit is reached.
 This stops charging after the battery level reaches the charge limit.
 
 ChargeRenaultCarLimit Code
