@@ -50,14 +50,15 @@ Bridge. The appliance needs to be configured with the unique appliance ID (with 
 as the `roomId`
 and the `locationId`. Once the account bridge is configured, the appliances in your account will be discovered as
 Appliance things.
+`pollingInterval` has a minimum value of 900 seconds to avoid service rate limiting.
 
-| Configuration            | Default value            | Description                                           |
-|--------------------------|--------------------------|-------------------------------------------------------|
+| Configuration            | Default value            | Description                                          |
+|--------------------------|--------------------------|------------------------------------------------------|
 | applianceId              | ''                       | Unique ID of the appliance in the GROHE ONDUS account |
-| roomId                   | ''                       | ID of the room the appliance is in                    |
-| locationId               | ''                       | ID of the location (building) the appliance is in     |
-| pollingInterval          | Retrieved from API,      | Interval in seconds to get new data from the API      |
-|                          | usually 900              | The `sense` thing uses 900 by default               |
+| roomId                   | ''                       | ID of the room the appliance is in                   |
+| locationId               | ''                       | ID of the location (building) the appliance is in    |
+| pollingInterval          | Retrieved from API,      | Interval in seconds to get new data from the API     |
+|                          | usually 900              | The `sense` thing uses 900 by default.               |
 
 #### Channels
 

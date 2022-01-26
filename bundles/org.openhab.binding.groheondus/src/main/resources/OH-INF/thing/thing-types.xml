@@ -55,7 +55,7 @@
 				<label>Location ID</label>
 				<description>The ID of the location the room is in as retrieved from the GROHE ONDUS API.</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false">
+			<parameter name="pollingInterval" type="integer" required="false" min="900">
 				<label>Polling Interval</label>
 				<description>The interval in seconds used to poll the API for new data. Defaults to the configuration of the
 					appliance itself as retrieved from the API, usually 15 minutes.
@@ -94,7 +94,7 @@
 				<label>Location ID</label>
 				<description>The ID of the location the room is in as retrieved from the GROHE ONDUS API.</description>
 			</parameter>
-			<parameter name="pollingInterval" type="integer" required="false">
+			<parameter name="pollingInterval" type="integer" required="false" min="900">
 				<label>Polling Interval</label>
 				<description>The interval in seconds used to poll the API for new data.</description>
 			</parameter>
