@@ -306,7 +306,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                 forceStopDeviceV1Monitor(deviceId, monitorWorkId);
                 throw new LGApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
             }
-            int retries = 3;
+            int retries = 10;
             ACSnapShot shot = null;
             while (retries > 0) {
                 // try to get monitoring data result 3 times.
@@ -322,13 +322,13 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     logger.info("Monitor for device {} was expired. Forcing stop and start to next cycle.", deviceId);
                     return null;
                 } catch (Exception e) {
-                    // If can't get monitoring, then stop monitor and restart the process again in new interaction
-                    // I force restart monitoring because of the errors returned (just in case)
+                    // If it can't get monitor handler, then stop monitor and restart the process again in new interaction
+                    // Force restart monitoring because of the errors returned (just in case)
                     forceStopDeviceV1Monitor(deviceId, monitorWorkId);
                     throw new LGApiException("Error getting monitor data for the device:" + deviceId, e);
                 }
             }
-            // I cant stop monitoring by exhausting, because the monitor can need more time.
+            forceStopDeviceV1Monitor(deviceId, monitorWorkId);
             throw new LGApiException("Exhausted trying to get monitor data for the device:" + deviceId);
         }
     }
