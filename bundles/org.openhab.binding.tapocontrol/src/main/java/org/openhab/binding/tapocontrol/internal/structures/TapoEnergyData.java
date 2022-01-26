@@ -71,6 +71,7 @@ public class TapoEnergyData {
 
     private void setData() {
         this.currentPower = (float) jsonObjectToInt(jsonObject, ENERGY_PROPERTY_POWER) / 1000;
+
         this.todayEnergy = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_ENERGY_TODAY);
         this.monthEnergy = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_ENERGY_MONTH);
         this.todayRuntime = jsonObjectToInt(jsonObject, ENERGY_PROPERTY_RUNTIME_TODAY);

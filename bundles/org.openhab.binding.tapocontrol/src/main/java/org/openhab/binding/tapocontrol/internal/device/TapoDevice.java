@@ -359,7 +359,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_USAGE_TODAY),
                 getEnergyType(energyData.getTodayEnergy(), Units.WATT_HOUR));
         publishState(getChannelID(CHANNEL_GROUP_ENERGY, CHANNEL_NRG_RUNTIME_TODAY),
-                getTimeType(energyData.getTodayRuntime(), Units.SECOND));
+                getTimeType(energyData.getTodayRuntime(), Units.MINUTE));
     }
 
     /**
@@ -494,6 +494,7 @@ public abstract class TapoDevice extends BaseThingHandler {
         channel = channel.replace(CHANNEL_GROUP_ACTUATOR + "#", "");
         channel = channel.replace(CHANNEL_GROUP_DEVICE + "#", "");
         channel = channel.replace(CHANNEL_GROUP_EFFECTS + "#", "");
+        channel = channel.replace(CHANNEL_GROUP_ENERGY + "#", "");
         return channel;
     }
 }

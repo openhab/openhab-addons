@@ -69,7 +69,7 @@
 		<channels>
 			<channel id="actualPower" typeId="actualPowerChannel"></channel>
 			<channel id="todayEnergyUsage" typeId="todayEnergyUsageChannel"></channel>
-			<channel id="todyRuntime" typeId="todayRuntimeChannel"></channel>
+			<channel id="todayRuntime" typeId="todayRuntimeChannel"></channel>
 		</channels>
 	</channel-group-type>
 
@@ -183,8 +183,8 @@
 		<item-type>Number:Time</item-type>
 		<label>Today Runtime</label>
 		<description>Today runtime (On-Time)</description>
-		<category>Energy</category>
-		<state readOnly="true" pattern="%s %unit%"></state>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"></state>
 	</channel-type>
 
 

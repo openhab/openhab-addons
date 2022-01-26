@@ -342,7 +342,7 @@ public class TapoUtils {
      * 
      * @param numVal Number with value
      * @param unit TimeUnit (Unit<Time>)
-     * @return QuantityTime<Time>
+     * @return QuantityType<Time>
      */
     public static QuantityType<Time> getTimeType(@Nullable Number numVal, Unit<Time> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -353,7 +353,7 @@ public class TapoUtils {
      * 
      * @param numVal Number with value
      * @param unit PowerUnit (Unit<Power>)
-     * @return QuantityTime<Power>
+     * @return QuantityType<Power>
      */
     public static QuantityType<Power> getPowerType(@Nullable Number numVal, Unit<Power> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);
@@ -364,7 +364,7 @@ public class TapoUtils {
      * 
      * @param numVal Number with value
      * @param unit PowerUnit (Unit<Power>)
-     * @return QuantityTime<Power>
+     * @return QuantityType<Energy>
      */
     public static QuantityType<Energy> getEnergyType(@Nullable Number numVal, Unit<Energy> unit) {
         return new QuantityType<>((numVal != null ? numVal : 0), unit);

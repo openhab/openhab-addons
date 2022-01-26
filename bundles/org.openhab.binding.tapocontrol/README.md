@@ -98,7 +98,7 @@ All devices support some of the following channels:
 |           | onTime           | Number:Time            | seconds output is on         | P100, P105, P110, L510, L530, L900, L920    |
 | energy    | actualPower      | Number:Power           | actual Power (Watt)          | P110                                        |
 |           | todayEnergyUsage | Number:Energy          | used energy today (Wh)       | P110                                        |
-|           | todyRuntime      | Number:Time            | seconds output was on today  | P110                                        |
+|           | todayRuntime      | Number:Time            | seconds output was on today  | P110                                        |
 
 
 ## Channel Refresh

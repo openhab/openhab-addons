@@ -159,7 +159,7 @@ public class TapoThingConstants {
     public static final String CHANNEL_GROUP_ENERGY = "energy";
     public static final String CHANNEL_NRG_POWER = "actualPower";
     public static final String CHANNEL_NRG_USAGE_TODAY = "todayEnergyUsage";
-    public static final String CHANNEL_NRG_RUNTIME_TODAY = "todyRuntime";
+    public static final String CHANNEL_NRG_RUNTIME_TODAY = "todayRuntime";
     // channel group effect
     public static final String CHANNEL_GROUP_EFFECTS = "effect";
     public static final String CHANNEL_FX_BRIGHTNESS = "brightness";
