@@ -1,11 +1,6 @@
 # LG Thinq Bridge & Things
 
-_This binding perform discovery & registry of (for now) LG Thinq Air Conditioners in version 1 & 2 of LG Emp API.
-![LG Thinq Air Conditioners (v1 & v2)](doc/lg-thinq-air.jpg)
-With this binding, you can control the following air conditioner resources:_
-* Target Temperature;
-* Operation Mode (the operation modes are grabbed online in the first time the thing is sync from LG Emp Server);
-* Fan Speed (the fan speed levels are grabbed online in the first time the thing is sync from LG Emp Server);
+_Give some details about what this binding is meant for - a protocol, system, specific device._
 
 
 ## Supported Things
