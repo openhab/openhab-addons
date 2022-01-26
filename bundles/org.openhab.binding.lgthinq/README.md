@@ -1,59 +1,73 @@
 # LG Thinq Bridge & Things
 
-_This binding performance discovery & registry of (for now) LG Thinq Air Conditioners in version 1 & 2 of LG Emp API.
+_This binding perform discovery & registry of (for now) LG Thinq Air Conditioners in version 1 & 2 of LG Emp API.
+![LG Thinq Air Conditioners (v1 & v2)](doc/lg-thinq-air.jpg)
 With this binding, you can control the following air conditioner resources:_
 * Target Temperature;
-* Operation Mode (restricted to: FAN, DRY, COOL, )
+* Operation Mode (the operation modes are grabbed online in the first time the thing is sync from LG Emp Server);
+* Fan Speed (the fan speed levels are grabbed online in the first time the thing is sync from LG Emp Server);
 
-_If possible, provide some resources like pictures, a video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+The Thinq Bridge is necessary to work as a hub/bridge to discovery and first configure the LG Thinq devices related with the LG's user account.
+Then, the first thing is to create the LG Thinq Bridge and configure the following parameters necessary to connect to the user's LG Thinq Account.
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+This Bridge discovery Air Conditioner Things related to the user's account. To force the immediate discovery, you can disable & enable the bridge 
 
 ## Binding Configuration
 
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
+![LG Bridge Configuration](doc/bridge-configuration.jpg)
 
-```
-# Configuration for the lgthinq Binding
-#
-# Default secret key for the pairing of the lgthinq Thing.
-# It has to be between 10-40 (alphanumeric) characters.
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
+The binding is represented by a bridge (LG GatewayBridge) and you must configure the following parameters:
 
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/OH-INF/binding``` of your binding._
+| Bridge Parameter           | Description                                                                                                                                                                                        | Constraints                |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
+| User Language              | User language configured for the LG's account. Actually we have an limited number of language values available. If you need some specific, please let me know                                      | en-US, en-GB, pt-BR and ge |
+| User Country               | User country configured for the LG's account. Actually we have an limited number of language values available. If you need some specific, please let me know                                       | US, UK, BR and DE          |
+| LG User name               | The LG user's account (normally an email)                                                                                                                                                          |                            |
+| LG Password                | The LG user's password                                                                                                                                                                             |                            |
+| Pooling Discovery Interval | It the time (in seconds) that the bridge wait to try to fetch de devices registered to the user's account and, if find some new device, will show available to link. Please, choose some long time | greater than 300 seconds   |
 
-_If your binding does not offer any generic configurations, you can remove this section completely._
+
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+For now, only Air Conditioners are supported and must implement versions 1 or 2 of LG API (currently, there are only this 2 versions). We are working hard to release in a next version supportability for others devices like: refrigerators, washing machines, etc.
+There is currently no configuration available, as it is automatically obtained by the bridge discovery process.
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
+LG Thinq Air Conditioners support the following channels to interact with the OpenHab automation framework:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._
+| channel            | type             | description                                                                                                                                                 |
+|--------------------|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target Temperature | Temperature      | Defines the desired target temperature for the device                                                                                                       |
+| Temperature        | Temperature      | Read-Only channel that indicates the current temperature informed by the device                                                                             |
+| Fan Speed          | Number (Labeled) | This channel let you choose the current label value for the fan speed (Low, Medium, High, Nature, etc.). These values are pre-configured in discovery time. |
+| Operation Mode     | Number (Labeled) | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                   |
+| Power              | Switch           | Define the device's current power state.                                                                                                                    |
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+**Important:** this binding will always interact with the LG API server to get information about the device. This is the Smart Thinq way to work, there is no other way (like direct access) to the devices. Hence, some side effects will happen in the following situations:
+1. **Internet Link** - if you OpenHab server doesn't have a good internet connection this binding will not work properly! In the same way, if the internet link goes down, your Things and Bridge going to be Offline as well, and you won't be able to control the devices though OpenHab until the link comes back.
+2. **LG Thinq App** - if you've already used the LG Thinq App to control your devices and hold it constantly activated in your mobile phone, you may experience some instability because the App (and Binding) will try to lock the device in LG Thinq API Server to get it's current state. In the app, you may see some information in the device informing that "The device is being used by other" (something like this) and in the OpenHab, the thing can go Offline for a while.
+3. **Pooling time** - both Bridge and Thing use pooling strategy to get the current state information about the registered devices. Note that the Thing pooling time is internal and can't be changed (please, don't change in the source code) and the Bridge can be changed for something greater than 300 seconds, and we recommend long pooling periods for the Bridge because the discovery process fetch a lot of information from the LG API Server, depending on the number of devices you have registered in your account. 
+About this last point, it's important to know that LG API is not Open & Public, i.e, only LG Official Partners with some agreement have access to there support and documentation. This binding was a hard (very hard actually) work to dig and reverse engineering in the LG's Thinq API protocol. Because this, don't overdo it by reducing the pooling times, otherwise they might blacklist your account, or worse, the service account used internally by this binding.
 
-## Full Example
+## Thanks and Inspirations
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+This binding was inspired in the work of some brave opensource community people. I got some tips and helps from their codes:
+* Adrian Sampson - [Wideq Project](https://github.com/sampsyo/wideq): I think it is the first reverse engineering of Thinq protocol made in Python, but only works (currently) for API V1.
+* Ollo69 - [LG Thinq Integration for Home Assistant](https://github.com/ollo69/ha-smartthinq-sensors): Ollo69 took the Adrian code and refactor it to support API V2 in an HA plugin.
 
-## Any custom content here!
+## Be nice!
+If you like the component, why don't you support me by buying me a coffee?
+It would certainly motivate me to further improve this work or to create new others cool bindings for OpenHab !
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+[![Buy me a coffee!](https://www.buymeacoffee.com/assets/img/custom_images/black_img.png)](https://www.buymeacoffee.com/nemerdaud)
+
+
+
+

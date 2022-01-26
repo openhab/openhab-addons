@@ -101,7 +101,6 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
                     logger.debug(
                             "Token authentication process has been already done. Skip first authentication process.");
                     try {
-                        // Dummy - if token is expired, then provide the refresh
                         tokenManager.getValidRegisteredToken(bridgeName);
                     } catch (IOException e) {
                         logger.error("Error reading LGThinq TokenFile", e);
@@ -118,7 +117,7 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
                         tokenManager.oauthFirstRegistration(bridgeName, lgthinqConfig.getLanguage(),
                                 lgthinqConfig.getCountry(), lgthinqConfig.getUsername(), lgthinqConfig.getPassword());
                         if (tokenManager.getValidRegisteredToken(bridgeName) != null) {
-
+                            logger.debug("Successful getting token from LG API");
                         }
                     } catch (IOException e) {
                         logger.debug(

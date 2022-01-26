@@ -12,13 +12,13 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.8.1</version>
+      <version>5.8.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.1.0</version>
+      <version>4.2.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -29,13 +29,13 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcore-osgi</artifactId>
-      <version>4.4.10</version>
+      <version>4.4.15</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpclient-osgi</artifactId>
-      <version>4.5.8</version>
+      <version>4.5.13</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -44,6 +44,12 @@
       <version>2.11.0</version>
       <scope>compile</scope>
     </dependency>
+      <dependency>
+          <groupId>com.github.tomakehurst</groupId>
+          <artifactId>wiremock-jre8</artifactId>
+          <version>2.32.0</version>
+          <scope>test</scope>
+      </dependency>
 
   </dependencies>
 

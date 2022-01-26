@@ -48,7 +48,8 @@ public class LGThinqBindingConstants {
     public static final String V1_START_MON_PATH = "rti/rtiMon";
     public static final String V1_POOL_MON_PATH = "rti/rtiResult";
     public static final String V1_CONTROL_OP = "rti/rtiControl";
-    public static final String GATEWAY_URL = "https://route.lgthinq.com:46030/v1/service/application/gateway-uri";
+    public static final String GATEWAY_SERVICE_PATH = "/v1/service/application/gateway-uri";
+    public static final String GATEWAY_URL = "https://route.lgthinq.com:46030"+GATEWAY_SERVICE_PATH;
     public static final String SECURITY_KEY = "nuts_securitykey";
     public static final String SVC_CODE = "SVC202";
     public static final String OAUTH_SECRET_KEY = "c053c2a6ddeb7ad97cb0eed0dcb31cf8";
