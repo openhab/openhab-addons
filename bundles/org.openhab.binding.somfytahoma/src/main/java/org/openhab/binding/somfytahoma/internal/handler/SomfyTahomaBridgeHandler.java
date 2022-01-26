@@ -671,6 +671,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * @throws ExecutionException
      * @throws TimeoutException
      * @throws InterruptedException
+     * @throws JsonSyntaxException
      */
     private String loginCozytouch()
             throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
@@ -715,7 +716,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             String jwt = response.getContentAsString();
             return jwt.replace("\"", "");
         } else {
-            throw new ExecutionException(response.getContentAsString(), null);
+            throw new ExecutionException(String.format("Failed to retrieve JWT token. ResponseCode=%d, ResponseText=%s",
+                    response.getStatus(), response.getContentAsString()), null);
         }
     }
 
