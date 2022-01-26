@@ -393,6 +393,7 @@
     <module>org.openhab.persistence.mongodb</module>
     <module>org.openhab.persistence.rrd4j</module>
     <!-- voice -->
+    <module>org.openhab.voice.googlestt</module>
     <module>org.openhab.voice.googletts</module>
     <module>org.openhab.voice.mactts</module>
     <module>org.openhab.voice.marytts</module>
