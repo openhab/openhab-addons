@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="infokey"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="dhtmodule">
+		<label>DHT 11 / 22 / AM2302 Module (Version 1)</label>
+		<description>Thing for capturing temperature and humidity module</description>
+		<channel-groups>
+			<channel-group id="dht_inputs" typeId="dht_module_group"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="dht_server_ip" type="text" required="true">
+				<label>DHT server IP</label>
+				<description>Raspberry Pi Service Server IP</description>
+				<default>127.0.0.1</default>
+			</parameter>
+			<parameter name="dht_data_pin" type="integer" required="true">
+				<label>DHT Data Pin Number Selection</label>
+				<description>Raspberry Pi GPIO pin that used as data pin for the DHT module</description>
+				<options>
+					<option value="0">0</option>
+					<option value="06">GPIO 06 (Pin 31)</option>
+					<option value="12">GPIO 12 (Pin 32)</option>
+					<option value="13">GPIO 13 (Pin 33)</option>
+					<option value="16">GPIO 16 (Pin 36)</option>
+					<option value="17">GPIO 17 (Pin 11)</option>
+					<option value="18">GPIO 18 (Pin 12)</option>
+					<option value="22">GPIO 22 (Pin 15)</option>
+					<option value="23">GPIO 23 (Pin 16)</option>
+					<option value="24">GPIO 24 (Pin 18)</option>
+					<option value="26">GPIO 26 (Pin 37)</option>
+					<option value="27">GPIO 27 (Pin 13)</option>
+				</options>
+				<default>0</default>
+			</parameter>
+			<parameter name="dht_model" type="integer" required="true">
+				<label>DHT Model Selection</label>
+				<description>Select the DHT Model (DHT 11 / 22 / AM2302) of the sensor that you own</description>
+				<options>
+					<option value="11">DHT 11</option>
+					<option value="22">DHT 22</option>
+					<option value="02">AM 2302x</option>
+				</options>
+				<default>11</default>
+			</parameter>
+			<parameter name="dht_polling_interval" type="integer" unit="ms">
+				<label>Polling Interval Time</label>
+				<description>mcp3008 polling interval time</description>
+				<default>60000</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

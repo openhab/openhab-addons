@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="infokey"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mcp3008dinv1">
+		<label>MCP3008 8 Channels 10-bit Analog to Digital Input Din Rail Module (Version 1)</label>
+		<description>Thing for 3 mcp3008 of 8 channels 10-bit Analog to Digital Input din rail module of Infokey</description>
+		<channel-groups>
+			<channel-group id="analoginput" typeId="mcp3008dinv1inputgroup"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="spi_chip_select" type="integer" required="true">
+				<label>Chip Select Pin Number</label>
+				<description>Raspberry Pi GPIO pin that used as chip select pin of SPI</description>
+				<options>
+					<option value="0">0</option>
+					<option value="06">GPIO 06 (Pin 31)</option>
+					<option value="12">GPIO 12 (Pin 32)</option>
+					<option value="13">GPIO 13 (Pin 33)</option>
+					<option value="16">GPIO 16 (Pin 36)</option>
+					<option value="17">GPIO 17 (Pin 11)</option>
+					<option value="18">GPIO 18 (Pin 12)</option>
+					<option value="22">GPIO 22 (Pin 15)</option>
+					<option value="23">GPIO 23 (Pin 16)</option>
+					<option value="24">GPIO 24 (Pin 18)</option>
+					<option value="26">GPIO 26 (Pin 37)</option>
+					<option value="27">GPIO 27 (Pin 13)</option>
+				</options>
+				<default>0</default>
+			</parameter>
+			<parameter name="spi_channel" type="integer" required="true">
+				<label>SPI BUS Number</label>
+				<description>SPI Bus number (0-1)</description>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+				</options>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>

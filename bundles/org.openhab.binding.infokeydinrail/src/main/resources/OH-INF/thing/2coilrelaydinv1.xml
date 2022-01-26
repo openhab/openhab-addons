@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="infokey"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="2coilrelaydinv1">
+		<label>2 Coil Relay Din Rail Module (Version 1)</label>
+		<description>Thing for 7 channels of 2 coil relay din rail module of Infokey</description>
+		<channel-groups>
+			<channel-group id="pulseoutput" typeId="2coilrelaydinv1pulseoutputgroup"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="address" type="integer" required="true">
+				<label>I2C Device Address</label>
+				<description>I2C Bus mcp2317 device Address in HEX</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="bus_number" type="integer" required="true">
+				<label>I2C BUS Number</label>
+				<description>I2C Bus number (0-7)</description>
+				<options>
+					<option value="0">0</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+				</options>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+</thing:thing-descriptions>
