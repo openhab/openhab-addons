@@ -15,12 +15,12 @@ package org.openhab.binding.renault.internal.handler;
 import static org.openhab.binding.renault.internal.RenaultBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.KILO;
 import static org.openhab.core.library.unit.SIUnits.METRE;
+import static org.openhab.core.library.unit.Units.KILOWATT_HOUR;
 import static org.openhab.core.library.unit.Units.MINUTE;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.measure.Unit;
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
@@ -42,7 +42,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -132,11 +131,7 @@ public class RenaultHandler extends BaseThingHandler {
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
                                 car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
                     } else if (command instanceof QuantityType && !car.isDisableHvac()) {
-                        double value = ((QuantityType<?>) command).doubleValue();
-                        Unit<?> unit = ((QuantityType<?>) command).getUnit();
-                        double celsius = (unit.equals(ImperialUnits.FAHRENHEIT))
-                                ? ImperialUnits.FAHRENHEIT.getConverterTo(SIUnits.CELSIUS).convert(value)
-                                : value;
+                        double celsius = ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS).doubleValue();
                         car.setHvacTargetTemperature(celsius);
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
                                 car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
@@ -153,9 +148,12 @@ public class RenaultHandler extends BaseThingHandler {
                         car.resetHVACStatus();
                         httpSession.initSesssion(car);
                         httpSession.actionHvacOn(car.getHvacTargetTemperature());
-                        scheduler.schedule(() -> {
-                            updateHvacStatus(httpSession);
-                        }, config.updateDelay, TimeUnit.SECONDS);
+                        if (pollingJob != null) {
+                            pollingJob.cancel(true);
+                        }
+                        pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.updateDelay,
+                                config.refreshInterval * 60, TimeUnit.SECONDS);
+                        ;
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         logger.warn("Error My Renault Http Session.", e);
@@ -168,8 +166,8 @@ public class RenaultHandler extends BaseThingHandler {
             case RenaultBindingConstants.CHANNEL_CHARGING_MODE:
                 if (command instanceof StringType) {
                     try {
-                        ChargingMode newMode = Car.ChargingMode.valueOf(command.toString());
-                        if (!ChargingMode.unknown.equals(newMode)) {
+                        ChargingMode newMode = ChargingMode.valueOf(command.toString());
+                        if (!ChargingMode.UNKNOWN.equals(newMode)) {
                             MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
                             try {
                                 httpSession.initSesssion(car);
@@ -295,6 +293,8 @@ public class RenaultHandler extends BaseThingHandler {
         if (!car.isDisableBattery()) {
             try {
                 httpSession.getBatteryStatus(car);
+                updateState(CHANNEL_PLUG_STATUS, new StringType(car.getPlugStatus().name()));
+                updateState(CHANNEL_CHARGING_STATUS, new StringType(car.getChargingStatus().name()));
                 Double batteryLevel = car.getBatteryLevel();
                 if (batteryLevel != null) {
                     updateState(CHANNEL_BATTERY_LEVEL, new DecimalType(batteryLevel.doubleValue()));
@@ -304,18 +304,10 @@ public class RenaultHandler extends BaseThingHandler {
                     updateState(CHANNEL_ESTIMATED_RANGE,
                             new QuantityType<Length>(estimatedRange.doubleValue(), KILO(METRE)));
                 }
-                String plugStatus = car.getPlugStatus();
-                if (plugStatus != null) {
-                    updateState(CHANNEL_PLUG_STATUS, new StringType(plugStatus));
-                }
-                String chargingStatus = car.getChargingStatus();
-                if (chargingStatus != null) {
-                    updateState(CHANNEL_CHARGING_STATUS, new StringType(chargingStatus));
-                }
                 Double batteryAvailableEnergy = car.getBatteryAvailableEnergy();
                 if (batteryAvailableEnergy != null) {
-                    updateState(CHANNEL_BATTERY_AVAILABLE_ENERGY, new QuantityType<Energy>(
-                            batteryAvailableEnergy.doubleValue(), org.openhab.core.library.unit.Units.KILOWATT_HOUR));
+                    updateState(CHANNEL_BATTERY_AVAILABLE_ENERGY,
+                            new QuantityType<Energy>(batteryAvailableEnergy.doubleValue(), KILOWATT_HOUR));
                 }
                 Integer chargingRemainingTime = car.getChargingRemainingTime();
                 if (chargingRemainingTime != null) {

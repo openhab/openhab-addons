@@ -30,8 +30,6 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class Car {
 
-    public static final String CHARGING_MODE_SCHEDULE = "schedule_mode";
-    public static final String CHARGING_MODE_ALWAYS = "always_charging";
     public static final String HVAC_STATUS_ON = "ON";
     public static final String HVAC_STATUS_OFF = "OFF";
     public static final String HVAC_STATUS_PENDING = "PENDING";
@@ -43,13 +41,14 @@ public class Car {
     private boolean disableCockpit = false;
     private boolean disableHvac = false;
 
+    private ChargingStatus chargingStatus = ChargingStatus.UNKNOWN;
+    private ChargingMode chargingMode = ChargingMode.UNKNOWN;
+    private PlugStatus plugStatus = PlugStatus.UNKNOWN;
+    private double hvacTargetTemperature = 20.0;
     private @Nullable Double batteryLevel;
     private @Nullable Double batteryAvailableEnergy;
     private @Nullable Integer chargingRemainingTime;
-    private @Nullable String chargingStatus;
-    private ChargingMode chargingMode = ChargingMode.unknown;
     private @Nullable Boolean hvacstatus;
-    private double hvacTargetTemperature = 20.0;
     private @Nullable Double odometer;
     private @Nullable Double estimatedRange;
     private @Nullable String imageURL;
@@ -57,12 +56,31 @@ public class Car {
     private @Nullable Double gpsLatitude;
     private @Nullable Double gpsLongitude;
     private @Nullable Double externalTemperature;
-    private @Nullable String plugStatus;
 
     public enum ChargingMode {
-        unknown,
-        schedule_mode,
-        always_charging
+        UNKNOWN,
+        SCHEDULE_MODE,
+        ALWAYS_CHARGING
+    }
+
+    public enum PlugStatus {
+        UNPLUGGED,
+        PLUGGED,
+        PLUG_ERROR,
+        PLUG_UNKNOWN,
+        UNKNOWN
+    }
+
+    public enum ChargingStatus {
+        NOT_IN_CHARGE,
+        WAITING_FOR_A_PLANNED_CHARGE,
+        CHARGE_ENDED,
+        WAITING_FOR_CURRENT_CHARGE,
+        ENERGY_FLAP_OPENED,
+        CHARGE_IN_PROGRESS,
+        CHARGE_ERROR,
+        UNAVAILABLE,
+        UNKNOWN
     }
 
     public void setBatteryStatus(JsonObject responseJson) {
@@ -226,11 +244,11 @@ public class Car {
         return estimatedRange;
     }
 
-    public @Nullable String getPlugStatus() {
+    public PlugStatus getPlugStatus() {
         return plugStatus;
     }
 
-    public @Nullable String getChargingStatus() {
+    public ChargingStatus getChargingStatus() {
         return chargingStatus;
     }
 
@@ -277,10 +295,10 @@ public class Car {
      */
     public void setChargeMode(ChargingMode mode) {
         switch (mode) {
-            case schedule_mode:
+            case SCHEDULE_MODE:
                 chargingMode = mode;
                 break;
-            case always_charging:
+            case ALWAYS_CHARGING:
                 chargingMode = mode;
                 break;
             default:
@@ -296,43 +314,43 @@ public class Car {
         return null;
     }
 
-    private String mapPlugStatus(String plugState) {
+    private PlugStatus mapPlugStatus(final String apiPlugState) {
         // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
-        switch (plugState) {
+        switch (apiPlugState) {
             case "0":
-                return "UNPLUGGED";
+                return PlugStatus.UNPLUGGED;
             case "1":
-                return "PLUGGED";
+                return PlugStatus.PLUGGED;
             case "-1":
-                return "PLUG_ERROR";
+                return PlugStatus.PLUG_ERROR;
             case "-2147483648":
-                return "PLUG_UNKNOWN";
+                return PlugStatus.PLUG_UNKNOWN;
             default:
-                return "UNKNOWN";
+                return PlugStatus.UNKNOWN;
         }
     }
 
-    private String mapChargingStatus(String chargeState) {
+    private ChargingStatus mapChargingStatus(final String apiChargeState) {
         // https://github.com/hacf-fr/renault-api/blob/main/src/renault_api/kamereon/enums.py
-        switch (chargeState) {
+        switch (apiChargeState) {
             case "0.0":
-                return "NOT_IN_CHARGE";
+                return ChargingStatus.NOT_IN_CHARGE;
             case "0.1":
-                return "WAITING_FOR_A_PLANNED_CHARGE";
+                return ChargingStatus.WAITING_FOR_A_PLANNED_CHARGE;
             case "0.2":
-                return "CHARGE_ENDED";
+                return ChargingStatus.CHARGE_ENDED;
             case "0.3":
-                return "WAITING_FOR_CURRENT_CHARGE";
+                return ChargingStatus.WAITING_FOR_CURRENT_CHARGE;
             case "0.4":
-                return "ENERGY_FLAP_OPENED";
+                return ChargingStatus.ENERGY_FLAP_OPENED;
             case "1.0":
-                return "CHARGE_IN_PROGRESS";
+                return ChargingStatus.CHARGE_IN_PROGRESS;
             case "-1.0":
-                return "CHARGE_ERROR";
+                return ChargingStatus.CHARGE_ERROR;
             case "-1.1":
-                return "UNAVAILABLE";
+                return ChargingStatus.UNAVAILABLE;
             default:
-                return "UNKNOWN";
+                return ChargingStatus.UNKNOWN;
         }
     }
 }

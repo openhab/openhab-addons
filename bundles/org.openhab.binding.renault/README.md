@@ -67,7 +67,7 @@ sitemap renaultcar label="Renault Car" {
         Default item=RenaultCar_BatteryEnergyAvailable icon="energy"
         Default item=RenaultCar_PlugStatus icon="poweroutlet"
         Default item=RenaultCar_ChargingStatus icon="switch"
-        Selection item=RenaultCar_ChargingMode mappings=[schedule_mode="Schedule mode",always_charging="Always charging"] icon="switch"
+        Selection item=RenaultCar_ChargingMode mappings=[SCHEDULE_MODE="Schedule mode",ALWAYS_CHARGING="Instant charge"] icon="switch"
         Default item=RenaultCar_ChargingTimeRemaining icon="time"
         Default item=RenaultCar_EstimatedRange
         Default item=RenaultCar_Odometer
@@ -111,12 +111,12 @@ actions:
       script: >-
         if ( RenaultCar_PlugStatus.state.toString == 'PLUGGED' ) {
           if ( RenaultCar_BatteryLevel.state as Number >= RenaultCar_ChargeLimit.state as Number ) {
-            if (RenaultCar_ChargingMode.state.toString == 'always_charging' ) {
-              RenaultCar_ChargingMode.sendCommand("schedule_mode")
+            if (RenaultCar_ChargingMode.state.toString == 'ALWAYS_CHARGING' ) {
+              RenaultCar_ChargingMode.sendCommand("SCHEDULE_MODE")
             }
           } else {
-            if (RenaultCar_ChargingMode.state.toString == 'schedule_mode' ) {
-              RenaultCar_ChargingMode.sendCommand("always_charging")
+            if (RenaultCar_ChargingMode.state.toString == 'SCHEDULE_MODE' ) {
+              RenaultCar_ChargingMode.sendCommand("ALWAYS_CHARGING")
             }
           }
         }

@@ -95,21 +95,41 @@
 		<item-type>String</item-type>
 		<label>Plug Status</label>
 		<description>Status of charging plug.</description>
-		<state readOnly="true"></state>
+		<state readOnly="true">
+			<options>
+				<option value="UNPLUGGED">Unplugged</option>
+				<option value="PLUGGED">Plugged</option>
+				<option value="PLUG_ERROR">Plug error</option>
+				<option value="PLUG_UNKNOWN">Plug unknown</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="chargingstatus">
 		<item-type>String</item-type>
 		<label>Charging Status</label>
-		<state readOnly="true"></state>
+		<state readOnly="true">
+			<options>
+				<option value="NOT_IN_CHARGE">Not charging</option>
+				<option value="WAITING_FOR_A_PLANNED_CHARGE">Waiting for schedule</option>
+				<option value="CHARGE_ENDED">Charge ended</option>
+				<option value="WAITING_FOR_CURRENT_CHARGE">Waiting for charge</option>
+				<option value="ENERGY_FLAP_OPENED">Plug flap opened</option>
+				<option value="CHARGE_IN_PROGRESS">Charge in progress</option>
+				<option value="CHARGE_ERROR">Charge error</option>
+				<option value="UNAVAILABLE">Unavailable</option>
+				<option value="UNKNOWN">Unknown</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="chargingmode">
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
 		<state readOnly="false">
 			<options>
-				<option value="CHARGING_MODE_UNKNOWN">unknown</option>
-				<option value="CHARGING_MODE_SCHEDULE">schedule_mode</option>
-				<option value="CHARGING_MODE_ALWAYS">always_charging</option>
+				<option value="UNKNOWN">Unknown</option>
+				<option value="SCHEDULE_MODE">Schedule mode</option>
+				<option value="ALWAYS_CHARGING">Instant charge</option>
 			</options>
 		</state>
 	</channel-type>
@@ -136,9 +156,9 @@
 		<label>HVAC Status (ON | OFF | PENDING)</label>
 		<state readOnly="false">
 			<options>
-				<option value="ON">ON</option>
-				<option value="PENDING">PENDING</option>
-				<option value="OFF">OFF</option>
+				<option value="ON">On</option>
+				<option value="PENDING">Pending</option>
+				<option value="OFF">Off</option>
 			</options>
 		</state>
 	</channel-type>
