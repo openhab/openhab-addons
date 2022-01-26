@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,10 +51,17 @@ public class LGThinqBindingConstants {
     public static final String GATEWAY_SERVICE_PATH = "/v1/service/application/gateway-uri";
     public static final String GATEWAY_URL = "https://route.lgthinq.com:46030"+GATEWAY_SERVICE_PATH;
     public static final String SECURITY_KEY = "nuts_securitykey";
+    public static final String APP_KEY = "wideq";
+    public static final String DATA_ROOT = "result";
+    public static final String POST_DATA_ROOT = "lgedmRoot";
+    public static final String RETURN_CODE_ROOT = "resultCode";
+    public static final String RETURN_MESSAGE_ROOT = "returnMsg";
     public static final String SVC_CODE = "SVC202";
     public static final String OAUTH_SECRET_KEY = "c053c2a6ddeb7ad97cb0eed0dcb31cf8";
     public static final String OAUTH_CLIENT_KEY = "LGAO722A02";
     public static final String DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss +0000";
+    public static final String DEFAULT_COUNTRY = "US";
+    public static final String DEFAULT_LANGUAGE = "en-US";
     public static final String APPLICATION_KEY = "6V1V8H2BN5P9ZQGOI5DAQ92YZBDO3EK9";
     public static final String V2_EMP_SESS_URL = "https://emp-oauth.lgecloud.com/emp/oauth2/token/empsession";
     // v2
