@@ -236,17 +236,25 @@ public class GoogleSTTService implements STTService {
         long startTime = System.currentTimeMillis();
         long maxTranscriptionMillis = (config.maxTranscriptionSeconds * 1000L);
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
+        int readBytes = 6400;
         while (keepStreaming.get()) {
-            byte[] data = new byte[6400];
+            byte[] data = new byte[readBytes];
             int dataN = audioStream.read(data);
-            if (!keepStreaming.get() || isExpiredInterval(maxTranscriptionMillis, startTime)) { // 60 seconds
+            if (!keepStreaming.get() || isExpiredInterval(maxTranscriptionMillis, startTime)) {
                 logger.debug("Stops listening, max transcription time reached");
                 break;
             }
             if (!config.singleUtteranceMode
-                    && isExpiredInterval(maxSilenceMillis, responseObserver.getLastInputTime())) { // 60 seconds
+                    && isExpiredInterval(maxSilenceMillis, responseObserver.getLastInputTime())) {
                 logger.debug("Stops listening, max silence time reached");
                 break;
+            }
+            if (dataN != readBytes) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                continue;
             }
             StreamingRecognizeRequest dataRequest = StreamingRecognizeRequest.newBuilder()
                     .setAudioContent(ByteString.copyFrom(data)).build();
@@ -327,7 +335,7 @@ public class GoogleSTTService implements STTService {
                 List<SpeechRecognitionAlternative> alternatives = result.getAlternativesList();
                 logger.debug("Got {} alternatives", alternatives.size());
                 SpeechRecognitionAlternative alternative = alternatives.stream()
-                        .min(Comparator.comparing(SpeechRecognitionAlternative::getConfidence)).orElse(null);
+                        .max(Comparator.comparing(SpeechRecognitionAlternative::getConfidence)).orElse(null);
                 if (alternative == null) {
                     return;
                 }
