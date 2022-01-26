@@ -48,6 +48,9 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class MyRenaultHttpSession {
 
+    private static final String CHARGING_MODE_SCHEDULE = "schedule_mode";
+    private static final String CHARGING_MODE_ALWAYS = "always_charging";
+
     private RenaultConfiguration config;
     private HttpClient httpClient;
     private Constants constants;
@@ -273,8 +276,10 @@ public class MyRenaultHttpSession {
                 .method(HttpMethod.POST).header("Content-type", "application/vnd.api+json")
                 .header("apikey", this.constants.getKamereonApiKey())
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
+
+        final String apiMode = ChargingMode.SCHEDULE_MODE.equals(mode) ? CHARGING_MODE_SCHEDULE : CHARGING_MODE_ALWAYS;
         request.content(new StringContentProvider(
-                "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + mode + "\"}}}", "utf-8"));
+                "{\"data\":{\"type\":\"ChargeMode\",\"attributes\":{\"action\":\"" + apiMode + "\"}}}", "utf-8"));
         try {
             ContentResponse response = request.send();
             logger.debug("Kamereon Response set ChargeMode: {}", response.getContentAsString());

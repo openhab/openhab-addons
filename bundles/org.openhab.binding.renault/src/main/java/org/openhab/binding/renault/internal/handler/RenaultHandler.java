@@ -144,7 +144,7 @@ public class RenaultHandler extends BaseThingHandler {
                         && !car.isDisableHvac()) {
                     final MyRenaultHttpSession httpSession = new MyRenaultHttpSession(this.config, httpClient);
                     try {
-                        updateState(CHANNEL_HVAC_STATUS, new StringType("PENDING"));
+                        updateState(CHANNEL_HVAC_STATUS, new StringType(Car.HVAC_STATUS_PENDING));
                         car.resetHVACStatus();
                         httpSession.initSesssion(car);
                         httpSession.actionHvacOn(car.getHvacTargetTemperature());

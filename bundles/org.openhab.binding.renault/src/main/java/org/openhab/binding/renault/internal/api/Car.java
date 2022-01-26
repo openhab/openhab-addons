@@ -60,7 +60,7 @@ public class Car {
     public enum ChargingMode {
         UNKNOWN,
         SCHEDULE_MODE,
-        ALWAYS_CHARGING
+        ALWAYS_CHARGING()
     }
 
     public enum PlugStatus {
