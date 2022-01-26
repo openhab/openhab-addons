@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="voice:googlestt">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Authentication for connecting to Google Cloud Platform.</description>
+		</parameter-group>
+		<parameter-group name="stt">
+			<label>STT Configuration</label>
+			<description>Configure Speech to Text.</description>
+		</parameter-group>
+		<parameter-group name="messages">
+			<label>Info Messages</label>
+			<description>Configure service information messages.</description>
+		</parameter-group>
+		<parameter name="clientId" type="text" required="true" groupName="authentication">
+			<label>Client Id</label>
+			<description>Google Cloud Platform OAuth 2.0-Client Id.</description>
+		</parameter>
+		<parameter name="clientSecret" type="text" required="true" groupName="authentication">
+			<context>password</context>
+			<label>Client Secret</label>
+			<description>Google Cloud Platform OAuth 2.0-Client Secret.</description>
+		</parameter>
+		<parameter name="oauthCode" type="text" groupName="authentication">
+			<label>Authorization Code</label>
+			<description><![CDATA[The oauth code is a one-time code needed to retrieve the necessary access token from Google Cloud Platform. <b>Please go to your browser ...</b> https://accounts.google.com/o/oauth2/auth?client_id=\<YOUR_CLIENT_ID\>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code <b>... to generate an auth-code and paste it here</b>.]]></description>
+		</parameter>
+		<parameter name="singleUtteranceMode" type="boolean" groupName="stt">
+			<label>Single Utterance Mode</label>
+			<description>When enabled Google Cloud Platform is responsible for detecting when to stop listening after a single
+				utterance. (Recommended)</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="maxTranscriptionSeconds" type="integer" unit="s" groupName="stt">
+			<label>Max Transcription Seconds</label>
+			<description>Max seconds to wait to force stop the transcription.</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="maxSilenceSeconds" type="integer" unit="s" groupName="stt">
+			<label>Max Silence Seconds</label>
+			<description>Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop
+				listening.</description>
+			<default>5</default>
+		</parameter>
+		<parameter name="refreshSupportedLocales" type="boolean" groupName="stt">
+			<label>Refresh Supported Locales</label>
+			<description>Try loading supported locales from the documentation page.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="noResultsMessage" type="text" groupName="messages">
+			<label>No Results Message</label>
+			<description>Message to be told when no results. (Empty for disabled)</description>
+			<default>Sorry, I didn't understand you</default>
+		</parameter>
+		<parameter name="errorMessage" type="text" groupName="messages">
+			<label>Error Message</label>
+			<description>Message to be told when an error has happened. (Empty for disabled)</description>
+			<default>Sorry, something went wrong</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
