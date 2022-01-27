@@ -29,6 +29,7 @@ import org.openhab.binding.hdpowerview.internal.builders.SceneGroupChannelBuilde
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.osgi.framework.Bundle;
 
 /**
@@ -78,6 +79,15 @@ public class SceneGroupChannelBuilderTest {
         assertEquals(1, channels.size());
         assertEquals(CHANNEL_GROUP_UID.getId(), channels.get(0).getUID().getGroupId());
         assertEquals(Integer.toString(sceneCollections.get(0).id), channels.get(0).getUID().getIdWithoutGroup());
+    }
+
+    @Test
+    public void autoUpdatePolicyIsCorrect() {
+        List<SceneCollection> sceneCollections = createSceneCollections();
+        List<Channel> channels = builder.withSceneCollections(sceneCollections).build();
+
+        assertEquals(1, channels.size());
+        assertEquals(AutoUpdatePolicy.VETO, channels.get(0).getAutoUpdatePolicy());
     }
 
     @Test
