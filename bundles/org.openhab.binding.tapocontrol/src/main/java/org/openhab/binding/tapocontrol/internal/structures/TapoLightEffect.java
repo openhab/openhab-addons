@@ -61,7 +61,7 @@ public class TapoLightEffect {
      */
     public TapoLightEffect setData(JsonObject jso) {
         /* create empty jsonObject to set efault values if has no lighning effect */
-        if (jsonObject.has(DEVICE_PROPERTY_EFFECT)) {
+        if (jso.has(DEVICE_PROPERTY_EFFECT)) {
             this.jsonObject = jso;
         } else {
             jsonObject = new JsonObject();
