@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class OauthLgEmpAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(OauthLgEmpAuthenticator.class);
     private static final OauthLgEmpAuthenticator instance;
-    private static final Map<String,String> oauthSearchKeyQueryParams = new LinkedHashMap<>();
+    private static final Map<String, String> oauthSearchKeyQueryParams = new LinkedHashMap<>();
     static {
         instance = new OauthLgEmpAuthenticator();
         oauthSearchKeyQueryParams.put("key_name", "OAUTH_SECRETKEY");

@@ -50,7 +50,7 @@ public class LGThinqBindingConstants {
     public static final String V1_CONTROL_OP = "rti/rtiControl";
     public static final String OAUTH_SEARCH_KEY_PATH = "/searchKey";
     public static final String GATEWAY_SERVICE_PATH = "/v1/service/application/gateway-uri";
-    public static String GATEWAY_URL = "https://route.lgthinq.com:46030"+GATEWAY_SERVICE_PATH;
+    public static String GATEWAY_URL = "https://route.lgthinq.com:46030" + GATEWAY_SERVICE_PATH;
     public static final String PRE_LOGIN_PATH = "/preLogin";
     public static final String SECURITY_KEY = "nuts_securitykey";
     public static final String APP_KEY = "wideq";
