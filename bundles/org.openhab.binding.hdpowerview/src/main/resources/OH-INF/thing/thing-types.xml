@@ -61,7 +61,7 @@
 				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
 			</channel>
 			<channel id="vane" typeId="shade-vane"/>
-			<channel id="calibrate" typeId="shade-calibrate"/>
+			<channel id="command" typeId="shade-command"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="batteryVoltage" typeId="battery-voltage"/>
@@ -121,10 +121,16 @@
 		<description>The opening of the slats in the shade</description>
 	</channel-type>
 
-	<channel-type id="shade-calibrate" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Calibrate</label>
-		<description>Perform calibration of the shade</description>
+	<channel-type id="shade-command" advanced="true">
+		<item-type>String</item-type>
+		<label>Command</label>
+		<description>Send a command to the shade</description>
+		<command>
+			<options>
+				<option value="CALIBRATE">Calibrate</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="scene-activate">
