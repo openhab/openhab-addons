@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+ 
+com.google.cloud: google-cloud-speech
+* License: Apache 2.0 License
+* Project: https://github.com/googleapis/java-speech
+* Source: https://github.com/googleapis/java-speech
