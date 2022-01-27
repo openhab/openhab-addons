@@ -41,15 +41,17 @@ public class LGThinqBindingConstants {
     public static final String V2_APP_OS = "LINUX";
     public static final String V2_APP_TYPE = "NUTS";
     public static final String V2_APP_VER = "3.0.1700";
-
+    public static final String V2_SESSION_LOGIN_PATH = "/emp/v2.0/account/session/";
     public static final String V2_LS_PATH = "/service/application/dashboard";
     public static final String V2_DEVICE_CONFIG_PATH = "service/devices/";
     public static final String V2_CTRL_DEVICE_CONFIG_PATH = "service/devices/%s/control-sync";
     public static final String V1_START_MON_PATH = "rti/rtiMon";
     public static final String V1_POOL_MON_PATH = "rti/rtiResult";
     public static final String V1_CONTROL_OP = "rti/rtiControl";
+    public static final String OAUTH_SEARCH_KEY_PATH = "/searchKey";
     public static final String GATEWAY_SERVICE_PATH = "/v1/service/application/gateway-uri";
-    public static final String GATEWAY_URL = "https://route.lgthinq.com:46030"+GATEWAY_SERVICE_PATH;
+    public static String GATEWAY_URL = "https://route.lgthinq.com:46030"+GATEWAY_SERVICE_PATH;
+    public static final String PRE_LOGIN_PATH = "/preLogin";
     public static final String SECURITY_KEY = "nuts_securitykey";
     public static final String APP_KEY = "wideq";
     public static final String DATA_ROOT = "result";
@@ -63,7 +65,7 @@ public class LGThinqBindingConstants {
     public static final String DEFAULT_COUNTRY = "US";
     public static final String DEFAULT_LANGUAGE = "en-US";
     public static final String APPLICATION_KEY = "6V1V8H2BN5P9ZQGOI5DAQ92YZBDO3EK9";
-    public static final String V2_EMP_SESS_URL = "https://emp-oauth.lgecloud.com/emp/oauth2/token/empsession";
+    public static String V2_EMP_SESS_URL = "https://emp-oauth.lgecloud.com/emp/oauth2/token/empsession";
     // v2
     public static final String API_KEY = "VGhpblEyLjAgU0VSVklDRQ==";
 

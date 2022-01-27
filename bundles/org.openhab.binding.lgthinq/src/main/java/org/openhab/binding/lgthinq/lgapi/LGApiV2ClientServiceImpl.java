@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
-public class LGApiV2ClientServiceImpl implements LGApiClientService {
+public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
     private static final LGApiClientService instance;
     private static final Logger logger = LoggerFactory.getLogger(LGApiV2ClientServiceImpl.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -56,6 +56,11 @@ public class LGApiV2ClientServiceImpl implements LGApiClientService {
 
     private LGApiV2ClientServiceImpl() {
         tokenManager = TokenManager.getInstance();
+    }
+
+    @Override
+    protected TokenManager getTokenManager() {
+        return tokenManager;
     }
 
     public static LGApiClientService getInstance() {
@@ -84,49 +89,6 @@ public class LGApiV2ClientServiceImpl implements LGApiClientService {
         if (userNumber != null && !userNumber.isBlank())
             headers.put("x-user-no", userNumber);
         return headers;
-    }
-
-    /**
-     * Even using V2 URL, this endpoint support grab informations about account devices from V1 and V2.
-     * 
-     * @return list os LG Devices.
-     * @throws LGApiException if some communication error occur.
-     */
-    @Override
-    public List<LGDevice> listAccountDevices(String bridgeName) throws LGApiException {
-        try {
-            TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-            UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(V2_LS_PATH);
-            Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
-                    token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-            RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
-            return handleListAccountDevicesResult(resp);
-        } catch (Exception e) {
-            throw new LGApiException("Erros list account devices from LG Server API", e);
-        }
-    }
-
-    /**
-     * Get device settings and snapshot for a specific device.
-     * <b>It works only for API V2 device versions!</b>
-     * 
-     * @param deviceId device ID for de desired V2 LG Thinq.
-     * @return return map containing metamodel of settings and snapshot
-     * @throws LGApiException if some communication error occur.
-     */
-    @Override
-    public Map<String, Object> getDeviceSettings(String bridgeName, String deviceId) throws LGApiException {
-        try {
-            TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-            UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
-                    .path(String.format("%s/%s", V2_DEVICE_CONFIG_PATH, deviceId));
-            Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
-                    token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
-            RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
-            return handleDeviceSettingsResult(resp);
-        } catch (Exception e) {
-            throw new LGApiException("Erros list account devices from LG Server API", e);
-        }
     }
 
     /**
