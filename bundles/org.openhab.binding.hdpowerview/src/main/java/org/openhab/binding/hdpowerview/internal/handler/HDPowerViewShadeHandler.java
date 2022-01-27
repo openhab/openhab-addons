@@ -42,6 +42,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -69,6 +70,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         SURVEY,
         BATTERY_LEVEL
     }
+
+    private static final String COMMAND_CALIBRATE = "CALIBRATE";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
@@ -226,9 +229,14 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 }
                 break;
 
-            case CHANNEL_SHADE_CALIBRATE:
-                if (OnOffType.ON == command) {
-                    calibrateShade(webTargets, shadeId);
+            case CHANNEL_SHADE_COMMAND:
+                if (command instanceof StringType) {
+                    if (COMMAND_CALIBRATE.equals(((StringType) command).toString())) {
+                        logger.debug("Calibrate shade {}", shadeId);
+                        calibrateShade(webTargets, shadeId);
+                    }
+                } else {
+                    logger.warn("Unsupported command: {}. Supported commands are: " + COMMAND_CALIBRATE, command);
                 }
                 break;
         }
