@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -322,7 +322,8 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     logger.info("Monitor for device {} was expired. Forcing stop and start to next cycle.", deviceId);
                     return null;
                 } catch (Exception e) {
-                    // If it can't get monitor handler, then stop monitor and restart the process again in new interaction
+                    // If it can't get monitor handler, then stop monitor and restart the process again in new
+                    // interaction
                     // Force restart monitoring because of the errors returned (just in case)
                     forceStopDeviceV1Monitor(deviceId, monitorWorkId);
                     throw new LGApiException("Error getting monitor data for the device:" + deviceId, e);
