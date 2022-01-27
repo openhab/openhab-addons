@@ -76,8 +76,8 @@ have different `id` values:
 
 | Channel Group | Channel | Item Type | Description |
 |---------------|---------|-----------|-------------|
-| scenes        | id      | Switch    | Setting this to ON will activate the scene. Scenes are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
-| sceneGroups   | id      | Switch    | Setting this to ON will activate the scene group. Scene groups are stateless in the PowerView hub; they have no on/off state. Note: include `{autoupdate="false"}` in the item configuration to avoid having to reset it to off after use. |
+| scenes        | id      | Switch    | Setting this to ON will activate the scene. Scenes are stateless in the PowerView hub; they have no on/off state. |
+| sceneGroups   | id      | Switch    | Setting this to ON will activate the scene group. Scene groups are stateless in the PowerView hub; they have no on/off state. |
 | automations   | id      | Switch    | Setting this to ON will enable the automation, while OFF will disable it. |
 
 ### Channels for Shades (Thing type `shade`)
@@ -239,7 +239,7 @@ Switch Bedroom_Repeater_BlinkingEnabled "Bedroom Repeater Blinking Enabled [%s]"
 Scene items:
 
 ```
-Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:scenes#22663", autoupdate="false"}
+Switch Living_Room_Shades_Scene_Heart "Living Room Shades Scene Heart" <blinds> (g_Shades_Scene_Trigger) {channel="hdpowerview:hub:g24:scenes#22663"}
 ```
 
 ### `demo.sitemap` File
