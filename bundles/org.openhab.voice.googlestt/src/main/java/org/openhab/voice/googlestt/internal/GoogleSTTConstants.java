@@ -25,7 +25,7 @@ public class GoogleSTTConstants {
     /**
      * Service name
      */
-    public static final String SERVICE_NAME = "Google Cloud Speech-to-Text";
+    public static final String SERVICE_NAME = "Google Cloud";
     /**
      * Service id
      */
