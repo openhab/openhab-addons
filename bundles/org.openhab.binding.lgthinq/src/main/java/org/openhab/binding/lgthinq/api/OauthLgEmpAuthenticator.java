@@ -17,11 +17,8 @@ import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -41,8 +38,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class OauthLgEmpAuthenticator {
     private static final Logger logger = LoggerFactory.getLogger(OauthLgEmpAuthenticator.class);
     private static final OauthLgEmpAuthenticator instance;
+    private static final Map<String,String> oauthSearchKeyQueryParams = new LinkedHashMap<>();
     static {
         instance = new OauthLgEmpAuthenticator();
+        oauthSearchKeyQueryParams.put("key_name", "OAUTH_SECRETKEY");
+        oauthSearchKeyQueryParams.put("sever_type", "OP");
     }
 
     public static OauthLgEmpAuthenticator getInstance() {
@@ -191,30 +191,16 @@ public class OauthLgEmpAuthenticator {
     }
 
     public PreLoginResult preLoginUser(Gateway gw, String username, String password) throws IOException {
-        MessageDigest digest = null;
-        try {
-            digest = MessageDigest.getInstance("SHA-512");
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Definitively, it is unexpected.", e);
-            return null;
-        }
-        digest.reset();
-        digest.update(password.getBytes(StandardCharsets.UTF_8));
-
-        String encPwd = String.format("%0128x", new BigInteger(1, digest.digest()));
-        // authUserLogin(gw.getLoginBaseUri(), gw.getEmpBaseUri(), username, toReturn, gw.getCountry(),
-        // gw.getLanguage());
+        String encPwd = RestUtils.getPreLoginEncPwd(password);
         Map<String, String> headers = getLoginHeader(gw);
-
-        // 1) Dong preLogin -> getting the password key
-        String preLoginUrl = gw.getLoginBaseUri() + "/preLogin";
+        // 1) Doing preLogin -> getting the password key
+        String preLoginUrl = gw.getLoginBaseUri() + PRE_LOGIN_PATH;
         Map<String, String> formData = Map.of("user_auth2", encPwd, "log_param", String.format(
                 "login request / user_id : %s / " + "third_party : null / svc_list : SVC202,SVC710 / 3rd_service : ",
                 username));
         RestResult resp = RestUtils.postCall(preLoginUrl, headers, formData);
         if (resp.getStatusCode() != 200) {
             logger.error("Error preLogin into account. The reason is:{}", resp.getJsonResponse());
-            // TODO - fazer o correto tratamento de erro aqui. Talvez subir uma exceção de validação custom
             throw new IllegalStateException(String.format("Error loggin into acccount:%s", resp.getJsonResponse()));
         }
         Map<String, String> preLoginResult = new ObjectMapper().readValue(resp.getJsonResponse(), HashMap.class);
@@ -232,7 +218,7 @@ public class OauthLgEmpAuthenticator {
         Map<String, String> formData = Map.of("user_auth2", "" + preLoginResult.getEncryptedPwd(),
                 "password_hash_prameter_flag", "Y", "svc_list", "SVC202,SVC710"); // SVC202=LG SmartHome, SVC710=EMP
                                                                                   // OAuth
-        String loginUrl = gw.getEmpBaseUri() + "/emp/v2.0/account/session/"
+        String loginUrl = gw.getEmpBaseUri() + V2_SESSION_LOGIN_PATH
                 + URLEncoder.encode(preLoginResult.getUsername(), StandardCharsets.UTF_8);
         RestResult resp = RestUtils.postCall(loginUrl, headers, formData);
         if (resp.getStatusCode() != 200) {
@@ -257,12 +243,11 @@ public class OauthLgEmpAuthenticator {
 
     public TokenResult getToken(Gateway gw, LoginAccountResult accountResult) throws IOException {
         // 3 - get secret key from emp signature
-        String empSearchKeyUrl = gw.getLoginBaseUri() + "/searchKey";
-        RestResult resp = RestUtils.getCall(empSearchKeyUrl, null,
-                Map.of("key_name", "OAUTH_SECRETKEY", "sever_type", "OP"));
+        String empSearchKeyUrl = gw.getLoginBaseUri() + OAUTH_SEARCH_KEY_PATH;
+
+        RestResult resp = RestUtils.getCall(empSearchKeyUrl, null, oauthSearchKeyQueryParams);
         if (resp.getStatusCode() != 200) {
             logger.error("Error login into account. The reason is:{}", resp.getJsonResponse());
-            // TODO - fazer o correto tratamento de erro aqui. Talvez subir uma exceção de validação custom
             throw new IllegalStateException(String.format("Error loggin into acccount:%s", resp.getJsonResponse()));
         }
         Map<String, String> secretResult = new ObjectMapper().readValue(resp.getJsonResponse(), HashMap.class);

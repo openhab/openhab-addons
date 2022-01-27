@@ -14,8 +14,11 @@ package org.openhab.binding.lgthinq.api;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -46,6 +49,20 @@ import org.slf4j.LoggerFactory;
  */
 public class RestUtils {
     private static final Logger logger = LoggerFactory.getLogger(RestUtils.class);
+
+    public static String getPreLoginEncPwd(String pwdToEnc) {
+        MessageDigest digest = null;
+        try {
+            digest = MessageDigest.getInstance("SHA-512");
+        } catch (NoSuchAlgorithmException e) {
+            logger.error("Definitively, it is unexpected.", e);
+            return null;
+        }
+        digest.reset();
+        digest.update(pwdToEnc.getBytes(StandardCharsets.UTF_8));
+
+        return String.format("%0128x", new BigInteger(1, digest.digest()));
+    }
 
     public static byte[] getOauth2Sig(String messageSign, String secret) {
         byte[] secretBytes = secret.getBytes(StandardCharsets.UTF_8);
