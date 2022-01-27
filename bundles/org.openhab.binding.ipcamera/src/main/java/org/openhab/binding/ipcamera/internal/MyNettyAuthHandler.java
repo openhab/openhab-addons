@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,7 +89,9 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         /////// Fresh Digest Authenticate method follows as Basic is already handled and returned ////////
         realm = Helper.searchString(authenticate, "realm=\"");
         if (realm.isEmpty()) {
-            logger.warn("Could not find a valid WWW-Authenticate response in :{}", authenticate);
+            logger.warn(
+                    "No valid WWW-Authenticate in response. Has the camera activated the illegal login lock? Details:{}",
+                    authenticate);
             return;
         }
         nonce = Helper.searchString(authenticate, "nonce=\"");
@@ -142,22 +144,16 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        boolean closeConnection = true;
-        String authenticate = "";
         if (msg instanceof HttpResponse) {
             HttpResponse response = (HttpResponse) msg;
             if (response.status().code() == 401) {
+                ctx.close();
                 if (!response.headers().isEmpty()) {
+                    String authenticate = "";
                     for (CharSequence name : response.headers().names()) {
                         for (CharSequence value : response.headers().getAll(name)) {
                             if (name.toString().equalsIgnoreCase("WWW-Authenticate")) {
                                 authenticate = value.toString();
-                            }
-                            if (name.toString().equalsIgnoreCase("Connection")
-                                    && value.toString().contains("keep-alive")) {
-                                // closeConnection = false;
-                                // trial this for a while to see if it solves too many bytes with digest turned on.
-                                closeConnection = true;
                             }
                         }
                     }
@@ -167,24 +163,22 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                         ipCameraHandler.cameraConfigError(
                                 "Camera gave no WWW-Authenticate: Your login details must be wrong.");
                     }
-                    if (closeConnection) {
-                        ctx.close();// needs to be here
-                    }
                 }
             } else if (response.status().code() != 200) {
-                logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
-                        ipCameraHandler.cameraConfig.getIp(), response.status().code());
+                ctx.close();
+                switch (response.status().code()) {
+                    case 403:
+                        logger.warn(
+                                "403 Forbidden: Check camera setup or has the camera activated the illegal login lock?");
+                        break;
+                    default:
+                        logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
+                                ipCameraHandler.cameraConfig.getIp(), response.status().code());
+                        break;
+                }
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//
         super.channelRead(ctx, msg);
-    }
-
-    @Override
-    public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
-    }
-
-    @Override
-    public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
     }
 }

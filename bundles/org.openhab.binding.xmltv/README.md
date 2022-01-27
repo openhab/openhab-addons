@@ -8,7 +8,7 @@ The building of the XMLTV file itself is taken in charge by so called "grabbers"
 
 Some websites provides updated XMLTV files than can be directly downloaded.
 
-Here is a sample for France : https://www.xmltv.fr/
+Here is a sample for France and Switzerland : https://xmltv.ch/
 
 This binding takes an XMLTV file as input and creates a thing for each channel contained in it.
 XmlTV channels are called Media Channels in this binding in order to avoid messing with openHAB Channels.

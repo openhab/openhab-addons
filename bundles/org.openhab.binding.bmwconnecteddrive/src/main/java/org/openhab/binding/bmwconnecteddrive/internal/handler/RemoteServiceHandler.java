@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,9 @@
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.MultiMap;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
@@ -45,6 +48,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(RemoteServiceHandler.class);
 
     private static final String SERVICE_TYPE = "serviceType";
+    private static final String EVENT_ID = "eventId";
     private static final String DATA = "data";
     // after 6 retries the state update will give up
     private static final int GIVEUP_COUNTER = 6;
@@ -52,12 +56,16 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     private final ConnectedDriveProxy proxy;
     private final VehicleHandler handler;
+    private final String legacyServiceExecutionAPI;
+    private final String legacyServiceExecutionStateAPI;
     private final String serviceExecutionAPI;
     private final String serviceExecutionStateAPI;
 
     private int counter = 0;
     private Optional<ScheduledFuture<?>> stateJob = Optional.empty();
     private Optional<String> serviceExecuting = Optional.empty();
+    private Optional<String> executingEventId = Optional.empty();
+    private boolean myBmwApiUsage = false;
 
     public enum ExecutionState {
         READY,
@@ -69,21 +77,23 @@ public class RemoteServiceHandler implements StringResponseCallback {
     }
 
     public enum RemoteService {
-        LIGHT_FLASH(REMOTE_SERVICE_LIGHT_FLASH, "Flash Lights"),
-        VEHICLE_FINDER(REMOTE_SERVICE_VEHICLE_FINDER, "Vehicle Finder"),
-        DOOR_LOCK(REMOTE_SERVICE_DOOR_LOCK, "Door Lock"),
-        DOOR_UNLOCK(REMOTE_SERVICE_DOOR_UNLOCK, "Door Unlock"),
-        HORN_BLOW(REMOTE_SERVICE_HORN, "Horn Blow"),
-        CLIMATE_NOW(REMOTE_SERVICE_AIR_CONDITIONING, "Climate Control"),
-        CHARGE_NOW(REMOTE_SERVICE_CHARGE_NOW, "Start Charging"),
-        CHARGING_CONTROL(REMOTE_SERVICE_CHARGING_CONTROL, "Send Charging Profile");
+        LIGHT_FLASH(REMOTE_SERVICE_LIGHT_FLASH, "Flash Lights", "light-flash"),
+        VEHICLE_FINDER(REMOTE_SERVICE_VEHICLE_FINDER, "Vehicle Finder", "vehicle-finder"),
+        DOOR_LOCK(REMOTE_SERVICE_DOOR_LOCK, "Door Lock", "door-lock"),
+        DOOR_UNLOCK(REMOTE_SERVICE_DOOR_UNLOCK, "Door Unlock", "door-unlock"),
+        HORN_BLOW(REMOTE_SERVICE_HORN, "Horn Blow", "horn-blow"),
+        CLIMATE_NOW(REMOTE_SERVICE_AIR_CONDITIONING, "Climate Control", "air-conditioning"),
+        CHARGE_NOW(REMOTE_SERVICE_CHARGE_NOW, "Start Charging", "charge-now"),
+        CHARGING_CONTROL(REMOTE_SERVICE_CHARGING_CONTROL, "Send Charging Profile", "charging-control");
 
         private final String command;
         private final String label;
+        private final String remoteCommand;
 
-        RemoteService(final String command, final String label) {
+        RemoteService(final String command, final String label, final String remoteCommand) {
             this.command = command;
             this.label = label;
+            this.remoteCommand = remoteCommand;
         }
 
         public String getCommand() {
@@ -93,30 +103,49 @@ public class RemoteServiceHandler implements StringResponseCallback {
         public String getLabel() {
             return label;
         }
+
+        public String getRemoteCommand() {
+            return remoteCommand;
+        }
     }
 
     public RemoteServiceHandler(VehicleHandler vehicleHandler, ConnectedDriveProxy connectedDriveProxy) {
         handler = vehicleHandler;
         proxy = connectedDriveProxy;
         final VehicleConfiguration config = handler.getConfiguration().get();
-        serviceExecutionAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionAPI;
-        serviceExecutionStateAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionStateAPI;
+        legacyServiceExecutionAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionAPI;
+        legacyServiceExecutionStateAPI = proxy.baseUrl + config.vin + proxy.serviceExecutionStateAPI;
+        serviceExecutionAPI = proxy.remoteCommandUrl + config.vin + "/";
+        serviceExecutionStateAPI = proxy.remoteStatusUrl;
     }
 
     boolean execute(RemoteService service, String... data) {
         synchronized (this) {
             if (serviceExecuting.isPresent()) {
+                logger.debug("Execution rejected - {} still pending", serviceExecuting.get());
                 // only one service executing
                 return false;
             }
             serviceExecuting = Optional.of(service.name());
         }
-        final MultiMap<String> dataMap = new MultiMap<String>();
-        dataMap.add(SERVICE_TYPE, service.name());
-        if (data.length > 0) {
-            dataMap.add(DATA, data[0]);
+        if (myBmwApiUsage) {
+            final MultiMap<String> dataMap = new MultiMap<String>();
+            if (data.length > 0) {
+                dataMap.add(DATA, data[0]);
+                proxy.post(serviceExecutionAPI + service.getRemoteCommand(), CONTENT_TYPE_JSON_ENCODED,
+                        "{CHARGING_PROFILE:" + data[0] + "}", this);
+            } else {
+                proxy.post(serviceExecutionAPI + service.getRemoteCommand(), null, null, this);
+            }
+        } else {
+            final MultiMap<String> dataMap = new MultiMap<String>();
+            dataMap.add(SERVICE_TYPE, service.name());
+            if (data.length > 0) {
+                dataMap.add(DATA, data[0]);
+            }
+            proxy.post(legacyServiceExecutionAPI, CONTENT_TYPE_URL_ENCODED,
+                    UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false), this);
         }
-        proxy.post(serviceExecutionAPI, dataMap, this);
         return true;
     }
 
@@ -130,9 +159,19 @@ public class RemoteServiceHandler implements StringResponseCallback {
                     handler.getData();
                 }
                 counter++;
-                final MultiMap<String> dataMap = new MultiMap<String>();
-                dataMap.add(SERVICE_TYPE, service);
-                proxy.get(serviceExecutionStateAPI, dataMap, this);
+                if (myBmwApiUsage) {
+                    final MultiMap<String> dataMap = new MultiMap<String>();
+                    dataMap.add(EVENT_ID, executingEventId.get());
+                    final String encoded = dataMap == null || dataMap.isEmpty() ? null
+                            : UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false);
+
+                    proxy.post(serviceExecutionStateAPI + Constants.QUESTION + encoded, null, null, this);
+                } else {
+                    final MultiMap<String> dataMap = new MultiMap<String>();
+                    dataMap.add(SERVICE_TYPE, service);
+                    proxy.get(legacyServiceExecutionStateAPI, CONTENT_TYPE_URL_ENCODED,
+                            UrlEncoded.encode(dataMap, StandardCharsets.UTF_8, false), this);
+                }
             }, () -> {
                 logger.warn("No Service executed to get state");
             });
@@ -145,15 +184,36 @@ public class RemoteServiceHandler implements StringResponseCallback {
         if (result != null) {
             try {
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(result, ExecutionStatusContainer.class);
-                if (esc != null && esc.executionStatus != null) {
-                    String status = esc.executionStatus.status;
-                    synchronized (this) {
-                        handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), status);
-                        if (ExecutionState.EXECUTED.name().equals(status)) {
-                            // refresh loop ends - update of status handled in the normal refreshInterval. Earlier
-                            // update doesn't show better results!
-                            reset();
-                            return;
+                if (esc != null) {
+                    if (esc.executionStatus != null) {
+                        // handling of BMW ConnectedDrive updates
+                        String status = esc.executionStatus.status;
+                        if (status != null) {
+                            synchronized (this) {
+                                handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), status);
+                                if (ExecutionState.EXECUTED.name().equals(status)) {
+                                    // refresh loop ends - update of status handled in the normal refreshInterval.
+                                    // Earlier
+                                    // update doesn't show better results!
+                                    reset();
+                                    return;
+                                }
+                            }
+                        }
+                    } else if (esc.eventId != null) {
+                        // store event id for further MyBMW updates
+                        executingEventId = Optional.of(esc.eventId);
+                    } else if (esc.eventStatus != null) {
+                        // update status for MyBMW API
+                        synchronized (this) {
+                            handler.updateRemoteExecutionStatus(serviceExecuting.orElse(null), esc.eventStatus);
+                            if (ExecutionState.EXECUTED.name().equals(esc.eventStatus)) {
+                                // refresh loop ends - update of status handled in the normal refreshInterval.
+                                // Earlier
+                                // update doesn't show better results!
+                                reset();
+                                return;
+                            }
                         }
                     }
                 }
@@ -183,6 +243,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     private void reset() {
         serviceExecuting = Optional.empty();
+        executingEventId = Optional.empty();
         counter = 0;
     }
 
@@ -195,5 +256,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
                 stateJob = Optional.empty();
             });
         }
+    }
+
+    public void setMyBmwApiUsage(boolean b) {
+        myBmwApiUsage = b;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,7 @@ public class Commands {
     public static byte[] EXHAUST_TEMPERATURE = { 0x14, 0x75 };
     public static byte[] BATTERY_LIFE = { 0x03, 0x0f };
     public static byte[] FILTER_LIFE = { 0x14, 0x6a };
+    public static byte[] FILTER_PERIOD = { 0x14, 0x69 };
     public static byte[] CURRENT_TIME = { 0x15, (byte) 0xe0 };
     public static byte[] AWAY_TO = { 0x15, 0x20 };
     public static byte[] AWAY_FROM = { 0x15, 0x21 };

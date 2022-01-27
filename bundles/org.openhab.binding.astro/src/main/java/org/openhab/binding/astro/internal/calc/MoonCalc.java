@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -391,7 +391,7 @@ public class MoonCalc {
     /**
      * Calculates the previous moon phase.
      */
-    public double getPreviousPhase(Calendar cal, double jd, double mode) {
+    private double getPreviousPhase(Calendar cal, double jd, double mode) {
         double tz = 0;
         double phaseJd = 0;
         do {
@@ -494,7 +494,7 @@ public class MoonCalc {
         return sr;
     }
 
-    public double[] calcMoon(double t) {
+    private double[] calcMoon(double t) {
         double p2 = 6.283185307;
         double arc = 206264.8062;
         double coseps = .91748;

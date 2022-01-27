@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.miio.internal.cloud;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -29,6 +30,9 @@ public class CloudDeviceListDTO {
     private List<CloudDeviceDTO> cloudDevices = null;
 
     public List<CloudDeviceDTO> getCloudDevices() {
+        if (cloudDevices == null) {
+            return Collections.emptyList();
+        }
         return cloudDevices;
     }
 }

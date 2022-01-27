@@ -313,6 +313,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -559,6 +560,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
@@ -859,6 +861,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -877,6 +880,7 @@
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="lastEventData" typeId="lastEventData"/>
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
@@ -1149,6 +1153,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1408,6 +1413,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1685,6 +1691,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -1704,6 +1711,7 @@
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="lastEventData" typeId="lastEventData"/>
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
@@ -1969,6 +1977,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
@@ -2237,6 +2246,7 @@
 					Default is "1000" which is 1 second.
 				</description>
 				<default>1000</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -2356,6 +2366,13 @@
 		<item-type>String</item-type>
 		<label>Last Motion Type</label>
 		<description>A string that contains the type of motion alarm that was last triggered.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lastEventData" advanced="true">
+		<item-type>String</item-type>
+		<label>Last Event Data</label>
+		<description>A string that contains detailed data on the last alarm that was triggered.</description>
 		<state readOnly="true"/>
 	</channel-type>
 

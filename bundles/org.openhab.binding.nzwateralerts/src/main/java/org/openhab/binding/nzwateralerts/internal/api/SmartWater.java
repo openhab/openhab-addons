@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class SmartWater implements WaterWebService {
     private static final String REGION_WAIKATO = "/alert-levels/waikato-district-council";
     private static final String REGION_WAIPA = "/alert-levels/waipa-district-council";
 
-    private static final String PATTERN = "/assets/Alert-Level-Images/water-alert-([1-4]|no)-large.svg.*?";
+    private static final String PATTERN = "/assets/Alert-Level-Images/(?:water-alert-([1-4]|no)-large|(save)-wai-logo).svg.*?";
     private static final Pattern REGEX = Pattern.compile(PATTERN,
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
@@ -66,8 +66,10 @@ public class SmartWater implements WaterWebService {
 
         while (matches.find()) {
             String level = matches.group(1);
+            final String altMsgs = matches.group(2);
+
             logger.debug("Data Level {}", level);
-            if (level.equalsIgnoreCase("no")) {
+            if ("no".equalsIgnoreCase(level) || "save".equalsIgnoreCase(altMsgs)) {
                 logger.debug("Convert Data Level to 0");
                 level = "0";
             }

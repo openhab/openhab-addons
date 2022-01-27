@@ -116,5 +116,10 @@
 			<description>Defines whether mDNS service of openHAB or a separate instance of mDNS should be used.</description>
 			<default>false</default>
 		</parameter>
+		<parameter name="blockUserDeletion" type="boolean" required="false" groupName="network">
+			<label>Block deletion of the HomeKit user</label>
+			<description>Block deletion of the HomeKit user information from openHAB and the unpairing of devices</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,9 @@ public enum StatusType {
     GOTO(16, "Go To"),
     ZONE(17, "Zone Clean"),
     ROOM(18, "Room Clean"),
-    FULL(100, "Full");
+    RETURNING_HOME(22, "Returning Home"),
+    FULL(100, "Full"),
+    OFFLINE(101, "Device Offline");
 
     private final int id;
     private final String description;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.*;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -268,10 +267,10 @@ public class EcobeeApi implements AccessTokenRefreshListener {
         return executePost(ECOBEE_THERMOSTAT_UPDATE_URL, GSON.toJson(request, ThermostatUpdateRequestDTO.class));
     }
 
-    private String buildQueryUrl(String baseUrl, String requestJson) throws UnsupportedEncodingException {
+    private String buildQueryUrl(String baseUrl, String requestJson) {
         final StringBuilder urlBuilder = new StringBuilder(baseUrl);
         urlBuilder.append("?json=");
-        urlBuilder.append(URLEncoder.encode(requestJson, StandardCharsets.UTF_8.toString()));
+        urlBuilder.append(URLEncoder.encode(requestJson, StandardCharsets.UTF_8));
         return urlBuilder.toString();
     }
 

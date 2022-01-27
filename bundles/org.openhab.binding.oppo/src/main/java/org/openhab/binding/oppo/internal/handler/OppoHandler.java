@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -456,11 +456,6 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         // example: 0 BD-PLAYER, split off just the number
                         updateChannelState(CHANNEL_SOURCE, updateData.split(SPACE)[0]);
                         break;
-                    case UPL:
-                        // we got the playback status update, throw it away and call the query because the text output
-                        // is better
-                        connector.sendCommand(OppoCommand.QUERY_PLAYBACK_STATUS);
-                        break;
                     case QTK:
                         // example: 02/10, split off both numbers
                         String[] track = updateData.split(SLASH);
@@ -477,10 +472,17 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             updateChannelState(CHANNEL_TOTAL_CHAPTER, chapter[1]);
                         }
                         break;
+                    case UPL:
                     case QPL:
+                        // try to normalize the slightly different responses between UPL and QPL
+                        String playStatus = OppoStatusCodes.PLAYBACK_STATUS.get(updateData);
+                        if (playStatus == null) {
+                            playStatus = updateData;
+                        }
+
                         // if playback has stopped, we have to zero out Time, Title and Track info and so on manually
-                        if (NO_DISC.equals(updateData) || LOADING.equals(updateData) || OPEN.equals(updateData)
-                                || CLOSE.equals(updateData) || STOP.equals(updateData)) {
+                        if (NO_DISC.equals(playStatus) || LOADING.equals(playStatus) || OPEN.equals(playStatus)
+                                || CLOSE.equals(playStatus) || STOP.equals(playStatus)) {
                             updateChannelState(CHANNEL_CURRENT_TITLE, ZERO);
                             updateChannelState(CHANNEL_TOTAL_TITLE, ZERO);
                             updateChannelState(CHANNEL_CURRENT_CHAPTER, ZERO);
@@ -489,15 +491,21 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                             updateChannelState(CHANNEL_AUDIO_TYPE, UNDEF);
                             updateChannelState(CHANNEL_SUBTITLE_TYPE, UNDEF);
                         }
-                        updateChannelState(CHANNEL_PLAY_MODE, updateData);
+                        updateChannelState(CHANNEL_PLAY_MODE, playStatus);
+
+                        // ejecting the disc does not produce a UDT message, so clear disc type manually
+                        if (OPEN.equals(playStatus) || NO_DISC.equals(playStatus)) {
+                            updateChannelState(CHANNEL_DISC_TYPE, UNKNOW_DISC);
+                            currentDiscType = BLANK;
+                        }
 
                         // if switching to play mode and not a CD then query the subtitle type...
                         // because if subtitles were on when playback stopped, they got nulled out above
                         // and the subtitle update message ("UST") is not sent when play starts like it is for audio
-                        if (PLAY.equals(updateData) && !CDDA.equals(currentDiscType)) {
+                        if (PLAY.equals(playStatus) && !CDDA.equals(currentDiscType)) {
                             connector.sendCommand(OppoCommand.QUERY_SUBTITLE_TYPE);
                         }
-                        currentPlayMode = updateData;
+                        currentPlayMode = playStatus;
                         break;
                     case QRP:
                         updateChannelState(CHANNEL_REPEAT_MODE, updateData);
@@ -506,16 +514,17 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         updateChannelState(CHANNEL_ZOOM_MODE, updateData);
                         break;
                     case UDT:
-                        // we got the disc type status update, throw it away
-                        // and call the query because the text output is better
-                        connector.sendCommand(OppoCommand.QUERY_DISC_TYPE);
                     case QDT:
-                        currentDiscType = updateData;
-                        updateChannelState(CHANNEL_DISC_TYPE, updateData);
+                        // try to normalize the slightly different responses between UDT and QDT
+                        final String discType = OppoStatusCodes.DISC_TYPE.get(updateData);
+                        currentDiscType = (discType != null ? discType : updateData);
+                        updateChannelState(CHANNEL_DISC_TYPE, currentDiscType);
                         break;
                     case UAT:
                         // we got the audio type status update, throw it away
                         // and call the query because the text output is better
+                        // wait before sending the command to give the player time to catch up
+                        Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         connector.sendCommand(OppoCommand.QUERY_AUDIO_TYPE);
                         break;
                     case QAT:
@@ -524,6 +533,8 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                     case UST:
                         // we got the subtitle type status update, throw it away
                         // and call the query because the text output is better
+                        // wait before sending the command to give the player time to catch up
+                        Thread.sleep(SLEEP_BETWEEN_CMD_MS);
                         connector.sendCommand(OppoCommand.QUERY_SUBTITLE_TYPE);
                         break;
                     case QST:
@@ -563,7 +574,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                         logger.debug("onNewMessageEvent: unhandled key {}, value: {}", key, updateData);
                         break;
                 }
-            } catch (OppoException e) {
+            } catch (OppoException | InterruptedException e) {
                 logger.debug("Exception processing event from player: {}", e.getMessage());
             }
         }

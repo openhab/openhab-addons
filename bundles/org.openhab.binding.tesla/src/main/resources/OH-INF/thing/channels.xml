@@ -58,10 +58,22 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="centerdisplay" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Central Display State</label>
 		<description>Indicates the state of the central display in the vehicle</description>
-		<state readOnly="true"></state>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="2">On, Standby or Camp Mode</option>
+				<option value="3">On, Charging Screen</option>
+				<option value="4">On</option>
+				<option value="5">On, Big Charging Screen</option>
+				<option value="6">On, Ready to Unlock</option>
+				<option value="7">Sentry Mode</option>
+				<option value="8">Dog Mode</option>
+				<option value="9">Media</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="centerrearseatheater" advanced="true">
 		<item-type>Switch</item-type>
@@ -79,6 +91,12 @@
 		<label>Charge Cable</label>
 		<description>Undocumented / To be defined</description>
 		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="chargingamps" advanced="true">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Set Charging Amps</label>
+		<description>Current (Ampere) to use for charging</description>
+		<state pattern="%.0f A"></state>
 	</channel-type>
 	<channel-type id="chargecurrent" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
@@ -119,13 +137,13 @@
 	<channel-type id="chargelimitsocstandard" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Charge Limit SOC Standard</label>
-		<description>Standard charging limity of the vehicle, in %</description>
+		<description>Standard charging limit of the vehicle, in %</description>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargeidealdistanceadded" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>"Ideal" Charge Distance Added</label>
-		<description>"Ideal" range added during the last charging session</description>
+		<label>Ideal Charge Distance Added</label>
+		<description>Ideal range added during the last charging session</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargemaxcurrent" advanced="true">
@@ -136,8 +154,8 @@
 	</channel-type>
 	<channel-type id="chargerateddistanceadded" advanced="true">
 		<item-type>Number:Length</item-type>
-		<label>"Rated" Charge Distance Added</label>
-		<description>"Rated" range added during the last charging session</description>
+		<label>Rated Charge Distance Added</label>
+		<description>Rated range added during the last charging session</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargerate" advanced="true">
@@ -403,7 +421,7 @@
 	</channel-type>
 	<channel-type id="notenoughpower" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Not Enought Power </label>
+		<label>Not Enought Power</label>
 		<description>Indicates if not enough power (ON) is available to heat the vehicle</description>
 		<state readOnly="true"></state>
 	</channel-type>
@@ -538,6 +556,17 @@
 		<description>Indicates when the scheduled charging session will start, in yyyy-MM-dd'T'HH:mm:ss format</description>
 		<state readOnly="true"></state>
 	</channel-type>
+	<channel-type id="sentrymode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sentry Mode</label>
+		<description>Activates or deactivates sentry mode</description>
+	</channel-type>
+	<channel-type id="sentrymodeavailable" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sentry Available</label>
+		<description>Indicates whether sentry mode is currently available</description>
+		<state readOnly="true"></state>
+	</channel-type>
 	<channel-type id="shiftstate" advanced="true">
 		<item-type>String</item-type>
 		<label>Shift State</label>
@@ -583,14 +612,19 @@
 	<channel-type id="sunroofstate" advanced="true">
 		<item-type>String</item-type>
 		<label>Sunroof State</label>
-		<description>“unknown”, “open”, “closed”, “vent”, “comfort”</description>
-		<state readOnly="true"></state>
+		<description>Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".</description>
+		<command>
+			<options>
+				<option value="close">close</option>
+				<option value="vent">vent</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="sunroof">
 		<item-type>Dimmer</item-type>
 		<label>Sunroof</label>
-		<description>Open or close the sunroof to provided % (0 closed, 100 fully open)</description>
-		<state pattern="%d %%"></state>
+		<description>Indicates the opening state of the sunroof (0% closed, 100% fully open)</description>
+		<state pattern="%d %%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="combinedtemp" advanced="true">
 		<item-type>Number:Temperature</item-type>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,6 +90,7 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void incomingEvent(IntegraStateEvent event) {
         logger.trace("Handling incoming event: {}", event);
         // update thing's state unless it should accept commands only
@@ -162,6 +163,7 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
      * @param event list of state changes since last refresh
      * @return collection of {@link IntegraStateCommand}
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected Collection<SatelCommand> getRefreshCommands(NewStatesEvent event) {
         final boolean hasExtPayload = getBridgeHandler().getIntegraType().hasExtPayload();
         final Collection<SatelCommand> result = new LinkedList<>();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -854,8 +854,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     }
                     switch (itemType) {
                         case "Number":
-                            if (((variableType.equals(HeliosVariable.TYPE_INTEGER))
-                                    || (variableType == HeliosVariable.TYPE_FLOAT)) && (!value.equals("-"))) {
+                            if (((HeliosVariable.TYPE_INTEGER.equals(variableType))
+                                    || (HeliosVariable.TYPE_FLOAT.equals(variableType))) && (!value.equals("-"))) {
                                 State state = null;
                                 if (v.getUnit() == null) {
                                     state = DecimalType.valueOf(value);

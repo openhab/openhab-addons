@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,8 +42,7 @@ public class OpenClosedTypeConverter extends AbstractTypeConverter<OpenClosedTyp
 
     @Override
     protected OpenClosedType fromBinding(HmDatapoint dp) throws ConverterException {
-        return (((Boolean) dp.getValue()) == Boolean.FALSE) != isInvert(dp) ? OpenClosedType.CLOSED
-                : OpenClosedType.OPEN;
+        return Boolean.FALSE.equals(dp.getValue()) != isInvert(dp) ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
     }
 
     /**

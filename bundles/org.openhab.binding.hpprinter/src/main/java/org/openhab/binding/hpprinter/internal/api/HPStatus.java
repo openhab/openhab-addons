@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,9 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.hpprinter.internal.api;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,8 +27,6 @@ import org.w3c.dom.NodeList;
 public class HPStatus {
     public static final String ENDPOINT = "/DevMgmt/ProductStatusDyn.xml";
 
-    private static final Map<String, String> STATUS_MESSAGES = initializeStatus();
-
     private final String printerStatus;
     private final boolean trayEmptyOrOpen;
 
@@ -44,7 +39,7 @@ public class HPStatus {
             Element element = (Element) nodes.item(i);
             String statusCategory = element.getElementsByTagName("pscat:StatusCategory").item(0).getTextContent();
             if (!"genuineHP".equals(statusCategory) && !"trayEmpty".equals(statusCategory)) {
-                localPrinterStatus = STATUS_MESSAGES.getOrDefault(statusCategory, statusCategory);
+                localPrinterStatus = statusCategory;
             }
             if ("trayEmpty".equals(statusCategory)) {
                 localTrayEmptyOrOpen = true;
@@ -52,20 +47,6 @@ public class HPStatus {
         }
         trayEmptyOrOpen = localTrayEmptyOrOpen;
         printerStatus = localPrinterStatus;
-    }
-
-    private static Map<String, String> initializeStatus() {
-        Map<String, String> statusMap = new HashMap<>();
-
-        statusMap.put("processing", "Printing...");
-        statusMap.put("scanProcessing", "Scanning...");
-        statusMap.put("inPowerSave", "Power Save");
-        statusMap.put("ready", "Idle");
-        statusMap.put("initializing", "Initializing...");
-        statusMap.put("closeDoorOrCover", "Door/Cover Open");
-        statusMap.put("inkSystemInitializing", "Loading Ink...");
-        statusMap.put("shuttingDown", "Shutting Down...");
-        return statusMap;
     }
 
     public boolean getTrayEmptyOrOpen() {

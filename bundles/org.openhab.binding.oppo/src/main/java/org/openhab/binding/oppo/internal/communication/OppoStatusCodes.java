@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,9 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.oppo.internal.communication;
+
+import static java.util.Map.entry;
+import static org.openhab.binding.oppo.internal.OppoBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,4 +57,16 @@ public class OppoStatusCodes {
         ZOOM_MODE.put("11", "1/3");
         ZOOM_MODE.put("12", "1/4");
     }
+
+    // map to lookup disc type
+    public static final Map<String, String> DISC_TYPE = Map.ofEntries(entry("BDMV", "BD-MV"),
+            entry("DVDV", "DVD-VIDEO"), entry("DVDA", "DVD-AUDIO"), entry("SACD", "SACD"), entry("CDDA", "CDDA"),
+            entry("HDCD", "HDCD"), entry("DATA", "DATA-DISC"), entry("VCD2", "VCD2"), entry("SVCD", "SVCD"),
+            entry("UHBD", "UHBD"), entry("UNKN", UNKNOW_DISC));
+
+    // map to lookup playback status
+    public static final Map<String, String> PLAYBACK_STATUS = Map.ofEntries(entry("DISC", "NO DISC"),
+            entry("LOAD", "LOADING"), entry("OPEN", "OPEN"), entry("CLOS", "CLOSE"), entry("PLAY", "PLAY"),
+            entry("PAUS", "PAUSE"), entry("STOP", "STOP"), entry("HOME", "HOME MENU"), entry("MCTR", "MEDIA CENTER"),
+            entry("SCSV", "SCREEN SAVER"), entry("MENU", "DISC MENU"));
 }

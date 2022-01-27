@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.ipcamera.internal;
 
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -96,6 +96,12 @@ public class Helper {
         if (sectionHeaderBeginning > 0) {
             result = result.substring(0, sectionHeaderBeginning);
         }
+        if (!key.endsWith(">")) {
+            startIndex = result.indexOf(">");
+            if (startIndex != -1) {
+                return result.substring(startIndex + 1);
+            }
+        }
         return result;
     }
 
@@ -105,12 +111,7 @@ public class Helper {
      * @author Matthew Skinner - Initial contribution
      */
     public static String encodeSpecialChars(String text) {
-        String processed = text;
-        try {
-            processed = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-        }
-        return processed;
+        return URLEncoder.encode(text, StandardCharsets.UTF_8).replace("+", "%20");
     }
 
     public static String getLocalIpAddress() {

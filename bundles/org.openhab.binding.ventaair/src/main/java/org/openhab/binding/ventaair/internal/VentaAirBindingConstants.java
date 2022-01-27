@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,6 +41,7 @@ public class VentaAirBindingConstants {
     public static final String CHANNEL_AUTOMATIC = "automatic";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_PM25 = "pm25";
     public static final String CHANNEL_WATERLEVEL = "waterLevel";
     public static final String CHANNEL_FAN_RPM = "fanRPM";
     public static final String CHANNEL_CLEAN_MODE = "cleanMode";
@@ -48,6 +49,7 @@ public class VentaAirBindingConstants {
     public static final String CHANNEL_DISC_REPLACE_TIME = "discReplaceTime";
     public static final String CHANNEL_CLEANING_TIME = "cleaningTime";
     public static final String CHANNEL_TIMER_TIME_PASSED = "timerTimePassed";
+    public static final String CHANNEL_SERVICE_TIME = "serviceTime";
 
     public static final int PORT = 48000;
 }

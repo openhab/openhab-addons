@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,7 +80,6 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
         logger.debug("Try to discover all Danfoss Air CCM devices");
 
         try (DatagramSocket socket = new DatagramSocket()) {
-
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
@@ -96,7 +95,6 @@ public class DanfossAirUnitDiscoveryService extends AbstractDiscoveryService {
                     sendBroadcastToDiscoverThing(socket, interfaceAddress.getBroadcast());
                 }
             }
-
         } catch (IOException e) {
             logger.debug("No Danfoss Air CCM device found. Diagnostic: {}", e.getMessage());
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io.serialport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Defines all the type of values
  * 
  * @author Olivier MARCEAU - Initial contribution
  *
  */
+@NonNullByDefault
 public enum ValueType {
     INTEGER,
     STRING

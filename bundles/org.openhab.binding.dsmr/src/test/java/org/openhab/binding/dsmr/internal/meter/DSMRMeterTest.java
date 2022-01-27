@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,12 +35,19 @@ public class DSMRMeterTest {
      */
     @Test
     public void testFilterMeterValues() {
-        DSMRMeterDescriptor descriptor = new DSMRMeterDescriptor(DSMRMeterType.DEVICE_V5, 0);
-        DSMRMeter meter = new DSMRMeter(descriptor);
+        final List<CosemObject> cosemObjects = TelegramReaderUtil.readTelegram("dsmr_50", TelegramState.OK)
+                .getCosemObjects();
 
-        List<CosemObject> filterMeterValues = meter
-                .filterMeterValues(TelegramReaderUtil.readTelegram("dsmr_50", TelegramState.OK).getCosemObjects());
-        assertEquals(DSMRMeterType.DEVICE_V5.requiredCosemObjects.length, filterMeterValues.size(),
-                "Filter should return all required objects");
+        assertMeterValues(cosemObjects, DSMRMeterType.DEVICE_V5, DSMRMeterConstants.UNKNOWN_CHANNEL, 3);
+        assertMeterValues(cosemObjects, DSMRMeterType.ELECTRICITY_V5_0, 0, 29);
+        assertMeterValues(cosemObjects, DSMRMeterType.M3_V5_0, 1, 3);
+    }
+
+    private void assertMeterValues(List<CosemObject> cosemObjects, DSMRMeterType type, int channel, int expected) {
+        final DSMRMeterDescriptor descriptor = new DSMRMeterDescriptor(type, channel);
+        final DSMRMeter meter = new DSMRMeter(descriptor);
+        final List<CosemObject> filterMeterValues = meter.filterMeterValues(cosemObjects, channel);
+
+        assertEquals(expected, filterMeterValues.size(), "Filter should return all required objects");
     }
 }

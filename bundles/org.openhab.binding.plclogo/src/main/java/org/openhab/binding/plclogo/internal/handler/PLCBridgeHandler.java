@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -177,7 +178,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                         for (Integer key : states.keySet()) {
                             String message = states.get(buffer[0] & key.intValue());
                             synchronized (oldValues) {
-                                if ((message != null) && (oldValues.get(channelUID) != message)) {
+                                if (message != null && !Objects.equals(oldValues.get(channelUID), message)) {
                                     updateState(channelUID, new StringType(message));
                                     oldValues.put(channelUID, message);
                                 }
@@ -187,7 +188,7 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
                 } else if (DAY_OF_WEEK_CHANNEL.equals(channelId)) {
                     String value = DAY_OF_WEEK.get(Integer.valueOf(buffer[0]));
                     synchronized (oldValues) {
-                        if ((value != null) && (oldValues.get(channelUID) != value)) {
+                        if (value != null && !Objects.equals(oldValues.get(channelUID), value)) {
                             updateState(channelUID, new StringType(value));
                             oldValues.put(channelUID, value);
                         }

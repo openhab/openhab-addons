@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,29 +27,26 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public enum SonyProjectorStatusPower {
 
-    STANDBY("Standby", new byte[] { 0x00, 0x00 }, false),
-    START_UP("Start Up", new byte[] { 0x00, 0x01 }, true),
-    STARTUP_LAMP("Sartup Lamp", new byte[] { 0x00, 0x02 }, true),
-    POWER_ON("Power On", new byte[] { 0x00, 0x03 }, true),
-    COOLING1("Cooling1", new byte[] { 0x00, 0x04 }, false),
-    COOLING2("Cooling1", new byte[] { 0x00, 0x05 }, false),
-    SAVING_COOLING1("Saving Cooling1", new byte[] { 0x00, 0x06 }, false),
-    SAVING_COOLING2("Saving Cooling2", new byte[] { 0x00, 0x07 }, false),
-    SAVING_STANDBY("Saving Standby", new byte[] { 0x00, 0x08 }, false);
+    STANDBY(new byte[] { 0x00, 0x00 }, false),
+    START_UP(new byte[] { 0x00, 0x01 }, true),
+    STARTUP_LAMP(new byte[] { 0x00, 0x02 }, true),
+    POWER_ON(new byte[] { 0x00, 0x03 }, true),
+    COOLING1(new byte[] { 0x00, 0x04 }, false),
+    COOLING2(new byte[] { 0x00, 0x05 }, false),
+    SAVING_COOLING1(new byte[] { 0x00, 0x06 }, false),
+    SAVING_COOLING2(new byte[] { 0x00, 0x07 }, false),
+    SAVING_STANDBY(new byte[] { 0x00, 0x08 }, false);
 
-    private String name;
     private byte[] dataCode;
     private boolean on;
 
     /**
      * Constructor
      *
-     * @param name the name of the power status
      * @param dataCode the data code identifying the power status
      * @param on the associated ON or OFF status of the power status
      */
-    private SonyProjectorStatusPower(String name, byte[] dataCode, boolean on) {
-        this.name = name;
+    private SonyProjectorStatusPower(byte[] dataCode, boolean on) {
         this.dataCode = dataCode;
         this.on = on;
     }
@@ -61,15 +58,6 @@ public enum SonyProjectorStatusPower {
      */
     public byte[] getDataCode() {
         return dataCode;
-    }
-
-    /**
-     * Get the name of the current power status
-     *
-     * @return the name
-     */
-    public String getName() {
-        return name;
     }
 
     /**

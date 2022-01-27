@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,21 +28,19 @@ import org.openhab.binding.miio.internal.miot.MiIoQuantiyTypesConversion;
 public class MiIoQuantiyTypesConversionTest {
 
     @Test
-    public void UnknownUnitTest() {
-
+    public void unknownUnitTest() {
         String unitName = "some none existent unit";
         assertNull(MiIoQuantiyTypesConversion.getType(unitName));
     }
 
     @Test
-    public void NullUnitTest() {
+    public void nullUnitTest() {
         String unitName = null;
         assertNull(MiIoQuantiyTypesConversion.getType(unitName));
     }
 
     @Test
     public void regularsUnitTest() {
-
         String unitName = "minute";
         assertEquals("Time", MiIoQuantiyTypesConversion.getType(unitName));
 

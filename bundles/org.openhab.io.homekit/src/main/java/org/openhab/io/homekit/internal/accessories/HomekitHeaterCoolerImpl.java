@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.ACTIVE_S
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_HEATER_COOLER_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_HEATER_COOLER_STATE;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -26,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
@@ -41,6 +41,7 @@ import io.github.hapjava.accessories.HeaterCoolerAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateEnum;
 import io.github.hapjava.characteristics.impl.heatercooler.TargetHeaterCoolerStateEnum;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitEnum;
 import io.github.hapjava.services.impl.HeaterCoolerService;
@@ -104,9 +105,12 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
-                DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
+        final @Nullable Double state = getStateAsTemperature(HomekitCharacteristicType.CURRENT_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state
+                : getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
+                        BigDecimal.valueOf(HomekitCharacteristicFactory
+                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
+                                        .doubleValue());
     }
 
     @Override
@@ -147,7 +151,7 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
 
     public CompletableFuture<TemperatureDisplayUnitEnum> getTemperatureDisplayUnit() {
         return CompletableFuture
-                .completedFuture(getSettings().useFahrenheitTemperature ? TemperatureDisplayUnitEnum.FAHRENHEIT
+                .completedFuture(HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
                         : TemperatureDisplayUnitEnum.CELSIUS);
     }
 

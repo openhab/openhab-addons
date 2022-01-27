@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -251,10 +251,14 @@ public class Converter {
                 vs.remainingRangeFuelMls = attributesMap.beRemainingRangeFuelMile;
                 vs.remainingFuel = attributesMap.remainingFuel;
                 vs.chargingLevelHv = attributesMap.chargingLevelHv;
+                vs.maxRangeElectric = attributesMap.beMaxRangeElectric;
+                vs.maxRangeElectricMls = attributesMap.beMaxRangeElectricMile;
                 vs.chargingStatus = attributesMap.chargingHVStatus;
+                vs.connectionStatus = attributesMap.connectorStatus;
                 vs.lastChargingEndReason = attributesMap.lastChargingEndReason;
 
                 vs.updateTime = attributesMap.updateTimeConverted;
+                vs.updateReason = attributesMap.lastUpdateReason;
 
                 Position p = new Position();
                 p.lat = attributesMap.gpsLat;

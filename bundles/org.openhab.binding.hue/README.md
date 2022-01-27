@@ -19,7 +19,7 @@ Additionally, it is possible to use OSRAM Lightify devices as well as other ZigB
 Beside bulbs and luminaires the Hue binding also supports some ZigBee sensors. Currently only Hue specific sensors are tested successfully (Hue Motion Sensor and Hue Dimmer Switch).
 Please note that the devices need to be registered with the Hue bridge before it is possible for this binding to use them.
 
-The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/documents/user_manual/JN-UG-3091.pdf).
+The Hue binding supports all seven types of lighting devices defined for ZigBee LightLink ([see page 24, table 2](https://www.nxp.com/docs/en/user-guide/JN-UG-3091.pdf).
 These are:
 
 | Device type              | ZigBee Device ID | Thing type |
@@ -227,7 +227,7 @@ The `tap_switch_event` can trigger one of the following events:
 ## Rule Actions
 
 This binding includes a rule action, which allows to change a light channel with a specific fading time from within rules.
-There is a separate instance for each light, which can be retrieved e.g. through
+There is a separate instance for each light or light group, which can be retrieved e.g. through
 
 ```php
 val hueActions = getActions("hue","hue:0210:00178810d0dc:1")
@@ -244,7 +244,7 @@ hueActions.fadingLightCommand("color", new PercentType(100), new DecimalType(100
 |-----------|--------------------------------------------------------------------------------------------------|
 | channel   | The following channels have fade time support: **brightness, color, color_temperature, switch**  |
 | command   | All commands supported by the channel can be used                                                |
-| fadeTime  | Fade time in Milliseconds to a new light value (min="0", step="100")                             |
+| fadeTime  | Fade time in milliseconds to a new light value (min="0", step="100")                             |
 
 ## Full Example
 

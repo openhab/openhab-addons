@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,8 +81,7 @@ public class RotelIpConnector extends RotelConnector {
             logger.debug("IP connection opened");
         } catch (IOException | SecurityException | IllegalArgumentException e) {
             setConnected(false);
-            logger.debug("Opening IP connection failed: {}", e.getMessage());
-            throw new RotelException("Opening IP connection failed: " + e.getMessage());
+            throw new RotelException("Opening IP connection failed", e);
         }
     }
 
@@ -129,7 +128,7 @@ public class RotelIpConnector extends RotelConnector {
             return 0;
         } catch (IOException e) {
             logger.debug("readInput failed: {}", e.getMessage());
-            throw new RotelException("readInput failed: " + e.getMessage());
+            throw new RotelException("readInput failed", e);
         }
     }
 }

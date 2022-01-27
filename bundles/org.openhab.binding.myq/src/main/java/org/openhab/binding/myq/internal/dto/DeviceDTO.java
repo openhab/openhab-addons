@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ public class DeviceDTO {
     public String deviceType;
     public String name;
     public String createdDate;
+    public String accountId;
     public DeviceStateDTO state;
     public String parentDevice;
     public String parentDeviceId;

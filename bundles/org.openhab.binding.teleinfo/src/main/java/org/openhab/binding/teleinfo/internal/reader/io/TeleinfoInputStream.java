@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,7 @@ import org.openhab.binding.teleinfo.internal.data.Frame;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.FrameUtil;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.InvalidFrameException;
 import org.openhab.binding.teleinfo.internal.reader.io.serialport.Label;
+import org.openhab.binding.teleinfo.internal.serial.TeleinfoTicMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,19 +44,32 @@ public class TeleinfoInputStream extends InputStream {
     private BufferedReader bufferedReader;
     private @Nullable String groupLine;
     private boolean autoRepairInvalidADPSgroupLine;
+    private final TeleinfoTicMode ticMode;
+    private final boolean verifyChecksum;
     private final Frame frame = new Frame();
 
-    public TeleinfoInputStream(final InputStream teleinfoInputStream) {
-        this(teleinfoInputStream, false);
+    public TeleinfoInputStream(final InputStream teleinfoInputStream, TeleinfoTicMode ticMode) {
+        this(teleinfoInputStream, false, ticMode, true);
     }
 
-    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream,
-            boolean autoRepairInvalidADPSgroupLine) {
+    public TeleinfoInputStream(final InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine,
+            TeleinfoTicMode ticMode) {
+        this(teleinfoInputStream, autoRepairInvalidADPSgroupLine, ticMode, true);
+    }
+
+    public TeleinfoInputStream(final InputStream teleinfoInputStream, TeleinfoTicMode ticMode, boolean verifyChecksum) {
+        this(teleinfoInputStream, false, ticMode, verifyChecksum);
+    }
+
+    public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, boolean autoRepairInvalidADPSgroupLine,
+            TeleinfoTicMode ticMode, boolean verifyChecksum) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
 
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
+        this.ticMode = ticMode;
+        this.verifyChecksum = verifyChecksum;
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
 
         groupLine = null;
@@ -96,29 +110,48 @@ public class TeleinfoInputStream extends InputStream {
             logger.trace("groupLine = {}", groupLine);
             String groupLineRef = groupLine;
             if (groupLineRef != null) {
-                String[] groupLineTokens = groupLineRef.split("\\s");
-                if (groupLineTokens.length != 2 && groupLineTokens.length != 3) {
+                String[] groupLineTokens = groupLineRef.split(ticMode.getSeparator());
+                if (ticMode == TeleinfoTicMode.HISTORICAL && groupLineTokens.length != 2 && groupLineTokens.length != 3
+                        || ticMode == TeleinfoTicMode.STANDARD && groupLineTokens.length != 3
+                                && groupLineTokens.length != 4) {
                     final String error = String.format("The groupLine '%1$s' is incomplete", groupLineRef);
                     throw new InvalidFrameException(error);
                 }
                 String labelStr = groupLineTokens[0];
-                String valueString = groupLineTokens[1];
+                String valueString;
+                String timestampString = null;
+                switch (ticMode) {
+                    default:
+                        valueString = groupLineTokens[1];
+                        break;
+                    case STANDARD:
+                        if (groupLineTokens.length == 3) {
+                            valueString = groupLineTokens[1];
+                        } else {
+                            timestampString = groupLineTokens[1];
+                            valueString = groupLineTokens[2];
+                        }
+                        break;
+                }
 
                 // verify integrity (through checksum)
-                char checksum = (groupLineTokens.length == 3 ? groupLineTokens[2].charAt(0) : ' ');
-                char computedChecksum = FrameUtil.computeGroupLineChecksum(labelStr, valueString);
-                if (computedChecksum != checksum) {
-                    logger.trace("computedChecksum = {}", computedChecksum);
-                    logger.trace("checksum = {}", checksum);
-                    final String error = String.format(
-                            "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
-                            groupLineRef, checksum, computedChecksum);
-                    throw new InvalidFrameException(error);
+                if (verifyChecksum) {
+                    char checksum = groupLineRef.charAt(groupLineRef.length() - 1);
+                    char computedChecksum = FrameUtil
+                            .computeGroupLineChecksum(groupLineRef.substring(0, groupLineRef.length() - 2), ticMode);
+                    if (computedChecksum != checksum) {
+                        logger.trace("computedChecksum = {}", computedChecksum);
+                        logger.trace("checksum = {}", checksum);
+                        final String error = String.format(
+                                "The groupLine '%s' is corrupted (integrity not checked). Actual checksum: '%s' / Expected checksum: '%s'",
+                                groupLineRef, checksum, computedChecksum);
+                        throw new InvalidFrameException(error);
+                    }
                 }
 
                 Label label;
                 try {
-                    label = Label.valueOf(labelStr);
+                    label = Label.getEnum(labelStr);
                 } catch (IllegalArgumentException e) {
                     if (autoRepairInvalidADPSgroupLine && labelStr.startsWith(Label.ADPS.name())) {
                         // in this hardware issue, label variable is composed by label name and value. E.g:
@@ -133,6 +166,9 @@ public class TeleinfoInputStream extends InputStream {
                 }
 
                 frame.put(label, valueString);
+                if (timestampString != null) {
+                    frame.putTimestamp(label, timestampString);
+                }
             }
         }
 
@@ -152,7 +188,7 @@ public class TeleinfoInputStream extends InputStream {
         throw new UnsupportedOperationException("The 'read()' is not supported");
     }
 
-    private boolean isHeaderFrame(final @Nullable String line) {
+    public static boolean isHeaderFrame(final @Nullable String line) {
         // A new teleinfo trame begin with '3' and '2' bytes (END OF TEXT et START OF TEXT)
         return (line != null && line.length() > 1 && line.codePointAt(0) == 3 && line.codePointAt(1) == 2);
     }

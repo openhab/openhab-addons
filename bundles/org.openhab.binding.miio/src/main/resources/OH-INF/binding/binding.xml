@@ -2,8 +2,9 @@
 <binding:binding id="miio" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
-	<name>Xiaomi Mi IO Binding</name>
-	<description>Binding for Xiaomi Mi IO devices like Mi Robot Vacuum</description>
+	<name>Xiaomi Wifi devices (Mi IO) Binding</name>
+	<description>Binding for Xiaomi wifi devices (Mi IO protocol) which are normally controlled by the mihome app like Mi
+		Robot Vacuums, Yeelights, Humidifiers, Fans etc.</description>
 
 	<config-description>
 		<parameter name="username" type="text" required="false">
@@ -26,7 +27,7 @@
 			<options>
 				<option value="disabled">Local discovery only (Default)</option>
 				<option value="supportedOnly">Discover online supported devices from Xiaomi cloud</option>
-				<option value="all">Discover all online devices from Xiaomi cloud</option>
+				<option value="all">Discover all on &amp; offline devices from Xiaomi cloud (advanced, see readme for usage)</option>
 			</options>
 		</parameter>
 	</config-description>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,6 +83,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         logger.debug("Creating DBusBlueZ device with address '{}'", address);
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public synchronized void updateBlueZDevice(@Nullable BluetoothDevice blueZDevice) {
         if (this.device != null && this.device == blueZDevice) {
             return;

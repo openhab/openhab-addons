@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,6 +151,13 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
             }
         } catch (MyStromException e) {
             logger.warn("Error while handling command {}", e.getMessage());
+        }
+    }
+
+    @Override
+    protected void checkRequiredInfo() throws MyStromException {
+        if (mac.isBlank()) {
+            throw new MyStromException("Cannot retrieve MAC info from myStrom device " + getThing().getUID());
         }
     }
 

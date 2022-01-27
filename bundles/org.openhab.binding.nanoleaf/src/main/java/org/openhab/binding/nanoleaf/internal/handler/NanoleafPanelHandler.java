@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,6 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing handler for panel {}", getThing().getUID());
-        updateStatus(ThingStatus.OFFLINE);
         Bridge controller = getBridge();
         if (controller == null) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,16 @@ public final class WebsiteCrawler {
      * @throws Exception if anything goes wrong.
      */
     public Website doGetRelative(String relativeUrl) throws Exception {
-        ContentResponse response = httpClient.GET("http://127.0.0.1:8080" + relativeUrl);
+        ContentResponse response = httpClient.GET("http://127.0.0.1:" + getServerPort() + relativeUrl);
         assertEquals(200, response.getStatus());
         return new Website(response.getContentAsString());
+    }
+
+    /**
+     * Gets the port the webserver for this integration test instance is running on. The port is reserved in the pom.xml
+     * by the build-helper-maven-plugin.
+     */
+    public static int getServerPort() {
+        return Integer.getInteger("org.osgi.service.http.port", 8080);
     }
 }

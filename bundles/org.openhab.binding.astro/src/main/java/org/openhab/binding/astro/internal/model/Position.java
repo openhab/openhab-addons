@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.astro.internal.model;
 
 import javax.measure.quantity.Angle;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 
@@ -24,6 +25,7 @@ import org.openhab.core.library.unit.Units;
  * @author Gaël L'hopital - Added shade length
  * @author Christoph Weitkamp - Introduced UoM
  */
+@NonNullByDefault
 public class Position {
 
     private double azimuth;

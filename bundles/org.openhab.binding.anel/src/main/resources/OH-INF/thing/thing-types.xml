@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="anel"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="home">
+		<label>HOME</label>
+		<description>Anel device with 3 controllable outlets without IO ports.</description>
+
+		<!-- Example channel ID: anel:home:mydevice:prop#temperature -->
+		<channel-groups>
+			<channel-group id="prop" typeId="propertiesGroup"/>
+
+			<channel-group id="r1" typeId="relayGroup"/>
+			<channel-group id="r2" typeId="relayGroup"/>
+			<channel-group id="r3" typeId="relayGroup"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">ANEL Elektronik AG</property>
+			<property name="modelId">NET-PwrCtrl HOME</property>
+		</properties>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:anel:config"/>
+	</thing-type>
+
+	<thing-type id="simple-firmware">
+		<label>PRO / POWER</label>
+		<description>Anel device with 8 controllable outlets without IO ports.</description>
+
+		<channel-groups>
+			<channel-group id="prop" typeId="propertiesGroup"/>
+
+			<!-- Example channel ID: anel:simple-firmware:mydevice:r1#state -->
+			<channel-group id="r1" typeId="relayGroup"/>
+			<channel-group id="r2" typeId="relayGroup"/>
+			<channel-group id="r3" typeId="relayGroup"/>
+			<channel-group id="r4" typeId="relayGroup"/>
+			<channel-group id="r5" typeId="relayGroup"/>
+			<channel-group id="r6" typeId="relayGroup"/>
+			<channel-group id="r7" typeId="relayGroup"/>
+			<channel-group id="r8" typeId="relayGroup"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">ANEL Elektronik AG</property>
+			<property name="modelId">NET-PwrCtrl PRO / POWER</property>
+		</properties>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:anel:config"/>
+	</thing-type>
+
+	<thing-type id="advanced-firmware">
+		<label>ADV / IO / HUT</label>
+		<description>Anel device with 8 controllable outlets / relays and possibly 8 IO ports.</description>
+
+		<channel-groups>
+			<channel-group id="prop" typeId="propertiesGroup"/>
+
+			<channel-group id="r1" typeId="relayGroup"/>
+			<channel-group id="r2" typeId="relayGroup"/>
+			<channel-group id="r3" typeId="relayGroup"/>
+			<channel-group id="r4" typeId="relayGroup"/>
+			<channel-group id="r5" typeId="relayGroup"/>
+			<channel-group id="r6" typeId="relayGroup"/>
+			<channel-group id="r7" typeId="relayGroup"/>
+			<channel-group id="r8" typeId="relayGroup"/>
+
+			<channel-group id="io1" typeId="ioGroup"/>
+			<channel-group id="io2" typeId="ioGroup"/>
+			<channel-group id="io3" typeId="ioGroup"/>
+			<channel-group id="io4" typeId="ioGroup"/>
+			<channel-group id="io5" typeId="ioGroup"/>
+			<channel-group id="io6" typeId="ioGroup"/>
+			<channel-group id="io7" typeId="ioGroup"/>
+			<channel-group id="io8" typeId="ioGroup"/>
+
+			<!-- Example channel ID: anel:advanced-firmware:mydevice:sensor#humidity -->
+			<channel-group id="sensor" typeId="sensorGroup"/>
+		</channel-groups>
+
+		<properties>
+			<property name="vendor">ANEL Elektronik AG</property>
+			<property name="modelId">NET-PwrCtrl ADV / IO / HUT</property>
+		</properties>
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="thing-type:anel:config"/>
+	</thing-type>
+
+	<channel-group-type id="propertiesGroup">
+		<label>Device Properties</label>
+		<description>Device properties</description>
+		<channels>
+			<channel id="name" typeId="name-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="relayGroup">
+		<label>Relay / Socket</label>
+		<description>A relay / socket</description>
+		<channels>
+			<channel id="name" typeId="relayName-channel"/>
+			<channel id="locked" typeId="relayLocked-channel"/>
+			<channel id="state" typeId="relayState-channel"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="ioGroup">
+		<label>I/O Port</label>
+		<description>An Input / Output Port</description>
+		<channels>
+			<channel id="name" typeId="ioName-channel"/>
+			<channel id="mode" typeId="ioMode-channel"/>
+			<channel id="state" typeId="ioState-channel"/>
+			<channel id="event" typeId="system.rawbutton"/>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="sensorGroup">
+		<label>Sensor</label>
+		<description>Optional sensor values</description>
+		<channels>
+			<channel id="temperature" typeId="sensorTemperature-channel"/>
+			<channel id="humidity" typeId="sensorHumidity-channel"/>
+			<channel id="brightness" typeId="sensorBrightness-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="name-channel">
+		<item-type>String</item-type>
+		<label>Device Name</label>
+		<description>The name of the Anel device</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Anel Device Temperature</label>
+		<description>The value of the built-in temperature sensor of the Anel device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="relayName-channel">
+		<item-type>String</item-type>
+		<label>Relay Name</label>
+		<description>The name of the relay / socket</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="relayLocked-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Relay Locked</label>
+		<description>Whether or not the relay is locked</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="relayState-channel">
+		<item-type>Switch</item-type>
+		<label>Relay State</label>
+		<description>The state of the relay / socket (read-only if locked!)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy><!-- updates are only sent in non-locked mode -->
+	</channel-type>
+
+	<channel-type id="ioName-channel">
+		<item-type>String</item-type>
+		<label>IO Name</label>
+		<description>The name of the I/O port</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ioMode-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>IO is Input</label>
+		<description>Whether the port is configured as input (true) or output (false)</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ioState-channel">
+		<item-type>Switch</item-type>
+		<label>IO State</label>
+		<description>The state of the I/O port (read-only for input ports)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy><!-- updates are only sent in output mode -->
+	</channel-type>
+
+	<channel-type id="sensorTemperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Sensor Temperature</label>
+		<description>The temperature value of the optional sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sensorHumidity-channel">
+		<item-type>Number</item-type>
+		<label>Sensor Humidity</label>
+		<description>The humidity value of the optional sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="sensorBrightness-channel">
+		<item-type>Number</item-type>
+		<label>Sensor Brightness</label>
+		<description>The brightness value of the optional sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

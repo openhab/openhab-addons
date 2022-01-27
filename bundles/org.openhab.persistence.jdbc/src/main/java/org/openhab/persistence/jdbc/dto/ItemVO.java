@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,9 @@ package org.openhab.persistence.jdbc.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +31,7 @@ public class ItemVO implements Serializable {
     private static final long serialVersionUID = 1871441039821454890L;
 
     private String tableName;
-    private String newTableName;
+    private @Nullable String newTableName;
     private String dbType;
     private String jdbcType;
     private String itemType;
@@ -37,7 +39,7 @@ public class ItemVO implements Serializable {
     private Date time;
     private Object value;
 
-    public ItemVO(String tableName, String newTableName) {
+    public ItemVO(String tableName, @Nullable String newTableName) {
         logger.debug("JDBC:ItemVO tableName={}; newTableName={}; ", tableName, newTableName);
         this.tableName = tableName;
         this.newTableName = newTableName;
@@ -60,7 +62,7 @@ public class ItemVO implements Serializable {
         this.tableName = tableName;
     }
 
-    public String getNewTableName() {
+    public @Nullable String getNewTableName() {
         return newTableName;
     }
 
@@ -116,11 +118,6 @@ public class ItemVO implements Serializable {
         this.value = value;
     }
 
-    /**
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -140,25 +137,13 @@ public class ItemVO implements Serializable {
         } else if (!value.equals(other.value)) {
             return false;
         }
-        return time == other.time;
+        return Objects.equals(time, other.time);
     }
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("ItemVO [tableName=");
-        builder.append(tableName);
-        builder.append(", newTableName=");
-        builder.append(newTableName);
-        builder.append(", dbType=");
-        builder.append(dbType);
-        builder.append(", javaType=");
-        builder.append(javaType);
-        builder.append(", time=");
-        builder.append(time);
-        builder.append(", value=");
-        builder.append(value);
-        builder.append("]");
-        return builder.toString();
+        return new StringBuilder("ItemVO [tableName=").append(tableName).append(", newTableName=").append(newTableName)
+                .append(", dbType=").append(dbType).append(", javaType=").append(javaType).append(", time=")
+                .append(time).append(", value=").append(value).append("]").toString();
     }
 }

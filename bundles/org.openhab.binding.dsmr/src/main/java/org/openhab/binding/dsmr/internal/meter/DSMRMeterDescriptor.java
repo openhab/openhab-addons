@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,6 @@ public class DSMRMeterDescriptor {
      *
      * @param meterType The meter type
      * @param channel The M-Bus channel this meter is connected to
-     * @throws IllegalArgumentException if one of the parameters is null
      */
     public DSMRMeterDescriptor(DSMRMeterType meterType, int channel) {
         this.meterType = meterType;

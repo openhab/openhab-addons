@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,7 @@ public class SunCalc {
     /**
      * Calculates sun radiation data.
      */
-    public void setRadiationInfo(Calendar calendar, double elevation, Double altitude, Sun sun) {
+    private void setRadiationInfo(Calendar calendar, double elevation, Double altitude, Sun sun) {
         double sinAlpha = Math.sin(DEG2RAD * elevation);
 
         int dayOfYear = calendar.get(Calendar.DAY_OF_YEAR);

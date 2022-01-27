@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -463,8 +464,8 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
             }
             sendComandsToDSS(device, intDeviceStateUpdate);
             if (nextDeviceStateUpdate != null) {
-                if (intDeviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_CONFIG
-                        || intDeviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_OUTPUT) {
+                if (DeviceStateUpdate.UPDATE_SCENE_CONFIG.equals(intDeviceStateUpdate.getType())
+                        || DeviceStateUpdate.UPDATE_SCENE_OUTPUT.equals(intDeviceStateUpdate.getType())) {
                     updateSceneData(device, intDeviceStateUpdate);
                 } else {
                     sendComandsToDSS(device, intDeviceStateUpdate);
@@ -625,7 +626,7 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         // to
         // OFFLINE.
         // An alternate algorithm is responsible for deletion.
-        if (newDevice.isPresent() != internalDevice.isPresent()) {
+        if (!Objects.equals(newDevice.isPresent(), internalDevice.isPresent())) {
             internalDevice.setIsPresent(newDevice.isPresent());
         }
         if (newDevice.getMeterDSID() != null && !newDevice.getMeterDSID().equals(internalDevice.getMeterDSID())) {
@@ -757,9 +758,9 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
         while (!device.isDeviceUpToDate()) {
             DeviceStateUpdate deviceStateUpdate = device.getNextDeviceUpdateState();
             if (deviceStateUpdate != null) {
-                if (deviceStateUpdate.getType() != DeviceStateUpdate.OUTPUT) {
-                    if (deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_CONFIG
-                            || deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_OUTPUT) {
+                if (!DeviceStateUpdate.OUTPUT.equals(deviceStateUpdate.getType())) {
+                    if (DeviceStateUpdate.UPDATE_SCENE_CONFIG.equals(deviceStateUpdate.getType())
+                            || DeviceStateUpdate.UPDATE_SCENE_OUTPUT.equals(deviceStateUpdate.getType())) {
                         updateSceneData(device, deviceStateUpdate);
                     } else {
                         sendComandsToDSS(device, deviceStateUpdate);
@@ -767,14 +768,14 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                 } else {
                     DeviceStateUpdate nextDeviceStateUpdate = device.getNextDeviceUpdateState();
                     while (nextDeviceStateUpdate != null
-                            && nextDeviceStateUpdate.getType() == DeviceStateUpdate.OUTPUT) {
+                            && DeviceStateUpdate.OUTPUT.equals(nextDeviceStateUpdate.getType())) {
                         deviceStateUpdate = nextDeviceStateUpdate;
                         nextDeviceStateUpdate = device.getNextDeviceUpdateState();
                     }
                     sendComandsToDSS(device, deviceStateUpdate);
                     if (nextDeviceStateUpdate != null) {
-                        if (deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_CONFIG
-                                || deviceStateUpdate.getType() == DeviceStateUpdate.UPDATE_SCENE_OUTPUT) {
+                        if (DeviceStateUpdate.UPDATE_SCENE_CONFIG.equals(deviceStateUpdate.getType())
+                                || DeviceStateUpdate.UPDATE_SCENE_OUTPUT.equals(deviceStateUpdate.getType())) {
                             updateSceneData(device, deviceStateUpdate);
                         } else {
                             sendComandsToDSS(device, deviceStateUpdate);
@@ -1188,6 +1189,8 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                 tempConsumption += value.getValue();
                 if (strucMan.getCircuitByDSID(value.getDsid()) != null) {
                     strucMan.getCircuitByDSID(value.getDsid()).addMeteringValue(value);
+                } else if (strucMan.getCircuitByDSUID(value.getDsuid()) != null) {
+                    strucMan.getCircuitByDSUID(value.getDsuid()).addMeteringValue(value);
                 }
             }
         }
@@ -1215,6 +1218,8 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                 tempEnergyMeter += value.getValue();
                 if (strucMan.getCircuitByDSID(value.getDsid()) != null) {
                     strucMan.getCircuitByDSID(value.getDsid()).addMeteringValue(value);
+                } else if (strucMan.getCircuitByDSUID(value.getDsuid()) != null) {
+                    strucMan.getCircuitByDSUID(value.getDsuid()).addMeteringValue(value);
                 }
             }
         }
@@ -1231,6 +1236,8 @@ public class DeviceStatusManagerImpl implements DeviceStatusManager {
                 tempEnergyMeterWs += value.getValue();
                 if (strucMan.getCircuitByDSID(value.getDsid()) != null) {
                     strucMan.getCircuitByDSID(value.getDsid()).addMeteringValue(value);
+                } else if (strucMan.getCircuitByDSUID(value.getDsuid()) != null) {
+                    strucMan.getCircuitByDSUID(value.getDsuid()).addMeteringValue(value);
                 }
             }
         }

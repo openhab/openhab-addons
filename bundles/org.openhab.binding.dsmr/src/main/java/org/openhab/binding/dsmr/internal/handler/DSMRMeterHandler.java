@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1TelegramListener;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeter;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterConfiguration;
+import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
 import org.openhab.core.thing.ChannelUID;
@@ -67,6 +68,11 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
     private @NonNullByDefault({}) ScheduledFuture<?> meterWatchdog;
 
     /**
+     * The M-bus channel this meter is on, or if the channel is irrelevant is set to unknown channel
+     */
+    private int channel = DSMRMeterConstants.UNKNOWN_CHANNEL;
+
+    /**
      * Creates a new MeterHandler for the given Thing.
      *
      * @param thing {@link Thing} to create the MeterHandler for
@@ -106,7 +112,8 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
             return;
         }
         DSMRMeterConfiguration meterConfig = getConfigAs(DSMRMeterConfiguration.class);
-        DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, meterConfig.channel);
+        channel = meterType.meterKind.isChannelRelevant() ? meterConfig.channel : DSMRMeterConstants.UNKNOWN_CHANNEL;
+        DSMRMeterDescriptor meterDescriptor = new DSMRMeterDescriptor(meterType, channel);
         meter = new DSMRMeter(meterDescriptor);
         meterWatchdog = scheduler.scheduleWithFixedDelay(this::updateState, meterConfig.refresh, meterConfig.refresh,
                 TimeUnit.SECONDS);
@@ -163,7 +170,7 @@ public class DSMRMeterHandler extends BaseThingHandler implements P1TelegramList
         if (localMeter == null) {
             return;
         }
-        List<CosemObject> filteredValues = localMeter.filterMeterValues(telegram.getCosemObjects());
+        List<CosemObject> filteredValues = localMeter.filterMeterValues(telegram.getCosemObjects(), channel);
 
         if (filteredValues.isEmpty()) {
             if (getThing().getStatus() == ThingStatus.ONLINE) {

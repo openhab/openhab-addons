@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.responses;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class Scenes {
      */
     @SuppressWarnings("null")
     @NonNullByDefault
-    public static class Scene {
+    public static class Scene implements Comparable<Scene> {
         public int id;
         public @Nullable String name;
         public int roomId;
@@ -45,8 +46,41 @@ public class Scenes {
         public int colorId;
         public int iconId;
 
+        @Override
+        public boolean equals(@Nullable Object o) {
+            if (o == this) {
+                return true;
+            }
+            if (!(o instanceof Scene)) {
+                return false;
+            }
+            Scene other = (Scene) o;
+
+            return this.id == other.id && this.name.equals(other.name) && this.roomId == other.roomId
+                    && this.order == other.order && this.colorId == other.colorId && this.iconId == other.iconId;
+        }
+
+        @Override
+        public final int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + id;
+            result = prime * result + (name == null ? 0 : name.hashCode());
+            result = prime * result + roomId;
+            result = prime * result + order;
+            result = prime * result + colorId;
+            result = prime * result + iconId;
+
+            return result;
+        }
+
+        @Override
+        public int compareTo(Scene other) {
+            return Integer.compare(order, other.order);
+        }
+
         public String getName() {
-            return new String(Base64.getDecoder().decode(name));
+            return new String(Base64.getDecoder().decode(name), StandardCharsets.UTF_8);
         }
     }
 }

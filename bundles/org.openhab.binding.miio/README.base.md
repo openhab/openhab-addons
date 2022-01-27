@@ -1,7 +1,8 @@
-# Xiaomi Mi IO Binding
+# Xiaomi Wifi devices (Mi IO) Binding
 
 This binding is used to control Xiaomi products implementing the Mi IO protocol. 
-This is a set of wifi devices from Xiaomi that are part of the Mi Ecosystem which is branded as MiJia.
+This protocol is used for most of Xiaomi Mi Ecosystem wifi devices which is branded as MiJia.
+If your Xiaomi wifi device is controlled by the mihome app, most likely it communicates using the Mi IO protocol and can communicate with openHAB using this binding.
 
 ![MIIO logo](doc/miio.png)
 
@@ -12,9 +13,11 @@ The following things types are available:
 | ThingType        | Description                                                                                                              |
 |------------------|--------------------------------------------------------------------------------------------------------------------------|
 | miio:generic     | Generic type for discovered devices. Once the token is available and the device model is determined, this ThingType will automatically change to the appropriate ThingType |
-| miio:vacuum      | For Xiaomi Robot Vacuum products                                                                                         |
-| miio:basic       | For several basic devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
-| miio:unsupported | For experimenting with other devices which use the Mi IO protocol                                                        |
+| miio:vacuum      | For Xiaomi/RoboRock Robot Vacuum products                                                                                         |
+| miio:basic       | For most other devices like yeelights, airpurifiers. Channels and commands are determined by database configuration   |
+| miio:gateway     | Similar to basic, but with the Bridge feature, it can support to forward commands for connected devices                  |
+| miio:lumi        | Thing type for subdevices connected to the gateway. Note, these devices require a defined gateway to function            |
+| miio:unsupported | For experimenting with other devices which use the Mi IO protocol or to build experimental support                                                       |
 
 # Discovery
 
@@ -85,6 +88,7 @@ However, for devices that are unsupported, you may override the value and try to
 
 Note: Suggest to use the cloud communication only for devices that require it. 
 It is unknown at this time if Xiaomi has a rate limit or other limitations on the cloud usage. e.g. if having many devices would trigger some throttling from the cloud side.
+Note2: communications parameter is not available for lumi devices. Lumi devices communicate using the bridge/gateway.
 
 ### Example Thing file
 
@@ -93,6 +97,11 @@ It is unknown at this time if Xiaomi has a rate limit or other limitations on th
 or in case of unknown models include the model information of a similar device that is supported:
 
 `Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId="326xxxx", model="roborock.vacuum.s4", communication="direct", cloudServer="de" ]`
+
+in case of gateway, instead of defining it as a Thing, use Bridge
+
+`Bridge miio:gateway:lumigateway "Mi Smarter Gateway" [ host="10.10.x.x", token="put here your token", deviceId="326xxxx", model="lumi.gateway.mieu01", communication="direct", cloudServer="de" ]` 
+
 
 # Advanced: Unsupported devices
 
@@ -176,6 +185,9 @@ This will change the communication method and the Mi IO binding can communicate 
 # Mi IO Devices
 
 !!!devices
+note: Supported means we received feedback from users this device is working with the binding. 
+For devices with experimental support, we did not yet confirmation that channels are correctly working. 
+Please feedback your findings for these devices (e.g. Are all channels working, do they contain the right information, is controlling the devices working etc.)
 
 # Channels
 

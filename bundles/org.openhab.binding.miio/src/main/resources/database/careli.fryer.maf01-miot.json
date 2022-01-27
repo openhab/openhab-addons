@@ -522,7 +522,6 @@
 				"readmeComment": "Value mapping `[\"1\"\u003d\"Switch Off\",\"0\"\u003d\"Not Turn Pot\",\"2\"\u003d\"Turn Pot\"]`"
 			}
 		],
-		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"air-fryer-start-cook\",\"siid\":2,\"aiid\":1,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"air-fryer-cancel-cooking\",\"siid\":2,\"aiid\":2,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"air-fryer-pause\",\"siid\":2,\"aiid\":3,\"in\":[]}`\u003cbr /\u003e`action{\"did\":\"custom-start-cook\",\"siid\":3,\"aiid\":1,\"in\":[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]}`\u003cbr /\u003e`action{\"did\":\"custom-resume-cook\",\"siid\":3,\"aiid\":2,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
 		"experimental": true
 	}
 }

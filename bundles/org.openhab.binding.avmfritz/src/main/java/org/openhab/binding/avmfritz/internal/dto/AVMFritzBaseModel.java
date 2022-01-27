@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * <ol>
  * <li>Bit 0: HAN-FUN Gerät</li>
+ * <li>Bit 2: Licht/Lampe</li>
  * <li>Bit 3: HAN-FUN Button - undocumented</li>
  * <li>Bit 4: Alarm-Sensor</li>
  * <li>Bit 5: AVM-Button</li>
@@ -37,6 +38,8 @@ import org.eclipse.jdt.annotation.Nullable;
  * <li>Bit 11: Mikrofon</li>
  * <li>Bit 13: HAN-FUN Unit</li>
  * <li>Bit 15: an-/ausschaltbares Gerät / Steckdose / Lampe / Aktor</li>
+ * <li>Bit 16: Gerät mit einstellbarem Dimm-, Höhen- bzw. Niveau-Level</li>
+ * <li>Bit 17: Lampe mit einstellbarer Farbe/Farbtemperatur</li>
  * <li>Bit 18: Rollladen - hoch, runter, stop und level 0% bis 100 %</li>
  * </ol>
  *
@@ -47,6 +50,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
+    protected static final int LIGHT_BIT = 1 << 2; // Bit 2
     protected static final int HAN_FUN_BUTTON_BIT = 1 << 3; // Bit 3 - undocumented
     protected static final int HAN_FUN_ALARM_SENSOR_BIT = 1 << 4; // Bit 4
     protected static final int BUTTON_BIT = 1 << 5; // Bit 5
@@ -58,6 +62,8 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int MICROPHONE_BIT = 1 << 11; // Bit 11
     protected static final int HAN_FUN_UNIT_BIT = 1 << 13; // Bit 13
     protected static final int HAN_FUN_ON_OFF_BIT = 1 << 15; // Bit 15
+    protected static final int DIMMABLE_LIGHT_BIT = 1 << 16; // Bit 16
+    protected static final int COLOR_LIGHT_BIT = 1 << 17; // Bit 17
     protected static final int HAN_FUN_BLINDS_BIT = 1 << 18; // Bit 18
     protected static final int HUMIDITY_SENSOR_BIT = 1 << 20; // Bit 20 - undocumented
 
@@ -195,6 +201,14 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
         return (bitmask / HAN_FUN_ON_OFF_BIT) > 0;
     }
 
+    public boolean isDimmableLight() {
+        return (bitmask & DIMMABLE_LIGHT_BIT) > 0;
+    }
+
+    public boolean isColorLight() {
+        return (bitmask & COLOR_LIGHT_BIT) > 0;
+    }
+
     public boolean isHANFUNBlinds() {
         return (bitmask & HAN_FUN_BLINDS_BIT) > 0;
     }
@@ -239,7 +253,8 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
                 .append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=").append(isDectRepeater())
                 .append(",isHeatingThermostat=").append(isHeatingThermostat()).append(",hasMicrophone=")
                 .append(hasMicrophone()).append(",isHANFUNUnit=").append(isHANFUNUnit()).append(",isHANFUNOnOff=")
-                .append(isHANFUNOnOff()).append(",isHANFUNBlind=").append(isHANFUNBlinds()).append(",id=")
+                .append(isHANFUNOnOff()).append(",isDimmableLight=").append(isDimmableLight()).append(",isColorLight=")
+                .append(isColorLight()).append(",isHANFUNBlind=").append(isHANFUNBlinds()).append(",id=")
                 .append(deviceId).append(",manufacturer=").append(deviceManufacturer).append(",productname=")
                 .append(productName).append(",fwversion=").append(firmwareVersion).append(",present=").append(present)
                 .append(",name=").append(name).append(",battery=").append(getBattery()).append(",batterylow=")

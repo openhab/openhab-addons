@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.remoteopenhab.internal.exceptions;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.AbstractI18nException;
 
 /**
  * Exceptions thrown by this binding.
@@ -22,17 +23,17 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 @SuppressWarnings("serial")
-public class RemoteopenhabException extends Exception {
+public class RemoteopenhabException extends AbstractI18nException {
 
-    public RemoteopenhabException(@Nullable String message) {
-        super(message);
-    }
-
-    public RemoteopenhabException(@Nullable String message, @Nullable Throwable cause) {
-        super(message, cause);
-    }
-
-    public RemoteopenhabException(@Nullable Throwable cause) {
+    public RemoteopenhabException(Throwable cause) {
         super(cause);
+    }
+
+    public RemoteopenhabException(String message, @Nullable Object @Nullable... msgParams) {
+        super(message, msgParams);
+    }
+
+    public RemoteopenhabException(String message, Throwable cause, @Nullable Object @Nullable... msgParams) {
+        super(message, cause, msgParams);
     }
 }

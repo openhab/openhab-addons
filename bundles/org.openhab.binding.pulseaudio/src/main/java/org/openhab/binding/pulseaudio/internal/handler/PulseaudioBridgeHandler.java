@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,6 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.pulseaudio.internal.PulseAudioBindingConfiguration;
+import org.openhab.binding.pulseaudio.internal.PulseAudioBindingConfigurationListener;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.PulseaudioClient;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
@@ -45,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Tobias Bräutigam - Initial contribution
  *
  */
-public class PulseaudioBridgeHandler extends BaseBridgeHandler {
+public class PulseaudioBridgeHandler extends BaseBridgeHandler implements PulseAudioBindingConfigurationListener {
     private final Logger logger = LoggerFactory.getLogger(PulseaudioBridgeHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
@@ -58,11 +60,17 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
 
     private PulseaudioClient client;
 
+    private PulseAudioBindingConfiguration configuration;
+
     private List<DeviceStatusListener> deviceStatusListeners = new CopyOnWriteArrayList<>();
     private HashSet<String> lastActiveDevices = new HashSet<>();
 
     private ScheduledFuture<?> pollingJob;
     private Runnable pollingRunnable = () -> {
+        update();
+    };
+
+    private synchronized void update() {
         client.update();
         for (AbstractAudioDeviceConfig device : client.getItems()) {
             if (lastActiveDevices != null && lastActiveDevices.contains(device.getPaName())) {
@@ -85,10 +93,11 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
                 }
             }
         }
-    };
+    }
 
-    public PulseaudioBridgeHandler(Bridge bridge) {
+    public PulseaudioBridgeHandler(Bridge bridge, PulseAudioBindingConfiguration configuration) {
         super(bridge);
+        this.configuration = configuration;
     }
 
     @Override
@@ -132,7 +141,7 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
         if (host != null && !host.isEmpty()) {
             Runnable connectRunnable = () -> {
                 try {
-                    client = new PulseaudioClient(host, port);
+                    client = new PulseaudioClient(host, port, configuration);
                     if (client.isConnected()) {
                         updateStatus(ThingStatus.ONLINE);
                         logger.info("Established connection to Pulseaudio server on Host '{}':'{}'.", host, port);
@@ -151,10 +160,13 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
                     host, port);
             updateStatus(ThingStatus.OFFLINE);
         }
+
+        this.configuration.addPulseAudioBindingConfigurationListener(this);
     }
 
     @Override
     public void dispose() {
+        this.configuration.removePulseAudioBindingConfigurationListener(this);
         if (pollingJob != null) {
             pollingJob.cancel(true);
         }
@@ -173,5 +185,10 @@ public class PulseaudioBridgeHandler extends BaseBridgeHandler {
 
     public boolean unregisterDeviceStatusListener(DeviceStatusListener deviceStatusListener) {
         return deviceStatusListeners.remove(deviceStatusListener);
+    }
+
+    @Override
+    public void bindingConfigurationChanged() {
+        update();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.xmltv.internal;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
@@ -36,7 +33,6 @@ public class XmlTVBindingConstants {
     public static final ThingTypeUID XMLTV_CHANNEL_THING_TYPE = new ThingTypeUID(BINDING_ID, "channel");
 
     // Channel groups
-    public static final String GROUP_CURRENT_PROGRAMME = "currentprog";
     public static final String GROUP_NEXT_PROGRAMME = "nextprog";
     public static final String GROUP_CHANNEL_PROPERTIES = "channelprops";
 
@@ -56,6 +52,6 @@ public class XmlTVBindingConstants {
     public static final String CHANNEL_PROGRAMME_TIMELEFT = "timeLeft";
 
     // Supported Thing types
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(XMLTV_FILE_BRIDGE_TYPE, XMLTV_CHANNEL_THING_TYPE).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(XMLTV_FILE_BRIDGE_TYPE,
+            XMLTV_CHANNEL_THING_TYPE);
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -143,6 +143,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void addBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;
@@ -164,6 +165,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBl
     }
 
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void removeBluetoothAdapter(BluetoothAdapter adapter) {
         if (adapter == this) {
             return;

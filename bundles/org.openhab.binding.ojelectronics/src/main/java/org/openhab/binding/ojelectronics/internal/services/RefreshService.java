@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,14 +115,21 @@ public final class RefreshService implements AutoCloseable {
                 if (!destroyed) {
                     if (result == null || result.isFailed()) {
                         handleConnectionLost();
-                    } else if (result.getResponse().getStatus() == HttpStatus.FORBIDDEN_403) {
-                        if (unauthorized != null) {
-                            unauthorized.run();
-                        }
-                    } else if (result.getResponse().getStatus() == HttpStatus.FORBIDDEN_403) {
-                        handleConnectionLost();
                     } else {
-                        handleRefreshDone(getContentAsString());
+                        int status = result.getResponse().getStatus();
+                        logger.trace("HTTP-Status {}", status);
+                        if (status == HttpStatus.FORBIDDEN_403) {
+                            if (unauthorized != null) {
+                                unauthorized.run();
+                            } else {
+                                handleConnectionLost();
+                            }
+                        } else if (status == HttpStatus.OK_200) {
+                            handleRefreshDone(getContentAsString());
+                        } else {
+                            logger.warn("unsupported HTTP-Status {}", status);
+                            handleConnectionLost();
+                        }
                     }
                 }
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import io.github.hapjava.accessories.ThermostatAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateEnum;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateEnum;
 import io.github.hapjava.characteristics.impl.thermostat.TargetTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitEnum;
@@ -105,22 +106,30 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE, DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
+        Double state = getStateAsTemperature(HomekitCharacteristicType.CURRENT_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state : getMinCurrentTemperature());
     }
 
     @Override
     public double getMinCurrentTemperature() {
-        return convertToCelsius(
+        // Apple defines default values in Celsius. We need to convert them to Fahrenheit if openHAB is using Fahrenheit
+        // convertToCelsius and convertFromCelsius are only converting if useFahrenheit is set to true, so no additional
+        // check here needed
+
+        return HomekitCharacteristicFactory.convertToCelsius(
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue());
+                        BigDecimal.valueOf(HomekitCharacteristicFactory
+                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
+                                        .doubleValue());
     }
 
     @Override
     public double getMaxCurrentTemperature() {
-        return convertToCelsius(
+        return HomekitCharacteristicFactory.convertToCelsius(
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
-                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue());
+                        BigDecimal.valueOf(HomekitCharacteristicFactory
+                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
+                                        .doubleValue());
     }
 
     @Override
@@ -138,7 +147,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
     @Override
     public CompletableFuture<TemperatureDisplayUnitEnum> getTemperatureDisplayUnit() {
         return CompletableFuture
-                .completedFuture(getSettings().useFahrenheitTemperature ? TemperatureDisplayUnitEnum.FAHRENHEIT
+                .completedFuture(HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
                         : TemperatureDisplayUnitEnum.CELSIUS);
     }
 
@@ -149,8 +158,8 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public CompletableFuture<Double> getTargetTemperature() {
-        DecimalType state = getStateAs(HomekitCharacteristicType.TARGET_TEMPERATURE, DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
+        Double state = getStateAsTemperature(HomekitCharacteristicType.TARGET_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state : 0.0);
     }
 
     @Override
@@ -165,7 +174,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
                 HomekitCharacteristicType.TARGET_TEMPERATURE);
         if (characteristic.isPresent()) {
             ((NumberItem) characteristic.get().getItem())
-                    .send(new DecimalType(BigDecimal.valueOf(convertFromCelsius(value))));
+                    .send(new DecimalType(BigDecimal.valueOf(HomekitCharacteristicFactory.convertFromCelsius(value))));
         } else {
             logger.warn("Missing mandatory characteristic {}", HomekitCharacteristicType.TARGET_TEMPERATURE);
         }
@@ -173,16 +182,24 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
 
     @Override
     public double getMinTargetTemperature() {
-        return convertToCelsius(
-                getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue());
+        return HomekitCharacteristicFactory
+                .convertToCelsius(
+                        getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE,
+                                HomekitTaggedItem.MIN_VALUE,
+                                BigDecimal.valueOf(HomekitCharacteristicFactory
+                                        .convertFromCelsius(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
+                                                .doubleValue());
     }
 
     @Override
     public double getMaxTargetTemperature() {
-        return convertToCelsius(
-                getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
-                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue());
+        return HomekitCharacteristicFactory
+                .convertToCelsius(
+                        getAccessoryConfiguration(HomekitCharacteristicType.TARGET_TEMPERATURE,
+                                HomekitTaggedItem.MAX_VALUE,
+                                BigDecimal.valueOf(HomekitCharacteristicFactory
+                                        .convertFromCelsius(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
+                                                .doubleValue());
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.powermax.internal.state;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All defined sensor types for Master panels
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public enum PowermasterSensorType {
 
     SENSOR_TYPE_1((byte) 0x01, "Motion"),
@@ -26,8 +29,8 @@ public enum PowermasterSensorType {
     SENSOR_TYPE_5((byte) 0x2A, "Magnet"),
     SENSOR_TYPE_6((byte) 0xFE, "Wired");
 
-    private byte code;
-    private String label;
+    private final byte code;
+    private final String label;
 
     private PowermasterSensorType(byte code, String label) {
         this.code = code;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -105,10 +105,7 @@ public final class NikoHomeControlDiscover {
      */
     private boolean isNhc(DatagramPacket packet) {
         byte[] packetData = packet.getData();
-        if ((packet.getLength() > 2) && (packetData[0] == 0x44)) {
-            return true;
-        }
-        return false;
+        return ((packet.getLength() > 2) && (packetData[0] == 0x44));
     }
 
     /**

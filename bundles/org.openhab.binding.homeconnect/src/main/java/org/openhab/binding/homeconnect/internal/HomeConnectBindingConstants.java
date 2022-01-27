@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -241,7 +241,7 @@ public class HomeConnectBindingConstants {
     public static final String API_SIMULATOR_BASE_URL = "https://simulator.home-connect.com";
     public static final String OAUTH_TOKEN_PATH = "/security/oauth/token";
     public static final String OAUTH_AUTHORIZE_PATH = "/security/oauth/authorize";
-    public static final String OAUTH_SCOPE = "IdentifyAppliance Monitor Settings Dishwasher-Control Washer-Control Dryer-Control WasherDryer-Control CoffeeMaker-Control Hood-Control CleaningRobot-Control";
+    public static final String OAUTH_SCOPE = "IdentifyAppliance Monitor Settings Dishwasher-Control Washer-Control Dryer-Control WasherDryer-Control CoffeeMaker-Control Hood-Control Oven-Control CleaningRobot-Control";
 
     // Operation states
     public static final String OPERATION_STATE_INACTIVE = "BSH.Common.EnumType.OperationState.Inactive";

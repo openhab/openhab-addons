@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,16 +12,18 @@
  */
 package org.openhab.persistence.rrd4j.internal.charts;
 
+import static java.util.Map.entry;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
+import java.io.UncheckedIOException;
+import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.imageio.ImageIO;
 import javax.servlet.Servlet;
@@ -30,6 +32,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -46,6 +51,7 @@ import org.osgi.service.http.NamespaceException;
 import org.rrd4j.ConsolFun;
 import org.rrd4j.core.RrdDb;
 import org.rrd4j.graph.RrdGraph;
+import org.rrd4j.graph.RrdGraphConstants.FontTag;
 import org.rrd4j.graph.RrdGraphDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,10 +72,14 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - a few improvements
  *
  */
+@NonNullByDefault
 @Component(service = ChartProvider.class)
 public class RRD4jChartServlet implements Servlet, ChartProvider {
 
     private final Logger logger = LoggerFactory.getLogger(RRD4jChartServlet.class);
+
+    private static final int DEFAULT_HEIGHT = 240;
+    private static final int DEFAULT_WIDTH = 480;
 
     /** the URI of this servlet */
     public static final String SERVLET_NAME = "/rrdchart.png";
@@ -81,28 +91,29 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
             new Color(0, 255, 255, 30), new Color(255, 0, 128, 30), new Color(255, 128, 128, 30),
             new Color(255, 255, 0, 30) };
 
-    protected static final Map<String, Long> PERIODS = new HashMap<>();
+    private static final Duration DEFAULT_PERIOD = Duration.ofDays(1);
 
-    static {
-        PERIODS.put("h", -3600000L);
-        PERIODS.put("4h", -14400000L);
-        PERIODS.put("8h", -28800000L);
-        PERIODS.put("12h", -43200000L);
-        PERIODS.put("D", -86400000L);
-        PERIODS.put("3D", -259200000L);
-        PERIODS.put("W", -604800000L);
-        PERIODS.put("2W", -1209600000L);
-        PERIODS.put("M", -2592000000L);
-        PERIODS.put("2M", -5184000000L);
-        PERIODS.put("4M", -10368000000L);
-        PERIODS.put("Y", -31536000000L);
+    private static final Map<String, Duration> PERIODS = Map.ofEntries( //
+            entry("h", Duration.ofHours(1)), entry("4h", Duration.ofHours(4)), //
+            entry("8h", Duration.ofHours(8)), entry("12h", Duration.ofHours(12)), //
+            entry("D", Duration.ofDays(1)), entry("2D", Duration.ofDays(2)), //
+            entry("3D", Duration.ofDays(3)), entry("W", Duration.ofDays(7)), //
+            entry("2W", Duration.ofDays(14)), entry("M", Duration.ofDays(30)), //
+            entry("2M", Duration.ofDays(60)), entry("4M", Duration.ofDays(120)), //
+            entry("Y", Duration.ofDays(365))//
+    );
+
+    private final HttpService httpService;
+    private final ItemUIRegistry itemUIRegistry;
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public RRD4jChartServlet(final @Reference HttpService httpService, final @Reference ItemUIRegistry itemUIRegistry,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        this.httpService = httpService;
+        this.itemUIRegistry = itemUIRegistry;
+        this.timeZoneProvider = timeZoneProvider;
     }
-
-    @Reference
-    protected HttpService httpService;
-
-    @Reference
-    protected ItemUIRegistry itemUIRegistry;
 
     @Activate
     protected void activate() {
@@ -125,35 +136,39 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
     public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
         logger.debug("RRD4J received incoming chart request: {}", req);
 
-        int width = 480;
-        try {
-            width = Integer.parseInt(Objects.requireNonNull(req.getParameter("w")));
-        } catch (Exception e) {
-        }
-        int height = 240;
-        try {
-            height = Integer.parseInt(Objects.requireNonNull(req.getParameter("h")));
-        } catch (Exception e) {
-        }
-        Long period = PERIODS.get(req.getParameter("period"));
-        if (period == null) {
-            // use a day as the default period
-            period = PERIODS.get("D");
-        }
-        // Create the start and stop time
-        Date timeEnd = new Date();
-        Date timeBegin = new Date(timeEnd.getTime() + period);
+        int width = parseInt(req.getParameter("w"), DEFAULT_WIDTH);
+        int height = parseInt(req.getParameter("h"), DEFAULT_HEIGHT);
+        String periodParam = req.getParameter("period");
+        Duration period = periodParam == null ? DEFAULT_PERIOD : PERIODS.getOrDefault(periodParam, DEFAULT_PERIOD);
 
-        // Set the content type to that provided by the chart provider
-        res.setContentType("image/" + getChartType());
+        // Create the start and stop time
+        ZonedDateTime timeEnd = ZonedDateTime.now(timeZoneProvider.getTimeZone());
+        ZonedDateTime timeBegin = timeEnd.minus(period);
+
         try {
             BufferedImage chart = createChart(null, null, timeBegin, timeEnd, height, width, req.getParameter("items"),
                     req.getParameter("groups"), null, null);
+            // Set the content type to that provided by the chart provider
+            res.setContentType("image/" + getChartType());
             ImageIO.write(chart, getChartType().toString(), res.getOutputStream());
         } catch (ItemNotFoundException e) {
-            logger.debug("Item not found error while generating chart.");
+            logger.debug("Item not found error while generating chart", e);
+            throw new ServletException("Item not found error while generating chart: " + e.getMessage());
         } catch (IllegalArgumentException e) {
             logger.debug("Illegal argument in chart", e);
+            throw new ServletException("Illegal argument in chart: " + e.getMessage());
+        }
+    }
+
+    private int parseInt(@Nullable String s, int defaultValue) {
+        if (s == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            logger.debug("'{}' is not an integer, using default: {}", s, defaultValue);
+            return defaultValue;
         }
     }
 
@@ -175,7 +190,7 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
             label = label.substring(0, label.indexOf('['));
         }
         try {
-            RrdDb db = new RrdDb(rrdName);
+            RrdDb db = RrdDb.of(rrdName);
             consolFun = db.getRrdDef().getArcDefs()[0].getConsolFun();
             db.close();
         } catch (IOException e) {
@@ -196,16 +211,16 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
     }
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
+    public void init(@Nullable ServletConfig config) throws ServletException {
     }
 
     @Override
-    public ServletConfig getServletConfig() {
+    public @Nullable ServletConfig getServletConfig() {
         return null;
     }
 
     @Override
-    public String getServletInfo() {
+    public @Nullable String getServletInfo() {
         return null;
     }
 
@@ -222,20 +237,17 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
     }
 
     @Override
-    public BufferedImage createChart(String service, String theme, Date startTime, Date endTime, int height, int width,
-            String items, String groups, Integer dpi, Boolean legend) throws ItemNotFoundException {
-        RrdGraphDef graphDef = new RrdGraphDef();
-
-        long period = (startTime.getTime() - endTime.getTime()) / 1000;
-
+    public BufferedImage createChart(@Nullable String service, @Nullable String theme, ZonedDateTime startTime,
+            ZonedDateTime endTime, int height, int width, @Nullable String items, @Nullable String groups,
+            @Nullable Integer dpi, @Nullable Boolean legend) throws ItemNotFoundException {
+        RrdGraphDef graphDef = new RrdGraphDef(startTime.toEpochSecond(), endTime.toEpochSecond());
         graphDef.setWidth(width);
         graphDef.setHeight(height);
         graphDef.setAntiAliasing(true);
         graphDef.setImageFormat("PNG");
-        graphDef.setStartTime(period);
         graphDef.setTextAntiAliasing(true);
-        graphDef.setLargeFont(new Font("SansSerif", Font.PLAIN, 15));
-        graphDef.setSmallFont(new Font("SansSerif", Font.PLAIN, 11));
+        graphDef.setFont(FontTag.TITLE, new Font("SansSerif", Font.PLAIN, 15));
+        graphDef.setFont(FontTag.DEFAULT, new Font("SansSerif", Font.PLAIN, 11));
 
         int seriesCounter = 0;
 
@@ -265,19 +277,15 @@ public class RRD4jChartServlet implements Servlet, ChartProvider {
         }
 
         // Write the chart as a PNG image
-        RrdGraph graph;
         try {
-            graph = new RrdGraph(graphDef);
+            RrdGraph graph = new RrdGraph(graphDef);
             BufferedImage bi = new BufferedImage(graph.getRrdGraphInfo().getWidth(),
                     graph.getRrdGraphInfo().getHeight(), BufferedImage.TYPE_INT_RGB);
             graph.render(bi.getGraphics());
-
             return bi;
         } catch (IOException e) {
-            logger.error("Error generating graph.", e);
+            throw new UncheckedIOException("Error generating RrdGraph", e);
         }
-
-        return null;
     }
 
     @Override

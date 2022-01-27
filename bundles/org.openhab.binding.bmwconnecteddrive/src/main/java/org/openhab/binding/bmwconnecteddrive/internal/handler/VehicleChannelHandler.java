@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,7 +120,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateCheckControls(List<CCMMessage> ccl) {
-        if (ccl.size() == 0) {
+        if (ccl.isEmpty()) {
             // No Check Control available - show not active
             CCMMessage ccm = new CCMMessage();
             ccm.ccmDescriptionLong = Constants.NO_ENTRIES;
@@ -169,7 +169,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateServices(List<CBSMessage> sl) {
         // if list is empty add "undefined" element
-        if (sl.size() == 0) {
+        if (sl.isEmpty()) {
             CBSMessage cbsm = new CBSMessage();
             cbsm.cbsType = Constants.NO_ENTRIES;
             cbsm.cbsDescription = Constants.NO_ENTRIES;
@@ -225,7 +225,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
     protected void updateDestinations(List<Destination> dl) {
         // if list is empty add "undefined" element
-        if (dl.size() == 0) {
+        if (dl.isEmpty()) {
             Destination dest = new Destination();
             dest.city = Constants.NO_ENTRIES;
             dest.lat = -1;
@@ -417,6 +417,9 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         // last update Time
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
                 DateTimeType.valueOf(Converter.getLocalDateTime(VehicleStatusUtils.getUpdateTime(vStatus))));
+        // last update reason
+        updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE_REASON,
+                StringType.valueOf(Converter.toTitleCase(vStatus.updateReason)));
 
         Doors doorState = null;
         try {
@@ -442,7 +445,8 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // Range values
         // based on unit of length decide if range shall be reported in km or miles
-        float totalRange = 0;
+        double totalRange = 0;
+        double maxTotalRange = 0;
         if (isElectric) {
             totalRange += vStatus.remainingRangeElectric;
             QuantityType<Length> qtElectricRange = QuantityType.valueOf(vStatus.remainingRangeElectric,
@@ -454,9 +458,21 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                     imperial ? Converter.getMiles(qtElectricRange) : qtElectricRange);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC,
                     imperial ? Converter.getMiles(qtElectricRadius) : qtElectricRadius);
+
+            maxTotalRange += vStatus.maxRangeElectric;
+            QuantityType<Length> qtMaxElectricRange = QuantityType.valueOf(vStatus.maxRangeElectric,
+                    Constants.KILOMETRE_UNIT);
+            QuantityType<Length> qtMaxElectricRadius = QuantityType
+                    .valueOf(Converter.guessRangeRadius(vStatus.maxRangeElectric), Constants.KILOMETRE_UNIT);
+
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_ELECTRIC_MAX,
+                    imperial ? Converter.getMiles(qtMaxElectricRange) : qtMaxElectricRange);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC_MAX,
+                    imperial ? Converter.getMiles(qtMaxElectricRadius) : qtMaxElectricRadius);
         }
         if (hasFuel) {
             totalRange += vStatus.remainingRangeFuel;
+            maxTotalRange += vStatus.remainingRangeFuel;
             QuantityType<Length> qtFuelRange = QuantityType.valueOf(vStatus.remainingRangeFuel,
                     Constants.KILOMETRE_UNIT);
             QuantityType<Length> qtFuelRadius = QuantityType
@@ -470,10 +486,17 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
             QuantityType<Length> qtHybridRange = QuantityType.valueOf(totalRange, Constants.KILOMETRE_UNIT);
             QuantityType<Length> qtHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(totalRange),
                     Constants.KILOMETRE_UNIT);
+            QuantityType<Length> qtMaxHybridRange = QuantityType.valueOf(maxTotalRange, Constants.KILOMETRE_UNIT);
+            QuantityType<Length> qtMaxHybridRadius = QuantityType.valueOf(Converter.guessRangeRadius(maxTotalRange),
+                    Constants.KILOMETRE_UNIT);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_HYBRID,
                     imperial ? Converter.getMiles(qtHybridRange) : qtHybridRange);
             updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID,
                     imperial ? Converter.getMiles(qtHybridRadius) : qtHybridRadius);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_HYBRID_MAX,
+                    imperial ? Converter.getMiles(qtMaxHybridRange) : qtMaxHybridRange);
+            updateChannel(CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID_MAX,
+                    imperial ? Converter.getMiles(qtMaxHybridRadius) : qtMaxHybridRadius);
         }
 
         updateChannel(CHANNEL_GROUP_RANGE, MILEAGE,
@@ -488,6 +511,12 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
 
         // Charge Values
         if (isElectric) {
+            if (vStatus.connectionStatus != null) {
+                updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION,
+                        StringType.valueOf(Converter.toTitleCase(vStatus.connectionStatus)));
+            } else {
+                updateChannel(CHANNEL_GROUP_STATUS, PLUG_CONNECTION, UnDefType.NULL);
+            }
             if (vStatus.chargingStatus != null) {
                 if (Constants.INVALID.equals(vStatus.chargingStatus)) {
                     updateChannel(CHANNEL_GROUP_STATUS, CHARGE_STATUS,

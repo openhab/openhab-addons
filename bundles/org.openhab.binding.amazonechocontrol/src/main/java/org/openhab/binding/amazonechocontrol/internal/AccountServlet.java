@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.amazonechocontrol.internal;
 import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -88,11 +87,11 @@ public class AccountServlet extends HttpServlet {
         this.gson = gson;
 
         try {
-            servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, "UTF8");
+            servletUrlWithoutRoot = "amazonechocontrol/" + URLEncoder.encode(id, StandardCharsets.UTF_8);
             servletUrl = "/" + servletUrlWithoutRoot;
 
             httpService.registerServlet(servletUrl, this, null, httpService.createDefaultHttpContext());
-        } catch (UnsupportedEncodingException | NamespaceException | ServletException e) {
+        } catch (NamespaceException | ServletException e) {
             throw new IllegalStateException(e.getMessage());
         }
     }
@@ -173,7 +172,7 @@ public class AccountServlet extends HttpServlet {
                     + uri.substring(PROXY_URI_PART.length());
 
             String postData = null;
-            if (verb == "POST" || verb == "PUT") {
+            if ("POST".equals(verb) || "PUT".equals(verb)) {
                 postData = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
             }
 
@@ -340,12 +339,7 @@ public class AccountServlet extends HttpServlet {
                 String[] elements = param.split("=");
                 if (elements.length == 2) {
                     String name = elements[0];
-                    String value = "";
-                    try {
-                        value = URLDecoder.decode(elements[1], "UTF8");
-                    } catch (UnsupportedEncodingException e) {
-                        logger.info("Unsupported encoding", e);
-                    }
+                    String value = URLDecoder.decode(elements[1], StandardCharsets.UTF_8);
                     map.put(name, value);
                 }
             }

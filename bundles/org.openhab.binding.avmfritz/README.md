@@ -67,6 +67,10 @@ The FRITZ!DECT 400 supports a configurable button to trigger short or long press
 Beside four customizable buttons the FRITZ!DECT 440 supports temperature readings.
 ** NOTE: ** FRITZ!DECT 440 now uses Channel Groups to group its Channels like `device#battery_level`, `device#battery_low` for device information, `sensors#temperature` for sensor data and `top-left`, `bottom-left`, `top-right` and `bottom-right` combined with `press` and `last_change` (see [Full Example](#full-example))
 
+### FRITZ!DECT 500
+
+The [FRITZ!DECT 500](https://avm.de/produkte/fritzdect/fritzdect-500/) is a dimmable colorized light bulb.
+
 #### Supported Channel Groups
 
 | Channel Group ID                                       | Description         | Available on thing |
@@ -88,6 +92,8 @@ The following sensors have been successfully tested using FRITZ!OS 7 for FRITZ!B
 - [SmartHome Zwischenstecker außen](https://www.smarthome.de/geraete/smarthome-zwischenstecker-aussen-schwarz) - a switchable outdoor outlet (thing type `HAN_FUN_ON_OFF`)
 - [Rollotron DECT 1213](https://www.rademacher.de/shop/rollladen-sonnenschutz/elektrischer-gurtwickler/rollotron-dect-1213) - an electronic belt winder (thing type `HAN_FUN_BLINDS`)
 - [Becker BoxCTRL](https://becker-antriebe.shop/) - a radio controlled roller shutter drive (thing type `HAN_FUN_BLINDS`)
+- SmartHome LED-Lampe E27 (farbig) - a dimmable colorized light bulb (thing type `HAN_FUN_COLOR_BULB`)
+- SmartHome LED-Lampe E27 (warmweiß) - a dimmable light bulb (thing type `HAN_FUN_DIMMABLE_BULB`)
 
 The use of other Sensors should be possible, if these are compatible with DECT-ULE / HAN-FUN standards.
 
@@ -173,12 +179,14 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | locked          | Contact                  | Device is locked for switching over external sources (OPEN/CLOSE)                                                                                  | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                    |
 | device_locked   | Contact                  | Device is locked for switching manually (OPEN/CLOSE) - FRITZ!OS 6.90                                                                               | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                    |
 | temperature     | Number:Temperature       | Current measured temperature                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!DECT Repeater 100, FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 440 |
-| humidity        | Number:Dimensionless     | Current measured humidity - FRITZ!OS 7.24                                                                                                          | FRITZ!DECT 440                                                                                           |
+| humidity        | Number:Dimensionless     | Current measured humidity - FRITZ!OS 7.24                                                                                                          | FRITZ!DECT 440                                                                                                      |
 | energy          | Number:Energy            | Accumulated energy consumption                                                                                                                     | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
 | power           | Number:Power             | Current power consumption                                                                                                                          | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
 | voltage         | Number:ElectricPotential | Current voltage - FRITZ!OS 7                                                                                                                       | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
 | outlet          | Switch                   | Switchable outlet (ON/OFF)                                                                                                                         | FRITZ!DECT 210, FRITZ!DECT 200, FRITZ!Powerline 546E                                                                |
-| on_off          | Switch                   | Switchable device (ON/OFF)                                                                                                                         | HAN_FUN_ON_OFF                                                                                      |
+| on_off          | Switch                   | Switchable device (ON/OFF)                                                                                                                         | HAN_FUN_ON_OFF                                                                                                      |
+| brightness      | Dimmer                   | Dimmable lights                                                                                                                                    | HAN_FUN_DIMMABLE_BULB                                                                                               |
+| color           | Color                    | Color lights                                                                                                                                       | FRITZ!DECT 500, HAN_FUN_COLOR_BULB                                                                                  |
 | actual_temp     | Number:Temperature       | Current temperature of heating thermostat                                                                                                          | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
 | set_temp        | Number:Temperature       | Set Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
 | eco_temp        | Number:Temperature       | Eco Temperature of heating thermostat                                                                                                              | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT                                                                          |
@@ -190,7 +198,7 @@ The AIN (actor identification number) can be found in the FRITZ!Box interface ->
 | battery_low     | Switch                   | Battery level low (ON/OFF) - FRITZ!OS 6.80                                                                                                         | FRITZ!DECT 301, FRITZ!DECT 300, Comet DECT, FRITZ!DECT 400, FRITZ!DECT 440                                          |
 | contact_state   | Contact                  | Contact state information (OPEN/CLOSED).                                                                                                           | HAN-FUN contact (e.g. SmartHome Tür-/Fensterkontakt or SmartHome Bewegungsmelder)- FRITZ!OS 7                       |
 | last_change     | DateTime                 | States the last time the button was pressed.                                                                                                       | FRITZ!DECT 400, FRITZ!DECT 440, HAN-FUN switch (e.g. SmartHome Wandtaster) - FRITZ!OS 7                             |
-| rollershutter   | Rollershutter            | Rollershutter control and status. Accepts UP/DOWN/STOP commands and the opening level in percent. States the opening level in percent.                                                                                                        | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                             |
+| rollershutter   | Rollershutter            | Rollershutter control and status. Accepts UP/DOWN/STOP commands and the opening level in percent. States the opening level in percent.             | HAN-FUN blind (e.g. Rolltron DECT 1213) - FRITZ!OS 7                                                                |
 
 ### Triggers
 

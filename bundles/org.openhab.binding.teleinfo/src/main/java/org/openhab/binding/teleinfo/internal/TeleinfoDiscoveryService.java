@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,6 @@ import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,13 +45,15 @@ import org.slf4j.LoggerFactory;
 public class TeleinfoDiscoveryService extends AbstractDiscoveryService
         implements TeleinfoControllerHandlerListener, ThingHandlerService, DiscoveryService {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID,
             THING_EJP_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_HC_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID,
             THING_EJP_CBEMM_EVO_ICC_ELECTRICITY_METER_TYPE_UID, THING_HC_CBETM_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID,
-            THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
+            THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID, THING_LSMT_PROD_ELECTRICITY_METER_TYPE_UID,
+            THING_LSMT_ELECTRICITY_METER_TYPE_UID, THING_LSMM_PROD_ELECTRICITY_METER_TYPE_UID,
+            THING_LSMM_ELECTRICITY_METER_TYPE_UID);
 
     private static final int SCAN_DURATION_IN_S = 60;
 
@@ -140,11 +140,12 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
         TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
         if (controllerHandlerRef != null) {
             logger.debug("New eletricity meter detection from frame {}", frameSample);
-            if (frameSample.get(Label.ADCO) == null) {
-                throw new IllegalStateException("Missing ADCO key");
+            if (frameSample.get(Label.ADCO) == null && frameSample.get(Label.ADSC) == null) {
+                throw new IllegalStateException("Missing ADCO or ADSC key");
             }
 
-            String adco = frameSample.get(Label.ADCO);
+            String adco = frameSample.get(Label.ADCO) != null ? frameSample.get(Label.ADCO)
+                    : frameSample.get(Label.ADSC);
             if (adco != null) {
                 ThingUID thingUID = new ThingUID(getThingTypeUID(frameSample), adco,
                         controllerHandlerRef.getThing().getUID().getId());
@@ -152,7 +153,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
                 final Map<String, Object> properties = getThingProperties(adco);
                 final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withLabel("Teleinfo ADCO " + adco).withThingType(getThingTypeUID(frameSample))
+                        .withLabel("Teleinfo ADCO/ADSC " + adco).withThingType(getThingTypeUID(frameSample))
                         .withBridge(controllerHandlerRef.getThing().getUID())
                         .withRepresentationProperty(representationProperty).build();
 

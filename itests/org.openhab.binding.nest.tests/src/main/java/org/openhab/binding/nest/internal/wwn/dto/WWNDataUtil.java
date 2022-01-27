@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -65,11 +65,11 @@ public final class WWNDataUtil {
         // Hidden utility class constructor
     }
 
-    public static Reader openDataReader(String fileName) throws UnsupportedEncodingException {
+    public static Reader openDataReader(String fileName) {
         String packagePath = (WWNDataUtil.class.getPackage().getName()).replaceAll("\\.", "/");
         String filePath = "/" + packagePath + "/" + fileName;
         InputStream inputStream = WWNDataUtil.class.getClassLoader().getResourceAsStream(filePath);
-        return new InputStreamReader(inputStream, "UTF-8");
+        return new InputStreamReader(inputStream, StandardCharsets.UTF_8);
     }
 
     public static <T> T fromJson(String fileName, Class<T> dataClass) throws IOException {
@@ -80,9 +80,9 @@ public final class WWNDataUtil {
 
     public static String fromFile(String fileName, Unit<Temperature> temperatureUnit) throws IOException {
         String json = fromFile(fileName);
-        if (temperatureUnit == SIUnits.CELSIUS) {
+        if (SIUnits.CELSIUS.equals(temperatureUnit)) {
             json = json.replace("\"temperature_scale\": \"F\"", "\"temperature_scale\": \"C\"");
-        } else if (temperatureUnit == ImperialUnits.FAHRENHEIT) {
+        } else if (ImperialUnits.FAHRENHEIT.equals(temperatureUnit)) {
             json = json.replace("\"temperature_scale\": \"C\"", "\"temperature_scale\": \"F\"");
         }
         return json;

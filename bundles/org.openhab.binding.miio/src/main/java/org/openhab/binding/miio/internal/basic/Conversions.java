@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,11 @@ import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 /**
@@ -41,7 +45,7 @@ public class Conversions {
      * @param RGB + brightness value (note brightness in the first byte)
      * @return HSV
      */
-    public static JsonElement bRGBtoHSV(JsonElement bRGB) throws ClassCastException {
+    private static JsonElement bRGBtoHSV(JsonElement bRGB) throws ClassCastException {
         if (bRGB.isJsonPrimitive() && bRGB.getAsJsonPrimitive().isNumber()) {
             Color rgb = new Color(bRGB.getAsInt());
             HSBType hsb = HSBType.fromRGB(rgb.getRed(), rgb.getGreen(), rgb.getBlue());
@@ -59,7 +63,7 @@ public class Conversions {
      * @param map with device variables containing the brightness info
      * @return HSV
      */
-    public static JsonElement addBrightToHSV(JsonElement rgbValue, @Nullable Map<String, Object> deviceVariables)
+    private static JsonElement addBrightToHSV(JsonElement rgbValue, @Nullable Map<String, Object> deviceVariables)
             throws ClassCastException, IllegalStateException {
         int bright = 100;
         if (deviceVariables != null) {
@@ -76,12 +80,39 @@ public class Conversions {
         return rgbValue;
     }
 
-    public static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
+    public static JsonElement deviceDataTab(JsonElement deviceLog, @Nullable Map<String, Object> deviceVariables)
+            throws ClassCastException, IllegalStateException {
+        if (!deviceLog.isJsonObject() && !deviceLog.isJsonPrimitive()) {
+            return deviceLog;
+        }
+        JsonObject deviceLogJsonObj = deviceLog.isJsonObject() ? deviceLog.getAsJsonObject()
+                : (JsonObject) JsonParser.parseString(deviceLog.getAsString());
+        JsonArray resultLog = new JsonArray();
+        if (deviceLogJsonObj.has("data") && deviceLogJsonObj.get("data").isJsonArray()) {
+            for (JsonElement element : deviceLogJsonObj.get("data").getAsJsonArray()) {
+                if (element.isJsonObject()) {
+                    JsonObject dataObject = element.getAsJsonObject();
+                    if (dataObject.has("value")) {
+                        String value = dataObject.get("value").getAsString();
+                        JsonElement val = JsonParser.parseString(value);
+                        if (val.isJsonArray()) {
+                            resultLog.add(JsonParser.parseString(val.getAsString()));
+                        } else {
+                            resultLog.add(val);
+                        }
+                    }
+                }
+            }
+        }
+        return resultLog;
+    }
+
+    private static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
         double value = seconds.getAsDouble() / 3600;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement yeelightSceneConversion(JsonElement intValue)
+    private static JsonElement yeelightSceneConversion(JsonElement intValue)
             throws ClassCastException, IllegalStateException {
         switch (intValue.getAsInt()) {
             case 1:
@@ -101,17 +132,17 @@ public class Conversions {
         }
     }
 
-    public static JsonElement divideTen(JsonElement value10) throws ClassCastException, IllegalStateException {
+    private static JsonElement divideTen(JsonElement value10) throws ClassCastException, IllegalStateException {
         double value = value10.getAsDouble() / 10.0;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement divideHundred(JsonElement value10) throws ClassCastException, IllegalStateException {
+    private static JsonElement divideHundred(JsonElement value10) throws ClassCastException, IllegalStateException {
         double value = value10.getAsDouble() / 100.0;
         return new JsonPrimitive(value);
     }
 
-    public static JsonElement tankLevel(JsonElement value12) throws ClassCastException, IllegalStateException {
+    private static JsonElement tankLevel(JsonElement value12) throws ClassCastException, IllegalStateException {
         // 127 without water tank. 120 = 100% water
         if (value12.getAsInt() == 127) {
             return new JsonPrimitive(-1);
@@ -121,9 +152,57 @@ public class Conversions {
         }
     }
 
-    public static JsonElement execute(String transformation, JsonElement value,
-            @Nullable Map<String, Object> deviceVariables) {
+    /**
+     * Returns the deviceId element value from the Json response. If not found, returns the input
+     *
+     * @param responseValue
+     * @param deviceVariables containing the deviceId
+     * @return
+     */
+    private static JsonElement getDidElement(JsonElement responseValue, Map<String, Object> deviceVariables) {
+        String did = (String) deviceVariables.get("deviceId");
+        if (did != null) {
+            return getJsonElement(did, responseValue);
+        }
+        LOGGER.debug("deviceId not Found, no conversion");
+        return responseValue;
+    }
+
+    /**
+     * Returns the element from the Json response. If not found, returns the input
+     *
+     * @param element to be found
+     * @param responseValue
+     * @return
+     */
+    private static JsonElement getJsonElement(String element, JsonElement responseValue) {
         try {
+            if (responseValue.isJsonPrimitive() || responseValue.isJsonObject()) {
+                JsonElement jsonElement = responseValue.isJsonObject() ? responseValue
+                        : JsonParser.parseString(responseValue.getAsString());
+                if (jsonElement.isJsonObject()) {
+                    JsonObject value = jsonElement.getAsJsonObject();
+                    if (value.has(element)) {
+                        return value.get(element);
+                    }
+                }
+            }
+        } catch (JsonParseException e) {
+            // ignore
+        }
+        LOGGER.debug("JsonElement '{}' not found in '{}'", element, responseValue);
+        return responseValue;
+    }
+
+    public static JsonElement execute(String transformation, JsonElement value, Map<String, Object> deviceVariables) {
+        try {
+            if (transformation.toUpperCase().startsWith("GETJSONELEMENT")) {
+                if (transformation.length() > 15) {
+                    return getJsonElement(transformation.substring(15), value);
+                } else {
+                    LOGGER.info("Transformation {} missing element. Returning '{}'", transformation, value.toString());
+                }
+            }
             switch (transformation.toUpperCase()) {
                 case "YEELIGHTSCENEID":
                     return yeelightSceneConversion(value);
@@ -139,6 +218,10 @@ public class Conversions {
                     return addBrightToHSV(value, deviceVariables);
                 case "BRGBTOHSV":
                     return bRGBtoHSV(value);
+                case "DEVICEDATATAB":
+                    return deviceDataTab(value, deviceVariables);
+                case "GETDIDELEMENT":
+                    return getDidElement(value, deviceVariables);
                 default:
                     LOGGER.debug("Transformation {} not found. Returning '{}'", transformation, value.toString());
                     return value;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -152,11 +152,11 @@ public class PJLinkDevice {
             socket.connect(socketAddress, timeout);
             socket.setSoTimeout(timeout);
             BufferedReader reader = getReader();
-            String header = reader.readLine();
-            if (header == null) {
+            String rawHeader = reader.readLine();
+            if (rawHeader == null) {
                 throw new ResponseException("No PJLink header received from the device");
             }
-            header = header.toUpperCase();
+            String header = rawHeader.toUpperCase();
             switch (header.substring(0, "PJLINK x".length())) {
                 case "PJLINK 0":
                     logger.debug("Authentication not needed");
@@ -170,7 +170,7 @@ public class PJLinkDevice {
                         throw new AuthenticationException("No password provided, but device requires authentication");
                     } else {
                         try {
-                            authenticate(header.substring("PJLINK 1 ".length()));
+                            authenticate(rawHeader.substring("PJLINK 1 ".length()));
                         } catch (AuthenticationException e) {
                             // propagate AuthenticationException
                             throw e;

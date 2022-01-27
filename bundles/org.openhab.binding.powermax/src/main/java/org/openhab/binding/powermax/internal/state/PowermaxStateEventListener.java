@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,14 @@ package org.openhab.binding.powermax.internal.state;
 import java.util.EventListener;
 import java.util.EventObject;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Powermax Alarm state Listener interface. Handles Powermax Alarm state events
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public interface PowermaxStateEventListener extends EventListener {
 
     /**

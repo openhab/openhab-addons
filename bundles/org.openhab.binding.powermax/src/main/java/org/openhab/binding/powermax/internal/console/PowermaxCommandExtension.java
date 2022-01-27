@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,9 @@ package org.openhab.binding.powermax.internal.console;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.powermax.internal.handler.PowermaxBridgeHandler;
+import org.openhab.binding.powermax.internal.state.PowermaxState;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
 import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
@@ -23,6 +25,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -31,6 +34,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ConsoleCommandExtension.class)
 public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
 
@@ -38,10 +42,12 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
     private static final String DOWNLOAD_SETUP = "download_setup";
     private static final String BRIDGE_STATE = "bridge_state";
 
-    private ThingRegistry thingRegistry;
+    private final ThingRegistry thingRegistry;
 
-    public PowermaxCommandExtension() {
+    @Activate
+    public PowermaxCommandExtension(final @Reference ThingRegistry thingRegistry) {
         super("powermax", "Interact with the Powermax binding.");
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -83,8 +89,11 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
                         console.println("Command '" + args[1] + "' handled.");
                         break;
                     case BRIDGE_STATE:
-                        for (String line : handler.getCurrentState().toString().split("\n")) {
-                            console.println(line);
+                        PowermaxState state = handler.getCurrentState();
+                        if (state != null) {
+                            for (String line : state.toString().split("\n")) {
+                                console.println(line);
+                            }
                         }
                         break;
                     default:
@@ -103,14 +112,5 @@ public class PowermaxCommandExtension extends AbstractConsoleCommandExtension {
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + INFO_SETUP, "information on setup"),
                 buildCommandUsage("<bridgeUID> " + DOWNLOAD_SETUP, "download setup"),
                 buildCommandUsage("<bridgeUID> " + BRIDGE_STATE, "show current state") });
-    }
-
-    @Reference
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
-    }
-
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = null;
     }
 }

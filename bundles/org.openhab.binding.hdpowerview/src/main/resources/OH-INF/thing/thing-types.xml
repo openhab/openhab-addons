@@ -8,10 +8,17 @@
 		<label>PowerView Hub</label>
 		<description>Hunter Douglas (Luxaflex) PowerView Hub</description>
 
+		<channel-groups>
+			<channel-group id="scenes" typeId="scenes"/>
+			<channel-group id="sceneGroups" typeId="sceneGroups"/>
+			<channel-group id="automations" typeId="automations"/>
+		</channel-groups>
+
 		<properties>
 			<property name="vendor">Hunter Douglas (Luxaflex)</property>
 			<property name="modelId">PowerView Hub</property>
 		</properties>
+
 		<representation-property>host</representation-property>
 
 		<config-description>
@@ -54,6 +61,7 @@
 				<description>The secondary vertical position (on top-down/bottom-up shades)</description>
 			</channel>
 			<channel id="vane" typeId="shade-vane"/>
+			<channel id="calibrate" typeId="shade-calibrate"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
 			<channel id="batteryLevel" typeId="system.battery-level"/>
 			<channel id="batteryVoltage" typeId="battery-voltage"/>
@@ -67,9 +75,36 @@
 		<representation-property>id</representation-property>
 
 		<config-description>
-			<parameter name="id" type="text" required="true">
+			<parameter name="id" type="integer" min="1" required="true">
 				<label>ID</label>
 				<description>The numeric ID of the PowerView Shade in the Hub</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="repeater">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="hub"/>
+		</supported-bridge-type-refs>
+		<label>PowerView Repeater</label>
+		<description>Hunter Douglas (Luxaflex) PowerView Repeater</description>
+
+		<channels>
+			<channel id="identify" typeId="repeater-identify"/>
+			<channel id="blinkingEnabled" typeId="repeater-blinking-enabled"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Hunter Douglas (Luxaflex)</property>
+			<property name="modelId">PowerView Repeater</property>
+		</properties>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="integer" min="1" required="true">
+				<label>ID</label>
+				<description>The numeric ID of the PowerView Repeater in the Hub</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -86,10 +121,25 @@
 		<description>The opening of the slats in the shade</description>
 	</channel-type>
 
+	<channel-type id="shade-calibrate" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Calibrate</label>
+		<description>Perform calibration of the shade</description>
+	</channel-type>
+
 	<channel-type id="scene-activate">
 		<item-type>Switch</item-type>
 		<label>Activate</label>
-		<description>Activates the scene</description>
+	</channel-type>
+
+	<channel-type id="scene-group-activate">
+		<item-type>Switch</item-type>
+		<label>Activate</label>
+	</channel-type>
+
+	<channel-type id="automation-enabled">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
 	</channel-type>
 
 	<channel-type id="battery-voltage" advanced="true">
@@ -98,5 +148,34 @@
 		<description>Battery voltage reported by the shade</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<channel-type id="repeater-identify">
+		<item-type>String</item-type>
+		<label>Identify</label>
+		<description>Flash repeater to identify</description>
+		<command>
+			<options>
+				<option value="IDENTIFY">Identify</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="repeater-blinking-enabled">
+		<item-type>Switch</item-type>
+		<label>Blinking Enabled</label>
+		<description>Blink during commands</description>
+	</channel-type>
+
+	<channel-group-type id="scenes">
+		<label>Scenes</label>
+	</channel-group-type>
+
+	<channel-group-type id="sceneGroups">
+		<label>Scene Groups</label>
+	</channel-group-type>
+
+	<channel-group-type id="automations">
+		<label>Automations</label>
+	</channel-group-type>
 
 </thing:thing-descriptions>

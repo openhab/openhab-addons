@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ public class MiIoSendCommand {
     private final int id;
     private final MiIoCommand command;
     private final JsonObject commandJson;
+    private final String sender;
     private @Nullable JsonObject response;
     private String cloudServer = "";
 
@@ -37,17 +38,19 @@ public class MiIoSendCommand {
         this.response = response;
     }
 
-    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand) {
+    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand, String sender) {
         this.id = id;
         this.command = command;
         this.commandJson = fullCommand;
+        this.sender = sender;
     }
 
-    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand, String cloudServer) {
+    public MiIoSendCommand(int id, MiIoCommand command, JsonObject fullCommand, String cloudServer, String sender) {
         this.id = id;
         this.command = command;
         this.commandJson = fullCommand;
         this.cloudServer = cloudServer;
+        this.sender = sender;
     }
 
     public int getId() {
@@ -71,7 +74,7 @@ public class MiIoSendCommand {
     }
 
     public JsonElement getParams() {
-        return commandJson.has("params") ? commandJson.get("params").getAsJsonArray() : new JsonArray();
+        return commandJson.has("params") ? commandJson.get("params") : new JsonArray();
     }
 
     public JsonObject getResponse() {
@@ -101,5 +104,9 @@ public class MiIoSendCommand {
 
     public void setCloudServer(String cloudServer) {
         this.cloudServer = cloudServer;
+    }
+
+    public String getSender() {
+        return sender;
     }
 }
