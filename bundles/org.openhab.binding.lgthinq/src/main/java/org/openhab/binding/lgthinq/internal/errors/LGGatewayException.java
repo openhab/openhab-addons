@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,17 +15,13 @@ package org.openhab.binding.lgthinq.internal.errors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PreLoginException}
+ * The {@link LGGatewayException}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class RefreshTokenException extends LGApiException {
-    public RefreshTokenException(String message, Throwable cause) {
+public class LGGatewayException extends LGThinqException {
+    public LGGatewayException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public RefreshTokenException(String message) {
-        super(message);
     }
 }
