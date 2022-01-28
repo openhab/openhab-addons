@@ -234,7 +234,7 @@ public class JRubyScriptEngineConfiguration {
             try {
                 engine.eval(code);
             } catch (ScriptException exception) {
-                logger.error("Error setting $LOAD_PATH from RUBYLIB='{}': {}", rubyLib.get(), exception.getMessage());
+                logger.warn("Error setting $LOAD_PATH from RUBYLIB='{}': {}", rubyLib.get(), exception.getMessage());
             }
         }
     }
