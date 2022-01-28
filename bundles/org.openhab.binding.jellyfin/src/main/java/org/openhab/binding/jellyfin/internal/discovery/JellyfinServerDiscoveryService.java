@@ -62,11 +62,11 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         var opts = new JellyfinOptions.Builder();
-        opts.setClientInfo(new ClientInfo("OpenHAB", OpenHAB.getVersion()));
-        opts.setDeviceInfo(new DeviceInfo("discovery", "OpenHAB"));
+        opts.setClientInfo(new ClientInfo("openHAB", OpenHAB.getVersion()));
+        opts.setDeviceInfo(new DeviceInfo("discovery", "openHAB"));
         var jellyfin = new Jellyfin(opts.build());
         var discoverySvc = new org.jellyfin.sdk.discovery.DiscoveryService(jellyfin);
-        logger.info("Starting search");
+        logger.debug("Starting search");
         cancelDiscovery = JavaFlow.collect(discoverySvc.discoverLocalServers(100, 10), null, (info) -> {
             if (info == null) {
                 return;
@@ -97,7 +97,7 @@ public class JellyfinServerDiscoveryService extends AbstractDiscoveryService {
         try {
             uri = new URI(Objects.requireNonNull(info.getAddress()));
         } catch (URISyntaxException e) {
-            logger.error("Error parsing server url: {}", e.getMessage());
+            logger.warn("Error parsing server url: {}", e.getMessage());
             return;
         }
         var jellyClient = jellyfin.createApi(info.getAddress());

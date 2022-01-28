@@ -18,19 +18,15 @@ import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.THI
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.THING_TYPE_SERVER;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.jellyfin.internal.discovery.JellyfinClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.handler.JellyfinClientHandler;
 import org.openhab.binding.jellyfin.internal.handler.JellyfinServerHandler;
 import org.openhab.binding.jellyfin.internal.servlet.JellyfinBridgeServlet;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -77,7 +73,6 @@ public class JellyfinHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_SERVER.equals(thingTypeUID)) {
             var serverHandler = new JellyfinServerHandler((Bridge) thing);
             registerAuthenticationServlet(serverHandler);
-            registerDiscoveryService(serverHandler);
             return serverHandler;
         }
         if (THING_TYPE_CLIENT.equals(thingTypeUID)) {
@@ -91,7 +86,6 @@ public class JellyfinHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof JellyfinServerHandler) {
             var serverHandler = (JellyfinServerHandler) thingHandler;
             unregisterAuthenticationServlet(serverHandler);
-            unregisterDiscoveryService(serverHandler);
         }
         super.removeHandler(thingHandler);
     }
@@ -117,27 +111,5 @@ public class JellyfinHandlerFactory extends BaseThingHandlerFactory {
     private String getAuthenticationServletPath(JellyfinServerHandler bridgeHandler) {
         return new StringBuilder().append("/").append(BINDING_ID).append("/")
                 .append(bridgeHandler.getThing().getUID().getId()).toString();
-    }
-
-    private synchronized void registerDiscoveryService(JellyfinServerHandler bridgeHandler) {
-        JellyfinClientDiscoveryService devicesDiscovery = new JellyfinClientDiscoveryService(bridgeHandler);
-        devicesDiscovery.activate();
-        var registration = bundleContext.registerService(DiscoveryService.class.getName(), devicesDiscovery,
-                new Hashtable<>());
-        discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), registration);
-    }
-
-    private synchronized void unregisterDiscoveryService(JellyfinServerHandler bridgeHandler) {
-        var registration = discoveryServiceRegistrations.remove(bridgeHandler.getThing().getUID());
-        if (registration != null) {
-            AbstractDiscoveryService service = (AbstractDiscoveryService) bundleContext
-                    .getService(registration.getReference());
-            registration.unregister();
-            if (service instanceof JellyfinClientDiscoveryService) {
-                ((JellyfinClientDiscoveryService) service).deactivate();
-            } else {
-                logger.warn("Found unknown discovery-service instance: {}", service);
-            }
-        }
     }
 }

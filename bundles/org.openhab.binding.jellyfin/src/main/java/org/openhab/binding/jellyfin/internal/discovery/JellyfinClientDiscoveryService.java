@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jellyfin.sdk.api.client.exception.ApiClientException;
 import org.jellyfin.sdk.api.client.exception.InvalidStatusException;
 import org.jellyfin.sdk.model.api.SessionInfo;
@@ -31,6 +32,8 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,24 +43,28 @@ import org.slf4j.LoggerFactory;
  * @author Miguel Alvarez - Initial contribution
  */
 @NonNullByDefault
-public class JellyfinClientDiscoveryService extends AbstractDiscoveryService {
+public class JellyfinClientDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(JellyfinClientDiscoveryService.class);
-    private final JellyfinServerHandler serverHandler;
+    private @Nullable JellyfinServerHandler bridgeHandler;
 
-    public JellyfinClientDiscoveryService(JellyfinServerHandler serverHandler) throws IllegalArgumentException {
+    public JellyfinClientDiscoveryService() throws IllegalArgumentException {
         super(Set.of(THING_TYPE_SERVER), 60);
-        this.serverHandler = serverHandler;
     }
 
     @Override
     protected void startScan() {
-        if (!serverHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.warn("Server handler {} is not online.", serverHandler.getThing().getLabel());
+        var bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
+            logger.warn("missing bridge aborting");
             return;
         }
-        logger.info("Searching devices for server {}", serverHandler.getThing().getLabel());
+        if (!bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            logger.warn("Server handler {} is not online.", bridgeHandler.getThing().getLabel());
+            return;
+        }
+        logger.debug("Searching devices for server {}", bridgeHandler.getThing().getLabel());
         try {
-            serverHandler.getControllableSessions().forEach(this::discoverDevice);
+            bridgeHandler.getControllableSessions().forEach(this::discoverDevice);
         } catch (SyncCallback.SyncCallbackError syncCallbackError) {
             logger.error("Unexpected error: {}", syncCallbackError.getMessage());
         } catch (InvalidStatusException e) {
@@ -70,11 +77,16 @@ public class JellyfinClientDiscoveryService extends AbstractDiscoveryService {
     public void discoverDevice(SessionInfo info) {
         var id = info.getDeviceId();
         if (id == null) {
-            logger.error("missing device id aborting");
+            logger.warn("missing device id aborting");
+            return;
+        }
+        var bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
+            logger.warn("missing bridge aborting");
             return;
         }
         logger.debug("Client discovered: [{}] {}", id, info.getDeviceName());
-        var bridgeUID = serverHandler.getThing().getUID();
+        var bridgeUID = bridgeHandler.getThing().getUID();
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, id);
         var appVersion = info.getApplicationVersion();
@@ -89,6 +101,18 @@ public class JellyfinClientDiscoveryService extends AbstractDiscoveryService {
                 DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_CLIENT, bridgeUID, id)).withBridge(bridgeUID)
                         .withTTL(DISCOVERY_RESULT_TTL_SEC).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                         .withProperties(properties).withLabel(info.getDeviceName()).build());
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof JellyfinServerHandler) {
+            bridgeHandler = (JellyfinServerHandler) thingHandler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return null;
     }
 
     public void activate() {

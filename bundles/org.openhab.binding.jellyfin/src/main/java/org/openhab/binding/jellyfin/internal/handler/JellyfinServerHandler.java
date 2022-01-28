@@ -14,6 +14,8 @@ package org.openhab.binding.jellyfin.internal.handler;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -45,6 +47,7 @@ import org.jellyfin.sdk.model.api.PlaystateCommand;
 import org.jellyfin.sdk.model.api.SessionInfo;
 import org.jellyfin.sdk.model.api.SystemInfo;
 import org.openhab.binding.jellyfin.internal.JellyfinServerConfiguration;
+import org.openhab.binding.jellyfin.internal.discovery.JellyfinClientDiscoveryService;
 import org.openhab.binding.jellyfin.internal.util.EmptySyncResponse;
 import org.openhab.binding.jellyfin.internal.util.SyncCallback;
 import org.openhab.binding.jellyfin.internal.util.SyncResponse;
@@ -56,6 +59,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +82,8 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
     public JellyfinServerHandler(Bridge bridge) {
         super(bridge);
         var options = new JellyfinOptions.Builder();
-        options.setClientInfo(new ClientInfo("OpenHAB", OpenHAB.getVersion()));
-        options.setDeviceInfo(new org.jellyfin.sdk.model.DeviceInfo(getThing().getUID().getId(), "OpenHAB"));
+        options.setClientInfo(new ClientInfo("openHAB", OpenHAB.getVersion()));
+        options.setDeviceInfo(new org.jellyfin.sdk.model.DeviceInfo(getThing().getUID().getId(), "openHAB"));
         jellyApiClient = new Jellyfin(options.build()).createApi();
     }
 
@@ -106,6 +110,11 @@ public class JellyfinServerHandler extends BaseBridgeHandler {
     public void dispose() {
         super.dispose();
         stopChecker();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(JellyfinClientDiscoveryService.class);
     }
 
     public String getServerUrl() {

@@ -1,10 +1,14 @@
 # Jellyfin Binding
 
+This is the binding for [Jellyfin](https://jellyfin.org) the volunteer-built media solution that puts you in control of your media. 
+Stream to any device from your own server, with no strings attached. 
+Your media, your server, your way.
 This binding allows connect to Jellyfin clients that supports remote control, it's build on top of the official Jellyfin kotlin sdk.
 
 ## Supported Things
 
-This binding was tested against the android tv, and web clients. The only problem that I found is that the channels play-next-by-terms and play-last-by-terms don't work currently on the android tv client.
+This binding was tested against the android tv, and web clients.
+The only problem that I found is that the channels play-next-by-terms and play-last-by-terms don't work currently on the android tv client.
 
 Before open an issue please test you are able to correctly control your device from the Jellyfin web ui to identify whetter is an issue on the client itself.
 
@@ -21,7 +25,8 @@ Before you are able to discover clients you should have a bridge to the server s
 
 ## Authentication
 
-To allow the server thing to go online you should provide valid credentials for the user that the biding will use to interact with the server api (userId and token configuration properties). Please note that the user should be allowed on the Jellyfin server to remote control devices.
+To allow the server thing to go online you should provide valid credentials for the user that the biding will use to interact with the server api (userId and token configuration properties).
+Please note that the user should be allowed on the Jellyfin server to remote control devices.
 
 In order to assist you with this process the binding expose a simple login form you can access on \<local openHAB server url\>/jellyfin/\<server thing id\> for example http://127.0.0.1:8080/jellyfin/2846b8fb60ad444f9ebd085335e3f6bf.
 
@@ -74,7 +79,8 @@ In order to assist you with this process the binding expose a simple login form 
 
 The terms search has a default behavior that can be modified sending some predefined prefixes.
 
-The default behavior will look for movies, series, or episodes whose name start with the provided text, if it found results the prevalence go as said before. If the result is a series the binding will try to resume some episode, if not it will look for the next episode to watch and finally will fall back to the first episode.
+The default behavior will look for movies, series, or episodes whose name start with the provided text, if it found results the prevalence go as said before.
+If the result is a series the binding will try to resume some episode, if not it will look for the next episode to watch and finally will fall back to the first episode.
 
 You can prefix your search with '\<type:movie\>', '\<type:episode\>', '\<type:series\>' to restrict your search to a given type.
 
@@ -105,7 +111,8 @@ Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Web client"
 Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Android client" (jellyfin:server:exampleServerId)
 ```
 
-* I recommend creating the clients using the discovery. For getting the device ids manually I recommend to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX). 
+* I recommend creating the clients using the discovery.
+For getting the device ids manually I recommend to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX). 
 
 ### Example Items - jellyfin.items
 

@@ -29,7 +29,7 @@
 				<default>30</default>
 			</parameter>
 			<parameter name="clientActiveWithInSeconds" type="integer" min="0" max="950" required="true">
-				<label>Client Active With In Seconds</label>
+				<label>Client Active Timeout</label>
 				<description>Amount off seconds allowed since the last client activity to assert it's online (0 disabled)</description>
 				<default>0</default>
 			</parameter>
@@ -79,7 +79,7 @@
 	<!-- Client Channels -->
 	<channel-type id="play-state-command-channel">
 		<item-type>String</item-type>
-		<label>Send Play State Command</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>Send Play State Command</label>
 		<description>Send play state command to the client</description>
 		<state>
 			<options>
