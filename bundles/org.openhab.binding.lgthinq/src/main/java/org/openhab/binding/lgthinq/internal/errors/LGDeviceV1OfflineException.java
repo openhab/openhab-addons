@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,17 +15,19 @@ package org.openhab.binding.lgthinq.internal.errors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PreLoginException}
+ * The {@link LGDeviceV1OfflineException} - Normally caught by V1 API in monitoring device.
+ * When the device is OFFLINE (away from internet), the API doesn't return data information and this
+ * exception is thrown to indicate that this device is offline for monitoring
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class RefreshTokenException extends LGApiException {
-    public RefreshTokenException(String message, Throwable cause) {
+public class LGDeviceV1OfflineException extends LGThinqException {
+    public LGDeviceV1OfflineException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public RefreshTokenException(String message) {
+    public LGDeviceV1OfflineException(String message) {
         super(message);
     }
 }

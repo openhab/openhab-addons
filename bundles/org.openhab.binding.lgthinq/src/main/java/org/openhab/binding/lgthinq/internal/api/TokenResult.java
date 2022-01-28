@@ -30,7 +30,7 @@ public class TokenResult implements Serializable {
     private Date generatedTime = new Date();
     private String oauthBackendUrl = "";
     private UserInfo userInfo = new UserInfo();
-    private LGThinqGateway gatewayInfo = new LGThinqGateway();
+    private Gateway gatewayInfo = new Gateway();
 
     public TokenResult(String accessToken, String refreshToken, int expiresIn, Date generatedTime,
             String ouathBackendUrl) {
@@ -45,11 +45,11 @@ public class TokenResult implements Serializable {
     public TokenResult() {
     }
 
-    public LGThinqGateway getGatewayInfo() {
+    public Gateway getGatewayInfo() {
         return gatewayInfo;
     }
 
-    public void setGatewayInfo(LGThinqGateway gatewayInfo) {
+    public void setGatewayInfo(Gateway gatewayInfo) {
         this.gatewayInfo = gatewayInfo;
     }
 
