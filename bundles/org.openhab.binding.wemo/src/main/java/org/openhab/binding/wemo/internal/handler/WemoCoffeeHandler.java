@@ -195,6 +195,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                                         getThing().getUID());
                             }
                         }
+                        updateStatus(ThingStatus.ONLINE);
                     } catch (Exception e) {
                         logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
                                 e.getMessage());
@@ -202,9 +203,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                     }
                 }
                 // if command.equals(OnOffType.OFF) we do nothing because WeMo Coffee Maker cannot be switched
-                // off
-                // remotely
-                updateStatus(ThingStatus.ONLINE);
+                // off remotely
             }
         }
     }

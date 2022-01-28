@@ -527,10 +527,10 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     }
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
             logger.debug("Failed to get actual state for device '{}':", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 }

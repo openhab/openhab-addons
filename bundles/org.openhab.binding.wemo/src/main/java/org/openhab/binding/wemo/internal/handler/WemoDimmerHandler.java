@@ -497,7 +497,6 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                 variable = "nightModeBrightness";
                 this.onValueReceived(variable, value, actionService + "1");
                 updateStatus(ThingStatus.ONLINE);
-
             }
         } catch (Exception e) {
             logger.debug("Failed to get actual NightMode state for device '{}': {}", getThing().getUID(),

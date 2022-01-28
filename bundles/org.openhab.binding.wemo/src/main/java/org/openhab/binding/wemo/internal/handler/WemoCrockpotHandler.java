@@ -180,11 +180,11 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                     logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
                     logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
                 }
+                updateStatus(ThingStatus.ONLINE);
             } catch (RuntimeException e) {
                 logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 

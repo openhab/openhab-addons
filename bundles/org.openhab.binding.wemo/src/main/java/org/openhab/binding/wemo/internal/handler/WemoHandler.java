@@ -164,12 +164,12 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                         logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse,
                                 getThing().getUID());
                     }
+                    updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
                             e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
-                updateStatus(ThingStatus.ONLINE);
             }
         }
     }
