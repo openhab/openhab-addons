@@ -271,25 +271,18 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                             + "&lt;/CapabilityValue&gt;&lt;/DeviceStatus&gt;" + "</DeviceStatusList>"
                             + "</u:SetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
-                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null) {
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                            logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader,
-                                    getThing().getUID());
-                            logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                            logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse,
-                                    getThing().getUID());
-                        }
-                        if ("10008".equals(capability)) {
-                            OnOffType binaryState = null;
-                            binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
-                            updateState(CHANNEL_STATE, binaryState);
-                        }
+                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+                    if ("10008".equals(capability)) {
+                        OnOffType binaryState = null;
+                        binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+                        updateState(CHANNEL_STATE, binaryState);
                     }
+                    updateStatus(ThingStatus.ONLINE);
                 }
             } catch (Exception e) {
-                throw new IllegalStateException("Could not send command to WeMo Bridge", e);
+                logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
+                        e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
     }
@@ -332,32 +325,24 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     + wemoLightID + "</DeviceIDs>" + "</u:GetDeviceStatus>" + "</s:Body>" + "</s:Envelope>";
 
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-                }
-                wemoCallResponse = unescapeXml(wemoCallResponse);
-                String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
-                logger.trace("wemoNewLightState = {}", response);
-                String[] splitResponse = response.split(",");
-                if (splitResponse[0] != null) {
-                    OnOffType binaryState = null;
-                    binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
-                    updateState(CHANNEL_STATE, binaryState);
-                }
-                if (splitResponse[1] != null) {
-                    String splitBrightness[] = splitResponse[1].split(":");
-                    if (splitBrightness[0] != null) {
-                        int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
-                        int newBrightness = Math.round(newBrightnessValue * 100 / 255);
-                        logger.trace("newBrightness = {}", newBrightness);
-                        State newBrightnessState = new PercentType(newBrightness);
-                        updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
-                        currentBrightness = newBrightness;
-                    }
+            wemoCallResponse = unescapeXml(wemoCallResponse);
+            String response = substringBetween(wemoCallResponse, "<CapabilityValue>", "</CapabilityValue>");
+            logger.trace("wemoNewLightState = {}", response);
+            String[] splitResponse = response.split(",");
+            if (splitResponse[0] != null) {
+                OnOffType binaryState = null;
+                binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
+                updateState(CHANNEL_STATE, binaryState);
+            }
+            if (splitResponse[1] != null) {
+                String splitBrightness[] = splitResponse[1].split(":");
+                if (splitBrightness[0] != null) {
+                    int newBrightnessValue = Integer.valueOf(splitBrightness[0]);
+                    int newBrightness = Math.round(newBrightnessValue * 100 / 255);
+                    logger.trace("newBrightness = {}", newBrightness);
+                    State newBrightnessState = new PercentType(newBrightness);
+                    updateState(CHANNEL_BRIGHTNESS, newBrightnessState);
+                    currentBrightness = newBrightness;
                 }
             }
         } catch (Exception e) {

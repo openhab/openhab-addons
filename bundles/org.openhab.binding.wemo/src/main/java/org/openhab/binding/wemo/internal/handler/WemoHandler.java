@@ -156,14 +156,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                     boolean binaryState = OnOffType.ON.equals(command) ? true : false;
                     String soapHeader = "\"urn:Belkin:service:basicevent:1#SetBinaryState\"";
                     String content = createBinaryStateContent(binaryState);
-                    String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                    if (wemoCallResponse != null && logger.isTraceEnabled()) {
-                        logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                        logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                        logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                        logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse,
-                                getThing().getUID());
-                    }
+                    wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
                     logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
@@ -207,22 +200,14 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
         String content = createStateRequestContent(action, actionService);
         try {
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-                }
-                if ("InsightParams".equals(variable)) {
-                    value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
-                } else {
-                    value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                }
-                if (value.length() != 0) {
-                    logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
-                    this.onValueReceived(variable, value, actionService + "1");
-                }
+            if ("InsightParams".equals(variable)) {
+                value = substringBetween(wemoCallResponse, "<InsightParams>", "</InsightParams>");
+            } else {
+                value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
+            }
+            if (value.length() != 0) {
+                logger.trace("New state '{}' for device '{}' received", value, getThing().getUID());
+                this.onValueReceived(variable, value, actionService + "1");
             }
         } catch (Exception e) {
             logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());

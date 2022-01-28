@@ -448,24 +448,16 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         String content = createStateRequestContent(action, actionService);
         try {
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-                }
-                value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
-                variable = "BinaryState";
-                this.onValueReceived(variable, value, actionService + "1");
-                value = substringBetween(wemoCallResponse, "<brightness>", "</brightness>");
-                variable = "brightness";
-                this.onValueReceived(variable, value, actionService + "1");
-                value = substringBetween(wemoCallResponse, "<fader>", "</fader>");
-                variable = "fader";
-                this.onValueReceived(variable, value, actionService + "1");
-                updateStatus(ThingStatus.ONLINE);
-            }
+            value = substringBetween(wemoCallResponse, "<BinaryState>", "</BinaryState>");
+            variable = "BinaryState";
+            this.onValueReceived(variable, value, actionService + "1");
+            value = substringBetween(wemoCallResponse, "<brightness>", "</brightness>");
+            variable = "brightness";
+            this.onValueReceived(variable, value, actionService + "1");
+            value = substringBetween(wemoCallResponse, "<fader>", "</fader>");
+            variable = "fader";
+            this.onValueReceived(variable, value, actionService + "1");
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -477,27 +469,19 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         content = createStateRequestContent(action, actionService);
         try {
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-                }
-                value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
-                variable = "startTime";
-                this.onValueReceived(variable, value, actionService + "1");
-                value = substringBetween(wemoCallResponse, "<endTime>", "</endTime>");
-                variable = "endTime";
-                this.onValueReceived(variable, value, actionService + "1");
-                value = substringBetween(wemoCallResponse, "<nightMode>", "</nightMode>");
-                variable = "nightMode";
-                this.onValueReceived(variable, value, actionService + "1");
-                value = substringBetween(wemoCallResponse, "<nightModeBrightness>", "</nightModeBrightness>");
-                variable = "nightModeBrightness";
-                this.onValueReceived(variable, value, actionService + "1");
-                updateStatus(ThingStatus.ONLINE);
-            }
+            value = substringBetween(wemoCallResponse, "<startTime>", "</startTime>");
+            variable = "startTime";
+            this.onValueReceived(variable, value, actionService + "1");
+            value = substringBetween(wemoCallResponse, "<endTime>", "</endTime>");
+            variable = "endTime";
+            this.onValueReceived(variable, value, actionService + "1");
+            value = substringBetween(wemoCallResponse, "<nightMode>", "</nightMode>");
+            variable = "nightMode";
+            this.onValueReceived(variable, value, actionService + "1");
+            value = substringBetween(wemoCallResponse, "<nightModeBrightness>", "</nightModeBrightness>");
+            variable = "nightModeBrightness";
+            this.onValueReceived(variable, value, actionService + "1");
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Failed to get actual NightMode state for device '{}': {}", getThing().getUID(),
                     e.getMessage());
@@ -542,13 +526,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     + "<s:Body>" + "<u:" + action + " xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<" + argument
                     + ">" + value + "</" + argument + ">" + "</u:" + action + ">" + "</s:Body>" + "</s:Envelope>";
 
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null && logger.isTraceEnabled()) {
-                logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-            }
+            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Failed to set binaryState '{}' for device '{}': {}", value, getThing().getUID(),
                     e.getMessage());
@@ -577,13 +556,8 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                     + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
                     + "<s:Body>" + "<u:SetBinaryState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + value
                     + "</u:SetBinaryState>" + "</s:Body>" + "</s:Envelope>";
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null && logger.isTraceEnabled()) {
-                logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-            }
+            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.debug("Failed to set timerStart '{}' for device '{}': {}", value, getThing().getUID(),
                     e.getMessage());

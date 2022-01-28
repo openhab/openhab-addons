@@ -15,6 +15,7 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -173,15 +174,9 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
                         + "<s:Body>" + "<u:SetCrockpotState xmlns:u=\"urn:Belkin:service:basicevent:1\">" + "<mode>"
                         + mode + "</mode>" + "<time>" + time + "</time>" + "</u:SetCrockpotState>" + "</s:Body>"
                         + "</s:Envelope>";
-                String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-                if (wemoCallResponse != null && logger.isTraceEnabled()) {
-                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-                }
+                wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                 updateStatus(ThingStatus.ONLINE);
-            } catch (RuntimeException e) {
+            } catch (IOException e) {
                 logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
@@ -225,46 +220,38 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-                }
-                String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
-                String time = substringBetween(wemoCallResponse, "<time>", "</time>");
-                String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");
+            String mode = substringBetween(wemoCallResponse, "<mode>", "</mode>");
+            String time = substringBetween(wemoCallResponse, "<time>", "</time>");
+            String coockedTime = substringBetween(wemoCallResponse, "<coockedTime>", "</coockedTime>");
 
-                State newMode = new StringType(mode);
-                State newCoockedTime = DecimalType.valueOf(coockedTime);
-                switch (mode) {
-                    case "0":
-                        newMode = new StringType("OFF");
-                        break;
-                    case "50":
-                        newMode = new StringType("WARM");
-                        State warmTime = DecimalType.valueOf(time);
-                        updateState(CHANNEL_WARMCOOKTIME, warmTime);
-                        break;
-                    case "51":
-                        newMode = new StringType("LOW");
-                        State lowTime = DecimalType.valueOf(time);
-                        updateState(CHANNEL_LOWCOOKTIME, lowTime);
-                        break;
-                    case "52":
-                        newMode = new StringType("HIGH");
-                        State highTime = DecimalType.valueOf(time);
-                        updateState(CHANNEL_HIGHCOOKTIME, highTime);
-                        break;
-                }
-                updateState(CHANNEL_COOKMODE, newMode);
-                updateState(CHANNEL_COOKEDTIME, newCoockedTime);
+            State newMode = new StringType(mode);
+            State newCoockedTime = DecimalType.valueOf(coockedTime);
+            switch (mode) {
+                case "0":
+                    newMode = new StringType("OFF");
+                    break;
+                case "50":
+                    newMode = new StringType("WARM");
+                    State warmTime = DecimalType.valueOf(time);
+                    updateState(CHANNEL_WARMCOOKTIME, warmTime);
+                    break;
+                case "51":
+                    newMode = new StringType("LOW");
+                    State lowTime = DecimalType.valueOf(time);
+                    updateState(CHANNEL_LOWCOOKTIME, lowTime);
+                    break;
+                case "52":
+                    newMode = new StringType("HIGH");
+                    State highTime = DecimalType.valueOf(time);
+                    updateState(CHANNEL_HIGHCOOKTIME, highTime);
+                    break;
             }
-        } catch (RuntimeException e) {
+            updateState(CHANNEL_COOKMODE, newMode);
+            updateState(CHANNEL_COOKEDTIME, newCoockedTime);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
             logger.debug("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 }
