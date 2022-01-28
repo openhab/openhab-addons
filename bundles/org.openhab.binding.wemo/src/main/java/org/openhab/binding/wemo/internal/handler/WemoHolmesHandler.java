@@ -127,7 +127,6 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    clearSubscriptionState();
                     return;
                 }
                 updateStatus(ThingStatus.ONLINE);

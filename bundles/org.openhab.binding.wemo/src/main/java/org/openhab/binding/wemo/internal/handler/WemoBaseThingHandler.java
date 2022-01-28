@@ -13,8 +13,6 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +42,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
     protected @Nullable UpnpIOService service;
     protected WemoHttpCall wemoHttpCaller;
     protected String host = "";
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing);
@@ -77,7 +74,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
         if (service != null) {
             logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
                     succeeded ? "succeeded" : "failed");
-            subscriptionState.put(service, succeeded);
         }
     }
 
@@ -99,14 +95,9 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             UpnpIOService service = this.service;
             if (service != null) {
                 if (service.isRegistered(this)) {
-                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
-
-                    if (subscriptionState.get(subscription) == null) {
-                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                                subscription);
-                        service.addSubscription(this, subscription, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
-                        subscriptionState.put(subscription, true);
-                    }
+                    logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
+                            subscription);
+                    service.addSubscription(this, subscription, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
                 } else {
                     logger.debug(
                             "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
@@ -121,23 +112,11 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             UpnpIOService service = this.service;
             if (service != null) {
                 if (service.isRegistered(this)) {
-                    logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
-
-                    if (subscriptionState.get(subscription) != null) {
-                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                        service.removeSubscription(this, subscription);
-                    }
-
-                    subscriptionState.remove(subscription);
+                    logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
+                    service.removeSubscription(this, subscription);
                     service.unregisterParticipant(this);
                 }
             }
-        }
-    }
-
-    protected synchronized void clearSubscriptionState() {
-        synchronized (upnpLock) {
-            subscriptionState = new HashMap<>();
         }
     }
 
