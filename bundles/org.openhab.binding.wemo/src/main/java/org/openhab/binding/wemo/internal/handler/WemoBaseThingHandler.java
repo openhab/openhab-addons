@@ -13,6 +13,8 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,6 +26,8 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link WemoBaseThingHandler} provides a base implementation for the
@@ -34,9 +38,13 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public abstract class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOParticipant {
 
+    private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
+    private final Object upnpLock = new Object();
+
     protected @Nullable UpnpIOService service;
     protected WemoHttpCall wemoHttpCaller;
     protected String host = "";
+    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing);
@@ -66,7 +74,11 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        // can be overridden by subclasses
+        if (service != null) {
+            logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
+                    succeeded ? "succeeded" : "failed");
+            subscriptionState.put(service, succeeded);
+        }
     }
 
     @Override
@@ -80,6 +92,53 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
             return service.isRegistered(this);
         }
         return false;
+    }
+
+    protected synchronized void addSubscription(String subscription) {
+        synchronized (upnpLock) {
+            UpnpIOService service = this.service;
+            if (service != null) {
+                if (service.isRegistered(this)) {
+                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
+
+                    if (subscriptionState.get(subscription) == null) {
+                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
+                                subscription);
+                        service.addSubscription(this, subscription, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
+                        subscriptionState.put(subscription, true);
+                    }
+                } else {
+                    logger.debug(
+                            "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
+                            getThing().getUID());
+                }
+            }
+        }
+    }
+
+    protected synchronized void removeSubscription(String subscription) {
+        synchronized (upnpLock) {
+            UpnpIOService service = this.service;
+            if (service != null) {
+                if (service.isRegistered(this)) {
+                    logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
+
+                    if (subscriptionState.get(subscription) != null) {
+                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
+                        service.removeSubscription(this, subscription);
+                    }
+
+                    subscriptionState.remove(subscription);
+                    service.unregisterParticipant(this);
+                }
+            }
+        }
+    }
+
+    protected synchronized void clearSubscriptionState() {
+        synchronized (upnpLock) {
+            subscriptionState = new HashMap<>();
+        }
     }
 
     protected String getHost() {

@@ -19,8 +19,6 @@ import java.io.StringReader;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
@@ -67,10 +65,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_COFFEE);
 
-    private final Object upnpLock = new Object();
     private final Object jobLock = new Object();
-
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
@@ -109,7 +104,7 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
             job.cancel(true);
         }
         this.pollingJob = null;
-        removeSubscription();
+        removeSubscription(DEVICEEVENT);
     }
 
     private void poll() {
@@ -127,14 +122,12 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    synchronized (upnpLock) {
-                        subscriptionState = new HashMap<>();
-                    }
+                    clearSubscriptionState();
                     return;
                 }
                 updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
-                addSubscription();
+                addSubscription(DEVICEEVENT);
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }
@@ -214,58 +207,8 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
     }
 
     @Override
-    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        if (service != null) {
-            logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
-                    succeeded ? "succeeded" : "failed");
-            subscriptionState.put(service, succeeded);
-        }
-    }
-
-    @Override
     public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
         // We can subscribe to GENA events, but there is no usefull response right now.
-    }
-
-    private synchronized void addSubscription() {
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
-
-                    String subscription = DEVICEEVENT;
-                    if (subscriptionState.get(subscription) == null) {
-                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                                subscription);
-                        localService.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
-                        subscriptionState.put(subscription, true);
-                    }
-                } else {
-                    logger.debug(
-                            "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                            getThing().getUID());
-                }
-            }
-        }
-    }
-
-    private synchronized void removeSubscription() {
-        logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    String subscription = DEVICEEVENT;
-                    if (subscriptionState.get(subscription) != null) {
-                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                        localService.removeSubscription(this, subscription);
-                    }
-                    subscriptionState = new HashMap<>();
-                    localService.unregisterParticipant(this);
-                }
-            }
-        }
     }
 
     /**
