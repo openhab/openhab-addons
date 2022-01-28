@@ -14,6 +14,9 @@ package org.openhab.binding.guntamatic.internal;
 
 import static org.openhab.binding.guntamatic.internal.GuntamaticBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -39,17 +42,26 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.guntamatic", service = ThingHandlerFactory.class)
 public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOSTAR, THING_TYPE_POWERCHIP,
-            THING_TYPE_POWERCORN, THING_TYPE_BIOCOM, THING_TYPE_PRO, THING_TYPE_THERM);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BIOSTAR, THING_TYPE_BIOSMART,
+            THING_TYPE_POWERCHIP, THING_TYPE_POWERCORN, THING_TYPE_BIOCOM, THING_TYPE_PRO, THING_TYPE_THERM,
+            THING_TYPE_GENERIC);
 
     private final HttpClient httpClient;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
+
+    private List<String> staticChannelIDs;
 
     @Activate
     public GuntamaticHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
+        this.staticChannelIDs = new ArrayList<>(Arrays.asList(CHANNEL_CONTROLPROGRAM, CHANNEL_CONTROLHEATCIRCPROGRAM0,
+                CHANNEL_CONTROLHEATCIRCPROGRAM1, CHANNEL_CONTROLHEATCIRCPROGRAM2, CHANNEL_CONTROLHEATCIRCPROGRAM3,
+                CHANNEL_CONTROLHEATCIRCPROGRAM4, CHANNEL_CONTROLHEATCIRCPROGRAM5, CHANNEL_CONTROLHEATCIRCPROGRAM6,
+                CHANNEL_CONTROLHEATCIRCPROGRAM7, CHANNEL_CONTROLHEATCIRCPROGRAM8, CHANNEL_CONTROLWWHEAT0,
+                CHANNEL_CONTROLWWHEAT1, CHANNEL_CONTROLWWHEAT2, CHANNEL_CONTROLEXTRAWWHEAT0,
+                CHANNEL_CONTROLEXTRAWWHEAT1, CHANNEL_CONTROLEXTRAWWHEAT2));
     }
 
     @Override
@@ -61,8 +73,14 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
+        if ((thingTypeUID == THING_TYPE_BIOSTAR) || (thingTypeUID == THING_TYPE_POWERCHIP)
+                || (thingTypeUID == THING_TYPE_POWERCORN) || (thingTypeUID == THING_TYPE_BIOCOM)
+                || (thingTypeUID == THING_TYPE_PRO) || (thingTypeUID == THING_TYPE_THERM)) {
+            staticChannelIDs.add(CHANNEL_CONTROLBOILERAPPROVAL);
+        }
+
         if (supportsThingType(thingTypeUID)) {
-            return new GuntamaticHandler(thing, httpClient, guntamaticChannelTypeProvider);
+            return new GuntamaticHandler(thing, httpClient, guntamaticChannelTypeProvider, staticChannelIDs);
         }
 
         return null;
