@@ -43,8 +43,8 @@ public class D2_05_00_NodON extends D2_05_00 {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-        if (channelId.equalsIgnoreCase(CHANNEL_REPEATERMODE)) {
-            if (command instanceof RefreshType) {
+        if (channelId.equals(CHANNEL_REPEATERMODE)) {
+            if (command == RefreshType.REFRESH) {
                 senderId = null; // make this message invalid as we do not support refresh of repeter status
             } else if (command instanceof StringType) {
                 switch (((StringType) command).toString()) {
