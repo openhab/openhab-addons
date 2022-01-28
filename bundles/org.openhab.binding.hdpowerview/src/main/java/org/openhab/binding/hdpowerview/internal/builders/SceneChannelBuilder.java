@@ -24,6 +24,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 
 /**
  * The {@link SceneChannelBuilder} class creates scene channels
@@ -95,6 +96,7 @@ public class SceneChannelBuilder extends BaseChannelBuilder {
         ChannelUID channelUid = new ChannelUID(channelGroupUid, Integer.toString(scene.id));
         String description = translationProvider.getText("dynamic-channel.scene-activate.description", scene.getName());
         return ChannelBuilder.create(channelUid, CoreItemFactory.SWITCH).withType(channelTypeUid)
-                .withLabel(scene.getName()).withDescription(description).build();
+                .withLabel(scene.getName()).withDescription(description).withAutoUpdatePolicy(AutoUpdatePolicy.VETO)
+                .build();
     }
 }
