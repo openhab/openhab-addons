@@ -16,33 +16,32 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ACCapability}
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class ACCapability {
 
-    private Map<String, String> opMod;
-    private Map<String, String> fanSpeed;
+    private Map<String, String> opMod = Collections.emptyMap();
+    private Map<String, String> fanSpeed = Collections.emptyMap();
 
-    private List<String> supportedOpMode;
-    private List<String> supportedFanSpeed;
+    private List<String> supportedOpMode = Collections.emptyList();
+    private List<String> supportedFanSpeed = Collections.emptyList();
 
-    @NonNull
     public Map<String, String> getOpMod() {
-        return opMod == null ? Collections.emptyMap() : opMod;
+        return opMod;
     }
 
     public void setOpMod(Map<String, String> opMod) {
         this.opMod = opMod;
     }
 
-    @NonNull
     public Map<String, String> getFanSpeed() {
-        return fanSpeed == null ? Collections.emptyMap() : fanSpeed;
+        return fanSpeed;
     }
 
     public void setFanSpeed(Map<String, String> fanSpeed) {
@@ -50,7 +49,7 @@ public class ACCapability {
     }
 
     public List<String> getSupportedOpMode() {
-        return supportedOpMode == null ? Collections.emptyList() : supportedOpMode;
+        return supportedOpMode;
     }
 
     public void setSupportedOpMode(List<String> supportedOpMode) {
@@ -58,7 +57,7 @@ public class ACCapability {
     }
 
     public List<String> getSupportedFanSpeed() {
-        return supportedFanSpeed == null ? Collections.emptyList() : supportedFanSpeed;
+        return supportedFanSpeed;
     }
 
     public void setSupportedFanSpeed(List<String> supportedFanSpeed) {

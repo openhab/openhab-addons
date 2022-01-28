@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.internal;
+package org.openhab.binding.lgthinq.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.errors.LGApiException;
@@ -22,25 +22,26 @@ import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public interface LGDeviceThing {
 
-    public void onDeviceAdded(@NonNullByDefault LGDevice device);
+    void onDeviceAdded(@NonNullByDefault LGDevice device);
 
-    public String getDeviceId();
+    String getDeviceId();
 
-    public String getDeviceAlias();
+    String getDeviceAlias();
 
-    public String getDeviceModelName();
+    String getDeviceModelName();
 
-    public String getDeviceUriJsonConfig();
+    String getDeviceUriJsonConfig();
 
-    public boolean onDeviceStateChanged();
+    boolean onDeviceStateChanged();
 
-    public void onDeviceRemoved();
+    void onDeviceRemoved();
 
-    public void onDeviceGone();
+    void onDeviceGone();
 
-    public void updateChannelDynStateDescription() throws LGApiException;
+    void updateChannelDynStateDescription() throws LGApiException;
 
-    public ACCapability getAcCapabilities() throws LGApiException;
+    ACCapability getAcCapabilities() throws LGApiException;
 }

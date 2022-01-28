@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgthinq.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LGThinqException} Parent Exception for all exceptions of this module
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGThinqException extends Exception {
     public LGThinqException(String message, Throwable cause) {
         super(message, cause);

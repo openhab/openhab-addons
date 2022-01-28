@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
+import static org.openhab.binding.lgthinq.handler.LGAirConditionerHandler.THING_TYPE_AIR_CONDITIONER;
 import static org.openhab.binding.lgthinq.handler.LGBridgeHandler.THING_TYPE_BRIDGE;
-import static org.openhab.binding.lgthinq.internal.LGAirConditionerHandler.THING_TYPE_AIR_CONDITIONER;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lgthinq.handler.LGAirConditionerHandler;
 import org.openhab.binding.lgthinq.handler.LGBridgeHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;

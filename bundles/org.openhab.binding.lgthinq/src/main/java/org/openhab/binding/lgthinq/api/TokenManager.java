@@ -19,7 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.errors.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,9 +33,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class TokenManager {
     private static final int EXPIRICY_TOLERANCE_SEC = 60;
     private final OauthLgEmpAuthenticator oAuthAuthenticator;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Nullable
     private TokenResult tokenCached;
     private static final TokenManager instance;
     static {
@@ -54,10 +61,11 @@ public class TokenManager {
         return expiricyDate.before(new Date());
     }
 
+    @NonNull
     public TokenResult refreshToken(String bridgeName, TokenResult currentToken) throws RefreshTokenException {
         try {
             TokenResult token = oAuthAuthenticator.doRefreshToken(currentToken);
-            new ObjectMapper().writeValue(new File(getConfigDataFileName(bridgeName)), token);
+            objectMapper.writeValue(new File(getConfigDataFileName(bridgeName)), token);
             return token;
         } catch (IOException e) {
             throw new RefreshTokenException("Error refreshing LGThinq token", e);
@@ -74,7 +82,7 @@ public class TokenManager {
         return tokenFile.isFile();
     }
 
-    public TokenResult oauthFirstRegistration(String bridgeName, String language, String country, String username,
+    public void oauthFirstRegistration(String bridgeName, String language, String country, String username,
             String password)
             throws LGGatewayException, PreLoginException, AccountLoginException, TokenException, IOException {
         Gateway gw;
@@ -112,18 +120,30 @@ public class TokenManager {
         }
 
         // persist the token information generated in file
-        new ObjectMapper().writeValue(new File(getConfigDataFileName(bridgeName)), token);
-        return token;
+        objectMapper.writeValue(new File(getConfigDataFileName(bridgeName)), token);
     }
 
     public TokenResult getValidRegisteredToken(String bridgeName) throws IOException, RefreshTokenException {
+        @NonNull
+        TokenResult validToken;
         if (tokenCached == null) {
-            tokenCached = new ObjectMapper().readValue(new File(getConfigDataFileName(bridgeName)), TokenResult.class);
+            tokenCached = objectMapper.readValue(new File(getConfigDataFileName(bridgeName)), TokenResult.class);
         }
-        if (isTokenExpired(tokenCached)) {
-            tokenCached = refreshToken(bridgeName, tokenCached);
+
+        if (!isValidToken(tokenCached)) {
+            throw new RefreshTokenException(
+                    "Token is not valid. Try to delete token file and disable/enable bridge to restart authentication process");
         }
-        return tokenCached;
+        validToken = Objects.requireNonNull(tokenCached, "Unexpected. Never null here");
+        if (isTokenExpired(validToken)) {
+            validToken = refreshToken(bridgeName, validToken);
+        }
+        return validToken;
+    }
+
+    private boolean isValidToken(@Nullable TokenResult token) {
+        return token != null && !token.getAccessToken().isBlank() && token.getExpiresIn() != 0
+                && !token.getOauthBackendUrl().isBlank() && !token.getRefreshToken().isBlank();
     }
 
     /**

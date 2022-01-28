@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lgthinq.lgapi.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -19,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class ACSnapShotV1 extends ACSnapShot {
 
     @Override
@@ -47,6 +51,7 @@ public class ACSnapShotV1 extends ACSnapShot {
 
     @Override
     @JsonProperty("Operation")
+    @Nullable
     public Integer getOperation() {
         return super.getOperation();
     }

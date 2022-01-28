@@ -16,12 +16,16 @@ import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import javax.ws.rs.core.UriBuilder;
 
-import org.apache.commons.io.FileUtils;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.api.RestResult;
 import org.openhab.binding.lgthinq.api.RestUtils;
@@ -44,6 +48,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
     private static final LGApiClientService instance;
     private static final Logger logger = LoggerFactory.getLogger(LGApiV2ClientServiceImpl.class);
@@ -69,26 +74,7 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
 
     private Map<String, String> getCommonV2Headers(String language, String country, String accessToken,
             String userNumber) {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Accept", "application/json");
-        headers.put("Content-type", "application/json;charset=UTF-8");
-        headers.put("x-api-key", V2_API_KEY);
-        headers.put("x-client-id", V2_CLIENT_ID);
-        headers.put("x-country-code", country);
-        headers.put("x-language-code", language);
-        headers.put("x-message-id", UUID.randomUUID().toString());
-        headers.put("x-service-code", SVC_CODE);
-        headers.put("x-service-phase", V2_SVC_PHASE);
-        headers.put("x-thinq-app-level", V2_APP_LEVEL);
-        headers.put("x-thinq-app-os", V2_APP_OS);
-        headers.put("x-thinq-app-type", V2_APP_TYPE);
-        headers.put("x-thinq-app-ver", V2_APP_VER);
-        headers.put("x-thinq-security-key", SECURITY_KEY);
-        if (accessToken != null && !accessToken.isBlank())
-            headers.put("x-emp-token", accessToken);
-        if (userNumber != null && !userNumber.isBlank())
-            headers.put("x-user-no", userNumber);
-        return headers;
+        return getCommonHeaders(language, country, accessToken, userNumber);
     }
 
     /**
@@ -100,9 +86,10 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
      * @throws LGApiException if some communication error occur.
      */
     @Override
-    public ACSnapShot getAcDeviceData(String bridgeName, String deviceId) throws LGApiException {
+    @Nullable
+    public ACSnapShot getAcDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGApiException {
         Map<String, Object> deviceSettings = getDeviceSettings(bridgeName, deviceId);
-        if (deviceSettings != null && deviceSettings.get("snapshot") != null) {
+        if (deviceSettings.get("snapshot") != null) {
             Map<String, Object> snapMap = (Map<String, Object>) deviceSettings.get("snapshot");
 
             ACSnapShot shot = objectMapper.convertValue(snapMap, ACSnapShotV2.class);
@@ -125,23 +112,22 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
     }
 
     @Override
-    public boolean turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
+    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
             throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Operation", "airState.operation",
                     newPowerState.commandValue());
-
-            return handleV2GenericErrorResult(resp) != null;
+            handleV2GenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGApiException("Error adjusting device power", e);
         }
     }
 
     @Override
-    public boolean changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGApiException {
+    public void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Set", "airState.opMode", newOpMode);
-            return handleV2GenericErrorResult(resp) != null;
+            handleV2GenericErrorResult(resp);
         } catch (LGApiException e) {
             throw e;
         } catch (Exception e) {
@@ -150,10 +136,10 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
     }
 
     @Override
-    public boolean changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGApiException {
+    public void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Set", "airState.windStrength", newFanSpeed);
-            return handleV2GenericErrorResult(resp) != null;
+            handleV2GenericErrorResult(resp);
         } catch (LGApiException e) {
             throw e;
         } catch (Exception e) {
@@ -162,12 +148,12 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
     }
 
     @Override
-    public boolean changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
+    public void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
             throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Set", "airState.tempState.target",
                     newTargetTemp.commandValue());
-            return handleV2GenericErrorResult(resp) != null;
+            handleV2GenericErrorResult(resp);
         } catch (LGApiException e) {
             throw e;
         } catch (Exception e) {
@@ -188,28 +174,21 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 
-    private File getCapFileForDevice(String deviceId) {
-        return new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
-    }
-
     @Override
+    @NonNull
+    @SuppressWarnings("ignoring Map type check")
     public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGApiException {
         try {
-            File regFile = getCapFileForDevice(deviceId);
+            File regFile = new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
             ACCapability acCap = new ACCapability();
             Map<String, Object> mapper;
-            if (regFile.isFile() && !forceRecreate) {
-                // reg exists. Retrieve from it
-                mapper = objectMapper.readValue(regFile, new TypeReference<Map<String, Object>>() {
-                });
-            } else {
-                FileUtils.copyURLToFile(new URL(uri), regFile);
-                // RestResult res = RestUtils.getCall(uri, null, null);
-                mapper = objectMapper.readValue(regFile, new TypeReference<Map<String, Object>>() {
-                });
-                // try save file
-                // objectMapper.writeValue(getCapFileForDevice(deviceId), mapper);
+            if (regFile.isFile() || forceRecreate) {
+                try (InputStream in = new URL(uri).openStream()) {
+                    Files.copy(in, regFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
             }
+            mapper = objectMapper.readValue(regFile, new TypeReference<>() {
+            });
             Map<String, Object> cap = (Map<String, Object>) mapper.get("Value");
             if (cap == null) {
                 throw new LGApiException("Error extracting capabilities supported by the device");
@@ -251,10 +230,10 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
         }
     }
 
-    private Map<String, Object> handleV2GenericErrorResult(@Nullable RestResult resp) throws LGApiException {
+    private void handleV2GenericErrorResult(@Nullable RestResult resp) throws LGApiException {
         Map<String, Object> metaResult;
         if (resp == null) {
-            return null;
+            return;
         }
         if (resp.getStatusCode() != 200) {
             logger.error("Error returned by LG Server API. The reason is:{}", resp.getJsonResponse());
@@ -274,61 +253,10 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
             }
 
         }
-        return (Map<String, Object>) metaResult.get("result");
     }
 
     private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGApiException {
-        Map<String, Object> deviceSettings;
-        if (resp.getStatusCode() != 200) {
-            logger.error("Error calling device settings from LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGApiException(String.format("Error calling device settings from LG Server API. The reason is:%s",
-                    resp.getJsonResponse()));
-        } else {
-            try {
-                deviceSettings = objectMapper.readValue(resp.getJsonResponse(),
-                        new TypeReference<Map<String, Object>>() {
-                        });
-                if (!"0000".equals(deviceSettings.get("resultCode"))) {
-                    throw new LGApiException(
-                            String.format("Status error getting device list. resultCode must be 0000, but was:%s",
-                                    deviceSettings.get("resultCode")));
-                }
-            } catch (JsonProcessingException e) {
-                throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
-            }
-
-        }
-        return (Map<String, Object>) deviceSettings.get("result");
-    }
-
-    private List<LGDevice> handleListAccountDevicesResult(RestResult resp) throws LGApiException {
-        Map<String, Object> devicesResult;
-        List<LGDevice> devices;
-        if (resp.getStatusCode() != 200) {
-            logger.error("Error calling device list from LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGApiException(String.format("Error calling device list from LG Server API. The reason is:%s",
-                    resp.getJsonResponse()));
-        } else {
-            try {
-                devicesResult = objectMapper.readValue(resp.getJsonResponse(),
-                        new TypeReference<Map<String, Object>>() {
-                        });
-                if (!"0000".equals(devicesResult.get("resultCode"))) {
-                    throw new LGApiException(
-                            String.format("Status error getting device list. resultCode must be 0000, but was:%s",
-                                    devicesResult.get("resultCode")));
-                }
-                List<Map<String, Object>> items = (List<Map<String, Object>>) ((Map<String, Object>) devicesResult
-                        .get("result")).get("item");
-                devices = objectMapper.convertValue(items, new TypeReference<List<LGDevice>>() {
-                });
-            } catch (JsonProcessingException e) {
-                throw new IllegalStateException("Unknown error occurred deserializing json stream.", e);
-            }
-
-        }
-
-        return devices;
+        return genericHandleDeviceSettingsResult(resp, logger, objectMapper);
     }
 
     @Override
@@ -338,7 +266,8 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
     }
 
     @Override
-    public ACSnapShot getMonitorData(String bridgeName, String deviceId, String workId)
+    @Nullable
+    public ACSnapShot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workId)
             throws LGApiException, LGDeviceV1MonitorExpiredException, IOException {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgthinq.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LGGatewayException}
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGGatewayException extends LGThinqException {
     public LGGatewayException(String message, Throwable cause) {
         super(message, cause);

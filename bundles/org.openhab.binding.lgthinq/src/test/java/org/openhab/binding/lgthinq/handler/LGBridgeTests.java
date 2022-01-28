@@ -13,7 +13,6 @@
 package org.openhab.binding.lgthinq.handler;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.any;
@@ -257,69 +256,6 @@ class LGBridgeTests {
         return sdf.format(new Date());
     }
 
-    // @Test
-    // void initialize() throws IOException {
-    // Bridge fakeThing = mock(Bridge.class);
-    // ThingUID fakeThingUid = mock(ThingUID.class);
-    // when(fakeThingUid.getId()).thenReturn(fakeBridgeName);
-    // when(fakeThing.getUID()).thenReturn(fakeThingUid);
-    // String tempDir = System.getProperty("java.io.tmpdir");
-    // LGThinqBindingConstants.THINQ_CONNECTION_DATA_FILE = tempDir+ File.separator +"token.json";
-    // LGThinqBindingConstants.BASE_CAP_CONFIG_DATA_FILE = tempDir+ File.separator +"thinq-cap.json";
-    // LGBridgeHandler b = new LGBridgeHandler(fakeThing);
-    // LGBridgeHandler spyBridge = spy(b);
-    // doReturn(new LGThinqConfiguration(fakeUserName, fakePassword, fakeCountry, fakeLanguage, 60)).when(spyBridge)
-    // .getConfigAs(any(Class.class));
-    // spyBridge.initialize();
-    // LGApiClientService service1 = LGApiV1ClientServiceImpl.getInstance();
-    // LGApiClientService service2 = LGApiV2ClientServiceImpl.getInstance();
-    // TokenManager tokenManager = TokenManager.getInstance();
-    // try {
-    // if (!tokenManager.isOauthTokenRegistered(fakeBridgeName)) {
-    // tokenManager.oauthFirstRegistration(fakeBridgeName, fakeLanguage,
-    // fakeCountry, fakeUserName, fakePassword);
-    // }
-    // String workId = service1.startMonitor(fakeBridgeName, "d27bdb00-7149-11d3-80b0-7440be92ac08");
-    // ACSnapShot shot = service1.getMonitorData("fakeBridgeId", "d27bdb00-7149-11d3-80b0-7440be92ac08", workId);
-    // System.out.println(shot);
-    // // service1.stopMonitor("d27cc560-7149-11d3-80b6-7440bec3653e", "n-d27cc560-7149-11d3-80b6-7440bec3653e");
-    // // String workId = service1.startMonitor("d27cc560-7149-11d3-80b6-7440bec3653e");
-    // // String workId = "n-d27cc560-7149-11d3-80b6-7440bec3653e";
-    // // service1.getMonitorData("d27cc560-7149-11d3-80b6-7440bec3653e", workId);
-    // // Thread.sleep(1000);
-    // // service1.getMonitorData("d27cc560-7149-11d3-80b6-7440bec3653e", workId);
-    // // Thread.sleep(1000);
-    // // service1.getMonitorData("d27cc560-7149-11d3-80b6-7440bec3653e", workId);
-    // // ACSnapShot ac = service1.getAcDeviceData("d7ee2251-e4bb-14a8-9d96-60ab14f3c836");
-    // // boolean ok = service1.turnDevicePower("d7ee2251-e4bb-14a8-9d96-60ab14f3c836",
-    // // DevicePowerState.DV_POWER_ON);
-    // // boolean ok = service1.changeOperationMode("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACOpMode.COOL);
-    // // ACSnapShot ac = service1.getAcDeviceData("d7ee2251-e4bb-14a8-9d96-60ab14f3c836");
-    // // service1.changeFanSpeed("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACFanSpeed.F3);
-    // // service1.changeTargetTemperature("d7ee2251-e4bb-14a8-9d96-60ab14f3c836", ACTargetTmp._21);
-    // List<LGDevice> devices = service1.listAccountDevices("bridgeTest");
-    // // devices.forEach((d) -> {
-    // // try {
-    // // if (d.getPlatformType().equals(PLATFORM_TYPE_V1)) {
-    // // ACCapability ac = service1.getDeviceCapability(d.getDeviceId(), d.getModelJsonUri(), true);
-    // // System.out.println(ac);
-    // // } else {
-    // // ACCapability ac = service2.getDeviceCapability(d.getDeviceId(), d.getModelJsonUri(), true);
-    // // System.out.println(ac);
-    // // }
-    // // } catch (LGApiException e) {
-    // // logger.error("Error getting capabilities", e);
-    // // }
-    // // });
-    // // service1.changeOperationMode("d27cc560-7149-11d3-80b6-7440bec3653e", ACOpMode.FAN);
-    // System.out.println("AC power ON:");
-    // } catch (LGThinqException e) {
-    // logger.error("Error testing facade", e);
-    // // } catch (InterruptedException | IOException e) {
-    // // e.printStackTrace();
-    // }
-    // }
-
     @Test
     public void testDiscoveryThings() {
         stubFor(get(GATEWAY_SERVICE_PATH).willReturn(ok(gtwResponse)));
@@ -327,9 +263,7 @@ class LGBridgeTests {
         stubFor(post("/spx" + PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
                 .willReturn(ok(preLoginResponse)));
         URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + OAUTH_SEARCH_KEY_PATH)
-                .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build(); // YES! It's
-                                                                                                   // sever_type, not
-                                                                                                   // server_type 8-|
+                .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build();
         stubFor(get(String.format("%s?%s", uri.getPath(), uri.getQuery())).willReturn(ok(oauthTokenSearchKeyReturned)));
         stubFor(post(V2_SESSION_LOGIN_PATH + fakeUserName).withRequestBody(containing("user_auth2=SOME_DUMMY_ENC_PWD"))
                 .withHeader("X-Signature", equalTo("SOME_DUMMY_SIGNATURE"))
@@ -341,16 +275,11 @@ class LGBridgeTests {
         empData.put("account_type", userIdType);
         empData.put("country_code", fakeCountry);
         empData.put("username", fakeUserName);
-        String tokenSign = new String(RestUtils.getTokenSignature(V2_EMP_SESS_URL, secretKey, empData, currTimestamp));
+
         stubFor(post("/emp/oauth2/token/empsession").withRequestBody(containing("account_type=" + userIdType))
                 .withRequestBody(containing("country_code=" + fakeCountry))
                 .withRequestBody(containing("username=" + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8)))
-                // .withHeader("lgemp-x-signature", equalTo(tokenSign)) // ignored because of timestamp in different
-                // times.
-                .withHeader("lgemp-x-session-key", equalTo(loginSessionId))
-                // .withHeader("lgemp-x-date", equalTo(currTimestamp)) // ignored because of timestamp in different
-                // times.
-                .willReturn(ok(sessionTokenReturned)));
+                .withHeader("lgemp-x-session-key", equalTo(loginSessionId)).willReturn(ok(sessionTokenReturned)));
         // faking some constants
         LGThinqBindingConstants.GATEWAY_URL = "http://localhost:8880" + GATEWAY_SERVICE_PATH;
         LGThinqBindingConstants.V2_EMP_SESS_URL = "http://localhost:8880/emp/oauth2/token/empsession";

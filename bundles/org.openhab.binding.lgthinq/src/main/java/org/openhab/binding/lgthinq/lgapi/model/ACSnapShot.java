@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.lgthinq.lgapi.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -20,17 +23,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ACSnapShot {
 
-    private Integer airWindStrength;
+    private int airWindStrength;
 
-    private Double targetTemperature;
+    private double targetTemperature;
 
-    private Double currentTemperature;
+    private double currentTemperature;
 
-    private Integer operationMode;
-
+    private int operationMode;
+    @Nullable
     private Integer operation;
     @JsonIgnore
     private boolean online;
@@ -42,8 +46,7 @@ public abstract class ACSnapShot {
 
     @JsonIgnore
     public ACFanSpeed getAcFanSpeed() {
-
-        return airWindStrength == null ? ACFanSpeed.F_UNK : ACFanSpeed.statusOf(airWindStrength);
+        return ACFanSpeed.statusOf(airWindStrength);
     }
 
     public Integer getAirWindStrength() {
@@ -78,6 +81,7 @@ public abstract class ACSnapShot {
         this.operationMode = operationMode;
     }
 
+    @Nullable
     public Integer getOperation() {
         return operation;
     }

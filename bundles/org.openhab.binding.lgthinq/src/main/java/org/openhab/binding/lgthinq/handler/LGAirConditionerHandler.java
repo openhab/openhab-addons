@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.internal;
+package org.openhab.binding.lgthinq.handler;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 import static org.openhab.core.library.types.OnOffType.ON;
@@ -25,7 +25,7 @@ import org.openhab.binding.lgthinq.errors.LGApiException;
 import org.openhab.binding.lgthinq.errors.LGDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.errors.LGDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.errors.LGThinqException;
-import org.openhab.binding.lgthinq.handler.LGBridgeHandler;
+import org.openhab.binding.lgthinq.internal.LGDeviceDynStateDescriptionProvider;
 import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
 import org.openhab.binding.lgthinq.lgapi.LGApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgapi.LGApiV2ClientServiceImpl;
@@ -59,7 +59,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     private final ChannelUID opModeFanSpeedUID;
     @Nullable
     private ACCapability acCapability;
-    private String lgPlatfomType = "";
+    private final String lgPlatfomType;
     private final Logger logger = LoggerFactory.getLogger(LGAirConditionerHandler.class);
     @NonNullByDefault
     private final LGApiClientService lgApiClientService;
@@ -72,8 +72,8 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     private @Nullable ScheduledFuture<?> thingStatePoolingJob;
     private @Nullable Future<?> commandExecutorQueueJob;
     // *** Long running isolated threadpools.
-    private ScheduledExecutorService poolingScheduler = Executors.newScheduledThreadPool(1);
-    private ExecutorService executorService = Executors.newFixedThreadPool(1);
+    private final ScheduledExecutorService poolingScheduler = Executors.newScheduledThreadPool(1);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     private boolean monitorV1Began = false;
     private String monitorWorkId = "";
@@ -98,14 +98,6 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
         public AsyncCommandParams(String channelUUID, Command command) {
             this.channelUID = channelUUID;
             this.command = command;
-        }
-    }
-
-    class UpdateThingStatusRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            final String deviceId = getDeviceId();
         }
     }
 
@@ -186,46 +178,48 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
 
     protected void startThingStatePooling() {
         if (thingStatePoolingJob == null || thingStatePoolingJob.isDone()) {
-            thingStatePoolingJob = getLocalScheduler().scheduleWithFixedDelay(() -> {
-                try {
-                    ACSnapShot shot = getSnapshotDeviceAdapter(getDeviceId());
-                    if (shot == null) {
-                        // no data to update. Maybe, the monitor stopped, then it gonna be restarted next try.
-                        return;
-                    }
-                    if (!shot.isOnline()) {
-                        if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
-                            updateState(CHANNEL_POWER_ID,
-                                    OnOffType.from(shot.getAcPowerStatus() == DevicePowerState.DV_POWER_OFF));
-                        }
-                        return;
-                    }
-                    if (shot.getOperationMode() != null) {
-                        updateState(CHANNEL_MOD_OP_ID, new DecimalType(shot.getOperationMode()));
-                    }
-                    if (shot.getAcPowerStatus() != null) {
-                        updateState(CHANNEL_POWER_ID,
-                                OnOffType.from(shot.getAcPowerStatus() == DevicePowerState.DV_POWER_ON));
-                        // TODO - validate if is needed to change the status of the thing from OFFLINE to ONLINE (as
-                        // soon as LG WebOs do)
-                    }
-                    if (shot.getAcFanSpeed() != null) {
-                        updateState(CHANNEL_FAN_SPEED_ID, new DecimalType(shot.getAirWindStrength()));
-                    }
-                    if (shot.getCurrentTemperature() != null) {
-                        updateState(CHANNEL_CURRENT_TEMP_ID, new DecimalType(shot.getCurrentTemperature()));
-                    }
-                    if (shot.getTargetTemperature() != null) {
-                        updateState(CHANNEL_TARGET_TEMP_ID, new DecimalType(shot.getTargetTemperature()));
-                    }
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (LGThinqException e) {
-                    logger.error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry.",
-                            getDeviceAlias(), getDeviceId());
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            thingStatePoolingJob = getLocalScheduler().scheduleWithFixedDelay(this::updateThingStateFromLG, 10,
+                    DEFAULT_STATE_POOLING_UPDATE_DELAY, TimeUnit.SECONDS);
+        }
+    }
+
+    private void updateThingStateFromLG() {
+        try {
+            ACSnapShot shot = getSnapshotDeviceAdapter(getDeviceId());
+            if (shot == null) {
+                // no data to update. Maybe, the monitor stopped, then it gonna be restarted next try.
+                return;
+            }
+            if (!shot.isOnline()) {
+                if (getThing().getStatus() != ThingStatus.OFFLINE) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
+                    updateState(CHANNEL_POWER_ID,
+                            OnOffType.from(shot.getAcPowerStatus() == DevicePowerState.DV_POWER_OFF));
                 }
-            }, 10, DEFAULT_STATE_POOLING_UPDATE_DELAY, TimeUnit.SECONDS);
+                return;
+            }
+            if (shot.getOperationMode() != null) {
+                updateState(CHANNEL_MOD_OP_ID, new DecimalType(shot.getOperationMode()));
+            }
+            if (shot.getAcPowerStatus() != null) {
+                updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getAcPowerStatus() == DevicePowerState.DV_POWER_ON));
+                // TODO - validate if is needed to change the status of the thing from OFFLINE to ONLINE (as
+                // soon as LG WebOs do)
+            }
+            if (shot.getAcFanSpeed() != null) {
+                updateState(CHANNEL_FAN_SPEED_ID, new DecimalType(shot.getAirWindStrength()));
+            }
+            if (shot.getCurrentTemperature() != null) {
+                updateState(CHANNEL_CURRENT_TEMP_ID, new DecimalType(shot.getCurrentTemperature()));
+            }
+            if (shot.getTargetTemperature() != null) {
+                updateState(CHANNEL_TARGET_TEMP_ID, new DecimalType(shot.getTargetTemperature()));
+            }
+            updateStatus(ThingStatus.ONLINE);
+        } catch (LGThinqException e) {
+            logger.error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry.",
+                    getDeviceAlias(), getDeviceId(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -234,21 +228,22 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     }
 
     private String getBridgeId() {
-        if (bridgeId.isBlank() && (getBridge() == null || getBridge().getUID() == null)) {
+        if (bridgeId.isBlank() && getBridge() == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             logger.error("Configuration error um Thinq Thing - No Bridge defined for the thing.");
             return "UNKNOWN";
-        } else if (bridgeId.isBlank()) {
+        } else if (bridgeId.isBlank() && getBridge() != null) {
             bridgeId = getBridge().getUID().getId();
         }
         return bridgeId;
     }
 
-    private void forceStopDeviceV1Monitor(String deviceId, String workId) {
+    private void forceStopDeviceV1Monitor(String deviceId) {
         try {
             monitorV1Began = false;
             lgApiClientService.stopMonitor(getBridgeId(), deviceId, monitorWorkId);
         } catch (Exception e) {
+            logger.error("Error stopping LG Device monitor", e);
         }
     }
 
@@ -262,28 +257,24 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
         ACCapability acCap = getAcCapabilities();
         if (isLinked(opModeChannelUID)) {
             List<StateOption> options = new ArrayList<>();
-            acCap.getSupportedOpMode().forEach((v) -> {
-                options.add(new StateOption(emptyIfNull(acCap.getOpMod().get(v)), emptyIfNull(CAP_OP_MODE.get(v))));
-            });
+            acCap.getSupportedOpMode().forEach((v) -> options
+                    .add(new StateOption(emptyIfNull(acCap.getOpMod().get(v)), emptyIfNull(CAP_OP_MODE.get(v)))));
             stateDescriptionProvider.setStateOptions(opModeChannelUID, options);
         }
         if (isLinked(opModeFanSpeedUID)) {
             List<StateOption> options = new ArrayList<>();
-            acCap.getSupportedFanSpeed().forEach((v) -> {
-                options.add(
-                        new StateOption(emptyIfNull(acCap.getFanSpeed().get(v)), emptyIfNull(CAP_FAN_SPEED.get(v))));
-            });
+            acCap.getSupportedFanSpeed().forEach((v) -> options
+                    .add(new StateOption(emptyIfNull(acCap.getFanSpeed().get(v)), emptyIfNull(CAP_FAN_SPEED.get(v)))));
             stateDescriptionProvider.setStateOptions(opModeFanSpeedUID, options);
         }
     }
 
     @Override
-    @Nullable
     public ACCapability getAcCapabilities() throws LGApiException {
         if (acCapability == null) {
             acCapability = lgApiClientService.getDeviceCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
         }
-        return acCapability;
+        return Objects.requireNonNull(acCapability, "Unexpected error. Return ac-capability shouldn't ever be null");
     }
 
     @Nullable
@@ -298,16 +289,16 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     monitorV1Began = true;
                 }
             } catch (LGDeviceV1OfflineException e) {
-                forceStopDeviceV1Monitor(deviceId, monitorWorkId);
+                forceStopDeviceV1Monitor(deviceId);
                 ACSnapShot shot = new ACSnapShotV1();
                 shot.setOnline(false);
                 return shot;
             } catch (Exception e) {
-                forceStopDeviceV1Monitor(deviceId, monitorWorkId);
+                forceStopDeviceV1Monitor(deviceId);
                 throw new LGApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
             }
             int retries = 10;
-            ACSnapShot shot = null;
+            ACSnapShot shot;
             while (retries > 0) {
                 // try to get monitoring data result 3 times.
                 try {
@@ -318,18 +309,18 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     Thread.sleep(500);
                     retries--;
                 } catch (LGDeviceV1MonitorExpiredException e) {
-                    forceStopDeviceV1Monitor(deviceId, monitorWorkId);
+                    forceStopDeviceV1Monitor(deviceId);
                     logger.info("Monitor for device {} was expired. Forcing stop and start to next cycle.", deviceId);
                     return null;
                 } catch (Exception e) {
                     // If it can't get monitor handler, then stop monitor and restart the process again in new
                     // interaction
                     // Force restart monitoring because of the errors returned (just in case)
-                    forceStopDeviceV1Monitor(deviceId, monitorWorkId);
+                    forceStopDeviceV1Monitor(deviceId);
                     throw new LGApiException("Error getting monitor data for the device:" + deviceId, e);
                 }
             }
-            forceStopDeviceV1Monitor(deviceId, monitorWorkId);
+            forceStopDeviceV1Monitor(deviceId);
             throw new LGApiException("Exhausted trying to get monitor data for the device:" + deviceId);
         }
     }
@@ -420,14 +411,13 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // TODO - implement refresh channels
+            updateThingStateFromLG();
         } else {
             AsyncCommandParams params = new AsyncCommandParams(channelUID.getId(), command);
             try {
                 // Ensure commands are send in a pipe per device.
                 commandBlockQueue.add(params);
             } catch (IllegalStateException ex) {
-                // oubound
                 logger.error(
                         "Device's command queue reached the size limit. Probably the device is busy ou stuck. Ignoring command.");
                 updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -437,7 +427,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
         }
     }
 
-    private Runnable queuedCommandExecutor = new Runnable() {
+    private final Runnable queuedCommandExecutor = new Runnable() {
         @Override
         public void run() {
             while (true) {
@@ -451,7 +441,6 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                 Command command = params.command;
 
                 try {
-                    ACCapability acCap = getAcCapabilities();
                     switch (params.channelUID) {
                         case CHANNEL_MOD_OP_ID: {
                             if (params.command instanceof DecimalType) {
@@ -481,7 +470,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                             break;
                         }
                         case CHANNEL_TARGET_TEMP_ID: {
-                            double targetTemp = 0.0;
+                            double targetTemp;
                             if (command instanceof DecimalType) {
                                 targetTemp = ((DecimalType) command).doubleValue();
                             } else if (command instanceof QuantityType) {
@@ -495,13 +484,13 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                             break;
                         }
                         default: {
-                            logger.error("Command {} to the channel {} not supported. Ignored.", command.toString(),
+                            logger.error("Command {} to the channel {} not supported. Ignored.", command,
                                     params.channelUID);
                         }
                     }
                 } catch (LGThinqException e) {
                     logger.error("Error executing Command {} to the channel {}. Thing goes offline until retry",
-                            command, params.channelUID);
+                            command, params.channelUID, e);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             }

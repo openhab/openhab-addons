@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.lgthinq.internal.discovery;
 
-import static org.openhab.binding.lgthinq.internal.LGAirConditionerHandler.THING_TYPE_AIR_CONDITIONER;
+import static org.openhab.binding.lgthinq.handler.LGAirConditionerHandler.THING_TYPE_AIR_CONDITIONER;
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lgthinq.errors.LGThinqException;
+import org.openhab.binding.lgthinq.handler.LGAirConditionerHandler;
 import org.openhab.binding.lgthinq.handler.LGBridgeHandler;
-import org.openhab.binding.lgthinq.internal.LGAirConditionerHandler;
 import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
 import org.openhab.binding.lgthinq.lgapi.LGApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgapi.LGApiV2ClientServiceImpl;
@@ -42,12 +45,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGThinqDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(LGThinqDiscoveryService.class);
     private @Nullable LGBridgeHandler bridgeHandler;
     private @Nullable ThingUID bridgeHandlerUID;
-    private LGApiClientService lgApiV1ClientService, lgApiV2ClientService;
+    private final LGApiClientService lgApiV1ClientService, lgApiV2ClientService;
 
     public LGThinqDiscoveryService() {
         super(LGAirConditionerHandler.SUPPORTED_THING_TYPES, SEARCH_TIME);
@@ -85,70 +89,68 @@ public class LGThinqDiscoveryService extends AbstractDiscoveryService implements
     }
 
     public void removeLgDeviceDiscovery(LGDevice device) {
-        ThingUID thingUID = getThingUID(device);
-
-        if (thingUID != null) {
+        try {
+            ThingUID thingUID = getThingUID(device);
             thingRemoved(thingUID);
+        } catch (LGThinqException e) {
+            logger.error("Error getting Thing UID");
         }
     }
 
     public void addLgDeviceDiscovery(String bridgeName, LGDevice device) {
-        ThingUID thingUID = getThingUID(device);
-        ThingTypeUID thingTypeUID = getThingTypeUID(device);
-
         String modelId = device.getModelName();
-        if (thingUID != null && thingTypeUID != null) {
-            Map<String, Object> properties = new HashMap<>();
-            properties.put(DEVICE_ID, device.getDeviceId());
-            properties.put(DEVICE_ALIAS, device.getAlias());
-            properties.put(MODEL_URL_INFO, device.getModelJsonUri());
-            properties.put(PLATFORM_TYPE, device.getPlatformType());
-            try {
-                // registry the capabilities of the thing
-                if (PLATFORM_TYPE_V1.equals(device.getPlatformType())) {
-                    lgApiV1ClientService.getDeviceCapability(bridgeName, device.getModelJsonUri(), true);
-                } else {
-                    lgApiV2ClientService.getDeviceCapability(bridgeName, device.getModelJsonUri(), true);
-                }
-
-            } catch (Exception ex) {
-                logger.error(
-                        "Error trying to get device capabilities in discovery service. Fallback to the defaults values",
-                        ex);
-            }
-            if (modelId != null) {
-                properties.put(Thing.PROPERTY_MODEL_ID, modelId);
-            }
-
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                    .withProperties(properties).withBridge(bridgeHandlerUID).withRepresentationProperty(DEVICE_ID)
-                    .withLabel(device.getAlias()).build();
-
-            thingDiscovered(discoveryResult);
-        } else {
+        ThingUID thingUID;
+        ThingTypeUID thingTypeUID;
+        try {
+            thingUID = getThingUID(device);
+            thingTypeUID = getThingTypeUID(device);
+        } catch (LGThinqException e) {
             logger.debug("Discovered unsupported LG device of type '{}' and model '{}' with id {}",
                     device.getDeviceType(), modelId, device.getDeviceId());
+            return;
         }
-    }
 
-    private @Nullable ThingUID getThingUID(LGDevice device) {
-        ThingUID localBridgeUID = bridgeHandlerUID;
-        if (localBridgeUID != null) {
-            ThingTypeUID thingTypeUID = getThingTypeUID(device);
-
-            if (thingTypeUID != null && getSupportedThingTypes().contains(thingTypeUID)) {
-                return new ThingUID(thingTypeUID, localBridgeUID, device.getDeviceId());
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(DEVICE_ID, device.getDeviceId());
+        properties.put(DEVICE_ALIAS, device.getAlias());
+        properties.put(MODEL_URL_INFO, device.getModelJsonUri());
+        properties.put(PLATFORM_TYPE, device.getPlatformType());
+        try {
+            // registry the capabilities of the thing
+            if (PLATFORM_TYPE_V1.equals(device.getPlatformType())) {
+                lgApiV1ClientService.getDeviceCapability(bridgeName, device.getModelJsonUri(), true);
+            } else {
+                lgApiV2ClientService.getDeviceCapability(bridgeName, device.getModelJsonUri(), true);
             }
+
+        } catch (Exception ex) {
+            logger.error(
+                    "Error trying to get device capabilities in discovery service. Fallback to the defaults values",
+                    ex);
         }
-        return null;
+        properties.put(Thing.PROPERTY_MODEL_ID, modelId);
+
+        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                .withProperties(properties).withBridge(bridgeHandlerUID).withRepresentationProperty(DEVICE_ID)
+                .withLabel(device.getAlias()).build();
+
+        thingDiscovered(discoveryResult);
     }
 
-    private ThingTypeUID getThingTypeUID(LGDevice device) {
+    private ThingUID getThingUID(LGDevice device) throws LGThinqException {
+        ThingTypeUID thingTypeUID = getThingTypeUID(device);
+        return new ThingUID(thingTypeUID,
+                Objects.requireNonNull(bridgeHandlerUID, "bridgeHandleUid should never be null here"),
+                device.getDeviceId());
+    }
+
+    private ThingTypeUID getThingTypeUID(LGDevice device) throws LGThinqException {
+        // Short switch, but is here because it is going to be increase after new LG Devices were added
         switch (device.getDeviceType()) {
             case AIR_CONDITIONER:
                 return THING_TYPE_AIR_CONDITIONER;
             default:
-                return null;
+                throw new LGThinqException(String.format("device type [%s] not supported", device.getDeviceType()));
         }
     }
 }

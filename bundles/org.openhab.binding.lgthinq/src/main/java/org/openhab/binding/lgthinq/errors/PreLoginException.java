@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgthinq.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link PreLoginException}
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class PreLoginException extends LGThinqException {
     public PreLoginException(String message, Throwable cause) {
         super(message, cause);
