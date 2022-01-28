@@ -15,7 +15,12 @@ package org.openhab.voice.googlestt.internal;
 import static org.openhab.voice.googlestt.internal.GoogleSTTConstants.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Dictionary;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,11 +30,21 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.auth.client.oauth2.*;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
+import org.openhab.core.auth.client.oauth2.OAuthClientService;
+import org.openhab.core.auth.client.oauth2.OAuthException;
+import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.voice.*;
+import org.openhab.core.voice.STTListener;
+import org.openhab.core.voice.STTService;
+import org.openhab.core.voice.STTServiceHandle;
+import org.openhab.core.voice.SpeechRecognitionErrorEvent;
+import org.openhab.core.voice.SpeechRecognitionEvent;
+import org.openhab.core.voice.SpeechStartEvent;
+import org.openhab.core.voice.SpeechStopEvent;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
@@ -45,7 +60,14 @@ import com.google.api.gax.rpc.StreamController;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.AccessToken;
 import com.google.auth.oauth2.OAuth2Credentials;
-import com.google.cloud.speech.v1.*;
+import com.google.cloud.speech.v1.RecognitionConfig;
+import com.google.cloud.speech.v1.SpeechClient;
+import com.google.cloud.speech.v1.SpeechRecognitionAlternative;
+import com.google.cloud.speech.v1.SpeechSettings;
+import com.google.cloud.speech.v1.StreamingRecognitionConfig;
+import com.google.cloud.speech.v1.StreamingRecognitionResult;
+import com.google.cloud.speech.v1.StreamingRecognizeRequest;
+import com.google.cloud.speech.v1.StreamingRecognizeResponse;
 import com.google.protobuf.ByteString;
 
 import io.grpc.LoadBalancerRegistry;
@@ -58,8 +80,8 @@ import io.grpc.internal.PickFirstLoadBalancerProvider;
  */
 @NonNullByDefault
 @Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
-@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME, description_uri = SERVICE_CATEGORY + ":"
-        + SERVICE_ID)
+@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
+        + " Speech-to-Text", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class GoogleSTTService implements STTService {
 
     private static final String GCP_AUTH_URI = "https://accounts.google.com/o/oauth2/auth";
@@ -318,11 +340,13 @@ public class GoogleSTTService implements STTService {
             this.completeListener = completeListener;
         }
 
+        @Override
         public void onStart(@Nullable StreamController controller) {
             sttListener.sttEventReceived(new SpeechStartEvent());
             lastInputTime = System.currentTimeMillis();
         }
 
+        @Override
         public void onResponse(StreamingRecognizeResponse response) {
             lastInputTime = System.currentTimeMillis();
             List<StreamingRecognitionResult> results = response.getResultsList();
@@ -354,9 +378,10 @@ public class GoogleSTTService implements STTService {
             });
         }
 
+        @Override
         public void onComplete() {
             sttListener.sttEventReceived(new SpeechStopEvent());
-            float averageConfidence = confidenceSum / (float) responseCount;
+            float averageConfidence = confidenceSum / responseCount;
             String transcript = transcriptBuilder.toString();
             if (!transcript.isBlank()) {
                 sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
@@ -369,6 +394,7 @@ public class GoogleSTTService implements STTService {
             }
         }
 
+        @Override
         public void onError(@Nullable Throwable t) {
             logger.warn("Recognition error: ", t);
             completeListener.accept(t);
