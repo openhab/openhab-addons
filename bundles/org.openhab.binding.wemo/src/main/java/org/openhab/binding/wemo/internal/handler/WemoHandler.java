@@ -15,30 +15,17 @@ package org.openhab.binding.wemo.internal.handler;
 import static org.openhab.binding.wemo.internal.WemoBindingConstants.*;
 import static org.openhab.binding.wemo.internal.WemoUtil.*;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.upnp.UpnpIOService;
-import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -46,7 +33,6 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,18 +47,12 @@ import org.slf4j.LoggerFactory;
  * @author Mihir Patil - Added standby switch
  */
 @NonNullByDefault
-public class WemoHandler extends WemoBaseThingHandler {
+public abstract class WemoHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
-            .collect(Collectors.toSet());
-
     private final Object upnpLock = new Object();
     private final Object jobLock = new Object();
-
-    private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
 
     private Map<String, Boolean> subscriptionState = new HashMap<>();
 
@@ -199,137 +179,6 @@ public class WemoHandler extends WemoBaseThingHandler {
             logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
                     succeeded ? "succeeded" : "failed");
             subscriptionState.put(service, succeeded);
-        }
-    }
-
-    @Override
-    public void onValueReceived(@Nullable String variable, @Nullable String value, @Nullable String service) {
-        logger.debug("Received pair '{}':'{}' (service '{}') for thing '{}'",
-                new Object[] { variable, value, service, this.getThing().getUID() });
-
-        updateStatus(ThingStatus.ONLINE);
-
-        if (!"BinaryState".equals(variable) && !"InsightParams".equals(variable)) {
-            return;
-        }
-
-        String oldValue = this.stateMap.get(variable);
-        if (variable != null && value != null) {
-            this.stateMap.put(variable, value);
-        }
-
-        if (value != null && value.length() > 1) {
-            String insightParams = stateMap.get(variable);
-
-            if (insightParams != null) {
-                String[] splitInsightParams = insightParams.split("\\|");
-
-                if (splitInsightParams[0] != null) {
-                    OnOffType binaryState = "0".equals(splitInsightParams[0]) ? OnOffType.OFF : OnOffType.ON;
-                    logger.trace("New InsightParam binaryState '{}' for device '{}' received", binaryState,
-                            getThing().getUID());
-                    updateState(CHANNEL_STATE, binaryState);
-                }
-
-                long lastChangedAt = 0;
-                try {
-                    lastChangedAt = Long.parseLong(splitInsightParams[1]) * 1000; // convert s to ms
-                } catch (NumberFormatException e) {
-                    logger.error("Unable to parse lastChangedAt value '{}' for device '{}'; expected long",
-                            splitInsightParams[1], getThing().getUID());
-                }
-                ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastChangedAt),
-                        TimeZone.getDefault().toZoneId());
-
-                State lastChangedAtState = new DateTimeType(zoned);
-                if (lastChangedAt != 0) {
-                    logger.trace("New InsightParam lastChangedAt '{}' for device '{}' received", lastChangedAtState,
-                            getThing().getUID());
-                    updateState(CHANNEL_LASTCHANGEDAT, lastChangedAtState);
-                }
-
-                State lastOnFor = DecimalType.valueOf(splitInsightParams[2]);
-                logger.trace("New InsightParam lastOnFor '{}' for device '{}' received", lastOnFor,
-                        getThing().getUID());
-                updateState(CHANNEL_LASTONFOR, lastOnFor);
-
-                State onToday = DecimalType.valueOf(splitInsightParams[3]);
-                logger.trace("New InsightParam onToday '{}' for device '{}' received", onToday, getThing().getUID());
-                updateState(CHANNEL_ONTODAY, onToday);
-
-                State onTotal = DecimalType.valueOf(splitInsightParams[4]);
-                logger.trace("New InsightParam onTotal '{}' for device '{}' received", onTotal, getThing().getUID());
-                updateState(CHANNEL_ONTOTAL, onTotal);
-
-                State timespan = DecimalType.valueOf(splitInsightParams[5]);
-                logger.trace("New InsightParam timespan '{}' for device '{}' received", timespan, getThing().getUID());
-                updateState(CHANNEL_TIMESPAN, timespan);
-
-                State averagePower = new QuantityType<>(DecimalType.valueOf(splitInsightParams[6]), Units.WATT); // natively
-                                                                                                                 // given
-                                                                                                                 // in W
-                logger.trace("New InsightParam averagePower '{}' for device '{}' received", averagePower,
-                        getThing().getUID());
-                updateState(CHANNEL_AVERAGEPOWER, averagePower);
-
-                BigDecimal currentMW = new BigDecimal(splitInsightParams[7]);
-                State currentPower = new QuantityType<>(currentMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP),
-                        Units.WATT); // recalculate
-                // mW to W
-                logger.trace("New InsightParam currentPower '{}' for device '{}' received", currentPower,
-                        getThing().getUID());
-                updateState(CHANNEL_CURRENTPOWER, currentPower);
-
-                BigDecimal energyTodayMWMin = new BigDecimal(splitInsightParams[8]);
-                // recalculate mW-mins to Wh
-                State energyToday = new QuantityType<>(
-                        energyTodayMWMin.divide(new BigDecimal(60000), 0, RoundingMode.HALF_UP), Units.WATT_HOUR);
-                logger.trace("New InsightParam energyToday '{}' for device '{}' received", energyToday,
-                        getThing().getUID());
-                updateState(CHANNEL_ENERGYTODAY, energyToday);
-
-                BigDecimal energyTotalMWMin = new BigDecimal(splitInsightParams[9]);
-                // recalculate mW-mins to Wh
-                State energyTotal = new QuantityType<>(
-                        energyTotalMWMin.divide(new BigDecimal(60000), 0, RoundingMode.HALF_UP), Units.WATT_HOUR);
-                logger.trace("New InsightParam energyTotal '{}' for device '{}' received", energyTotal,
-                        getThing().getUID());
-                updateState(CHANNEL_ENERGYTOTAL, energyTotal);
-
-                if (splitInsightParams.length > 10 && splitInsightParams[10] != null) {
-                    BigDecimal standByLimitMW = new BigDecimal(splitInsightParams[10]);
-                    State standByLimit = new QuantityType<>(
-                            standByLimitMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP), Units.WATT); // recalculate
-                    // mW to W
-                    logger.trace("New InsightParam standByLimit '{}' for device '{}' received", standByLimit,
-                            getThing().getUID());
-                    updateState(CHANNEL_STANDBYLIMIT, standByLimit);
-
-                    if (currentMW.divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue() > standByLimitMW
-                            .divide(new BigDecimal(1000), 0, RoundingMode.HALF_UP).intValue()) {
-                        updateState(CHANNEL_ONSTANDBY, OnOffType.OFF);
-                    } else {
-                        updateState(CHANNEL_ONSTANDBY, OnOffType.ON);
-                    }
-                }
-            }
-        } else if (value != null && value.length() == 1) {
-            String binaryState = stateMap.get("BinaryState");
-            if (binaryState != null) {
-                if (oldValue == null || !oldValue.equals(binaryState)) {
-                    State state = "0".equals(binaryState) ? OnOffType.OFF : OnOffType.ON;
-                    logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
-                    if ("motion".equals(getThing().getThingTypeUID().getId())) {
-                        updateState(CHANNEL_MOTIONDETECTION, state);
-                        if (OnOffType.ON.equals(state)) {
-                            State lastMotionDetected = new DateTimeType();
-                            updateState(CHANNEL_LASTMOTIONDETECTED, lastMotionDetected);
-                        }
-                    } else {
-                        updateState(CHANNEL_STATE, state);
-                    }
-                }
-            }
         }
     }
 
