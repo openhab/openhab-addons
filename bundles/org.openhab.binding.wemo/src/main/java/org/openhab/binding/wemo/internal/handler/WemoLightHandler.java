@@ -83,9 +83,9 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                localService.registerParticipant(this);
+            UpnpIOService service = this.service;
+            if (service != null) {
+                service.registerParticipant(this);
             }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, DEFAULT_REFRESH_INITIAL_DELAY,
@@ -120,6 +120,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
         }
         this.pollingJob = null;
         removeSubscription(BRIDGEEVENT);
+        UpnpIOService service = this.service;
+        if (service != null) {
+            service.unregisterParticipant(this);
+        }
     }
 
     private synchronized @Nullable WemoBridgeHandler getWemoBridgeHandler() {

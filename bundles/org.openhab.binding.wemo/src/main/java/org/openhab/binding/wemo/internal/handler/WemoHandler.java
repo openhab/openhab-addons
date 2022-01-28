@@ -64,9 +64,9 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService localService = service;
-            if (localService != null) {
-                localService.registerParticipant(this);
+            UpnpIOService service = this.service;
+            if (service != null) {
+                service.registerParticipant(this);
             }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
@@ -91,6 +91,10 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
         removeSubscription(BASICEVENT);
         if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
             removeSubscription(INSIGHTEVENT);
+        }
+        UpnpIOService service = this.service;
+        if (service != null) {
+            service.unregisterParticipant(this);
         }
     }
 

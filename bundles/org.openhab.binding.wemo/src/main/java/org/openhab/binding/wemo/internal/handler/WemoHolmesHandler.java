@@ -86,9 +86,9 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoHolmesHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService localService = service;
-            if (localService != null) {
-                localService.registerParticipant(this);
+            UpnpIOService service = this.service;
+            if (service != null) {
+                service.registerParticipant(this);
             }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
@@ -111,6 +111,10 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
         }
         this.pollingJob = null;
         removeSubscription(BASICEVENT);
+        UpnpIOService service = this.service;
+        if (service != null) {
+            service.unregisterParticipant(this);
+        }
     }
 
     private void poll() {

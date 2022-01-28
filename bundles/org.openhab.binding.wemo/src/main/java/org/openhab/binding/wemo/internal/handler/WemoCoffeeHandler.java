@@ -81,9 +81,9 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoCoffeeHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService localService = service;
-            if (localService != null) {
-                localService.registerParticipant(this);
+            UpnpIOService service = this.service;
+            if (service != null) {
+                service.registerParticipant(this);
             }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
@@ -98,13 +98,17 @@ public class WemoCoffeeHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WeMoCoffeeHandler disposed.");
+        logger.debug("WemoCoffeeHandler disposed.");
         ScheduledFuture<?> job = this.pollingJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }
         this.pollingJob = null;
         removeSubscription(DEVICEEVENT);
+        UpnpIOService service = this.service;
+        if (service != null) {
+            service.unregisterParticipant(this);
+        }
     }
 
     private void poll() {

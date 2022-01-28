@@ -114,7 +114,6 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
                 if (service.isRegistered(this)) {
                     logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
                     service.removeSubscription(this, subscription);
-                    service.unregisterParticipant(this);
                 }
             }
         }
