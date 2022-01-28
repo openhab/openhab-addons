@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,17 +35,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jamie Townsend - Initial contribution
  */
+@NonNullByDefault
 public class SolarmaxConnectorFindCommands {
 
-    private static final Logger logger = LoggerFactory.getLogger(SolarMaxConnector.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SolarMaxConnector.class);
 
-    private static final String host = "192.168.1.151";
-    private static final int port = 12345;
-    private static final int connectionTimeout = 1000; // ms
+    private static final String HOST = "192.168.1.151";
+    private static final int PORT = 12345;
+    private static final int CONNECTION_TIMEOUT = 1000; // ms
 
     @Test
     public void testForCommands() throws UnknownHostException, SolarMaxException {
-
         List<String> validCommands = new ArrayList<>();
         List<String> commandsToCheck = new ArrayList<String>();
         List<String> failedCommands = new ArrayList<>();
@@ -69,7 +71,7 @@ public class SolarmaxConnectorFindCommands {
 
         while (!commandsToCheck.isEmpty()) {
             if (commandsToCheck.size() % 100 == 0) {
-                System.out.println(commandsToCheck.size() + " left to check");
+                LOGGER.debug(commandsToCheck.size() + " left to check");
             }
             try {
                 if (checkIsValidCommand(commandsToCheck.get(0))) {
@@ -79,8 +81,8 @@ public class SolarmaxConnectorFindCommands {
                     commandsToCheck.remove(0);
                 }
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                System.out.println("Sleeping after Exception: " + e.getLocalizedMessage());
+                LOGGER.debug("Sleeping after Exception: " + e.getLocalizedMessage());
+
                 if (lastFailedCommand.equals(commandsToCheck.get(0))) {
                     failedCommandRetry = failedCommandRetry + 1;
                     if (failedCommandRetry >= 5) {
@@ -103,36 +105,32 @@ public class SolarmaxConnectorFindCommands {
             } catch (InterruptedException e1) {
                 // do nothing
             }
-
         }
 
-        System.out.println();
-        System.out.println("Valid commands:");
+        LOGGER.info("\nValid commands:");
 
         for (String validCommand : validCommands) {
-            System.out.println(validCommand);
+            LOGGER.info(validCommand);
         }
 
-        System.out.println();
-        System.out.println("Failed commands:");
+        LOGGER.info("\nFailed commands:");
 
         for (String failedCommand : failedCommands) {
-            System.out.println(failedCommand + "\", \"");
+            LOGGER.info(failedCommand + "\", \"");
         }
     }
 
     private boolean checkIsValidCommand(String command)
             throws InterruptedException, UnknownHostException, SolarMaxException {
-
         List<String> commands = new ArrayList<String>();
         commands.add(command);
 
-        Map<String, String> responseMap = null;
+        Map<String, @Nullable String> responseMap = null;
 
-        responseMap = getValuesFromSolarMax(host, port, commands);
+        responseMap = getValuesFromSolarMax(HOST, PORT, commands);
 
         if (responseMap.containsKey(command)) {
-            System.out.println("Request: " + command + " Valid Response: " + responseMap.get(command));
+            LOGGER.debug("Request: " + command + " Valid Response: " + responseMap.get(command));
             return true;
         }
         return false;
@@ -141,12 +139,11 @@ public class SolarmaxConnectorFindCommands {
     /**
      * based on SolarMaxConnector.getValuesFromSolarMax
      */
-    private static Map<String, String> getValuesFromSolarMax(final String host, int port,
+    private static Map<String, @Nullable String> getValuesFromSolarMax(final String host, int port,
             final List<String> commandList) throws SolarMaxException {
-
         Socket socket;
 
-        Map<String, String> returnMap = new HashMap<>();
+        Map<String, @Nullable String> returnMap = new HashMap<>();
 
         // SolarMax can't answer correclty if too many commands are send in a single request, so limit it to 16 at a
         // time
@@ -156,7 +153,7 @@ public class SolarmaxConnectorFindCommands {
             requestsRequired = requestsRequired + 1;
         }
         for (int requestNumber = 0; requestNumber < requestsRequired; requestNumber++) {
-            logger.debug("    Requesting data from {}:{} with timeout of {}ms", host, port, connectionTimeout);
+            LOGGER.debug("    Requesting data from {}:{} with timeout of {}ms", host, port, CONNECTION_TIMEOUT);
 
             int firstCommandNumber = requestNumber * maxConcurrentCommands;
             int lastCommandNumber = (requestNumber + 1) * maxConcurrentCommands;
@@ -182,8 +179,8 @@ public class SolarmaxConnectorFindCommands {
         return returnMap;
     }
 
-    private static Map<String, String> getValuesFromSolarMax(final Socket socket, final List<String> commandList)
-            throws SolarMaxException {
+    private static Map<String, @Nullable String> getValuesFromSolarMax(final Socket socket,
+            final List<String> commandList) throws SolarMaxException {
         OutputStream outputStream = null;
         InputStream inputStream = null;
         try {
@@ -191,7 +188,6 @@ public class SolarmaxConnectorFindCommands {
             inputStream = socket.getInputStream();
 
             return getValuesFromSolarMax(outputStream, inputStream, commandList);
-
         } catch (final SolarMaxException | IOException e) {
             throw new SolarMaxException("Error getting input/output streams from socket", e);
         } finally {
@@ -237,17 +233,16 @@ public class SolarmaxConnectorFindCommands {
 
     private static Socket getSocketConnection(final String host, int port)
             throws SolarMaxConnectionException, UnknownHostException {
-
-        port = (port == 0) ? SolarmaxConnectorFindCommands.port : port;
+        port = (port == 0) ? SolarmaxConnectorFindCommands.PORT : port;
 
         Socket socket;
 
         try {
             socket = new Socket();
-            logger.debug("    Connecting to " + host + ":" + port + " with a timeout of " + connectionTimeout);
-            socket.connect(new InetSocketAddress(host, port), connectionTimeout);
-            logger.debug("    Connected.");
-            socket.setSoTimeout(connectionTimeout);
+            LOGGER.debug("    Connecting to " + host + ":" + port + " with a timeout of " + CONNECTION_TIMEOUT);
+            socket.connect(new InetSocketAddress(host, port), CONNECTION_TIMEOUT);
+            LOGGER.debug("    Connected.");
+            socket.setSoTimeout(CONNECTION_TIMEOUT);
         } catch (final UnknownHostException e) {
             throw e;
         } catch (final IOException e) {
@@ -257,15 +252,13 @@ public class SolarmaxConnectorFindCommands {
         return socket;
     }
 
-    private static Map<String, String> getValuesFromSolarMax(final OutputStream outputStream,
+    private static Map<String, @Nullable String> getValuesFromSolarMax(final OutputStream outputStream,
             final InputStream inputStream, final List<String> commandList) throws SolarMaxException {
-
-        Map<String, String> returnedValues;
+        Map<String, @Nullable String> returnedValues;
         String commandString = getCommandString(commandList);
         String request = SolarMaxConnector.contructRequest(commandString);
         try {
-
-            logger.trace("    ==>: {}", request);
+            LOGGER.trace("    ==>: {}", request);
 
             outputStream.write(request.getBytes());
 
@@ -292,7 +285,7 @@ public class SolarmaxConnectorFindCommands {
                 }
             }
 
-            logger.trace("    <==: {}", response);
+            LOGGER.trace("    <==: {}", response);
 
             // if (!validateResponse(response)) {
             // throw new SolarMaxException("Invalid response received: " + response);
@@ -301,9 +294,8 @@ public class SolarmaxConnectorFindCommands {
             returnedValues = extractValuesFromResponse(response);
 
             return returnedValues;
-
         } catch (IOException e) {
-            logger.debug("Error communicating via input/output streams: {} ", e.getMessage());
+            LOGGER.debug("Error communicating via input/output streams: {} ", e.getMessage());
             throw new SolarMaxException(e);
         }
     }
@@ -311,7 +303,7 @@ public class SolarmaxConnectorFindCommands {
     static String getCommandString(List<String> commandList) {
         String commandString = "";
         for (String command : commandList) {
-            if (!commandString.equals("")) {
+            if (!commandString.isEmpty()) {
                 commandString = commandString + ";";
             }
             commandString = commandString + command;
@@ -324,13 +316,12 @@ public class SolarmaxConnectorFindCommands {
      *            "{01;FB;6D|64:KDY=82;KMT=8F;KYR=23F7;KT0=72F1;TNF=1386;TKK=28;PAC=1F70;PRL=28;IL1=236;UL1=8F9;SYS=4E28,0|19E5}"
      * @return a map of keys and values
      */
-    static Map<String, String> extractValuesFromResponse(String response) {
-
-        final Map<String, String> responseMap = new HashMap<>();
+    static Map<String, @Nullable String> extractValuesFromResponse(String response) {
+        final Map<String, @Nullable String> responseMap = new HashMap<>();
 
         // in case there is no response
         if (response.indexOf("|") == -1) {
-            logger.warn("Response doesn't contain data. Response: {}", response);
+            LOGGER.warn("Response doesn't contain data. Response: {}", response);
             return responseMap;
         }
 

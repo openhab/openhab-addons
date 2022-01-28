@@ -16,6 +16,9 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.DefaultLocation;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -26,11 +29,15 @@ import org.openhab.core.types.State;
  *
  * @author Jamie Townsend - Initial contribution
  */
+@NonNullByDefault({ DefaultLocation.PARAMETER, DefaultLocation.FIELD, DefaultLocation.TYPE_BOUND,
+        DefaultLocation.TYPE_ARGUMENT })
 public class SolarMaxData {
 
-    private ZonedDateTime dataDateTime;
+    private ZonedDateTime dataDateTime = ZonedDateTime.now();
+
     private boolean communicationSuccessful;
-    private final Map<SolarMaxCommandKey, String> data = new HashMap<>();
+
+    private final Map<SolarMaxCommandKey, @Nullable String> data = new HashMap<>();
 
     public State getDataDateTime() {
         return new DateTimeType(dataDateTime);
@@ -199,9 +206,11 @@ public class SolarMaxData {
         return getIntegerValueFrom(SolarMaxCommandKey.heatSinkTemperature);
     }
 
+    @Nullable
     private DecimalType getDecimalValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
+
             if (valueString != null) {
                 int valueInt = Integer.parseInt(valueString, 16);
                 return new DecimalType((float) valueInt * multiplyByFactor);
@@ -211,9 +220,11 @@ public class SolarMaxData {
         return null;
     }
 
+    @Nullable
     private DecimalType getIntegerValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
+
             if (valueString != null) {
                 int valueInt = Integer.parseInt(valueString, 16);
                 return new DecimalType((int) (valueInt * multiplyByFactor));
@@ -223,6 +234,7 @@ public class SolarMaxData {
         return null;
     }
 
+    @Nullable
     private DecimalType getIntegerValueFrom(SolarMaxCommandKey solarMaxCommandKey) {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
@@ -235,7 +247,7 @@ public class SolarMaxData {
         return null;
     }
 
-    protected void setData(Map<SolarMaxCommandKey, String> data) {
+    protected void setData(Map<SolarMaxCommandKey, @Nullable String> data) {
         this.data.putAll(data);
     }
 }

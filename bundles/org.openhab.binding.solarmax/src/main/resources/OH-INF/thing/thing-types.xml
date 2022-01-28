@@ -82,22 +82,22 @@
 
 	<channel-type id="acPhase1Current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Ac Phase 1 Current</label>
-		<description>Ac Phase 1 Current in Amps</description>
+		<label>AC Phase 1 Current</label>
+		<description>AC Phase 1 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase2Current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Ac Phase 2 Current</label>
-		<description>Ac Phase 2 Current in Amps</description>
+		<label>AC Phase 2 Current</label>
+		<description>AC Phase 2 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase3Current">
 		<item-type>Number:ElectricCurrent</item-type>
-		<label>Ac Phase 3 Current</label>
-		<description>Ac Phase 3 Current in Amps</description>
+		<label>AC Phase 3 Current</label>
+		<description>AC Phase 3 Current in Amps</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -166,29 +166,29 @@
 
 	<channel-type id="acFrequency">
 		<item-type>Number:Frequency</item-type>
-		<label>Ac Frequency</label>
+		<label>AC Frequency</label>
 		<description>AcFrequency in Hz</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase1Voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Ac Phase1 Voltage</label>
-		<description>Ac Phase1 Voltage in V</description>
+		<label>AC Phase1 Voltage</label>
+		<description>AC Phase1 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase2Voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Ac Phase2 Voltage</label>
-		<description>Ac Phase2 Voltage in V</description>
+		<label>AC Phase2 Voltage</label>
+		<description>AC Phase2 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="acPhase3Voltage">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Ac Phase3 Voltage</label>
-		<description>Ac Phase3 Voltage in V</description>
+		<label>AC Phase3 Voltage</label>
+		<description>AC Phase3 Voltage in V</description>
 		<state readOnly="true"></state>
 	</channel-type>
 

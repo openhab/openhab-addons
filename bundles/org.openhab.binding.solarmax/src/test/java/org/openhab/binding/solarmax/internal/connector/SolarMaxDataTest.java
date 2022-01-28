@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -35,7 +36,6 @@ public class SolarMaxDataTest {
 
     @Test
     public void dataDateTimeGetterSetterTest() throws Exception {
-
         // dataDateTime shouldn't be a problem, but check it anyway
         ZonedDateTime dateTimeOriginal = ZonedDateTime.now();
         ZonedDateTime dateTimeUpdated = dateTimeOriginal.plusDays(2);
@@ -51,20 +51,22 @@ public class SolarMaxDataTest {
 
     @Test
     public void valueGetterSetterTest() throws Exception {
-
         String softwareVersionOriginal = "3B8B"; // 15243 in hex
         String softwareVersionUpdated = "3B8C"; // 15244 in hex
 
         SolarMaxData solarMaxData = new SolarMaxData();
 
-        Map<SolarMaxCommandKey, String> dataOrig = new HashMap<>();
+        Map<SolarMaxCommandKey, @Nullable String> dataOrig = new HashMap<>();
         dataOrig.put(SolarMaxCommandKey.softwareVersion, softwareVersionOriginal);
         solarMaxData.setData(dataOrig);
+
+        @Nullable
         DecimalType origVersion = solarMaxData.get(SolarMaxCommandKey.softwareVersion).as(DecimalType.class);
+
         assertNotNull(origVersion);
         assertEquals(Integer.parseInt(softwareVersionOriginal, 16), origVersion.intValue());
 
-        Map<SolarMaxCommandKey, String> dataUpdated = new HashMap<>();
+        Map<SolarMaxCommandKey, @Nullable String> dataUpdated = new HashMap<>();
         dataUpdated.put(SolarMaxCommandKey.softwareVersion, softwareVersionUpdated);
         solarMaxData.setData(dataUpdated);
         DecimalType updatedVersion = solarMaxData.get(SolarMaxCommandKey.softwareVersion).as(DecimalType.class);

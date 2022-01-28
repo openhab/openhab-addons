@@ -29,10 +29,4 @@ public class SolarMaxBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SOLARMAX = new ThingTypeUID(BINDING_ID, THING_TYPE_ID);
-
-    // Config - do we really need to define all the values from SolarMaxConfiguration here?? I think not
-    // ...
-
-    // Channels - do we really need to define all the values from SolarMaxChannel here?? I think not
-    // ...
 }

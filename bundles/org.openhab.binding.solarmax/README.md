@@ -24,29 +24,29 @@ Each inverter requires the following configuration parameters:
 
 ## Channels
 
-| channel                  | type     | description                                            |
-| ------------------------ | -------- | ------------------------------------------------------ |
-| lastUpdated              | DateTime | Time when data was last read from the device           |
-| softwareVersion          | Point    | Software Version installed on the SolarMax device      |
-| buildNumber              | Point    | Firmware Build Number installed on the SolarMax device |
-| startups                 | Point    | Number of times the device has started                 |
-| acPhase1Current          | Point    | Ac Phase 1 Current in Amps                             |
-| acPhase2Current          | Point    | Ac Phase 2 Current in Amps                             |
-| acPhase3Current          | Point    | Ac Phase 3 Current in Amps                             |
-| energyGeneratedToday     | Point    | Energy Generated Today in wH                           |
-| energyGeneratedTotal     | Point    | Energy Generated since recording began in wH           |
-| operatingHours           | Point    | Operating Hours since recording began in H             |
-| energyGeneratedYesterday | Point    | Energy Generated Yesterday in wH                       |
-| energyGeneratedLastMonth | Point    | Energy Generated Last Month in wH                      |
-| energyGeneratedLastYear  | Point    | Energy Generated Last Year in wH                       |
-| energyGeneratedThisMonth | Point    | Energy Generated This Month in wH                      |
-| energyGeneratedThisYear  | Point    | Energy Generated This Year in wH                       |
-| currentPowerGenerated    | Point    | Power currently being generated in w                   |
-| acFrequency              | Point    | AcFrequency in Hz                                      |
-| acPhase1Voltage          | Point    | Ac Phase1 Voltage in V                                 |
-| acPhase2Voltage          | Point    | Ac Phase2 Voltage in V                                 |
-| acPhase3Voltage          | Point    | Ac Phase3 Voltage in V                                 |
-| heatSinkTemperature      | Point    | Heat Sink Temperature in degrees celcius               |
+| channel                  | type                     | description                                            |
+| ------------------------ | ------------------------ | ------------------------------------------------------ |
+| lastUpdated              | DateTime                 | Time when data was last read from the device           |
+| softwareVersion          | Number                   | Software Version installed on the SolarMax device      |
+| buildNumber              | Number                   | Firmware Build Number installed on the SolarMax device |
+| startups                 | Number                   | Number of times the device has started                 |
+| acPhase1Current          | Number:ElectricCurrent   | Ac Phase 1 Current in Amps                             |
+| acPhase2Current          | Number:ElectricCurrent   | Ac Phase 2 Current in Amps                             |
+| acPhase3Current          | Number:ElectricCurrent   | Ac Phase 3 Current in Amps                             |
+| energyGeneratedToday     | Number:Energy            | Energy Generated Today in Wh                           |
+| energyGeneratedTotal     | Number:Energy            | Energy Generated since recording began in Wh           |
+| operatingHours           | Number                   | Operating Hours since recording began in h             |
+| energyGeneratedYesterday | Number:Energy            | Energy Generated Yesterday in Wh                       |
+| energyGeneratedLastMonth | Number:Energy            | Energy Generated Last Month in Wh                      |
+| energyGeneratedLastYear  | Number:Energy            | Energy Generated Last Year in Wh                       |
+| energyGeneratedThisMonth | Number:Energy            | Energy Generated This Month in Wh                      |
+| energyGeneratedThisYear  | Number:Energy            | Energy Generated This Year in Wh                       |
+| currentPowerGenerated    | Number:Power             | Power currently being generated in W                   |
+| acFrequency              | Number:Frequency         | AcFrequency in Hz                                      |
+| acPhase1Voltage          | Number:ElectricPotential | Ac Phase1 Voltage in V                                 |
+| acPhase2Voltage          | Number:ElectricPotential | Ac Phase2 Voltage in V                                 |
+| acPhase3Voltage          | Number:ElectricPotential | Ac Phase3 Voltage in V                                 |
+| heatSinkTemperature      | Number:Temperature       | Heat Sink Temperature in degrees celcius               |
 
 ### SolarMax Commands
 

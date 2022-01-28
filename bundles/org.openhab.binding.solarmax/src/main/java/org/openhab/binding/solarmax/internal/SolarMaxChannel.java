@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarmax.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarmax.internal.connector.SolarMaxCommandKey;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.solarmax.internal.connector.SolarMaxCommandKey;
  *
  * @author Jamie Townsend - Initial contribution
  */
+@NonNullByDefault
 public enum SolarMaxChannel {
 
     CHANNEL_LAST_UPDATED("lastUpdated"), //

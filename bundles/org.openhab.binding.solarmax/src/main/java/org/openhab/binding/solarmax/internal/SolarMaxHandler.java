@@ -15,6 +15,7 @@ package org.openhab.binding.solarmax.internal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarmax.internal.connector.SolarMaxCommandKey;
 import org.openhab.binding.solarmax.internal.connector.SolarMaxConnector;
@@ -37,12 +38,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jamie Townsend - Initial contribution
  */
+@NonNullByDefault
 public class SolarMaxHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SolarMaxHandler.class);
 
-    @Nullable
-    private SolarMaxConfiguration config;
+    private SolarMaxConfiguration config = getConfigAs(SolarMaxConfiguration.class);
 
     @Nullable
     private ScheduledFuture<?> pollingJob;
@@ -96,7 +97,6 @@ public class SolarMaxHandler extends BaseThingHandler {
     };
 
     private synchronized void updateValuesFromDevice() {
-
         logger.debug("Updating data from {} at {}:{} ", getThing().getUID(), this.config.host, this.config.portNumber);
         // get the data from the SolarMax device
         try {
@@ -134,7 +134,6 @@ public class SolarMaxHandler extends BaseThingHandler {
             } else
             // must be somthing to collect from the device, so...
             if (solarMaxData.has(SolarMaxCommandKey.valueOf(channelId))) {
-
                 if (channel == null) {
                     logger.error("No channel found with id: {}", channelId);
                 }

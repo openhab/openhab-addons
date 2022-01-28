@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.solarmax.internal.connector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SolarMaxCommandKey} enum defines the commands that are understood by the SolarMax device
  *
  * @author Jamie Townsend - Initial contribution
  */
+@NonNullByDefault
 public enum SolarMaxCommandKey {
-
     // for further commands, that are not implemented here, see this binding's README.md file
 
     // Valid commands which returned a non-null value during testing
@@ -56,7 +58,6 @@ public enum SolarMaxCommandKey {
     }
 
     public static SolarMaxCommandKey getKeyFromString(String commandKey) {
-
         for (SolarMaxCommandKey key : SolarMaxCommandKey.values()) {
             if (key.commandKey.equals(commandKey)) {
                 return key;
