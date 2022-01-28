@@ -32,7 +32,7 @@ import org.openhab.core.types.Command;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOParticipant {
+public abstract class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOParticipant {
 
     protected @Nullable UpnpIOService service;
     protected WemoHttpCall wemoHttpCaller;

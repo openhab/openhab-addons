@@ -129,10 +129,6 @@ public class WemoBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_THING_TYPES = Collections.singleton(THING_TYPE_MZ100);
 
-    public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION)
-                    .collect(Collectors.toSet()));
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
             .unmodifiableSet(Stream
                     .of(THING_TYPE_SOCKET, THING_TYPE_INSIGHT, THING_TYPE_LIGHTSWITCH, THING_TYPE_MOTION,
