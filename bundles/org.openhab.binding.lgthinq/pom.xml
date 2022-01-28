@@ -11,33 +11,29 @@
 
   <artifactId>org.openhab.binding.lgthinq</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: lgthinq Binding</name>
+  <name>openHAB Add-ons :: Bundles :: LG Thinq Binding</name>
   <properties>
-    <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*,!org.apache.commons.codec.*,!org.apache.commons.io.*,!sun.nio.ch.*,!com.fasterxml.jackson.*</bnd.importpackage>
+    <!-- <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*,!sun.nio.ch.*,!com.fasterxml.jackson.*</bnd.importpackage> -->
+    <!-- <bnd.importpackage>!com.fasterxml.jackson.*</bnd.importpackage> -->
+    <bnd.importpackage>!net.sf.ehcache.*,!net.spy.*</bnd.importpackage>
+    <dep.noembedding>jackson-core,jackson-annotations,jackson-databind</dep.noembedding>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.8.2</version>
-      <scope>test</scope>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>4.2.0</version>
-      <scope>test</scope>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>1.15</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore-osgi</artifactId>
-      <version>4.4.15</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -47,9 +43,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>commons-io</groupId>
-      <artifactId>commons-io</artifactId>
-      <version>2.11.0</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore-osgi</artifactId>
+      <version>4.4.10</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

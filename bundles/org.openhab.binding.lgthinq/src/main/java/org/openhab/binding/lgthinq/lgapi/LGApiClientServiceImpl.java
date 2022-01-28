@@ -18,6 +18,7 @@ import java.util.*;
 
 import javax.ws.rs.core.UriBuilder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.api.RestResult;
 import org.openhab.binding.lgthinq.api.RestUtils;
 import org.openhab.binding.lgthinq.api.TokenManager;
@@ -36,13 +37,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public abstract class LGApiClientServiceImpl implements LGApiClientService {
     private static final Logger logger = LoggerFactory.getLogger(LGApiClientServiceImpl.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     protected abstract TokenManager getTokenManager();
 
-    protected Map<String, String> getCommonHeaders(String language, String country, String accessToken,
+    static Map<String, String> getCommonHeaders(String language, String country, String accessToken,
             String userNumber) {
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
@@ -59,9 +61,9 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
         headers.put("x-thinq-app-type", V2_APP_TYPE);
         headers.put("x-thinq-app-ver", V2_APP_VER);
         headers.put("x-thinq-security-key", SECURITY_KEY);
-        if (accessToken != null && !accessToken.isBlank())
+        if (!accessToken.isBlank())
             headers.put("x-emp-token", accessToken);
-        if (userNumber != null && !userNumber.isBlank())
+        if (!userNumber.isBlank())
             headers.put("x-user-no", userNumber);
         return headers;
     }
@@ -110,6 +112,12 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
     }
 
     private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGApiException {
+        return genericHandleDeviceSettingsResult(resp, logger, objectMapper);
+    }
+
+    @SuppressWarnings("unchecked")
+    static Map<String, Object> genericHandleDeviceSettingsResult(RestResult resp, Logger logger,
+            ObjectMapper objectMapper) throws LGApiException {
         Map<String, Object> deviceSettings;
         if (resp.getStatusCode() != 200) {
             logger.error("Error calling device settings from LG Server API. The reason is:{}", resp.getJsonResponse());
@@ -117,9 +125,8 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
                     resp.getJsonResponse()));
         } else {
             try {
-                deviceSettings = objectMapper.readValue(resp.getJsonResponse(),
-                        new TypeReference<Map<String, Object>>() {
-                        });
+                deviceSettings = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+                });
                 if (!"0000".equals(deviceSettings.get("resultCode"))) {
                     throw new LGApiException(
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
@@ -130,9 +137,11 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
             }
 
         }
-        return (Map<String, Object>) deviceSettings.get("result");
+        return Objects.requireNonNull((Map<String, Object>) deviceSettings.get("result"),
+                "Unexpected json result asking for Device Settings. Node 'result' no present");
     }
 
+    @SuppressWarnings("unchecked")
     private List<LGDevice> handleListAccountDevicesResult(RestResult resp) throws LGApiException {
         Map<String, Object> devicesResult;
         List<LGDevice> devices;
@@ -142,9 +151,8 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
                     resp.getJsonResponse()));
         } else {
             try {
-                devicesResult = objectMapper.readValue(resp.getJsonResponse(),
-                        new TypeReference<Map<String, Object>>() {
-                        });
+                devicesResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
+                });
                 if (!"0000".equals(devicesResult.get("resultCode"))) {
                     throw new LGApiException(
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
@@ -152,7 +160,7 @@ public abstract class LGApiClientServiceImpl implements LGApiClientService {
                 }
                 List<Map<String, Object>> items = (List<Map<String, Object>>) ((Map<String, Object>) devicesResult
                         .get("result")).get("item");
-                devices = objectMapper.convertValue(items, new TypeReference<List<LGDevice>>() {
+                devices = objectMapper.convertValue(items, new TypeReference<>() {
                 });
             } catch (JsonProcessingException e) {
                 throw new IllegalStateException("Unknown error occurred deserializing json stream.", e);

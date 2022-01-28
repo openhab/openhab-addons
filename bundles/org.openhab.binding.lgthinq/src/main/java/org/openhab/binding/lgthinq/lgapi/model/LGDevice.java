@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lgthinq.lgapi.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,15 +24,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Nemer Daud - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NonNullByDefault
 public class LGDevice {
-    private String modelName;
+    private String modelName = "";
     @JsonProperty("deviceType")
     private int deviceTypeId;
-    private String deviceCode;
-    private String alias;
-    private String deviceId;
-    private String platformType;
-    private String modelJsonUri;
+    private String deviceCode = "";
+    private String alias = "";
+    private String deviceId = "";
+    private String platformType = "";
+    private String modelJsonUri = "";
     private boolean online;
 
     public String getModelName() {
@@ -66,7 +69,7 @@ public class LGDevice {
         return modelJsonUri;
     }
 
-    public void setmodelJsonUri(String modelJsonUri) {
+    public void setModelJsonUri(String modelJsonUri) {
         this.modelJsonUri = modelJsonUri;
     }
 

@@ -21,6 +21,7 @@ import java.util.*;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.api.RestResult;
 import org.openhab.binding.lgthinq.api.RestUtils;
@@ -43,6 +44,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
     private static final LGApiClientService instance;
     private static final Logger logger = LoggerFactory.getLogger(LGApiV1ClientServiceImpl.class);
@@ -75,7 +77,8 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
      * @throws LGApiException if some communication error occur.
      */
     @Override
-    public ACSnapShot getAcDeviceData(String bridgeName, String deviceId) throws LGApiException {
+    @Nullable
+    public ACSnapShot getAcDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGApiException {
         throw new UnsupportedOperationException("Method not supported in V1 API device.");
     }
 
@@ -95,20 +98,18 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
     }
 
     @Override
-    public boolean turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
+    public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
             throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Operation", newPowerState.commandValue());
-
             handleV1GenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGApiException("Error adjusting device power", e);
         }
-        return true;
     }
 
     @Override
-    public boolean changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGApiException {
+    public void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "OpMode", newOpMode);
 
@@ -116,11 +117,10 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
         } catch (Exception e) {
             throw new LGApiException("Error adjusting operation mode", e);
         }
-        return true;
     }
 
     @Override
-    public boolean changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGApiException {
+    public void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "WindStrength", newFanSpeed);
 
@@ -128,11 +128,10 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
         } catch (Exception e) {
             throw new LGApiException("Error adjusting fan speed", e);
         }
-        return true;
     }
 
     @Override
-    public boolean changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
+    public void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
             throws LGApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "TempCfg", newTargetTemp.commandValue());
@@ -141,7 +140,6 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
         } catch (Exception e) {
             throw new LGApiException("Error adjusting target temperature", e);
         }
-        return true;
     }
 
     /**
@@ -162,14 +160,15 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
         String jsonData = String.format(" { \"lgedmRoot\" : {" + "\"cmd\": \"Mon\"," + "\"cmdOpt\": \"Start\","
                 + "\"deviceId\": \"%s\"," + "\"workId\": \"%s\"" + "} }", deviceId, workerId);
         RestResult resp = RestUtils.postCall(builder.build().toURL().toString(), headers, jsonData);
-        return (String) handleV1GenericErrorResult(resp).get("workId");
+        return Objects.requireNonNull((String) handleV1GenericErrorResult(resp).get("workId"),
+                "Unexpected StartMonitor json result. Node 'workId' not present");
     }
 
     @NonNull
     private Map<String, Object> handleV1GenericErrorResult(@Nullable RestResult resp)
             throws LGApiException, LGDeviceV1OfflineException {
         Map<String, Object> metaResult;
-        Map<String, Object> envelope = Collections.EMPTY_MAP;
+        Map<String, Object> envelope = Collections.emptyMap();
         if (resp == null) {
             return envelope;
         }
@@ -179,7 +178,7 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
                     String.format("Error returned by LG Server API. The reason is:%s", resp.getJsonResponse()));
         } else {
             try {
-                metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<Map<String, Object>>() {
+                metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 envelope = (Map<String, Object>) metaResult.get("lgedmRoot");
                 if (envelope == null) {
@@ -201,32 +200,6 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
         return envelope;
     }
 
-    private Map<String, Object> handleV2GenericErrorResult(@Nullable RestResult resp) throws LGApiException {
-        Map<String, Object> metaResult;
-        if (resp == null) {
-            return null;
-        }
-        if (resp.getStatusCode() != 200) {
-            logger.error("Error returned by LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGApiException(
-                    String.format("Error returned by LG Server API. The reason is:%s", resp.getJsonResponse()));
-        } else {
-            try {
-                metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<Map<String, Object>>() {
-                });
-                if (!"0000".equals(metaResult.get("resultCode"))) {
-                    throw new LGApiException(
-                            String.format("Status error executing endpoint. resultCode must be 0000, but was:%s",
-                                    metaResult.get("resultCode")));
-                }
-            } catch (JsonProcessingException e) {
-                throw new IllegalStateException("Unknown error occurred deserializing json stream", e);
-            }
-
-        }
-        return (Map<String, Object>) metaResult.get("result");
-    }
-
     @Override
     public void stopMonitor(String bridgeName, String deviceId, String workId)
             throws LGApiException, RefreshTokenException, IOException, LGDeviceV1OfflineException {
@@ -241,7 +214,8 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
     }
 
     @Override
-    public ACSnapShot getMonitorData(String bridgeName, String deviceId, String workId)
+    @Nullable
+    public ACSnapShot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workId)
             throws LGApiException, LGDeviceV1MonitorExpiredException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
         UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_POOL_MON_PATH);
@@ -295,6 +269,7 @@ public class LGApiV1ClientServiceImpl extends LGApiClientServiceImpl {
      * @throws LGApiException If some error occurr
      */
     @Override
+    @NonNull
     public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGApiException {
         try {
             File regFile = getCapFileForDevice(deviceId);

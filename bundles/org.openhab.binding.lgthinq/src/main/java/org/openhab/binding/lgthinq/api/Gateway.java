@@ -14,32 +14,36 @@ package org.openhab.binding.lgthinq.api;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link Gateway} hold informations about the LG Gateway
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class Gateway implements Serializable {
-    private String empBaseUri;
-    private String loginBaseUri;
-    private String apiRootV1;
-    private String apiRootV2;
-    private String authBase;
-    private String language;
-    private String country;
-    private String username;
-    private String password;
+    private String empBaseUri = "";
+    private String loginBaseUri = "";
+    private String apiRootV1 = "";
+    private String apiRootV2 = "";
+    private String authBase = "";
+    private String language = "";
+    private String country = "";
+    private String username = "";
+    private String password = "";
 
     public Gateway() {
     }
 
     public Gateway(Map<String, String> params, String language, String country) {
-        this.apiRootV2 = params.get("thinq2Uri");
-        this.apiRootV1 = params.get("thinq1Uri");
-        this.loginBaseUri = params.get("empSpxUri");
-        this.authBase = params.get("empUri");
-        this.empBaseUri = params.get("empTermsUri");
+        this.apiRootV2 = Objects.requireNonNullElse(params.get("thinq2Uri"), "");
+        this.apiRootV1 = Objects.requireNonNullElse(params.get("thinq1Uri"), "");
+        this.loginBaseUri = Objects.requireNonNullElse(params.get("empSpxUri"), "");
+        this.authBase = Objects.requireNonNullElse(params.get("empUri"), "");
+        this.empBaseUri = Objects.requireNonNullElse(params.get("empTermsUri"), "");
         this.language = language;
         this.country = country;
     }

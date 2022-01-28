@@ -15,19 +15,22 @@ package org.openhab.binding.lgthinq.api;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link TokenResult} Hold information about token and related entities
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class TokenResult implements Serializable {
-    private String accessToken;
-    private String refreshToken;
+    private String accessToken = "";
+    private String refreshToken = "";
     private int expiresIn;
-    private Date generatedTime;
-    private String oauthBackendUrl;
-    private UserInfo userInfo;
-    private Gateway gatewayInfo;
+    private Date generatedTime = new Date();
+    private String oauthBackendUrl = "";
+    private UserInfo userInfo = new UserInfo();
+    private Gateway gatewayInfo = new Gateway();
 
     public TokenResult(String accessToken, String refreshToken, int expiresIn, Date generatedTime,
             String ouathBackendUrl) {
@@ -38,8 +41,9 @@ public class TokenResult implements Serializable {
         this.oauthBackendUrl = ouathBackendUrl;
     }
 
+    // This constructor will never be called by this. It only exists because of ObjectMapper instantiation needs
     public TokenResult() {
-    };
+    }
 
     public Gateway getGatewayInfo() {
         return gatewayInfo;
@@ -73,6 +77,7 @@ public class TokenResult implements Serializable {
         this.accessToken = accessToken;
     }
 
+    @SuppressWarnings("It is implicitly used by the ObjectMapper instantiator")
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
@@ -85,6 +90,7 @@ public class TokenResult implements Serializable {
         this.generatedTime = generatedTime;
     }
 
+    @SuppressWarnings("It is implicitly used by the ObjectMapper instantiator")
     public void setOauthBackendUrl(String ouathBackendUrl) {
         this.oauthBackendUrl = ouathBackendUrl;
     }

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.lgthinq.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LGDeviceV1MonitorExpiredException} - Normally caught by V1 API in monitoring device.
  * After long-running moniotor, it indicates the need to refresh the monitor.
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGDeviceV1MonitorExpiredException extends LGThinqException {
     public LGDeviceV1MonitorExpiredException(String message, Throwable cause) {
         super(message, cause);

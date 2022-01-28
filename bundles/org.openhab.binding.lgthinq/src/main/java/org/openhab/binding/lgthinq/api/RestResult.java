@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.lgthinq.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RestResult} result from rest calls
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class RestResult {
-    private String jsonResponse;
-    private int resultCode;
+    private final String jsonResponse;
+    private final int resultCode;
 
     public RestResult(String jsonResponse, int resultCode) {
         this.jsonResponse = jsonResponse;

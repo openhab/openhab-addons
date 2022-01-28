@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgthinq.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link AccountLoginException}
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class AccountLoginException extends LGThinqException {
     public AccountLoginException(String message, Throwable cause) {
         super(message, cause);

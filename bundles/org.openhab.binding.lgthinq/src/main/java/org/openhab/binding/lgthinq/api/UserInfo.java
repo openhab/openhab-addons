@@ -14,17 +14,20 @@ package org.openhab.binding.lgthinq.api;
 
 import java.io.Serializable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UserInfo} User Info (registered in LG Account)
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class UserInfo implements Serializable {
 
-    private String userNumber;
-    private String userID;
-    private String userIDType;
-    private String displayUserID;
+    private String userNumber = "";
+    private String userID = "";
+    private String userIDType = "";
+    private String displayUserID = "";
 
     public UserInfo() {
     }

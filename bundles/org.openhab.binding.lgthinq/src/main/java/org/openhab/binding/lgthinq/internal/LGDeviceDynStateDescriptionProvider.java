@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
+import org.openhab.binding.lgthinq.handler.LGDeviceThing;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;

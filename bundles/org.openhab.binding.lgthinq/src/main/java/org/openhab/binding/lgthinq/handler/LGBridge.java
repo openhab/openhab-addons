@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.lgthinq.handler;
 
-import org.openhab.binding.lgthinq.internal.LGDeviceThing;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
 
 /**
@@ -21,7 +20,7 @@ import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
  * @author Nemer Daud - Initial contribution
  */
 public interface LGBridge {
-    boolean registerDiscoveryListener(LGThinqDiscoveryService listener);
+    void registerDiscoveryListener(LGThinqDiscoveryService listener);
 
     void registryListenerThing(LGDeviceThing thing);
 

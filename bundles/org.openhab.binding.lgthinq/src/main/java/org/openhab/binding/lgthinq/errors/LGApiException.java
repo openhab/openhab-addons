@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.lgthinq.errors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LGApiException}
  *
  * @author Nemer Daud - Initial contribution
  */
+@NonNullByDefault
 public class LGApiException extends LGThinqException {
     public LGApiException(String message, Throwable cause) {
         super(message, cause);

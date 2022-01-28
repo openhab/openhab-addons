@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.api.TokenManager;
 import org.openhab.binding.lgthinq.errors.LGThinqException;
 import org.openhab.binding.lgthinq.errors.RefreshTokenException;
-import org.openhab.binding.lgthinq.internal.LGDeviceThing;
 import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
@@ -152,12 +151,10 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
     }
 
     @Override
-    public boolean registerDiscoveryListener(LGThinqDiscoveryService listener) {
+    public void registerDiscoveryListener(LGThinqDiscoveryService listener) {
         if (discoveryService == null) {
             discoveryService = listener;
-            return true;
         }
-        return false;
     }
 
     /**
