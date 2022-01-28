@@ -61,7 +61,7 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
 
     @Override
     protected int getDeviceType() {
-        return NukiBindingConstants.DEVICE_SMART_LOCK;
+        return this.configuration.deviceType;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
 
                     withHttpClient(client -> {
                         BridgeLockActionResponse bridgeLockActionResponse = client
-                                .getSmartLockAction(configuration.nukiId, action);
+                                .getSmartLockAction(configuration.nukiId, action, getDeviceType());
                         handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
                     });
 
@@ -93,7 +93,7 @@ public class NukiSmartLockHandler extends AbstractNukiDeviceHandler<NukiSmartLoc
                     if (action != null) {
                         withHttpClient(client -> {
                             BridgeLockActionResponse bridgeLockActionResponse = client
-                                    .getSmartLockAction(configuration.nukiId, action);
+                                    .getSmartLockAction(configuration.nukiId, action, getDeviceType());
                             handleResponse(bridgeLockActionResponse, channelUID.getAsString(), command.toString());
                         });
                     }

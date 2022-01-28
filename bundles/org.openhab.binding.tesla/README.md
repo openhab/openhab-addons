@@ -27,7 +27,10 @@ Furthermore, once an account is configured, it is automatically queried for asso
 
 The `account` bridge requires an OAuth2 refresh token as the only parameter `refreshToken`.
 
-There are two different ways of obtaining the token:
+There are three different ways of obtaining the token.
+
+NOTE: Tesla has introduced some captcha mechanism, which might prevent options 1 and 2 from working as expected.
+In case you are only receiving error messages, please make use of option 3!
 
 1. Use the openHAB console
 
@@ -49,6 +52,18 @@ Alternatively, you can use the refresh token to textually configure your `accoun
 If you do not want to use the openHAB console, you can also manually create a "Tesla Account" thing in the UI by providing your username and password as parameters (to show them, use the "Show More" button) in the "Edit Thing" view and leaving the refresh token parameter field empty.
 
 openHAB will use the provided credentials to retrieve and set the refresh token and automatically delete your password from the configuration afterwards for safety reasons.
+
+3. Use external tools
+
+There are a few 3rd party tools available that have specialized on getting hold of refresh tokens for the Tesla API.
+Please note that we in general consider it dangerous to enter your credentials into some 3rd party app - you will have to trust the author not to send or store those credentials anywhere.
+
+- [Tesla Access Token Generator (Chromium Extension](https://github.com/DoctorMcKay/chromium-tesla-token-generator)
+- [Auth App for Tesla (iOS)](https://apps.apple.com/us/app/auth-app-for-tesla/id1552058613)
+- [Tesla Tokens (Android)](https://play.google.com/store/apps/details?id=net.leveugle.teslatokens)
+
+When using one of such apps, simply copy and paste the received refresh token into the account configuration.
+
 
 ## Thing Configuration
 
@@ -85,7 +100,7 @@ Additionally, these advanced channels are available (not all are available on al
 | batteryheaternopower      | Switch                   | Battery Heater Power          | Indicates if there is enough power to use the battery heater                                                     |
 | batteryrange              | Number:Length            | Battery Range                 | Range of the battery                                                                                             |
 | calendarenabled           | Switch                   | Calendar Enabled              | Indicates if access to a remote calendar is enabled                                                              |
-| centerdisplay             | Switch                   | Central Display State         | Indicates the state of the central display in the vehicle                                                        |
+| centerdisplay             | Number                   | Central Display State         | Indicates the state of the central display in the vehicle, see [here](https://tesla-api.timdorr.com/vehicle/state/vehiclestate) for valid values |                                                 
 | centerrearseatheater      | Switch                   | Center Rear Seat Heater       | Indicates if the center rear seat heater is switched on                                                          |
 | charge                    | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                                |
 | chargecable               | String                   | Charge Cable                  | Undocumented / To be defined                                                                                     |
@@ -95,21 +110,22 @@ Additionally, these advanced channels are available (not all are available on al
 | chargelimit               | Dimmer                   | Charge Limit                  | Limit charging of the vehicle to the given %                                                                     |
 | chargelimitmaximum        | Dimmer                   | Charge Limit Maximum          | Maximum charging limit of the vehicle, as %                                                                      |
 | chargelimitminimum        | Dimmer                   | Charge Limit Minimum          | Minimum charging limit of the vehicle, as %                                                                      |
-| chargelimitsocstandard    | Dimmer                   | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                                    |
-| chargeidealdistanceadded  | Number:Length            | "Ideal" Charge Distance Added | "Ideal" range added during the last charging session                                                             |
+| chargelimitsocstandard    | Dimmer                   | Charge Limit SOC Standard     | Standard charging limit of the vehicle, in %                                                                     |
+| chargeidealdistanceadded  | Number:Length            | Ideal Charge Distance Added   | Ideal range added during the last charging session                                                               |
 | chargemaxcurrent          | Number:ElectricCurrent   | Charge Max Current            | Maximum current (Ampere) that can be requested from the charger                                                  |
-| chargerateddistanceadded  | Number:Length            | "Rated" Charge Distance Added | "Rated" range added during the last charging session                                                             |
+| chargerateddistanceadded  | Number:Length            | Rated Charge Distance Added   | Rated range added during the last charging session                                                               |
 | chargerate                | Number:Speed             | Charge Rate                   | Distance per hour charging rate                                                                                  |
 | chargestartingrange       | String                   | Charge Starting Range         | Undocumented / To be defined                                                                                     |
 | chargestartingsoc         | String                   | Charge Starting SOC           | Undocumented / To be defined                                                                                     |
-| chargetomax               | Switch                   | Charge To Max Range           | Indicates if charging to the maximum range is enabled                                                        |
+| chargetomax               | Switch                   | Charge To Max Range           | Indicates if charging to the maximum range is enabled                                                            |
 | chargercurrent            | Number:ElectricCurrent   | Charge Current                | Current (Ampere) actually being drawn from the charger                                                           |
 | chargerphases             | Number                   | Charger Phases                | Indicates the number of phases (1 to 3) used for charging                                                        |
 | chargermaxcurrent         | Number:ElectricCurrent   | Charger Maximum Current       | Maximum current (Ampere) that can be delivered by the charger                                                    |
 | chargerpower              | Number                   | Charger Power                 | Power actually delivered by the charger                                                                          |
 | chargervoltage            | Number:ElectricPotential | Charger Voltage               | Voltage (V) actually presented by the charger                                                                    |
-| driverfrontdoor           | Contact                  | Driver Front Door             | Indicates if the front door at the driver's side is open                                                       |
-| driverreardoor            | Contact                  | Driver Rear Door              | Indicates if the rear door at the driver's side is open                                                        |
+| chargingamps              | Number:ElectricCurrent   | Set Charging Amps             | Current (Ampere) to use for charging                                                                             |
+| driverfrontdoor           | Contact                  | Driver Front Door             | Indicates if the front door at the driver's side is open                                                         |
+| driverreardoor            | Contact                  | Driver Rear Door              | Indicates if the rear door at the driver's side is open                                                          |
 | drivertemp                | Number:Temperature       | Driver Temperature            | Indicates the auto conditioning temperature set at the driver's side                                             |
 | eventstamp                | DateTime                 | Event Timestamp               | Timestamp of the last event received from the Tesla streaming service                                            |
 | estimatedbatteryrange     | Number:Length            | Estimated Battery Range       | Estimated battery range                                                                                          |
@@ -123,21 +139,21 @@ Additionally, these advanced channels are available (not all are available on al
 | headingestimation         | Number                   | Estimated Heading             | Estimated (compass) heading of the car, in 0 to 360 degrees                                                      |
 | honkhorn                  | Switch                   | Honk the Horn                 | Honk the horn of the vehicle, when ON is received                                                                |
 | homelink                  | Switch                   | Homelink Nearby               | Indicates if the Home Link is nearby                                                                             |
-| idealbatteryrange         | Number:Length            | Ideal Battery Range           | Indicates the Battery Range                                                                                       |
+| idealbatteryrange         | Number:Length            | Ideal Battery Range           | Indicates the Battery Range                                                                                      |
 | lefttempdirection         | Number                   | Left Temperature Direction    | Not documented / To be defined                                                                                   |
 | lastautoparkerror         | String                   | Last Autopark Error           | Not documented / To be defined                                                                                   |
 | location" advanced="false | Location                 | Location                      | The actual position of the vehicle                                                                               |
 | leftseatheater            | Switch                   | Left Seat Heater              | Indicates if the left seat heater is switched on                                                                 |
 | leftrearseatheater        | Switch                   | Left Rear Seat Heater         | Indicates if the left rear seat heater is switched on                                                            |
-| leftrearbackseatheater    | Number                   | Left Rear Backseat Heater     | Indicates the level (0, 1, 2, or 3) of the left rear backseat heater                                                |
-| managedcharging           | Switch                   | Managed Charging              | Indicates if managed charging is active                                                                             |
-| managedchargingcancelled  | Switch                   | Managed Charging Cancelled    | Indicates if managed charging is cancelled by the user                                                              |
+| leftrearbackseatheater    | Number                   | Left Rear Backseat Heater     | Indicates the level (0, 1, 2, or 3) of the left rear backseat heater                                             |
+| managedcharging           | Switch                   | Managed Charging              | Indicates if managed charging is active                                                                          |
+| managedchargingcancelled  | Switch                   | Managed Charging Cancelled    | Indicates if managed charging is cancelled by the user                                                           |
 | managedchargingstart      | String                   | Managed Charging Start Time   | Not documented / To be defined                                                                                   |
 | maxcharges                | Number                   | Max Charges                   | Indicates the number of consecutive "Max Range Charges" performed by the vehicle                                 |
 | minavailabletemp          | Number:Temperature       | Minimum Temperature           | Indicates the minimal inside temperature of the vehicle                                                          |
 | maxavailabletemp          | Number:Temperature       | Maximum Temperature           | Indicates the maximum inside temperature of the vehicle                                                          |
 | mobileenabled             | Switch                   | Mobile Enabled                | Indicates whether the vehicle can be remotely controlled                                                         |
-| notenoughpower            | Switch                   | Not Enough Power             | Indicates if not enough power (ON) is available to heat the vehicle                                              |
+| notenoughpower            | Switch                   | Not Enough Power              | Indicates if not enough power (ON) is available to heat the vehicle                                              |
 | notificationsenabled      | Switch                   | Notifications Enabled         | Not documented / To be defined                                                                                   |
 | notificationssupported    | Switch                   | Notifications Supported       | Not documented / To be defined                                                                                   |
 | outsidetemp               | Number:Temperature       | Outside Temperature           | Indicates the outside temperature of the vehicle                                                                 |
@@ -155,18 +171,20 @@ Additionally, these advanced channels are available (not all are available on al
 | remotestartsupported      | Switch                   | Remote Start Supported        | Not documented / To be defined                                                                                   |
 | rightseatheater           | Switch                   | Right Seat Heater             | Indicates if the right seat heater is switched on                                                                |
 | rightrearseatheater       | Switch                   | Right Rear Seat Heater        | Indicates if the right rear seat heater is switched on                                                           |
-| rightrearbackseatheater   | Number                   | Right Rear Backseat Heater    | Indicates the level (0, 1, 2, or 3) of the right rear backseat heater                                               |
+| rightrearbackseatheater   | Number                   | Right Rear Backseat Heater    | Indicates the level (0, 1, 2, or 3) of the right rear backseat heater                                            |
 | righttempdirection        | Number                   | Right Temperature Direction   | Not documented / To be defined                                                                                   |
 | scheduledchargingpending  | Switch                   | Scheduled Charging Pending    | Indicates if a scheduled charging session is still pending                                                       |
 | scheduledchargingstart    | DateTime                 | Scheduled Charging Start      | Indicates when the scheduled charging session will start, in yyyy-MM-dd'T'HH:mm:ss format                        |
+| sentrymode                | Switch                   | Sentry Mode                   | Activates or deactivates sentry mode                                                                             |
+| sentrymodeavailable       | Switch                   | Sentry Mode Available         | Indicates whether sentry mode is currently available                                                             |
 | shiftstate                | String                   | Shift State                   | Indicates the state of the transmission, “P”, “D”, “R”, or “N”                                                   |
 | sidemirrorheaters         | Switch                   | Side Mirror Heaters           | Indicates if the side mirror heaters are switched on                                                             |
 | smartpreconditioning      | Switch                   | Smart Preconditioning         | Indicates if smart preconditioning is switched on                                                                |
 | soc                       | Number                   | State of Charge               | State of Charge, in %                                                                                            |
 | state                     | String                   | State                         | “online”, “asleep”, “waking”                                                                                     |
 | steeringwheelheater       | Switch                   | Steering Wheel Heater         | Indicates if the steering wheel heater is switched on                                                            |
-| sunroofstate              | String                   | Sunroof State                 | “unknown”, “open”, “closed”, “vent”, “comfort”                                                                   |
-| sunroof                   | Dimmer                   | Sunroof                       | Open or close the sunroof to provided % (0 closed, 100 fully open)                                               |
+| sunroofstate              | String                   | Sunroof State                 | Valid states are “unknown”, “open”, “closed”, “vent”, “comfort”. Accepts commands "close" and "vent".            |
+| sunroof                   | Dimmer                   | Sunroof                       | Indicates the opening state of the sunroof (0% closed, 100% fully open)                                          |
 | temperature               | Number:Temperature       | Temperature                   | Set the temperature of the autoconditioning system. The temperature for the driver and passenger will be synced. |
 | timetofullcharge          | Number                   | Time To Full Charge           | Number of hours to fully charge the battery                                                                      |
 | tripcharging              | Switch                   | Trip Charging                 | Not documented / To be defined                                                                                   |

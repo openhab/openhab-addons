@@ -44,6 +44,7 @@
 					<option value="ENERGENIE_5">Energenie 5-gang</option>
 					<option value="COCO">COCO GDR2-2000R</option>
 					<option value="HQ_COCO20">HQ COCO-20</option>
+					<option value="OASE_INSCENIO_FM_N">Oase Inscenio FM Master</option>
 				</options>
 			</parameter>
 		</config-description>

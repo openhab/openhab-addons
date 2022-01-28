@@ -223,7 +223,7 @@ Note `serviceId` is optional, if omitted, the default persistance service will b
 
 * ItemHistory : <code>object</code>
     * .averageSince(timestamp, serviceId) ⇒ <code>Number</code>
-    * .changedSince(timestamp, serviceId) ⇒ <code>Number</code>
+    * .changedSince(timestamp, serviceId) ⇒ <code>Boolean</code>
     * .deltaSince(timestamp, serviceId) ⇒ <code>Number</code>
     * .deviationSince(timestamp, serviceId) ⇒ <code>Number</code>
     * .evolutionRate(timestamp, serviceId) ⇒ <code>Number</code>

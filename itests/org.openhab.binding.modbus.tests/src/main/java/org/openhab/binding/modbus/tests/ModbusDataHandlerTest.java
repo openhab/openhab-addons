@@ -952,8 +952,8 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
         captureModbusWrites();
         Configuration pollerConfig = new Configuration();
         pollerConfig.put("refresh", 0L); // 0 -> non polling
-        pollerConfig.put("start", "2");
-        pollerConfig.put("length", "3");
+        pollerConfig.put("start", 2);
+        pollerConfig.put("length", 3);
         pollerConfig.put("type", ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER);
         ThingUID pollerUID = new ThingUID(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, "realPoller");
         Bridge poller = BridgeBuilder.create(ModbusBindingConstantsInternal.THING_TYPE_MODBUS_POLLER, pollerUID)
