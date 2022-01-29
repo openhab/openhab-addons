@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.lgthinq.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.io.Serializable;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link UserInfo} User Info (registered in LG Account)
