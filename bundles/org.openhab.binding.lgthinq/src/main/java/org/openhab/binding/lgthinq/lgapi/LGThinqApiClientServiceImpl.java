@@ -121,8 +121,8 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
         Map<String, Object> deviceSettings;
         if (resp.getStatusCode() != 200) {
             logger.error("Error calling device settings from LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGThinqApiException(String.format("Error calling device settings from LG Server API. The reason is:%s",
-                    resp.getJsonResponse()));
+            throw new LGThinqApiException(String.format(
+                    "Error calling device settings from LG Server API. The reason is:%s", resp.getJsonResponse()));
         } else {
             try {
                 deviceSettings = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
@@ -147,8 +147,8 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
         List<LGDevice> devices;
         if (resp.getStatusCode() != 200) {
             logger.error("Error calling device list from LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGThinqApiException(String.format("Error calling device list from LG Server API. The reason is:%s",
-                    resp.getJsonResponse()));
+            throw new LGThinqApiException(String
+                    .format("Error calling device list from LG Server API. The reason is:%s", resp.getJsonResponse()));
         } else {
             try {
                 devicesResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
