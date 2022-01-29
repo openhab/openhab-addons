@@ -26,12 +26,12 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
 
 /**
- * The {@link LGApiClientService}
+ * The {@link LGThinqApiClientService}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public interface LGApiClientService {
+public interface LGThinqApiClientService {
 
     List<LGDevice> listAccountDevices(String bridgeName) throws LGApiException;
 

@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import static org.openhab.binding.lgthinq.internal.LGAirConditionerHandler.THING_TYPE_AIR_CONDITIONER;
-import static org.openhab.binding.lgthinq.internal.handler.LGBridgeHandler.THING_TYPE_BRIDGE;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THING_TYPE_AIR_CONDITIONER;
+import static org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler.THING_TYPE_BRIDGE;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.handler.LGBridgeHandler;
+import org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -47,7 +47,7 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
             THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(LGThinqHandlerFactory.class);
-    private final LGDeviceDynStateDescriptionProvider stateDescriptionProvider;
+    private final LGThinqDeviceDynStateDescriptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -59,9 +59,9 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_AIR_CONDITIONER.equals(thingTypeUID)) {
-            return new LGAirConditionerHandler(thing, stateDescriptionProvider);
+            return new LGThinqAirConditionerHandler(thing, stateDescriptionProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new LGBridgeHandler((Bridge) thing);
+            return new LGThinqBridgeHandler((Bridge) thing);
         }
         logger.error("Thing not supported by this Factory: {}", thingTypeUID.getId());
         return null;
@@ -72,14 +72,14 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
-        } else if (LGAirConditionerHandler.THING_TYPE_AIR_CONDITIONER.equals(thingTypeUID)) {
+        } else if (LGThinqBindingConstants.THING_TYPE_AIR_CONDITIONER.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
         return null;
     }
 
     @Activate
-    public LGThinqHandlerFactory(final @Reference LGDeviceDynStateDescriptionProvider stateDescriptionProvider) {
+    public LGThinqHandlerFactory(final @Reference LGThinqDeviceDynStateDescriptionProvider stateDescriptionProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 }
