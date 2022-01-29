@@ -23,7 +23,7 @@ import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.api.TokenResult;
-import org.openhab.binding.lgthinq.internal.errors.LGApiException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,10 +72,10 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
      * Even using V2 URL, this endpoint support grab informations about account devices from V1 and V2.
      * 
      * @return list os LG Devices.
-     * @throws LGApiException if some communication error occur.
+     * @throws LGThinqApiException if some communication error occur.
      */
     @Override
-    public List<LGDevice> listAccountDevices(String bridgeName) throws LGApiException {
+    public List<LGDevice> listAccountDevices(String bridgeName) throws LGThinqApiException {
         try {
             TokenResult token = getTokenManager().getValidRegisteredToken(bridgeName);
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(V2_LS_PATH);
@@ -84,7 +84,7 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
             RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
             return handleListAccountDevicesResult(resp);
         } catch (Exception e) {
-            throw new LGApiException("Erros list account devices from LG Server API", e);
+            throw new LGThinqApiException("Erros list account devices from LG Server API", e);
         }
     }
 
@@ -94,10 +94,10 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
      * 
      * @param deviceId device ID for de desired V2 LG Thinq.
      * @return return map containing metamodel of settings and snapshot
-     * @throws LGApiException if some communication error occur.
+     * @throws LGThinqApiException if some communication error occur.
      */
     @Override
-    public Map<String, Object> getDeviceSettings(String bridgeName, String deviceId) throws LGApiException {
+    public Map<String, Object> getDeviceSettings(String bridgeName, String deviceId) throws LGThinqApiException {
         try {
             TokenResult token = getTokenManager().getValidRegisteredToken(bridgeName);
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
@@ -107,28 +107,28 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
             RestResult resp = RestUtils.getCall(builder.build().toURL().toString(), headers, null);
             return handleDeviceSettingsResult(resp);
         } catch (Exception e) {
-            throw new LGApiException("Erros list account devices from LG Server API", e);
+            throw new LGThinqApiException("Erros list account devices from LG Server API", e);
         }
     }
 
-    private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGApiException {
+    private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGThinqApiException {
         return genericHandleDeviceSettingsResult(resp, logger, objectMapper);
     }
 
     @SuppressWarnings("unchecked")
     static Map<String, Object> genericHandleDeviceSettingsResult(RestResult resp, Logger logger,
-            ObjectMapper objectMapper) throws LGApiException {
+            ObjectMapper objectMapper) throws LGThinqApiException {
         Map<String, Object> deviceSettings;
         if (resp.getStatusCode() != 200) {
             logger.error("Error calling device settings from LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGApiException(String.format("Error calling device settings from LG Server API. The reason is:%s",
+            throw new LGThinqApiException(String.format("Error calling device settings from LG Server API. The reason is:%s",
                     resp.getJsonResponse()));
         } else {
             try {
                 deviceSettings = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 if (!"0000".equals(deviceSettings.get("resultCode"))) {
-                    throw new LGApiException(
+                    throw new LGThinqApiException(
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
                                     deviceSettings.get("resultCode")));
                 }
@@ -142,19 +142,19 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
     }
 
     @SuppressWarnings("unchecked")
-    private List<LGDevice> handleListAccountDevicesResult(RestResult resp) throws LGApiException {
+    private List<LGDevice> handleListAccountDevicesResult(RestResult resp) throws LGThinqApiException {
         Map<String, Object> devicesResult;
         List<LGDevice> devices;
         if (resp.getStatusCode() != 200) {
             logger.error("Error calling device list from LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGApiException(String.format("Error calling device list from LG Server API. The reason is:%s",
+            throw new LGThinqApiException(String.format("Error calling device list from LG Server API. The reason is:%s",
                     resp.getJsonResponse()));
         } else {
             try {
                 devicesResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 if (!"0000".equals(devicesResult.get("resultCode"))) {
-                    throw new LGApiException(
+                    throw new LGThinqApiException(
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
                                     devicesResult.get("resultCode")));
                 }

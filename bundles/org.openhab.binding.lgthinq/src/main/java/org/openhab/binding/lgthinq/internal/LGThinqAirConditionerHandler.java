@@ -12,18 +12,12 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
-import static org.openhab.core.library.types.OnOffType.ON;
-
-import java.util.*;
-import java.util.concurrent.*;
-
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.errors.LGApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGDeviceV1MonitorExpiredException;
-import org.openhab.binding.lgthinq.internal.errors.LGDeviceV1OfflineException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler;
 import org.openhab.binding.lgthinq.lgapi.LGThinqApiClientService;
@@ -41,6 +35,12 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.*;
+
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
+import static org.openhab.core.library.types.OnOffType.ON;
 
 /**
  * The {@link LGThinqAirConditionerHandler} is responsible for handling commands, which are
@@ -65,10 +65,10 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
     private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
             ThingStatusDetail.BRIDGE_UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
             ThingStatusDetail.CONFIGURATION_ERROR);
-    private @Nullable ScheduledFuture<?> thingStatePoolingJob;
+    private @Nullable ScheduledFuture<?> thingStatePollingJob;
     private @Nullable Future<?> commandExecutorQueueJob;
     // *** Long running isolated threadpools.
-    private final ScheduledExecutorService poolingScheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService pollingScheduler = Executors.newScheduledThreadPool(1);
     private final ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     private boolean monitorV1Began = false;
@@ -128,7 +128,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
         if (!deviceId.isBlank()) {
             try {
                 updateChannelDynStateDescription();
-            } catch (LGApiException e) {
+            } catch (LGThinqApiException e) {
                 logger.error(
                         "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.");
             }
@@ -173,10 +173,10 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
         }
     }
 
-    protected void startThingStatePooling() {
-        if (thingStatePoolingJob == null || thingStatePoolingJob.isDone()) {
-            thingStatePoolingJob = getLocalScheduler().scheduleWithFixedDelay(this::updateThingStateFromLG, 10,
-                    DEFAULT_STATE_POOLING_UPDATE_DELAY, TimeUnit.SECONDS);
+    protected void startThingStatePolling() {
+        if (thingStatePollingJob == null || thingStatePollingJob.isDone()) {
+            thingStatePollingJob = getLocalScheduler().scheduleWithFixedDelay(this::updateThingStateFromLG, 10,
+                    DEFAULT_STATE_POLLING_UPDATE_DELAY, TimeUnit.SECONDS);
         }
     }
 
@@ -221,7 +221,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
     }
 
     private ScheduledExecutorService getLocalScheduler() {
-        return poolingScheduler;
+        return pollingScheduler;
     }
 
     private String getBridgeId() {
@@ -250,7 +250,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
     }
 
     @Override
-    public void updateChannelDynStateDescription() throws LGApiException {
+    public void updateChannelDynStateDescription() throws LGThinqApiException {
         ACCapability acCap = getAcCapabilities();
         if (isLinked(opModeChannelUID)) {
             List<StateOption> options = new ArrayList<>();
@@ -267,7 +267,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
     }
 
     @Override
-    public ACCapability getAcCapabilities() throws LGApiException {
+    public ACCapability getAcCapabilities() throws LGThinqApiException {
         if (acCapability == null) {
             acCapability = lgThinqApiClientService.getDeviceCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
         }
@@ -275,7 +275,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
     }
 
     @Nullable
-    private ACSnapShot getSnapshotDeviceAdapter(String deviceId) throws LGApiException {
+    private ACSnapShot getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException {
         // analise de platform version
         if (PLATFORM_TYPE_V2.equals(lgPlatfomType)) {
             return lgThinqApiClientService.getAcDeviceData(getBridgeId(), getDeviceId());
@@ -285,14 +285,14 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                     monitorWorkId = lgThinqApiClientService.startMonitor(getBridgeId(), getDeviceId());
                     monitorV1Began = true;
                 }
-            } catch (LGDeviceV1OfflineException e) {
+            } catch (LGThinqDeviceV1OfflineException e) {
                 forceStopDeviceV1Monitor(deviceId);
                 ACSnapShot shot = new ACSnapShotV1();
                 shot.setOnline(false);
                 return shot;
             } catch (Exception e) {
                 forceStopDeviceV1Monitor(deviceId);
-                throw new LGApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
+                throw new LGThinqApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
             }
             int retries = 10;
             ACSnapShot shot;
@@ -305,7 +305,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                     }
                     Thread.sleep(500);
                     retries--;
-                } catch (LGDeviceV1MonitorExpiredException e) {
+                } catch (LGThinqDeviceV1MonitorExpiredException e) {
                     forceStopDeviceV1Monitor(deviceId);
                     logger.info("Monitor for device {} was expired. Forcing stop and start to next cycle.", deviceId);
                     return null;
@@ -314,34 +314,34 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                     // interaction
                     // Force restart monitoring because of the errors returned (just in case)
                     forceStopDeviceV1Monitor(deviceId);
-                    throw new LGApiException("Error getting monitor data for the device:" + deviceId, e);
+                    throw new LGThinqApiException("Error getting monitor data for the device:" + deviceId, e);
                 }
             }
             forceStopDeviceV1Monitor(deviceId);
-            throw new LGApiException("Exhausted trying to get monitor data for the device:" + deviceId);
+            throw new LGThinqApiException("Exhausted trying to get monitor data for the device:" + deviceId);
         }
     }
 
-    protected void stopThingStatePooling() {
-        if (thingStatePoolingJob != null && !thingStatePoolingJob.isDone()) {
-            logger.debug("Stopping LG thinq pooling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
-            thingStatePoolingJob.cancel(true);
+    protected void stopThingStatePolling() {
+        if (thingStatePollingJob != null && !thingStatePollingJob.isDone()) {
+            logger.debug("Stopping LG thinq polling for device/alias: {}/{}", getDeviceId(), getDeviceAlias());
+            thingStatePollingJob.cancel(true);
         }
     }
 
     private void handleStatusChanged(ThingStatus newStatus, ThingStatusDetail statusDetail) {
         if (lastThingStatus != ThingStatus.ONLINE && newStatus == ThingStatus.ONLINE) {
-            // start the thing pooling
-            startThingStatePooling();
+            // start the thing polling
+            startThingStatePolling();
         } else if (lastThingStatus == ThingStatus.ONLINE && newStatus == ThingStatus.OFFLINE
                 && BRIDGE_STATUS_DETAIL_ERROR.contains(statusDetail)) {
             // comunication error is not a specific Bridge error, then we must analise it to give
             // this thinq the change to recovery from communication errors
             if (statusDetail != ThingStatusDetail.COMMUNICATION_ERROR
                     || (getBridge() != null && getBridge().getStatus() != ThingStatus.ONLINE)) {
-                // in case of status offline, I only stop the pooling if is not an COMMUNICATION_ERROR or if
+                // in case of status offline, I only stop the polling if is not an COMMUNICATION_ERROR or if
                 // the bridge is out
-                stopThingStatePooling();
+                stopThingStatePolling();
             }
 
         }
@@ -356,7 +356,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
 
     @Override
     public void onDeviceAdded(LGDevice device) {
-        // TODO - handle it
+        // TODO - handle it. Think if it's needed
     }
 
     @Override
@@ -381,27 +381,27 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
 
     @Override
     public boolean onDeviceStateChanged() {
-        // TODO - HANDLE IT
+        // TODO - HANDLE IT, Think if it's needed
         return false;
     }
 
     @Override
     public void onDeviceRemoved() {
-        // TODO - HANDLE IT
+        // TODO - HANDLE IT, Think if it's needed
     }
 
     @Override
     public void onDeviceGone() {
-        // TODO - HANDLE IT
+        // TODO - HANDLE IT, Think if it's needed
     }
 
     @Override
     public void dispose() {
-        if (thingStatePoolingJob != null) {
-            thingStatePoolingJob.cancel(true);
-            stopThingStatePooling();
+        if (thingStatePollingJob != null) {
+            thingStatePollingJob.cancel(true);
+            stopThingStatePolling();
             stopCommandExecutorQueueJob();
-            thingStatePoolingJob = null;
+            thingStatePollingJob = null;
         }
     }
 

@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgapi.model.DeviceTypes;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The {@link LGThinqBindingConstants} class defines common constants, which are
@@ -53,7 +53,7 @@ public class LGThinqBindingConstants {
     public static final String V2_DEVICE_CONFIG_PATH = "service/devices/";
     public static final String V2_CTRL_DEVICE_CONFIG_PATH = "service/devices/%s/control-sync";
     public static final String V1_START_MON_PATH = "rti/rtiMon";
-    public static final String V1_POOL_MON_PATH = "rti/rtiResult";
+    public static final String V1_MON_DATA_PATH = "rti/rtiResult";
     public static final String V1_CONTROL_OP = "rti/rtiControl";
     public static final String OAUTH_SEARCH_KEY_PATH = "/searchKey";
     public static final String GATEWAY_SERVICE_PATH = "/v1/service/application/gateway-uri";
@@ -98,7 +98,7 @@ public class LGThinqBindingConstants {
 
     public static final int SEARCH_TIME = 20;
     // delay between each devices's scan for state changes (in seconds)
-    public static final int DEFAULT_STATE_POOLING_UPDATE_DELAY = 30;
+    public static final int DEFAULT_STATE_POLLING_UPDATE_DELAY = 30;
     // CHANNEL IDS
     public static final String CHANNEL_MOD_OP_ID = "op_mode";
     public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
