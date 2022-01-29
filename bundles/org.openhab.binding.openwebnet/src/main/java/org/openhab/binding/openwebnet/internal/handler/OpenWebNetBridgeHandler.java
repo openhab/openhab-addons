@@ -418,10 +418,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     OpenWebNetThingHandler hndlr = (OpenWebNetThingHandler) ownThing.getHandler();
                     if (hndlr != null) {
                         howMany++;
-                        logger.debug("--- REFRESHING thing #{}/{}: {}", howMany, total, ownThing.getUID());
+                        logger.debug("--- REFRESHING ALL DEVICES FOR thing #{}/{}: {}", howMany, total,
+                                ownThing.getUID());
                         hndlr.refreshAllDevices();
                     } else {
-                        logger.warn("--- no handler for thing {}", ownThing.getUID());
+                        logger.warn("--- No handler for thing {}", ownThing.getUID());
                     }
                 }
                 logger.debug("--- --- COMPLETED REFRESH all devices for bridge {}", thing.getUID());
@@ -430,7 +431,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 refreshAllSchedule = scheduler.schedule(() -> checkAllRefreshed(things), 20, TimeUnit.SECONDS);
             }
         } else {
-            logger.debug("--- --- NO DEVICE to REFRESH for bridge {}", thing.getUID());
+            logger.debug("--- --- NO CHILD DEVICE to REFRESH for bridge {}", thing.getUID());
         }
     }
 
@@ -451,7 +452,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         if (allOnline) {
             logger.info("--- --- CHECK COMPLETED: ALL THINGS ONLINE for bridge {}", thing.getUID());
         } else {
-            logger.warn("--- --- CHECKED COMPLETED: ^^^NOT ALL THINGS ONLINE^^^ for bridge {}", thing.getUID());
+            logger.warn("--- --- CHECK COMPLETED: ^^^NOT ALL THINGS ONLINE^^^ for bridge {}", thing.getUID());
         }
     }
 

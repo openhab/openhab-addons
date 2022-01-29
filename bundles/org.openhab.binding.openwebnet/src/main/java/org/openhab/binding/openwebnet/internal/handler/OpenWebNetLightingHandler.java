@@ -67,6 +67,8 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
 
     private long lastStatusRequestSentTS = 0; // timestamp when last status request was sent to the device
 
+    private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
+
     private int brightness = UNKNOWN_STATE; // current brightness percent value for this device
 
     private int brightnessBeforeOff = UNKNOWN_STATE; // latest brightness before device was set to off
@@ -80,18 +82,20 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     @Override
     protected void requestChannelState(ChannelUID channel) {
         super.requestChannelState(channel);
-        try {
-            lastStatusRequestSentTS = System.currentTimeMillis();
-            send(Lighting.requestStatus(toWhere(channel.getId())));
-        } catch (OWNException e) {
-            logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        if (deviceWhere != null) {
+            try {
+                lastStatusRequestSentTS = System.currentTimeMillis();
+                send(Lighting.requestStatus(toWhere(channel.getId())));
+            } catch (OWNException e) {
+                logger.debug("Exception while requesting state for channel {}: {} ", channel, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
     @Override
-    protected boolean supportsRefreshAllDevices() {
-        return true;
+    protected long getRefreshAllLastTS() {
+        return lastAllDevicesRefreshTS;
     };
 
     @Override
@@ -100,6 +104,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
             logger.debug("--- refreshDevice() : refreshing GENERAL... ({})", thing.getUID());
             try {
                 send(Lighting.requestStatus(WhereLightAutom.GENERAL.value()));
+                lastAllDevicesRefreshTS = System.currentTimeMillis();
             } catch (OWNException e) {
                 logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
             }

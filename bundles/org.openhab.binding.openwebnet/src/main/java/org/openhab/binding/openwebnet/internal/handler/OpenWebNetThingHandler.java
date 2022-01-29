@@ -61,10 +61,9 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     protected @Nullable String ownId; // OpenWebNet identifier for this device: WHO.WHERE
     protected @Nullable Where deviceWhere; // this device Where address
 
+    protected @Nullable ScheduledFuture<?> requestChannelStateTimeout;
     protected @Nullable ScheduledFuture<?> refreshTimeout;
 
-    private static long lastAllDevicesRefreshTS = -1; // timestamp when the last request for all device refresh was sent
-    // for this handler
     private static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another all
     // devices refresh request
 
@@ -215,10 +214,11 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
             return;
         }
         // set a schedule to put device OFFLINE if no answer is received after THING_STATE_REQ_TIMEOUT_SEC
-        refreshTimeout = scheduler.schedule(() -> {
+        requestChannelStateTimeout = scheduler.schedule(() -> {
             if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not get channel state");
-                logger.debug("requestChannelState() timeout for thing {}", thing.getUID());
+                logger.debug("requestChannelState() TIMEOUT for thing {}", thing.getUID());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/offline.comm-error-state");
             }
         }, THING_STATE_REQ_TIMEOUT_SEC, TimeUnit.SECONDS);
     }
@@ -232,13 +232,15 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     protected abstract void refreshDevice(boolean refreshAll);
 
     /**
-     * Check if the subclass supports refreshing all devices with a single command. If it's supported, it must be
-     * implemented by subclass to return true. Default is false.
+     * If the subclass supports refreshing all devices with a single command, return 1 or the last TS a refresh all was
+     * requested for the subclass. Otherwise return -1 (default).
+     * It must be implemented by each subclass that supports all device refresh.
      *
-     * @return true in case the handler subclass supports refreshing all devices with a single command.
+     * @return timestamp when last refresh all was requested, 1 if not requested yet,, or -1 if it's not supported by
+     *         subclass.
      */
-    protected boolean supportsRefreshAllDevices() {
-        return false;
+    protected long getRefreshAllLastTS() {
+        return -1;
     };
 
     /**
@@ -249,26 +251,26 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         logger.debug("--- refreshAllDevices() for device {}", thing.getUID());
         OpenWebNetBridgeHandler brH = bridgeHandler;
         if (brH != null) {
-            logger.debug("{} support = {}", thing.getUID(), supportsRefreshAllDevices());
-            if (brH.isBusGateway() && supportsRefreshAllDevices()) {
-                logger.debug("--- refreshAllDevices() : refreshing all devices... (thinUID={}", thing.getUID());
+            long refAllTS = getRefreshAllLastTS();
+            logger.debug("{} support = {}", thing.getUID(), refAllTS >= 0);
+            if (brH.isBusGateway() && refAllTS >= 0) {
                 long now = System.currentTimeMillis();
-                if (now - lastAllDevicesRefreshTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
+                if (now - refAllTS > ALL_DEVICES_REFRESH_INTERVAL_MSEC) {
+                    logger.debug("--- refreshAllDevices() : refreshing ALL devices... ({})", thing.getUID());
                     refreshDevice(true);
-                    lastAllDevicesRefreshTS = now;
                 } else {
                     logger.debug("--- refreshAllDevices() : refresh all devices just sent... ({})", thing.getUID());
                 }
-                // sometimes GENERAL refresh request does not return state, so let's schedule another single refresh
-                // device, just in case
-                // TODO assign schedule to a variable and cancel it in dispose() ??
-                scheduler.schedule(() -> {
+                // sometimes GENERAL refresh requests do not return state for all devices, so let's schedule another
+                // single refresh device, just in case
+                refreshTimeout = scheduler.schedule(() -> {
                     if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
-                        logger.debug("--- refreshAllDevices() : schedule expired: ---UNKNOWN--- status for thing {}",
+                        logger.debug(
+                                "--- refreshAllDevices() : schedule expired: --UNKNOWN-- status for {}. Rerfreshing it...",
                                 thing.getUID());
                         refreshDevice(false);
                     } else {
-                        logger.debug("--- refreshAllDevices() : schedule expired: ONLINE status for thing {}",
+                        logger.debug("--- refreshAllDevices() : schedule expired: ONLINE status for {}",
                                 thing.getUID());
                     }
                 }, THING_STATE_REQ_TIMEOUT_SEC, TimeUnit.SECONDS);
@@ -293,9 +295,13 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
         if (bh != null && oid != null) {
             bh.unregisterDevice(oid);
         }
-        ScheduledFuture<?> sc = refreshTimeout;
-        if (sc != null) {
-            sc.cancel(true);
+        ScheduledFuture<?> rcst = requestChannelStateTimeout;
+        if (rcst != null) {
+            rcst.cancel(true);
+        }
+        ScheduledFuture<?> rt = refreshTimeout;
+        if (rt != null) {
+            rt.cancel(true);
         }
         super.dispose();
     }

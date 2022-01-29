@@ -120,9 +120,9 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
     private boolean isDryContactIR = false;
     private boolean isCENPlus = false;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.SCENARIO_SUPPORTED_THING_TYPES;
+    private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
-    protected static boolean supportsRefreshAllDevices = false;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.SCENARIO_SUPPORTED_THING_TYPES;
 
     public OpenWebNetScenarioHandler(Thing thing) {
         super(thing);
@@ -374,13 +374,13 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                 }
             }
         } else {
-            logger.debug("CEN/CEN+ channels are trigger channels and do not have state");
+            logger.debug("requestChannelState() CEN/CEN+ channels are trigger channels and do not have state.");
         }
     }
 
     @Override
-    protected boolean supportsRefreshAllDevices() {
-        return true;
+    protected long getRefreshAllLastTS() {
+        return lastAllDevicesRefreshTS;
     };
 
     @Override
@@ -390,6 +390,7 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                 logger.debug("--- refreshDevice() : refreshing GENERAL... ({})", thing.getUID());
                 try {
                     send(CENPlusScenario.requestStatus("30"));
+                    lastAllDevicesRefreshTS = System.currentTimeMillis();
                 } catch (OWNException e) {
                     logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
                 }
@@ -398,7 +399,12 @@ public class OpenWebNetScenarioHandler extends OpenWebNetThingHandler {
                 requestChannelState(new ChannelUID(thing.getUID(), CHANNEL_DRY_CONTACT_IR));
             }
         } else {
-            logger.debug("CEN/CEN+ channels are trigger channels and do not have state ");
+            logger.debug("CEN/CEN+ channels are trigger channels and do not have state. Setting it ONLINE");
+            // put CEN/CEN+ scenario things to ONLINE automatically as they do not have state
+            ThingStatus ts = getThing().getStatus();
+            if (ThingStatus.ONLINE != ts && ThingStatus.REMOVING != ts && ThingStatus.REMOVED != ts) {
+                updateStatus(ThingStatus.ONLINE);
+            }
         }
     }
 

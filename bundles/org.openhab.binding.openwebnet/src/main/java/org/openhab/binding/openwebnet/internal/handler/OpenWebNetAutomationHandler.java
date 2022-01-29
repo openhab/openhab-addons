@@ -61,6 +61,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUTOMATION_SUPPORTED_THING_TYPES;
 
+    private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
+
     // moving states
     public static final int MOVING_STATE_STOPPED = 0;
     public static final int MOVING_STATE_MOVING_UP = 1;
@@ -150,8 +152,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected boolean supportsRefreshAllDevices() {
-        return true;
+    protected long getRefreshAllLastTS() {
+        return lastAllDevicesRefreshTS;
     };
 
     @Override
@@ -160,6 +162,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             logger.debug("--- refreshDevice() : refreshing GENERAL... ({})", thing.getUID());
             try {
                 send(Automation.requestStatus(WhereLightAutom.GENERAL.value()));
+                lastAllDevicesRefreshTS = System.currentTimeMillis();
             } catch (OWNException e) {
                 logger.warn("Excpetion while requesting all devices refresh: {}", e.getMessage());
             }
