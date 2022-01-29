@@ -130,7 +130,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
+            logger.warn("Failed to send command '{}' for device '{}': IP address missing", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-ip");
@@ -138,7 +138,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
-            logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
+            logger.warn("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
@@ -159,7 +159,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                     wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     updateStatus(ThingStatus.ONLINE);
                 } catch (Exception e) {
-                    logger.error("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
+                    logger.warn("Failed to send command '{}' for device '{}': {}", command, getThing().getUID(),
                             e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
@@ -176,7 +176,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
         String actionService = BASICACTION;
         String localhost = getHost();
         if (localhost.isEmpty()) {
-            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-ip");
             return;
@@ -191,7 +191,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
         }
         String wemoURL = getWemoURL(localhost, actionService);
         if (wemoURL == null) {
-            logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
+            logger.warn("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return;
@@ -210,7 +210,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 this.onValueReceived(variable, value, actionService + "1");
             }
         } catch (Exception e) {
-            logger.error("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
+            logger.warn("Failed to get actual state for device '{}': {}", getThing().getUID(), e.getMessage());
         }
     }
 }

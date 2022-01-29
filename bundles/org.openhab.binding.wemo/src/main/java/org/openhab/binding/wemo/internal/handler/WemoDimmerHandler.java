@@ -428,14 +428,14 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     protected void updateWemoState() {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
-            logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
+            logger.warn("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return;
@@ -494,7 +494,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         try {
             value = Long.parseLong(attributeValue);
         } catch (NumberFormatException e) {
-            logger.error("Unable to parse attributeValue '{}' for device '{}'; expected long", attributeValue,
+            logger.warn("Unable to parse attributeValue '{}' for device '{}'; expected long", attributeValue,
                     getThing().getUID());
             return null;
         }
@@ -507,14 +507,14 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     public void setBinaryState(String action, String argument, String value) {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            logger.error("Failed to set binary state for device '{}': IP address missing", getThing().getUID());
+            logger.warn("Failed to set binary state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
-            logger.error("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
+            logger.warn("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return;
@@ -538,14 +538,14 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
     public void setTimerStart(String action, String argument, String value) {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            logger.error("Failed to set timerStart for device '{}': IP address missing", getThing().getUID());
+            logger.warn("Failed to set timerStart for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-ip");
             return;
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
-            logger.error("Failed to set timerStart for device '{}': URL cannot be created", getThing().getUID());
+            logger.warn("Failed to set timerStart for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return;

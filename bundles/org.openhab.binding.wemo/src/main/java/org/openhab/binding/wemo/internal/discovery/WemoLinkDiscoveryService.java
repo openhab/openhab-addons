@@ -222,12 +222,11 @@ public class WemoLinkDiscoveryService extends AbstractDiscoveryService implement
 
                     }
                 } catch (Exception e) {
-                    logger.error("Failed to parse endDevices for bridge '{}'", wemoBridgeHandler.getThing().getUID(),
-                            e);
+                    logger.warn("Failed to parse endDevices for bridge '{}'", wemoBridgeHandler.getThing().getUID(), e);
                 }
             }
         } catch (Exception e) {
-            logger.error("Failed to get endDevices for bridge '{}'", wemoBridgeHandler.getThing().getUID(), e);
+            logger.warn("Failed to get endDevices for bridge '{}'", wemoBridgeHandler.getThing().getUID(), e);
         }
     }
 

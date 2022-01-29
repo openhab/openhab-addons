@@ -84,7 +84,7 @@ public class WemoInsightHandler extends WemoHandler {
                 try {
                     lastChangedAt = Long.parseLong(splitInsightParams[1]) * 1000; // convert s to ms
                 } catch (NumberFormatException e) {
-                    logger.error("Unable to parse lastChangedAt value '{}' for device '{}'; expected long",
+                    logger.warn("Unable to parse lastChangedAt value '{}' for device '{}'; expected long",
                             splitInsightParams[1], getThing().getUID());
                 }
                 ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochMilli(lastChangedAt),
