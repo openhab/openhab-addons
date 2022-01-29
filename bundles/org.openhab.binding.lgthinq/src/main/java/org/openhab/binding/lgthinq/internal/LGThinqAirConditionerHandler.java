@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
+import static org.openhab.core.library.types.OnOffType.ON;
+
+import java.util.*;
+import java.util.concurrent.*;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,12 +41,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.concurrent.*;
-
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
-import static org.openhab.core.library.types.OnOffType.ON;
 
 /**
  * The {@link LGThinqAirConditionerHandler} is responsible for handling commands, which are
