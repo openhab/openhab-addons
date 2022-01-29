@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,12 @@ package org.openhab.binding.boschshc.internal.services.dto;
  * @author Christian Oeing - Initial contribution
  */
 public class JsonRestExceptionResponse extends BoschSHCServiceState {
+
+    /**
+     * The entity could not be found. One of the defined path parameters was invalid.
+     */
+    public static final String ENTITY_NOT_FOUND = "ENTITY_NOT_FOUND";
+
     public JsonRestExceptionResponse() {
         super("JsonRestExceptionResponseEntity");
         this.errorCode = "";
@@ -32,5 +38,9 @@ public class JsonRestExceptionResponse extends BoschSHCServiceState {
     /**
      * The HTTP status of the error.
      */
-    public int statusCode;
+    public Integer statusCode;
+
+    public static boolean isValid(JsonRestExceptionResponse obj) {
+        return obj != null && obj.errorCode != null && obj.statusCode != null;
+    }
 }

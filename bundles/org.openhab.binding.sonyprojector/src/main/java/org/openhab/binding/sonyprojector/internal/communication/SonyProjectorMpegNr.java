@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.util.HexUtils;
@@ -32,21 +31,20 @@ public enum SonyProjectorMpegNr {
 
     // Category 1: VW260, VW270, VW285, VW295, VW315, VW320, VW328, VW365, VW>385, VW500, VW515, VW520, VW528, VW550,
     // VW570, VW600, VW665, VW675, VW695, VW760, VW870, VW885, VW995, HW60, HW65, HW68
-    CAT1_AUTO(1, "Auto", null, new byte[] { 0x00, 0x04 }),
-    CAT1_HIGH(1, "High", null, new byte[] { 0x00, 0x03 }),
-    CAT1_MIDDLE(1, "Middle", null, new byte[] { 0x00, 0x02 }),
-    CAT1_LOW(1, "Low", null, new byte[] { 0x00, 0x01 }),
-    CAT1_OFF(1, "Off", null, new byte[] { 0x00, 0x00 }),
+    CAT1_AUTO(1, "Auto", new byte[] { 0x00, 0x04 }),
+    CAT1_HIGH(1, "High", new byte[] { 0x00, 0x03 }),
+    CAT1_MIDDLE(1, "Middle", new byte[] { 0x00, 0x02 }),
+    CAT1_LOW(1, "Low", new byte[] { 0x00, 0x01 }),
+    CAT1_OFF(1, "Off", new byte[] { 0x00, 0x00 }),
 
     // Category 2: HW35ES, HW40ES, HW45ES, HW50ES, HW55ES, HW58ES
-    CAT2_HIGH(2, "High", null, new byte[] { 0x00, 0x03 }),
-    CAT2_MIDDLE(2, "Middle", null, new byte[] { 0x00, 0x02 }),
-    CAT2_LOW(2, "Low", null, new byte[] { 0x00, 0x01 }),
-    CAT2_OFF(2, "Off", null, new byte[] { 0x00, 0x00 });
+    CAT2_HIGH(2, "High", new byte[] { 0x00, 0x03 }),
+    CAT2_MIDDLE(2, "Middle", new byte[] { 0x00, 0x02 }),
+    CAT2_LOW(2, "Low", new byte[] { 0x00, 0x01 }),
+    CAT2_OFF(2, "Off", new byte[] { 0x00, 0x00 });
 
     private int category;
     private String name;
-    private @Nullable String label;
     private byte[] dataCode;
 
     /**
@@ -54,13 +52,11 @@ public enum SonyProjectorMpegNr {
      *
      * @param category a category of projector models for which the MPEG noise reduction mode is available
      * @param name the name of the MPEG noise reduction mode
-     * @param label the label of the MPEG noise reduction mode; can be null when the label is identical to the name
      * @param dataCode the data code identifying the MPEG noise reduction mode
      */
-    private SonyProjectorMpegNr(int category, String name, @Nullable String label, byte[] dataCode) {
+    private SonyProjectorMpegNr(int category, String name, byte[] dataCode) {
         this.category = category;
         this.name = name;
-        this.label = label;
         this.dataCode = dataCode;
     }
 
@@ -80,15 +76,6 @@ public enum SonyProjectorMpegNr {
      */
     public byte[] getDataCode() {
         return dataCode;
-    }
-
-    /**
-     * Get the label of the current MPEG noise reduction mode
-     *
-     * @return the label
-     */
-    public @Nullable String getLabel() {
-        return label;
     }
 
     /**
@@ -113,8 +100,7 @@ public enum SonyProjectorMpegNr {
         List<StateOption> options = new ArrayList<>();
         for (SonyProjectorMpegNr value : SonyProjectorMpegNr.values()) {
             if (value.getCategory() == category) {
-                options.add(new StateOption(value.getName(),
-                        value.getLabel() != null ? value.getLabel() : value.getName()));
+                options.add(new StateOption(value.getName(), value.getName()));
             }
         }
         return options;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,6 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,9 +43,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.astro", service = ThingHandlerFactory.class)
 public class AstroHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
-            .concat(SunHandler.SUPPORTED_THING_TYPES.stream(), MoonHandler.SUPPORTED_THING_TYPES.stream())
-            .collect(Collectors.toSet());
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SUN, THING_TYPE_MOON);
     private static final Map<String, AstroThingHandler> ASTRO_THING_HANDLERS = new HashMap<>();
     private final CronScheduler scheduler;
     private final TimeZoneProvider timeZoneProvider;

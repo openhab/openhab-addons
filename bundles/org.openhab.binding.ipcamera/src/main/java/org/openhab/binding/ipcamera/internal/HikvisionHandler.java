@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,6 +65,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         if (content.contains("hannelID>" + nvrChannel) || content.contains("<channelID>0</channelID>")) {
             final int debounce = 3;
             String eventType = Helper.fetchXML(content, "", "<eventType>");
+            ipCameraHandler.setChannelState(CHANNEL_LAST_EVENT_DATA, new StringType(content));
             switch (eventType) {
                 case "videoloss":
                     if (content.contains("<eventState>inactive</eventState>")) {
@@ -120,7 +121,11 @@ public class HikvisionHandler extends ChannelDuplexHandler {
             String content = msg.toString();
             logger.trace("HTTP Result back from camera is \t:{}:", content);
             if (content.startsWith("--boundary")) {// Alarm checking goes in here//
-                processEvent(content);
+                int startIndex = content.indexOf("<");// skip to start of XML content
+                if (startIndex != -1) {
+                    String eventData = content.substring(startIndex, content.length());
+                    processEvent(eventData);
+                }
             } else {
                 String replyElement = Helper.fetchXML(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<");
                 switch (replyElement) {
@@ -195,9 +200,6 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                                         "Stopping checks for alarm inputs as camera appears to be missing this feature.");
                             }
                         }
-                        break;
-                    default:
-                        logger.debug("Unhandled reply-{}.", content);
                         break;
                 }
             }

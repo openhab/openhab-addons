@@ -92,6 +92,7 @@
 				<option value="130">Neo 6/Neo:X Cinema + DTS:X/Neural:X</option>
 				<option value="131">Neo 6/Neo:X Music</option>
 				<option value="134">PLII/PLIIx Game</option>
+				<option value="139">PLII/PLIIx Music + THX Music</option>
 				<option value="160">PLIIx/PLII Movie + Audyssey DSX</option>
 				<option value="161">PLIIx/PLII Music + Audyssey DSX</option>
 				<option value="162">PLIIx/PLII Game + Audyssey DSX</option>
@@ -186,6 +187,30 @@
 		<item-type>Number</item-type>
 		<label>Selected Item</label>
 		<description>Position of the currently selected menu item</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="audioIn" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Input Info</label>
+		<description>Audio Input Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="audioOut" advanced="true">
+		<item-type>String</item-type>
+		<label>Audio Output Info</label>
+		<description>Audio Output Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="videoIn" advanced="true">
+		<item-type>String</item-type>
+		<label>Video Input Info</label>
+		<description>Video Input Stream Information</description>
+		<state readOnly="true" pattern="%s"></state>
+	</channel-type>
+	<channel-type id="videoOut" advanced="true">
+		<item-type>String</item-type>
+		<label>Video Output Info</label>
+		<description>Video Output Stream Information</description>
 		<state readOnly="true" pattern="%s"></state>
 	</channel-type>
 

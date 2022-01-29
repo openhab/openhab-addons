@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,8 @@ public enum MiIoCommand {
     // Basic device commands
     GET_PROPERTY("get_prop"),
     GET_PROPERTIES("get_properties"),
+    GET_DEVICE_PROPERTY_EXP("get_device_prop_exp"),
+    GET_DEVICE_PROPERTY("get_device_prop"),
     GET_VALUE("get_value"),
     SET_PROPERTIES("set_properties"),
     SET_MODE_BASIC("set_mode"),
@@ -94,6 +96,24 @@ public enum MiIoCommand {
     GET_CUSTOMIZED_CLEAN_MODE("get_customize_clean_mode"),
     GET_MULTI_MAP_LIST("get_multi_maps_list"),
     GET_ROOM_MAPPING("get_room_mapping"),
+
+    // Gateway & child device commands
+    GET_ARMING("get_arming"),
+    GET_ARMING_TIME("get_arming_time"),
+    GET_DOORBEL_VOLUME("get_doorbell_volume"),
+    GET_GATEWAY_VOLUME("get_gateway_volume"),
+    GET_ALARMING_VOLUME("get_alarming_volume"),
+    GET_CLOCK_VOLUME("get_clock_volume"),
+    GET_DOORBELL_VOLUME("get_doorbell_volume"),
+    GET_ARM_WAIT_TIME("get_arm_wait_time"),
+    ALARM_TIME_LEN("alarm_time_len"),
+    EN_ALARM_LIGHT("en_alarm_light"),
+    GET_CORRIDOR_ON_TIME("get_corridor_on_time"),
+    GET_ZIGBEE_CHANNEL("get_zigbee_channel"),
+    GET_RGB("get_rgb"),
+    GET_NIGHTLIGHT_RGB("get_night_light_rgb"),
+    GET_LUMI_BIND("get_lumi_bind"),
+    GET_PROP_PLUG("get_prop_plug"),
 
     UNKNOWN("");
 

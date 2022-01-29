@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,8 +47,11 @@ public class PowermaxBindingConstants {
 
     // List of all Channel ids
     public static final String MODE = "mode";
+    public static final String LAST_MESSAGE_TIME = "last_message_time";
+    public static final String ACTIVE_ALERTS = "active_alerts";
     public static final String TROUBLE = "trouble";
     public static final String ALERT_IN_MEMORY = "alert_in_memory";
+    public static final String RINGING = "ringing";
     public static final String SYSTEM_STATUS = "system_status";
     public static final String READY = "ready";
     public static final String WITH_ZONES_BYPASSED = "with_zones_bypassed";
@@ -58,8 +61,14 @@ public class PowermaxBindingConstants {
     public static final String TRIPPED = "tripped";
     public static final String LAST_TRIP = "last_trip";
     public static final String BYPASSED = "bypassed";
+    public static final String ALARMED = "alarmed";
+    public static final String TAMPER_ALARM = "tamper_alarm";
+    public static final String INACTIVE = "inactive";
+    public static final String TAMPERED = "tampered";
     public static final String ARMED = "armed";
     public static final String LOCKED = "locked";
+    public static final String ZONE_LAST_MESSAGE = "last_message";
+    public static final String ZONE_LAST_MESSAGE_TIME = "last_message_time";
     public static final String LOW_BATTERY = "low_battery";
     public static final String PGM_STATUS = "pgm_status";
     public static final String X10_STATUS = "x10_status";

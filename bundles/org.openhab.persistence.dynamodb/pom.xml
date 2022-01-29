@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>3.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.dynamodb</artifactId>
@@ -19,10 +19,10 @@
       <dependencies> -->
     <bnd.importpackage>!com.amazonaws.*,!com.sun.org.apache.xpath.*,!kotlin,!org.apache.log.*,!org.bouncycastle.*,!org.joda.convert.*,!scala.util.*,!software.amazon.*,!org.reactivestreams,!com.typesafe.netty</bnd.importpackage>
     <!-- We do not want to embed/compile in dependencies that are declared as OSGi imports (feature.xml). This includes e.g.
-      netty & jackson. Let's ensure by listing relevant packages with dep.noembedding -->
-    <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler,jackson-core,jackson-annotations,jackson-dataformat-cbor,jackson-databind</dep.noembedding>
-    <!-- netty version matching the openhab.tp-netty feature version -->
-    <slf4j.version>1.7.21</slf4j.version>
+      netty. Let's ensure by listing relevant packages with dep.noembedding -->
+    <dep.noembedding>netty-common,netty-transport,netty-transport-native-epoll,netty-transport-native-unix-common,netty-buffer,netty-resolver,netty-codec,netty-codec-http,netty-codec-http2,netty-handler</dep.noembedding>
+    <!-- slf4j version matching the version specified in openhab-core/pom.xml -->
+    <slf4j.version>1.7.32</slf4j.version>
   </properties>
 
   <!--Custom repository for DynamoDBLocal -->
@@ -61,7 +61,7 @@
 
   <!-- Let's ensure the correct versions with dependencyManagement.
 
-    We want to run our tests and compilations using netty and jackson version used in the runtime (provided as OSGi features).
+    We want to run our tests and compilations using netty version used in the runtime (provided as OSGi features).
     slf4j-api version is locked to core-version. Also: slf4j comes via openHAB logging, so setting it here as provided to
     have the right OSGi imports.
   -->
@@ -72,21 +72,6 @@
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-annotations</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-core</artifactId>
-        <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.core</groupId>
-        <artifactId>jackson-databind</artifactId>
-        <version>${jackson.version}</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
@@ -213,87 +198,97 @@
     <dependency>
       <groupId>com.typesafe.netty</groupId>
       <artifactId>netty-reactive-streams-http</artifactId>
-      <version>2.0.4</version>
+      <version>2.0.5</version>
     </dependency>
     <dependency>
       <groupId>com.typesafe.netty</groupId>
       <artifactId>netty-reactive-streams</artifactId>
-      <version>2.0.4</version>
+      <version>2.0.5</version>
     </dependency>
     <dependency>
       <groupId>org.reactivestreams</groupId>
       <artifactId>reactive-streams</artifactId>
-      <version>1.0.2</version>
+      <version>1.0.3</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>annotations</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>auth</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>aws-core</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>aws-json-protocol</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>dynamodb-enhanced</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>dynamodb</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>http-client-spi</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>json-utils</artifactId>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>metrics-spi</artifactId>
-      <version>2.15.77</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>netty-nio-client</artifactId>
-      <version>2.15.77</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>profiles</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>protocol-core</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>regions</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>sdk-core</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>third-party-jackson-core</artifactId>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>utils</artifactId>
-      <version>2.15.56</version>
+      <version>2.17.102</version>
     </dependency>
     <dependency>
       <groupId>software.amazon.eventstream</groupId>

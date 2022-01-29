@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,18 +12,21 @@
  */
 package org.openhab.binding.xmltv.internal.discovery;
 
-import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.XMLTV_CHANNEL_THING_TYPE;
+import static org.openhab.binding.xmltv.internal.XmlTVBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.xmltv.internal.XmlTVBindingConstants;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.xmltv.internal.configuration.XmlChannelConfiguration;
 import org.openhab.binding.xmltv.internal.handler.XmlTVHandler;
-import org.openhab.binding.xmltv.internal.jaxb.Tv;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,28 +36,33 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(service = ThingHandlerService.class)
 @NonNullByDefault
-public class XmlTVDiscoveryService extends AbstractDiscoveryService {
+public class XmlTVDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+    private static final int SEARCH_TIME = 5;
+
     private final Logger logger = LoggerFactory.getLogger(XmlTVDiscoveryService.class);
-
-    private static final int SEARCH_TIME = 10;
-
-    private XmlTVHandler bridgeHandler;
+    private @Nullable XmlTVHandler handler;
 
     /**
      * Creates a XmlTVDiscoveryService with background discovery disabled.
      */
-    public XmlTVDiscoveryService(XmlTVHandler bridgeHandler) {
-        super(XmlTVBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-        this.bridgeHandler = bridgeHandler;
+    @Activate
+    public XmlTVDiscoveryService() {
+        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting XmlTV discovery scan");
-        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
-            Tv tv = bridgeHandler.getXmlFile();
-            if (tv != null) {
+        XmlTVHandler bridgeHandler = handler;
+        if (bridgeHandler != null && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+            bridgeHandler.getXmlFile().ifPresent(tv -> {
                 tv.getMediaChannels().stream().forEach(channel -> {
                     String channelId = channel.getId();
                     String uid = channelId.replaceAll("[^A-Za-z0-9_]", "_");
@@ -67,7 +75,19 @@ public class XmlTVDiscoveryService extends AbstractDiscoveryService {
 
                     thingDiscovered(discoveryResult);
                 });
-            }
+            });
         }
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler handler) {
+        if (handler instanceof XmlTVHandler) {
+            this.handler = (XmlTVHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return handler;
     }
 }

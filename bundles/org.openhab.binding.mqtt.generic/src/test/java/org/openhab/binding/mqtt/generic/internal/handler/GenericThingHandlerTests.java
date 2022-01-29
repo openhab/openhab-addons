@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,5 +191,17 @@ public class GenericThingHandlerTests {
 
         verify(callback).stateUpdated(eq(textChannelUID), argThat(arg -> "UPDATE".equals(arg.toString())));
         assertThat(textValue.getChannelState().toString(), is("UPDATE"));
+    }
+
+    @Test
+    public void handleBridgeStatusChange() {
+        Configuration config = new Configuration();
+        config.put("availabilityTopic", "test/LWT");
+        when(thing.getConfiguration()).thenReturn(config);
+        thingHandler.initialize();
+        thingHandler
+                .bridgeStatusChanged(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null));
+        thingHandler.bridgeStatusChanged(new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
+        verify(connection, times(2)).subscribe(eq("test/LWT"), any());
     }
 }

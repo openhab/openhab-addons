@@ -416,4 +416,95 @@
 			</options>
 		</state>
 	</channel-type>
+
+	<channel-type id="rssi">
+		<item-type>Number</item-type>
+		<label>RSSI</label>
+		<description>Relative received signal strength state</description>
+		<state pattern="%.1f" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="boost_mode_duration">
+		<item-type>Number</item-type>
+		<label>Boost Mode Duration</label>
+		<description>Duration for Boost Mode</description>
+		<state min="0" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="away_mode_duration">
+		<item-type>Number</item-type>
+		<label>Away Mode Duration</label>
+		<description>Duration for Away Mode</description>
+		<state min="0" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="heat_pump_operating_time">
+		<item-type>Number</item-type>
+		<label>Heat Pump Operating Time</label>
+		<description>Time the Heat Pump has been operating in hours</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="electric_booster_operating_time">
+		<item-type>Number</item-type>
+		<label>Electric Bosster Operating Time</label>
+		<description>Time the Electric Bosster has been operating in hours</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power_heatpump">
+		<item-type>Number</item-type>
+		<label>Heat Pump Power</label>
+		<description>Indicates current status of heatpump in watts</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="power_heatelec">
+		<item-type>Number</item-type>
+		<label>Electrical Heater Active</label>
+		<description>Indicates current status of electrical heater in watts</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="water_heater_mode">
+		<item-type>String</item-type>
+		<label>Mode</label>
+		<description>Describes the water heater mode</description>
+		<state>
+			<options>
+				<option value="manualEcoActive">Manual - Eco</option>
+				<option value="manualEcoInactive">Manual</option>
+				<option value="autoMode">Auto</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="showers">
+		<item-type>Number</item-type>
+		<label>Number of showers</label>
+		<description>3 to 5 showers</description>
+		<state min="3" max="5" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="middlewater_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Middle Water Temperature</label>
+		<description>Describes the temperature at the middle sensor</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="boost_mode">
+		<item-type>Switch</item-type>
+		<label>Boost</label>
+		<description>Boost Mode (ON or OFF)</description>
+	</channel-type>
+
+	<channel-type id="away_mode">
+		<item-type>Switch</item-type>
+		<label>Away</label>
+		<description>Away Mode (ON or OFF)</description>
+	</channel-type>
+
+
 </thing:thing-descriptions>

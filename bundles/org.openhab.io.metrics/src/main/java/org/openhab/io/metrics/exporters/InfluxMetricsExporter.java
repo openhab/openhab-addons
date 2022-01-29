@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.io.metrics.exporters;
 
 import java.time.Duration;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,15 +25,15 @@ import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxMeterRegistry;
 
 /**
- * The {@link InfluxMetricsExporter} class implements a MetricsExporter for InfluxDB
+ * The {@link InfluxMetricsExporter} class implements a MetricsExporter for InfluxDB.
  *
  * @author Robert Bach - Initial contribution
  */
 @NonNullByDefault
 public class InfluxMetricsExporter extends MetricsExporter {
 
-    private @Nullable InfluxMeterRegistry influxMeterRegistry = null;
-    private @Nullable CompositeMeterRegistry meterRegistry = null;
+    private @Nullable InfluxMeterRegistry influxMeterRegistry;
+    private @Nullable CompositeMeterRegistry meterRegistry;
 
     @Override
     public void start(CompositeMeterRegistry meterRegistry, MetricsConfiguration metricsConfiguration) {
@@ -44,14 +43,17 @@ public class InfluxMetricsExporter extends MetricsExporter {
 
     @Override
     public void shutdown() {
+        InfluxMeterRegistry influxMeterRegistry = this.influxMeterRegistry;
         if (influxMeterRegistry != null) {
-            Objects.requireNonNull(influxMeterRegistry).stop();
+            influxMeterRegistry.stop();
+            this.influxMeterRegistry = null;
         }
+
+        CompositeMeterRegistry meterRegistry = this.meterRegistry;
         if (meterRegistry != null) {
-            Objects.requireNonNull(meterRegistry).remove(influxMeterRegistry);
-            meterRegistry = null;
+            meterRegistry.remove(influxMeterRegistry);
+            this.meterRegistry = null;
         }
-        influxMeterRegistry = null;
     }
 
     private InfluxConfig getInfluxConfig(MetricsConfiguration metricsConfiguration) {

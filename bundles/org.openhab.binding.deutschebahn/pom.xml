@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.binding.deutschebahn</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Deutsche Bahn Binding</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.14.0</version>
+        <executions>
+          <execution>
+            <id>generate-jaxb-sources</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <generatePackage>org.openhab.binding.deutschebahn.internal.timetable.dto</generatePackage>
+          <schemaDirectory>src/main/resources/xsd</schemaDirectory>
+          <noFileHeader>true</noFileHeader>
+          <locale>en</locale>
+          <episode>false</episode>
+          <extension>true</extension>
+          <args>
+            <arg>-Xxew</arg>
+            <arg>-Xxew:instantiate early</arg>
+          </args>
+          <plugins>
+            <plugin>
+              <groupId>com.github.jaxb-xew-plugin</groupId>
+              <artifactId>jaxb-xew-plugin</artifactId>
+              <version>1.10</version>
+            </plugin>
+          </plugins>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

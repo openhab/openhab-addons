@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.openhab.core.types.RefreshType;
  */
 @NonNullByDefault
 public class MyQLampHandler extends BaseThingHandler implements MyQDeviceHandler {
-    private @Nullable DeviceDTO deviceState;
+    private @Nullable DeviceDTO device;
     private String serialNumber;
 
     public MyQLampHandler(Thing thing) {
@@ -58,12 +58,11 @@ public class MyQLampHandler extends BaseThingHandler implements MyQDeviceHandler
 
         if (command instanceof OnOffType) {
             Bridge bridge = getBridge();
-            final DeviceDTO localState = deviceState;
-            if (bridge != null && localState != null) {
+            final DeviceDTO localDevice = device;
+            if (bridge != null && localDevice != null) {
                 BridgeHandler handler = bridge.getHandler();
                 if (handler != null) {
-                    ((MyQAccountHandler) handler).sendAction(localState.serialNumber,
-                            command == OnOffType.ON ? "turnon" : "turnoff");
+                    ((MyQAccountHandler) handler).sendLampAction(localDevice, command == OnOffType.ON ? "on" : "off");
                 }
             }
         }
@@ -75,9 +74,9 @@ public class MyQLampHandler extends BaseThingHandler implements MyQDeviceHandler
     }
 
     protected void updateState() {
-        final DeviceDTO localState = deviceState;
-        if (localState != null) {
-            String lampState = localState.state.lampState;
+        final DeviceDTO localDevice = device;
+        if (localDevice != null) {
+            String lampState = localDevice.state.lampState;
             updateState("switch", "on".equals(lampState) ? OnOffType.ON : OnOffType.OFF);
         }
     }
@@ -87,7 +86,7 @@ public class MyQLampHandler extends BaseThingHandler implements MyQDeviceHandler
         if (!MyQBindingConstants.THING_TYPE_LAMP.getId().equals(device.deviceFamily)) {
             return;
         }
-        deviceState = device;
+        this.device = device;
         if (device.state.online) {
             updateStatus(ThingStatus.ONLINE);
             updateState();

@@ -25,12 +25,12 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Device Id. House code + unit code, separated by dot. Example A.1</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="X10">X10 lighting</option>
 					<option value="ARC">ARC</option>
@@ -44,6 +44,7 @@
 					<option value="ENERGENIE_5">Energenie 5-gang</option>
 					<option value="COCO">COCO GDR2-2000R</option>
 					<option value="HQ_COCO20">HQ COCO-20</option>
+					<option value="OASE_INSCENIO_FM_N">Oase Inscenio FM Master</option>
 				</options>
 			</parameter>
 		</config-description>

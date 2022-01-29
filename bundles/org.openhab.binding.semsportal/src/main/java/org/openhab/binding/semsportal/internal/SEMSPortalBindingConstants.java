@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingTypeUID;
 public class SEMSPortalBindingConstants {
 
     private static final String BINDING_ID = "semsportal";
-    static final String DATE_FORMAT = "MM.dd.yyyy HH:mm:ss";
+    public static final String TIME_FORMAT = "HH:mm:ss";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_PORTAL = new ThingTypeUID(BINDING_ID, "portal");

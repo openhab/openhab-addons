@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.amplipi.internal.discovery;
 
+import java.net.InetAddress;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -24,6 +25,7 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * This is a discovery participant which finds AmpliPis on the local network
@@ -33,7 +35,10 @@ import org.openhab.core.thing.ThingUID;
  *
  */
 @NonNullByDefault
+@Component
 public class AmpliPiMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
+
+    private static final String AMPLIPI_API = "amplipi-api";
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -42,16 +47,15 @@ public class AmpliPiMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public String getServiceType() {
-        return "_http._tcp";
+        return "_http._tcp.local.";
     }
 
     @Override
     public @Nullable DiscoveryResult createResult(ServiceInfo service) {
         ThingUID uid = getThingUID(service);
         if (uid != null) {
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(service.getName())
-                    .withProperty(AmpliPiBindingConstants.CFG_PARAM_HOSTNAME,
-                            service.getInet4Addresses()[0].getHostAddress())
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Controller")
+                    .withProperty(AmpliPiBindingConstants.CFG_PARAM_HOSTNAME, getIpAddress(service).getHostAddress())
                     .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_HOSTNAME).build();
             return result;
         } else {
@@ -61,7 +65,21 @@ public class AmpliPiMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant
 
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
-        // TODO: Currently, the AmpliPi does not seem to announce any services.
+        if (service.getName().equals(AMPLIPI_API)) {
+            InetAddress ip = getIpAddress(service);
+            if (ip != null) {
+                String id = ip.toString().substring(1).replaceAll("\\.", "");
+                return new ThingUID(AmpliPiBindingConstants.THING_TYPE_CONTROLLER, id);
+            }
+        }
         return null;
+    }
+
+    private @Nullable InetAddress getIpAddress(ServiceInfo service) {
+        if (service.getInet4Addresses().length > 0) {
+            return service.getInet4Addresses()[0];
+        } else {
+            return null;
+        }
     }
 }

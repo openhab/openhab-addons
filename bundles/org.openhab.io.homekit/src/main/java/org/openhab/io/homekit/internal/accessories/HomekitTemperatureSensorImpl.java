@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -25,6 +24,7 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.TemperatureSensorAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TargetTemperatureCharacteristic;
 import io.github.hapjava.services.impl.TemperatureSensorService;
 
@@ -43,9 +43,8 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
 
     @Override
     public CompletableFuture<Double> getCurrentTemperature() {
-        final @Nullable DecimalType state = getStateAs(HomekitCharacteristicType.CURRENT_TEMPERATURE,
-                DecimalType.class);
-        return CompletableFuture.completedFuture(state != null ? convertToCelsius(state.doubleValue()) : 0.0);
+        final @Nullable Double state = getStateAsTemperature(HomekitCharacteristicType.CURRENT_TEMPERATURE);
+        return CompletableFuture.completedFuture(state != null ? state : getMinCurrentTemperature());
     }
 
     @Override
@@ -55,16 +54,23 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
 
     @Override
     public double getMinCurrentTemperature() {
-        return convertToCelsius(
+        // Apple defines default values in Celsius. We need to convert them to Fahrenheit if openHAB is using Fahrenheit
+        // convertToCelsius and convertFromCelsius are only converting if useFahrenheit is set to true, so no additional
+        // check here needed
+        return HomekitCharacteristicFactory.convertToCelsius(
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MIN_VALUE,
-                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE)).doubleValue());
+                        BigDecimal.valueOf(HomekitCharacteristicFactory
+                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE)))
+                                        .doubleValue());
     }
 
     @Override
     public double getMaxCurrentTemperature() {
-        return convertToCelsius(
+        return HomekitCharacteristicFactory.convertToCelsius(
                 getAccessoryConfiguration(HomekitCharacteristicType.CURRENT_TEMPERATURE, HomekitTaggedItem.MAX_VALUE,
-                        BigDecimal.valueOf(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE)).doubleValue());
+                        BigDecimal.valueOf(HomekitCharacteristicFactory
+                                .convertFromCelsius(CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE)))
+                                        .doubleValue());
     }
 
     @Override

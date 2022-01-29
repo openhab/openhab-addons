@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -322,7 +322,7 @@ public abstract class DSCAlarmBaseThingHandler extends BaseThingHandler {
         List<Channel> channels = getThing().getChannels();
 
         for (Channel ch : channels) {
-            if (channelUID == ch.getUID()) {
+            if (ch.getUID().equals(channelUID)) {
                 channel = ch;
                 break;
             }

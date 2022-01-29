@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,10 +35,10 @@ public class RadioThermostatTstatDTO {
     private Integer programMode;
 
     @SerializedName("t_heat")
-    private Integer heatTarget;
+    private Double heatTarget;
 
     @SerializedName("t_cool")
-    private Integer coolTarget;
+    private Double coolTarget;
 
     @SerializedName("override")
     private Integer override;
@@ -86,19 +86,19 @@ public class RadioThermostatTstatDTO {
         this.programMode = programMode;
     }
 
-    public Integer getHeatTarget() {
+    public Double getHeatTarget() {
         return heatTarget;
     }
 
-    public void setHeatTarget(Integer heatTarget) {
+    public void setHeatTarget(Double heatTarget) {
         this.heatTarget = heatTarget;
     }
 
-    public Integer getCoolTarget() {
+    public Double getCoolTarget() {
         return coolTarget;
     }
 
-    public void setCoolTarget(Integer coolTarget) {
+    public void setCoolTarget(Double coolTarget) {
         this.coolTarget = coolTarget;
     }
 
@@ -129,9 +129,9 @@ public class RadioThermostatTstatDTO {
      */
     public Integer getSetpoint() {
         if (mode == 1) {
-            return heatTarget;
+            return heatTarget.intValue();
         } else if (mode == 2) {
-            return coolTarget;
+            return coolTarget.intValue();
         } else {
             return 0;
         }

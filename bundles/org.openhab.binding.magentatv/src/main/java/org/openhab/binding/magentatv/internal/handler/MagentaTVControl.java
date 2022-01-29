@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.magentatv.internal.handler;
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
 import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
@@ -57,7 +57,7 @@ public class MagentaTVControl {
     }
 
     public MagentaTVControl(MagentaTVDynamicConfig config, MagentaTVNetwork network, HttpClient httpClient) {
-        thingId = config.getFriendlyName();
+        this.thingId = config.getFriendlyName();
         this.network = network;
         this.oauth = new MagentaTVOAuth(httpClient);
         this.config = config;
@@ -69,6 +69,10 @@ public class MagentaTVControl {
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+    public void setThingId(String thingId) {
+        this.thingId = thingId;
     }
 
     /**
@@ -476,7 +480,7 @@ public class MagentaTVControl {
      */
     public static String computeMD5(String unhashed) {
         try {
-            byte[] bytesOfMessage = unhashed.getBytes(UTF_8);
+            byte[] bytesOfMessage = unhashed.getBytes(StandardCharsets.UTF_8);
 
             MessageDigest md5 = MessageDigest.getInstance(HASH_ALGORITHM_MD5);
             byte[] hash = md5.digest(bytesOfMessage);
@@ -486,7 +490,7 @@ public class MagentaTVControl {
             }
 
             return sb.toString();
-        } catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+        } catch (NoSuchAlgorithmException e) {
             return "";
         }
     }

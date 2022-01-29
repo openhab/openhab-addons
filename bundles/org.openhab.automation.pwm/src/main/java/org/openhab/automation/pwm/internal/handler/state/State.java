@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,6 +50,7 @@ public abstract class State {
     /**
      * Sets a new state in the state machine.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public synchronized void nextState(Function<StateMachine, ? extends State> nextState) {
         if (context.getState() != this) { // compare identity
             return;

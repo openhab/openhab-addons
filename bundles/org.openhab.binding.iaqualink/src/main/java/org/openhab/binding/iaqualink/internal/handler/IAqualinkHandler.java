@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -206,7 +206,9 @@ public class IAqualinkHandler extends BaseThingHandler {
                     Optional<Auxiliary> optional = Arrays.stream(auxs).filter(o -> o.getName().equals(channelName))
                             .findFirst();
                     if (optional.isPresent()) {
-                        if (toState(channelName, "Switch", optional.get().getState()) != command) {
+                        OnOffType onOffCommand = (OnOffType) command;
+                        State currentState = toState(channelName, "Switch", optional.get().getState());
+                        if (!currentState.equals(onOffCommand)) {
                             client.auxSetCommand(serialNumber, sessionId, channelName);
                         }
                     }
@@ -225,20 +227,23 @@ public class IAqualinkHandler extends BaseThingHandler {
                     }
                 }
             } else if (command instanceof OnOffType) {
+                OnOffType onOffCommand = (OnOffType) command;
                 // these are toggle commands and require we have the current state to turn on/off
                 if (channelName.startsWith("onetouch_")) {
                     OneTouch[] ota = client.getOneTouch(serialNumber, sessionId);
                     Optional<OneTouch> optional = Arrays.stream(ota).filter(o -> o.getName().equals(channelName))
                             .findFirst();
                     if (optional.isPresent()) {
-                        if (toState(channelName, "Switch", optional.get().getState()) != command) {
+                        State currentState = toState(channelName, "Switch", optional.get().getState());
+                        if (!currentState.equals(onOffCommand)) {
                             logger.debug("Sending command {} to {}", command, channelName);
                             client.oneTouchSetCommand(serialNumber, sessionId, channelName);
                         }
                     }
                 } else if (channelName.endsWith("heater") || channelName.endsWith("pump")) {
                     String value = client.getHome(serialNumber, sessionId).getSerializedMap().get(channelName);
-                    if (toState(channelName, "Switch", value) != command) {
+                    State currentState = toState(channelName, "Switch", value);
+                    if (!currentState.equals(onOffCommand)) {
                         logger.debug("Sending command {} to {}", command, channelName);
                         client.homeScreenSetCommand(serialNumber, sessionId, channelName);
                     }

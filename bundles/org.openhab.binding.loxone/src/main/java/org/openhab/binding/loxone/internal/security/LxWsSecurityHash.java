@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ class LxWsSecurityHash extends LxWsSecurity {
         if (!checkResponse(resp)) {
             return false;
         }
-        String hash = hashString(user + ":" + password, resp.getValueAsString());
+        String hash = hashString(user + ":" + password, resp.getValueAsString(), false);
         if (hash == null) {
             return setError(LxErrorCode.INTERNAL_ERROR, "Error hashing credentials.");
         }

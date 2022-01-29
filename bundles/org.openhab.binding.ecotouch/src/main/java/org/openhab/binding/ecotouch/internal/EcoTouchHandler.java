@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,11 @@ import static org.openhab.core.library.unit.Units.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -107,6 +111,10 @@ public class EcoTouchHandler extends BaseThingHandler {
             // send command to heat pump
             try {
                 EcoTouchTags ecoTouchTag = EcoTouchTags.fromString(channelUID.getId());
+                if (ecoTouchTag == null) {
+                    logger.warn("ID: {} unknown", channelUID.getId());
+                    return;
+                }
                 if (ecoTouchTag == EcoTouchTags.TYPE_ADAPT_HEATING) {
                     // this type needs special treatment
                     QuantityType<?> value = (QuantityType<?>) command;
@@ -189,8 +197,9 @@ public class EcoTouchHandler extends BaseThingHandler {
                     for (EcoTouchTags ecoTouchTag : EcoTouchTags.values()) {
                         String channel = ecoTouchTag.getCommand();
                         boolean linked = isLinked(channel);
-                        if (linked)
+                        if (linked) {
                             tags.add(ecoTouchTag.getTagName());
+                        }
                     }
                     var localConnector = connector;
                     if (localConnector != null) {
@@ -216,8 +225,9 @@ public class EcoTouchHandler extends BaseThingHandler {
             };
 
             var localConfig = config;
-            if (localConfig != null)
+            if (localConfig != null) {
                 refreshJob = scheduler.scheduleWithFixedDelay(runnable, 10, localConfig.refresh, TimeUnit.SECONDS);
+            }
         }
     }
 
@@ -229,7 +239,8 @@ public class EcoTouchHandler extends BaseThingHandler {
             localRefreshJob = null;
         }
         var localConnector = connector;
-        if (localConnector != null)
+        if (localConnector != null) {
             localConnector.logout();
+        }
     }
 }

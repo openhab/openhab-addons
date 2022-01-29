@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -277,8 +278,8 @@ public class GreeAirDevice {
         // If commanding Fahrenheit set halfStep to 1 or 0 to tell the A/C which F integer
         // temperature to use as celsius alone is ambigious
         double newVal = temp.doubleValue();
-        int CorF = temp.getUnit() == SIUnits.CELSIUS ? TEMP_UNIT_CELSIUS : TEMP_UNIT_FAHRENHEIT; // 0=Celsius,
-                                                                                                 // 1=Fahrenheit
+        int CorF = SIUnits.CELSIUS.equals(temp.getUnit()) ? TEMP_UNIT_CELSIUS : TEMP_UNIT_FAHRENHEIT; // 0=Celsius,
+        // 1=Fahrenheit
         if (((CorF == TEMP_UNIT_CELSIUS) && (newVal < TEMP_MIN_C || newVal > TEMP_MAX_C))
                 || ((CorF == TEMP_UNIT_FAHRENHEIT) && (newVal < TEMP_MIN_F || newVal > TEMP_MAX_F))) {
             throw new IllegalArgumentException("Temp Value out of Range");
@@ -404,7 +405,7 @@ public class GreeAirDevice {
         }
 
         // Finally Compare the values
-        return currvalList.get(currvalueArrayposition) != prevvalList.get(prevvalueArrayposition);
+        return !Objects.equals(currvalList.get(currvalueArrayposition), prevvalList.get(prevvalueArrayposition));
     }
 
     protected void executeCommand(DatagramSocket clientSocket, Map<String, Integer> parameters) throws GreeException {

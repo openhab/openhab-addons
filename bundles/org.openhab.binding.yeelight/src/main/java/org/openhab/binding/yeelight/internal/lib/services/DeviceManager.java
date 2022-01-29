@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -332,13 +332,14 @@ public class DeviceManager {
         }
         switch (device.getDeviceType()) {
             case ceiling:
-            case ceiling3:
                 return "Yeelight LED Ceiling";
             case ceiling1:
+            case ceiling3:
                 return "Yeelight LED Ceiling with night mode";
             case ceiling4:
                 return "Yeelight LED Ceiling with ambient light";
             case color:
+            case color4:
                 return "Yeelight Color LED Bulb";
             case mono:
                 return "Yeelight White LED Bulb";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,9 @@
 package org.openhab.io.hueemulation.internal.dto.response;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -64,6 +66,9 @@ public class HueSuccessResponseStateChanged extends HueSuccessResponse {
             }
             if (product.value instanceof String) {
                 jObj.addProperty(product.relURI, (String) product.value);
+            }
+            if (product.value instanceof List) {
+                jObj.add(product.relURI, new Gson().toJsonTree(product.value));
             }
             return jObj;
         }

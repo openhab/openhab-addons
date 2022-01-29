@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class HueEmulationService implements EventHandler {
              * Jetty returns 415 on any GET request if a client sends the Content-Type header.
              * This is a workaround - stripping it away in the preMatching stage.
              */
-            if (requestContext.getMethod() == HttpMethod.GET
+            if (HttpMethod.GET.equals(requestContext.getMethod())
                     && requestContext.getHeaders().containsKey(HttpHeader.CONTENT_TYPE.asString())) {
                 requestContext.getHeaders().remove(HttpHeader.CONTENT_TYPE.asString());
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,15 +36,18 @@ public final class MiIoBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MIIO = new ThingTypeUID(BINDING_ID, "generic");
     public static final ThingTypeUID THING_TYPE_BASIC = new ThingTypeUID(BINDING_ID, "basic");
+    public static final ThingTypeUID THING_TYPE_LUMI = new ThingTypeUID(BINDING_ID, "lumi");
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
     public static final ThingTypeUID THING_TYPE_VACUUM = new ThingTypeUID(BINDING_ID, "vacuum");
     public static final ThingTypeUID THING_TYPE_UNSUPPORTED = new ThingTypeUID(BINDING_ID, "unsupported");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(THING_TYPE_MIIO, THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY,
+                    THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> NONGENERIC_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_BASIC, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED).collect(Collectors.toSet()));
+            Stream.of(THING_TYPE_BASIC, THING_TYPE_LUMI, THING_TYPE_GATEWAY, THING_TYPE_VACUUM, THING_TYPE_UNSUPPORTED)
+                    .collect(Collectors.toSet()));
 
     // List of all Channel IDs
     public static final String CHANNEL_BATTERY = "status#battery";
@@ -65,6 +68,7 @@ public final class MiIoBindingConstants {
     public static final String CHANNEL_VACUUM = "actions#vacuum";
     public static final String CHANNEL_FAN_CONTROL = "actions#fan";
     public static final String CHANNEL_TESTCOMMANDS = "actions#testcommands";
+    public static final String CHANNEL_TESTMIOT = "actions#testmiot";
     public static final String CHANNEL_POWER = "actions#power";
 
     public static final String CHANNEL_SSID = "network#ssid";
@@ -122,4 +126,8 @@ public final class MiIoBindingConstants {
             + File.separator + BINDING_ID;
     public static final String BINDING_USERDATA_PATH = OpenHAB.getUserDataFolder() + File.separator
             + MiIoBindingConstants.BINDING_ID;
+
+    public static final String I18N_THING_PREFIX = "thing.";
+    public static final String I18N_CHANNEL_PREFIX = "ch.";
+    public static final String I18N_OPTION_PREFIX = "option.";
 }

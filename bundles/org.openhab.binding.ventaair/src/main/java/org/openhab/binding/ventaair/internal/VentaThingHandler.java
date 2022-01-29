@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,6 +38,7 @@ import org.openhab.binding.ventaair.internal.message.dto.DeviceInfoMessage;
 import org.openhab.binding.ventaair.internal.message.dto.Header;
 import org.openhab.binding.ventaair.internal.message.dto.Info;
 import org.openhab.binding.ventaair.internal.message.dto.Measurements;
+import org.openhab.core.library.dimension.Density;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -159,7 +160,7 @@ public class VentaThingHandler extends BaseThingHandler {
         if (config.macAddress.isEmpty()) {
             return "Mac Address not set, use discovery to find the correct one";
         }
-        if (config.deviceType == BigDecimal.ZERO) {
+        if (BigDecimal.ZERO.equals(config.deviceType)) {
             return "Device Type not set, use discovery to find the correct one";
         }
         if (config.pollingTime.compareTo(BigDecimal.ZERO) <= 0) {
@@ -275,6 +276,11 @@ public class VentaThingHandler extends BaseThingHandler {
                 updateState(VentaAirBindingConstants.CHANNEL_HUMIDITY, humidityState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_HUMIDITY, humidityState);
 
+                QuantityType<Density> pm25State = new QuantityType<>(measurements.getDust(),
+                        Units.MICROGRAM_PER_CUBICMETRE);
+                updateState(VentaAirBindingConstants.CHANNEL_PM25, pm25State);
+                channelValueCache.put(VentaAirBindingConstants.CHANNEL_PM25, pm25State);
+
                 DecimalType waterLevelState = new DecimalType(measurements.getWaterLevel());
                 updateState(VentaAirBindingConstants.CHANNEL_WATERLEVEL, waterLevelState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_WATERLEVEL, waterLevelState);
@@ -309,6 +315,10 @@ public class VentaThingHandler extends BaseThingHandler {
                 QuantityType<Time> timerTimePassedState = new QuantityType<Time>(info.getTimerT(), Units.MINUTE);
                 updateState(VentaAirBindingConstants.CHANNEL_TIMER_TIME_PASSED, timerTimePassedState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_TIMER_TIME_PASSED, timerTimePassedState);
+
+                QuantityType<Time> serviceTimeState = new QuantityType<Time>(info.getServiceT(), Units.MINUTE);
+                updateState(VentaAirBindingConstants.CHANNEL_SERVICE_TIME, serviceTimeState);
+                channelValueCache.put(VentaAirBindingConstants.CHANNEL_SERVICE_TIME, serviceTimeState);
 
                 updateProperties(info);
             }

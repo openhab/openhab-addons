@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.miio.internal.MiIoBindingConfiguration;
 import org.openhab.binding.miio.internal.MiIoCommand;
 import org.openhab.binding.miio.internal.MiIoDevices;
@@ -41,7 +42,10 @@ import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.miot.MiotParser;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -67,6 +71,7 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
 
     private static final DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
     private static final Gson GSONP = new GsonBuilder().setPrettyPrinting().create();
+    private final HttpClient httpClient;
 
     private final Logger logger = LoggerFactory.getLogger(MiIoUnsupportedHandler.class);
     private final MiIoBindingConfiguration conf = getConfigAs(MiIoBindingConfiguration.class);
@@ -84,8 +89,10 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
     });
 
     public MiIoUnsupportedHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            CloudConnector cloudConnector) {
-        super(thing, miIoDatabaseWatchService, cloudConnector);
+            CloudConnector cloudConnector, HttpClient httpClientFactory, TranslationProvider i18nProvider,
+            LocaleProvider localeProvider) {
+        super(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider, localeProvider);
+        this.httpClient = httpClientFactory;
     }
 
     @Override
@@ -111,6 +118,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         }
         if (channelUID.getId().equals(CHANNEL_TESTCOMMANDS)) {
             executeExperimentalCommands();
+        }
+        if (channelUID.getId().equals(CHANNEL_TESTMIOT)) {
+            executeCreateMiotTestFile();
         }
     }
 
@@ -189,6 +199,59 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         logger.info("{}", sb.toString());
     }
 
+    private void executeCreateMiotTestFile() {
+        sb = new StringBuilder();
+        try {
+            MiotParser miotParser;
+            miotParser = MiotParser.parse(model, httpClient);
+            logger.info("urn: {}", miotParser.getUrn());
+            logger.info("{}", miotParser.getUrnData());
+            MiIoBasicDevice device = miotParser.getDevice();
+            if (device == null) {
+                logger.debug("Error while creating experimental miot db file for {}.", conf.model);
+                return;
+            }
+            sendCommand(MiIoCommand.MIIO_INFO);
+            logger.info("Start experimental creation of database file based on MIOT spec for device '{}'. ",
+                    miDevice.toString());
+            sb.append("Info for ");
+            sb.append(conf.model);
+            sb.append("\r\n");
+            sb.append("Database file created:");
+            sb.append(writeDevice(device, true));
+            sb.append("\r\n");
+            sb.append(MiotParser.toJson(device));
+            sb.append("\r\n");
+            sb.append("Testing Properties:\r\n");
+            int lastCommand = -1;
+            for (MiIoBasicChannel ch : device.getDevice().getChannels()) {
+                if (ch.isMiOt() && ch.getRefresh()) {
+                    JsonObject json = new JsonObject();
+                    json.addProperty("did", ch.getProperty());
+                    json.addProperty("siid", ch.getSiid());
+                    json.addProperty("piid", ch.getPiid());
+                    String cmd = ch.getChannelCustomRefreshCommand().isBlank()
+                            ? ("get_properties[" + json.toString() + "]")
+                            : ch.getChannelCustomRefreshCommand();
+                    sb.append(ch.getChannel());
+                    sb.append(" -> ");
+                    sb.append(cmd);
+                    sb.append(" -> ");
+                    lastCommand = sendCommand(cmd);
+                    sb.append(lastCommand);
+                    sb.append(", \r\n");
+                    testChannelList.put(lastCommand, ch);
+                }
+            }
+            this.lastCommand = lastCommand;
+            sb.append("\r\n");
+            logger.info("{}", sb.toString());
+        } catch (Exception e) {
+            logger.debug("Error while creating experimental miot db file for {}", conf.model);
+            logger.info("{}", sb.toString());
+        }
+    }
+
     private LinkedHashMap<String, MiIoBasicChannel> collectProperties(@Nullable String model) {
         LinkedHashMap<String, MiIoBasicChannel> testChannelsList = new LinkedHashMap<>();
         LinkedHashSet<MiIoDevices> testDeviceList = new LinkedHashSet<>();
@@ -238,7 +301,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             JsonObject deviceMapping = Utils.convertFileToJSON(fn);
             logger.debug("Using device database: {} for device {}", fn.getFile(), deviceName);
             final MiIoBasicDevice device = GSONP.fromJson(deviceMapping, MiIoBasicDevice.class);
-            return device.getDevice().getChannels();
+            if (device != null) {
+                return device.getDevice().getChannels();
+            }
         } catch (JsonIOException | JsonSyntaxException e) {
             logger.warn("Error parsing database Json", e);
         } catch (IOException e) {
@@ -255,7 +320,14 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         sb.append("===================================\r\n");
         sb.append("Device Info: ");
         sb.append(info);
+        sb.append("\r\n");
+        sb.append(supportedChannelList.size());
+        sb.append(" channels with responses.\r\n");
+        int miotChannels = 0;
         for (MiIoBasicChannel ch : supportedChannelList.keySet()) {
+            if (ch.isMiOt()) {
+                miotChannels++;
+            }
             sb.append("Property: ");
             sb.append(Utils.minLengthString(ch.getProperty(), 15));
             sb.append(" Friendly Name: ");
@@ -264,15 +336,17 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             sb.append(supportedChannelList.get(ch));
             sb.append("\r\n");
         }
-        if (!supportedChannelList.isEmpty()) {
+        boolean isMiot = miotChannels > supportedChannelList.size() / 2;
+        if (!supportedChannelList.isEmpty() && !isMiot) {
             MiIoBasicDevice mbd = createBasicDeviceDb(model, new ArrayList<>(supportedChannelList.keySet()));
             sb.append("Created experimental database for your device:\r\n");
             sb.append(GSONP.toJson(mbd));
             sb.append("\r\nDatabase file saved to: ");
-            sb.append(writeDevice(mbd));
+            sb.append(writeDevice(mbd, false));
             isIdentified = false;
         } else {
-            sb.append("No supported channels found.\r\n");
+            sb.append(isMiot ? "Miot file already created. Manually remove non-functional channels.\r\n"
+                    : "No supported channels found.\r\n");
         }
         sb.append("\r\nDevice testing file saved to: ");
         sb.append(writeLog());
@@ -303,14 +377,14 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
         return device;
     }
 
-    private String writeDevice(MiIoBasicDevice device) {
+    private String writeDevice(MiIoBasicDevice device, boolean miot) {
         File folder = new File(BINDING_DATABASE_PATH);
         if (!folder.exists()) {
             folder.mkdirs();
         }
-        File dataFile = new File(folder, model + "-experimental.json");
+        File dataFile = new File(folder, model + (miot ? "-miot" : "") + "-experimental.json");
         try (FileWriter writer = new FileWriter(dataFile)) {
-            writer.write(GSONP.toJson(device));
+            writer.write(miot ? MiotParser.toJson(device) : GSONP.toJson(device));
             logger.debug("Experimental database file created: {}", dataFile.getAbsolutePath());
             return dataFile.getAbsolutePath().toString();
         } catch (IOException e) {

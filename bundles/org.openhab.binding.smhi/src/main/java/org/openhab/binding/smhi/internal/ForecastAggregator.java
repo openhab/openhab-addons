@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,6 +64,9 @@ public class ForecastAggregator {
      */
     public static Optional<BigDecimal> total(TimeSeries timeSeries, int dayOffset, String parameter) {
         List<Forecast> dayForecasts = timeSeries.getDay(dayOffset);
+        if (dayForecasts.size() == 1) {
+            return dayForecasts.get(0).getParameter(parameter);
+        }
         List<BigDecimal> values = new ArrayList<>();
         for (int i = 0; i < dayForecasts.size(); i++) {
             Forecast current = dayForecasts.get(i);

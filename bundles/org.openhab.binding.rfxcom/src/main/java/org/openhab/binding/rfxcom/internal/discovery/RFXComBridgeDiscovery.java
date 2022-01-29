@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,13 @@ import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,8 +54,12 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 
     private ScheduledFuture<?> discoveryJob;
 
-    public RFXComBridgeDiscovery() {
+    @Activate
+    public RFXComBridgeDiscovery(@Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider) {
         super(RFXComBindingConstants.DISCOVERABLE_BRIDGE_THING_TYPES_UIDS, 10, false);
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -135,7 +143,7 @@ public class RFXComBridgeDiscovery extends AbstractDiscoveryService {
 
         ThingUID uid = new ThingUID(bridgeType, bridgeId);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                .withLabel("RFXCOM transceiver").build();
+                .withLabel("@text/discovery.bridge.label").build();
         thingDiscovered(result);
     }
 }

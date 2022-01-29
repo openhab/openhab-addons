@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -218,6 +218,17 @@ public class HomekitTaggedItem {
     public boolean isInverted() {
         final String invertedConfig = getConfiguration(HomekitTaggedItem.INVERTED, "false");
         return invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
+    }
+
+    /**
+     * return configuration as int if exists otherwise return defaultValue
+     *
+     * @param key configuration key
+     * @param defaultValue default value
+     * @return value
+     */
+    public int getConfigurationAsInt(String key, int defaultValue) {
+        return getConfiguration(key, BigDecimal.valueOf(defaultValue)).intValue();
     }
 
     /**

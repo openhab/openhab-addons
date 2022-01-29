@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
 import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -106,12 +109,9 @@ public class SysteminfoHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
-
         if (instantiateSysteminfoLibrary() && isConfigurationValid() && updateProperties()) {
             groupChannelsByPriority();
             scheduleUpdates();
-            logger.debug("Thing is successfully initialized!");
             updateStatus(ThingStatus.ONLINE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -290,6 +290,13 @@ public class SysteminfoHandler extends BaseThingHandler {
 
         try {
             switch (channelID) {
+                case CHANNEL_MEMORY_HEAP_AVAILABLE:
+                    state = new QuantityType<>(Runtime.getRuntime().freeMemory(), Units.BYTE);
+                    break;
+                case CHANNEL_MEMORY_USED_HEAP_PERCENT:
+                    state = new DecimalType((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
+                            * 100 / Runtime.getRuntime().maxMemory());
+                    break;
                 case CHANNEL_DISPLAY_INFORMATION:
                     state = systeminfo.getDisplayInformation(deviceIndex);
                     break;

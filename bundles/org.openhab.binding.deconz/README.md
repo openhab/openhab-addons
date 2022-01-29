@@ -26,6 +26,7 @@ These sensors are supported:
 | Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`    |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 | Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxide`     |
+| Air quality Sensor                | ZHAAirQuality                     | `airqualitysensor`   |
 | Color Controller                  | ZBT-Remote-ALL-RGBW               | `colorcontrol`       |
 
 
@@ -150,6 +151,8 @@ The sensor devices support some of the following channels:
 | battery_level   | Number                   | R           | Battery level (in %)                                                                      | any battery-powered sensor                        |
 | battery_low     | Switch                   | R           | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                        |
 | carbonmonoxide  | Switch                   | R           | `ON` = carbon monoxide detected                                                           | carbonmonoxide                                    |
+| airquality      | String                   | R           | Current air quality level                                                                 | airqualitysensor                                  |
+| airqualityppb   | Number:Dimensionless     | R           | Current air quality ppb (parts per billion)                                               | airqualitysensor                                  |
 | color           | Color                    | R           | Color set by remote                                                                       | colorcontrol                                      |
 | windowopen      | Contact                  | R           | `windowopen` status is reported by some thermostats                                       | thermostat                                        |
 
@@ -218,6 +221,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
     presencesensor      livingroom-presence     "Livingroom Presence"       [ id="1" ]
     temperaturesensor   livingroom-temperature  "Livingroom Temperature"    [ id="2" ]
     humiditysensor      livingroom-humidity     "Livingroom Humidity"       [ id="3" ]
+    airqualitysensor    livingroom-voc          "Livingroom Voc"            [ id="9" ]
     pressuresensor      livingroom-pressure     "Livingroom Pressure"       [ id="4" ]
     openclosesensor     livingroom-window       "Livingroom Window"         [ id="5" ]
     switch              livingroom-hue-tap      "Livingroom Hue Tap"        [ id="6" ]
@@ -235,6 +239,8 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ] {
 Switch                  Livingroom_Presence     "Presence Livingroom [%s]"          <motion>        { channel="deconz:presencesensor:homeserver:livingroom-presence:presence" }
 Number:Temperature      Livingroom_Temperature  "Temperature Livingroom [%.1f °C]"  <temperature>   { channel="deconz:temperaturesensor:homeserver:livingroom-temperature:temperature" }
 Number:Dimensionless    Livingroom_Humidity     "Humidity Livingroom [%.1f %%]"     <humidity>      { channel="deconz:humiditysensor:homeserver:livingroom-humidity:humidity" }
+String                  Livingroom_voc_label    "Air quality Livingroom [%s]"                       { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airquality" }
+Number:Dimensionless    Livingroom_voc          "Air quality [%d ppb]"                              { channel="deconz:airqualitysensor:homeserver:livingroom-voc:airqualityppb" }
 Number:Pressure         Livingroom_Pressure     "Pressure Livingroom [%.1f hPa]"    <pressure>      { channel="deconz:pressuresensor:homeserver:livingroom-pressure:pressure" }
 Contact                 Livingroom_Window       "Window Livingroom [%s]"            <door>          { channel="deconz:openclosesensor:homeserver:livingroom-window:open" }
 Switch                  Basement_Water_Leakage  "Basement Water Leakage [%s]"                       { channel="deconz:waterleakagesensor:homeserver:basement-water-leakage:waterleakage" }

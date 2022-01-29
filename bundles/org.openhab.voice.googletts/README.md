@@ -12,7 +12,7 @@ You can find pricing information on the [documentation page](https://cloud.googl
 <!-- MarkdownTOC -->
 
 * [Obtaining Credentials](#obtaining-credentials)
-* [Service Configuration](#service-configuration)
+* [Configuration](#configuration)
 * [Voice Configuration](#voice-configuration)
 
 <!-- /MarkdownTOC -->
@@ -30,7 +30,7 @@ Before you can integrate this service with your Google Cloud Text-to-Speech, you
   * Select application type "TV and Limited Input" and enter a name into the "Name" field.
   * Click Create. A pop-up appears, showing your "client ID" and "client secret".
 
-## Service Configuration
+## Configuration
 
 Using your favorite configuration UI to edit **Settings / Other Services - Google Cloud Text-to-Speech** and set:
 
@@ -38,7 +38,7 @@ Using your favorite configuration UI to edit **Settings / Other Services - Googl
 * **Client Secret** - Google Cloud Platform OAuth 2.0-Client Secret.
 * **Authorization Code** - The auth-code is a one-time code needed to retrieve the necessary access-codes from Google Cloud Platform.
 **Please go to your browser ...**
-[https://accounts.google.com/o/oauth2/auth?client_id={{clientId}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code](https://accounts.google.com/o/oauth2/auth?client_id={{clientId}}&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code) (replace `{{clientId}}` by your Client Id)
+[https://accounts.google.com/o/oauth2/auth?client_id=<clientId>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code](https://accounts.google.com/o/oauth2/auth?client_id=<clientId>&redirect_uri=urn:ietf:wg:oauth:2.0:oob&scope=https://www.googleapis.com/auth/cloud-platform&response_type=code) (replace `<clientId>` by your Client Id)
 **... to generate an auth-code and paste it here**.
 After initial authorization, this code is not needed anymore.
 It is recommended to clear this configuration parameter afterwards.
@@ -50,11 +50,32 @@ It is recommended to clear this configuration parameter afterwards.
 When enabled the cache is purged once.
 Make sure to disable this setting again so the cache is maintained after restarts.
 
-## Voice Configuration
+In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `googletts.cfg`
 
-Using your favorite configuration UI:
+Its contents should look similar to:
+
+```
+org.openhab.voice.googletts:clientId=ID
+org.openhab.voice.googletts:clientSecret=SECRET
+org.openhab.voice.googletts:authcode=XXXXX
+org.openhab.voice.googletts:pitch=0
+org.openhab.voice.googletts:volumeGain=0
+org.openhab.voice.googletts:speakingRate=1
+org.openhab.voice.googletts:purgeCache=false
+```
+
+### Default Text-to-Speech and Voice Configuration
+
+You can setup your preferred default Text-to-Speech and default voice in the UI:
 
 * Go to **Settings**.
 * Edit **System Services - Voice**.
 * Set **Google Cloud** as **Default Text-to-Speech**.
 * Choose your preferred **Default Voice** for your setup.
+
+In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+
+```
+org.openhab.voice:defaultTTS=googletts
+org.openhab.voice:defaultVoice=googletts:XXX
+```

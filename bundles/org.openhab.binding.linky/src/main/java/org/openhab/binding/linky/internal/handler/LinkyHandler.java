@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,10 +64,10 @@ import com.google.gson.Gson;
 
 @NonNullByDefault
 public class LinkyHandler extends BaseThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
-
     private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
     private static final int REFRESH_INTERVAL_IN_MIN = 120;
+
+    private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
     private final HttpClient httpClient;
     private final Gson gson;
@@ -146,12 +146,11 @@ public class LinkyHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
-        enedisApi = new EnedisHttpApi(config, gson, httpClient);
-
-        scheduler.submit(() -> {
-            try {
-                EnedisHttpApi api = this.enedisApi;
-                if (api != null) {
+        if (config.seemsValid()) {
+            enedisApi = new EnedisHttpApi(config, gson, httpClient);
+            scheduler.submit(() -> {
+                try {
+                    EnedisHttpApi api = this.enedisApi;
                     api.initialize();
                     updateStatus(ThingStatus.ONLINE);
 
@@ -179,13 +178,14 @@ public class LinkyHandler extends BaseThingHandler {
                     refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
                             ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
                             REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-                } else {
-                    throw new LinkyException("Enedis Api is not initialized");
+                } catch (LinkyException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
-            } catch (LinkyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
+            });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-mandatory-settings");
+        }
     }
 
     /**
@@ -369,6 +369,7 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
+                logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -385,6 +386,7 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.ONLINE);
                 return consumption;
             } catch (LinkyException e) {
+                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
@@ -401,7 +403,8 @@ public class LinkyHandler extends BaseThingHandler {
         if (api != null) {
             try {
                 api.dispose();
-            } catch (LinkyException ignore) {
+            } catch (LinkyException e) {
+                logger.debug("disconnect: {}", e.getMessage());
             }
         }
     }
@@ -470,7 +473,7 @@ public class LinkyHandler extends BaseThingHandler {
         return consumption;
     }
 
-    public void checkData(Consumption consumption) throws LinkyException {
+    private void checkData(Consumption consumption) throws LinkyException {
         if (consumption.aggregats.days.periodes.size() == 0) {
             throw new LinkyException("invalid consumptions data: no day period");
         }

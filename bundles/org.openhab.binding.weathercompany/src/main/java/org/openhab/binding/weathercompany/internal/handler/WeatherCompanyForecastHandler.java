@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             case CONFIG_LOCATION_TYPE_POSTAL_CODE:
                 String postalCode = config.postalCode;
                 if (postalCode == null || postalCode.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Postal code is not set");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-unset-postal-code");
                 } else {
                     locationQueryString = "&postalKey=" + postalCode.replace(" ", "");
                     validLocation = true;
@@ -137,7 +138,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             case CONFIG_LOCATION_TYPE_GEOCODE:
                 String geocode = config.geocode;
                 if (geocode == null || geocode.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Geocode is not set");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-unset-geocode");
                 } else {
                     locationQueryString = "&geocode=" + geocode.replace(" ", "");
                     validLocation = true;
@@ -146,14 +148,16 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             case CONFIG_LOCATION_TYPE_IATA_CODE:
                 String iataCode = config.iataCode;
                 if (iataCode == null || iataCode.isBlank()) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IATA code is not set");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "@text/offline.config-error-unset-iata-code");
                 } else {
                     locationQueryString = "&iataCode=" + iataCode.replace(" ", "").toUpperCase();
                     validLocation = true;
                 }
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location Type is not set");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-unset-location-type");
                 break;
         }
         return validLocation;
@@ -216,7 +220,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             updateDaypartForecast(forecast.daypart);
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing daily forecast response object", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing daily forecast");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-parsing-daily-forecast");
             return;
         }
     }
@@ -244,7 +249,8 @@ public class WeatherCompanyForecastHandler extends WeatherCompanyAbstractHandler
             logger.debug("Handler: Successfully parsed daypart forecast object");
         } catch (JsonSyntaxException e) {
             logger.debug("Handler: Error parsing daypart forecast object: {}", e.getMessage(), e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing daypart forecast");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/offline.comm-error-parsing-daypart-forecast");
             return;
         }
         logger.debug("There are {} daypart forecast entries", dayparts.length);

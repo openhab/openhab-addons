@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,7 +106,7 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
         return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
-                .withProperty(CONFIG_SEGMENT_INDEX, -1).withLabel(label).withProperties(properties)
+                .withProperty(CONFIG_SEGMENT_INDEX, 0).withLabel(label).withProperties(properties)
                 .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
     }
 

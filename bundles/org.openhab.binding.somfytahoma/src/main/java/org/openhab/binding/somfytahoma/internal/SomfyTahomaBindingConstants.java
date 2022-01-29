@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -144,6 +144,9 @@ public class SomfyTahomaBindingConstants {
     // Electricity sensor
     public static final ThingTypeUID THING_TYPE_ELECTRICITYSENSOR = new ThingTypeUID(BINDING_ID, "electricitysensor");
 
+    // Water Heating System
+    public static final ThingTypeUID THING_TYPE_WATERHEATINGSYSTEM = new ThingTypeUID(BINDING_ID, "waterheatingsystem");
+
     // Dock
     public static final ThingTypeUID THING_TYPE_DOCK = new ThingTypeUID(BINDING_ID, "dock");
 
@@ -260,6 +263,20 @@ public class SomfyTahomaBindingConstants {
     // ElectricitySensor
     public static final String ENERGY_CONSUMPTION = "energy_consumption";
 
+    // WaterHeaterSystem
+    public static final String MIDDLEWATER_TEMPERATURE = "middlewater_temperature";
+    public static final String BOOST_MODE = "boost_mode";
+    public static final String AWAY_MODE = "away_mode";
+    public static final String BOOST_MODE_DURATION = "boost_mode_duration";
+    public static final String AWAY_MODE_DURATION = "away_mode_duration";
+    public static final String HEAT_PUMP_OPERATING_TIME = "heat_pump_operating_time";
+    public static final String POWER_HEAT_PUMP = "power_heatpump";
+    public static final String POWER_HEAT_ELEC = "power_heatelec";
+    public static final String WATER_HEATER_MODE = "mode";
+    public static final String WATER_TEMPERATURE = "water_temperature";
+    public static final String ELECTRIC_BOOSTER_OPERATING_TIME = "electric_booster_operating_time";
+    public static final String SHOWERS = "showers";
+
     // Dock
     public static final String BATTERY_STATUS = "battery_status";
     public static final String SIREN_STATUS = "siren_status";
@@ -281,7 +298,12 @@ public class SomfyTahomaBindingConstants {
     public static final String SHUTTER = "shutter";
 
     // Constants
+    public static final String COZYTOUCH_PORTAL = "ha110-1.overkiz.com";
     public static final String TAHOMA_PORTAL = "www.tahomalink.com";
+    public static final String COZYTOUCH_OAUTH2_URL = "api.groupe-atlantic.com";
+    public static final String COZYTOUCH_OAUTH2_BASICAUTH = "czduc0RZZXdWbjVGbVV4UmlYN1pVSUM3ZFI4YTphSDEzOXZmbzA1ZGdqeDJkSFVSQkFTbmhCRW9h";
+    public static final String COZYTOUCH_OAUTH2_TOKEN_URL = "/token";
+    public static final String COZYTOUCH_OAUTH2_JWT_URL = "/gacoma/gacomawcfservice/accounts/jwt";
     public static final String API_BASE_URL = "/enduser-mobile-web/enduserAPI/";
     public static final String EVENTS_URL = "events/";
     public static final String SETUP_URL = "setup/";
@@ -293,12 +315,14 @@ public class SomfyTahomaBindingConstants {
     public static final String TAHOMA_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36";
     public static final int TAHOMA_TIMEOUT = 5;
     public static final String UNAUTHORIZED = "Not logged in";
+    public static final int TYPE_NONE = 0;
     public static final int TYPE_PERCENT = 1;
     public static final int TYPE_DECIMAL = 2;
     public static final int TYPE_STRING = 3;
     public static final int TYPE_BOOLEAN = 6;
     public static final String UNAVAILABLE = "unavailable";
     public static final String AUTHENTICATION_CHALLENGE = "HTTP protocol violation: Authentication challenge without WWW-Authenticate header";
+    public static final String AUTHENTICATION_OAUTH_GRANT_ERROR = "Provided Authorization Grant is invalid.";
     public static final String TOO_MANY_REQUESTS = "Too many requests, try again later";
     public static final int SUSPEND_TIME = 120;
     public static final int RECONCILIATION_TIME = 600;
@@ -323,8 +347,24 @@ public class SomfyTahomaBindingConstants {
     public static final String COMMAND_STOP = "stop";
     public static final String COMMAND_OFF = "off";
     public static final String COMMAND_CHECK_TRIGGER = "checkEventTrigger";
+    public static final String COMMAND_SET_BOOST_MODE_DURATION = "setBoostModeDuration";
+    public static final String COMMAND_SET_WATER_HEATER_MODE = "setDHWMode";
+    public static final String COMMAND_SET_AWAY_MODE_DURATION = "setAwayModeDuration";
+    public static final String COMMAND_SET_CURRENT_OPERATING_MODE = "setCurrentOperatingMode";
+    public static final String COMMAND_SET_TARGET_TEMPERATURE = "setTargetTemperature";
+    public static final String COMMAND_REFRESH_DHWMODE = "refreshDHWMode";
+    public static final String COMMAND_REFRESH_BOOST_MODE_DURATION = "refreshBoostModeDuration";
 
     // States
+    public static final String OPERATING_MODE_STATE = "core:OperatingModeState";
+    public static final String ELECTRIC_BOOSTER_OPERATING_TIME_STATE = "io:ElectricBoosterOperatingTimeState";
+    public static final String WATER_HEATER_MODE_STATE = "io:DHWModeState";
+    public static final String POWER_HEAT_ELEC_STATE = "io:PowerHeatElectricalState";
+    public static final String POWER_HEAT_PUMP_STATE = "io:PowerHeatPumpState";
+    public static final String HEAT_PUMP_OPERATING_TIME_STATE = "io:HeatPumpOperatingTimeState";
+    public static final String BOOST_MODE_DURATION_STATE = "core:BoostModeDurationState";
+    public static final String AWAY_MODE_DURATION_STATE = "io:AwayModeDurationState";
+    public static final String MIDDLE_WATER_TEMPERATURE_STATE = "io:MiddleWaterTemperatureState";
     public static final String NAME_STATE = "core:NameState";
     public static final String RSSI_LEVEL_STATE = "core:RSSILevelState";
     public static final String STATUS_STATE = "core:StatusState";
@@ -340,6 +380,7 @@ public class SomfyTahomaBindingConstants {
     public static final String BATTERY_LEVEL_STATE = "core:BatteryLevelState";
     public static final String SIREN_STATUS_STATE = "internal:SirenStatusState";
     public static final String TARGET_TEMPERATURE_STATE = "core:TargetTemperatureState";
+    public static final String TEMPERATURE_STATE = "core:TemperatureState";
     public static final String TARGET_ROOM_TEMPERATURE_STATE = "core:TargetRoomTemperatureState";
     public static final String SMOKE_STATE = "core:SmokeState";
     public static final String SENSOR_DEFECT_STATE = "core:SensorDefectState";
@@ -378,6 +419,7 @@ public class SomfyTahomaBindingConstants {
     public static final String CLASS_SIREN = "Siren";
     public static final String CLASS_ADJUSTABLE_SLATS_ROLLER_SHUTTER = "AdjustableSlatsRollerShutter";
     public static final String CLASS_CAMERA = "Camera";
+    public static final String CLASS_WATER_HEATING_SYSTEM = "WaterHeatingSystem";
 
     // unsupported uiClasses
     public static final String THING_PROTOCOL_GATEWAY = "ProtocolGateway";
@@ -400,7 +442,7 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER, THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO,
             THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
             THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM, THING_TYPE_VALVE_HEATING_SYSTEM,
-            THING_TYPE_BIOCLIMATIC_PERGOLA));
+            THING_TYPE_BIOCLIMATIC_PERGOLA, THING_TYPE_WATERHEATINGSYSTEM));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {

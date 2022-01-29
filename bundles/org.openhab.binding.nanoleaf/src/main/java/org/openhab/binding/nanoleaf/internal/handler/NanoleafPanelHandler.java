@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ import org.openhab.binding.nanoleaf.internal.OpenAPIUtils;
 import org.openhab.binding.nanoleaf.internal.config.NanoleafControllerConfig;
 import org.openhab.binding.nanoleaf.internal.model.Effects;
 import org.openhab.binding.nanoleaf.internal.model.Write;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -81,15 +82,14 @@ public class NanoleafPanelHandler extends BaseThingHandler {
     private @NonNullByDefault({}) ScheduledFuture<?> singleTapJob;
     private @NonNullByDefault({}) ScheduledFuture<?> doubleTapJob;
 
-    public NanoleafPanelHandler(Thing thing, HttpClient httpClient) {
+    public NanoleafPanelHandler(Thing thing, HttpClientFactory httpClientFactory) {
         super(thing);
-        this.httpClient = httpClient;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
     public void initialize() {
         logger.debug("Initializing handler for panel {}", getThing().getUID());
-        updateStatus(ThingStatus.OFFLINE);
         Bridge controller = getBridge();
         if (controller == null) {
             initializePanel(new ThingStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, ""));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,7 +129,8 @@ public class EnOceanBaseSensorHandler extends EnOceanBaseThingHandler implements
 
     protected Predicate<Channel> channelFilter(EEPType eepType, byte[] senderId) {
         return c -> {
-            boolean result = eepType.GetSupportedChannels().containsKey(c.getUID().getId());
+
+            boolean result = eepType.isChannelSupported(c);
             return (isLinked(c.getUID()) || c.getKind() == ChannelKind.TRIGGER) && result;
         };
     }

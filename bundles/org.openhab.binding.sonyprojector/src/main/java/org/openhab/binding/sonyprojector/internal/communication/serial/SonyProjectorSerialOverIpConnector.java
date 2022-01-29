@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,8 +21,9 @@ import java.net.SocketTimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sonyprojector.internal.SonyProjectorException;
 import org.openhab.binding.sonyprojector.internal.SonyProjectorModel;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConnectionException;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
     }
 
     @Override
-    public synchronized void open() throws SonyProjectorException {
+    public synchronized void open() throws ConnectionException {
         if (!connected) {
             logger.debug("Opening serial over IP connection on IP {} port {}", this.address, this.port);
             try {
@@ -75,8 +76,7 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
 
                 logger.debug("Serial over IP connection opened");
             } catch (IOException | SecurityException | IllegalArgumentException e) {
-                logger.debug("Opening serial over IP connection failed: {}", e.getMessage());
-                throw new SonyProjectorException("Opening serial over IP connection failed: " + e.getMessage());
+                throw new ConnectionException("@text/exception.opening-serial-over-ip-connection-failed", e);
             }
         }
     }
@@ -106,15 +106,15 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
      * @param dataBuffer the buffer into which the data is read.
      * @return the total number of bytes read into the buffer, or -1 if there is no more data because the end of the
      *         stream has been reached.
-     * @throws SonyProjectorException - If the input stream is null, if the first byte cannot be read for any reason
+     * @throws CommunicationException if the input stream is null, if the first byte cannot be read for any reason
      *             other than the end of the file, if the input stream has been closed, or if some other I/O error
      *             occurs.
      */
     @Override
-    protected int readInput(byte[] dataBuffer) throws SonyProjectorException {
+    protected int readInput(byte[] dataBuffer) throws CommunicationException {
         InputStream dataIn = this.dataIn;
         if (dataIn == null) {
-            throw new SonyProjectorException("readInput failed: input stream is null");
+            throw new CommunicationException("readInput failed: input stream is null");
         }
         try {
             return dataIn.read(dataBuffer);
@@ -122,7 +122,7 @@ public class SonyProjectorSerialOverIpConnector extends SonyProjectorSerialConne
             return 0;
         } catch (IOException e) {
             logger.debug("readInput failed: {}", e.getMessage());
-            throw new SonyProjectorException("readInput failed: " + e.getMessage());
+            throw new CommunicationException("readInput failed", e);
         }
     }
 }

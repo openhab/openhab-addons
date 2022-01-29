@@ -1,0 +1,26 @@
+{
+  "availability": [
+    {
+      "topic": "zigbee2mqtt/bridge/state"
+    }
+  ],
+  "command_topic": "zigbee2mqtt/th1/set/auto_lock",
+  "device": {
+    "identifiers": [
+      "zigbee2mqtt_0x847127fffe11dd6a"
+    ],
+    "manufacturer": "TuYa",
+    "model": "Radiator valve with thermostat (TS0601_thermostat)",
+    "name": "th1",
+    "sw_version": "Zigbee2MQTT 1.18.2"
+  },
+  "json_attributes_topic": "zigbee2mqtt/th1",
+  "name": "th1 auto lock",
+  "payload_off": "MANUAL",
+  "payload_on": "AUTO",
+  "state_off": "MANUAL",
+  "state_on": "AUTO",
+  "state_topic": "zigbee2mqtt/th1",
+  "unique_id": "0x847127fffe11dd6a_auto_lock_zigbee2mqtt",
+  "value_template": "{{ value_json.auto_lock }}"
+}

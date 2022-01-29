@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.nikohomecontrol.internal.handler;
+
+import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.THREAD_NAME_PREFIX;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -50,11 +52,12 @@ public class NikoHomeControlBridgeHandler1 extends NikoHomeControlBridgeHandler 
         logger.debug("bridge handler host {}, port {}", addr, port);
 
         if (addr != null) {
-            nhcComm = new NikoHomeControlCommunication1(this, scheduler);
+            String eventThreadName = THREAD_NAME_PREFIX + thing.getUID().getAsString();
+            nhcComm = new NikoHomeControlCommunication1(this, scheduler, eventThreadName);
             startCommunication();
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                    "Cannot resolve bridge IP with hostname " + config.addr);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.ip");
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,8 @@ public class RFXComLighting1Message extends RFXComDeviceMessageImpl<RFXComLighti
         ENERGENIE(8),
         ENERGENIE_5(9),
         COCO(10),
-        HQ_COCO20(11);
+        HQ_COCO20(11),
+        OASE_INSCENIO_FM_N(12);
 
         private final int subType;
 

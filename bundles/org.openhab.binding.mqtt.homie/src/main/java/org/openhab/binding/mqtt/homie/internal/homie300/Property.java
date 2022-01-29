@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
+import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
@@ -47,6 +48,7 @@ import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.types.util.UnitUtils;
 import org.openhab.core.util.UIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,7 +179,7 @@ public class Property implements AttributeChanged {
         Value value;
         Boolean isDecimal = null;
 
-        if (attributes.name == "") {
+        if (attributes.name.isEmpty()) {
             attributes.name = propertyID;
         }
 
@@ -215,8 +217,11 @@ public class Property implements AttributeChanged {
                 if (attributes.unit.contains("%") && attributes.settable) {
                     value = new PercentageValue(min, max, step, null, null);
                 } else {
-                    value = new NumberValue(min, max, step, attributes.unit);
+                    value = new NumberValue(min, max, step, UnitUtils.parseUnit(attributes.unit));
                 }
+                break;
+            case datetime_:
+                value = new DateTimeValue();
                 break;
             case string_:
             case unknown:

@@ -1,6 +1,6 @@
 # Systeminfo Binding
 
-System information Binding provides operating system and hardware information including:
+The system information binding provides operating system and hardware information including:
 
 -   Operating system name, version and manufacturer;
 -   CPU average load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime;
@@ -14,7 +14,7 @@ System information Binding provides operating system and hardware information in
 -   Network IP,name and adapter name, mac, data sent and received, packets sent and received;
 -   Process information - size of RAM memory used, CPU load, process name, path, number of threads.
 
-The binding uses [OSHI](https://github.com/oshi/oshi) API to access this information regardless of the underlying platform and does not need any native parts.
+The binding uses the [OSHI](https://github.com/oshi/oshi) library to access this information regardless of the underlying OS and hardware.
 
 ## Supported Things
 
@@ -28,8 +28,7 @@ The thing has the following properties:
 -   `os_version` - The version of the operating system
 -   `os_family` - The family of the operating system
 
-If multiple storage or display devices support is needed, new thing type has to be defined.
-This is workaround until [this issue](https://github.com/eclipse/smarthome/issues/588) is resolved and it is possible to add dynamically channels to DSL defined thing.
+If multiple storage or display devices support is needed, a new thing type has to be defined.
 
 ## Discovery
 
@@ -37,12 +36,8 @@ The discovery service implementation tries to resolve the computer name.
 If the resolving process fails, the computer name is set to "Unknown".
 In both cases it creates a Discovery Result with thing type  **computer**.
 
-When [this issue](https://github.com/eclipse/smarthome/issues/1118) is resolved it will be possible to implement creation of dynamic channels (e.g. the binding will scan how much storage devices are present and create channel groups for them).
+It will be possible to implement creation of dynamic channels (e.g. the binding will scan how many storage devices are present and create channel groups for them).
 At the moment this is not supported.
-
-## Binding configuration
-
-No binding configuration required.
 
 ## Thing configuration
 
@@ -57,13 +52,14 @@ That means that by default configuration:
 
 *   channels with priority set to 'High' are updated every second
 *   channels with priority set to 'Medium' are updated every minute
-*   channels with priority set to 'Low' are updated only at initialization or at Refresh command.
+*   channels with priority set to 'Low' are updated only at initialization or if the `REFRESH` command is sent to the channel.
 
 For more info see [channel configuration](#channel-configuration)
 
 ## Channels
 
-The binding support several channel group. Each channel group, contains one or more channels.
+The binding support several channel group.
+Each channel group, contains one or more channels.
 In the list below, you can find, how are channel group and channels id`s related.
 
 **thing** `computer`
@@ -137,7 +133,8 @@ The binding introduces the following channels:
 | packetsReceived    | Number of packets received                                       | Number              | Medium           | True     |
 | dataSent           | Data sent in MB                                                  | Number              | Medium           | True     |
 | dataReceived       | Data received in MB                                              | Number              | Medium           | True     |
-
+| availableHeap      | How many bytes are free out of the currently committed heap      | Number:DataAmount   | Medium           | True     |
+| usedHeapPercent    | How much of the MAX heap size is actually used in %              | Number:Dimensionless| Medium           | False    |
 
 ## Channel configuration
 
@@ -167,27 +164,14 @@ If you find an issue with a support for a specific hardware or software architec
 Your problem might have be already reported and solved!
 Feel free to open a new issue there with the log message and the and information about your software or hardware configuration.
 
-After the issue is resolved the binding has to be [updated](#updating-this-binding).
-
 For a general problem with the binding report the issue directly to openHAB.
-
-## Updating this binding
-
-OSHI project has a good support and regularly updates the library with fixes to issues and new features.
-
-In order to update the version used in the binding, follow these easy steps:
-
--   Go to the [OSHI GitHub repo](https://github.com/oshi/oshi) and download the newest version available of the module oshi-core or download the jar from the [Maven Central](https://search.maven.org/#search%7Cga%7C1%7Coshi-). Check if the versions of the OSHI dependencies as well (jna and jna-platform) are changed;
--   Replace the jars in lib folder;
--   Modify the .classpath file with the new versions of the jars;
--   Modify the header Bundle-ClassPath in the META-INF/MANIFEST.MF.
 
 ## Example
 
 Things:
 
 ```
-systeminfo:computer:work [interval_high=3, interval_medium=60]
+Thing systeminfo:computer:work [interval_high=3, interval_medium=60]
 ```
 
 Items:
@@ -265,7 +249,7 @@ String Process_path               "Path"                <none>           { chann
 Sitemap:
 
 ```
-Text label="Systeminfo" {
+sitemap systeminfo label="Systeminfo" {
     Frame label="Network Information" {
         Default item=Network_AdapterName
         Default item=Network_Name

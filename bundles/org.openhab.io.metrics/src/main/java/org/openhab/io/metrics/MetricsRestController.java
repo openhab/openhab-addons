@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.io.metrics;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
@@ -31,6 +30,7 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.monitor.MeterRegistryProvider;
 import org.openhab.core.io.rest.RESTConstants;
 import org.openhab.io.metrics.exporters.InfluxMetricsExporter;
+import org.openhab.io.metrics.exporters.JmxMetricsExporter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
@@ -56,7 +56,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  *
  * @author Robert Bach - Initial contribution
  */
-@Component(immediate = true, service = MetricsRestController.class)
+@Component(configurationPid = "org.openhab.metrics", immediate = true, service = MetricsRestController.class)
 @JaxrsResource
 @JaxrsApplicationSelect("(" + JaxrsWhiteboardConstants.JAX_RS_NAME + "=" + RESTConstants.JAX_RS_NAME + ")")
 @Path(MetricsRestController.PATH_METRICS)
@@ -64,11 +64,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RolesAllowed({ Role.USER, Role.ADMIN })
 @Tag(name = MetricsRestController.PATH_METRICS)
 @NonNullByDefault
-@ConfigurableService(category = "io", label = "Metrics service", description_uri = "io:metrics")
+@ConfigurableService(category = "io", label = "Metrics Service", description_uri = "io:metrics")
 public class MetricsRestController {
     private final Logger logger = LoggerFactory.getLogger(MetricsRestController.class);
     public static final String PATH_METRICS = "metrics";
-    private @Nullable CompositeMeterRegistry meterRegistry = null;
+    private @Nullable CompositeMeterRegistry meterRegistry;
     private final PrometheusMeterRegistry prometheusMeterRegistry = new PrometheusMeterRegistry(
             PrometheusConfig.DEFAULT);
     private final Set<MetricsExporter> metricsExporters = new HashSet<>();
@@ -85,11 +85,13 @@ public class MetricsRestController {
 
     @Reference
     public void setMeterRegistryProvider(MeterRegistryProvider meterRegistryProvider) {
+        CompositeMeterRegistry meterRegistry = this.meterRegistry;
         if (meterRegistry != null) {
-            Objects.requireNonNull(meterRegistry).remove(prometheusMeterRegistry);
+            meterRegistry.remove(prometheusMeterRegistry);
         }
         meterRegistry = meterRegistryProvider.getOHMeterRegistry();
-        Objects.requireNonNull(meterRegistry).add(prometheusMeterRegistry);
+        meterRegistry.add(prometheusMeterRegistry);
+        this.meterRegistry = meterRegistry;
         logger.debug("Core metrics registry retrieved and Prometheus registry added successfully.");
         updateMeterRegistry();
     }
@@ -98,6 +100,7 @@ public class MetricsRestController {
     protected void activate(Map<@Nullable String, @Nullable Object> configuration) {
         logger.info("Metrics service activated, serving the following URL(s): /rest/metrics/prometheus");
         metricsExporters.add(new InfluxMetricsExporter());
+        metricsExporters.add(new JmxMetricsExporter());
         updateConfig(configuration);
         updateMeterRegistry();
     }

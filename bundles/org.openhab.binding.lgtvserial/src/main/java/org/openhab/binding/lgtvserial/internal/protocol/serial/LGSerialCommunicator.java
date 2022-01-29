@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class LGSerialCommunicator {
         int data;
         int len = 0;
         int offset = 0;
-        while ((data = input.read()) > -1) {
+        while (input.available() > 0 && (data = input.read()) > -1) {
             if (data == 'x') {
                 String result = new String(buffer, offset, len);
                 if (logger.isDebugEnabled()) {

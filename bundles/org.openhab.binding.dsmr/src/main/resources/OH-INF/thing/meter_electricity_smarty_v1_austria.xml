@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dsmr"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="electricity_smarty_v1_0_austria" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartyBridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Electricity Meter Austria</label>
+		<description>This is an electricity meter that complies to the Austria's Smarty V1.0 specification.</description>
+
+		<channels>
+			<channel id="p1_timestamp" typeId="p1TimestampType"/>
+			<channel id="p1_version_output" typeId="p1VersionType"/>
+			<channel id="emeter_actual_delivery" typeId="actualDeliveryType"/>
+			<channel id="emeter_actual_production" typeId="actualProductionType"/>
+			<channel id="emeter_delivery_tariff0" typeId="deliveryTariff0Type"/>
+			<channel id="emeter_delivery_tariff1" typeId="deliveryTariff1Type"/>
+			<channel id="emeter_delivery_tariff2" typeId="deliveryTariff2Type"/>
+			<channel id="emeter_production_tariff0" typeId="productionTariff0Type"/>
+			<channel id="emeter_production_tariff1" typeId="productionTariff1Type"/>
+			<channel id="emeter_production_tariff2" typeId="productionTariff2Type"/>
+			<channel id="emeter_actual_reactive_delivery" typeId="actualReactiveDeliveryType"/>
+			<channel id="emeter_actual_reactive_production" typeId="actualReactiveProductionType"/>
+			<channel id="emeter_total_imported_energy_register_q" typeId="totalImportedEnergyRegisterQType"/>
+			<channel id="emeter_total_imported_energy_register_r_rate1" typeId="totalImportedEnergyRegisterRRate1Type"/>
+			<channel id="emeter_total_imported_energy_register_r_rate2" typeId="totalImportedEnergyRegisterRRate2Type"/>
+			<channel id="emeter_total_exported_energy_register_q" typeId="totalExportedEnergyRegisterQType"/>
+			<channel id="emeter_total_exported_energy_register_r_rate1" typeId="totalExportedEnergyRegisterRRate1Type"/>
+			<channel id="emeter_total_exported_energy_register_r_rate2" typeId="totalExportedEnergyRegisterRRate2Type"/>
+		</channels>
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
+	</thing-type>
+</thing:thing-descriptions>

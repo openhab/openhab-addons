@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -109,14 +109,16 @@ public class LongPolling {
             String url = httpClient.getBoschShcUrl("remote/json-rpc");
             JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe",
                     new String[] { "com/bosch/sh/remote/*", null });
-            logger.debug("Subscribe: Sending request: {} - using httpClient {}", gson.toJson(request), httpClient);
+            logger.debug("Subscribe: Sending request: {} - using httpClient {}", request.toString(),
+                    httpClient.toString());
             Request httpRequest = httpClient.createRequest(url, POST, request);
-            SubscribeResult response = httpClient.sendRequest(httpRequest, SubscribeResult.class);
+            SubscribeResult response = httpClient.sendRequest(httpRequest, SubscribeResult.class,
+                    SubscribeResult::isValid, null);
 
             logger.debug("Subscribe: Got subscription ID: {} {}", response.getResult(), response.getJsonrpc());
             String subscriptionId = response.getResult();
             return subscriptionId;
-        } catch (TimeoutException | ExecutionException e) {
+        } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             throw new LongPollingFailedException(
                     String.format("Error on subscribe (Http client: %s): %s", httpClient.toString(), e.getMessage()),
                     e);

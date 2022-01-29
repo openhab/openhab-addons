@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,6 +54,8 @@ import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -98,6 +100,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private final Logger logger = LoggerFactory.getLogger(HueBridgeHandler.class);
     private final HueStateDescriptionProvider stateDescriptionOptionProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     private final Map<String, FullLight> lastLightStates = new ConcurrentHashMap<>();
     private final Map<String, FullSensor> lastSensorStates = new ConcurrentHashMap<>();
@@ -403,9 +407,12 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
 
     private List<String> consoleScenesList = new ArrayList<>();
 
-    public HueBridgeHandler(Bridge bridge, HueStateDescriptionProvider stateDescriptionOptionProvider) {
+    public HueBridgeHandler(Bridge bridge, HueStateDescriptionProvider stateDescriptionOptionProvider,
+            TranslationProvider i18nProvider, LocaleProvider localeProvider) {
         super(bridge);
         this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -684,6 +691,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
             if (hueBridge == null) {
                 hueBridge = new HueBridge(ip, hueBridgeConfig.getPort(), hueBridgeConfig.getProtocol(), scheduler);
                 hueBridge.setTimeout(5000);
+
+                updateStatus(ThingStatus.UNKNOWN);
 
                 // Try a first connection that will fail, then try to authenticate,
                 // and finally change the bridge status to ONLINE
@@ -1030,6 +1039,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public Collection<ConfigStatusMessage> getConfigStatus() {
         // The bridge IP address to be used for checks
         // Check whether an IP address is provided
+        hueBridgeConfig = getConfigAs(HueBridgeConfig.class);
+
         String ip = hueBridgeConfig.getIpAddress();
         if (ip == null || ip.isEmpty()) {
             return List.of(ConfigStatusMessage.Builder.error(HOST)
@@ -1037,5 +1048,13 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
         } else {
             return List.of();
         }
+    }
+
+    public TranslationProvider getI18nProvider() {
+        return i18nProvider;
+    }
+
+    public LocaleProvider getLocaleProvider() {
+        return localeProvider;
     }
 }

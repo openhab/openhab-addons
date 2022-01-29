@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -207,7 +207,8 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
                     .header("Authorization", authHeader).get();
 
-            logger.debug("Querying the vehicle: Response: {}:{}", response.getStatus(), response.getStatusInfo());
+            logger.debug("Querying the vehicle: Response: {}: {}", response.getStatus(),
+                    response.getStatusInfo().getReasonPhrase());
 
             if (!checkResponse(response, true)) {
                 logger.error("An error occurred while querying the vehicle");
@@ -335,15 +336,15 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
             }
 
             if (!checkResponse(response, false)) {
-                logger.debug("An error occurred while communicating with the vehicle during request {}: {}:{}", command,
-                        (response != null) ? response.getStatus() : "",
-                        (response != null) ? response.getStatusInfo() : "No Response");
+                logger.debug("An error occurred while communicating with the vehicle during request {}: {}: {}",
+                        command, (response != null) ? response.getStatus() : "",
+                        (response != null) ? response.getStatusInfo().getReasonPhrase() : "No Response");
                 return null;
             }
 
             try {
                 JsonObject jsonObject = JsonParser.parseString(response.readEntity(String.class)).getAsJsonObject();
-                logger.trace("Request : {}:{}:{} yields {}", command, payLoad, target, jsonObject.get("response"));
+                logger.trace("Request : {}:{} yields {}", command, payLoad, jsonObject.get("response"));
                 return jsonObject.get("response").toString();
             } catch (Exception e) {
                 logger.error("An exception occurred while invoking a REST request: '{}'", e.getMessage());

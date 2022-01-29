@@ -1,7 +1,5 @@
 # Oppo Blu-ray player Binding
 
-![Oppo logo](doc/oppo.png)
-
 This binding can be used to control the Oppo UDP-203/205 or BDP-83/93/95/103/105 Blu-ray player.
 Almost all features of the various models of this player line are supported by the binding.
 This binding was tested on a BDP-103 only, so there might be issues with other models that will need to be fixed.
@@ -63,6 +61,7 @@ Some notes:
 * Available HDMI modes for BDP-83 & BDP-9x: AUTO, SRC, 1080P, 1080I, 720P, SDP, SDI
 * Available HDMI modes for BDP-10x: AUTO, SRC, 4K2K, 1080P, 1080I, 720P, SDP, SDI
 * Available HDMI modes for UDP-20x: AUTO, SRC, UHD_AUTO, UHD24, UHD50, UHD60, 1080P_AUTO, 1080P24, 1080P50, 1080P60, 1080I50, 1080I60, 720P50, 720P60, 567P, 567I, 480P, 480I
+
 * On Linux, you may get an error stating the serial port cannot be opened when the Oppo binding tries to load.
 * You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
 * Also on Linux you may have issues with the USB if using two serial USB devices e.g. Oppo and RFXcom.
@@ -280,7 +279,8 @@ M3D 3D Show/hide the 2D-to-3D Conversion or 3D adjustment menu
 SEH Display the Picture Adjustment menu  
 DRB Display the Darbee Adjustment menu  
 
-#### Extra buttons on UDP models:  
+#### Extra buttons on UDP models:
+
 HDR Display the HDR selection menu  
 INH Show on-screen detailed information  
 RLH Set resolution to Auto  

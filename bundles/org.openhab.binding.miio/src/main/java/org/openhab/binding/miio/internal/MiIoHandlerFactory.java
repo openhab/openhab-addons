@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,10 +25,16 @@ import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
+import org.openhab.binding.miio.internal.handler.MiIoGatewayHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
+import org.openhab.binding.miio.internal.handler.MiIoLumiHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
 import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -54,20 +60,28 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     private static final String THING_HANDLER_THREADPOOL_NAME = "thingHandler";
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(THING_HANDLER_THREADPOOL_NAME);
+    private final HttpClientFactory httpClientFactory;
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
     private CloudConnector cloudConnector;
     private ChannelTypeRegistry channelTypeRegistry;
     private BasicChannelTypeProvider basicChannelTypeProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
     private @Nullable Future<Boolean> scheduledTask;
     private final Logger logger = LoggerFactory.getLogger(MiIoHandlerFactory.class);
 
     @Activate
-    public MiIoHandlerFactory(@Reference ChannelTypeRegistry channelTypeRegistry,
+    public MiIoHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference ChannelTypeRegistry channelTypeRegistry,
             @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
-            @Reference BasicChannelTypeProvider basicChannelTypeProvider, Map<String, Object> properties) {
+            @Reference BasicChannelTypeProvider basicChannelTypeProvider, @Reference TranslationProvider i18nProvider,
+            @Reference LocaleProvider localeProvider, Map<String, Object> properties) {
+        this.httpClientFactory = httpClientFactory;
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.channelTypeRegistry = channelTypeRegistry;
         this.basicChannelTypeProvider = basicChannelTypeProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
         this.cloudConnector = cloudConnector;
         @Nullable
         String username = (String) properties.get("username");
@@ -78,7 +92,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         cloudConnector.setCredentials(username, password, country);
         try {
             if (!scheduler.isShutdown()) {
-                scheduledTask = scheduler.submit(() -> cloudConnector.isConnected());
+                scheduledTask = scheduler.submit(() -> cloudConnector.isConnected(true));
             } else {
                 logger.debug("Unexpected: ScheduledExecutorService is shutdown.");
             }
@@ -104,15 +118,26 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(THING_TYPE_MIIO)) {
-            return new MiIoGenericHandler(thing, miIoDatabaseWatchService, cloudConnector);
+            return new MiIoGenericHandler(thing, miIoDatabaseWatchService, cloudConnector, i18nProvider,
+                    localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
             return new MiIoBasicHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
-                    basicChannelTypeProvider);
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
+        }
+        if (thingTypeUID.equals(THING_TYPE_LUMI)) {
+            return new MiIoLumiHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
+        }
+        if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
+            return new MiIoGatewayHandler((Bridge) thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
-            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
+            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    i18nProvider, localeProvider);
         }
-        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector);
+        return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService, cloudConnector,
+                httpClientFactory.getCommonHttpClient(), i18nProvider, localeProvider);
     }
 }

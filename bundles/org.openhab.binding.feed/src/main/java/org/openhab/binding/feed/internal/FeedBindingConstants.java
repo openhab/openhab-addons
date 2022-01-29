@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,6 +20,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Svilen Valkanov - Initial contribution
+ * @author Juergen Pabel - Added enclosure channel
  */
 @NonNullByDefault
 public class FeedBindingConstants {
@@ -49,6 +50,11 @@ public class FeedBindingConstants {
      * Contains the link to the last feed entry.
      */
     public static final String CHANNEL_LATEST_LINK = "latest-link";
+
+    /**
+     * Contains the enclosure link to the last feed entry.
+     */
+    public static final String CHANNEL_LATEST_ENCLOSURE = "latest-enclosure";
 
     /**
      * Description of the feed.

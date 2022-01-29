@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxTcpConnector extends PowermaxConnector {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxTcpConnector.class);
@@ -33,7 +36,7 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     private final String ipAddress;
     private final int tcpPort;
     private final int connectTimeout;
-    private Socket tcpSocket;
+    private @Nullable Socket tcpSocket;
 
     /**
      * Constructor.
@@ -54,16 +57,18 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     public void open() throws Exception {
         logger.debug("open(): Opening TCP Connection");
 
-        tcpSocket = new Socket();
-        tcpSocket.setSoTimeout(250);
+        Socket socket = new Socket();
+        tcpSocket = socket;
+        socket.setSoTimeout(250);
         SocketAddress socketAddress = new InetSocketAddress(ipAddress, tcpPort);
-        tcpSocket.connect(socketAddress, connectTimeout);
+        socket.connect(socketAddress, connectTimeout);
 
-        setInput(tcpSocket.getInputStream());
-        setOutput(tcpSocket.getOutputStream());
+        setInput(socket.getInputStream());
+        setOutput(socket.getOutputStream());
 
-        setReaderThread(new PowermaxReaderThread(this, readerThreadName));
-        getReaderThread().start();
+        PowermaxReaderThread readerThread = new PowermaxReaderThread(this, readerThreadName);
+        setReaderThread(readerThread);
+        readerThread.start();
 
         setConnected(true);
     }
@@ -74,9 +79,10 @@ public class PowermaxTcpConnector extends PowermaxConnector {
 
         super.cleanup(false);
 
-        if (tcpSocket != null) {
+        Socket socket = tcpSocket;
+        if (socket != null) {
             try {
-                tcpSocket.close();
+                socket.close();
             } catch (IOException e) {
                 logger.debug("Error while closing the socket: {}", e.getMessage());
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -111,14 +111,14 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
             if (conn != null && conn.isConnected()) {
                 conn.sendCommand(gatewayCommand);
 
-                if (code == GatewayCommandCode.ControlSetpoint) {
+                if (GatewayCommandCode.ControlSetpoint.equals(code)) {
                     if (gatewayCommand.getMessage().equals("0.0")) {
                         updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT,
                                 UnDefType.UNDEF);
                     }
                     updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
                             OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
-                } else if (code == GatewayCommandCode.ControlSetpoint2) {
+                } else if (GatewayCommandCode.ControlSetpoint2.equals(code)) {
                     if (gatewayCommand.getMessage().equals("0.0")) {
                         updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT,
                                 UnDefType.UNDEF);

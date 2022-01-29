@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.smhi.internal;
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -218,7 +219,7 @@ public class SmhiHandler extends BaseThingHandler {
                     newState = new QuantityType<>(value.get(), MetricPrefix.MILLI(SIUnits.METRE));
                     break;
                 default:
-                    newState = new DecimalType(value.get());
+                    newState = new DecimalType(value.get().setScale(0, RoundingMode.DOWN));
             }
         }
 
@@ -254,6 +255,7 @@ public class SmhiHandler extends BaseThingHandler {
         } catch (RuntimeException e) {
             logger.warn("Unexpected exception occurred, please report to the developers: {}: {}", e.getClass(),
                     e.getMessage());
+            logger.debug("Details: ", e);
         }
     }
 

@@ -15,7 +15,7 @@
 		</parameter>
 		<parameter name="deviceId" type="text" required="true">
 			<label>Device ID</label>
-			<description>Device ID number for communication (in Hex)</description>
+			<description>Device ID number for communication</description>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="model" type="text" required="false">
@@ -46,7 +46,9 @@
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="cloudServer" type="text" required="false">
-			<label>Xiaomi cloud Server (county code)</label>
+			<label>Cloud Server Country Code</label>
+			<description>Country code (2 characters) of the Xiaomi cloud server. See binding documentation for mapping of the
+				country to cloud server</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

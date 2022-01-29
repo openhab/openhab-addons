@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,12 +31,16 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
+import org.openhab.binding.amplipi.internal.audio.PAAudioSink;
 import org.openhab.binding.amplipi.internal.discovery.AmpliPiZoneAndGroupDiscoveryService;
+import org.openhab.binding.amplipi.internal.model.Announcement;
 import org.openhab.binding.amplipi.internal.model.Preset;
 import org.openhab.binding.amplipi.internal.model.SourceUpdate;
 import org.openhab.binding.amplipi.internal.model.Status;
 import org.openhab.binding.amplipi.internal.model.Stream;
+import org.openhab.core.audio.AudioHTTPServer;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -67,7 +71,9 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(AmpliPiHandler.class);
 
     private final HttpClient httpClient;
+    private AudioHTTPServer audioHTTPServer;
     private final Gson gson;
+    private @Nullable String callbackUrl;
 
     private String url = "http://amplipi";
     private List<Preset> presets = List.of();
@@ -76,9 +82,12 @@ public class AmpliPiHandler extends BaseBridgeHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
-    public AmpliPiHandler(Thing thing, HttpClient httpClient) {
+    public AmpliPiHandler(Thing thing, HttpClient httpClient, AudioHTTPServer audioHTTPServer,
+            @Nullable String callbackUrl) {
         super((Bridge) thing);
         this.httpClient = httpClient;
+        this.audioHTTPServer = audioHTTPServer;
+        this.callbackUrl = callbackUrl;
         this.gson = new Gson();
     }
 
@@ -190,7 +199,7 @@ public class AmpliPiHandler extends BaseBridgeHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(PresetCommandOptionProvider.class, InputStateOptionProvider.class,
-                AmpliPiZoneAndGroupDiscoveryService.class);
+                AmpliPiZoneAndGroupDiscoveryService.class, PAAudioSink.class);
     }
 
     public List<Preset> getPresets() {
@@ -205,11 +214,42 @@ public class AmpliPiHandler extends BaseBridgeHandler {
         return url;
     }
 
+    public AudioHTTPServer getAudioHTTPServer() {
+        return audioHTTPServer;
+    }
+
     public void addStatusChangeListener(AmpliPiStatusChangeListener listener) {
         changeListeners.add(listener);
     }
 
     public void removeStatusChangeListener(AmpliPiStatusChangeListener listener) {
         changeListeners.remove(listener);
+    }
+
+    public void playPA(String audioUrl, @Nullable PercentType volume) {
+        Announcement announcement = new Announcement();
+        announcement.setMedia(audioUrl);
+        if (volume != null) {
+            announcement.setVol(AmpliPiUtils.percentTypeToVolume(volume));
+        }
+        String url = getUrl() + "/api/announce";
+        StringContentProvider contentProvider = new StringContentProvider(gson.toJson(announcement));
+        try {
+            ContentResponse response = httpClient.newRequest(url).method(HttpMethod.POST)
+                    .content(contentProvider, "application/json").send();
+            if (response.getStatus() != HttpStatus.OK_200) {
+                logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
+                logger.debug("Content: {}", response.getContentAsString());
+            } else {
+                logger.debug("PA request sent successfully.");
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "AmpliPi request failed: " + e.getMessage());
+        }
+    }
+
+    public @Nullable String getCallbackUrl() {
+        return callbackUrl;
     }
 }

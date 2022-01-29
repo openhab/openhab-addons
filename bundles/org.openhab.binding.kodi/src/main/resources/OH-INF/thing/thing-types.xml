@@ -22,6 +22,7 @@
 			<channel id="input" typeId="input"/>
 			<channel id="inputtext" typeId="inputtext"/>
 			<channel id="inputaction" typeId="inputaction"/>
+			<channel id="inputbuttonevent" typeId="inputbuttonevent"/>
 			<channel id="systemcommand" typeId="systemcommand"/>
 			<channel id="title" typeId="system.media-title"/>
 			<channel id="originaltitle" typeId="system.media-title"/>
@@ -109,6 +110,8 @@
 			<channel id="userrating" typeId="rating">
 				<label>User Rating</label>
 			</channel>
+			<channel id="screensaver" typeId="screensaver"/>
+			<channel id="inputrequested" typeId="inputrequested"/>
 		</channels>
 
 		<properties>
@@ -395,6 +398,11 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="inputbuttonevent" advanced="true">
+		<item-type>String</item-type>
+		<label>Sends a button press event as Input</label>
+		<description>Sends a generic button press event to Kodi</description>
+	</channel-type>
 	<channel-type id="systemcommand" advanced="true">
 		<item-type>String</item-type>
 		<label>Send System Command</label>
@@ -553,5 +561,17 @@
 		<label>Profile</label>
 		<description>Profile of Kodi</description>
 		<state pattern="%s"/>
+	</channel-type>
+	<channel-type id="screensaver">
+		<item-type>Switch</item-type>
+		<label>Screensaver</label>
+		<description>Status of the screensaver</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="inputrequested">
+		<item-type>Switch</item-type>
+		<label>Input requested</label>
+		<description>Status that shows if Kodi is asking for user input.</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

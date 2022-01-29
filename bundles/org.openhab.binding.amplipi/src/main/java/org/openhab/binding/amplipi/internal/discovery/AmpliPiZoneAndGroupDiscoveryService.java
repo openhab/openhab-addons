@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ public class AmpliPiZoneAndGroupDiscoveryService extends AbstractDiscoveryServic
         if (handler != null) {
             ThingUID bridgeUID = handler.getThing().getUID();
             ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_ZONE, bridgeUID, z.getId().toString());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(z.getName())
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Zone '" + z.getName() + "'")
                     .withProperty(AmpliPiBindingConstants.CFG_PARAM_ID, z.getId()).withBridge(bridgeUID)
                     .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_ID).build();
             thingDiscovered(result);
@@ -89,7 +89,7 @@ public class AmpliPiZoneAndGroupDiscoveryService extends AbstractDiscoveryServic
         if (handler != null) {
             ThingUID bridgeUID = handler.getThing().getUID();
             ThingUID uid = new ThingUID(AmpliPiBindingConstants.THING_TYPE_GROUP, bridgeUID, g.getId().toString());
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel(g.getName())
+            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withLabel("AmpliPi Group '" + g.getName() + "'")
                     .withProperty(AmpliPiBindingConstants.CFG_PARAM_ID, g.getId()).withBridge(bridgeUID)
                     .withRepresentationProperty(AmpliPiBindingConstants.CFG_PARAM_ID).build();
             thingDiscovered(result);

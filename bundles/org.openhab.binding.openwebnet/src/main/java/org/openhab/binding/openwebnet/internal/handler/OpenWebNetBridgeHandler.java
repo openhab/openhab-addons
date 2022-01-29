@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -48,6 +49,7 @@ import org.openwebnet4j.communication.OWNAuthException;
 import org.openwebnet4j.communication.OWNException;
 import org.openwebnet4j.message.Automation;
 import org.openwebnet4j.message.BaseOpenMessage;
+import org.openwebnet4j.message.CEN;
 import org.openwebnet4j.message.EnergyManagement;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.GatewayMgmt;
@@ -308,7 +310,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         }
         // we support these types only
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
-                || baseMsg instanceof Thermoregulation) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN) {
             BaseOpenMessage bmsg = baseMsg;
             if (baseMsg instanceof Lighting) {
                 What what = baseMsg.getWhat();
@@ -419,7 +421,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
-                || baseMsg instanceof Thermoregulation) {
+                || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("ownIdFromMessage({}) --> {}", baseMsg, ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);
@@ -457,13 +459,13 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.info("---- CONNECTED to BUS gateway bridge '{}' ({}:{})", thing.getUID(),
                     ((BUSGateway) gw).getHost(), ((BUSGateway) gw).getPort());
             // update serial number property (with MAC address)
-            if (properties.get(PROPERTY_SERIAL_NO) != gw.getMACAddr().toUpperCase()) {
+            if (!Objects.equals(properties.get(PROPERTY_SERIAL_NO), gw.getMACAddr().toUpperCase())) {
                 properties.put(PROPERTY_SERIAL_NO, gw.getMACAddr().toUpperCase());
                 propertiesChanged = true;
                 logger.debug("updated property gw serialNumber: {}", properties.get(PROPERTY_SERIAL_NO));
             }
         }
-        if (properties.get(PROPERTY_FIRMWARE_VERSION) != gw.getFirmwareVersion()) {
+        if (!Objects.equals(properties.get(PROPERTY_FIRMWARE_VERSION), gw.getFirmwareVersion())) {
             properties.put(PROPERTY_FIRMWARE_VERSION, gw.getFirmwareVersion());
             propertiesChanged = true;
             logger.debug("updated property gw firmware version: {}", properties.get(PROPERTY_FIRMWARE_VERSION));
@@ -598,7 +600,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Normalize a Where address
+     * Normalize a Where address to generate ownId and Thing id
      *
      * @param where the Where address
      * @return the normalized address as String

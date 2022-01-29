@@ -12,7 +12,7 @@
 			<description>The serial port where the P1 port of the Smart Meter is connected (e.g. Linux: /dev/ttyUSB0, Windows:
 				COM1)</description>
 		</parameter>
-		<parameter name="receivedTimeout" type="integer" min="1">
+		<parameter name="receivedTimeout" type="integer" min="1" unit="s">
 			<default>30</default>
 			<label>Received Timeout</label>
 			<description>The time period within results are expected in seconds</description>
@@ -76,7 +76,7 @@
 			<description>The Luxembourgian Smart meter decryption key. Ask for your energy grid operator for your Smart meter P1
 				key.</description>
 		</parameter>
-		<parameter name="receivedTimeout" type="integer" min="1">
+		<parameter name="receivedTimeout" type="integer" min="1" unit="s">
 			<default>30</default>
 			<label>Received Timeout</label>
 			<description>The time period within results are expected in seconds</description>
@@ -84,7 +84,7 @@
 	</config-description>
 
 	<config-description uri="thing-type:dsmr:meterdescriptor">
-		<parameter name="refresh" type="integer" min="1">
+		<parameter name="refresh" type="integer" min="1" unit="s">
 			<default>60</default>
 			<label>Refresh</label>
 			<description>The time interval the data is refreshed in seconds</description>

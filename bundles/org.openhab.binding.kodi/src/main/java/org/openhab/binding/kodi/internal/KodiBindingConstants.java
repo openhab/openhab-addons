@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,8 @@ public class KodiBindingConstants {
     public static final String REFRESH_PARAMETER = "refreshInterval";
 
     // List of all Channel ids
+    public static final String CHANNEL_SCREENSAVER = "screensaver";
+    public static final String CHANNEL_INPUTREQUESTED = "inputrequested";
     public static final String CHANNEL_MUTE = "mute";
     public static final String CHANNEL_VOLUME = "volume";
     public static final String CHANNEL_STOP = "stop";
@@ -60,6 +62,7 @@ public class KodiBindingConstants {
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUTTEXT = "inputtext";
     public static final String CHANNEL_INPUTACTION = "inputaction";
+    public static final String CHANNEL_INPUTBUTTONEVENT = "inputbuttonevent";
 
     public static final String CHANNEL_SYSTEMCOMMAND = "systemcommand";
 

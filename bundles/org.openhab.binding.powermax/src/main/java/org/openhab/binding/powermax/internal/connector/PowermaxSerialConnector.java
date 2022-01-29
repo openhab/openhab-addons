@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,11 @@
 package org.openhab.binding.powermax.internal.connector;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
 import org.openhab.core.io.transport.serial.SerialPortEventListener;
@@ -27,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@NonNullByDefault
 public class PowermaxSerialConnector extends PowermaxConnector implements SerialPortEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(PowermaxSerialConnector.class);
@@ -34,7 +39,7 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
     private final String serialPortName;
     private final int baudRate;
     private final SerialPortManager serialPortManager;
-    private SerialPort serialPort;
+    private @Nullable SerialPort serialPort;
 
     /**
      * Constructor
@@ -50,7 +55,6 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
         this.baudRate = baudRate;
-        this.serialPort = null;
     }
 
     @Override
@@ -65,26 +69,31 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
         SerialPort commPort = portIdentifier.open(this.getClass().getName(), 2000);
 
         serialPort = commPort;
-        serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-        serialPort.enableReceiveThreshold(1);
-        serialPort.enableReceiveTimeout(250);
+        commPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+        commPort.enableReceiveThreshold(1);
+        commPort.enableReceiveTimeout(250);
 
-        setInput(serialPort.getInputStream());
-        setOutput(serialPort.getOutputStream());
+        InputStream inputStream = commPort.getInputStream();
+        setInput(inputStream);
+        OutputStream outputStream = commPort.getOutputStream();
+        setOutput(outputStream);
 
-        getOutput().flush();
-        if (getInput().markSupported()) {
-            getInput().reset();
+        if (outputStream != null) {
+            outputStream.flush();
+        }
+        if (inputStream != null && inputStream.markSupported()) {
+            inputStream.reset();
         }
 
         // RXTX serial port library causes high CPU load
         // Start event listener, which will just sleep and slow down event
         // loop
-        serialPort.addEventListener(this);
-        serialPort.notifyOnDataAvailable(true);
+        commPort.addEventListener(this);
+        commPort.notifyOnDataAvailable(true);
 
-        setReaderThread(new PowermaxReaderThread(this, readerThreadName));
-        getReaderThread().start();
+        PowermaxReaderThread readerThread = new PowermaxReaderThread(this, readerThreadName);
+        setReaderThread(readerThread);
+        readerThread.start();
 
         setConnected(true);
     }
@@ -93,14 +102,15 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
     public void close() {
         logger.debug("close(): Closing Serial Connection");
 
-        if (serialPort != null) {
-            serialPort.removeEventListener();
+        SerialPort commPort = serialPort;
+        if (commPort != null) {
+            commPort.removeEventListener();
         }
 
         super.cleanup(true);
 
-        if (serialPort != null) {
-            serialPort.close();
+        if (commPort != null) {
+            commPort.close();
         }
 
         serialPort = null;

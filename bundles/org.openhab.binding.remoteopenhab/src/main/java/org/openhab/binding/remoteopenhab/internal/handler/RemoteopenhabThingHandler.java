@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                 String uid = getConfigThingUID();
                 if (uid.length() == 0) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Undefined thing UID setting in the thing configuration");
+                            "@text/offline.config-error-undefined-thing-uid");
                 } else {
                     RemoteopenhabRestClient client = ((RemoteopenhabBridgeHandler) bridgeHandler).gestRestClient();
                     client.addThingsDataListener(this);
@@ -114,8 +114,7 @@ public class RemoteopenhabThingHandler extends BaseThingHandler implements Remot
                                 updateThingStatus(uid, statusInfo);
                             }
                         } catch (RemoteopenhabException e) {
-                            logger.debug("{}", e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getRawMessage());
                         }
                     });
                 }

@@ -40,17 +40,18 @@ Any home automation system based on the OverKiz API is potentially supported.
 - sirens (battery status full/low/normal/verylow, siren control ON/OFF, setting memorized volume)
 - action groups (scenarios which can execute predefined Tahoma group of steps, e.g. send to all roller shutters DOWN command, one by one)
 - thermostats (read status and battery level)
+- water heater system (monitor and control)
 
 Both Somfy Tahoma and Somfy Connexoon gateways have been confirmed working.
 
 ## Discovery
 
 To start a discovery, just
- 
+
 - Add a new bridge thing.
 - Configure the bridge selecting your cloud portal (www.tahomalink.com by default) and setting your email (login) and password to the cloud portal.
- 
-If the supplied credentials are correct, the automatic discovery can be used to scan and detect roller shutters, awnings, switches and action groups that will appear in your Inbox. 
+
+If the supplied credentials are correct, the automatic discovery can be used to scan and detect roller shutters, awnings, switches and action groups that will appear in your Inbox.
 
 ## Thing Configuration
 
@@ -70,7 +71,7 @@ Please see the example below.
 | roller shutter, screen, venetian blind, garage door, awning, pergola, curtain | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                                |
 | window                                                                        | control                      | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                                   |
 | silent roller shutter                                                         | silent_control               | similar to control channel but in silent mode                                                                               |
-| venetian blind, adjustable slats roller shutter, bioclimatic pergola           | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
+| venetian blind, adjustable slats roller shutter, bioclimatic pergola          | orientation                  | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
 | venetian blind, adjustable slats roller shutter                               | closure_orientation          | percentual closure and orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS) |
 | adjustable slats roller shutter                                               | rocker                       | used for setting the rocker position of the roller shutter, the only position allowing the slats control                    |
 | bioclimatic pergola                                                           | slats                        | slats state (open/closed)                                                                                                   |
@@ -123,13 +124,25 @@ Please see the example below.
 | myfox camera, myfox alarm                                                     | cloud_status                 | cloud connection status                                                                                                     |
 | myfox camera                                                                  | shutter                      | controlling of the camera shutter                                                                                           |
 | myfox alarm                                                                   | myfox_alarm_command          | used for sending commands to Somfy Myfox alarm device                                                                       |
+| waterheatersystem                                                             | middlewater_temperature      | Number:Temperature indicating the temperature of the water at the middle of the heater |
+| waterheatersystem                                                             | boost_mode                   | Switch allowing to enable or disable the booster. When switching to ON, by default, the Boost duration will be set for 1 day.|
+| waterheatersystem                                                             | away_mode                    | Defines if away mode is On or Off (no water heating) |
+| waterheatersystem                                                             | away_mode_duration           | Defines if away mode the duration in days. |
+| waterheatersystem                                                             | boost_mode_duration          | The duration of the Boost mode in days. Valid from 1 to 7. |
+| waterheatersystem                                                             | power_heatpump               | Current consumption/power of the heatpump in Watts. |
+| waterheatersystem                                                             | power_heatelec               | Current consumption/power of the electric resistance in Watts. |
+| waterheatersystem                                                             | showers                      | Virtual channel, representing the number of desired showers - between 3 to 5. It actually switches the desired temperature to 50.0, 54.5 or 62.0 Celcius degrees. Please note that in ECO mode, only 3 and 4 showers are allowed. |
+| waterheatersystem                                                             | heat_pump_operating_time     | Number of hours the heatpump has been operating |
+| waterheatersystem                                                             | electric_booster_operating_time | number of hours the electric booster has been operating. |
+| waterheatersystem                                                             | mode                         | The current mode of the boiler. Can be: autoMode / manualEcoInactive / manualEcoActive |
+| waterheatersystem                                                             | target_temperature           | Water target temperature in degrees. Read only. Temperature desired is managed through mode and showers channels. |
 
 To run a scenario inside a rule for example, the ID of the scenario will be required.
 You can list all the scenarios IDs with the following console command: `somfytahoma <bridgeUID> scenarios`.
 
 ### Remarks
 
-All things which have a RSSI (relative received signal) state, expose a channel "rssi".
+All things which have a RSSI (received signal strength indication) state, expose a channel "rssi".
 
 When a roller shutter-like thing receives STOP command, there are two possible behaviours
 
@@ -174,7 +187,7 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
 }
 ```
 
-Awnings, garage doors, screens, blinds, and windows things have the same notation as roller shutters. Just use "awning", "garagedoor", "screen", "blind" or "window" instead of "rolleshutter" in thing definition. 
+Awnings, garage doors, screens, blinds, and windows things have the same notation as roller shutters. Just use "awning", "garagedoor", "screen", "blind" or "window" instead of "rolleshutter" in thing definition.
 
 .items file
 
@@ -267,7 +280,7 @@ Slider item=HeatingLevel
 
 ## Alexa compatibility
 
-This binding is compatible with the official Alexa Smart Home Skill. 
+This binding is compatible with the official Alexa Smart Home Skill.
 Since Rolleshutter items are unsupported, only Dimmer with control channel can be used.
 Syntax in .item file is as follows:
 

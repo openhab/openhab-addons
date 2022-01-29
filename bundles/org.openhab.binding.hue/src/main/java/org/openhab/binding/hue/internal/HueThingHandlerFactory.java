@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,8 @@ import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -68,10 +70,15 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             .flatMap(i -> i).collect(Collectors.toSet()));
 
     private final HueStateDescriptionProvider stateDescriptionProvider;
+    private final TranslationProvider i18nProvider;
+    private final LocaleProvider localeProvider;
 
     @Activate
-    public HueThingHandlerFactory(final @Reference HueStateDescriptionProvider stateDescriptionProvider) {
+    public HueThingHandlerFactory(final @Reference HueStateDescriptionProvider stateDescriptionProvider,
+            final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider) {
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.i18nProvider = i18nProvider;
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -142,7 +149,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new HueBridgeHandler((Bridge) thing, stateDescriptionProvider);
+            return new HueBridgeHandler((Bridge) thing, stateDescriptionProvider, i18nProvider, localeProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new HueLightHandler(thing, stateDescriptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {

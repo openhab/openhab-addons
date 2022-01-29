@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -2541,6 +2541,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean publicAddress(LineInType lineInType) {
         // check if sourcePlayer has a line-in connected
         if ((lineInType != LineInType.DIGITAL && isAnalogLineInConnected())

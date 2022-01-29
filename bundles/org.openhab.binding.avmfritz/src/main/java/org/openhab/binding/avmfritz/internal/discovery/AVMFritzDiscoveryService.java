@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.avmfritz.internal.discovery;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -56,12 +55,10 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
     private @NonNullByDefault({}) AVMFritzBaseBridgeHandler bridgeHandler;
 
     public AVMFritzDiscoveryService() {
-        super(Collections
-                .unmodifiableSet(Stream
-                        .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES,
-                                SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS)
-                        .flatMap(Set::stream).collect(Collectors.toSet())),
-                30);
+        super(Stream
+                .of(SUPPORTED_LIGHTING_THING_TYPES, SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES,
+                        SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS)
+                .flatMap(Set::stream).collect(Collectors.toUnmodifiableSet()), 30);
     }
 
     @Override

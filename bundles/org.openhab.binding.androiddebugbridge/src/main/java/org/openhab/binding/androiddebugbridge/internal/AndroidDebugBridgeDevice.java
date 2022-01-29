@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,9 +22,14 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +60,10 @@ public class AndroidDebugBridgeDevice {
     private static final Pattern TAP_EVENT_PATTERN = Pattern.compile("(?<x>\\d+),(?<y>\\d+)");
     private static final Pattern PACKAGE_NAME_PATTERN = Pattern
             .compile("^([A-Za-z]{1}[A-Za-z\\d_]*\\.)+[A-Za-z][A-Za-z\\d_]*$");
+    private static final Pattern URL_PATTERN = Pattern.compile(
+            "https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,4}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)$");
+    private static final Pattern INPUT_EVENT_PATTERN = Pattern
+            .compile("/(?<input>\\S+): (?<n1>\\S+) (?<n2>\\S+) (?<n3>\\S+)$", Pattern.MULTILINE);
 
     private static @Nullable AdbCrypto adbCrypto;
 
@@ -78,18 +87,20 @@ public class AndroidDebugBridgeDevice {
     private String ip = "127.0.0.1";
     private int port = 5555;
     private int timeoutSec = 5;
+    private int recordDuration;
     private @Nullable Socket socket;
     private @Nullable AdbConnection connection;
     private @Nullable Future<String> commandFuture;
 
-    AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
+    public AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
     }
 
-    public void configure(String ip, int port, int timeout) {
+    public void configure(String ip, int port, int timeout, int recordDuration) {
         this.ip = ip;
         this.port = port;
         this.timeoutSec = timeout;
+        this.recordDuration = recordDuration;
     }
 
     public void sendKeyEvent(String eventCode)
@@ -111,15 +122,65 @@ public class AndroidDebugBridgeDevice {
         runAdbShell("input", "mouse", "tap", match.group("x"), match.group("y"));
     }
 
+    public void openUrl(String url)
+            throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        var match = URL_PATTERN.matcher(url);
+        if (!match.matches()) {
+            throw new AndroidDebugBridgeDeviceException("Unable to parse url");
+        }
+        runAdbShell("am", "start", "-a", url);
+    }
+
     public void startPackage(String packageName)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        if (packageName.contains("/")) {
+            startPackageWithActivity(packageName);
+            return;
+        }
         if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
             logger.warn("{} is not a valid package name", packageName);
             return;
         }
         var out = runAdbShell("monkey", "--pct-syskeys", "0", "-p", packageName, "-v", "1");
         if (out.contains("monkey aborted")) {
+            startTVPackage(packageName);
+        }
+    }
+
+    private void startTVPackage(String packageName)
+            throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        // https://developer.android.com/training/tv/start/start
+        String result = runAdbShell("monkey", "--pct-syskeys", "0", "-c", "android.intent.category.LEANBACK_LAUNCHER",
+                "-p", packageName, "1");
+        if (result.contains("monkey aborted")) {
             throw new AndroidDebugBridgeDeviceException("Unable to open package");
+        }
+    }
+
+    public void startPackageWithActivity(String packageWithActivity)
+            throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        var parts = packageWithActivity.split("/");
+        if (parts.length != 2) {
+            logger.warn("{} is not a valid package", packageWithActivity);
+            return;
+        }
+        var packageName = parts[0];
+        var activityName = parts[1];
+        if (!PACKAGE_NAME_PATTERN.matcher(packageName).matches()) {
+            logger.warn("{} is not a valid package name", packageName);
+            return;
+        }
+        if (!PACKAGE_NAME_PATTERN.matcher(activityName).matches()) {
+            logger.warn("{} is not a valid activity name", activityName);
+            return;
+        }
+        var out = runAdbShell("am", "start", "-n", packageWithActivity);
+        if (out.contains("usage: am")) {
+            out = runAdbShell("am", "start", packageWithActivity);
+        }
+        if (out.contains("usage: am") || out.contains("Exception")) {
+            logger.warn("open {} fail; retrying to open without activity info", packageWithActivity);
+            startPackage(packageName);
         }
     }
 
@@ -160,7 +221,7 @@ public class AndroidDebugBridgeDevice {
                 var state = devicesResp.split("=")[1].trim();
                 return state.equals("ON");
             } catch (NumberFormatException e) {
-                logger.debug("Unable to parse device wake lock: {}", e.getMessage());
+                logger.debug("Unable to parse device screen state: {}", e.getMessage());
             }
         }
         throw new AndroidDebugBridgeDeviceReadException("Unable to read screen state");
@@ -203,10 +264,12 @@ public class AndroidDebugBridgeDevice {
             try {
                 return Integer.parseInt(lockResp.replace("\n", "").split("=")[1].trim());
             } catch (NumberFormatException e) {
-                logger.debug("Unable to parse device wake lock: {}", e.getMessage());
+                String message = String.format("Unable to parse device wake-lock '%s'", lockResp);
+                logger.debug("{}: {}", message, e.getMessage());
+                throw new AndroidDebugBridgeDeviceReadException(message);
             }
         }
-        throw new AndroidDebugBridgeDeviceReadException("Unable to read wake lock");
+        throw new AndroidDebugBridgeDeviceReadException(String.format("Unable to read wake-lock '%s'", lockResp));
     }
 
     private void setVolume(int stream, int volume)
@@ -234,11 +297,16 @@ public class AndroidDebugBridgeDevice {
         return getDeviceProp("ro.serialno");
     }
 
+    public String getMacAddress() throws AndroidDebugBridgeDeviceException, InterruptedException,
+            AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
+        return getDeviceProp("ro.boot.wifimacaddr").toLowerCase();
+    }
+
     private String getDeviceProp(String name) throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         var propValue = runAdbShell("getprop", name, "&&", "sleep", "0.3").replace("\n", "").replace("\r", "");
         if (propValue.length() == 0) {
-            throw new AndroidDebugBridgeDeviceReadException("Unable to get device property");
+            throw new AndroidDebugBridgeDeviceReadException(String.format("Unable to get device property '%s'", name));
         }
         return propValue;
     }
@@ -256,6 +324,36 @@ public class AndroidDebugBridgeDevice {
         logger.debug("Device {}:{} VolumeInfo: current {}, min {}, max {}", this.ip, this.port, volumeInfo.current,
                 volumeInfo.min, volumeInfo.max);
         return volumeInfo;
+    }
+
+    public String recordInputEvents()
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        String out = runAdbShell(recordDuration * 2, "getevent", "&", "sleep", Integer.toString(recordDuration), "&&",
+                "exit");
+        var matcher = INPUT_EVENT_PATTERN.matcher(out);
+        var commandList = new ArrayList<String>();
+        try {
+            while (matcher.find()) {
+                String inputPath = matcher.group("input");
+                int n1 = Integer.parseInt(matcher.group("n1"), 16);
+                int n2 = Integer.parseInt(matcher.group("n2"), 16);
+                int n3 = Integer.parseInt(matcher.group("n3"), 16);
+                commandList.add(String.format("sendevent /%s %d %d %d", inputPath, n1, n2, n3));
+            }
+        } catch (NumberFormatException e) {
+            logger.warn("NumberFormatException while parsing events, aborting");
+            return "";
+        }
+        return String.join(" && ", commandList);
+    }
+
+    public void sendInputEvents(String command)
+            throws AndroidDebugBridgeDeviceException, InterruptedException, TimeoutException, ExecutionException {
+        String out = runAdbShell(command.split(" "));
+        if (out.length() != 0) {
+            logger.warn("Device event unexpected output: {}", out);
+            throw new AndroidDebugBridgeDeviceException("Device event execution fail");
+        }
     }
 
     public void rebootDevice()
@@ -295,7 +393,7 @@ public class AndroidDebugBridgeDevice {
             sock.connect(new InetSocketAddress(ip, port), (int) TimeUnit.SECONDS.toMillis(15));
         } catch (IOException e) {
             logger.debug("Error connecting to {}: [{}] {}", ip, e.getClass().getName(), e.getMessage());
-            if (e.getMessage().equals("Socket closed")) {
+            if ("Socket closed".equals(e.getMessage())) {
                 // Connection aborted by us
                 throw new InterruptedException();
             }
@@ -313,6 +411,11 @@ public class AndroidDebugBridgeDevice {
 
     private String runAdbShell(String... args)
             throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
+        return runAdbShell(timeoutSec, args);
+    }
+
+    private String runAdbShell(int commandTimeout, String... args)
+            throws InterruptedException, AndroidDebugBridgeDeviceException, TimeoutException, ExecutionException {
         var adb = connection;
         if (adb == null) {
             throw new AndroidDebugBridgeDeviceException("Device not connected");
@@ -323,21 +426,19 @@ public class AndroidDebugBridgeDevice {
                 var byteArrayOutputStream = new ByteArrayOutputStream();
                 String cmd = String.join(" ", args);
                 logger.debug("{} - shell:{}", ip, cmd);
-                try {
-                    AdbStream stream = adb.open("shell:" + cmd);
+                try (AdbStream stream = adb.open("shell:" + cmd)) {
                     do {
                         byteArrayOutputStream.writeBytes(stream.read());
                     } while (!stream.isClosed());
                 } catch (IOException e) {
-                    String message = e.getMessage();
-                    if (message != null && !message.equals("Stream closed")) {
+                    if (!"Stream closed".equals(e.getMessage())) {
                         throw e;
                     }
                 }
                 return byteArrayOutputStream.toString(StandardCharsets.US_ASCII);
             });
             this.commandFuture = commandFuture;
-            return commandFuture.get(timeoutSec, TimeUnit.SECONDS);
+            return commandFuture.get(commandTimeout, TimeUnit.SECONDS);
         } finally {
             var commandFuture = this.commandFuture;
             if (commandFuture != null) {

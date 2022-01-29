@@ -101,4 +101,14 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="information">
+		<label>Audio &amp; Video Info</label>
+		<channels>
+			<channel id="audioIn" typeId="audioIn"/>
+			<channel id="audioOut" typeId="audioOut"/>
+			<channel id="videoIn" typeId="videoIn"/>
+			<channel id="videoOut" typeId="videoOut"/>
+		</channels>
+	</channel-group-type>
+
 </thing:thing-descriptions>

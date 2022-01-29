@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>3.2.0-SNAPSHOT</version>
+    <version>3.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.groovyscripting</artifactId>
@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>com.ibm.icu.*;resolution:=optional,groovy.runtime.metaclass;resolution:=optional,groovyjarjarantlr4.stringtemplate;resolution:=optional,org.abego.treelayout.*;resolution:=optional,org.apache.ivy.*;resolution:=optional,org.stringtemplate.v4.*;resolution:=optional</bnd.importpackage>
-    <groovy.version>3.0.8</groovy.version>
+    <groovy.version>3.0.9</groovy.version>
   </properties>
 
   <dependencies>

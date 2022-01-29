@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 public class EnoceanBleRockerHandler extends BeaconBluetoothHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EnoceanBleRockerHandler.class);
+    private int lastSequence = Integer.MIN_VALUE;
 
     public EnoceanBleRockerHandler(Thing thing) {
         super(thing);
@@ -44,7 +45,12 @@ public class EnoceanBleRockerHandler extends BeaconBluetoothHandler {
             if (manufacturerData != null && manufacturerData.length > 0) {
                 EnoceanBlePtm215Event event = new EnoceanBlePtm215Event(manufacturerData);
                 logger.debug("Parsed manufacturer data to PTM215B event: {}", event);
-                triggerChannel(resolveChannel(event), resolveTriggerEvent(event));
+                synchronized (this) {
+                    if (event.getSequence() > lastSequence) {
+                        lastSequence = event.getSequence();
+                        triggerChannel(resolveChannel(event), resolveTriggerEvent(event));
+                    }
+                }
             }
         } catch (IllegalStateException e) {
             logger.warn("PTM215B event could not be parsed correctly, exception occured:", e);

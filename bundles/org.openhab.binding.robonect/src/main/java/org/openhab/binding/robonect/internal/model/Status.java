@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.robonect.internal.model;
 
 /**
  * Object holding information from the status section of the mowers status response.
- * 
+ *
  * @author Marco Meyer - Initial contribution
  */
 public class Status {
@@ -25,6 +25,7 @@ public class Status {
     private MowerStatus status;
     private MowerMode mode;
     private boolean stopped;
+    private int distance;
 
     /**
      * @return - the battery level in percent. (0-100)
@@ -38,6 +39,13 @@ public class Status {
      */
     public int getDuration() {
         return duration;
+    }
+
+    /**
+     * @return - The distance from the charging station (in case it searches the remote starting point)
+     */
+    public int getDistance() {
+        return distance;
     }
 
     /**
@@ -74,6 +82,10 @@ public class Status {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 
     public void setHours(int hours) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public enum VenstarAwayMode {
         return friendlyName;
     }
 
-    public static VenstarAwayMode fromInt(int mode) {
+    public static VenstarAwayMode fromInt(int mode) throws IllegalArgumentException {
         for (VenstarAwayMode am : values()) {
             if (am.mode == mode) {
                 return am;

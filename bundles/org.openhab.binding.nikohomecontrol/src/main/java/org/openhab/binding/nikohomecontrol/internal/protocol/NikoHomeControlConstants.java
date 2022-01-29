@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,9 @@ public class NikoHomeControlConstants {
     // switch and dimmer constants in the Nhc layer
     public static final String NHCON = "On";
     public static final String NHCOFF = "Off";
+
+    public static final String NHCTRUE = "True";
+    public static final String NHCFALSE = "False";
 
     public static final String NHCTRIGGERED = "Triggered";
 

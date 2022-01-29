@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,7 +124,7 @@ public class ValloxMVHandler extends BaseThingHandler {
                 // Not writable channel
                 return;
             }
-            if (strUpdateValue != "") {
+            if (!strUpdateValue.isEmpty()) {
                 if (readDataJob != null) {
                     // Re-schedule readDataJob to read device values after data write
                     // Avoid re-scheduling job several times in case of subsequent data writes

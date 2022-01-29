@@ -25,15 +25,16 @@
 
 		<config-description>
 			<parameter name="deviceId" type="text" required="true">
-				<label>Device Id</label>
+				<label>@text/config.deviceId.label</label>
 				<description>Sensor Id. Example 5693</description>
 			</parameter>
 			<parameter name="subType" type="text" required="true">
-				<label>Sub Type</label>
-				<description>Specifies device sub type.</description>
+				<label>@text/config.subType.label</label>
+				<description>@text/config.subType.description</description>
 				<options>
 					<option value="HUM1">LaCrosse TX3</option>
 					<option value="HUM2">LaCrosse WS2300</option>
+					<option value="HUM3">Inovalley S80 plant humidity sensor</option>
 				</options>
 			</parameter>
 		</config-description>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,17 +47,36 @@ public class NetworkActions implements ThingActions {
         return handler;
     }
 
+    /**
+     * @deprecated Use sendWakeOnLanPacketViaMac or sendWakeOnLanPacketViaIp instead.
+     */
+    @Deprecated
     @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device.")
     public void sendWakeOnLanPacket() {
+        sendWakeOnLanPacketViaMac();
+    }
+
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via Mac.")
+    public void sendWakeOnLanPacketViaMac() {
         NetworkHandler localHandler = handler;
         if (localHandler != null) {
-            localHandler.sendWakeOnLanPacket();
+            localHandler.sendWakeOnLanPacketViaMac();
+        } else {
+            logger.warn("Failed to send Wake-on-LAN packet (handler null)");
+        }
+    }
+
+    @RuleAction(label = "send a WoL packet", description = "Send a Wake-on-LAN packet to wake the device via IP.")
+    public void sendWakeOnLanPacketViaIp() {
+        NetworkHandler localHandler = handler;
+        if (localHandler != null) {
+            localHandler.sendWakeOnLanPacketViaIp();
         } else {
             logger.warn("Failed to send Wake-on-LAN packet (handler null)");
         }
     }
 
     public static void sendWakeOnLanPacket(ThingActions actions) {
-        ((NetworkActions) actions).sendWakeOnLanPacket();
+        ((NetworkActions) actions).sendWakeOnLanPacketViaMac();
     }
 }

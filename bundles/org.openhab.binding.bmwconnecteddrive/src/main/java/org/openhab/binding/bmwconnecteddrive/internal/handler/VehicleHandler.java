@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,6 +30,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.action.BMWConnectedDriveAc
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributesContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.navigation.NavigationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
@@ -50,8 +51,10 @@ import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -86,6 +89,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     private ImageProperties imageProperties = new ImageProperties();
     VehicleStatusCallback vehicleStatusCallback = new VehicleStatusCallback();
     StringResponseCallback oldVehicleStatusCallback = new LegacyVehicleStatusCallback();
+    StringResponseCallback navigationCallback = new NavigationStatusCallback();
     StringResponseCallback lastTripCallback = new LastTripCallback();
     StringResponseCallback allTripsCallback = new AllTripsCallback();
     StringResponseCallback chargeProfileCallback = new ChargeProfilesCallback();
@@ -275,6 +279,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                     prox.requestVehcileStatus(config, vehicleStatusCallback);
                 }
                 addCallback(vehicleStatusCallback);
+                prox.requestLNavigation(config, navigationCallback);
+                addCallback(navigationCallback);
                 if (isSupported(Constants.STATISTICS)) {
                     prox.requestLastTrip(config, lastTripCallback);
                     prox.requestAllTrips(config, allTripsCallback);
@@ -677,8 +683,28 @@ public class VehicleHandler extends VehicleChannelHandler {
 
         @Override
         public void onError(NetworkError error) {
-            logger.debug("{}", error.toString());
             vehicleStatusCallback.onError(error);
+        }
+    }
+
+    public class NavigationStatusCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(@Nullable String content) {
+            if (content != null) {
+                try {
+                    NavigationContainer nav = Converter.getGson().fromJson(content, NavigationContainer.class);
+                    updateChannel(CHANNEL_GROUP_RANGE, SOC_MAX, QuantityType.valueOf(nav.socmax, Units.KILOWATT_HOUR));
+                } catch (JsonSyntaxException jse) {
+                    logger.debug("{}", jse.getMessage());
+                }
+            }
+            removeCallback(this);
+        }
+
+        @Override
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+            removeCallback(this);
         }
     }
 

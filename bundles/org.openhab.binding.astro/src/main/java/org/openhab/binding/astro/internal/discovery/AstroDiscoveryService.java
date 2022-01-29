@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.astro.internal.discovery;
 
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
+import static org.openhab.binding.astro.internal.config.AstroThingConfig.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
 public class AstroDiscoveryService extends AbstractDiscoveryService {
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
-    private static final Set<String> METEO_BASED_COUNTRIES = new HashSet<>(Arrays.asList("NZ", "AU"));
+    private static final Set<String> METEO_BASED_COUNTRIES = Set.of("NZ", "AU");
     private static final ThingUID SUN_THING = new ThingUID(THING_TYPE_SUN, LOCAL);
     private static final ThingUID MOON_THING = new ThingUID(THING_TYPE_MOON, LOCAL);
 
@@ -110,15 +111,15 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void createResults(PointType location) {
-        String propGeolocation;
+        String propGeolocation = location.toString();
         String country = localeProvider.getLocale().getCountry();
-        propGeolocation = String.format("%s,%s,%s", location.getLatitude(), location.getLongitude(),
-                location.getAltitude());
+
         thingDiscovered(DiscoveryResultBuilder.create(SUN_THING).withLabel("Local Sun")
-                .withProperty("geolocation", propGeolocation)
-                .withProperty("useMeteorologicalSeason", METEO_BASED_COUNTRIES.contains(country))
-                .withRepresentationProperty("geolocation").build());
+                .withProperty(GEOLOCATION, propGeolocation)
+                .withProperty(USE_METEOROLOGICAL_SEASON, METEO_BASED_COUNTRIES.contains(country))
+                .withRepresentationProperty(GEOLOCATION).build());
+
         thingDiscovered(DiscoveryResultBuilder.create(MOON_THING).withLabel("Local Moon")
-                .withProperty("geolocation", propGeolocation).withRepresentationProperty("geolocation").build());
+                .withProperty(GEOLOCATION, propGeolocation).withRepresentationProperty(GEOLOCATION).build());
     }
 }

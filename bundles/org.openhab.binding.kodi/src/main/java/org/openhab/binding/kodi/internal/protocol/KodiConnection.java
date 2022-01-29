@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,6 @@
 package org.openhab.binding.kodi.internal.protocol;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -68,6 +67,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     private static final String PROPERTY_FANART = "fanart";
     private static final String PROPERTY_THUMBNAIL = "thumbnail";
     private static final String PROPERTY_VERSION = "version";
+    private static final String PROPERTY_SCREENSAVER = "System.ScreensaverActive";
     private static final String PROPERTY_VOLUME = "volume";
     private static final String PROPERTY_MUTED = "muted";
     private static final String PROPERTY_TOTALTIME = "totaltime";
@@ -857,16 +857,11 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private @Nullable String stripImageUrl(String url) {
-        try {
-            // we have to strip ending "/" here because Kodi returns a not valid path and filename
-            // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
-            // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
-            String encodedURL = URLEncoder.encode(stripEnd(url, '/'), StandardCharsets.UTF_8.name());
-            return imageUri.resolve(encodedURL).toString();
-        } catch (UnsupportedEncodingException e) {
-            logger.debug("exception during encoding {}", url, e);
-            return null;
-        }
+        // we have to strip ending "/" here because Kodi returns a not valid path and filename
+        // "fanart":"image://http%3a%2f%2fthetvdb.com%2fbanners%2ffanart%2foriginal%2f263365-31.jpg/"
+        // "thumbnail":"image://http%3a%2f%2fthetvdb.com%2fbanners%2fepisodes%2f263365%2f5640869.jpg/"
+        String encodedURL = URLEncoder.encode(stripEnd(url, '/'), StandardCharsets.UTF_8);
+        return imageUri.resolve(encodedURL).toString();
     }
 
     private String stripEnd(final String str, final char suffix) {
@@ -984,7 +979,9 @@ public class KodiConnection implements KodiClientSocketEventListener {
             } else if (method.startsWith("System.On")) {
                 processSystemStateChanged(method, params);
             } else if (method.startsWith("GUI.OnScreensaver")) {
-                processScreensaverStateChanged(method, params);
+                processScreenSaverStateChanged(method, params);
+            } else if (method.startsWith("Input.OnInput")) {
+                processInputRequestedStateChanged(method, params);
             } else if (method.startsWith("Playlist.On")) {
                 processPlaylistStateChanged(method, params);
             } else {
@@ -994,7 +991,7 @@ public class KodiConnection implements KodiClientSocketEventListener {
     }
 
     private void processPlayerStateChanged(String method, JsonObject json) {
-        if ("Player.OnPlay".equals(method)) {
+        if ("Player.OnPlay".equals(method) || "Player.OnAVStart".equals(method)) {
             // get the player id and make a new request for the media details
 
             JsonObject data = json.get("data").getAsJsonObject();
@@ -1065,11 +1062,22 @@ public class KodiConnection implements KodiClientSocketEventListener {
         }
     }
 
-    private void processScreensaverStateChanged(String method, JsonObject json) {
+    private void processScreenSaverStateChanged(String method, JsonObject json) {
         if ("GUI.OnScreensaverDeactivated".equals(method)) {
             listener.updateScreenSaverState(false);
         } else if ("GUI.OnScreensaverActivated".equals(method)) {
             listener.updateScreenSaverState(true);
+        } else {
+            logger.debug("Unknown event from Kodi {}: {}", method, json);
+        }
+        listener.updateConnectionState(true);
+    }
+
+    private void processInputRequestedStateChanged(String method, JsonObject json) {
+        if ("Input.OnInputFinished".equals(method)) {
+            listener.updateInputRequestedState(false);
+        } else if ("Input.OnInputRequested".equals(method)) {
+            listener.updateInputRequestedState(true);
         } else {
             logger.debug("Unknown event from Kodi {}: {}", method, json);
         }
@@ -1094,6 +1102,25 @@ public class KodiConnection implements KodiClientSocketEventListener {
     public synchronized void close() {
         if (socket != null && socket.isConnected()) {
             socket.close();
+        }
+    }
+
+    public void updateScreenSaverState() {
+        if (socket.isConnected()) {
+            String[] props = { PROPERTY_SCREENSAVER };
+
+            JsonObject params = new JsonObject();
+            params.add("booleans", getJsonArray(props));
+            JsonElement response = socket.callMethod("XBMC.GetInfoBooleans", params);
+
+            if (response instanceof JsonObject) {
+                JsonObject data = response.getAsJsonObject();
+                if (data.has(PROPERTY_SCREENSAVER)) {
+                    listener.updateScreenSaverState(data.get(PROPERTY_SCREENSAVER).getAsBoolean());
+                }
+            }
+        } else {
+            listener.updateScreenSaverState(false);
         }
     }
 
@@ -1325,6 +1352,46 @@ public class KodiConnection implements KodiClientSocketEventListener {
         JsonObject params = new JsonObject();
         params.addProperty("action", action);
         socket.callMethod("Input.ExecuteAction", params);
+    }
+
+    public void inputButtonEvent(String buttonEvent) {
+        logger.debug("inputButtonEvent {}.", buttonEvent);
+
+        String button = buttonEvent;
+        String keymap = "KB";
+        Integer holdtime = null;
+
+        if (buttonEvent.contains(";")) {
+            String[] params = buttonEvent.split(";");
+            switch (params.length) {
+                case 2:
+                    button = params[0];
+                    keymap = params[1];
+                    break;
+                case 3:
+                    button = params[0];
+                    keymap = params[1];
+                    try {
+                        holdtime = Integer.parseInt(params[2]);
+                    } catch (NumberFormatException nfe) {
+                        holdtime = null;
+                    }
+                    break;
+            }
+        }
+
+        this.inputButtonEvent(button, keymap, holdtime);
+    }
+
+    private void inputButtonEvent(String button, String keymap, Integer holdtime) {
+        JsonObject params = new JsonObject();
+        params.addProperty("button", button);
+        params.addProperty("keymap", keymap);
+        if (holdtime != null) {
+            params.addProperty("holdtime", holdtime.intValue());
+        }
+        JsonElement result = socket.callMethod("Input.ButtonEvent", params);
+        logger.debug("inputButtonEvent result {}.", result);
     }
 
     public void getSystemProperties() {

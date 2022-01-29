@@ -115,6 +115,10 @@
 		<label>Level</label>
 		<description>Level changes the brightness of the globe.</description>
 		<category>Slider</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="colourTemperature">
@@ -122,6 +126,10 @@
 		<label>Colour Temperature</label>
 		<description>Change from cool to warm white with this control.</description>
 		<category>Slider</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>ColorTemperature</tag>
+		</tags>
 	</channel-type>
 
 	<channel-type id="colour">
@@ -130,7 +138,8 @@
 		<description>Allows you to change the colour, brightness and saturation of the globe.</description>
 		<category>ColorLight</category>
 		<tags>
-			<tag>Lighting</tag>
+			<tag>Control</tag>
+			<tag>Light</tag>
 		</tags>
 	</channel-type>
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -11,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>3.2.0-SNAPSHOT</version>
+  <version>3.3.0-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -68,19 +68,20 @@
     <maven.compiler.target>${oh.java.version}</maven.compiler.target>
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
-    <ohc.version>3.2.0-SNAPSHOT</ohc.version>
-    <bnd.version>5.3.0</bnd.version>
+    <ohc.version>3.3.0-SNAPSHOT</ohc.version>
+    <bnd.version>6.1.0</bnd.version>
     <commons.net.version>3.7.2</commons.net.version>
     <eea.version>2.2.1</eea.version>
-    <jackson.version>2.12.3</jackson.version>
-    <karaf.version>4.3.2</karaf.version>
-    <netty.version>4.1.63.Final</netty.version>
-    <sat.version>0.11.1</sat.version>
+    <jackson.version>2.12.5</jackson.version>
+    <karaf.version>4.3.6</karaf.version>
+    <netty.version>4.1.72.Final</netty.version>
+    <okhttp.version>3.14.9</okhttp.version>
+    <sat.version>0.12.0</sat.version>
     <spotless.version>2.0.3</spotless.version>
 
     <bnd.importpackage/>
     <bnd.exportpackage/>
-    <bnd.fixupmessages/>
+    <bnd.fixupmessages>"Classes found in the wrong directory"; is:=warning</bnd.fixupmessages>
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
@@ -158,9 +159,13 @@ Import-Package: \\
 -sources: false
 -contract: *
 -includeresource: ${bnd.includeresource}
--fixupmessages: ${bnd.fixupmessages}]]></bnd>
+-fixupmessages: \\
+  'Unused Import-Package instructions';is:=ignore,\\
+  'Unused Export-Package instructions';is:=ignore,\\
+  ${bnd.fixupmessages}]]></bnd>
             <!-- -dsannotations-options: norequirements -->
             <!-- Bundle-SymbolicName: ${project.groupId}.${project.artifactId} -->
+            <skipIfEmpty>true</skipIfEmpty>
           </configuration>
           <executions>
             <execution>
@@ -379,6 +384,11 @@ Import-Package: \\
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.0.0-M5</version>
+          <configuration>
+            <systemPropertyVariables>
+              <junit.jupiter.execution.timeout.default>15 m</junit.jupiter.execution.timeout.default>
+            </systemPropertyVariables>
+          </configuration>
         </plugin>
 
         <plugin>
@@ -415,7 +425,7 @@ Import-Package: \\
             </excludes>
             <useDefaultExcludes>true</useDefaultExcludes>
             <properties>
-              <year>2021</year>
+              <year>2022</year>
             </properties>
             <encoding>UTF-8</encoding>
           </configuration>
@@ -511,6 +521,12 @@ Import-Package: \\
         </plugin>
 
         <plugin>
+          <groupId>org.openhab.core.tools</groupId>
+          <artifactId>i18n-maven-plugin</artifactId>
+          <version>${ohc.version}</version>
+        </plugin>
+
+        <plugin>
           <groupId>org.openhab.tools.sat</groupId>
           <artifactId>sat-plugin</artifactId>
           <version>${sat.version}</version>
@@ -531,6 +547,7 @@ Import-Package: \\
             </execution>
           </executions>
         </plugin>
+
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>

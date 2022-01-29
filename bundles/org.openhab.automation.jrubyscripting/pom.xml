@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.openhab.addons.bundles</groupId>
+    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>org.openhab.automation.jrubyscripting</artifactId>
+
+  <name>openHAB Add-ons :: Bundles :: Automation :: JRuby Scripting</name>
+
+  <properties>
+    <bnd.importpackage>com.sun.nio.*;resolution:=optional,com.sun.security.*;resolution:=optional,org.apache.tools.ant.*;resolution:=optional,org.bouncycastle.*;resolution:=optional,org.joda.*;resolution:=optional,sun.management.*;resolution:=optional,sun.nio.*;resolution:=optional,jakarta.annotation;resolution:=optional</bnd.importpackage>
+    <jruby.version>9.3.3.0</jruby.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby-complete</artifactId>
+      <version>${jruby.version}</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+</project>

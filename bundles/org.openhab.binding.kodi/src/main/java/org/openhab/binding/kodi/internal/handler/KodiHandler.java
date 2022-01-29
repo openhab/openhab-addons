@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,6 +91,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     private final KodiDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
 
+    private final ChannelUID screenSaverChannelUID;
+    private final ChannelUID inputRequestedChannelUID;
     private final ChannelUID volumeChannelUID;
     private final ChannelUID mutedChannelUID;
     private final ChannelUID favoriteChannelUID;
@@ -108,6 +110,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
 
+        screenSaverChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_SCREENSAVER);
+        inputRequestedChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_INPUTREQUESTED);
         volumeChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_VOLUME);
         mutedChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_MUTE);
         favoriteChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_PLAYFAVORITE);
@@ -141,6 +145,11 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getIdWithoutGroup()) {
+            case CHANNEL_SCREENSAVER:
+                if (RefreshType.REFRESH == command) {
+                    connection.updateScreenSaverState();
+                }
+                break;
             case CHANNEL_MUTE:
                 if (command.equals(OnOffType.ON)) {
                     connection.setMute(true);
@@ -260,6 +269,15 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                     updateState(CHANNEL_INPUTACTION, UnDefType.UNDEF);
                 } else if (RefreshType.REFRESH == command) {
                     updateState(CHANNEL_INPUTACTION, UnDefType.UNDEF);
+                }
+                break;
+            case CHANNEL_INPUTBUTTONEVENT:
+                logger.debug("handleCommand CHANNEL_INPUTBUTTONEVENT {}.", command);
+                if (command instanceof StringType) {
+                    connection.inputButtonEvent(command.toString());
+                    updateState(CHANNEL_INPUTBUTTONEVENT, UnDefType.UNDEF);
+                } else if (RefreshType.REFRESH == command) {
+                    updateState(CHANNEL_INPUTBUTTONEVENT, UnDefType.UNDEF);
                 }
                 break;
             case CHANNEL_SYSTEMCOMMAND:
@@ -732,7 +750,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
     }
 
     @Override
-    public void updateScreenSaverState(boolean screenSaveActive) {
+    public void updateScreenSaverState(boolean screenSaverActive) {
+        updateState(screenSaverChannelUID, OnOffType.from(screenSaverActive));
+    }
+
+    @Override
+    public void updateInputRequestedState(boolean inputRequested) {
+        updateState(inputRequestedChannelUID, OnOffType.from(inputRequested));
     }
 
     @Override

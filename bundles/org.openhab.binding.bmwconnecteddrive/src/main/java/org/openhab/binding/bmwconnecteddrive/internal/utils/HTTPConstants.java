@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,12 +25,15 @@ public class HTTPConstants {
 
     public static final String AUTH_HTTP_CLIENT_NAME = "AuthHttpClient";
     public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
-    public static final String CONTENT_TYPE_JSON = "application/json";
+    public static final String CONTENT_TYPE_JSON_ENCODED = "application/json";
     public static final String KEEP_ALIVE = "Keep-Alive";
     public static final String CLIENT_ID = "client_id";
     public static final String RESPONSE_TYPE = "response_type";
     public static final String TOKEN = "token";
+    public static final String CODE = "code";
     public static final String REDIRECT_URI = "redirect_uri";
+    public static final String AUTHORIZATION = "authorization";
+    public static final String GRANT_TYPE = "grant_type";
     public static final String SCOPE = "scope";
     public static final String CREDENTIALS = "Credentials";
     public static final String USERNAME = "username";

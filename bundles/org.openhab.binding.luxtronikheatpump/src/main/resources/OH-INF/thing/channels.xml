@@ -1946,6 +1946,30 @@
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="frequencyCompressorTarget" advanced="true">
+		<item-type>Number:Frequency</item-type>
+		<label>Compressor Target Frequency</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="flowRateHeatSource2" advanced="true">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Flow Rate Heat Source</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heatingPowerActualValue" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>Heating Power Actual Value</label>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="unknown" advanced="true">
+		<item-type>Number</item-type>
+		<label>Unknown Channel</label>
+		<state readOnly="true"/>
+	</channel-type>
+
 
 	<channel-type id="temperatureHeatingParallelShift">
 		<item-type>Number:Temperature</item-type>
@@ -1954,9 +1978,9 @@
 		<state pattern="%.1f %unit%" min="-10" max="10" step="0.5"></state>
 	</channel-type>
 
-	<channel-type id="temperatureHotWaterTarget">
+	<channel-type id="temperatureHotWaterCoverage">
 		<item-type>Number:Temperature</item-type>
-		<label>Hot Water Target Temp.</label>
+		<label>Coverage Hot Water Temp.</label>
 		<category>Temperature</category>
 		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
 	</channel-type>
@@ -2029,6 +2053,13 @@
 		<label>Thermal Disinfection (Permanent)</label>
 	</channel-type>
 
+	<channel-type id="temperatureHotWaterTarget">
+		<item-type>Number:Temperature</item-type>
+		<label>Hot Water Target Temp.</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" min="30" max="65" step="0.5"></state>
+	</channel-type>
+
 	<channel-type id="comfortCoolingMode">
 		<item-type>Number</item-type>
 		<label>Comfort Cooling Mode</label>
@@ -2054,18 +2085,25 @@
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 
+	<channel-type id="temperatureHeatingLimit">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature Heating Limit</label>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"></state>
+	</channel-type>
+
 	<channel-type id="comfortCoolingATExcess">
 		<item-type>Number:Time</item-type>
 		<label>AT Excess</label>
 		<category>Time</category>
-		<state pattern="%.1f %unit%" step="1"></state>
+		<state pattern="%.1f %unit%" step="0.5" min="0" max="12"></state>
 	</channel-type>
 
 	<channel-type id="comfortCoolingATUndercut">
 		<item-type>Number:Time</item-type>
 		<label>AT Undercut</label>
 		<category>Time</category>
-		<state pattern="%.1f %unit%" step="1"></state>
+		<state pattern="%.1f %unit%" step="0.5" min="0" max="12"></state>
 	</channel-type>
 
 </thing:thing-descriptions>

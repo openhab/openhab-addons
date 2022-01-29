@@ -43,9 +43,7 @@
 			<channel id="yesterday" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
-			<channel id="power" typeId="power">
-				<label>Maximum power usage yesterday</label>
-			</channel>
+			<channel id="power" typeId="power"/>
 			<channel id="timestamp" typeId="timestamp">
 				<label>Peak Timestamp</label>
 				<description>Maximum power usage timestamp</description>
@@ -99,7 +97,7 @@
 
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
-		<label>Peak Power</label>
+		<label>Yesterday Peak Power</label>
 		<description>Maximum power usage yesterday</description>
 		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>

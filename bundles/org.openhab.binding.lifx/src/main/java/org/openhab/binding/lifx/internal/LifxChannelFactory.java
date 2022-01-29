@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,8 @@ import org.openhab.core.thing.ThingUID;
  */
 @NonNullByDefault
 public interface LifxChannelFactory {
+
+    Channel createAbsTemperatureZoneChannel(ThingUID thingUID, int index);
 
     Channel createColorZoneChannel(ThingUID thingUID, int index);
 

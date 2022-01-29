@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,6 +53,9 @@ public class Info {
 
     @SerializedName(value = "FilterT")
     private int filterT;
+
+    @SerializedName(value = "ServiceT")
+    private int serviceT;
 
     @SerializedName(value = "UVCOnT")
     private int uvCOnT;
@@ -108,6 +111,10 @@ public class Info {
 
     public int getFilterT() {
         return filterT;
+    }
+
+    public int getServiceT() {
+        return serviceT;
     }
 
     public int getUvCOnT() {

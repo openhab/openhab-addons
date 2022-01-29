@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -164,6 +164,20 @@ public class StatusWrapper {
                             ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
+            case RANGE_ELECTRIC_MAX:
+                assertTrue(isElectric, "Is Eelctric");
+                assertTrue(state instanceof QuantityType);
+                qt = ((QuantityType) state);
+                if (imperial) {
+                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
+                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.maxRangeElectricMls),
+                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
+                } else {
+                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(Converter.round(qt.floatValue()), Converter.round(vStatus.maxRangeElectric),
+                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
+                }
+                break;
             case RANGE_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
                 if (!(state instanceof UnDefType)) {
@@ -196,6 +210,22 @@ public class StatusWrapper {
                             ALLOWED_KM_ROUND_DEVIATION, "Mileage");
                 }
                 break;
+            case RANGE_HYBRID_MAX:
+                assertTrue(isHybrid, "Is Hybrid");
+                assertTrue(state instanceof QuantityType);
+                qt = ((QuantityType) state);
+                if (imperial) {
+                    assertEquals(ImperialUnits.MILE, qt.getUnit(), "Miles");
+                    assertEquals(Converter.round(qt.floatValue()),
+                            Converter.round(vStatus.maxRangeElectricMls + vStatus.remainingRangeFuelMls),
+                            ALLOWED_MILE_CONVERSION_DEVIATION, "Mileage");
+                } else {
+                    assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                    assertEquals(Converter.round(qt.floatValue()),
+                            Converter.round(vStatus.maxRangeElectric + vStatus.remainingRangeFuel),
+                            ALLOWED_KM_ROUND_DEVIATION, "Mileage");
+                }
+                break;
             case REMAINING_FUEL:
                 assertTrue(hasFuel, "Has Fuel");
                 assertTrue(state instanceof QuantityType);
@@ -211,6 +241,14 @@ public class StatusWrapper {
                 assertEquals(Units.PERCENT, qt.getUnit(), "Percent");
                 assertEquals(Converter.round(vStatus.chargingLevelHv), Converter.round(qt.floatValue()), 0.01,
                         "Charge Level");
+                break;
+            case SOC_MAX:
+                assertTrue(isElectric, "Is Eelctric");
+                assertTrue(state instanceof QuantityType);
+                qt = ((QuantityType) state);
+                assertEquals(Units.KILOWATT_HOUR, qt.getUnit(), "kw/h");
+                assertEquals(Converter.round(vStatus.chargingLevelHv), Converter.round(qt.floatValue()), 0.01,
+                        "SOC Max");
                 break;
             case LOCK:
                 assertTrue(state instanceof StringType);
@@ -274,12 +312,24 @@ public class StatusWrapper {
                     assertEquals(Units.MINUTE, qtt.getUnit(), "Minutes");
                 }
                 break;
+            case PLUG_CONNECTION:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.connectionStatus));
+                assertEquals(wanted.toString(), st.toString(), "Plug Connection State");
+                break;
             case LAST_UPDATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = (DateTimeType) state;
                 DateTimeType expected = DateTimeType
                         .valueOf(Converter.getLocalDateTime(VehicleStatusUtils.getUpdateTime(vStatus)));
                 assertEquals(expected.toString(), dtt.toString(), "Last Update");
+                break;
+            case LAST_UPDATE_REASON:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.updateReason));
+                assertEquals(wanted.toString(), st.toString(), "Last Update");
                 break;
             case GPS:
                 assertTrue(state instanceof PointType);
@@ -303,6 +353,18 @@ public class StatusWrapper {
                             "Range Radius Electric mi");
                 } else {
                     assertEquals(Converter.guessRangeRadius(vStatus.remainingRangeElectric), qt.floatValue(), 0.1,
+                            "Range Radius Electric km");
+                }
+                break;
+            case RANGE_RADIUS_ELECTRIC_MAX:
+                assertTrue(state instanceof QuantityType);
+                assertTrue(isElectric);
+                qt = (QuantityType) state;
+                if (imperial) {
+                    assertEquals(Converter.guessRangeRadius(vStatus.maxRangeElectricMls), qt.floatValue(), 1,
+                            "Range Radius Electric mi");
+                } else {
+                    assertEquals(Converter.guessRangeRadius(vStatus.maxRangeElectric), qt.floatValue(), 0.1,
                             "Range Radius Electric km");
                 }
                 break;
@@ -331,6 +393,19 @@ public class StatusWrapper {
                     assertEquals(
                             Converter.guessRangeRadius(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel),
                             qt.floatValue(), ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid km");
+                }
+                break;
+            case RANGE_RADIUS_HYBRID_MAX:
+                assertTrue(state instanceof QuantityType);
+                assertTrue(isHybrid);
+                qt = (QuantityType) state;
+                if (imperial) {
+                    assertEquals(
+                            Converter.guessRangeRadius(vStatus.maxRangeElectricMls + vStatus.remainingRangeFuelMls),
+                            qt.floatValue(), ALLOWED_MILE_CONVERSION_DEVIATION, "Range Radius Hybrid Max mi");
+                } else {
+                    assertEquals(Converter.guessRangeRadius(vStatus.maxRangeElectric + vStatus.remainingRangeFuel),
+                            qt.floatValue(), ALLOWED_KM_ROUND_DEVIATION, "Range Radius Hybrid Max km");
                 }
                 break;
             case DOOR_DRIVER_FRONT:

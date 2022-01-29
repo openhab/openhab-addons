@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.lifx.internal.dto;
+
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -153,7 +155,7 @@ public class Effect {
         }
         Effect n = (Effect) o;
         return n.getType().equals(this.getType()) && n.duration.equals(this.duration) && n.speed.equals(this.speed)
-                && n.palette == this.palette;
+                && Arrays.equals(n.palette, this.palette);
     }
 
     @Override

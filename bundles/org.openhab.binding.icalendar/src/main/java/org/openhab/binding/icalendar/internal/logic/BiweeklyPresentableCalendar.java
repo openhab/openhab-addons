@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,55 +88,14 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public List<Event> getJustBegunEvents(Instant frameBegin, Instant frameEnd) {
-        final List<Event> eventList = new ArrayList<>();
-        // process all the events in the iCalendar
-        for (final VEvent event : usedCalendar.getEvents()) {
-            // iterate over all begin dates
-            final DateIterator begDates = getRecurredEventDateIterator(event);
-            while (begDates.hasNext()) {
-                final Instant begInst = begDates.next().toInstant();
-                if (begInst.isBefore(frameBegin)) {
-                    continue;
-                } else if (begInst.isAfter(frameEnd)) {
-                    break;
-                }
-                // fall through => means we are within the time frame
-                Duration duration = getEventLength(event);
-                if (duration == null) {
-                    duration = Duration.ofMinutes(1);
-                }
-                eventList.add(new VEventWPeriod(event, begInst, begInst.plus(duration)).toEvent());
-                break;
-            }
-        }
-        return eventList;
+        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0).stream().map(e -> e.toEvent())
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<Event> getJustEndedEvents(Instant frameBegin, Instant frameEnd) {
-        final List<Event> eventList = new ArrayList<>();
-        // process all the events in the iCalendar
-        for (final VEvent event : usedCalendar.getEvents()) {
-            final Duration duration = getEventLength(event);
-            if (duration == null) {
-                continue;
-            }
-            // iterate over all begin dates
-            final DateIterator begDates = getRecurredEventDateIterator(event);
-            while (begDates.hasNext()) {
-                final Instant begInst = begDates.next().toInstant();
-                final Instant endInst = begInst.plus(duration);
-                if (endInst.isBefore(frameBegin)) {
-                    continue;
-                } else if (endInst.isAfter(frameEnd)) {
-                    break;
-                }
-                // fall through => means we are within the time frame
-                eventList.add(new VEventWPeriod(event, begInst, endInst).toEvent());
-                break;
-            }
-        }
-        return eventList;
+        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, 0, true).stream().map(e -> e.toEvent())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -247,6 +206,20 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return All events which begin in the time frame.
      */
     private List<VEventWPeriod> getVEventWPeriodsBetween(Instant frameBegin, Instant frameEnd, int maximumPerSeries) {
+        return this.getVEventWPeriodsBetween(frameBegin, frameEnd, maximumPerSeries, false);
+    }
+
+    /**
+     * Finds events which begin in the given frame by end time and date
+     *
+     * @param frameBegin Begin of the frame where to search events.
+     * @param frameEnd End of the time frame where to search events. The Instant is inclusive when searchByEnd is true.
+     * @param maximumPerSeries Limit the results per series. Set to 0 for no limit.
+     * @param searchByEnd Whether to search by begin of the event or by end.
+     * @return All events which begin in the time frame.
+     */
+    private List<VEventWPeriod> getVEventWPeriodsBetween(Instant frameBegin, Instant frameEnd, int maximumPerSeries,
+            boolean searchByEnd) {
         final List<VEvent> positiveEvents = new ArrayList<>();
         final List<VEvent> negativeEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
@@ -254,16 +227,22 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         final List<VEventWPeriod> eventList = new ArrayList<>();
         for (final VEvent positiveEvent : positiveEvents) {
             final DateIterator positiveBeginDates = getRecurredEventDateIterator(positiveEvent);
-            positiveBeginDates.advanceTo(Date.from(frameBegin));
+            Duration duration = getEventLength(positiveEvent);
+            if (duration == null) {
+                duration = Duration.ZERO;
+            }
+            positiveBeginDates.advanceTo(Date.from(frameBegin.minus(searchByEnd ? duration : Duration.ZERO)));
             int foundInSeries = 0;
             while (positiveBeginDates.hasNext()) {
                 final Instant begInst = positiveBeginDates.next().toInstant();
-                if (begInst.isAfter(frameEnd) || begInst.equals(frameEnd)) {
+                if ((!searchByEnd && (begInst.isAfter(frameEnd) || begInst.equals(frameEnd)))
+                        || (searchByEnd && begInst.plus(duration).isAfter(frameEnd))) {
                     break;
                 }
-                Duration duration = getEventLength(positiveEvent);
-                if (duration == null) {
-                    duration = Duration.ZERO;
+                // biweekly is not as precise as java.time. An exact check is required.
+                if ((!searchByEnd && begInst.isBefore(frameBegin))
+                        || (searchByEnd && begInst.plus(duration).isBefore(frameBegin))) {
+                    continue;
                 }
 
                 final VEventWPeriod resultingVEWP = new VEventWPeriod(positiveEvent, begInst, begInst.plus(duration));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -90,9 +89,6 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
 
     // time in seconds to try to reconnect
     private static final int RECONNECT_TIME = 60;
-
-    // utf8 charset name
-    private static final String UTF8_NAME = StandardCharsets.UTF_8.name();
 
     // the value by which the volume is changed by each INCREASE or
     // DECREASE-Event
@@ -520,21 +516,11 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
         }
 
         private String decode(String raw) {
-            try {
-                return URLDecoder.decode(raw, UTF8_NAME);
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("Failed to decode '{}' ", raw, e);
-                return null;
-            }
+            return URLDecoder.decode(raw, StandardCharsets.UTF_8);
         }
 
         private String encode(String raw) {
-            try {
-                return URLEncoder.encode(raw, UTF8_NAME);
-            } catch (UnsupportedEncodingException e) {
-                logger.debug("Failed to encode '{}' ", raw, e);
-                return null;
-            }
+            return URLEncoder.encode(raw, StandardCharsets.UTF_8);
         }
 
         @NonNullByDefault
@@ -646,7 +632,7 @@ public class SqueezeBoxServerHandler extends BaseBridgeHandler {
                     String volumeStringValue = decode(messageParts[3]);
                     updatePlayer(listener -> {
                         try {
-                            int volume = Integer.parseInt(volumeStringValue);
+                            int volume = Math.round(Float.parseFloat(volumeStringValue));
 
                             // Check if we received a relative volume change, or an absolute
                             // volume value.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ public class NanoleafBindingConstants {
 
     // Panel configuration settings
     public static final String CONFIG_PANEL_ID = "id";
+    public static final String CONTROLLER_PANEL_ID = "-1";
 
     // List of controller channels
     public static final String CHANNEL_COLOR = "color";
@@ -52,6 +53,11 @@ public class NanoleafBindingConstants {
     public static final String CHANNEL_RHYTHM_STATE = "rhythmState";
     public static final String CHANNEL_RHYTHM_ACTIVE = "rhythmActive";
     public static final String CHANNEL_RHYTHM_MODE = "rhythmMode";
+    public static final String CHANNEL_SWIPE = "swipe";
+    public static final String CHANNEL_SWIPE_EVENT_UP = "UP";
+    public static final String CHANNEL_SWIPE_EVENT_DOWN = "DOWN";
+    public static final String CHANNEL_SWIPE_EVENT_LEFT = "LEFT";
+    public static final String CHANNEL_SWIPE_EVENT_RIGHT = "RIGHT";
 
     // List of light panel channels
     public static final String CHANNEL_PANEL_COLOR = "color";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.doorbird.internal.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,7 +36,6 @@ public class DoorbirdInfo {
     private @Nullable String primaryMacAddress;
     private @Nullable String wifiMacAddress;
     private @Nullable String deviceType;
-    private @Nullable String controllerId;
     private ArrayList<String> relays = new ArrayList<>();
 
     @SuppressWarnings("null")
@@ -51,13 +51,7 @@ public class DoorbirdInfo {
                 primaryMacAddress = doorbirdInfo.primaryMacAddress;
                 wifiMacAddress = doorbirdInfo.wifiMacAddress;
                 deviceType = doorbirdInfo.deviceType;
-                for (String relay : doorbirdInfo.relays) {
-                    relays.add(relay);
-                    String[] parts = relay.split("@");
-                    if (parts.length == 2) {
-                        controllerId = parts[0];
-                    }
-                }
+                relays.addAll(Arrays.asList(doorbirdInfo.relays));
             }
         }
     }
@@ -86,15 +80,12 @@ public class DoorbirdInfo {
         return deviceType;
     }
 
-    public @Nullable String getControllerId() {
-        return controllerId;
+    public @Nullable String getControllerId(@Nullable String configId) {
+        return relays.stream().map(relay -> relay.split("@")).filter(parts -> parts.length == 2).map(parts -> parts[0])
+                .filter(id -> configId == null || id.equals(configId)).reduce((first, second) -> second).orElse(null);
     }
 
     public ArrayList<String> getRelays() {
         return relays;
-    }
-
-    public void addRelay(String relay) {
-        relays.add(relay);
     }
 }

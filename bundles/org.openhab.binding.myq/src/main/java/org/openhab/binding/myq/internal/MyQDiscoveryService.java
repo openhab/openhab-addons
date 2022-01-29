@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,11 +14,12 @@ package org.openhab.binding.myq.internal;
 
 import static org.openhab.binding.myq.internal.MyQBindingConstants.BINDING_ID;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.myq.internal.dto.DevicesDTO;
+import org.openhab.binding.myq.internal.dto.DeviceDTO;
 import org.openhab.binding.myq.internal.handler.MyQAccountHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -55,9 +56,9 @@ public class MyQDiscoveryService extends AbstractDiscoveryService implements Dis
     public void startScan() {
         MyQAccountHandler accountHandler = this.accountHandler;
         if (accountHandler != null) {
-            DevicesDTO devices = accountHandler.devicesCache();
+            List<DeviceDTO> devices = accountHandler.devicesCache();
             if (devices != null) {
-                devices.items.forEach(device -> {
+                devices.forEach(device -> {
                     ThingTypeUID thingTypeUID = new ThingTypeUID(BINDING_ID, device.deviceFamily);
                     if (SUPPORTED_DISCOVERY_THING_TYPES_UIDS.contains(thingTypeUID)) {
                         ThingUID thingUID = new ThingUID(thingTypeUID, accountHandler.getThing().getUID(),
@@ -71,6 +72,11 @@ public class MyQDiscoveryService extends AbstractDiscoveryService implements Dis
                 });
             }
         }
+    }
+
+    @Override
+    public void startBackgroundDiscovery() {
+        startScan();
     }
 
     @Override

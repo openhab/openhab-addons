@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,7 +85,7 @@ public class PortalHandler extends BaseBridgeHandler {
     public PortalHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge);
         httpClient = httpClientFactory.getCommonHttpClient();
-        gson = new GsonBuilder().setDateFormat(SEMSPortalBindingConstants.DATE_FORMAT).create();
+        gson = new GsonBuilder().create();
     }
 
     @Override

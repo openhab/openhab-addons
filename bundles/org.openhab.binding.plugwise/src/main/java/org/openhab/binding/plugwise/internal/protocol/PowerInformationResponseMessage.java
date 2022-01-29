@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,6 +33,7 @@ public class PowerInformationResponseMessage extends Message {
 
     private static final Pattern PAYLOAD_PATTERN = Pattern.compile("(\\w{16})(\\w{4})(\\w{4})(\\w{8})(\\w{8})(\\w{4})");
     private static final double NANOSECONDS_CORRECTION_DIVISOR = 0.000046875; // 46875 divided by nanos per second
+    private static final Duration ONE_HOUR = Duration.ofHours(1);
 
     private Energy oneSecond;
     private Energy eightSecond;
@@ -67,12 +68,12 @@ public class PowerInformationResponseMessage extends Message {
             ZonedDateTime utcNow = ZonedDateTime.now(UTC);
             macAddress = new MACAddress(matcher.group(1));
             nanosCorrection = Math.round(Integer.parseInt(matcher.group(6), 16) / NANOSECONDS_CORRECTION_DIVISOR);
-            oneSecond = new Energy(utcNow, Integer.parseInt(matcher.group(2), 16),
+            oneSecond = new Energy(utcNow, (short) Integer.parseInt(matcher.group(2), 16),
                     Duration.ofSeconds(1, nanosCorrection));
-            eightSecond = new Energy(utcNow, Integer.parseInt(matcher.group(3), 16),
+            eightSecond = new Energy(utcNow, (short) Integer.parseInt(matcher.group(3), 16),
                     Duration.ofSeconds(8, nanosCorrection));
-            oneHourConsumed = new Energy(utcNow, Long.parseLong(matcher.group(4), 16), Duration.ofHours(1));
-            oneHourProduced = new Energy(utcNow, Long.parseLong(matcher.group(5), 16), Duration.ofHours(1));
+            oneHourConsumed = new Energy(utcNow, Long.parseLong(matcher.group(4), 16), ONE_HOUR);
+            oneHourProduced = new Energy(utcNow, Long.parseLong(matcher.group(5), 16), ONE_HOUR);
         } else {
             throw new PlugwisePayloadMismatchException(POWER_INFORMATION_RESPONSE, PAYLOAD_PATTERN, payload);
         }

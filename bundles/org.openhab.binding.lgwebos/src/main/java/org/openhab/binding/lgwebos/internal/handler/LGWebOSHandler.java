@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,11 +76,6 @@ public class LGWebOSHandler extends BaseThingHandler
     private static final int CHANNEL_SUBSCRIPTION_DELAY_SECONDS = 1;
     private static final String APP_ID_LIVETV = "com.webos.app.livetv";
 
-    /*
-     * error messages
-     */
-    private static final String MSG_MISSING_PARAM = "Missing parameter \"host\"";
-
     private final Logger logger = LoggerFactory.getLogger(LGWebOSHandler.class);
 
     // ChannelID to CommandHandler Map
@@ -135,7 +130,8 @@ public class LGWebOSHandler extends BaseThingHandler
         logger.trace("Handler initialized with config {}", c);
         String host = c.getHost();
         if (host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, MSG_MISSING_PARAM);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-unknown-host");
             return;
         }
 
@@ -143,7 +139,7 @@ public class LGWebOSHandler extends BaseThingHandler
         s.setListener(this);
         socket = s;
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.tv-off");
 
         startReconnectJob();
     }
@@ -284,7 +280,7 @@ public class LGWebOSHandler extends BaseThingHandler
                 postUpdate(CHANNEL_POWER, OnOffType.OFF);
                 break;
             case DISCONNECTED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "TV is off");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.tv-off");
                 channelHandlers.forEach((k, v) -> {
                     v.onDeviceRemoved(k, this);
                     v.removeAnySubscription(this);
@@ -297,13 +293,12 @@ public class LGWebOSHandler extends BaseThingHandler
                 stopReconnectJob();
                 break;
             case REGISTERING:
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                        "Registering - You may need to confirm pairing on TV.");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.registering");
                 findMacAddress();
                 break;
             case REGISTERED:
                 startKeepAliveJob();
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "Connected");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "@text/online.connected");
 
                 channelHandlers.forEach((k, v) -> {
                     // refresh subscriptions except on channel, which can only be subscribe in livetv app. see
@@ -330,7 +325,8 @@ public class LGWebOSHandler extends BaseThingHandler
             case CONNECTING:
             case REGISTERING:
             case REGISTERED:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Connection Failed: " + error);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        String.format("@text/offline.comm-error-connexion-failed [ \"%s\" ]", error));
                 break;
         }
     }

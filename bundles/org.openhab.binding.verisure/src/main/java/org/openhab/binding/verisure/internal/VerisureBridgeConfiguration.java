@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class VerisureBridgeConfiguration {
-    public @Nullable String username;
-    public @Nullable String password;
-    public int refresh;
+    public String username = "";
+    public String password = "";
+    public int refresh = 600;
     public @Nullable String pin;
 }

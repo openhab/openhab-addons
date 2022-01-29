@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,27 +193,28 @@ public class SelectionDTO {
         this.includeRuntime = Boolean.TRUE;
         this.includeSensors = Boolean.TRUE;
 
-        this.includeAudio = selection.includeAudio == Boolean.TRUE ? Boolean.TRUE : includeAudio;
-        this.includeDevice = selection.includeDevice == Boolean.TRUE ? Boolean.TRUE : includeDevice;
-        this.includeElectricity = selection.includeElectricity == Boolean.TRUE ? Boolean.TRUE : includeElectricity;
-        this.includeEnergy = selection.includeEnergy == Boolean.TRUE ? Boolean.TRUE : includeEnergy;
-        this.includeExtendedRuntime = selection.includeExtendedRuntime == Boolean.TRUE ? Boolean.TRUE
+        this.includeAudio = Boolean.TRUE.equals(selection.includeAudio) ? Boolean.TRUE : includeAudio;
+        this.includeDevice = Boolean.TRUE.equals(selection.includeDevice) ? Boolean.TRUE : includeDevice;
+        this.includeElectricity = Boolean.TRUE.equals(selection.includeElectricity) ? Boolean.TRUE : includeElectricity;
+        this.includeEnergy = Boolean.TRUE.equals(selection.includeEnergy) ? Boolean.TRUE : includeEnergy;
+        this.includeExtendedRuntime = Boolean.TRUE.equals(selection.includeExtendedRuntime) ? Boolean.TRUE
                 : includeExtendedRuntime;
-        this.includeHouseDetails = selection.includeHouseDetails == Boolean.TRUE ? Boolean.TRUE : includeHouseDetails;
-        this.includeLocation = selection.includeLocation == Boolean.TRUE ? Boolean.TRUE : includeLocation;
-        this.includeManagement = selection.includeManagement == Boolean.TRUE ? Boolean.TRUE : includeManagement;
-        this.includeNotificationSettings = selection.includeNotificationSettings == Boolean.TRUE ? Boolean.TRUE
+        this.includeHouseDetails = Boolean.TRUE.equals(selection.includeHouseDetails) ? Boolean.TRUE
+                : includeHouseDetails;
+        this.includeLocation = Boolean.TRUE.equals(selection.includeLocation) ? Boolean.TRUE : includeLocation;
+        this.includeManagement = Boolean.TRUE.equals(selection.includeManagement) ? Boolean.TRUE : includeManagement;
+        this.includeNotificationSettings = Boolean.TRUE.equals(selection.includeNotificationSettings) ? Boolean.TRUE
                 : includeNotificationSettings;
-        this.includeOemCfg = selection.includeOemCfg == Boolean.TRUE ? Boolean.TRUE : includeOemCfg;
-        this.includePrivacy = selection.includePrivacy == Boolean.TRUE ? Boolean.TRUE : includePrivacy;
-        this.includeReminders = selection.includeReminders == Boolean.TRUE ? Boolean.TRUE : includeReminders;
-        this.includeSecuritySettings = selection.includeSecuritySettings == Boolean.TRUE ? Boolean.TRUE
+        this.includeOemCfg = Boolean.TRUE.equals(selection.includeOemCfg) ? Boolean.TRUE : includeOemCfg;
+        this.includePrivacy = Boolean.TRUE.equals(selection.includePrivacy) ? Boolean.TRUE : includePrivacy;
+        this.includeReminders = Boolean.TRUE.equals(selection.includeReminders) ? Boolean.TRUE : includeReminders;
+        this.includeSecuritySettings = Boolean.TRUE.equals(selection.includeSecuritySettings) ? Boolean.TRUE
                 : includeSecuritySettings;
-        this.includeSettings = selection.includeSettings == Boolean.TRUE ? Boolean.TRUE : includeSettings;
-        this.includeTechnician = selection.includeTechnician == Boolean.TRUE ? Boolean.TRUE : includeTechnician;
-        this.includeUtility = selection.includeUtility == Boolean.TRUE ? Boolean.TRUE : includeUtility;
-        this.includeVersion = selection.includeVersion == Boolean.TRUE ? Boolean.TRUE : includeVersion;
-        this.includeWeather = selection.includeWeather == Boolean.TRUE ? Boolean.TRUE : includeWeather;
+        this.includeSettings = Boolean.TRUE.equals(selection.includeSettings) ? Boolean.TRUE : includeSettings;
+        this.includeTechnician = Boolean.TRUE.equals(selection.includeTechnician) ? Boolean.TRUE : includeTechnician;
+        this.includeUtility = Boolean.TRUE.equals(selection.includeUtility) ? Boolean.TRUE : includeUtility;
+        this.includeVersion = Boolean.TRUE.equals(selection.includeVersion) ? Boolean.TRUE : includeVersion;
+        this.includeWeather = Boolean.TRUE.equals(selection.includeWeather) ? Boolean.TRUE : includeWeather;
         return this;
     }
 

@@ -283,7 +283,6 @@
 				"actions": []
 			}
 		],
-		"readmeComment": "Identified manual actions for execution\u003cbr /\u003e`action{\"did\":\"private-service-toggle-switch\",\"siid\":8,\"aiid\":1,\"in\":[]}`\u003cbr /\u003ePlease test and feedback if they are working to they can be linked to a channel.",
 		"experimental": true
 	}
 }

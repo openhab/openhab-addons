@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -236,6 +236,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_BATTERY, new DecimalType(info.getStatus().getBattery()));
             updateState(CHANNEL_STATUS, new DecimalType(info.getStatus().getStatus().getStatusCode()));
             updateState(CHANNEL_STATUS_DURATION, new QuantityType<>(info.getStatus().getDuration(), Units.SECOND));
+            updateState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(info.getStatus().getDistance(), SIUnits.METRE));
             updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), Units.HOUR));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
             updateState(CHANNEL_MOWER_START, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);

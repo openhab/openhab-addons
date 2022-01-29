@@ -1,7 +1,9 @@
 # Android Debug Bridge Binding
 
-This binding allows to connect to android devices through the adb protocol. 
-The device needs to have **usb debugging enabled** and **allow debugging over tcp**, some devices allow to enable this in the device options but others need a previous connection through adb or even be rooted. 
+This binding allows to connect to android devices through the adb protocol.
+
+The device needs to have **usb debugging enabled** and **allow debugging over tcp**, some devices allow to enable this in the device options but others need a previous connection through adb or even be rooted.
+
 If you are not familiar with adb I suggest you to search "How to enable adb over wifi on \<device name\>" or something like that.
 
 ## Supported Things
@@ -10,7 +12,11 @@ This binding was tested on the Fire TV Stick (android version 7.1.2, volume cont
 
 ## Discovery
 
-As I can not find a way to identify android devices in the network the discovery will try to connect through adb to all the reachable ip in the defined range, you could customize the discovery process through the binding options. **Your device will prop a message requesting you to authorize the connection, you should check the option "Always allow connections from this device" (or something similar) and accept**.
+As I can not find a way to identify android devices in the network the discovery will try to connect through adb to all the reachable ip in the defined range.
+
+You could customize the discovery process through the binding options. 
+
+**Your device will prompt a message requesting you to authorize the connection, you should check the option "Always allow connections from this device" (or something similar) and accept**.
 
 ## Binding Configuration
 
@@ -33,6 +39,7 @@ As I can not find a way to identify android devices in the network the discovery
 | port | int | Device port listening to adb connections (default: 5555) |
 | refreshTime | int | Seconds between device status refreshes (default: 30) |
 | timeout | int | Command timeout in seconds (default: 5) |
+| recordDuration | int | Record input duration in seconds |
 | mediaStateJSONConfig | String | Expects a JSON array. Allow to configure the media state detection method per app. Described in the following section |
 
 ## Media State Detection
@@ -52,6 +59,20 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 
 `[{"name": "com.amazon.tv.launcher", "mode": "idle"},{"name": "org.jellyfin.androidtv", "mode": "wake_lock", "wakeLockPlayStates": [2,3]},{"name": "com.amazon.firetv.youtube", "mode": "wake_lock", "wakeLockPlayStates": [2]}]`
 
+## Record/Send input events
+
+As the execution of key events takes a while, you can use input events as an alternative way to control your device. 
+
+They are pretty device specific, so you should use the record-input and recorded-input channels to store/send those events.
+
+An example of what you can do:
+
+* You can send the command `UP` to the `record-input` channel the binding will then capture the events you send through your remote for the defined recordDuration config for the thing, so press once the UP key on your remote and wait a while.
+* Now that you have recorded your input, you can send the `UP` command to the `recorded-input` event and it will send the recorded event to the android device.
+
+Please note that events could fail if the input method is removed, for example it could fail if you clone the events of a bluetooth controller and the remote goes offline. This is happening for me when recording the Fire TV remote events but not for my Xiaomi TV which also has a bt remote controller.
+
+
 ## Channels
 
 | channel  | type   | description                  |
@@ -59,12 +80,17 @@ This is a sample of the mediaStateJSONConfig thing configuration:
 | key-event  | String | Send key event to android device. Possible values listed below |
 | text  | String | Send text to android device |
 | tap  | String | Send tap event to android device (format x,y) |
+| url  | String | Open url in browser |
 | media-volume  | Dimmer | Set or get media volume level on android device |
 | media-control  | Player | Control media on android device |
 | start-package  | String | Run application by package name |
 | stop-package  | String | Stop application by package name |
+| stop-current-package  | String | Stop current application |
 | current-package  | String | Package name of the top application in screen |
+| record-input  | String | Capture events, generate the equivalent command and store it under the provided name |
+| recorded-input  | String | Emulates previously captured input events by name |
 | shutdown  | String | Power off/reboot device (allowed values POWER_OFF, REBOOT) |
+| awake-state  | OnOff | Awake state value. |
 | wake-lock  | Number | Power wake lock value |
 | screen-state  | Switch | Screen power state |
 

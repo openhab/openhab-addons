@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -171,11 +171,11 @@ public class Enums {
          * @return the enum value representing the given measure unit
          */
         public static MeasureUnit fromUnit(Unit<?> unit) {
-            if (unit == SIUnits.CELSIUS) {
+            if (SIUnits.CELSIUS.equals(unit)) {
                 return CELSIUS;
-            } else if (unit == ImperialUnits.FAHRENHEIT) {
+            } else if (ImperialUnits.FAHRENHEIT.equals(unit)) {
                 return FAHRENHEIT;
-            } else if (unit == Units.PERCENT) {
+            } else if (Units.PERCENT.equals(unit)) {
                 return PERCENTAGE;
             } else {
                 return DIMENSIONLESS;
