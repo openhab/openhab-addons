@@ -19,8 +19,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,7 +27,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Nemer Daud - Initial contribution
  */
-@NonNullByDefault
 public class JsonUtils {
     public static <T> T unmashallJson(String fileName) {
         InputStream inputStream = JsonUtils.class.getResourceAsStream(fileName);

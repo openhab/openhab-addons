@@ -25,10 +25,10 @@ import org.openhab.binding.lgthinq.internal.errors.LGApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.internal.errors.LGDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.internal.handler.LGBridgeHandler;
-import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
-import org.openhab.binding.lgthinq.lgapi.LGApiV1ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgapi.LGApiV2ClientServiceImpl;
+import org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler;
+import org.openhab.binding.lgthinq.lgapi.LGThinqApiClientService;
+import org.openhab.binding.lgthinq.lgapi.LGThinqApiV1ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgapi.LGThinqApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgapi.model.*;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -43,32 +43,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LGAirConditionerHandler} is responsible for handling commands, which are
+ * The {@link LGThinqAirConditionerHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class LGAirConditionerHandler extends BaseThingHandler implements LGDeviceThing {
-    public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
-            "" + DeviceTypes.AIR_CONDITIONER.deviceTypeId()); // deviceType from AirConditioner
+public class LGThinqAirConditionerHandler extends BaseThingHandler implements LGThinqDeviceThing {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AIR_CONDITIONER);
-    private final LGDeviceDynStateDescriptionProvider stateDescriptionProvider;
+    private final LGThinqDeviceDynStateDescriptionProvider stateDescriptionProvider;
     private final ChannelUID opModeChannelUID;
     private final ChannelUID opModeFanSpeedUID;
     @Nullable
     private ACCapability acCapability;
     private final String lgPlatfomType;
-    private final Logger logger = LoggerFactory.getLogger(LGAirConditionerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(LGThinqAirConditionerHandler.class);
     @NonNullByDefault
-    private final LGApiClientService lgApiClientService;
+    private final LGThinqApiClientService lgThinqApiClientService;
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     // Bridges status that this thing must top scanning for state change
     private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
             ThingStatusDetail.BRIDGE_UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR,
             ThingStatusDetail.CONFIGURATION_ERROR);
-    private static final Set<String> SUPPORTED_LG_PLATFORMS = Set.of(PLATFORM_TYPE_V1, PLATFORM_TYPE_V2);
     private @Nullable ScheduledFuture<?> thingStatePoolingJob;
     private @Nullable Future<?> commandExecutorQueueJob;
     // *** Long running isolated threadpools.
@@ -81,12 +77,13 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     @NonNullByDefault
     private String bridgeId = "";
 
-    public LGAirConditionerHandler(Thing thing, LGDeviceDynStateDescriptionProvider stateDescriptionProvider) {
+    public LGThinqAirConditionerHandler(Thing thing,
+            LGThinqDeviceDynStateDescriptionProvider stateDescriptionProvider) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         lgPlatfomType = "" + thing.getProperties().get(PLATFORM_TYPE);
-        lgApiClientService = lgPlatfomType.equals(PLATFORM_TYPE_V1) ? LGApiV1ClientServiceImpl.getInstance()
-                : LGApiV2ClientServiceImpl.getInstance();
+        lgThinqApiClientService = lgPlatfomType.equals(PLATFORM_TYPE_V1) ? LGThinqApiV1ClientServiceImpl.getInstance()
+                : LGThinqApiV2ClientServiceImpl.getInstance();
         opModeChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_MOD_OP_ID);
         opModeFanSpeedUID = new ChannelUID(getThing().getUID(), CHANNEL_FAN_SPEED_ID);
     }
@@ -136,7 +133,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                         "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.");
             }
             if (bridge != null) {
-                LGBridgeHandler handler = (LGBridgeHandler) bridge.getHandler();
+                LGThinqBridgeHandler handler = (LGThinqBridgeHandler) bridge.getHandler();
                 // registry this thing to the bridge
                 if (handler == null) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
@@ -241,7 +238,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     private void forceStopDeviceV1Monitor(String deviceId) {
         try {
             monitorV1Began = false;
-            lgApiClientService.stopMonitor(getBridgeId(), deviceId, monitorWorkId);
+            lgThinqApiClientService.stopMonitor(getBridgeId(), deviceId, monitorWorkId);
         } catch (Exception e) {
             logger.error("Error stopping LG Device monitor", e);
         }
@@ -272,7 +269,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     @Override
     public ACCapability getAcCapabilities() throws LGApiException {
         if (acCapability == null) {
-            acCapability = lgApiClientService.getDeviceCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
+            acCapability = lgThinqApiClientService.getDeviceCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
         }
         return Objects.requireNonNull(acCapability, "Unexpected error. Return ac-capability shouldn't ever be null");
     }
@@ -281,11 +278,11 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
     private ACSnapShot getSnapshotDeviceAdapter(String deviceId) throws LGApiException {
         // analise de platform version
         if (PLATFORM_TYPE_V2.equals(lgPlatfomType)) {
-            return lgApiClientService.getAcDeviceData(getBridgeId(), getDeviceId());
+            return lgThinqApiClientService.getAcDeviceData(getBridgeId(), getDeviceId());
         } else {
             try {
                 if (!monitorV1Began) {
-                    monitorWorkId = lgApiClientService.startMonitor(getBridgeId(), getDeviceId());
+                    monitorWorkId = lgThinqApiClientService.startMonitor(getBridgeId(), getDeviceId());
                     monitorV1Began = true;
                 }
             } catch (LGDeviceV1OfflineException e) {
@@ -302,7 +299,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
             while (retries > 0) {
                 // try to get monitoring data result 3 times.
                 try {
-                    shot = lgApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId);
+                    shot = lgThinqApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId);
                     if (shot != null) {
                         return shot;
                     }
@@ -444,7 +441,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                     switch (params.channelUID) {
                         case CHANNEL_MOD_OP_ID: {
                             if (params.command instanceof DecimalType) {
-                                lgApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
+                                lgThinqApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
                                         ((DecimalType) command).intValue());
                             } else {
                                 logger.warn("Received command different of Numeric in Mod Operation. Ignoring");
@@ -453,7 +450,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                         }
                         case CHANNEL_FAN_SPEED_ID: {
                             if (command instanceof DecimalType) {
-                                lgApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
+                                lgThinqApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
                                         ((DecimalType) command).intValue());
                             } else {
                                 logger.warn("Received command different of Numeric in FanSpeed Channel. Ignoring");
@@ -462,7 +459,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                         }
                         case CHANNEL_POWER_ID: {
                             if (command instanceof OnOffType) {
-                                lgApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
+                                lgThinqApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
                                         command == ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
                             } else {
                                 logger.warn("Received command different of OnOffType in Power Channel. Ignoring");
@@ -479,7 +476,7 @@ public class LGAirConditionerHandler extends BaseThingHandler implements LGDevic
                                 logger.warn("Received command different of Numeric in TargetTemp Channel. Ignoring");
                                 break;
                             }
-                            lgApiClientService.changeTargetTemperature(getBridgeId(), getDeviceId(),
+                            lgThinqApiClientService.changeTargetTemperature(getBridgeId(), getDeviceId(),
                                     ACTargetTmp.statusOf(targetTemp));
                             break;
                         }
