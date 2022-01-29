@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class RefreshTokenException extends LGApiException {
+public class RefreshTokenException extends LGThinqApiException {
     public RefreshTokenException(String message, Throwable cause) {
         super(message, cause);
     }

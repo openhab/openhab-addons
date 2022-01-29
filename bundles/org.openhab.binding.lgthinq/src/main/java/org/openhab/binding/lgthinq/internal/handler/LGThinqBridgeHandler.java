@@ -12,17 +12,6 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_USER_DATA_FOLDER;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
@@ -41,6 +30,17 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_USER_DATA_FOLDER;
 
 /**
  * The {@link LGThinqBridgeHandler}
@@ -82,7 +82,7 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
     final ReentrantLock pollingLock = new ReentrantLock();
 
     /**
-     * Abstract Runnable Pooling Class to schedule sincronization status of the Bridge Thing Kinds !
+     * Abstract Runnable Polling Class to schedule sincronization status of the Bridge Thing Kinds !
      */
     abstract class PollingRunnable implements Runnable {
         protected final String bridgeName;
@@ -285,25 +285,25 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
                     "@text/error.mandotory-fields-missing");
         } else {
             updateStatus(ThingStatus.UNKNOWN);
-            startLGDevicePolling();
+            startLGThinqDevicePolling();
         }
     }
 
-    private void startLGDevicePolling() {
+    private void startLGThinqDevicePolling() {
         // stop current scheduler, if any
         if (devicePollingJob != null && !devicePollingJob.isDone()) {
             devicePollingJob.cancel(true);
         }
         long pollingInterval;
-        int configPollingInterval = lgthinqConfig.getPoolingIntervalSec();
-        // It's not recommended to pool for resources in LG API short intervals to do not enter in BlackList
+        int configPollingInterval = lgthinqConfig.getPollingIntervalSec();
+        // It's not recommended to polling for resources in LG API short intervals to do not enter in BlackList
         if (configPollingInterval < 300) {
             pollingInterval = TimeUnit.SECONDS.toSeconds(300);
             logger.info("Wrong configuration value for polling interval. Using default value: {}s", pollingInterval);
         } else {
             pollingInterval = configPollingInterval;
         }
-        // submit instantlly and schedule for the next pooling interval.
+        // submit instantlly and schedule for the next polling interval.
         scheduler.submit(lgDevicePollingRunnable);
         devicePollingJob = scheduler.scheduleWithFixedDelay(lgDevicePollingRunnable, pollingInterval, pollingInterval,
                 TimeUnit.SECONDS);

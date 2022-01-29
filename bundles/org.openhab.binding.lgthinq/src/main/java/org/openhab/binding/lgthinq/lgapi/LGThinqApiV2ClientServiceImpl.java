@@ -31,9 +31,9 @@ import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.api.TokenResult;
-import org.openhab.binding.lgthinq.internal.errors.LGApiException;
-import org.openhab.binding.lgthinq.internal.errors.LGDeviceV1MonitorExpiredException;
-import org.openhab.binding.lgthinq.internal.errors.LGDeviceV1OfflineException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
 import org.slf4j.Logger;
@@ -83,11 +83,11 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
      * 
      * @param deviceId device ID for de desired V2 LG Thinq.
      * @return return map containing metamodel of settings and snapshot
-     * @throws LGApiException if some communication error occur.
+     * @throws LGThinqApiException if some communication error occur.
      */
     @Override
     @Nullable
-    public ACSnapShot getAcDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGApiException {
+    public ACSnapShot getAcDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException {
         Map<String, Object> deviceSettings = getDeviceSettings(bridgeName, deviceId);
         if (deviceSettings.get("snapshot") != null) {
             Map<String, Object> snapMap = (Map<String, Object>) deviceSettings.get("snapshot");
@@ -113,51 +113,51 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
 
     @Override
     public void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState)
-            throws LGApiException {
+            throws LGThinqApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Operation", "airState.operation",
                     newPowerState.commandValue());
             handleV2GenericErrorResult(resp);
         } catch (Exception e) {
-            throw new LGApiException("Error adjusting device power", e);
+            throw new LGThinqApiException("Error adjusting device power", e);
         }
     }
 
     @Override
-    public void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGApiException {
+    public void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGThinqApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Set", "airState.opMode", newOpMode);
             handleV2GenericErrorResult(resp);
-        } catch (LGApiException e) {
+        } catch (LGThinqApiException e) {
             throw e;
         } catch (Exception e) {
-            throw new LGApiException("Error adjusting operation mode", e);
+            throw new LGThinqApiException("Error adjusting operation mode", e);
         }
     }
 
     @Override
-    public void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGApiException {
+    public void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGThinqApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Set", "airState.windStrength", newFanSpeed);
             handleV2GenericErrorResult(resp);
-        } catch (LGApiException e) {
+        } catch (LGThinqApiException e) {
             throw e;
         } catch (Exception e) {
-            throw new LGApiException("Error adjusting operation mode", e);
+            throw new LGThinqApiException("Error adjusting operation mode", e);
         }
     }
 
     @Override
     public void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
-            throws LGApiException {
+            throws LGThinqApiException {
         try {
             RestResult resp = sendControlCommands(bridgeName, deviceId, "Set", "airState.tempState.target",
                     newTargetTemp.commandValue());
             handleV2GenericErrorResult(resp);
-        } catch (LGApiException e) {
+        } catch (LGThinqApiException e) {
             throw e;
         } catch (Exception e) {
-            throw new LGApiException("Error adjusting operation mode", e);
+            throw new LGThinqApiException("Error adjusting operation mode", e);
         }
     }
 
@@ -166,18 +166,18 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
      * 
      * @param deviceId Device ID
      * @return Work1 to be uses to grab data during monitoring.
-     * @throws LGApiException If some communication error occur.
+     * @throws LGThinqApiException If some communication error occur.
      */
     @Override
     public String startMonitor(String bridgeName, String deviceId)
-            throws LGApiException, LGDeviceV1OfflineException, IOException {
+            throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 
     @Override
     @NonNull
     @SuppressWarnings("ignoring Map type check")
-    public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGApiException {
+    public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
         try {
             File regFile = new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
             ACCapability acCap = new ACCapability();
@@ -191,12 +191,12 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
             });
             Map<String, Object> cap = (Map<String, Object>) mapper.get("Value");
             if (cap == null) {
-                throw new LGApiException("Error extracting capabilities supported by the device");
+                throw new LGThinqApiException("Error extracting capabilities supported by the device");
             }
 
             Map<String, Object> opModes = (Map<String, Object>) cap.get("airState.opMode");
             if (opModes == null) {
-                throw new LGApiException("Error extracting opModes supported by the device");
+                throw new LGThinqApiException("Error extracting opModes supported by the device");
             } else {
                 Map<String, String> modes = new HashMap<String, String>();
                 ((Map<String, String>) opModes.get("value_mapping")).forEach((k, v) -> {
@@ -206,7 +206,7 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
             }
             Map<String, Object> fanSpeed = (Map<String, Object>) cap.get("airState.windStrength");
             if (fanSpeed == null) {
-                throw new LGApiException("Error extracting fanSpeed supported by the device");
+                throw new LGThinqApiException("Error extracting fanSpeed supported by the device");
             } else {
                 Map<String, String> fanModes = new HashMap<String, String>();
                 ((Map<String, String>) fanSpeed.get("value_mapping")).forEach((k, v) -> {
@@ -226,25 +226,25 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
             acCap.getSupportedFanSpeed().remove("@NON");
             return acCap;
         } catch (IOException e) {
-            throw new LGApiException("Error reading IO interface", e);
+            throw new LGThinqApiException("Error reading IO interface", e);
         }
     }
 
-    private void handleV2GenericErrorResult(@Nullable RestResult resp) throws LGApiException {
+    private void handleV2GenericErrorResult(@Nullable RestResult resp) throws LGThinqApiException {
         Map<String, Object> metaResult;
         if (resp == null) {
             return;
         }
         if (resp.getStatusCode() != 200) {
             logger.error("Error returned by LG Server API. The reason is:{}", resp.getJsonResponse());
-            throw new LGApiException(
+            throw new LGThinqApiException(
                     String.format("Error returned by LG Server API. The reason is:%s", resp.getJsonResponse()));
         } else {
             try {
                 metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<Map<String, Object>>() {
                 });
                 if (!"0000".equals(metaResult.get("resultCode"))) {
-                    throw new LGApiException(
+                    throw new LGThinqApiException(
                             String.format("Status error executing endpoint. resultCode must be 0000, but was:%s",
                                     metaResult.get("resultCode")));
                 }
@@ -255,20 +255,20 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
         }
     }
 
-    private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGApiException {
+    private Map<String, Object> handleDeviceSettingsResult(RestResult resp) throws LGThinqApiException {
         return genericHandleDeviceSettingsResult(resp, logger, objectMapper);
     }
 
     @Override
     public void stopMonitor(String bridgeName, String deviceId, String workId)
-            throws LGApiException, RefreshTokenException, IOException, LGDeviceV1OfflineException {
+            throws LGThinqApiException, RefreshTokenException, IOException, LGThinqDeviceV1OfflineException {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 
     @Override
     @Nullable
     public ACSnapShot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workId)
-            throws LGApiException, LGDeviceV1MonitorExpiredException, IOException {
+            throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.lgthinq.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.errors.LGApiException;
+import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgapi.model.ACCapability;
 import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 
@@ -41,7 +41,7 @@ public interface LGThinqDeviceThing {
 
     void onDeviceGone();
 
-    void updateChannelDynStateDescription() throws LGApiException;
+    void updateChannelDynStateDescription() throws LGThinqApiException;
 
-    ACCapability getAcCapabilities() throws LGApiException;
+    ACCapability getAcCapabilities() throws LGThinqApiException;
 }
