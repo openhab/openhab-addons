@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgapi.model.DeviceTypes;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.thing.ThingTypeUID;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The {@link LGThinqBindingConstants} class defines common constants, which are
