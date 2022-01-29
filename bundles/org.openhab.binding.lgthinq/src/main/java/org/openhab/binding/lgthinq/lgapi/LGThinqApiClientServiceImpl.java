@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.lgthinq.lgapi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
+
+import java.util.*;
+
+import javax.ws.rs.core.UriBuilder;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
@@ -25,10 +28,9 @@ import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.UriBuilder;
-import java.util.*;
-
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link LGThinqApiV1ClientServiceImpl}
