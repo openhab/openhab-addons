@@ -24,15 +24,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.LGDeviceThing;
 import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
+import org.openhab.binding.lgthinq.internal.LGThinqDeviceThing;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
-import org.openhab.binding.lgthinq.lgapi.LGApiClientService;
-import org.openhab.binding.lgthinq.lgapi.LGApiV1ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgapi.LGThinqApiClientService;
+import org.openhab.binding.lgthinq.lgapi.LGThinqApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.*;
@@ -43,18 +43,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LGBridgeHandler}
+ * The {@link LGThinqBridgeHandler}
  *
  * @author Nemer Daud - Initial contribution
  */
-public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBridge {
+public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements LGThinqBridge {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(LGThinqBindingConstants.BINDING_ID, "bridge");
 
-    private Map<String, LGDeviceThing> lGDeviceRegister = new ConcurrentHashMap<>();
+    private Map<String, LGThinqDeviceThing> lGDeviceRegister = new ConcurrentHashMap<>();
     private Map<String, LGDevice> lastDevicesDiscovered = new ConcurrentHashMap<>();
 
     static {
-        var logger = LoggerFactory.getLogger(LGBridgeHandler.class);
+        var logger = LoggerFactory.getLogger(LGThinqBridgeHandler.class);
         try {
             File directory = new File(THINQ_USER_DATA_FOLDER);
             if (!directory.exists()) {
@@ -64,18 +64,18 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
             logger.warn("Unable to setup thinq userdata directory: {}", e.getMessage());
         }
     }
-    private final Logger logger = LoggerFactory.getLogger(LGBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(LGThinqBridgeHandler.class);
     private LGThinqConfiguration lgthinqConfig;
     private TokenManager tokenManager;
     private LGThinqDiscoveryService discoveryService;
-    private LGApiClientService lgApiClient;
+    private LGThinqApiClientService lgApiClient;
     private @Nullable Future<?> initJob;
     private @Nullable ScheduledFuture<?> devicePollingJob;
 
-    public LGBridgeHandler(Bridge bridge) {
+    public LGThinqBridgeHandler(Bridge bridge) {
         super(bridge);
         tokenManager = TokenManager.getInstance();
-        lgApiClient = LGApiV1ClientServiceImpl.getInstance();
+        lgApiClient = LGThinqApiV1ClientServiceImpl.getInstance();
         lgDevicePollingRunnable = new LGDevicePollingRunnable(bridge.getUID().getId());
     }
 
@@ -170,7 +170,7 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
     }
 
     @Override
-    public void registryListenerThing(LGDeviceThing thing) {
+    public void registryListenerThing(LGThinqDeviceThing thing) {
         if (lGDeviceRegister.get(thing.getDeviceId()) == null) {
             lGDeviceRegister.put(thing.getDeviceId(), thing);
             // remove device from discovery list, if exists.
@@ -182,12 +182,12 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
     }
 
     @Override
-    public void unRegistryListenerThing(LGDeviceThing thing) {
+    public void unRegistryListenerThing(LGThinqDeviceThing thing) {
         lGDeviceRegister.remove(thing.getDeviceId());
     }
 
     @Override
-    public LGDeviceThing getThingByDeviceId(String deviceId) {
+    public LGThinqDeviceThing getThingByDeviceId(String deviceId) {
         return lGDeviceRegister.get(deviceId);
     }
 
@@ -218,7 +218,7 @@ public class LGBridgeHandler extends ConfigStatusBridgeHandler implements LGBrid
                 logger.trace("LG Device '{}' removed.", deviceId);
                 lastDevicesDiscovered.remove(deviceId);
 
-                LGDeviceThing deviceThing = lGDeviceRegister.get(deviceId);
+                LGThinqDeviceThing deviceThing = lGDeviceRegister.get(deviceId);
                 if (deviceThing != null) {
                     deviceThing.onDeviceRemoved();
                 }

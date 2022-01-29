@@ -13,10 +13,14 @@
 package org.openhab.binding.lgthinq.internal;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lgthinq.lgapi.model.DeviceTypes;
 import org.openhab.core.OpenHAB;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link LGThinqBindingConstants} class defines common constants, which are
@@ -28,6 +32,9 @@ import org.openhab.core.OpenHAB;
 public class LGThinqBindingConstants {
 
     public static final String BINDING_ID = "lgthinq";
+    public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
+            "" + DeviceTypes.AIR_CONDITIONER.deviceTypeId()); // deviceType from AirConditioner
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AIR_CONDITIONER);
 
     public static final String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";
     public static String THINQ_CONNECTION_DATA_FILE = THINQ_USER_DATA_FOLDER + File.separator + "thinqbridge-%s.json";
@@ -87,6 +94,7 @@ public class LGThinqBindingConstants {
     public static final String PLATFORM_TYPE = "platform_type";
     public static final String PLATFORM_TYPE_V1 = "thinq1";
     public static final String PLATFORM_TYPE_V2 = "thinq2";
+    static final Set<String> SUPPORTED_LG_PLATFORMS = Set.of(PLATFORM_TYPE_V1, PLATFORM_TYPE_V2);
 
     public static final int SEARCH_TIME = 20;
     // delay between each devices's scan for state changes (in seconds)

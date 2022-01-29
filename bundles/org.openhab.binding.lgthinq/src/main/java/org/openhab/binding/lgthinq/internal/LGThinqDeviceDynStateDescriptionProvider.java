@@ -22,14 +22,14 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link LGDeviceThing} is a main interface contract for all LG Thinq things
+ * The {@link LGThinqDeviceThing} is a main interface contract for all LG Thinq things
  *
  * @author Nemer Daud - Initial contribution
  */
-@Component(service = { DynamicStateDescriptionProvider.class, LGDeviceDynStateDescriptionProvider.class })
-public class LGDeviceDynStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
+@Component(service = { DynamicStateDescriptionProvider.class, LGThinqDeviceDynStateDescriptionProvider.class })
+public class LGThinqDeviceDynStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     @Activate
-    public LGDeviceDynStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
+    public LGThinqDeviceDynStateDescriptionProvider(final @Reference EventPublisher eventPublisher, //
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry, //
             final @Reference ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.eventPublisher = eventPublisher;

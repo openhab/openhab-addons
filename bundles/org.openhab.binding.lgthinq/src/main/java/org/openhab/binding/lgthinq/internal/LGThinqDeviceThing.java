@@ -18,12 +18,12 @@ import org.openhab.binding.lgthinq.lgapi.model.ACCapability;
 import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
 
 /**
- * The {@link LGDeviceThing} is a main interface contract for all LG Thinq things
+ * The {@link LGThinqDeviceThing} is a main interface contract for all LG Thinq things
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public interface LGDeviceThing {
+public interface LGThinqDeviceThing {
 
     void onDeviceAdded(@NonNullByDefault LGDevice device);
 

@@ -33,13 +33,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link LGApiV1ClientServiceImpl}
+ * The {@link LGThinqApiV1ClientServiceImpl}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public abstract class LGApiClientServiceImpl implements LGApiClientService {
-    private static final Logger logger = LoggerFactory.getLogger(LGApiClientServiceImpl.class);
+public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientService {
+    private static final Logger logger = LoggerFactory.getLogger(LGThinqApiClientServiceImpl.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     protected abstract TokenManager getTokenManager();

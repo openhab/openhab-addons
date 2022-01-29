@@ -44,22 +44,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * The {@link LGApiV2ClientServiceImpl}
+ * The {@link LGThinqApiV2ClientServiceImpl}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
-    private static final LGApiClientService instance;
-    private static final Logger logger = LoggerFactory.getLogger(LGApiV2ClientServiceImpl.class);
+public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
+    private static final LGThinqApiClientService instance;
+    private static final Logger logger = LoggerFactory.getLogger(LGThinqApiV2ClientServiceImpl.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final TokenManager tokenManager;
 
     static {
-        instance = new LGApiV2ClientServiceImpl();
+        instance = new LGThinqApiV2ClientServiceImpl();
     }
 
-    private LGApiV2ClientServiceImpl() {
+    private LGThinqApiV2ClientServiceImpl() {
         tokenManager = TokenManager.getInstance();
     }
 
@@ -68,7 +68,7 @@ public class LGApiV2ClientServiceImpl extends LGApiClientServiceImpl {
         return tokenManager;
     }
 
-    public static LGApiClientService getInstance() {
+    public static LGThinqApiClientService getInstance() {
         return instance;
     }
 
