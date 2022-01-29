@@ -301,7 +301,9 @@ public class MiIoUnsupportedHandler extends MiIoAbstractHandler {
             JsonObject deviceMapping = Utils.convertFileToJSON(fn);
             logger.debug("Using device database: {} for device {}", fn.getFile(), deviceName);
             final MiIoBasicDevice device = GSONP.fromJson(deviceMapping, MiIoBasicDevice.class);
-            return device.getDevice().getChannels();
+            if (device != null) {
+                return device.getDevice().getChannels();
+            }
         } catch (JsonIOException | JsonSyntaxException e) {
             logger.warn("Error parsing database Json", e);
         } catch (IOException e) {

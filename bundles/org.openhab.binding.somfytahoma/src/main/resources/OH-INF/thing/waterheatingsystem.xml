@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="somfytahoma"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="waterheatingsystem">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Somfy Water Heating System</label>
+		<channels>
+			<channel id="target_temperature" typeId="temperature"></channel>
+			<channel id="middlewater_temperature" typeId="middlewater_temperature"></channel>
+			<channel id="boost_mode" typeId="boost_mode"></channel>
+			<channel id="away_mode" typeId="away_mode"></channel>
+			<channel id="boost_mode_duration" typeId="boost_mode_duration"></channel>
+			<channel id="away_mode_duration" typeId="away_mode_duration"></channel>
+			<channel id="heat_pump_operating_time" typeId="heat_pump_operating_time"></channel>
+			<channel id="electric_booster_operating_time" typeId="electric_booster_operating_time"></channel>
+			<channel id="power_heatpump" typeId="power_heatpump"></channel>
+			<channel id="power_heatelec" typeId="power_heatelec"></channel>
+			<channel id="mode" typeId="water_heater_mode"></channel>
+			<channel id="showers" typeId="showers"></channel>
+		</channels>
+		<representation-property>url</representation-property>
+		<config-description-ref uri="thing-type:somfytahoma:device"/>
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -92,7 +92,6 @@ public class TapoDeviceInfo {
         this.hue = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_HUE);
         this.hwVer = jsonObjectToString(jsonObject, DEVICE_PROPERTY_HW);
         this.ip = jsonObjectToString(jsonObject, DEVICE_PROPERTY_IP);
-        this.lightEffect = lightEffect.setData(jsonObject);
         this.mac = jsonObjectToString(jsonObject, DEVICE_PROPERTY_MAC);
         this.model = jsonObjectToString(jsonObject, DEVICE_PROPERTY_MODEL);
         this.nickname = jsonObjectToString(jsonObject, DEVICE_PROPERTY_NICKNAME);
@@ -106,6 +105,19 @@ public class TapoDeviceInfo {
         this.timeUsagePast30 = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_USAGE_30);
         this.timeUsageToday = jsonObjectToInt(jsonObject, DEVICE_PROPERTY_USAGE_TODAY);
         this.type = jsonObjectToString(jsonObject, DEVICE_PROPERTY_TYPE);
+
+        if (this.hasLightEffect()) {
+            this.lightEffect = lightEffect.setData(jsonObject);
+        }
+    }
+
+    /***********************************
+     *
+     * CHECK FOR CHILD TYPES
+     *
+     ************************************/
+    public Boolean hasLightEffect() {
+        return this.jsonObject.has(DEVICE_PROPERTY_EFFECT);
     }
 
     /***********************************

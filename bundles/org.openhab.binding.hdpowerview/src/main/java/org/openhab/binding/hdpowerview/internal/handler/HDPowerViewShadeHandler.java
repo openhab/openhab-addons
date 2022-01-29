@@ -42,6 +42,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
@@ -70,6 +71,8 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         BATTERY_LEVEL
     }
 
+    private static final String COMMAND_CALIBRATE = "CALIBRATE";
+
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
 
@@ -86,11 +89,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing shade handler");
         isDisposing = false;
-        try {
-            shadeId = getShadeId();
-        } catch (NumberFormatException e) {
+        shadeId = getConfigAs(HDPowerViewShadeConfiguration.class).id;
+        logger.debug("Initializing shade handler for shade {}", shadeId);
+        if (shadeId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.invalid-id");
             return;
@@ -105,12 +107,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-        ThingStatus bridgeStatus = bridge.getStatus();
-        if (bridgeStatus == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.UNKNOWN);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override
@@ -193,9 +190,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         switch (channelId) {
             case CHANNEL_SHADE_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(PRIMARY_ZERO_IS_CLOSED, ((PercentType) command).intValue(), webTargets, shadeId);
+                    moveShade(PRIMARY_POSITION, ((PercentType) command).intValue(), webTargets, shadeId);
                 } else if (command instanceof UpDownType) {
-                    moveShade(PRIMARY_ZERO_IS_CLOSED, UpDownType.UP == command ? 0 : 100, webTargets, shadeId);
+                    moveShade(PRIMARY_POSITION, UpDownType.UP == command ? 0 : 100, webTargets, shadeId);
                 } else if (command instanceof StopMoveType) {
                     if (StopMoveType.STOP == command) {
                         stopShade(webTargets, shadeId);
@@ -207,17 +204,17 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_VANE:
                 if (command instanceof PercentType) {
-                    moveShade(VANE_TILT_COORDS, ((PercentType) command).intValue(), webTargets, shadeId);
+                    moveShade(VANE_TILT_POSITION, ((PercentType) command).intValue(), webTargets, shadeId);
                 } else if (command instanceof OnOffType) {
-                    moveShade(VANE_TILT_COORDS, OnOffType.ON == command ? 100 : 0, webTargets, shadeId);
+                    moveShade(VANE_TILT_POSITION, OnOffType.ON == command ? 100 : 0, webTargets, shadeId);
                 }
                 break;
 
             case CHANNEL_SHADE_SECONDARY_POSITION:
                 if (command instanceof PercentType) {
-                    moveShade(SECONDARY_ZERO_IS_OPEN, ((PercentType) command).intValue(), webTargets, shadeId);
+                    moveShade(SECONDARY_POSITION, ((PercentType) command).intValue(), webTargets, shadeId);
                 } else if (command instanceof UpDownType) {
-                    moveShade(SECONDARY_ZERO_IS_OPEN, UpDownType.UP == command ? 0 : 100, webTargets, shadeId);
+                    moveShade(SECONDARY_POSITION, UpDownType.UP == command ? 0 : 100, webTargets, shadeId);
                 } else if (command instanceof StopMoveType) {
                     if (StopMoveType.STOP == command) {
                         stopShade(webTargets, shadeId);
@@ -227,9 +224,14 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                 }
                 break;
 
-            case CHANNEL_SHADE_CALIBRATE:
-                if (OnOffType.ON == command) {
-                    calibrateShade(webTargets, shadeId);
+            case CHANNEL_SHADE_COMMAND:
+                if (command instanceof StringType) {
+                    if (COMMAND_CALIBRATE.equals(((StringType) command).toString())) {
+                        logger.debug("Calibrate shade {}", shadeId);
+                        calibrateShade(webTargets, shadeId);
+                    }
+                } else {
+                    logger.warn("Unsupported command: {}. Supported commands are: " + COMMAND_CALIBRATE, command);
                 }
                 break;
         }
@@ -393,9 +395,9 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
             updateState(CHANNEL_SHADE_SECONDARY_POSITION, UnDefType.UNDEF);
             return;
         }
-        updateState(CHANNEL_SHADE_POSITION, shadePos.getState(capabilities, PRIMARY_ZERO_IS_CLOSED));
-        updateState(CHANNEL_SHADE_VANE, shadePos.getState(capabilities, VANE_TILT_COORDS));
-        updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(capabilities, SECONDARY_ZERO_IS_OPEN));
+        updateState(CHANNEL_SHADE_POSITION, shadePos.getState(capabilities, PRIMARY_POSITION));
+        updateState(CHANNEL_SHADE_VANE, shadePos.getState(capabilities, VANE_TILT_POSITION));
+        updateState(CHANNEL_SHADE_SECONDARY_POSITION, shadePos.getState(capabilities, SECONDARY_POSITION));
     }
 
     private void updateBatteryLevelStates(int batteryStatus) {
@@ -457,14 +459,6 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         }
         updateCapabilities(shadeData);
         updatePositionStates(shadePosition);
-    }
-
-    private int getShadeId() throws NumberFormatException {
-        String str = getConfigAs(HDPowerViewShadeConfiguration.class).id;
-        if (str == null) {
-            throw new NumberFormatException("null input string");
-        }
-        return Integer.parseInt(str);
     }
 
     /**

@@ -374,12 +374,14 @@
 /bundles/org.openhab.transform.scale/ @clinique
 /bundles/org.openhab.transform.xpath/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.xslt/ @openhab/add-ons-maintainers
+/bundles/org.openhab.voice.googlestt/ @GiviMAD
 /bundles/org.openhab.voice.googletts/ @gbicskei
 /bundles/org.openhab.voice.mactts/ @kaikreuzer
 /bundles/org.openhab.voice.marytts/ @kaikreuzer
 /bundles/org.openhab.voice.picotts/ @FlorianSW
 /bundles/org.openhab.voice.pollytts/ @hillmanr
-/bundles/org.openhab.voice.voicerss/ @JochenHiller
+/bundles/org.openhab.voice.porcupineks/ @GiviMAD
+/bundles/org.openhab.voice.voicerss/ @JochenHiller @lolodomo
 /bundles/org.openhab.voice.watsonstt/ @GiviMAD
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp

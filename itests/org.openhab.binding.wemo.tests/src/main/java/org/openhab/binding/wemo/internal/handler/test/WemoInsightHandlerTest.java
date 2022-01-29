@@ -21,7 +21,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.handler.WemoHandler;
+import org.openhab.binding.wemo.internal.handler.WemoInsightHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -35,17 +35,17 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
 
 /**
- * Tests for {@link WemoHandler}.
+ * Tests for {@link WemoInsightHandler}.
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Stefan Triller - Ported Tests from Groovy to Java
  */
-public class WemoHandlerTest {
+public class WemoInsightHandlerTest {
 
     private static final ThingTypeUID THING_TYPE = WemoBindingConstants.THING_TYPE_INSIGHT;
     private static final String THING_ID = "test";
 
-    private MockWemoHandler handler;
+    private MockWemoInsightHandler handler;
 
     private static final String SERVICE_ID = "insight";
     private static final String PARAMS_NAME = "InsightParams";
@@ -131,18 +131,18 @@ public class WemoHandlerTest {
     }
 
     private void testOnValueReceived(String expectedChannel, State expectedState, String insightParams) {
-        handler = new MockWemoHandler(thing, expectedChannel);
+        handler = new MockWemoInsightHandler(thing, expectedChannel);
 
         handler.onValueReceived(PARAMS_NAME, insightParams, SERVICE_ID);
         assertThat(handler.channelState, is(notNullValue()));
         assertThat(handler.channelState, is(expectedState));
     }
 
-    class MockWemoHandler extends WemoHandler {
+    class MockWemoInsightHandler extends WemoInsightHandler {
         State channelState;
         String channelToWatch;
 
-        public MockWemoHandler(Thing thing, String channelToWatch) {
+        public MockWemoInsightHandler(Thing thing, String channelToWatch) {
             super(thing, null, new WemoHttpCall());
             this.channelToWatch = channelToWatch;
         }
