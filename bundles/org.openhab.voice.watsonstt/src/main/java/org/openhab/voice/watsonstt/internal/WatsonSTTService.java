@@ -235,7 +235,7 @@ public class WatsonSTTService implements STTService {
 
         @Override
         public void onConnected() {
-            logger.info("onConnected");
+            logger.debug("onConnected");
         }
 
         @Override

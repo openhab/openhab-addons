@@ -32,11 +32,12 @@
 			<description>Use the parameter to suppress word insertions from music, coughing, and other non-speech events.</description>
 			<default>0.5</default>
 		</parameter>
-		<parameter name="inactivityTimeout" type="decimal" step="1" groupName="stt">
+		<parameter name="inactivityTimeout" type="integer" unit="s" groupName="stt">
 			<label>Inactivity Timeout</label>
 			<description>The time in seconds after which, if only silence (no speech) is detected in the audio, the connection is
 				closed.</description>
-			<default>20</default>
+			<unitLabel>s</unitLabel>
+			<default>3</default>
 		</parameter>
 		<parameter name="noResultsMessage" type="text" groupName="stt">
 			<label>No Results Message</label>
