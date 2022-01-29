@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.lgthinq.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link LGThinqGateway} hold informations about the LG Gateway
