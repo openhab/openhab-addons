@@ -12,15 +12,11 @@
  */
 package org.openhab.binding.lgthinq.internal.api;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V2_EMP_SESS_PATH;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V2_EMP_SESS_URL;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import java.io.Serializable;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.lgthinq.internal.api.model.GatewayResult;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * The {@link LGThinqGateway} hold informations about the LG Gateway
@@ -38,34 +34,22 @@ public class LGThinqGateway implements Serializable {
     private String country = "";
     private String username = "";
     private String password = "";
-    private String alternativeEmpServer = "";
-    private int accountVersion;
 
     public LGThinqGateway() {
     }
 
-    public LGThinqGateway(GatewayResult gwResult, String language, String country, String alternativeEmpServer) {
-        this.apiRootV2 = gwResult.getThinq2Uri();
-        this.apiRootV1 = gwResult.getThinq1Uri();
-        this.loginBaseUri = gwResult.getEmpSpxUri();
-        this.authBase = gwResult.getEmpUri();
-        this.empBaseUri = gwResult.getEmpTermsUri();
+    public LGThinqGateway(Map<String, String> params, String language, String country) {
+        this.apiRootV2 = Objects.requireNonNullElse(params.get("thinq2Uri"), "");
+        this.apiRootV1 = Objects.requireNonNullElse(params.get("thinq1Uri"), "");
+        this.loginBaseUri = Objects.requireNonNullElse(params.get("empSpxUri"), "");
+        this.authBase = Objects.requireNonNullElse(params.get("empUri"), "");
+        this.empBaseUri = Objects.requireNonNullElse(params.get("empTermsUri"), "");
         this.language = language;
         this.country = country;
-        this.alternativeEmpServer = alternativeEmpServer;
-    }
-
-    @JsonIgnore
-    public String getTokenSessionEmpUrl() {
-        return alternativeEmpServer.isBlank() ? V2_EMP_SESS_URL : alternativeEmpServer + V2_EMP_SESS_PATH;
     }
 
     public String getEmpBaseUri() {
         return empBaseUri;
-    }
-
-    public int getAccountVersion() {
-        return accountVersion;
     }
 
     public String getApiRootV2() {
