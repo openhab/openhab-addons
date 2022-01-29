@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.lgthinq.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link TokenResult} Hold information about token and related entities
