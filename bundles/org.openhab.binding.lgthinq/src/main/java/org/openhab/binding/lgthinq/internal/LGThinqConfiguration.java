@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -30,18 +28,18 @@ public class LGThinqConfiguration {
     public String password = "";
     public String country = "";
     public String language = "";
-    public Integer poolingIntervalSec = 0;
+    public Integer pollingIntervalSec = 0;
 
     public LGThinqConfiguration() {
     }
 
     public LGThinqConfiguration(String username, String password, String country, String language,
-            Integer poolingIntervalSec) {
+            Integer pollingIntervalSec) {
         this.username = username;
         this.password = password;
         this.country = country;
         this.language = language;
-        this.poolingIntervalSec = poolingIntervalSec;
+        this.pollingIntervalSec = pollingIntervalSec;
     }
 
     public String getUsername() {
@@ -60,8 +58,8 @@ public class LGThinqConfiguration {
         return language;
     }
 
-    public Integer getPoolingIntervalSec() {
-        return poolingIntervalSec;
+    public Integer getPollingIntervalSec() {
+        return pollingIntervalSec;
     }
 
     public void setUsername(String username) {
@@ -80,7 +78,7 @@ public class LGThinqConfiguration {
         this.language = language;
     }
 
-    public void setPoolingIntervalSec(Integer poolingIntervalSec) {
-        this.poolingIntervalSec = poolingIntervalSec;
+    public void setPollingIntervalSec(Integer pollingIntervalSec) {
+        this.pollingIntervalSec = pollingIntervalSec;
     }
 }
