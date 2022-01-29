@@ -34,7 +34,6 @@ public class JellyfinBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SERVER, THING_TYPE_CLIENT);
 
     // List of all Channel ids
-    public static final String SEND_PLAY_STATE_COMMAND_CHANNEL = "play-state-command";
     public static final String SEND_NOTIFICATION_CHANNEL = "send-notification";
     public static final String MEDIA_CONTROL_CHANNEL = "media-control";
     public static final String PLAYING_ITEM_PERCENTAGE_CHANNEL = "playing-item-percentage";

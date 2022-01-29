@@ -53,7 +53,6 @@
 		<description>Represents a running Jellyfin client connected to a server</description>
 
 		<channels>
-			<channel id="play-state-command" typeId="play-state-command-channel"/>
 			<channel id="send-notification" typeId="send-notification-channel"/>
 			<channel id="media-control" typeId="system.media-control"/>
 			<channel id="playing-item-name" typeId="playing-item-name-channel"/>
@@ -77,23 +76,6 @@
 	</thing-type>
 
 	<!-- Client Channels -->
-	<channel-type id="play-state-command-channel">
-		<item-type>String</item-type>
-		<label>Send Play State Command</label>
-		<description>Send play state command to the client</description>
-		<state>
-			<options>
-				<option value="STOP">STOP</option>
-				<option value="PAUSE">PAUSE</option>
-				<option value="UNPAUSE">UNPAUSE</option>
-				<option value="NEXT_TRACK">NEXT_TRACK</option>
-				<option value="PREVIOUS_TRACK">PREVIOUS_TRACK</option>
-				<option value="REWIND">REWIND</option>
-				<option value="FAST_FORWARD">FAST_FORWARD</option>
-				<option value="PLAY_PAUSE">PLAY_PAUSE</option>
-			</options>
-		</state>
-	</channel-type>
 	<channel-type id="send-notification-channel">
 		<item-type>String</item-type>
 		<label>Send Notification</label>

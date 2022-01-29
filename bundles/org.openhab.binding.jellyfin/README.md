@@ -46,7 +46,6 @@ In order to assist you with this process the binding expose a simple login form 
 
 | channel  | type   | description                  |
 |----------|--------|------------------------------|
-| play-state-command  | String | Send play state command to the client; listed bellow |
 | send-notification  | String | Display message in client |
 | media-control  | Player | Control media playback |
 | playing-item-name  | String | Name of the item currently playing (readonly) |
@@ -111,13 +110,11 @@ Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Web client"
 Thing jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID> "Jellyfin Android client" (jellyfin:server:exampleServerId)
 ```
 
-* I recommend creating the clients using the discovery.
-For getting the device ids manually I recommend to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX). 
+* I recommend creating the clients using the discovery. For getting the device ids manually I recommend to use the Jellyfin web interface with the web inspector and look for the request that is launched when you click the cast button (<jellyfin url>/Sessions?ControllableByUserId=XXXXXXXXXXXX). 
 
 ### Example Items - jellyfin.items
 
 ```
-String strJellyfinAndroidPlayStateCommand { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:play-state-command", stateDescription=""[options="STOP=Stop, PAUSE=Pause, UNPAUSE=Unpause, NEXT_TRACK=Next track, PREVIOUS_TRACK=Previous track, REWIND=Rewind, FAST_FORWARD=Fast forward, PLAY_PAUSE=Play Pause"]}
 String strJellyfinAndroidSendNotification { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:send-notification " }
 Player plJellyfinAndroidMediaControl { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:media-control" }
 String strJellyfinAndroidPlayingItemName { channel="jellyfin:client:exampleServerId:<JELLYFIN_DEVICE_ID>:playing-item-name" }

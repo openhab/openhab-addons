@@ -28,10 +28,10 @@ import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLA
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_LAST_BY_TERMS_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.PLAY_NEXT_BY_TERMS_CHANNEL;
 import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.SEND_NOTIFICATION_CHANNEL;
-import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.SEND_PLAY_STATE_COMMAND_CHANNEL;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -103,12 +103,6 @@ public class JellyfinClientHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             switch (channelUID.getId()) {
-                case SEND_PLAY_STATE_COMMAND_CHANNEL:
-                    if (command instanceof RefreshType) {
-                        return;
-                    }
-                    sendPlayStateCommand(PlaystateCommand.valueOf(command.toFullString()));
-                    break;
                 case SEND_NOTIFICATION_CHANNEL:
                     if (command instanceof RefreshType) {
                         return;
@@ -180,8 +174,6 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     }
                     break;
             }
-        } catch (InterruptedException e) {
-            logger.warn("Execution interrupted while running channel {}: {}", channelUID.getId(), e.getMessage());
         } catch (SyncCallback.SyncCallbackError syncCallbackError) {
             logger.warn("Unexpected error while running channel {}: {}", channelUID.getId(),
                     syncCallbackError.getMessage());
@@ -289,7 +281,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void runItemSearch(String terms, @Nullable PlayCommand playCommand)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+            throws SyncCallback.SyncCallbackError, ApiClientException {
         if (terms.isBlank() || UnDefType.NULL.toFullString().equals(terms)) {
             return;
         }
@@ -315,7 +307,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
 
     private void runItemSearchByType(String terms, @Nullable PlayCommand playCommand, boolean movieSearchEnabled,
             boolean seriesSearchEnabled, boolean episodeSearchEnabled)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+            throws SyncCallback.SyncCallbackError, ApiClientException {
         var seriesItem = seriesSearchEnabled ? getServerHandler().searchItem(terms, "Series", null) : null;
         var movieItem = movieSearchEnabled ? getServerHandler().searchItem(terms, "Movie", null) : null;
         var episodeItem = episodeSearchEnabled ? getServerHandler().searchItem(terms, "Episode", null) : null;
@@ -363,7 +355,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void runSeriesEpisode(String terms, int season, int episode, @Nullable PlayCommand playCommand)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+            throws SyncCallback.SyncCallbackError, ApiClientException {
         logger.debug("{} series episode mode", playCommand != null ? "Play" : "Browse");
         var seriesItem = getServerHandler().searchItem(terms, "Series", null);
         if (seriesItem != null) {
@@ -380,7 +372,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void runItem(BaseItemDto item, @Nullable PlayCommand playCommand)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+            throws SyncCallback.SyncCallbackError, ApiClientException {
         var itemType = Objects.requireNonNull(item.getType());
         logger.debug("{} {} '{}'", playCommand == null ? "Browsing" : "Playing", itemType.toLowerCase(),
                 "Episode".equals(itemType) ? item.getSeriesName() + ": " + item.getName() : item.getName());
@@ -392,30 +384,56 @@ public class JellyfinClientHandler extends BaseThingHandler {
     }
 
     private void playItem(BaseItemDto item, PlayCommand playCommand)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+            throws SyncCallback.SyncCallbackError, ApiClientException {
         playItem(item, playCommand, null);
     }
 
     private void playItem(BaseItemDto item, PlayCommand playCommand, @Nullable Long startPositionTicks)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
-        if (playCommand.equals(PlayCommand.PLAY_NOW)) {
-            stopCurrentPlayback();
+            throws SyncCallback.SyncCallbackError, ApiClientException {
+        if (playCommand.equals(PlayCommand.PLAY_NOW) && stopCurrentPlayback()) {
+            scheduler.schedule(() -> {
+                try {
+                    playItemInternal(item, playCommand, startPositionTicks);
+                } catch (SyncCallback.SyncCallbackError | ApiClientException e) {
+                    logger.warn("Unexpected error while running channel {}: {}", PLAY_BY_TERMS_CHANNEL, e.getMessage());
+                }
+            }, 3, TimeUnit.SECONDS);
+        } else {
+            playItemInternal(item, playCommand, startPositionTicks);
         }
+    }
+
+    private void playItemInternal(BaseItemDto item, PlayCommand playCommand, @Nullable Long startPositionTicks)
+            throws SyncCallback.SyncCallbackError, ApiClientException {
         getServerHandler().playItem(lastSessionId, playCommand, item.getId().toString(), startPositionTicks);
     }
 
-    private void browseItem(BaseItemDto item)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
-        stopCurrentPlayback();
+    private void browseItem(BaseItemDto item) throws SyncCallback.SyncCallbackError, ApiClientException {
+        if (stopCurrentPlayback()) {
+            scheduler.schedule(() -> {
+                try {
+                    browseItemInternal(item);
+                } catch (SyncCallback.SyncCallbackError | ApiClientException e) {
+                    logger.warn("Unexpected error while running channel {}: {}", BROWSE_ITEM_BY_TERMS_CHANNEL,
+                            e.getMessage());
+                }
+            }, 3, TimeUnit.SECONDS);
+        } else {
+            browseItemInternal(item);
+        }
+    }
+
+    private void browseItemInternal(BaseItemDto item) throws SyncCallback.SyncCallbackError, ApiClientException {
         getServerHandler().browseToItem(lastSessionId, Objects.requireNonNull(item.getType()), item.getId().toString(),
                 Objects.requireNonNull(item.getName()));
     }
 
-    private void stopCurrentPlayback() throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+    private boolean stopCurrentPlayback() throws SyncCallback.SyncCallbackError, ApiClientException {
         if (lastPlayingState) {
             sendPlayStateCommand(PlaystateCommand.STOP);
-            Thread.sleep(2000);
+            return true;
         }
+        return false;
     }
 
     private void sendPlayStateCommand(PlaystateCommand command)
@@ -461,8 +479,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
         }
     }
 
-    private void seekToPercentage(int percentage)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+    private void seekToPercentage(int percentage) throws SyncCallback.SyncCallbackError, ApiClientException {
         if (lastRunTimeTicks == 0L) {
             logger.warn("Can't seek missing RunTimeTicks info");
             return;
@@ -472,18 +489,15 @@ public class JellyfinClientHandler extends BaseThingHandler {
         seekToTick(seekPositionTick);
     }
 
-    private void seekToSecond(long second)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+    private void seekToSecond(long second) throws SyncCallback.SyncCallbackError, ApiClientException {
         long seekPositionTick = second * 10000000L;
         logger.debug("Seek to second {}: {} of {}", second, seekPositionTick, lastRunTimeTicks);
         seekToTick(seekPositionTick);
     }
 
-    private void seekToTick(long seekPositionTick)
-            throws SyncCallback.SyncCallbackError, ApiClientException, InterruptedException {
+    private void seekToTick(long seekPositionTick) throws SyncCallback.SyncCallbackError, ApiClientException {
         sendPlayStateCommand(PlaystateCommand.SEEK, seekPositionTick);
-        Thread.sleep(3000);
-        refreshState();
+        scheduler.schedule(this::refreshState, 3, TimeUnit.SECONDS);
     }
 
     private void cleanChannels() {

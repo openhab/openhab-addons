@@ -34,7 +34,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -54,7 +53,6 @@ import org.slf4j.LoggerFactory;
 public class JellyfinHandlerFactory extends BaseThingHandlerFactory {
     private final HttpService httpService;
     private final Logger logger = LoggerFactory.getLogger(JellyfinHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
     private final Map<ThingUID, JellyfinBridgeServlet> servletRegistrations = new HashMap<>();
 
     @Activate
