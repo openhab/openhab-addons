@@ -177,16 +177,25 @@ Synopsis of this tool:
 
 ```
 Usage: java org.openhab.voice.voicerss.tool.CreateTTSCache <args>
-Arguments: --api-key <key> <cache-dir> <locale> { <text> | @inputfile }
+Arguments: --api-key <key> <cache-dir> <locale> <voice> { <text> | @inputfile } [ <codec> <format> ]
   key       the VoiceRSS API Key, e.g. "123456789"
   cache-dir is directory where the files will be stored, e.g. "voicerss-cache"
   locale    the language locale, has to be valid, e.g. "en-us", "de-de"
+  voice     the voice, "default" for the default voice
   text      the text to create audio file for, e.g. "Hello World"
   inputfile a name of a file, where all lines will be translatet to text, e.g. "@message.txt"
+  codec     the audio codec, "MP3", "WAV", "OGG" or "AAC", "MP3" by default
+  format    the audio format, "44khz_16bit_mono" by default
 
-Sample: java org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890 cache en-US @messages.txt
+Sample: java org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890 cache en-US default @messages.txt
 ```
 
+In fact, you need to specify the classpath for your addon (jar) in the command.
+So your final command should look like this (with path depending on your openHAB version):
+
+```
+java -cp userdata/tmp/kar/openhab-addons-3.3.0-SNAPSHOT-2694/org/openhab/addons/bundles/org.openhab.voice.voicerss/3.3.0-SNAPSHOT/org.openhab.voice.voicerss-3.3.0-SNAPSHOT.jar org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890 cache en-US default @messages.txt
+```
 
 ## Open Issues
 

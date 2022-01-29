@@ -23,7 +23,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -40,11 +39,10 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
      */
     private static final int READ_BUFFER_SIZE = 4096;
 
-    private final Logger logger = LoggerFactory.getLogger(CachedVoiceRSSCloudImpl.class);
-
     private final File cacheFolder;
 
-    public CachedVoiceRSSCloudImpl(String cacheFolderName) throws IllegalStateException {
+    public CachedVoiceRSSCloudImpl(String cacheFolderName, boolean logging) throws IllegalStateException {
+        super(logging);
         if (cacheFolderName == null) {
             throw new IllegalStateException("Folder for cache must be defined");
         }
@@ -112,7 +110,10 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
             return filename;
         } catch (NoSuchAlgorithmException ex) {
             // should not happen
-            logger.error("Could not create MD5 hash for '{}'", text, ex);
+            if (logging) {
+                LoggerFactory.getLogger(CachedVoiceRSSCloudImpl.class).error("Could not create MD5 hash for '{}'", text,
+                        ex);
+            }
             return null;
         }
     }
