@@ -13,6 +13,11 @@
 package org.openhab.binding.wemo.internal.handler;
 
 import java.net.URL;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,19 +34,24 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link WemoBaseThingHandler} provides a base implementation for the
- * concrete WeMo handlers for each thing type.
+ * concrete WeMo handlers.
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
 public abstract class WemoBaseThingHandler extends BaseThingHandler implements UpnpIOParticipant {
 
+    private static final int SUBSCRIPTION_RENEWAL_INITIAL_DELAY_SECONDS = 15;
+    private static final int SUBSCRIPTION_RENEWAL_INTERVAL_SECONDS = 60;
+
     private final Logger logger = LoggerFactory.getLogger(WemoBaseThingHandler.class);
-    private final Object upnpLock = new Object();
 
     protected @Nullable UpnpIOService service;
     protected WemoHttpCall wemoHttpCaller;
     protected String host = "";
+
+    private Map<String, Instant> subscriptions = new ConcurrentHashMap<String, Instant>();
+    private @Nullable ScheduledFuture<?> subscriptionRenewalJob;
 
     public WemoBaseThingHandler(Thing thing, UpnpIOService upnpIOService, WemoHttpCall wemoHttpCaller) {
         super(thing);
@@ -51,7 +61,22 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public void initialize() {
-        // can be overridden by subclasses
+        UpnpIOService service = this.service;
+        if (service != null) {
+            logger.debug("Registering UPnP participant for {}", getThing().getUID());
+            service.registerParticipant(this);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        removeSubscriptions();
+        UpnpIOService service = this.service;
+        if (service != null) {
+            logger.debug("Unregistering UPnP participant for {}", getThing().getUID());
+            service.unregisterParticipant(this);
+        }
+        cancelSubscriptionRenewalJob();
     }
 
     @Override
@@ -71,9 +96,12 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     @Override
     public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        if (service != null) {
-            logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
-                    succeeded ? "succeeded" : "failed");
+        if (service == null) {
+            return;
+        }
+        logger.debug("Subscription to service {} for {} {}", service, getUDN(), succeeded ? "succeeded" : "failed");
+        if (succeeded) {
+            subscriptions.put(service, Instant.now());
         }
     }
 
@@ -84,39 +112,115 @@ public abstract class WemoBaseThingHandler extends BaseThingHandler implements U
 
     protected boolean isUpnpDeviceRegistered() {
         UpnpIOService service = this.service;
-        if (service != null) {
-            return service.isRegistered(this);
-        }
-        return false;
+        return service != null && service.isRegistered(this);
     }
 
-    protected synchronized void addSubscription(String subscription) {
-        synchronized (upnpLock) {
-            UpnpIOService service = this.service;
-            if (service != null) {
-                if (service.isRegistered(this)) {
-                    logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                            subscription);
-                    service.addSubscription(this, subscription, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
-                } else {
-                    logger.debug(
-                            "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                            getThing().getUID());
-                }
-            }
+    protected void addSubscription(String serviceId) {
+        if (subscriptions.containsKey(serviceId)) {
+            logger.debug("{} already subscribed to {}", getUDN(), serviceId);
+            return;
         }
+        if (subscriptions.isEmpty()) {
+            logger.debug("Adding first GENA subscription for {}, scheduling renewal job", getUDN());
+            scheduleSubscriptionRenewalJob();
+        }
+        subscriptions.put(serviceId, Instant.ofEpochSecond(0));
+        UpnpIOService service = this.service;
+        if (service == null) {
+            return;
+        }
+        if (!service.isRegistered(this)) {
+            logger.debug("Registering UPnP participant for {}", getUDN());
+            service.registerParticipant(this);
+        }
+        if (!service.isRegistered(this)) {
+            logger.debug("Trying to add GENA subscription {} for {}, but service is not registered", serviceId,
+                    getUDN());
+            return;
+        }
+        logger.debug("Adding GENA subscription {} for {}", serviceId, getUDN());
+        service.addSubscription(this, serviceId, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
     }
 
-    protected synchronized void removeSubscription(String subscription) {
-        synchronized (upnpLock) {
-            UpnpIOService service = this.service;
-            if (service != null) {
-                if (service.isRegistered(this)) {
-                    logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                    service.removeSubscription(this, subscription);
-                }
-            }
+    protected void removeSubscription(String serviceId) {
+        UpnpIOService service = this.service;
+        if (service == null) {
+            return;
         }
+        subscriptions.remove(serviceId);
+        if (subscriptions.isEmpty()) {
+            logger.debug("Removing last GENA subscription for {}, cancelling renewal job", getUDN());
+            cancelSubscriptionRenewalJob();
+        }
+        if (!service.isRegistered(this)) {
+            logger.debug("Trying to remove GENA subscription {} for {}, but service is not registered", serviceId,
+                    getUDN());
+            return;
+        }
+        logger.debug("Unsubscribing {} from service {}", getUDN(), serviceId);
+        service.removeSubscription(this, serviceId);
+    }
+
+    private void scheduleSubscriptionRenewalJob() {
+        cancelSubscriptionRenewalJob();
+        this.subscriptionRenewalJob = scheduler.scheduleWithFixedDelay(this::renewSubscriptions,
+                SUBSCRIPTION_RENEWAL_INITIAL_DELAY_SECONDS, SUBSCRIPTION_RENEWAL_INTERVAL_SECONDS, TimeUnit.SECONDS);
+    }
+
+    private void cancelSubscriptionRenewalJob() {
+        ScheduledFuture<?> subscriptionRenewalJob = this.subscriptionRenewalJob;
+        if (subscriptionRenewalJob != null) {
+            subscriptionRenewalJob.cancel(true);
+        }
+        this.subscriptionRenewalJob = null;
+    }
+
+    private void renewSubscriptions() {
+        if (subscriptions.isEmpty()) {
+            return;
+        }
+        UpnpIOService service = this.service;
+        if (service == null) {
+            return;
+        }
+        if (!service.isRegistered(this)) {
+            service.registerParticipant(this);
+        }
+        if (!service.isRegistered(this)) {
+            logger.debug("Trying to renew GENA subscriptions for {}, but service is not registered", getUDN());
+            return;
+        }
+        logger.debug("Renewing GENA subscriptions for {}", getUDN());
+        subscriptions.forEach((serviceId, lastRenewed) -> {
+            if (lastRenewed.isBefore(Instant.now().minusSeconds(
+                    WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS - SUBSCRIPTION_RENEWAL_INTERVAL_SECONDS))) {
+                logger.debug("Subscription for service {} with timestamp {} has expired, renewing", serviceId,
+                        lastRenewed);
+                service.removeSubscription(this, serviceId);
+                service.addSubscription(this, serviceId, WemoBindingConstants.SUBSCRIPTION_DURATION_SECONDS);
+            }
+        });
+    }
+
+    private void removeSubscriptions() {
+        if (subscriptions.isEmpty()) {
+            return;
+        }
+        UpnpIOService service = this.service;
+        if (service == null) {
+            return;
+        }
+        if (!service.isRegistered(this)) {
+            logger.debug("Trying to remove GENA subscriptions for {}, but service is not registered",
+                    getThing().getUID());
+            return;
+        }
+        logger.debug("Removing GENA subscriptions for {}", getUDN());
+        subscriptions.forEach((serviceId, lastRenewed) -> {
+            logger.debug("Removing subscription for service {}", serviceId);
+            service.removeSubscription(this, serviceId);
+        });
+        subscriptions.clear();
     }
 
     protected String getHost() {

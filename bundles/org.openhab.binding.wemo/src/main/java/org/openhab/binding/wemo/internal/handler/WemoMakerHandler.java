@@ -70,14 +70,11 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         Configuration configuration = getConfig();
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoMakerHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService service = this.service;
-            if (service != null) {
-                service.registerParticipant(this);
-            }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
@@ -91,17 +88,14 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WeMoMakerHandler disposed.");
+        logger.debug("WemoMakerHandler disposed.");
 
         ScheduledFuture<?> job = this.pollingJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }
         this.pollingJob = null;
-        UpnpIOService service = this.service;
-        if (service != null) {
-            service.unregisterParticipant(this);
-        }
+        super.dispose();
     }
 
     private void poll() {

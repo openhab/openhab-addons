@@ -78,15 +78,13 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         // initialize() is only called if the required parameter 'deviceID' is available
         wemoLightID = (String) getConfig().get(DEVICE_ID);
 
         final Bridge bridge = getBridge();
         if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-            UpnpIOService service = this.service;
-            if (service != null) {
-                service.registerParticipant(this);
-            }
+            addSubscription(BRIDGEEVENT);
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, DEFAULT_REFRESH_INITIAL_DELAY,
                     DEFAULT_REFRESH_INTERVAL_SECONDS, TimeUnit.SECONDS);
@@ -112,18 +110,14 @@ public class WemoLightHandler extends WemoBaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("WeMoLightHandler disposed.");
+        logger.debug("WemoLightHandler disposed.");
 
         ScheduledFuture<?> job = this.pollingJob;
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
         }
         this.pollingJob = null;
-        removeSubscription(BRIDGEEVENT);
-        UpnpIOService service = this.service;
-        if (service != null) {
-            service.unregisterParticipant(this);
-        }
+        super.dispose();
     }
 
     private synchronized @Nullable WemoBridgeHandler getWemoBridgeHandler() {
@@ -160,7 +154,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                 }
                 updateStatus(ThingStatus.ONLINE);
                 getDeviceState();
-                addSubscription(BRIDGEEVENT);
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }

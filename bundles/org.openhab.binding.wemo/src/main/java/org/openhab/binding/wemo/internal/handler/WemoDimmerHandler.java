@@ -81,14 +81,12 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         Configuration configuration = getConfig();
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoDimmerHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService service = this.service;
-            if (service != null) {
-                service.registerParticipant(this);
-            }
+            addSubscription(BASICEVENT);
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
@@ -109,11 +107,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
             job.cancel(true);
         }
         this.pollingJob = null;
-        removeSubscription(BASICEVENT);
-        UpnpIOService service = this.service;
-        if (service != null) {
-            service.unregisterParticipant(this);
-        }
+        super.dispose();
     }
 
     private void poll() {
@@ -134,7 +128,6 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                 }
                 updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
-                addSubscription(BASICEVENT);
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }

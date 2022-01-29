@@ -60,13 +60,14 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         Configuration configuration = getConfig();
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService service = this.service;
-            if (service != null) {
-                service.registerParticipant(this);
+            addSubscription(BASICEVENT);
+            if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
+                addSubscription(INSIGHTEVENT);
             }
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
@@ -88,14 +89,7 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
             job.cancel(true);
         }
         this.pollingJob = null;
-        removeSubscription(BASICEVENT);
-        if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
-            removeSubscription(INSIGHTEVENT);
-        }
-        UpnpIOService service = this.service;
-        if (service != null) {
-            service.unregisterParticipant(this);
-        }
+        super.dispose();
     }
 
     private void poll() {
@@ -116,10 +110,6 @@ public abstract class WemoHandler extends WemoBaseThingHandler {
                 }
                 updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
-                addSubscription(BASICEVENT);
-                if (THING_TYPE_INSIGHT.equals(thing.getThingTypeUID())) {
-                    addSubscription(INSIGHTEVENT);
-                }
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }
