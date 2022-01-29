@@ -12,8 +12,6 @@
  */
 package org.openhab.voice.voicerss.internal.cloudapi;
 
-import static java.util.stream.Collectors.toSet;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -28,8 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Stream;
 
+import org.openhab.core.audio.AudioFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,21 +39,52 @@ import org.slf4j.LoggerFactory;
  * <ul>
  * <li>All API languages supported</li>
  * <li>Only default voice supported with good audio quality</li>
- * <li>Only MP3, OGG and AAC audio formats supported</li>
+ * <li>MP3, OGG, AAC and WAV audio formats supported</li>
  * <li>It uses HTTP and not HTTPS (for performance reasons)</li>
  * </ul>
  *
  * @author Jochen Hiller - Initial contribution
  * @author Laurent Garnier - add support for all API languages
  * @author Laurent Garnier - add support for OGG and AAC audio formats
+ * @author Andreas Brenk - add support for WAV audio format
  */
 public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     public static final String DEFAULT_VOICE = "default";
 
-    private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
+    public static final String API_URL = "https://api.voicerss.org/?key=%s&hl=%s&c=%s&f=%s&src=%s";
+    public static final String API_URL_WITH_VOICE = API_URL + "&v=%s";
 
-    private static final Set<String> SUPPORTED_AUDIO_FORMATS = Stream.of("MP3", "OGG", "AAC").collect(toSet());
+    private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = Set.of(
+            new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, null, 44_100L),
+            new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, 16, null, 44_100L),
+            new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, null, 16, null, 44_100L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, null, 8, 64_000, 8_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, null, 16, 128_000, 8_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 88_200, 11_025L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 176_400, 11_025L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 96_000, 12_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 192_000, 12_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 128_000, 16_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 256_000, 16_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 176_400, 22_050L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 352_800, 22_050L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 192_000, 24_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 384_000, 24_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 256_000, 32_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 512_000, 32_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 352_800, 44_100L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 705_600, 44_100L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false, 8, 384_000, 48_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 768_000, 48_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8, 64_000, 8_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8, 88_200, 11_025L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8, 176_400, 22_050L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8, 352_800, 44_100L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8, 64_000, 8_000L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8, 88_200, 11_025L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8, 176_400, 22_050L),
+            new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8, 352_800, 44_100L));
 
     private static final Set<Locale> SUPPORTED_LOCALES = new HashSet<>();
     static {
@@ -163,8 +192,10 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         SUPPORTED_VOICES.put("zh-tw", Set.of("Akemi", "Lin", "Lee"));
     }
 
+    private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
+
     @Override
-    public Set<String> getAvailableAudioFormats() {
+    public Set<AudioFormat> getAvailableAudioFormats() {
         return SUPPORTED_AUDIO_FORMATS;
     }
 
@@ -200,7 +231,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         return allvoxes;
     }
 
-    /**
+    /*
      * This method will return an input stream to an audio stream for the given
      * parameters.
      *
@@ -208,10 +239,10 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      * dependencies.
      */
     @Override
-    public InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioFormat)
-            throws IOException {
-        String url = createURL(apiKey, text, locale, voice, audioFormat);
-        logger.debug("Call {}", url);
+    public InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioCodec,
+            String audioFormat) throws IOException {
+        String url = createURL(apiKey, text, locale, voice, audioCodec, audioFormat);
+        logger.debug("Call {}", url.replace(apiKey, "***"));
         URLConnection connection = new URL(url).openConnection();
 
         // we will check return codes. The service will ALWAYS return a HTTP
@@ -219,7 +250,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         // the error message in body
         int status = ((HttpURLConnection) connection).getResponseCode();
         if (HttpURLConnection.HTTP_OK != status) {
-            logger.error("Call {} returned HTTP {}", url, status);
+            logger.warn("Call {} returned HTTP {}", url.replace(apiKey, "***"), status);
             throw new IOException("Could not read from service: HTTP code " + status);
         }
         if (logger.isTraceEnabled()) {
@@ -240,7 +271,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
                 logger.debug("Failed to close inputstream", ex);
             }
             throw new IOException(
-                    "Could not read audio content, service return an error: " + new String(bytes, "UTF-8"));
+                    "Could not read audio content, service returned an error: " + new String(bytes, "UTF-8"));
         } else {
             return is;
         }
@@ -254,13 +285,15 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
      *
      * It is in package scope to be accessed by tests.
      */
-    private String createURL(String apiKey, String text, String locale, String voice, String audioFormat) {
+    private String createURL(String apiKey, String text, String locale, String voice, String audioCodec,
+            String audioFormat) {
         String encodedMsg = URLEncoder.encode(text, StandardCharsets.UTF_8);
-        String url = "http://api.voicerss.org/?key=" + apiKey + "&hl=" + locale + "&c=" + audioFormat;
+        String url;
         if (!DEFAULT_VOICE.equals(voice)) {
-            url += "&v=" + voice;
+            url = String.format(API_URL_WITH_VOICE, apiKey, locale, audioCodec, audioFormat, encodedMsg, voice);
+        } else {
+            url = String.format(API_URL, apiKey, locale, audioCodec, audioFormat, encodedMsg);
         }
-        url += "&f=44khz_16bit_mono&src=" + encodedMsg;
         return url;
     }
 }

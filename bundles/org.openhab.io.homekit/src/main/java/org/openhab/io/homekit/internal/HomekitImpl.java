@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -116,10 +117,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
         if (props == null) { // if null, the configuration is new
             props = new Hashtable<>();
         }
-        if (settings.networkInterface == null) {
-            settings.networkInterface = networkAddressService.getPrimaryIpv4HostAddress();
-            props.put("networkInterface", settings.networkInterface);
-        }
+
         if (settings.setupId == null) { // generate setupId very first time
             settings.setupId = HAPSetupCodeUtils.generateSetupId();
             props.put("setupId", settings.setupId);
@@ -210,13 +208,12 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     private void startHomekitServer() throws IOException {
         logger.trace("start HomeKit bridge");
         if (homekitServer == null) {
-            if (settings.useOHmDNS) {
-                if ((settings.networkInterface == null) || (settings.networkInterface.isEmpty())) {
-                    logger.trace(
-                            "no IP address configured in HomeKit settings. HomeKit will use the first configured address of openHAB");
-                    homekitServer = new HomekitServer(mdnsClient.getClientInstances().iterator().next(), settings.port);
-                } else {
-                    networkInterface = InetAddress.getByName(settings.networkInterface);
+            try {
+                networkInterface = InetAddress
+                        .getByName(((settings.networkInterface != null) && (!settings.networkInterface.isEmpty()))
+                                ? settings.networkInterface
+                                : networkAddressService.getPrimaryIpv4HostAddress());
+                if (settings.useOHmDNS) {
                     for (JmDNS mdns : mdnsClient.getClientInstances()) {
                         if (mdns.getInetAddress().equals(networkInterface)) {
                             logger.trace("suitable mDNS client for IP {} found and will be used for HomeKit",
@@ -225,15 +222,18 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
                         }
                     }
                 }
-            }
-            if (homekitServer == null) {
-                if (settings.useOHmDNS) {
-                    logger.trace("no suitable mDNS server for IP {} found", networkInterface);
+                if (homekitServer == null) {
+                    if (settings.useOHmDNS) {
+                        logger.trace("no suitable mDNS server for IP {} found", networkInterface);
+                    }
+                    logger.trace("create HomeKit server with dedicated mDNS server");
+                    homekitServer = new HomekitServer(networkInterface, settings.port);
                 }
-                logger.trace("create HomeKit server with dedicated mDNS server");
-                homekitServer = new HomekitServer(networkInterface, settings.port);
+                startBridge();
+            } catch (UnknownHostException e) {
+                logger.warn("cannot resolve the Pv4 address / hostname {}.",
+                        networkAddressService.getPrimaryIpv4HostAddress());
             }
-            startBridge();
         } else {
             logger.warn("trying to start HomeKit server but it is already initialized");
         }
@@ -291,13 +291,30 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     }
 
     @Override
-    public void onChanged(final List<CidrAddress> list, final List<CidrAddress> list1) {
-        logger.trace("restarting homekit bridge on network interface changes.");
-        stopHomekitServer();
-        try {
-            startHomekitServer();
-        } catch (IOException e) {
-            logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
+    public void onChanged(final List<CidrAddress> added, final List<CidrAddress> removed) {
+        logger.trace("restarting HomeKit bridge on network interface changes.");
+        removed.forEach(i -> {
+            logger.trace("removed interface {}", i.getAddress().toString());
+            if (i.getAddress().equals(networkInterface)) {
+                final @Nullable HomekitRoot bridge = this.bridge;
+                if (this.bridge != null) {
+                    bridge.stop();
+                    this.bridge = null;
+                }
+                final @Nullable HomekitServer homekitServer = this.homekitServer;
+                if (homekitServer != null) {
+                    homekitServer.stop();
+                    this.homekitServer = null;
+                }
+                logger.trace("bridge stopped");
+            }
+        });
+        if ((this.bridge == null) && (!added.isEmpty())) {
+            try {
+                startHomekitServer();
+            } catch (IOException e) {
+                logger.warn("could not initialize HomeKit bridge: {}", e.getMessage());
+            }
         }
     }
 }

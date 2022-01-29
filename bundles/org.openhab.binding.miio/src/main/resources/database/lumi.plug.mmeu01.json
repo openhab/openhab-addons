@@ -1,0 +1,117 @@
+{
+	"deviceMapping": {
+		"id": [
+			"lumi.plug.mmeu01"
+		],
+		"propertyMethod": "get_device_prop_exp",
+		"maxProperties": 5,
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"customRefreshCommand": "{\"sid\":$deviceId$,\"method\":\"get_prop_plug\"} [\"channel_0\"]",
+				"actions": [
+					{
+						"command": "{\"sid\":$deviceId$,\"method\":\"toggle_plug\"}",
+						"parameterType": "ONOFF",
+						"parameters": [
+							"channel_0",
+							"$value$"
+						]
+					}
+				],
+				"category": "switch",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "load_power",
+				"friendlyName": "Load Power",
+				"channel": "load_power",
+				"type": "Number",
+				"refresh": true,
+				"customRefreshCommand": "{\"sid\":$deviceId$,\"method\":\"get_prop_plug\"} [\"load_power\"]",
+				"actions": [],
+				"category": "switch",
+				"tags": [
+					"Measurement"
+				]
+			},
+			{
+				"property": "en_night_tip_light",
+				"friendlyName": "Led Light",
+				"channel": "en_night_tip_light",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [],
+				"category": "light",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "poweroff_memory",
+				"friendlyName": "Poweroff Memory",
+				"channel": "poweroff_memory",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_device_prop",
+						"parameterType": "EMPTY",
+						"parameters": [
+							{
+								"sid": "$deviceId$",
+								"poweroff_memory": "$value$"
+							}
+						]
+					}
+				],
+				"category": "setting",
+				"tags": [
+					"Switch"
+				]
+			},
+			{
+				"property": "max_power",
+				"friendlyName": "Max Power",
+				"channel": "max_power",
+				"type": "Number",
+				"refresh": true,
+				"actions": [],
+				"category": "power",
+				"tags": [
+					"Setpoint"
+				]
+			},
+			{
+				"property": "log",
+				"friendlyName": "Device Log",
+				"channel": "log",
+				"type": "String",
+				"refresh": true,
+				"customRefreshCommand": "/v2/user/getuserdevicedatatab",
+				"customRefreshParameters": {
+					"limit": 10,
+					"timestamp": "$timestamp$",
+					"did": "$deviceId$",
+					"type": "prop",
+					"key": "device_log"
+				},
+				"transformation": "deviceDataTab",
+				"actions": [],
+				"category": "setting",
+				"tags": [
+					"Point"
+				],
+				"readmeComment": "This channel uses cloud to get data. See widget market place for suitable widget to display the data."
+			}
+		],
+		"readmeComment": "Needs to have the Xiaomi gateway configured in the binding as bridge.",
+		"experimental": false
+	}
+}
