@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.lgthinq.lgapi;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,10 +24,6 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpired
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgapi.model.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * The {@link LGThinqApiClientService}

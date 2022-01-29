@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_USER_DATA_FOLDER;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
@@ -30,17 +41,6 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_USER_DATA_FOLDER;
 
 /**
  * The {@link LGThinqBridgeHandler}
