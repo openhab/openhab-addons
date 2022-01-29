@@ -47,6 +47,7 @@ public class JRubyScriptEngineConfiguration {
     private static final Path DEFAULT_RUBYLIB = Paths.get(OpenHAB.getConfigFolder(), "automation", "lib", "ruby");
 
     private static final String GEM_HOME = "gem_home";
+    private static final String RUBYLIB = "rubylib";
 
     // Map of configuration parameters
     private static final Map<String, OptionalConfigurationElement> CONFIGURATION_PARAMETERS = Map.ofEntries(
@@ -62,7 +63,7 @@ public class JRubyScriptEngineConfiguration {
                     new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT)
                             .mappedTo("GEM_HOME").defaultValue(DEFAULT_GEM_HOME.toString()).build()),
 
-            Map.entry("rubylib",
+            Map.entry(RUBYLIB,
                     new OptionalConfigurationElement.Builder(OptionalConfigurationElement.Type.RUBY_ENVIRONMENT)
                             .mappedTo("RUBYLIB").defaultValue(DEFAULT_RUBYLIB.toString()).build()),
 
@@ -207,6 +208,33 @@ public class JRubyScriptEngineConfiguration {
                 }
             } else {
                 logger.debug("Ruby environment property ({}) has no value", environmentProperty);
+            }
+        }
+
+        configureRubyLib(engine);
+    }
+
+    /**
+     * Split up and insert ENV['RUBYLIB'] into Ruby's $LOAD_PATH
+     * This needs to be called after ENV['RUBYLIB'] has been set by configureRubyEnvironment
+     * 
+     * @param engine Engine in which to configure environment
+     */
+    private void configureRubyLib(ScriptEngine engine) {
+        OptionalConfigurationElement rubyLibConfigElement = CONFIGURATION_PARAMETERS.get(RUBYLIB);
+        if (rubyLibConfigElement == null) {
+            return;
+        }
+
+        Optional<String> rubyLib = rubyLibConfigElement.getValue();
+        if (rubyLib.isPresent() && !rubyLib.get().trim().isEmpty()) {
+            final String code = "$LOAD_PATH.unshift *ENV['RUBYLIB']&.split(File::PATH_SEPARATOR)" + //
+                    "&.reject(&:empty?)" + //
+                    "&.reject { |path| $LOAD_PATH.include?(path) }"; //
+            try {
+                engine.eval(code);
+            } catch (ScriptException exception) {
+                logger.warn("Error setting $LOAD_PATH from RUBYLIB='{}': {}", rubyLib.get(), exception.getMessage());
             }
         }
     }
