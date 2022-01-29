@@ -177,7 +177,8 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
     @Override
     @NonNull
     @SuppressWarnings("ignoring Map type check")
-    public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
+    public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate)
+            throws LGThinqApiException {
         try {
             File regFile = new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
             ACCapability acCap = new ACCapability();

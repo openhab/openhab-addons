@@ -53,7 +53,8 @@ public interface LGThinqApiClientService {
 
     void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGThinqApiException;
 
-    void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp) throws LGThinqApiException;
+    void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
+            throws LGThinqApiException;
 
     String startMonitor(String bridgeName, String deviceId)
             throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException;
