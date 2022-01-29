@@ -101,10 +101,16 @@ telegram.thing (SOCKS5 proxy server is used):
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="HOST", proxyPort="PORT", proxyType="TYPE" ]
 ```
 
-or HTTP proxy server
+HTTP proxy server
 
 ```
 Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
+```
+
+or with second chatId   
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID","ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
 ```
 
 ## State Channels
