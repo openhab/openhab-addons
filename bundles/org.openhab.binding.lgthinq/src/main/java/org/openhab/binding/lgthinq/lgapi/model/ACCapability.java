@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.lgthinq.lgapi.model;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link ACCapability}
