@@ -129,7 +129,7 @@ You can connect this channel to a Contact or Switch item.
 
 ### Channel Type "color"
 
-* __color_mode__: A required string that defines the color representation: "hsb", "rgb" or "xyY" (x,y,brightness).
+* __color_mode__: An optional string that defines the color representation: `HSB`, `RGB` or `XYY` (x,y,brightness). Defaults to `HSB` when not specified.
 * __on__: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
 * __off__: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)
 * __onBrightness__: If you connect this channel to a Switch item and turn it on,
