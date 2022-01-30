@@ -242,7 +242,16 @@ Switching, Brightness and Color is done using the `color` channel.
 
 Switching, Brightness and Color is done using the `color` channel.
 
-### KL430 Kasa Smart Wi-Fi Outdoor Plug-In Dimmer
+### KL400 Kasa Smart LED Light Strip
+
+* Power On/Off
+* Fine-tune colors
+* Adjust light appearance from soft white (2500k) to daylight (9000k)
+* Adjust the brightness
+* Wi-Fi signal strength (RSSI)
+
+
+### KL400 Kasa Smart LED Light Strip, 16 Color Zones
 
 * Power On/Off
 * Fine-tune colors
@@ -373,9 +382,9 @@ All devices support some of the following channels:
 |---------------------|--------------------------|------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
 | switch              | Switch                   | Power the device on or off.                    | EP10, EP40, HS100, HS103, HS105, HS107, HS110, HS200, HS210, HS300, KP100, KP105, KP115, KP200, KP303, KP400, KS230, RE270K, RE370K             |
 | brightness          | Dimmer                   | Set the brightness of device or dimmer.        | ES20M, HS220, KB100, KL50, KL60, KL110, KL120, KP405, LB100, LB110, LB120, LB200                                                                |
-| colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL125, KL130, KL135, KL430, LB120, LB130, LB230                                                                                   |
-| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL125, KL130, KL135, KL430, LB120, LB130, LB230                                                                                   |
-| color               | Color                    | Set the color of the light.                    | KB130, KL125, KL130, KL135, KL430, LB130, LB230                                                                                                 |
+| colorTemperature    | Dimmer                   | Set the color temperature in percentage.       | KB130, KL120, KL125, KL130, KL135, KL400, KL430, LB120, LB130, LB230                                                                                   |
+| colorTemperatureAbs | Number                   | Set the color temperature in Kelvin.           | KB130, KL120, KL125, KL130, KL135, KL400, KL430, LB120, LB130, LB230                                                                                   |
+| color               | Color                    | Set the color of the light.                    | KB130, KL125, KL130, KL135, KL400, KL430, LB130, LB230                                                                                                 |
 | power               | Number:Power             | Actual energy usage in Watt.                   | HS110, HS300, KLxxx, KP115, KP125, LBxxx,                                                                                                       |
 | eneryUsage          | Number:Energy            | Energy Usage in kWh.                           | HS110, HS300, KP115, KP125                                                                                                                      |
 | current             | Number:ElectricCurrent   | Actual current usage in Ampere.                | HS110, HS300, KP115, KP125                                                                                                                      |

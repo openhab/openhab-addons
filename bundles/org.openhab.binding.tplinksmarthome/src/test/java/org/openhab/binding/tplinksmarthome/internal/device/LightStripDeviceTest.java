@@ -65,6 +65,14 @@ public class LightStripDeviceTest extends DeviceTestBase<LightStripDevice> {
     }
 
     @Test
+    public void kl400_testHandleCommandBrightness() throws IOException {
+        assertInput("kl400_set_brightness");
+        setSocketReturnAssert("kl400_set_brightness_response");
+        assertTrue(device.handleCommand(CHANNEL_UID_BRIGHTNESS, new PercentType(50)),
+                "Brightness channel should be handled");
+    }
+
+    @Test
     public void testHandleCommandBrightnessOnOff() throws IOException {
         assertInput("kl430_set_on");
         setSocketReturnAssert("kl430_set_brightness_response");
