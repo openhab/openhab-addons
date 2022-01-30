@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
  *         - openhab 3 conversion
  *         1.10 :
  *         - TCP flow removed
+ *         1.11 :
+ *         - resolve problem with physical button actions not syncing with openhab thing status
  */
 @NonNullByDefault
 public class LuxomBridgeHandler extends BaseBridgeHandler {
@@ -94,7 +96,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
         this.systemInfo = new LuxomSystemInfo();
         this.communication = new LuxomCommunication(this);
-        logger.info("luxom bridge 1.10 started");
+        logger.info("luxom bridge 1.11 started");
     }
 
     @Override
