@@ -7,20 +7,23 @@ to common openHAB functionality within rules including items, things, actions, l
 
 - [Configuration](#configuration)
 - [UI Based Rules](#ui-based-rules)
+  - [Adding Triggers](#adding-triggers)
+  - [Adding Actions](#adding-actions)
 - [Scripting Basics](#scripting-basics)
-    - [require](#require)
-    - [console](#console)
-    - [setInterval](#setinterval)
-    - [setTimeout](#settimeout)
-    - [scriptLoaded](#scriptloaded)
-    - [scriptUnLoaded](#scriptunloaded)
-    - [Paths](#paths)
+  - [Require](#require)
+  - [Console](#console)
+  - [SetTimeout](#settimeout)
+  - [SetInterval](#setinterval)
+  - [ScriptLoaded](#scriptloaded)
+  - [ScriptUnLoaded](#scriptunloaded)
+  - [Paths](#paths)
 - [Standard Library](#standard-library)
-    - [items](#items)
-    - [actions](#actions)
-    - [cache](#cache)
-    - [log](#log)
-    - [time](#time)
+  - [Items](#items)
+  - [Actions](#actions)
+  - [Cache](#cache)
+  - [Log](#log)
+  - [Time](#time)
+  - [Utils](#utils)
 - [File Based Rules](#file-based-rules)
   - [JSRule](#jsrule)
   - [Rule Builder](#rule-builder)
@@ -39,14 +42,15 @@ The quickest way to add rules is through the openHAB Web UI.
 Advanced users, or users migrating scripts from existing systems may want to use [File Based Rules](#file-based-rules) for managing rules using files in the user configuration directory.
 
 ### Adding Triggers
-
 Using the openHAB UI, first create a new rule and set a trigger condition
 
 ![openHAB Rule Configuration](./doc/rule-config.png)
 
-### Adding Actions
 
-Select "Add Action" and then select "ECMAScript 262 Edition 11".  Its important this is "Edition 11" or higher, earlier versions will not work. This will bring up a empty script editor where you can enter your javascript.
+### Adding Actions
+Select "Add Action" and then select "ECMAScript 262 Edition 11".
+Its important this is "Edition 11" or higher, earlier versions will not work.
+This will bring up a empty script editor where you can enter your javascript.
 
 ![openHAB Rule Engines](./doc/rule-engines.png)
 
@@ -79,12 +83,13 @@ The openHAB JSScripting runtime attempts to provide a familiar environment to Ja
 
 ### Require
 
-Scripts may include standard NPM based libraries by using CommonJS require.  The library search path will look in `automation/js/node_modules` in the user configuration directory.
+Scripts may include standard NPM based libraries by using CommonJS require.
+The library search path will look in `automation/js/node_modules` in the user configuration directory.
 
 ### Console
 
 The JSScripting binding supports the standard `console` object for logging.
-Script debug logging is enabled by default at the `TRACE` level, but can be configured using the [console logging]({{base}}/administration/logging.html) commands.
+Script debug logging is enabled by default at the `INFO` level, but can be configured using the [console logging]({{base}}/administration/logging.html) commands.
 
 ```text
 log:set DEBUG org.openhab.automation.script
@@ -98,11 +103,12 @@ Supported logging functions include:
 - `console.debug(obj1 [, obj2, ..., objN])`
 - `console.trace(obj1 [, obj2, ..., objN])`
 
-where `obj1 ... objN` is a list of JavaScript objects to output. The string representations of each of these objects are appended together in the order listed and output.
+where `obj1 ... objN` is a list of JavaScript objects to output.
+The string representations of each of these objects are appended together in the order listed and output.
 
 see https://developer.mozilla.org/en-US/docs/Web/API/console for more information about console logging.
 
-### setTimeout
+### SetTimeout
 
 The global setTimeout() method sets a timer which executes a function or specified piece of code once the timer expires.
 ```javascript
@@ -114,7 +120,7 @@ The global `clearTimeout()` method cancels a timeout previously established by c
 
 see https://developer.mozilla.org/en-US/docs/Web/API/setTimeout for more information about setTimeout.
 
-### setInterval
+### SetInterval
 
 The setInterval() method repeatedly calls a function or executes a code snippet, with a fixed time delay between each call.
 
@@ -125,7 +131,7 @@ var intervalID = setInterval(function[, delay]);
 
 The global `clearInterval()` method cancels a timed, repeating action which was previously established by a call to `setInterval()`.
 
-NOTE: Timers will not be canceled if a script is deleted or modified, it is up to the user to manage timers.  See using the [cache](#cache) namespace as well as [ScriptLoaded](#scriptloaded) and [ScriptUnLoaded](#scriptunloaded) for a convenient way of managing persisted objects, such as timers between reloads or deletions of scripts. 
+NOTE: Timers will not be canceled if a script is deleted or modified, it is up to the user to manage timers.  See using the [cache](#cache) namespace as well as [ScriptLoaded](#scriptloaded) and [ScriptUnLoaded](#scriptunloaded) for a convenient way of managing persisted objects, such as timers between reloads or deletions of scripts.
 
 see https://developer.mozilla.org/en-US/docs/Web/API/setInterval for more information about setInterval.
 
@@ -164,12 +170,13 @@ Full documentation for the openHAB JavaScript library can be found at [openhab-j
 
 ### Items
 
-The items namespace allows interactions with openHAB items.  
+The items namespace allows interactions with openHAB items.
 
-See [openhab-js : items ](https://openhab.github.io/openhab-js/items.html) for full API documentation
+See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for full API documentation
 
 * items : <code>object</code>
     * .getItem(name, nullIfMissing) ⇒ <code>Item</code>
+    * .getItems() ⇒ <code>Array.&lt;Item&gt;</code>
     * .getItemsByTag(...tagNames) ⇒ <code>Array.&lt;Item&gt;</code>
     * .createItem(itemName, [itemType], [category], [groups], [label], [tags], [giBaseType], [groupFunction], [itemMetadata])
     * .addItem(itemName, [itemType], [category], [groups], [label], [tags], [giBaseType], [groupFunction])
@@ -194,6 +201,7 @@ Calling `getItem(...)` returns an `Item` object with the following properties:
     * .members ⇒ <code>Array.&lt;Item&gt;</code>
     * .descendents ⇒ <code>Array.&lt;Item&gt;</code>
     * .isUninitialized ⇒ <code>Boolean</code>
+    * .groupNames ⇒ <code>Array.&lt;String&gt;</code>
     * .tags ⇒ <code>Array.&lt;String&gt;</code>
     * .getMetadataValue(namespace) ⇒ <code>String</code>
     * .updateMetadataValue(namespace, value) ⇒ <code>String</code>
@@ -223,7 +231,7 @@ Note `serviceId` is optional, if omitted, the default persistance service will b
 
 * ItemHistory : <code>object</code>
     * .averageSince(timestamp, serviceId) ⇒ <code>Number</code>
-    * .changedSince(timestamp, serviceId) ⇒ <code>Boolean</code>
+    * .changedSince(timestamp, serviceId) ⇒ <code>Number</code>
     * .deltaSince(timestamp, serviceId) ⇒ <code>Number</code>
     * .deviationSince(timestamp, serviceId) ⇒ <code>Number</code>
     * .evolutionRate(timestamp, serviceId) ⇒ <code>Number</code>
@@ -246,28 +254,29 @@ console.log("KitchenDimmer averageSince", item.history.averageSince(yesterday));
 
 ### Actions
 
-The actions namespace allows interactions with openHAB actions. The following are a list of standard actions. 
+The actions namespace allows interactions with openHAB actions.
+The following are a list of standard actions.
 
 Additional actions provided by user installed addons can be accessed using their common name on the actions name space
 (example:  `actions.Pushsafer.pushsafer(...)`)
 
-See [openhab-js : actions ](https://openhab.github.io/openhab-js/actions.html) for full API documentation and additional actions.
+See [openhab-js : actions](https://openhab.github.io/openhab-js/actions.html) for full API documentation and additional actions.
 
 #### Audio Actions
 
-See [openhab-js : actions.Audio ](https://openhab.github.io/openhab-js/actions.html#.Audio) for complete documentation
+See [openhab-js : actions.Audio](https://openhab.github.io/openhab-js/actions.html#.Audio) for complete documentation
 
-### BusEvent
+#### BusEvent
 
-See [openhab-js : actions.BusEvent ](https://openhab.github.io/openhab-js/actions.html#.BusEvent) for complete documentation
+See [openhab-js : actions.BusEvent](https://openhab.github.io/openhab-js/actions.html#.BusEvent) for complete documentation
 
-## Ephemeris Actions
+#### Ephemeris Actions
 
-See [openhab-js : actions.Ephemeris ](https://openhab.github.io/openhab-js/actions.html#.Ephemeris) for complete documentation
+See [openhab-js : actions.Ephemeris](https://openhab.github.io/openhab-js/actions.html#.Ephemeris) for complete documentation
 
 Ephemeris is a way to determine what type of day today or a number of days before or after today is. For example, a way to determine if today is a weekend, a bank holiday, someone’s birthday, trash day, etc.
 
-Additional information can be found on the  [Ephemeris Actions Docs](https://www.openhab.org/docs/configuration/actions.html#ephemeris) as well as the [Ephemeris JavaDoc](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/ephemeris). 
+Additional information can be found on the  [Ephemeris Actions Docs](https://www.openhab.org/docs/configuration/actions.html#ephemeris) as well as the [Ephemeris JavaDoc](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/ephemeris).
 
 ```javascript
 // Example
@@ -276,7 +285,7 @@ let weekend = actions.Ephemeris.isWeekend();
 
 #### Exec Actions
 
-See [openhab-js : actions.Exec ](https://openhab.github.io/openhab-js/actions.html#.Exec) for complete documentation
+See [openhab-js : actions.Exec](https://openhab.github.io/openhab-js/actions.html#.Exec) for complete documentation
 
 Execute a command line.
 
@@ -296,9 +305,9 @@ let response = actions.Exec.executeCommandLine('echo', 'Hello World!');
 response = actions.Exec.executeCommandLine(Duration.ofSeconds(20), 'echo', 'Hello World!');
 ```
 
-### HTTP Actions
+#### HTTP Actions
 
-See [openhab-js : actions.HTTP ](https://openhab.github.io/openhab-js/actions.html#.HTTP) for complete documentation
+See [openhab-js : actions.HTTP](https://openhab.github.io/openhab-js/actions.html#.HTTP) for complete documentation
 
 ```javascript
 // Example GET Request
@@ -307,9 +316,9 @@ var response = actions.HTTP.sendHttpGetRequest('<url>');
 
 Replace `<url>` with the request url.
 
-### ScriptExecution Actions
+#### ScriptExecution Actions
 
-See [openhab-js : actions.ScriptExecution ](https://openhab.github.io/openhab-js/actions.html#.ScriptExecution) for complete documentation
+See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/actions.html#.ScriptExecution) for complete documentation
 
 
 ```javascript
@@ -332,19 +341,19 @@ let active = this.myTimer.isActive();
 // Reschedule the timer.
 this.myTimer.reschedule(now.plusSeconds(5));
 ```
-### Semantics Actions
+#### Semantics Actions
 
-See [openhab-js : actions.Semantics ](https://openhab.github.io/openhab-js/actions.html#.Semantics) for complete documentation
+See [openhab-js : actions.Semantics](https://openhab.github.io/openhab-js/actions.html#.Semantics) for complete documentation
 
-### Things Actions
+#### Things Actions
 
-See [openhab-js : actions.Things ](https://openhab.github.io/openhab-js/actions.html#.Things) for complete documentation
+See [openhab-js : actions.Things](https://openhab.github.io/openhab-js/actions.html#.Things) for complete documentation
 
-### Voice Actions
+#### Voice Actions
 
-See [openhab-js : actions.Voice ](https://openhab.github.io/openhab-js/actions.html#.Voice) for complete documentation
+See [openhab-js : actions.Voice](https://openhab.github.io/openhab-js/actions.html#.Voice) for complete documentation
 
-### Cloud Notification Actions
+#### Cloud Notification Actions
 
 (optional action if openhab-cloud is installed)
 
@@ -365,7 +374,7 @@ Replace `<message>` with the notification text.
 
 The cache namespace provides a default cache that can be use to set and retrieve objects that will be persisted between reloads of scripts.
 
-See [openhab-js : cache ](https://openhab.github.io/openhab-js/cache.html) for full API documentation
+See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation
 
 * cache : <code>object</code>
     * .get(key, defaultSupplier) ⇒ <code>Object | null</code>
@@ -374,13 +383,13 @@ See [openhab-js : cache ](https://openhab.github.io/openhab-js/cache.html) for f
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value
 
-**Example** *(Get a previously set value with a default value (times &#x3D; 0))*  
+**Example** *(Get a previously set value with a default value (times &#x3D; 0))*
 ```js
 let counter = cache.get("counter", () => ({ "times": 0 }));
 console.log("Count",counter.times++);
 ```
 
-**Example** *(Get a previously set object)*  
+**Example** *(Get a previously set object)*
 ```js
 let counter = cache.get("counter");
 if(counter == null){
@@ -391,8 +400,8 @@ console.log("Count",counter.times++);
 ```
 ### Log
 
-By default the JS Scripting binding supports console logging like `console.log()` and `console.debug()` to the openHAB
-default log. Additionally scripts may create their own native openHAB logs using the log namespace
+By default the JS Scripting binding supports console logging like `console.log()` and `console.debug()` to the openHAB default log.
+Additionally scripts may create their own native openHAB logs using the log namespace.
 
 ```javascript
 let logger = log('my_logger');
@@ -403,7 +412,9 @@ logger.debug("Hello {}!", "world");
 
 ### Time
 
-openHAB internally makes extensive use of the `java.time` package.  openHAB-JS exports the excellent [JS-Joda](https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native Javascript port of the same API standard used in Java for `java.time`.  Anywhere that a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart. 
+openHAB internally makes extensive use of the `java.time` package.
+openHAB-JS exports the excellent [JS-Joda](#https://js-joda.github.io/js-joda/) library via the `time` namespace, which is a native Javascript port of the same API standard used in Java for `java.time`.
+Anywhere that a native Java `ZonedDateTime` or `Duration` is required, the runtime will automatically convert a JS-Joda `ZonedDateTime` or `Duration` to its Java counterpart.
 
 Examples:
 ```javascript
@@ -420,9 +431,19 @@ actions.Exec.executeCommandLine(time.Duration.ofSeconds(20), 'echo', 'Hello Worl
 
 See [JS-Joda](https://js-joda.github.io/js-joda/) for more examples and complete API usage.
 
+### Utils
+
+openHAB internally is a Java program. 
+openHAB-JS converts between Java and JavaScript data types and reverse.
+
+See [openhab-js : utils](https://openhab.github.io/openhab-js/utils.html) for full API documentation
+
+
 ## File Based Rules
 
-The JSScripting binding  will load scripts from `automation/js` in the user configuration directory. The system will automatically reload scripts when changes are detected to files.  Local variable state is not persisted among reloads, see using the [cache](#cache) for a connivent way to persist objects.
+The JSScripting binding  will load scripts from `automation/js` in the user configuration directory.
+The system will automatically reload scripts when changes are detected to files.
+Local variable state is not persisted among reloads, see using the [cache](#cache) for a connivent way to persist objects.
 
 File based rules can be created in 2 different ways: using [JSRule](#jsrule) or the [Rule Builder](#rule-builder).
 
@@ -442,9 +463,13 @@ rules.JSRule({
   execute: data => {
     items.getItem("BalconyLights").sendCommand("ON");
     actions.NotificationAction.sendNotification(email, "Balcony lights are ON");
-  }
+  },
+  tags: ["Balcony", "Lights"],
+  id: "BalconyLightsOn"
 });
 ```
+
+Note: `description`, `tags` and `id` are optional.
 
 Multiple triggers can be added,  some example triggers include:
 
@@ -493,10 +518,15 @@ Rules are started by calling `rules.when()` and can chain together [triggers](#r
 [conditions](#rule-builder-conditions) and [operations](#rule-builder-operations) in the following pattern:
 
 ```javascript
-rules.when().triggerType()...if().conditionType().then().operationType()...build(name,description);
+rules.when().triggerType()...if().conditionType().then().operationType()...build(name, description, tags, id);
 ```
 
-Rule are completed by calling `.build(name,description)` , if name or description are omitted, a generated value will be used.
+Rule are completed by calling `.build(name, description, tags, id)` , all parameters are optional and reasonable defaults will be used if omitted.  
+
+- `name` String rule name - defaults generated name
+- `description` String Rule description - defaults generated description
+- `tags` Array of string tag names - defaults empty array
+- `id` String id - defaults random UUID  
 
 A simple example of this would look like:
 
@@ -557,11 +587,13 @@ Additionally all the above triggers have the following functions:
 #### Rule Builder Conditions
 
 * `if(optionalFunction)`
-    * `.stateOfItem(state)`
+    * `.stateOfItem(itemName)`
+        * `is(state)`
+        * `in(state...)`
 
 #### Rule Builder Operations
 * `then(optionalFunction)`
-    * `.build(name, description)`
+    * `.build(name, description, tags, id)`
     * `.copyAndSendState()`
     * `.copyState()`
     * `.inGroup(groupName)`
@@ -579,19 +611,19 @@ Additionally all the above triggers have the following functions:
 //Basic rule, when the BedroomLight1 is changed, run a custom function
 rules.when().item('BedroomLight1').changed().then(e => {
     console.log("BedroomLight1 state", e.newState)
-}).build();
+}.build();
 
 //turn on the kitchen light at SUNSET
 rules.when().timeOfDay("SUNSET").then().sendOn().toItem("KitchenLight").build("Sunset Rule","turn on the kitchen light
 at SUNSET");
 
-//turn off the kitchen light at 9PM
+//turn off the kitchen light at 9PM and tag rule
 rules.when().cron("0 0 21 * * ?").then().sendOff().toItem("KitchenLight").build("9PM Rule", "turn off the kitchen light
-at 9PM");
+at 9PM", ["Tag1", "Tag2"]);
 
-//set the colour of the hall light to pink at 9PM
+//set the colour of the hall light to pink at 9PM, tag rule and use a custom ID
 rules.when().cron("0 0 21 * * ?").then().send("300,100,100").toItem("HallLight").build("Pink Rule", "set the colour of
-the hall light to pink at 9PM");
+the hall light to pink at 9PM", ["Tag1", "Tag2"], "MyCustomID");
 
 //when the switch S1 status changes to ON, then turn on the HallLight
 rules.when().item('S1').changed().toOn().then(sendOn().toItem('HallLight')).build("S1 Rule");
