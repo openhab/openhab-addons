@@ -37,19 +37,15 @@ Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
 
 ### Devices
 
-- Each device has an address on the Luxom bus, his adres must be specified in the 'address' parameter. 
-You will have to look it up in your documentation or in the 'Luxom Plusconfig' software.
-- Sometimes a devices does not send back a confirmation over the bus having set the correct state. I've encountered it with one dimmer, the dimmer does do the dimming, but does not send back the set brightness level.
-To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately set's the items state and does not wait for confirmation.
+- Each device has an address on the Luxom bus, his adres must be specified in the 'address' parameter. You will have to look it up in your documentation or in the 'Luxom Plusconfig' software.
+- Sometimes a devices does not send back a confirmation over the bus having set the correct state. I've encountered it with one dimmer, the dimmer does do the dimming, but does not send back the set brightness level. To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately set's the items state and does not wait for confirmation.
   
 #### Dimmers
 
 Dimmers support the optional advanced parameters `onLevel`, `onToLast` and `stepPercentage` :
 
 - The `onLevel` parameter specifies the level to which the dimmer will go when sent an ON command. It defaults to 100.
-- The `onToLast` parameter is a boolean that defaults to false.
-If set to "true", the dimmer will go to its last non-zero level when sent an ON command.
-If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
+- The `onToLast` parameter is a boolean that defaults to false. If set to "true", the dimmer will go to its last non-zero level when sent an ON command. If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
 - The `stepPercentage` specifies the in-/decrease in percentage of brightness. Default is 5.
 
 A **dimmer** thing has a single channel *Lighting.Brightness* with type Dimmer and category DimmableLight.
