@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioFormat;
@@ -118,7 +120,6 @@ public class WatsonSTTService implements STTService {
         logger.debug("Content-Type: {}", contentType);
         var speechToText = new SpeechToText(new IamAuthenticator.Builder().apikey(config.apiKey).build());
         speechToText.setServiceUrl(config.instanceUrl);
-        speechToText.enableRetries(2, 100);
         if (config.optOutLogging) {
             speechToText.setDefaultHeaders(Map.of("X-Watson-Learning-Opt-Out", "1"));
         }
@@ -130,8 +131,26 @@ public class WatsonSTTService implements STTService {
                 .build();
         final AtomicReference<@Nullable WebSocket> socketRef = new AtomicReference<>();
         var task = executor.submit(() -> {
-            socketRef.set(
-                    speechToText.recognizeUsingWebSocket(wsOptions, new TranscriptionListener(sttListener, config)));
+            int retries = 2;
+            while (retries > 0) {
+                try {
+                    socketRef.set(speechToText.recognizeUsingWebSocket(wsOptions,
+                            new TranscriptionListener(sttListener, config)));
+                    break;
+                } catch (RuntimeException e) {
+                    var cause = e.getCause();
+                    if (cause instanceof SSLPeerUnverifiedException) {
+                        logger.debug("Retrying on error: {}", cause.getMessage());
+                        retries--;
+                    } else {
+                        var errorMessage = e.getMessage();
+                        logger.warn("Aborting on error: {}", errorMessage);
+                        sttListener.sttEventReceived(
+                                new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+                        break;
+                    }
+                }
+            }
         });
         return new STTServiceHandle() {
             @Override
