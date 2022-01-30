@@ -61,7 +61,13 @@ public class ValueFactory {
                 value = new ColorValue(ColorMode.RGB, config.on, config.off, config.onBrightness);
                 break;
             case MqttBindingConstants.COLOR:
-                value = new ColorValue(ColorMode.valueOf(config.colorMode), config.on, config.off, config.onBrightness);
+                ColorMode colorMode;
+                try {
+                    colorMode = ColorMode.valueOf(config.colorMode);
+                } catch (IllegalArgumentException exception) {
+                    throw new IllegalArgumentException("Invalid color mode: " + config.colorMode, exception);
+                }
+                value = new ColorValue(colorMode, config.on, config.off, config.onBrightness);
                 break;
             case MqttBindingConstants.SWITCH:
                 value = new OnOffValue(config.on, config.off);
