@@ -26,14 +26,6 @@
 				<default>1</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="delay" type="integer" min="0" max="250" unit="ms">
-				<label>Send Delay</label>
-				<description>The delay in milliseconds between sending integration commands (for throttling)
-				</description>
-				<unitLabel>ms</unitLabel>
-				<default>0</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</bridge-type>
 

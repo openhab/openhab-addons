@@ -31,7 +31,6 @@ public class LuxomBridgeConfig {
      */
     public int reconnectInterval;
     public int aliveCheckInterval;
-    public int delay = 0;
 
     /**
      * if true, on communication error the devices will NOT go offline...
@@ -42,7 +41,6 @@ public class LuxomBridgeConfig {
 
     public boolean sameConnectionParameters(LuxomBridgeConfig config) {
         return StringUtils.equals(ipAddress, config.ipAddress) && config.port == port
-                && (reconnectInterval == config.reconnectInterval) && (aliveCheckInterval == config.aliveCheckInterval)
-                && (delay == config.delay);
+                && (reconnectInterval == config.reconnectInterval) && (aliveCheckInterval == config.aliveCheckInterval);
     }
 }

@@ -22,6 +22,5 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class LuxomThingConfig {
-    public @Nullable String address;
     public Boolean doesNotReply = Boolean.FALSE;
 }
