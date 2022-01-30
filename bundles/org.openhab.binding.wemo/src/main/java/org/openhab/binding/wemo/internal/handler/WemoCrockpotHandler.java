@@ -131,7 +131,7 @@ public class WemoCrockpotHandler extends WemoBaseThingHandler {
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
-            logger.warn("Failed to send command '{}' for device '{}': URL cannot be created", command,
+            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");

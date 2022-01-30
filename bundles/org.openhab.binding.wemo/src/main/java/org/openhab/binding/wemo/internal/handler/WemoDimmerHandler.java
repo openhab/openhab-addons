@@ -427,7 +427,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
-            logger.warn("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
+            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return;
@@ -506,7 +506,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         }
         String wemoURL = getWemoURL(localHost, BASICACTION);
         if (wemoURL == null) {
-            logger.warn("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
+            logger.debug("Failed to set binary state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return;
