@@ -63,7 +63,7 @@ This service currently supports English, German, French and Spanish.
 
 Only the English model binary is included with the addon and will be used if the one for your configured language is not found under '\<openHAB userdata\>/porcupine'.
 
-To get the language model files, go to the [Porcupine repo](https://github.com/Picovoice/porcupine/tree/v2.0/lib/common).
+To get the language model files, go to the [Porcupine repo](https://github.com/Picovoice/porcupine/tree/v2.1/lib/common).
 
 Note that the keyword model you use should match the language model.
 

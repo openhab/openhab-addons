@@ -64,9 +64,9 @@ public class VoiceRSSTTSService implements TTSService {
     private static final Map<Long, String> FREQUENCY_MAP = Map.of(8_000L, "8khz", 11_025L, "11khz", 12_000L, "12khz",
             16_000L, "16khz", 22_050L, "22khz", 24_000L, "24khz", 32_000L, "32khz", 44_100L, "44khz", 48_000L, "48khz");
 
-    private String apiKey;
-
     private final Logger logger = LoggerFactory.getLogger(VoiceRSSTTSService.class);
+
+    private String apiKey;
 
     /**
      * We need the cached implementation to allow for FixedLengthAudioStream.
@@ -95,7 +95,7 @@ public class VoiceRSSTTSService implements TTSService {
 
             logger.debug("Using VoiceRSS cache folder {}", getCacheFolderName());
         } catch (IllegalStateException e) {
-            logger.error("Failed to activate VoiceRSS: {}", e.getMessage(), e);
+            logger.warn("Failed to activate VoiceRSS: {}", e.getMessage(), e);
         }
     }
 
@@ -141,9 +141,6 @@ public class VoiceRSSTTSService implements TTSService {
             File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(apiKey, trimmedText,
                     voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioCodec(requestedFormat),
                     getApiAudioFormat(requestedFormat));
-            if (cacheAudioFile == null) {
-                throw new TTSException("Could not read from VoiceRSS service");
-            }
             return new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
@@ -223,7 +220,7 @@ public class VoiceRSSTTSService implements TTSService {
         }
     }
 
-    private CachedVoiceRSSCloudImpl initVoiceImplementation() {
+    private CachedVoiceRSSCloudImpl initVoiceImplementation() throws IllegalStateException {
         return new CachedVoiceRSSCloudImpl(getCacheFolderName());
     }
 

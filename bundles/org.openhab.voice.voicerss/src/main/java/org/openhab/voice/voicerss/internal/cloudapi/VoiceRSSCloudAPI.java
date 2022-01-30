@@ -60,7 +60,7 @@ public interface VoiceRSSCloudAPI {
     Set<String> getAvailableVoices(Locale locale);
 
     /**
-     * Get the given text in specified locale and auido format as input stream.
+     * Get the given text in specified locale and audio format as input stream.
      *
      * @param apiKey
      *            the API key to use for the cloud service

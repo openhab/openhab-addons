@@ -13,7 +13,6 @@
 package org.openhab.voice.voicerss.internal.cloudapi;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,16 +35,16 @@ import org.slf4j.LoggerFactory;
  */
 public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
 
-    private final Logger logger = LoggerFactory.getLogger(CachedVoiceRSSCloudImpl.class);
-
-    private final File cacheFolder;
-
     /**
      * Stream buffer size
      */
     private static final int READ_BUFFER_SIZE = 4096;
 
-    public CachedVoiceRSSCloudImpl(String cacheFolderName) {
+    private final Logger logger = LoggerFactory.getLogger(CachedVoiceRSSCloudImpl.class);
+
+    private final File cacheFolder;
+
+    public CachedVoiceRSSCloudImpl(String cacheFolderName) throws IllegalStateException {
         if (cacheFolderName == null) {
             throw new IllegalStateException("Folder for cache must be defined");
         }
@@ -59,6 +58,9 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
     public File getTextToSpeechAsFile(String apiKey, String text, String locale, String voice, String audioCodec,
             String audioFormat) throws IOException {
         String fileNameInCache = getUniqueFilenameForText(text, locale, voice, audioFormat);
+        if (fileNameInCache == null) {
+            throw new IOException("Could not infer cache file name");
+        }
         // check if in cache
         File audioFileInCache = new File(cacheFolder, fileNameInCache + "." + audioCodec.toLowerCase());
         if (audioFileInCache.exists()) {
@@ -75,12 +77,8 @@ public class CachedVoiceRSSCloudImpl extends VoiceRSSCloudImpl {
             writeText(txtFileInCache, text);
             // return from cache
             return audioFileInCache;
-        } catch (FileNotFoundException ex) {
-            logger.warn("Could not write {} to cache", audioFileInCache, ex);
-            return null;
         } catch (IOException ex) {
-            logger.error("Could not write {} to cache", audioFileInCache, ex);
-            return null;
+            throw new IOException("Could not write to cache file: " + ex.getMessage(), ex);
         }
     }
 

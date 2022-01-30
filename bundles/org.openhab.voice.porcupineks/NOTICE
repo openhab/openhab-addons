@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+ 
+ai.picovoice: porcupine-java
+* License: Apache 2.0 License
+* Project: https://github.com/Picovoice/porcupine
+* Source: https://github.com/Picovoice/porcupine/tree/v2.1/binding/java

@@ -55,8 +55,6 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
     public static final String API_URL = "https://api.voicerss.org/?key=%s&hl=%s&c=%s&f=%s&src=%s";
     public static final String API_URL_WITH_VOICE = API_URL + "&v=%s";
 
-    private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
-
     private static final Set<AudioFormat> SUPPORTED_AUDIO_FORMATS = Set.of(
             new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, null, 44_100L),
             new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, 16, null, 44_100L),
@@ -194,6 +192,8 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         SUPPORTED_VOICES.put("zh-tw", Set.of("Akemi", "Lin", "Lee"));
     }
 
+    private final Logger logger = LoggerFactory.getLogger(VoiceRSSCloudImpl.class);
+
     @Override
     public Set<AudioFormat> getAvailableAudioFormats() {
         return SUPPORTED_AUDIO_FORMATS;
@@ -231,7 +231,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         return allvoxes;
     }
 
-    /**
+    /*
      * This method will return an input stream to an audio stream for the given
      * parameters.
      *
@@ -242,7 +242,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
     public InputStream getTextToSpeech(String apiKey, String text, String locale, String voice, String audioCodec,
             String audioFormat) throws IOException {
         String url = createURL(apiKey, text, locale, voice, audioCodec, audioFormat);
-        logger.debug("Call {}", url);
+        logger.debug("Call {}", url.replace(apiKey, "***"));
         URLConnection connection = new URL(url).openConnection();
 
         // we will check return codes. The service will ALWAYS return a HTTP
@@ -250,7 +250,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
         // the error message in body
         int status = ((HttpURLConnection) connection).getResponseCode();
         if (HttpURLConnection.HTTP_OK != status) {
-            logger.error("Call {} returned HTTP {}", url, status);
+            logger.warn("Call {} returned HTTP {}", url.replace(apiKey, "***"), status);
             throw new IOException("Could not read from service: HTTP code " + status);
         }
         if (logger.isTraceEnabled()) {
@@ -271,7 +271,7 @@ public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
                 logger.debug("Failed to close inputstream", ex);
             }
             throw new IOException(
-                    "Could not read audio content, service return an error: " + new String(bytes, "UTF-8"));
+                    "Could not read audio content, service returned an error: " + new String(bytes, "UTF-8"));
         } else {
             return is;
         }

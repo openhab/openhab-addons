@@ -60,3 +60,17 @@ org.openhab.voice.googlestt:refreshSupportedLocales=false
 org.openhab.voice.googlestt:noResultsMessage="Sorry, I didn't understand you"
 org.openhab.voice.googlestt:errorMessage="Sorry, something went wrong"
 ```
+
+### Default Speech-to-Text Configuration
+
+You can setup your preferred default Speech-to-Text in the UI:
+
+* Go to **Settings**.
+* Edit **System Services - Voice**.
+* Set **Google Cloud** as **Speech-to-Text**.
+
+In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
+
+```
+org.openhab.voice:defaultSTT=googlestt
+```
