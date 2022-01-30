@@ -13,7 +13,7 @@
 package org.openhab.binding.lgthinq.internal;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THING_TYPE_AIR_CONDITIONER;
-import static org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler.THING_TYPE_BRIDGE;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THING_TYPE_BRIDGE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
