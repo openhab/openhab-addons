@@ -11,7 +11,6 @@ MQTT servers are called brokers and the clients are simply the connected devices
 * When a device (a client) wants to send data to the broker, we call this operation a “publish”.
 * When a device (a client) wants to receive data from the broker, we call this operation a “subscribe”.
 
-
 ![Publish and Subscribe](doc/subpub.png)
 
 openHAB itself is not an MQTT Broker and needs to connect to one as a regular client.
@@ -52,9 +51,17 @@ On each of those things you can add an arbitrary number of channels.
 
 Remember that you need a configured broker Thing first!
 
-You can add the following channels:
+### Thing Configuration
 
-#### Supported Channels
+The following optional parameters can be set for the Thing:
+
+* __availabilityTopic__: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
+* __payloadAvailable__: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
+* __payloadNotAvailable__: Payload of the `Availability Topic`, when the device is *not* available. Default: `OFF`.
+
+## Supported Channels
+
+You can add the following channels:
 
 * **string**: This channel can show the received text on the given topic and can send text to a given topic.
 * **number**: This channel can show the received number on the given topic and can send a number to a given topic. It can have a min, max and step values.
@@ -232,7 +239,7 @@ The second connection is a plain, unsecured one. Use this only for local MQTT Br
 A third connection uses a username and password for authentication. The credentials are plain values on the wire, therefore you should only use this on a secure connection.
 In a fourth connection, the public key pinning is enabled again. This time, a public key hash is provided to pin the connection to a specific server. It follows the form "hashname:hashvalue". Valid hashnames are SHA-1, SHA-224, SHA-256, SHA-384, SHA-512 and all others listed in Java MessageDigest Algorithms.
 
-### Example
+### Examples
 
 Files can also be used to create topic things and channels and to combine them with a broker connection:
 
@@ -248,6 +255,15 @@ Thing mqtt:topic:mything "mything" (mqtt:broker:myUnsecureBroker) {
     Type string : alarmpanel "Alarm system" [ stateTopic="alarm/panel/state", commandTopic="alarm/panel/set", allowedStates="ARMED_HOME,ARMED_AWAY,UNARMED" ]
     Type color : lampcolor "Kitchen Lamp color" [ stateTopic="lamp/color", commandTopic="lamp/color/set", rgb=true ]
     Type dimmer : blind "Blind" [ stateTopic="blind/state", commandTopic="blind/set", min=0, max=5, step=1 ]
+}
+```
+
+If the availability status is available, it can be configured to set the Thing status:
+
+```
+Thing mqtt:topic:bedroom1-switch (mqtt:broker:myUnsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
+    Channels:
+         Type switch        : power        [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)∩JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
 }
 ```
     
