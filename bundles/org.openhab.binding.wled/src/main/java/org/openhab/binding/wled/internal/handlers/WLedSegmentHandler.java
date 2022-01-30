@@ -63,6 +63,23 @@ public class WLedSegmentHandler extends BaseThingHandler {
         updateState(channelID, state);
     }
 
+    public void removeWhiteChannels() {
+        ArrayList<Channel> removeChannels = new ArrayList<>();
+        Channel channel = getThing().getChannel(CHANNEL_PRIMARY_WHITE);
+        if (channel != null) {
+            removeChannels.add(channel);
+        }
+        channel = getThing().getChannel(CHANNEL_SECONDARY_WHITE);
+        if (channel != null) {
+            removeChannels.add(channel);
+        }
+        channel = getThing().getChannel(CHANNEL_THIRD_WHITE);
+        if (channel != null) {
+            removeChannels.add(channel);
+        }
+        removeChannels(removeChannels);
+    }
+
     public void removeChannels(ArrayList<Channel> removeChannels) {
         if (!removeChannels.isEmpty()) {
             ThingBuilder thingBuilder = editThing();

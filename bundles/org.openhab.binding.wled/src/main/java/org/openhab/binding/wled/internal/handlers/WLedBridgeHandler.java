@@ -90,14 +90,9 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
         updateThing(thingBuilder.build());
     }
 
-    /**
-     * If the firmware does not support a feature, then remove the channels associated from all children things.
-     *
-     * @param removeChannels
-     */
-    public void removeChannels(ArrayList<Channel> removeChannels) {
+    public void removeWhiteChannels() {
         for (WLedSegmentHandler segmentHandler : segmentHandlers.values()) {
-            segmentHandler.removeChannels(removeChannels);
+            segmentHandler.removeWhiteChannels();
         }
     }
 

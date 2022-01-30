@@ -45,7 +45,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
@@ -89,23 +88,10 @@ public class WledApiV084 implements WledApi {
         }
 
         handler.hasWhite = state.ledInfo.rgbw;
-        ArrayList<Channel> removeChannels = new ArrayList<>();
         if (!state.ledInfo.rgbw) {
             logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
-            Channel channel = handler.getThing().getChannel(CHANNEL_PRIMARY_WHITE);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = handler.getThing().getChannel(CHANNEL_SECONDARY_WHITE);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
-            channel = handler.getThing().getChannel(CHANNEL_THIRD_WHITE);
-            if (channel != null) {
-                removeChannels.add(channel);
-            }
+            handler.removeWhiteChannels();
         }
-        handler.removeChannels(removeChannels);
     }
 
     @Override
