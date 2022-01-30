@@ -262,7 +262,7 @@ public class HomekitCharacteristicFactory {
     }
 
     public static @Nullable Double stateAsTemperature(@Nullable State state) {
-        if (state == null) {
+        if (state == null || state instanceof UnDefType) {
             return null;
         }
 
