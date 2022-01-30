@@ -81,6 +81,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
     private static final int REFRESH_ALL_DEVICES_DELAY_MSEC = 500; // Delay to wait before sending all devices refresh
                                                                    // request after a connect/reconnect
+    private static final int REFRESH_ALL_CHECK_DELAY_SEC = 20;
 
     private static long lastRegisteredDeviceTS = -1; // timestamp when the last device has been associated to the bridge
 
@@ -99,6 +100,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     public @Nullable OpenWebNetDeviceDiscoveryService deviceDiscoveryService;
     private boolean reconnecting = false; // we are trying to reconnect to gateway
     private @Nullable ScheduledFuture<?> refreshAllSchedule;
+    private @Nullable ScheduledFuture<?> connectSchedule;
 
     private boolean scanIsActive = false; // a device scan has been activated by OpenWebNetDeviceDiscoveryService;
     private boolean discoveryByActivation;
@@ -132,8 +134,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 logger.debug("Trying to connect gateway {}... ", gw);
                 try {
                     gw.connect();
-                    scheduler.schedule(() -> {
-                        // if status is still UNKNOWN after timer ends, set the device as OFFLINE
+                    connectSchedule = scheduler.schedule(() -> {
+                        // if status is still UNKNOWN after timer ends, set the device OFFLINE
                         if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                             logger.info("status still UNKNOWN. Setting device={} to OFFLINE", thing.getUID());
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
@@ -227,6 +229,10 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         ScheduledFuture<?> rSc = refreshAllSchedule;
         if (rSc != null) {
             rSc.cancel(true);
+        }
+        ScheduledFuture<?> cs = connectSchedule;
+        if (cs != null) {
+            cs.cancel(true);
         }
         disconnectGateway();
         super.dispose();
@@ -428,7 +434,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 logger.debug("--- --- COMPLETED REFRESH all devices for bridge {}", thing.getUID());
 
                 // set a check that all things are Online
-                refreshAllSchedule = scheduler.schedule(() -> checkAllRefreshed(things), 20, TimeUnit.SECONDS);
+                refreshAllSchedule = scheduler.schedule(() -> checkAllRefreshed(things), REFRESH_ALL_CHECK_DELAY_SEC,
+                        TimeUnit.SECONDS);
             }
         } else {
             logger.debug("--- --- NO CHILD DEVICE to REFRESH for bridge {}", thing.getUID());
@@ -450,9 +457,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             }
         }
         if (allOnline) {
-            logger.info("--- --- CHECK COMPLETED: ALL THINGS ONLINE for bridge {}", thing.getUID());
+            logger.debug("--- --- REFRESH CHECK COMPLETED: all things ONLINE for bridge {}", thing.getUID());
         } else {
-            logger.warn("--- --- CHECK COMPLETED: ^^^NOT ALL THINGS ONLINE^^^ for bridge {}", thing.getUID());
+            logger.debug("--- --- REFRESH CHECK COMPLETED: NOT all things ONLINE for bridge {}", thing.getUID());
         }
     }
 
@@ -586,7 +593,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                             "@text/offline.conf-error-auth" + " (" + e + ")");
                 }
             } else {
-                logger.debug("---- reconnecting=true");
+                logger.debug("---- already reconnecting");
             }
         } else {
             logger.warn("---- cannot start RECONNECT, gateway is null");

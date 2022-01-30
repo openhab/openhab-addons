@@ -59,13 +59,13 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     protected @Nullable OpenWebNetBridgeHandler bridgeHandler;
     protected @Nullable String ownId; // OpenWebNet identifier for this device: WHO.WHERE
-    protected @Nullable Where deviceWhere; // this device Where address
+    protected @Nullable Where deviceWhere; // this device WHERE address
 
     protected @Nullable ScheduledFuture<?> requestChannelStateTimeout;
     protected @Nullable ScheduledFuture<?> refreshTimeout;
 
-    private static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60000; // interval in msec before sending another all
-    // devices refresh request
+    private static final int ALL_DEVICES_REFRESH_INTERVAL_MSEC = 60_000; // interval before sending another
+                                                                         // refreshAllDevices request
 
     public OpenWebNetThingHandler(Thing thing) {
         super(thing);
@@ -149,16 +149,16 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     /**
      * Handles a command for the specific channel for this thing.
-     * It must be implemented by each specific OpenWebNet category of device (WHO), based on channel
+     * It must be further implemented by each specific device handler.
      *
-     * @param channel specific ChannleUID
+     * @param channel the {@link ChannelUID}
      * @param command the Command to be executed
      */
     protected abstract void handleChannelCommand(ChannelUID channel, Command command);
 
     /**
-     * Handle incoming message from OWN network via bridge Thing, directed to this device. It should be further
-     * implemented by each specific device handler.
+     * Handle incoming message from OWN network via bridge Thing, directed to this device.
+     * It should be further implemented by each specific device handler.
      *
      * @param msg the message to handle
      */
@@ -170,7 +170,9 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Helper method to send OWN messages from ThingHandlers
+     * Helper method to send OWN messages from handler.
+     *
+     * @param msg the OpenMessage to be sent
      */
     public @Nullable Response send(OpenMessage msg) throws OWNException {
         OpenWebNetBridgeHandler bh = bridgeHandler;
@@ -185,7 +187,9 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Helper method to send with high priority OWN messages from ThingsHandlers
+     * Helper method to send with high priority OWN messages from handler.
+     *
+     * @param msg the OpenMessage to be sent
      */
     protected @Nullable Response sendHighPriority(OpenMessage msg) throws OWNException {
         OpenWebNetBridgeHandler handler = bridgeHandler;
@@ -199,8 +203,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Request the state for the specified channel. If no answer is received for this Thing within
-     * THING_STATE_REQ_TIMEOUT_SEC, it is put OFFLINE.
+     * Request the state for the specified channel. If no answer is received within THING_STATE_REQ_TIMEOUT_SEC, it is
+     * put OFFLINE.
      * The method must be further implemented by each specific handler.
      *
      * @param channel the {@link ChannelUID} to request the state for
@@ -224,19 +228,20 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Refresh a single device. The method must be further implemented by each specific handler.
+     * Refresh a device, possibly using a single OWN command if refreshAll=true and if supported.
+     * The method must be further implemented by each specific handler.
      *
-     * @param refreshAll true if all devices for this handler must be refreshed (if supported, otherwise refresh the
-     *            single device).
+     * @param refreshAll true if all devices for this handler must be refreshed with a single OWN command, if supported,
+     *            otherwise just refresh the single device.
      */
     protected abstract void refreshDevice(boolean refreshAll);
 
     /**
-     * If the subclass supports refreshing all devices with a single command, return 1 or the last TS a refresh all was
-     * requested for the subclass. Otherwise return -1 (default).
-     * It must be implemented by each subclass that supports all device refresh.
+     * If the subclass supports refreshing all devices with a single OWN command, returns the last TS when a refreshAll
+     * was requested, or 0 if not requested yet. If not supported return -1 (default).
+     * It must be implemented by each subclass that supports all devices refresh.
      *
-     * @return timestamp when last refresh all was requested, 1 if not requested yet,, or -1 if it's not supported by
+     * @return timestamp when last refreshAll command was sent, 0 if not requested yet, or -1 if it's not supported by
      *         subclass.
      */
     protected long getRefreshAllLastTS() {
@@ -245,7 +250,6 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
 
     /**
      * Refresh all devices for this handler
-     *
      */
     protected void refreshAllDevices() {
         logger.debug("--- refreshAllDevices() for device {}", thing.getUID());
@@ -261,8 +265,8 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
                 } else {
                     logger.debug("--- refreshAllDevices() : refresh all devices just sent... ({})", thing.getUID());
                 }
-                // sometimes GENERAL refresh requests do not return state for all devices, so let's schedule another
-                // single refresh device, just in case
+                // sometimes GENERAL (e.g. #*1*0##) refresh requests do not return state for all devices, so let's
+                // schedule another single refresh device, just in case
                 refreshTimeout = scheduler.schedule(() -> {
                     if (thing.getStatus().equals(ThingStatus.UNKNOWN)) {
                         logger.debug(
