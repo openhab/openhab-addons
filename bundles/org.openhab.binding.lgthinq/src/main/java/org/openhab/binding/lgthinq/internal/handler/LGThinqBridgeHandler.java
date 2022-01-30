@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.LGThinqConfiguration;
 import org.openhab.binding.lgthinq.internal.LGThinqDeviceThing;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
@@ -48,7 +47,6 @@ import org.slf4j.LoggerFactory;
  * @author Nemer Daud - Initial contribution
  */
 public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements LGThinqBridge {
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(LGThinqBindingConstants.BINDING_ID, "bridge");
 
     private Map<String, LGThinqDeviceThing> lGDeviceRegister = new ConcurrentHashMap<>();
     private Map<String, LGDevice> lastDevicesDiscovered = new ConcurrentHashMap<>();
