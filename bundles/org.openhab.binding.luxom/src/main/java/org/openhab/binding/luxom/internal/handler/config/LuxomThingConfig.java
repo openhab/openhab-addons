@@ -13,7 +13,6 @@
 package org.openhab.binding.luxom.internal.handler.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * {@link LuxomThingConfig} is the general config class for luxom things.
