@@ -72,6 +72,7 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
     }
 
     private static final String COMMAND_CALIBRATE = "CALIBRATE";
+    private static final String COMMAND_IDENTIFY = "IDENTIFY";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewShadeHandler.class);
     private final ShadeCapabilitiesDatabase db = new ShadeCapabilitiesDatabase();
@@ -226,7 +227,10 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
 
             case CHANNEL_SHADE_COMMAND:
                 if (command instanceof StringType) {
-                    if (COMMAND_CALIBRATE.equals(((StringType) command).toString())) {
+                    if (COMMAND_IDENTIFY.equals(((StringType) command).toString())) {
+                        logger.debug("Identify shade {}", shadeId);
+                        identifyShade(webTargets, shadeId);
+                    } else if (COMMAND_CALIBRATE.equals(((StringType) command).toString())) {
                         logger.debug("Calibrate shade {}", shadeId);
                         calibrateShade(webTargets, shadeId);
                     }
@@ -445,6 +449,11 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
         // Positions in response from stop motion is not updated to to actual positions yet,
         // so we need to request hard refresh.
         requestRefreshShadePosition();
+    }
+
+    private void identifyShade(HDPowerViewWebTargets webTargets, int shadeId)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        updateShadePositions(webTargets.jogShade(shadeId));
     }
 
     private void calibrateShade(HDPowerViewWebTargets webTargets, int shadeId)

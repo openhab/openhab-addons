@@ -29,6 +29,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 import org.openhab.binding.hdpowerview.internal.api.requests.RepeaterBlinking;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeCalibrate;
+import org.openhab.binding.hdpowerview.internal.api.requests.ShadeJog;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeMove;
 import org.openhab.binding.hdpowerview.internal.api.requests.ShadeStop;
 import org.openhab.binding.hdpowerview.internal.api.responses.FirmwareVersion;
@@ -243,6 +244,22 @@ public class HDPowerViewWebTargets {
     public ShadeData stopShade(int shadeId)
             throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
         String jsonRequest = gson.toJson(new ShadeStop());
+        String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
+        return shadeDataFromJson(jsonResponse);
+    }
+
+    /**
+     * Instructs the hub to jog a specific shade
+     *
+     * @param shadeId id of the shade to be jogged
+     * @return ShadeData class instance
+     * @throws HubInvalidResponseException if response is invalid
+     * @throws HubProcessingException if there is any processing error
+     * @throws HubMaintenanceException if the hub is down for maintenance
+     */
+    public ShadeData jogShade(int shadeId)
+            throws HubInvalidResponseException, HubProcessingException, HubMaintenanceException {
+        String jsonRequest = gson.toJson(new ShadeJog());
         String jsonResponse = invoke(HttpMethod.PUT, shades + Integer.toString(shadeId), null, jsonRequest);
         return shadeDataFromJson(jsonResponse);
     }
