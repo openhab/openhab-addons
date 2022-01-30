@@ -131,11 +131,11 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
     @Override
     public void handleCommandCommingFromBridge(LuxomCommand command) {
         updateStatus(ThingStatus.ONLINE);
-        if (command.getAction() == LuxomAction.CLEAR_RESPONSE) {
+        if (command.getAction() == LuxomAction.CLEAR || command.getAction() == LuxomAction.CLEAR_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
-        } else if (command.getAction() == LuxomAction.SET_RESPONSE) {
+        } else if (command.getAction() == LuxomAction.SET || command.getAction() == LuxomAction.SET_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
-        } else if (command.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
+        } else if (command.getAction() == LuxomAction.DATA || command.getAction() == LuxomAction.DATA_RESPONSE) {
             int percentage = PercentageConvertor.getPercentage(command.getData());
 
             if (percentage > 0) {

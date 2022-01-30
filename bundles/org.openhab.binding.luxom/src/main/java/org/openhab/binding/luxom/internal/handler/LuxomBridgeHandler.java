@@ -326,10 +326,10 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             }
         } else if (luxomCommand.getAction() == LuxomAction.ACKNOWLEDGE) {
             addSendPermit(); // based on : ACK acknowledges a 'send' command
-        } else if (luxomCommand.getAction() == LuxomAction.DATA_RESPONSE) {
+        } else if (luxomCommand.getAction() == LuxomAction.DATA || luxomCommand.getAction() == LuxomAction.DATA_RESPONSE) {
             previousCommand = luxomCommand;
         } else if (luxomCommand.getAction() != LuxomAction.INVALID_ACTION) {
-            if (luxomCommand.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
+            if (luxomCommand.getAction() == LuxomAction.DATA_BYTE || luxomCommand.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
                 // data for previous command if it needs it
                 if (previousCommand != null && previousCommand.getAction().isNeedsData()) {
                     luxomCommand.setAddress(previousCommand.getAddress());
