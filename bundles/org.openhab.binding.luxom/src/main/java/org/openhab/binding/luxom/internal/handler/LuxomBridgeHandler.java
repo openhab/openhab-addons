@@ -281,8 +281,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     public void thingUpdated(Thing thing) {
         LuxomBridgeConfig newConfig = thing.getConfiguration().as(LuxomBridgeConfig.class);
         boolean validConfig = validConfiguration(newConfig);
-        boolean needsReconnect = validConfig && this.config != null
-                && !this.config.sameConnectionParameters(newConfig);
+        boolean needsReconnect = validConfig && this.config != null && !this.config.sameConnectionParameters(newConfig);
 
         if (!validConfig || needsReconnect) {
             dispose();
