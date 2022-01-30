@@ -323,6 +323,7 @@ public class Commands {
         final int brightness = hsb.getBrightness().intValue();
         lightState.setHue(hsb.getHue().intValue());
         lightState.setSaturation(hsb.getSaturation().intValue());
+        lightState.setBrightness(brightness);
         return setLightStripState(lightState, OnOffType.from(brightness != 0), transition);
     }
 
@@ -334,7 +335,7 @@ public class Commands {
      * @return The json string of the command to send to the device
      */
     public String setLightStripColorTemperature(final int colorTemperature, final int transition) {
-        final SetLightState.Color lightState = new SetLightState.Color();
+        final SetLightState.ColorTemperature lightState = new SetLightState.ColorTemperature();
         lightState.setColorTemp(colorTemperature);
         return setLightStripState(lightState, OnOffType.ON, transition);
     }

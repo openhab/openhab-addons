@@ -32,17 +32,26 @@ public class SetLightState implements HasErrorResponse {
     private static final int GROUPS_INDEX_BRIGHTNESS = 4;
     private static final int GROUPS_INDEX_COLOR_TEMPERATURE = 5;
 
-    public static class Color extends LightOnOff {
+    public static class ColorTemperature extends LightOnOff {
+        @Expose(deserialize = false)
+        private int colorTemp;
+        @Expose(deserialize = false)
+        private int hue = 0;
+        @Expose(deserialize = false)
+        private int saturation = 0;
+
+        public void setColorTemp(final int colorTemperature) {
+            this.colorTemp = colorTemperature;
+        }
+    }
+
+    public static class Color extends Brightness {
         @Expose(deserialize = false)
         private int colorTemp;
         @Expose(deserialize = false)
         private int hue;
         @Expose(deserialize = false)
         private int saturation;
-
-        public void setColorTemp(final int colorTemperature) {
-            this.colorTemp = colorTemperature;
-        }
 
         public void setHue(final int hue) {
             this.hue = hue;
