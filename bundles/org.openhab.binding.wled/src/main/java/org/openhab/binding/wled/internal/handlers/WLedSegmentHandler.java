@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2021 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,21 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.wled.internal;
+package org.openhab.binding.wled.internal.handlers;
 
 import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.wled.internal.WLedSegmentConfiguration;
 import org.openhab.binding.wled.internal.api.ApiException;
 import org.openhab.binding.wled.internal.api.WledApi;
-import org.openhab.binding.wled.internal.api.WledApiFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -32,13 +27,11 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -46,36 +39,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link WLedHandler} is responsible for handling commands and states, which are
- * sent to one of the channels or http replies back.
+ * The {@link WLedSegmentHandler} is responsible for handling only a single segment from a WLED device.
  *
  * @author Matthew Skinner - Initial contribution
  */
 
 @NonNullByDefault
-public class WLedHandler extends BaseThingHandler {
+public class WLedSegmentHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    public final WledDynamicStateDescriptionProvider stateDescriptionProvider;
-    private WledApiFactory apiFactory;
-    private @Nullable WledApi api;
-    private @Nullable ScheduledFuture<?> pollingFuture = null;
+    public WLedSegmentConfiguration config = new WLedSegmentConfiguration();
     private BigDecimal masterBrightness255 = BigDecimal.ZERO;
-    public boolean hasWhite = false;
     private HSBType primaryColor = new HSBType();
     private HSBType secondaryColor = new HSBType();
     private HSBType thirdColor = new HSBType();
-    public WLedConfiguration config = new WLedConfiguration();
 
-    public WLedHandler(Thing thing, WledApiFactory apiFactory,
-            WledDynamicStateDescriptionProvider stateDescriptionProvider) {
+    public WLedSegmentHandler(Thing thing) {
         super(thing);
-        this.apiFactory = apiFactory;
-        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    public void update(String channelID, State state) {
+        updateState(channelID, state);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        WledApi localApi = api;
+        WLedBridgeHandler bridgeHandler = (WLedBridgeHandler) this.getBridge().getHandler();
+        WledApi localApi = bridgeHandler.api;
         if (localApi == null) {
             return;
         }
@@ -100,9 +89,6 @@ public class WLedHandler extends BaseThingHandler {
                 case CHANNEL_MIRROR:
                     localApi.setMirror(OnOffType.ON.equals(command), config.segmentIndex);
                     break;
-                case CHANNEL_LIVE_OVERRIDE:
-                    localApi.setLiveOverride(command.toString());
-                    break;
                 case CHANNEL_SPACING:
                     if (command instanceof DecimalType) {
                         localApi.setSpacing(((DecimalType) command).intValue(), config.segmentIndex);
@@ -115,12 +101,6 @@ public class WLedHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_REVERSE:
                     localApi.setReverse(OnOffType.ON.equals(command), config.segmentIndex);
-                    break;
-                case CHANNEL_SYNC_SEND:
-                    localApi.setUdpSend(OnOffType.ON.equals(command));
-                    break;
-                case CHANNEL_SYNC_RECEIVE:
-                    localApi.setUdpRecieve(OnOffType.ON.equals(command));
                     break;
                 case CHANNEL_PRIMARY_WHITE:
                     if (command instanceof PercentType) {
@@ -162,10 +142,11 @@ public class WLedHandler extends BaseThingHandler {
                         }
                         localApi.setGlobalOn(true);
                         primaryColor = (HSBType) command;
-                        if (primaryColor.getSaturation().intValue() < config.saturationThreshold && hasWhite) {
+                        if (primaryColor.getSaturation().intValue() < bridgeHandler.config.saturationThreshold
+                                && bridgeHandler.hasWhite) {
                             localApi.setWhiteOnly((PercentType) command, config.segmentIndex);
                         } else if (primaryColor.getSaturation().intValue() == 32
-                                && primaryColor.getHue().intValue() == 36 && hasWhite) {
+                                && primaryColor.getHue().intValue() == 36 && bridgeHandler.hasWhite) {
                             localApi.setWhiteOnly((PercentType) command, config.segmentIndex);
                         } else {
                             localApi.setMasterHSB((HSBType) command, config.segmentIndex);
@@ -213,10 +194,6 @@ public class WLedHandler extends BaseThingHandler {
                 case CHANNEL_INTENSITY:
                     localApi.setFxIntencity((PercentType) command, config.segmentIndex);
                     break;
-                case CHANNEL_SLEEP:
-                    localApi.setSleep(OnOffType.ON.equals(command));
-                    break;
-                case CHANNEL_PLAYLISTS:
                 case CHANNEL_PRESETS:
                     localApi.setPreset(command.toString());
                     break;
@@ -248,65 +225,13 @@ public class WLedHandler extends BaseThingHandler {
         }
     }
 
-    public void savePreset(int position, String presetName) {
-        try {
-            if (api != null) {
-                api.savePreset(position, presetName);
-            }
-        } catch (ApiException e) {
-        }
-    }
-
-    public void removeChannels(ArrayList<Channel> removeChannels) {
-        if (!removeChannels.isEmpty()) {
-            ThingBuilder thingBuilder = editThing();
-            thingBuilder.withoutChannels(removeChannels);
-            updateThing(thingBuilder.build());
-        }
-    }
-
-    public void update(String channelID, State state) {
-        updateState(channelID, state);
-    }
-
-    private void pollState() {
-        WledApi localApi = api;
-        try {
-            if (localApi == null) {
-                // api = apiFactory.getApi(this);
-                // api.initialize();
-            }
-            if (localApi == null) {
-                return;
-            }
-            localApi.update();
-            updateStatus(ThingStatus.ONLINE);
-        } catch (ApiException e) {
-            api = null;// Firmware may be updated so need to check next connect
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-    }
-
     @Override
     public void initialize() {
-        config = getConfigAs(WLedConfiguration.class);
-        if (config.segmentIndex < 0) {
-            config.segmentIndex = 0;
+        config = getConfigAs(WLedSegmentConfiguration.class);
+        if (this.thing.getBridgeUID() != null) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No bridge is selected");
         }
-        if (!config.address.contains("://")) {
-            logger.debug("Address was not entered in correct format, it may be the raw IP so adding http:// to start");
-            config.address = "http://" + config.address;
-        }
-        pollingFuture = scheduler.scheduleWithFixedDelay(this::pollState, 0, config.pollTime, TimeUnit.SECONDS);
-    }
-
-    @Override
-    public void dispose() {
-        Future<?> future = pollingFuture;
-        if (future != null) {
-            future.cancel(true);
-            pollingFuture = null;
-        }
-        api = null; // re-initialize api after configuration change
     }
 }

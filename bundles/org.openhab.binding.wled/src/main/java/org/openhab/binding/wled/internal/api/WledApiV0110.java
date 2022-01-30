@@ -21,8 +21,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedHandler;
 import org.openhab.binding.wled.internal.WledState.PresetState;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 
@@ -39,7 +39,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class WledApiV0110 extends WledApiV084 {
 
-    public WledApiV0110(WLedHandler handler, HttpClient httpClient) {
+    public WledApiV0110(WLedBridgeHandler handler, HttpClient httpClient) {
         super(handler, httpClient);
     }
 

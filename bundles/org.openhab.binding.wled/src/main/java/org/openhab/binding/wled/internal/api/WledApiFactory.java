@@ -14,7 +14,7 @@ package org.openhab.binding.wled.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedHandler;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -39,7 +39,7 @@ public class WledApiFactory {
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
-    public WledApi getApi(WLedHandler handler) throws ApiException {
+    public WledApi getApi(WLedBridgeHandler handler) throws ApiException {
         WledApi lowestSupportedApi = new WledApiV084(handler, httpClient);
         int version = lowestSupportedApi.getFirmwareVersion();
         logger.debug("Treating firmware as int:{}", version);

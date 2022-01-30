@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.wled.internal.WLedHandler;
+import org.openhab.binding.wled.internal.handlers.WLedBridgeHandler;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 
@@ -31,7 +31,7 @@ import org.openhab.core.thing.Channel;
 @NonNullByDefault
 public class WledApiV0130 extends WledApiV0110 {
 
-    public WledApiV0130(WLedHandler handler, HttpClient httpClient) {
+    public WledApiV0130(WLedBridgeHandler handler, HttpClient httpClient) {
         super(handler, httpClient);
     }
 
@@ -52,8 +52,8 @@ public class WledApiV0130 extends WledApiV0110 {
     }
 
     @Override
-    protected void processState() throws ApiException {
-        super.processState();
-        handler.update(CHANNEL_PLAYLISTS, new StringType(Integer.toString(state.stateResponse.pl)));
+    protected void processState(int segmentIndex) throws ApiException {
+        super.processState(segmentIndex);
+        handler.update(segmentIndex, CHANNEL_PLAYLISTS, new StringType(Integer.toString(state.stateResponse.pl)));
     }
 }
