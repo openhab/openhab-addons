@@ -28,6 +28,11 @@ class PercentageConvertorTest {
     }
 
     @Test
+    void hexToPercentage100() {
+        assertEquals(100, PercentageConvertor.getPercentage("0FF"));
+    }
+
+    @Test
     void percentageToHex() {
         assertEquals("57", PercentageConvertor.getHexRepresentation(34));
     }

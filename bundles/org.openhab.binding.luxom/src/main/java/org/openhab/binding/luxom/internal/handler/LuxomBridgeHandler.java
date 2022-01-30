@@ -194,10 +194,6 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void addSendPermit() {
-        logger.debug("adding send permit {}", nrOfSendPermits.incrementAndGet());
-    }
-
     private synchronized void disconnect() {
         logger.debug("Disconnecting from bridge");
 
@@ -323,7 +319,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                 startProcessing();
             }
         } else if (luxomCommand.getAction() == LuxomAction.ACKNOWLEDGE) {
-            addSendPermit(); // based on : ACK acknowledges a 'send' command
+            logger.debug("received acknowledgement");
         } else if (luxomCommand.getAction() == LuxomAction.DATA
                 || luxomCommand.getAction() == LuxomAction.DATA_RESPONSE) {
             previousCommand = luxomCommand;
