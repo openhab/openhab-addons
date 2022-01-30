@@ -40,7 +40,7 @@
 
 	<channel-type id="dimmer">
 		<item-type>Dimmer</item-type>
-		<label>Percentage Value</label>
+		<label>Dimmer</label>
 		<config-description-ref uri="thing-type:mqtt:dimmer_channel"></config-description-ref>
 	</channel-type>
 
