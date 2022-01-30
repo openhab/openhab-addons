@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
+import static org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler.THING_TYPE_BRIDGE;
+
 import java.io.File;
 import java.util.Collections;
 import java.util.Map;
@@ -34,6 +36,8 @@ public class LGThinqBindingConstants {
     public static final String BINDING_ID = "lgthinq";
     public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
             "" + DeviceTypes.AIR_CONDITIONER.deviceTypeId()); // deviceType from AirConditioner
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
+            THING_TYPE_BRIDGE);
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AIR_CONDITIONER);
 
     public static final String THINQ_USER_DATA_FOLDER = OpenHAB.getUserDataFolder() + File.separator + "thinq";

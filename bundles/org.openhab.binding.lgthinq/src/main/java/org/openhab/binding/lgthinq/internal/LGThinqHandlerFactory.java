@@ -15,8 +15,6 @@ package org.openhab.binding.lgthinq.internal;
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THING_TYPE_AIR_CONDITIONER;
 import static org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler.THING_TYPE_BRIDGE;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler;
@@ -44,14 +42,12 @@ import org.slf4j.LoggerFactory;
 @Component(service = { ThingHandlerFactory.class }, configurationPid = "binding.lgthinq")
 public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
-            THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(LGThinqHandlerFactory.class);
     private final LGThinqDeviceDynStateDescriptionProvider stateDescriptionProvider;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return LGThinqBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override

@@ -13,7 +13,6 @@
 package org.openhab.binding.lgthinq.internal;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
-import static org.openhab.core.library.types.OnOffType.ON;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -460,7 +459,8 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                         case CHANNEL_POWER_ID: {
                             if (command instanceof OnOffType) {
                                 lgThinqApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
-                                        command == ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
+                                        command == OnOffType.ON ? DevicePowerState.DV_POWER_ON
+                                                : DevicePowerState.DV_POWER_OFF);
                             } else {
                                 logger.warn("Received command different of OnOffType in Power Channel. Ignoring");
                             }
