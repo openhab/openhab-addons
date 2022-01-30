@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Garnier - add support for OGG and AAC audio formats
  * @author Andreas Brenk - add support for WAV audio format
  */
+@NonNullByDefault
 public class VoiceRSSCloudImpl implements VoiceRSSCloudAPI {
 
     public static final String DEFAULT_VOICE = "default";

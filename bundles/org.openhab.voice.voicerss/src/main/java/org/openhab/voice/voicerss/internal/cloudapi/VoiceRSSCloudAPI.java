@@ -17,12 +17,15 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface which represents the functionality needed from the VoiceRSS TTS
  * service.
  *
  * @author Jochen Hiller - Initial contribution
  */
+@NonNullByDefault
 public interface VoiceRSSCloudAPI {
 
     /**

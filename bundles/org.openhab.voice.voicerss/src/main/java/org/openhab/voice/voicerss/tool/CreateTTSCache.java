@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImpl;
 
 /**
@@ -24,6 +25,7 @@ import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImpl;
  *
  * @author Jochen Hiller - Initial contribution
  */
+@NonNullByDefault
 public class CreateTTSCache {
 
     public static final int RC_OK = 0;
@@ -39,7 +41,7 @@ public class CreateTTSCache {
     }
 
     public int doMain(String[] args) throws IOException {
-        if ((args == null) || (args.length < 6)) {
+        if (args.length < 6) {
             usage();
             return RC_USAGE;
         }
@@ -115,10 +117,6 @@ public class CreateTTSCache {
 
     private void generateCacheForMessage(String apiKey, String cacheDir, String locale, String voice, String codec,
             String format, String msg) throws IOException {
-        if (msg == null) {
-            System.err.println("Ignore msg=null");
-            return;
-        }
         String trimmedMsg = msg.trim();
         if (trimmedMsg.length() == 0) {
             System.err.println("Ignore msg=''");
