@@ -172,6 +172,7 @@ public class WledApiV084 implements WledApi {
             }
             state.stateResponse = response;
             state.unpackJsonObjects();
+            processBridgeStates();
             for (int count = 0; count < state.stateResponse.seg.length; count++) {
                 processState(count);
             }
@@ -224,6 +225,7 @@ public class WledApiV084 implements WledApi {
     public void update() throws ApiException {
         state.stateResponse = getState();
         state.unpackJsonObjects();
+        processBridgeStates();
         for (int count = 0; count < state.stateResponse.seg.length; count++) {
             processState(count);
         }
@@ -268,10 +270,47 @@ public class WledApiV084 implements WledApi {
         return version;
     }
 
+    protected void processBridgeStates() throws ApiException {
+        if (!state.stateResponse.on) {
+            handler.update(CHANNEL_GLOBAL_BRIGHTNESS, OnOffType.OFF);
+        } else {
+            handler.update(CHANNEL_GLOBAL_BRIGHTNESS, new PercentType(
+                    new BigDecimal(state.stateResponse.bri).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
+        }
+        handler.update(CHANNEL_LIVE_OVERRIDE, new StringType(Integer.toString(state.stateResponse.lor)));
+        handler.update(CHANNEL_PRESETS, new StringType(Integer.toString(state.stateResponse.ps)));
+        if (state.nightLightState.on) {
+            handler.update(CHANNEL_SLEEP, OnOffType.ON);
+        } else {
+            handler.update(CHANNEL_SLEEP, OnOffType.OFF);
+        }
+        if (state.udpnState.recv) {
+            handler.update(CHANNEL_SYNC_RECEIVE, OnOffType.ON);
+        } else {
+            handler.update(CHANNEL_SYNC_RECEIVE, OnOffType.OFF);
+        }
+        if (state.udpnState.send) {
+            handler.update(CHANNEL_SYNC_SEND, OnOffType.ON);
+        } else {
+            handler.update(CHANNEL_SYNC_SEND, OnOffType.OFF);
+        }
+        if (state.stateResponse.pl == 0) {
+            handler.update(CHANNEL_PRESET_CYCLE, OnOffType.ON);
+        } else {
+            handler.update(CHANNEL_PRESET_CYCLE, OnOffType.OFF);
+        }
+        handler.update(CHANNEL_TRANS_TIME, new QuantityType<>(
+                new BigDecimal(state.stateResponse.transition).divide(BigDecimal.TEN), Units.SECOND));
+    }
+
     protected void processState(int segmentIndex) throws ApiException {
         if (state.stateResponse.seg.length <= segmentIndex) {
             throw new ApiException(
                     "Segment " + segmentIndex + " is not currently setup correctly in the WLED firmware");
+        }
+        if (handler.segmentHandlers.get(segmentIndex) == null) {
+            // There is no thing setup for this segmentIndex.
+            return;
         }
         HSBType tempHSB = WLedHelper.parseToHSBType(state.stateResponse.seg[segmentIndex].col[0].toString());
         handler.update(segmentIndex, CHANNEL_PRIMARY_COLOR, tempHSB);
@@ -297,26 +336,6 @@ public class WledApiV084 implements WledApi {
                     new PercentType(new BigDecimal(state.stateResponse.seg[segmentIndex].bri).divide(BIG_DECIMAL_2_55,
                             RoundingMode.HALF_UP)));
         }
-        if (state.nightLightState.on) {
-            handler.update(segmentIndex, CHANNEL_SLEEP, OnOffType.ON);
-        } else {
-            handler.update(segmentIndex, CHANNEL_SLEEP, OnOffType.OFF);
-        }
-        if (state.stateResponse.pl == 0) {
-            handler.update(segmentIndex, CHANNEL_PRESET_CYCLE, OnOffType.ON);
-        } else {
-            handler.update(segmentIndex, CHANNEL_PRESET_CYCLE, OnOffType.OFF);
-        }
-        if (state.udpnState.recv) {
-            handler.update(segmentIndex, CHANNEL_SYNC_RECEIVE, OnOffType.ON);
-        } else {
-            handler.update(segmentIndex, CHANNEL_SYNC_RECEIVE, OnOffType.OFF);
-        }
-        if (state.udpnState.send) {
-            handler.update(segmentIndex, CHANNEL_SYNC_SEND, OnOffType.ON);
-        } else {
-            handler.update(segmentIndex, CHANNEL_SYNC_SEND, OnOffType.OFF);
-        }
         if (state.stateResponse.seg[segmentIndex].mi) {
             handler.update(segmentIndex, CHANNEL_MIRROR, OnOffType.ON);
         } else {
@@ -327,9 +346,6 @@ public class WledApiV084 implements WledApi {
         } else {
             handler.update(segmentIndex, CHANNEL_REVERSE, OnOffType.OFF);
         }
-        handler.update(segmentIndex, CHANNEL_TRANS_TIME, new QuantityType<>(
-                new BigDecimal(state.stateResponse.transition).divide(BigDecimal.TEN), Units.SECOND));
-        handler.update(segmentIndex, CHANNEL_PRESETS, new StringType(Integer.toString(state.stateResponse.ps)));
         handler.update(segmentIndex, CHANNEL_FX,
                 new StringType(Integer.toString(state.stateResponse.seg[segmentIndex].fx)));
         handler.update(segmentIndex, CHANNEL_PALETTES,
@@ -340,7 +356,6 @@ public class WledApiV084 implements WledApi {
         handler.update(segmentIndex, CHANNEL_INTENSITY,
                 new PercentType(new BigDecimal(state.stateResponse.seg[segmentIndex].ix).divide(BIG_DECIMAL_2_55,
                         RoundingMode.HALF_UP)));
-        handler.update(segmentIndex, CHANNEL_LIVE_OVERRIDE, new StringType(Integer.toString(state.stateResponse.lor)));
         handler.update(segmentIndex, CHANNEL_GROUPING, new DecimalType(state.stateResponse.seg[segmentIndex].grp));
         handler.update(segmentIndex, CHANNEL_SPACING, new DecimalType(state.stateResponse.seg[segmentIndex].spc));
     }

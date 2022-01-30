@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.wled.internal.handlers;
 import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.wled.internal.WLedSegmentConfiguration;
@@ -25,13 +26,14 @@ import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -61,14 +63,28 @@ public class WLedSegmentHandler extends BaseThingHandler {
         updateState(channelID, state);
     }
 
+    public void removeChannels(ArrayList<Channel> removeChannels) {
+        if (!removeChannels.isEmpty()) {
+            ThingBuilder thingBuilder = editThing();
+            thingBuilder.withoutChannels(removeChannels);
+            updateThing(thingBuilder.build());
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        WLedBridgeHandler bridgeHandler = (WLedBridgeHandler) this.getBridge().getHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return;
+        }
+        WLedBridgeHandler bridgeHandler = (WLedBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
         WledApi localApi = bridgeHandler.api;
         if (localApi == null) {
             return;
         }
-        BigDecimal bigTemp;
         if (command instanceof RefreshType) {
             return;// no need to check for refresh below
         }
@@ -194,31 +210,6 @@ public class WLedSegmentHandler extends BaseThingHandler {
                 case CHANNEL_INTENSITY:
                     localApi.setFxIntencity((PercentType) command, config.segmentIndex);
                     break;
-                case CHANNEL_PRESETS:
-                    localApi.setPreset(command.toString());
-                    break;
-                case CHANNEL_PRESET_DURATION:// ch removed in firmware 0.13.0 and newer
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
-                        if (seconds != null) {
-                            bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
-                            localApi.sendGetRequest("/win&PT=" + bigTemp.intValue());
-                        }
-                    }
-                    break;
-                case CHANNEL_TRANS_TIME:
-                    if (command instanceof QuantityType) {
-                        QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
-                        if (seconds != null) {
-                            localApi.setTransitionTime(new BigDecimal(seconds.multiply(BigDecimal.TEN).intValue()));
-                        }
-                    }
-                    break;
-                case CHANNEL_PRESET_CYCLE: // ch removed in firmware 0.13.0 and newer
-                    if (command instanceof OnOffType) {
-                        localApi.setPresetCycle(OnOffType.ON.equals(command));
-                    }
-                    break;
             }
         } catch (ApiException e) {
             logger.debug("Exception occured:{}", e.getMessage());
@@ -231,7 +222,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
         if (this.thing.getBridgeUID() != null) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No bridge is selected");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No bridge is selected.");
         }
     }
 }

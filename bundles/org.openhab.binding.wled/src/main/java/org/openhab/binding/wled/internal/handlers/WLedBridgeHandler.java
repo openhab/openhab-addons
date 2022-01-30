@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,8 @@ import org.openhab.binding.wled.internal.api.WledApi;
 import org.openhab.binding.wled.internal.api.WledApiFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -43,6 +45,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -58,11 +61,10 @@ import org.slf4j.LoggerFactory;
 public class WLedBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     public final WledDynamicStateDescriptionProvider stateDescriptionProvider;
-    private Map<Integer, ThingHandler> segmentHandlers = new HashMap<Integer, ThingHandler>();
+    public Map<Integer, WLedSegmentHandler> segmentHandlers = new HashMap<Integer, WLedSegmentHandler>();
     private WledApiFactory apiFactory;
     public boolean hasWhite = false;
-    @Nullable
-    WledApi api;
+    public @Nullable WledApi api;
     private @Nullable ScheduledFuture<?> pollingFuture = null;
     public WLedConfiguration config = new WLedConfiguration();
 
@@ -82,25 +84,51 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void removeChannels(ArrayList<Channel> removeChannels) {
-        // if (!removeChannels.isEmpty()) {
-        // ThingBuilder thingBuilder = editThing();
-        // thingBuilder.withoutChannels(removeChannels);
-        // updateThing(thingBuilder.build());
-        // }
+    public void removeBridgeChannels(ArrayList<Channel> removeChannels) {
+        ThingBuilder thingBuilder = editThing();
+        thingBuilder.withoutChannels(removeChannels);
+        updateThing(thingBuilder.build());
     }
 
+    /**
+     * If the firmware does not support a feature, then remove the channels associated from all children things.
+     *
+     * @param removeChannels
+     */
+    public void removeChannels(ArrayList<Channel> removeChannels) {
+        for (WLedSegmentHandler segmentHandler : segmentHandlers.values()) {
+            segmentHandler.removeChannels(removeChannels);
+        }
+    }
+
+    /**
+     * Updates a channel with a new state for a child of this bridge using the segmentIndex
+     *
+     * @param segmentIndex
+     * @param channelID
+     * @param state
+     */
     public void update(int segmentIndex, String channelID, State state) {
-        WLedSegmentHandler segmentHandler = (WLedSegmentHandler) segmentHandlers.get(segmentIndex);
+        WLedSegmentHandler segmentHandler = segmentHandlers.get(segmentIndex);
         if (segmentHandler != null) {
             segmentHandler.update(channelID, state);
         }
     }
 
+    /**
+     * Updates the bridges channels with a new state.
+     *
+     * @param channelID
+     * @param state
+     */
+    public void update(String channelID, State state) {
+        updateState(channelID, state);
+    }
+
     @Override
     public void childHandlerInitialized(final ThingHandler childHandler, final Thing childThing) {
         BigDecimal segmentIndex = (BigDecimal) childThing.getConfiguration().get(CONFIG_SEGMENT_INDEX);
-        segmentHandlers.put(segmentIndex.intValue(), childHandler);
+        segmentHandlers.put(segmentIndex.intValue(), (WLedSegmentHandler) childHandler);
     }
 
     @Override
@@ -117,7 +145,7 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
         }
         try {
             switch (channelUID.getId()) {
-                case CHANNEL_SEGMENT_BRIGHTNESS:
+                case CHANNEL_GLOBAL_BRIGHTNESS:
                     if (command instanceof OnOffType) {
                         localApi.setGlobalOn(OnOffType.ON.equals(command));
                     } else if (command instanceof PercentType) {
@@ -142,6 +170,31 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     break;
                 case CHANNEL_LIVE_OVERRIDE:
                     localApi.setLiveOverride(command.toString());
+                    break;
+                case CHANNEL_PRESETS:
+                    localApi.setPreset(command.toString());
+                    break;
+                case CHANNEL_TRANS_TIME:
+                    if (command instanceof QuantityType) {
+                        QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                        if (seconds != null) {
+                            localApi.setTransitionTime(new BigDecimal(seconds.multiply(BigDecimal.TEN).intValue()));
+                        }
+                    }
+                    break;
+                case CHANNEL_PRESET_DURATION:// ch removed in firmware 0.13.0 and newer
+                    if (command instanceof QuantityType) {
+                        QuantityType<?> seconds = ((QuantityType<?>) command).toUnit(Units.SECOND);
+                        if (seconds != null) {
+                            BigDecimal bigTemp = new BigDecimal(seconds.intValue()).multiply(new BigDecimal(1000));
+                            localApi.sendGetRequest("/win&PT=" + bigTemp.intValue());
+                        }
+                    }
+                    break;
+                case CHANNEL_PRESET_CYCLE: // ch removed in firmware 0.13.0 and newer
+                    if (command instanceof OnOffType) {
+                        localApi.setPresetCycle(OnOffType.ON.equals(command));
+                    }
                     break;
             }
         } catch (ApiException e) {

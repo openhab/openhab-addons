@@ -105,9 +105,8 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
-        return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0])
-                .withProperty(CONFIG_SEGMENT_INDEX, 0).withLabel(label).withProperties(properties)
-                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+        return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0]).withLabel(label)
+                .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
     }
 
     @Override

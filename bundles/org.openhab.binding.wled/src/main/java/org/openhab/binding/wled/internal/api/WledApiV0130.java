@@ -48,12 +48,14 @@ public class WledApiV0130 extends WledApiV0110 {
         if (channel != null) {
             removeChannels.add(channel);
         }
-        handler.removeChannels(removeChannels);
+        if (!removeChannels.isEmpty()) {
+            handler.removeBridgeChannels(removeChannels);
+        }
     }
 
     @Override
     protected void processState(int segmentIndex) throws ApiException {
         super.processState(segmentIndex);
-        handler.update(segmentIndex, CHANNEL_PLAYLISTS, new StringType(Integer.toString(state.stateResponse.pl)));
+        handler.update(CHANNEL_PLAYLISTS, new StringType(Integer.toString(state.stateResponse.pl)));
     }
 }

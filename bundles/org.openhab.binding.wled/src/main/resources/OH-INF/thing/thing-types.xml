@@ -7,40 +7,47 @@
 	<bridge-type id="json">
 		<label>WLED via JSON API</label>
 		<description>A connection to a WLED device controlled via the JSON API.</description>
-		      <channels>        
-        <channel id="globalBrightness" typeId="globalBrightness"/>
-        <channel id="playlists" typeId="playlists"/>
-                    <channel id="liveOverride" typeId="liveOverride"/>
-            <channel id="sleep" typeId="sleep"/>
-            <channel id="syncSend" typeId="syncSend"/>
-            <channel id="syncReceive" typeId="syncReceive"/>
-        </channels>
+		<channels>
+			<channel id="globalBrightness" typeId="globalBrightness"/>
+			<channel id="playlists" typeId="playlists"/>
+			<channel id="presets" typeId="presets"/>
+			<channel id="presetDuration" typeId="presetDuration"/>
+			<channel id="transformTime" typeId="transformTime"/>
+			<channel id="presetCycle" typeId="presetCycle"/>
+			<channel id="liveOverride" typeId="liveOverride"/>
+			<channel id="sleep" typeId="sleep"/>
+			<channel id="syncSend" typeId="syncSend"/>
+			<channel id="syncReceive" typeId="syncReceive"/>
+		</channels>
 		<config-description>
 			<parameter name="address" type="text" required="true">
 				<label>Address</label>
 				<description>Use this format http://192.168.1.2:80</description>
 			</parameter>
 			<parameter name="pollTime" type="integer" required="true" min="1" unit="s">
-				<label>Poll States</label>
+				<label>Poll Time</label>
 				<description>Time in seconds of how often to fetch the state of the LEDs.</description>
-				<default>10</default>
+				<default>5</default>
 			</parameter>
 			<parameter name="saturationThreshold" type="integer" required="true" min="0" max="99">
 				<label>Saturation Threshold</label>
 				<description>This feature allows you to specify a number that if the saturation drops below, will trigger white.
 				</description>
+				<advanced>true</advanced>
 				<default>0</default>
 			</parameter>
 			<parameter name="sortEffects" type="boolean">
 				<label>Sort Effects</label>
 				<description>If set, will sort the state options of the effects channel alphabetically while keeping the first
 					option (Solid) at the top.</description>
+				<advanced>true</advanced>
 				<default>true</default>
 			</parameter>
 			<parameter name="sortPalettes" type="boolean">
 				<label>Sort Palettes</label>
 				<description>If set, will sort the state options of the palettes channel alphabetically while keeping the first
 					option (Default) at the top.</description>
+				<advanced>true</advanced>
 				<default>true</default>
 			</parameter>
 		</config-description>
@@ -51,7 +58,8 @@
 			<bridge-type-ref id="json"/>
 		</supported-bridge-type-refs>
 		<label>WLED Segment</label>
-		<description>Controls an entire LED strip, or a section of the strip if the LED string is split into multiple segments.</description>
+		<description>Controls an entire LED strip, or a section of the strip if the LED string is split into multiple
+			segments.</description>
 		<category>ColorLight</category>
 		<channels>
 			<channel id="masterControls" typeId="masterControls"/>
@@ -62,10 +70,6 @@
 			<channel id="secondaryWhite" typeId="secondaryWhite"/>
 			<channel id="tertiaryColor" typeId="tertiaryColor"/>
 			<channel id="tertiaryWhite" typeId="tertiaryWhite"/>
-			<channel id="presets" typeId="presets"/>			
-			<channel id="presetDuration" typeId="presetDuration"/>
-			<channel id="transformTime" typeId="transformTime"/>
-			<channel id="presetCycle" typeId="presetCycle"/>
 			<channel id="palettes" typeId="palettes"/>
 			<channel id="fx" typeId="fx"/>
 			<channel id="speed" typeId="speed"/>
@@ -84,13 +88,13 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
-	   <channel-type id="globalBrightness">
-        <item-type>Dimmer</item-type>
-        <label>Global Controls</label>
-        <description>Allows you to fade and turn all segments ON and OFF at the same time</description>
-        <category>DimmableLight</category>
-    </channel-type>
+
+	<channel-type id="globalBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Global Controls</label>
+		<description>Allows you to fade and turn all segments ON and OFF at the same time</description>
+		<category>DimmableLight</category>
+	</channel-type>
 
 	<channel-type id="masterControls">
 		<item-type>Color</item-type>
@@ -168,26 +172,6 @@
 		<item-type>String</item-type>
 		<label>Presets</label>
 		<description>Auto rotate or change to a saved preset</description>
-		<state>
-			<options>
-				<option value="1">Preset 1</option>
-				<option value="2">Preset 2</option>
-				<option value="3">Preset 3</option>
-				<option value="4">Preset 4</option>
-				<option value="5">Preset 5</option>
-				<option value="6">Preset 6</option>
-				<option value="7">Preset 7</option>
-				<option value="8">Preset 8</option>
-				<option value="9">Preset 9</option>
-				<option value="10">Preset 10</option>
-				<option value="11">Preset 11</option>
-				<option value="12">Preset 12</option>
-				<option value="13">Preset 13</option>
-				<option value="14">Preset 14</option>
-				<option value="15">Preset 15</option>
-				<option value="16">Preset 16</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="playlists">
