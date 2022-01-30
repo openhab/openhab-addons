@@ -134,6 +134,12 @@
 				<label>Allow Wake-Up</label>
 				<description>Allows waking up the vehicle. Caution: This can result in huge vampire drain!</description>
 			</parameter>
+			<parameter name="allowWakeupForCommands" type="boolean" required="false">
+				<default>false</default>
+				<label>Allow Wake-Up For Commands</label>
+				<description>Allows waking up the vehicle, when commands are sent to it. Execution of commands will be delayed in
+					this case and you could cause the vehicle to stay awake very long.</description>
+			</parameter>
 		</config-description>
 
 	</thing-type>
