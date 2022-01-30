@@ -126,7 +126,6 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
-                updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);

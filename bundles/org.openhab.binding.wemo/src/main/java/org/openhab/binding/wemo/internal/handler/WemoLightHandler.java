@@ -152,7 +152,6 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
-                updateStatus(ThingStatus.ONLINE);
                 getDeviceState();
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
@@ -338,8 +337,10 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     currentBrightness = newBrightness;
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
-            throw new IllegalStateException("Could not retrieve new Wemo light state", e);
+            logger.debug("Could not retrieve new Wemo light state for '{}':", getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
         }
     }
 

@@ -114,7 +114,6 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
                     return;
                 }
-                updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
@@ -242,11 +241,13 @@ public class WemoMakerHandler extends WemoBaseThingHandler {
                             break;
                     }
                 }
+                updateStatus(ThingStatus.ONLINE);
             } catch (Exception e) {
                 logger.warn("Failed to parse attributeList for WeMo Maker '{}'", this.getThing().getUID(), e);
             }
         } catch (Exception e) {
             logger.warn("Failed to get attributes for device '{}'", getThing().getUID(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }
