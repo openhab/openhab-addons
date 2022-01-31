@@ -81,10 +81,10 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
 
     @Override
     public void handleCommandCommingFromBridge(LuxomCommand command) {
-        if (command.getAction() == LuxomAction.CLEAR || command.getAction() == LuxomAction.CLEAR_RESPONSE) {
+        if (command.getAction() == LuxomAction.CLEAR_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
             updateStatus(ThingStatus.ONLINE);
-        } else if (command.getAction() == LuxomAction.SET || command.getAction() == LuxomAction.SET_RESPONSE) {
+        } else if (command.getAction() == LuxomAction.SET_RESPONSE) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
             updateStatus(ThingStatus.ONLINE);
         }

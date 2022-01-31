@@ -63,6 +63,8 @@ import org.slf4j.LoggerFactory;
  *         - TCP flow removed
  *         1.11 :
  *         - resolve problem with physical button actions not syncing with openhab thing status
+ *         1.12 :
+ *         - final fix for physical dimmer button actions
  */
 @NonNullByDefault
 public class LuxomBridgeHandler extends BaseBridgeHandler {
@@ -328,7 +330,8 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                     || luxomCommand.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
                 // data for previous command if it needs it
                 if (previousCommand != null && previousCommand.getAction().isNeedsData()) {
-                    luxomCommand.setAddress(previousCommand.getAddress());
+                    previousCommand.setData(luxomCommand.getData());
+                    luxomCommand = previousCommand;
                     previousCommand = null;
                 }
             }
