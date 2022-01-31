@@ -176,9 +176,11 @@ public class VoiceRSSTTSService implements TTSService {
                 case "MP3":
                     audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, 64000,
                             44_100L));
+                    break;
                 case "OGG":
                     audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, 16,
                             null, 44_100L));
+                    break;
                 case "AAC":
                     audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, null, 16, null,
                             44_100L));
