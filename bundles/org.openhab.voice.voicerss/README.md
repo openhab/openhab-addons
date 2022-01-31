@@ -191,7 +191,3 @@ Sample: java org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890
 ```
 
 You will need to specify the classpath for your addon (jar) in the command line (java -cp <path> ...).
-
-## Open Issues
-
-* do not log API-Key in plain text
