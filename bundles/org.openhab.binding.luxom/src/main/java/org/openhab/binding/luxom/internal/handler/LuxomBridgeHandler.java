@@ -96,7 +96,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
         this.systemInfo = new LuxomSystemInfo();
         this.communication = new LuxomCommunication(this);
-        logger.info("luxom bridge 1.11 started");
+        logger.info("luxom bridge 1.12 started");
     }
 
     @Override
