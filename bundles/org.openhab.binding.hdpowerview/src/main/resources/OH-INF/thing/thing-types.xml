@@ -127,6 +127,7 @@
 		<description>Send a command to the shade</description>
 		<command>
 			<options>
+				<option value="IDENTIFY">Identify</option>
 				<option value="CALIBRATE">Calibrate</option>
 			</options>
 		</command>
