@@ -15,12 +15,16 @@ package org.openhab.binding.solarmax.internal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarmax.internal.connector.SolarMaxCommandKey;
 import org.openhab.binding.solarmax.internal.connector.SolarMaxConnector;
 import org.openhab.binding.solarmax.internal.connector.SolarMaxData;
 import org.openhab.binding.solarmax.internal.connector.SolarMaxException;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -103,8 +107,9 @@ public class SolarMaxHandler extends BaseThingHandler {
             SolarMaxData solarMaxData = SolarMaxConnector.getAllValuesFromSolarMax(config.host, config.portNumber);
 
             if (solarMaxData.wasCommunicationSuccessful()) {
-                updateChannels(solarMaxData);
                 updateStatus(ThingStatus.ONLINE);
+                updateProperties(solarMaxData);
+                updateChannels(solarMaxData);
                 return;
             }
         } catch (SolarMaxException e) {
@@ -120,13 +125,13 @@ public class SolarMaxHandler extends BaseThingHandler {
      */
     private void updateChannels(SolarMaxData solarMaxData) {
         logger.debug("Updating all channels");
-        for (SolarMaxChannel channelConfig : SolarMaxChannel.values()) {
-            String channelId = channelConfig.getChannelId();
-
+        for (SolarMaxChannel solarMaxChannel : SolarMaxChannel.values()) {
+            String channelId = solarMaxChannel.getChannelId();
             Channel channel = getThing().getChannel(channelId);
 
             if (channelId.equals(SolarMaxChannel.CHANNEL_LAST_UPDATED.getChannelId())) {
-                // channel shows when the device was last read, so handle it specially
+                // CHANNEL_LAST_UPDATED shows when the device was last read and does not come from the device, so handle
+                // it specially
                 State state = solarMaxData.getDataDateTime();
                 logger.debug("Update channel state: {} - {}", channelId, state);
                 updateState(channel.getUID(), state);
@@ -137,17 +142,47 @@ public class SolarMaxHandler extends BaseThingHandler {
                 if (channel == null) {
                     logger.error("No channel found with id: {}", channelId);
                 }
-                State state = solarMaxData.get(SolarMaxCommandKey.valueOf(channelId));
+                State state = convertValueToState(solarMaxData.get(SolarMaxCommandKey.valueOf(channelId)),
+                        solarMaxChannel.getUnit());
+
+                // getAcPhase1Current()
 
                 if (channel != null && state != null) {
                     logger.debug("Update channel state: {} - {}", channelId, state);
                     updateState(channel.getUID(), state);
                 } else {
                     logger.debug("Error refreshing channel {}: {}", getThing().getUID(), channelId);
-
                 }
             }
+        }
+    }
 
+    private @Nullable State convertValueToState(Number value, @Nullable Unit<?> unit) {
+        if (unit == null) {
+            return new DecimalType(value.floatValue());
+        }
+        return new QuantityType<>(value, unit);
+    }
+
+    /*
+     * Update the properties
+     */
+    private void updateProperties(SolarMaxData solarMaxData) {
+        logger.debug("Updating properties");
+        for (SolarMaxProperty solarMaxProperty : SolarMaxProperty.values()) {
+            String propertyId = solarMaxProperty.getPropertyId();
+            Number valNumber = solarMaxData.get(SolarMaxCommandKey.valueOf(propertyId));
+            if (valNumber == null) {
+                logger.debug("Null value returned for value of {}: {}", getThing().getUID(), propertyId);
+                continue;
+            }
+
+            // deal with properties
+            if (propertyId.equals(SolarMaxProperty.PROPERTY_BUILD_NUMBER.getPropertyId())
+                    || propertyId.equals(SolarMaxProperty.PROPERTY_SOFTWARE_VERSION.getPropertyId())) {
+                updateProperty(solarMaxProperty.getPropertyId(), valNumber.toString());
+                continue;
+            }
         }
     }
 }

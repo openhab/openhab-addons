@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 
 /**
  * The {@link SolarMaxDataTest} class is used to test the {@link SolaMaxData} class.
@@ -51,25 +50,25 @@ public class SolarMaxDataTest {
 
     @Test
     public void valueGetterSetterTest() throws Exception {
-        String softwareVersionOriginal = "3B8B"; // 15243 in hex
-        String softwareVersionUpdated = "3B8C"; // 15244 in hex
+        String startupsOriginal = "3B8B"; // 15243 in hex
+        String startupsUpdated = "3B8C"; // 15244 in hex
 
         SolarMaxData solarMaxData = new SolarMaxData();
 
         Map<SolarMaxCommandKey, @Nullable String> dataOrig = new HashMap<>();
-        dataOrig.put(SolarMaxCommandKey.softwareVersion, softwareVersionOriginal);
+        dataOrig.put(SolarMaxCommandKey.startups, startupsOriginal);
         solarMaxData.setData(dataOrig);
 
         @Nullable
-        DecimalType origVersion = solarMaxData.get(SolarMaxCommandKey.softwareVersion).as(DecimalType.class);
+        Number origVersion = solarMaxData.get(SolarMaxCommandKey.startups);
 
         assertNotNull(origVersion);
-        assertEquals(Integer.parseInt(softwareVersionOriginal, 16), origVersion.intValue());
+        assertEquals(Integer.parseInt(startupsOriginal, 16), origVersion.intValue());
 
         Map<SolarMaxCommandKey, @Nullable String> dataUpdated = new HashMap<>();
-        dataUpdated.put(SolarMaxCommandKey.softwareVersion, softwareVersionUpdated);
+        dataUpdated.put(SolarMaxCommandKey.startups, startupsUpdated);
         solarMaxData.setData(dataUpdated);
-        DecimalType updatedVersion = solarMaxData.get(SolarMaxCommandKey.softwareVersion).as(DecimalType.class);
+        Number updatedVersion = solarMaxData.get(SolarMaxCommandKey.startups);
         assertNotEquals(origVersion, updatedVersion);
     }
 }

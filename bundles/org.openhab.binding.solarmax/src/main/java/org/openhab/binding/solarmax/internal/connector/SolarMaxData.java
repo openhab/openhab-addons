@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DateTimeType;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
 
 /**
@@ -47,7 +46,7 @@ public class SolarMaxData {
         return data.containsKey(key);
     }
 
-    public State get(SolarMaxCommandKey key) {
+    public Number get(SolarMaxCommandKey key) {
         switch (key) {
             case softwareVersion:
                 return getSoftwareVersion();
@@ -126,94 +125,94 @@ public class SolarMaxData {
         this.communicationSuccessful = communicationSuccessful;
     }
 
-    public DecimalType getSoftwareVersion() {
+    public Number getSoftwareVersion() {
         return getIntegerValueFrom(SolarMaxCommandKey.softwareVersion);
     }
 
-    public DecimalType getBuildNumber() {
+    public Number getBuildNumber() {
         return getIntegerValueFrom(SolarMaxCommandKey.buildNumber);
     }
 
-    public DecimalType getStartups() {
+    public Number getStartups() {
         return getIntegerValueFrom(SolarMaxCommandKey.startups);
     }
 
-    public DecimalType getAcPhase1Current() {
+    public Number getAcPhase1Current() {
         return getDecimalValueFrom(SolarMaxCommandKey.acPhase1Current, 0.01);
     }
 
-    public DecimalType getAcPhase2Current() {
+    public Number getAcPhase2Current() {
         return getDecimalValueFrom(SolarMaxCommandKey.acPhase2Current, 0.01);
     }
 
-    public DecimalType getAcPhase3Current() {
+    public Number getAcPhase3Current() {
         return getDecimalValueFrom(SolarMaxCommandKey.acPhase3Current, 0.01);
     }
 
-    public DecimalType getEnergyGeneratedToday() {
+    public Number getEnergyGeneratedToday() {
         return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedToday, 100);
     }
 
-    public DecimalType getEnergyGeneratedTotal() {
+    public Number getEnergyGeneratedTotal() {
         return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedTotal, 1000);
     }
 
-    public DecimalType getOperatingHours() {
+    public Number getOperatingHours() {
         return getIntegerValueFrom(SolarMaxCommandKey.operatingHours);
     }
 
-    public DecimalType getEnergyGeneratedYesterday() {
+    public Number getEnergyGeneratedYesterday() {
         return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedYesterday, 100);
     }
 
-    public DecimalType getEnergyGeneratedLastMonth() {
+    public Number getEnergyGeneratedLastMonth() {
         return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedLastMonth, 1000);
     }
 
-    public DecimalType getEnergyGeneratedLastYear() {
+    public Number getEnergyGeneratedLastYear() {
         return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedLastYear, 1000);
     }
 
-    public DecimalType getEnergyGeneratedThisMonth() {
+    public Number getEnergyGeneratedThisMonth() {
         return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedThisMonth, 1000);
     }
 
-    public DecimalType getEnergyGeneratedThisYear() {
+    public Number getEnergyGeneratedThisYear() {
         return getIntegerValueFrom(SolarMaxCommandKey.energyGeneratedThisYear, 1000);
     }
 
-    public DecimalType getCurrentPowerGenerated() {
+    public Number getCurrentPowerGenerated() {
         return getIntegerValueFrom(SolarMaxCommandKey.currentPowerGenerated, 0.5);
     }
 
-    public DecimalType getAcFrequency() {
+    Number getAcFrequency() {
         return getDecimalValueFrom(SolarMaxCommandKey.acFrequency, 0.01);
     }
 
-    public DecimalType getAcPhase1Voltage() {
+    public Number getAcPhase1Voltage() {
         return getDecimalValueFrom(SolarMaxCommandKey.acPhase1Voltage, 0.1);
     }
 
-    public DecimalType getAcPhase2Voltage() {
+    public Number getAcPhase2Voltage() {
         return getDecimalValueFrom(SolarMaxCommandKey.acPhase2Voltage, 0.1);
     }
 
-    public DecimalType getAcPhase3Voltage() {
+    public Number getAcPhase3Voltage() {
         return getDecimalValueFrom(SolarMaxCommandKey.acPhase3Voltage, 0.1);
     }
 
-    public DecimalType getHeatSinkTemperature() {
+    public Number getHeatSinkTemperature() {
         return getIntegerValueFrom(SolarMaxCommandKey.heatSinkTemperature);
     }
 
     @Nullable
-    private DecimalType getDecimalValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {
+    private Number getDecimalValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
 
             if (valueString != null) {
                 int valueInt = Integer.parseInt(valueString, 16);
-                return new DecimalType((float) valueInt * multiplyByFactor);
+                return (float) valueInt * multiplyByFactor;
             }
             return null;
         }
@@ -221,13 +220,13 @@ public class SolarMaxData {
     }
 
     @Nullable
-    private DecimalType getIntegerValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {
+    private Number getIntegerValueFrom(SolarMaxCommandKey solarMaxCommandKey, double multiplyByFactor) {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
 
             if (valueString != null) {
                 int valueInt = Integer.parseInt(valueString, 16);
-                return new DecimalType((int) (valueInt * multiplyByFactor));
+                return (int) (valueInt * multiplyByFactor);
             }
             return null;
         }
@@ -235,12 +234,11 @@ public class SolarMaxData {
     }
 
     @Nullable
-    private DecimalType getIntegerValueFrom(SolarMaxCommandKey solarMaxCommandKey) {
+    private Number getIntegerValueFrom(SolarMaxCommandKey solarMaxCommandKey) {
         if (this.data.containsKey(solarMaxCommandKey)) {
             String valueString = this.data.get(solarMaxCommandKey);
             if (valueString != null) {
-                int valueInt = Integer.parseInt(valueString, 16);
-                return new DecimalType(valueInt);
+                return Integer.parseInt(valueString, 16);
             }
             return null;
         }

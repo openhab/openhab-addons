@@ -11,8 +11,6 @@
 
 		<channels>
 			<channel id="lastUpdated" typeId="lastUpdated"/>
-			<channel id="softwareVersion" typeId="softwareVersion"/>
-			<channel id="buildNumber" typeId="buildNumber"/>
 			<channel id="startups" typeId="startups"/>
 			<channel id="acPhase1Current" typeId="acPhase1Current"/>
 			<channel id="acPhase2Current" typeId="acPhase2Current"/>
@@ -56,20 +54,6 @@
 		<item-type>DateTime</item-type>
 		<label>Last Updated</label>
 		<description>Time when data was last read from the device</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="softwareVersion">
-		<item-type>Number</item-type>
-		<label>Software Version</label>
-		<description>Software Version installed on the SolarMax device</description>
-		<state readOnly="true"></state>
-	</channel-type>
-
-	<channel-type id="buildNumber">
-		<item-type>Number</item-type>
-		<label>Build Number</label>
-		<description>Firmware Build Number installed on the SolarMax device</description>
 		<state readOnly="true"></state>
 	</channel-type>
 
