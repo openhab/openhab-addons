@@ -49,10 +49,7 @@ public class SolarMaxHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SOLARMAX.equals(thingTypeUID)) {
-            logger.debug("Creating Handler {}", thing.getUID());
             return new SolarMaxHandler(thing);
-        } else {
-            logger.warn("Creating Handler failed - unsupported Thing Type {}", thingTypeUID);
         }
 
         return null;

@@ -63,8 +63,6 @@ public class SolarMaxHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing SolarMax");
-
         config = getConfigAs(SolarMaxConfiguration.class);
 
         configurePolling(); // Setup the scheduler
@@ -86,7 +84,6 @@ public class SolarMaxHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Disposing SolarMax Handler Thing");
         if (pollingJob != null && !pollingJob.isCancelled()) {
             pollingJob.cancel(true);
         }
@@ -113,10 +110,8 @@ public class SolarMaxHandler extends BaseThingHandler {
                 return;
             }
         } catch (SolarMaxException e) {
-            logger.debug("Error refreshing source {} at {}:{} - {}", getThing().getUID(), this.config.host,
-                    this.config.portNumber, e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Communication error with the device. Please retry later.");
+                    "Communication error with the device: " + e.getMessage());
         }
     }
 
@@ -136,22 +131,23 @@ public class SolarMaxHandler extends BaseThingHandler {
                 logger.debug("Update channel state: {} - {}", channelId, state);
                 updateState(channel.getUID(), state);
 
-            } else
-            // must be somthing to collect from the device, so...
-            if (solarMaxData.has(SolarMaxCommandKey.valueOf(channelId))) {
-                if (channel == null) {
-                    logger.error("No channel found with id: {}", channelId);
-                }
-                State state = convertValueToState(solarMaxData.get(SolarMaxCommandKey.valueOf(channelId)),
-                        solarMaxChannel.getUnit());
+            } else {
+                // must be somthing to collect from the device, so...
+                if (solarMaxData.has(SolarMaxCommandKey.valueOf(channelId))) {
+                    if (channel == null) {
+                        logger.error("No channel found with id: {}", channelId);
+                    }
+                    State state = convertValueToState(solarMaxData.get(SolarMaxCommandKey.valueOf(channelId)),
+                            solarMaxChannel.getUnit());
 
-                // getAcPhase1Current()
+                    // getAcPhase1Current()
 
-                if (channel != null && state != null) {
-                    logger.debug("Update channel state: {} - {}", channelId, state);
-                    updateState(channel.getUID(), state);
-                } else {
-                    logger.debug("Error refreshing channel {}: {}", getThing().getUID(), channelId);
+                    if (channel != null && state != null) {
+                        logger.debug("Update channel state: {} - {}", channelId, state);
+                        updateState(channel.getUID(), state);
+                    } else {
+                        logger.debug("Error refreshing channel {}: {}", getThing().getUID(), channelId);
+                    }
                 }
             }
         }

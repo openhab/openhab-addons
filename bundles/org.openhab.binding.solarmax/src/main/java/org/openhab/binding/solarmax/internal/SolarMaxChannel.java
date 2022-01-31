@@ -47,9 +47,7 @@ public enum SolarMaxChannel {
     CHANNEL_AC_PHASE1_VOLTAGE(SolarMaxCommandKey.acPhase1Voltage.name(), Units.VOLT),
     CHANNEL_AC_PHASE2_VOLTAGE(SolarMaxCommandKey.acPhase2Voltage.name(), Units.VOLT),
     CHANNEL_AC_PHASE3_VOLTAGE(SolarMaxCommandKey.acPhase3Voltage.name(), Units.VOLT),
-    CHANNEL_HEAT_SINK_TEMPERATUR(SolarMaxCommandKey.heatSinkTemperature.name(), SIUnits.CELSIUS)
-
-    ;
+    CHANNEL_HEAT_SINK_TEMPERATUR(SolarMaxCommandKey.heatSinkTemperature.name(), SIUnits.CELSIUS);
 
     private final String channelId;
 
