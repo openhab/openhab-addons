@@ -15,32 +15,16 @@ package org.openhab.binding.hdpowerview.internal.api.requests;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * A motion directive for a shade
+ * A request to jog a shade for identification
  *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-class ShadeMotion {
+public class ShadeJog {
 
-    public enum Type {
-        STOP("stop"),
-        JOG("jog"),
-        CALIBRATE("calibrate");
+    public ShadeMotion shade;
 
-        private String motion;
-
-        Type(String motion) {
-            this.motion = motion;
-        }
-
-        public String getMotion() {
-            return this.motion;
-        }
-    }
-
-    public String motion;
-
-    public ShadeMotion(Type motionType) {
-        this.motion = motionType.getMotion();
+    public ShadeJog() {
+        this.shade = new ShadeMotion(ShadeMotion.Type.JOG);
     }
 }
