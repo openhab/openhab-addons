@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,9 +20,6 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import javax.measure.Quantity;
-import javax.measure.Unit;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.GenericItem;
@@ -32,8 +27,6 @@ import org.openhab.core.items.Item;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.ImperialUnits;
-import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
@@ -147,17 +140,26 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         }
     }
 
-    protected @Nullable <T extends State> T getStateAs(HomekitCharacteristicType characteristic, Class<T> type) {
+    protected @Nullable State getState(HomekitCharacteristicType characteristic) {
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(characteristic);
         if (taggedItem.isPresent()) {
-            final State state = taggedItem.get().getItem().getStateAs(type);
-            if (state != null) {
-                return state.as(type);
-            }
+            return taggedItem.get().getItem().getState();
         }
         logger.debug("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
                 accessory.getName());
         return null;
+    }
+
+    protected @Nullable <T extends State> T getStateAs(HomekitCharacteristicType characteristic, Class<T> type) {
+        final State state = getState(characteristic);
+        if (state != null) {
+            return state.as(type);
+        }
+        return null;
+    }
+
+    protected @Nullable Double getStateAsTemperature(HomekitCharacteristicType characteristic) {
+        return HomekitCharacteristicFactory.stateAsTemperature(getState(characteristic));
     }
 
     @NonNullByDefault
@@ -282,32 +284,13 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         characteristics.add(characteristic);
     }
 
-    @NonNullByDefault
-    private <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
-        double rawValue = from.equals(to) ? value : from.getConverterTo(to).convert(value);
-        return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
-    }
-
-    @NonNullByDefault
-    protected double convertToCelsius(double degrees) {
-        return convertAndRound(degrees,
-                getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
-    }
-
-    @NonNullByDefault
-    protected double convertFromCelsius(double degrees) {
-        return convertAndRound(degrees,
-                getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT,
-                ImperialUnits.FAHRENHEIT);
-    }
-
     /**
      * create boolean reader with ON state mapped to trueOnOffValue or trueOpenClosedValue depending of item type
      *
      * @param characteristicType characteristic id
      * @param trueOnOffValue ON value for switch
      * @param trueOpenClosedValue ON value for contact
-     * @return boolean readed
+     * @return boolean read
      * @throws IncompleteAccessoryException
      */
     @NonNullByDefault

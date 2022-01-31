@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -300,6 +300,14 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                     logUnsupportedDevice(device);
                 }
                 break;
+            case CLASS_WATER_HEATING_SYSTEM:
+                // widget: DomesticHotWaterProduction
+                if ("DomesticHotWaterProduction".equals(device.getWidget())) {
+                    deviceDiscovered(device, THING_TYPE_WATERHEATINGSYSTEM, place);
+                } else {
+                    logUnsupportedDevice(device);
+                }
+                break;
             case CLASS_DOCK:
                 // widget: Dock
                 deviceDiscovered(device, THING_TYPE_DOCK, place);
@@ -323,6 +331,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 // widget: AlarmRemoteController
             case THING_NETWORK_COMPONENT:
                 break;
+
             default:
                 logUnsupportedDevice(device);
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1039,6 +1039,8 @@ public class HueBridgeHandler extends ConfigStatusBridgeHandler implements HueCl
     public Collection<ConfigStatusMessage> getConfigStatus() {
         // The bridge IP address to be used for checks
         // Check whether an IP address is provided
+        hueBridgeConfig = getConfigAs(HueBridgeConfig.class);
+
         String ip = hueBridgeConfig.getIpAddress();
         if (ip == null || ip.isEmpty()) {
             return List.of(ConfigStatusMessage.Builder.error(HOST)

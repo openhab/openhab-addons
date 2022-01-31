@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,6 +91,14 @@ public class TapoDeviceHttpApi {
      * @param responseBody String with responseBody from device
      */
     protected void handleDeviceResult(String responseBody) {
+    }
+
+    /**
+     * handle JsonResponse (getEnergyData)
+     * 
+     * @param responseBody String with responseBody from device
+     */
+    protected void handleEnergyResult(String responseBody) {
     }
 
     /**
@@ -345,6 +353,9 @@ public class TapoDeviceHttpApi {
                                 break;
                             case DEVICE_CMD_GETINFO:
                                 handleDeviceResult(rBody);
+                                break;
+                            case DEVICE_CMD_GETENERGY:
+                                handleEnergyResult(rBody);
                                 break;
                             case DEVICE_CMD_CUSTOM:
                                 handleCustomResponse(rBody);

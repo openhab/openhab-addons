@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.Date;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.MeteringTypeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.MeteringUnitsEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSID;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.impl.DSUID;
 
 /**
  * The {@link CachedMeteringValue} saves the metering value of an digitalSTROM-Circuit.
@@ -32,7 +33,15 @@ public interface CachedMeteringValue {
      *
      * @return dSID of circuit
      */
+    @Deprecated(since = "value removed in API since dss v1.19.2")
     DSID getDsid();
+
+    /**
+     * Returns the {@link DSUID} of the digitalSTROM-Circuit.
+     *
+     * @return dSUID of circuit
+     */
+    DSUID getDsuid();
 
     /**
      * Returns the saved sensor value.

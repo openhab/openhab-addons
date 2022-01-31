@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -88,7 +92,7 @@ public class AndroidDebugBridgeDevice {
     private @Nullable AdbConnection connection;
     private @Nullable Future<String> commandFuture;
 
-    AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
+    public AndroidDebugBridgeDevice(ScheduledExecutorService scheduler) {
         this.scheduler = scheduler;
     }
 
@@ -260,10 +264,12 @@ public class AndroidDebugBridgeDevice {
             try {
                 return Integer.parseInt(lockResp.replace("\n", "").split("=")[1].trim());
             } catch (NumberFormatException e) {
-                logger.debug("Unable to parse device wake lock: {}", e.getMessage());
+                String message = String.format("Unable to parse device wake-lock '%s'", lockResp);
+                logger.debug("{}: {}", message, e.getMessage());
+                throw new AndroidDebugBridgeDeviceReadException(message);
             }
         }
-        throw new AndroidDebugBridgeDeviceReadException("Unable to read wake lock");
+        throw new AndroidDebugBridgeDeviceReadException(String.format("Unable to read wake-lock '%s'", lockResp));
     }
 
     private void setVolume(int stream, int volume)
@@ -291,11 +297,16 @@ public class AndroidDebugBridgeDevice {
         return getDeviceProp("ro.serialno");
     }
 
+    public String getMacAddress() throws AndroidDebugBridgeDeviceException, InterruptedException,
+            AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
+        return getDeviceProp("ro.boot.wifimacaddr").toLowerCase();
+    }
+
     private String getDeviceProp(String name) throws AndroidDebugBridgeDeviceException, InterruptedException,
             AndroidDebugBridgeDeviceReadException, TimeoutException, ExecutionException {
         var propValue = runAdbShell("getprop", name, "&&", "sleep", "0.3").replace("\n", "").replace("\r", "");
         if (propValue.length() == 0) {
-            throw new AndroidDebugBridgeDeviceReadException("Unable to get device property");
+            throw new AndroidDebugBridgeDeviceReadException(String.format("Unable to get device property '%s'", name));
         }
         return propValue;
     }
@@ -382,7 +393,7 @@ public class AndroidDebugBridgeDevice {
             sock.connect(new InetSocketAddress(ip, port), (int) TimeUnit.SECONDS.toMillis(15));
         } catch (IOException e) {
             logger.debug("Error connecting to {}: [{}] {}", ip, e.getClass().getName(), e.getMessage());
-            if (e.getMessage().equals("Socket closed")) {
+            if ("Socket closed".equals(e.getMessage())) {
                 // Connection aborted by us
                 throw new InterruptedException();
             }
@@ -415,14 +426,12 @@ public class AndroidDebugBridgeDevice {
                 var byteArrayOutputStream = new ByteArrayOutputStream();
                 String cmd = String.join(" ", args);
                 logger.debug("{} - shell:{}", ip, cmd);
-                try {
-                    AdbStream stream = adb.open("shell:" + cmd);
+                try (AdbStream stream = adb.open("shell:" + cmd)) {
                     do {
                         byteArrayOutputStream.writeBytes(stream.read());
                     } while (!stream.isClosed());
                 } catch (IOException e) {
-                    String message = e.getMessage();
-                    if (message != null && !message.equals("Stream closed")) {
+                    if (!"Stream closed".equals(e.getMessage())) {
                         throw e;
                     }
                 }

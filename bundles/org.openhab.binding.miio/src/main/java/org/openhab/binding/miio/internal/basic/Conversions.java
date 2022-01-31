@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -77,6 +78,33 @@ public class Conversions {
             return new JsonPrimitive(hsb.toFullString());
         }
         return rgbValue;
+    }
+
+    public static JsonElement deviceDataTab(JsonElement deviceLog, @Nullable Map<String, Object> deviceVariables)
+            throws ClassCastException, IllegalStateException {
+        if (!deviceLog.isJsonObject() && !deviceLog.isJsonPrimitive()) {
+            return deviceLog;
+        }
+        JsonObject deviceLogJsonObj = deviceLog.isJsonObject() ? deviceLog.getAsJsonObject()
+                : (JsonObject) JsonParser.parseString(deviceLog.getAsString());
+        JsonArray resultLog = new JsonArray();
+        if (deviceLogJsonObj.has("data") && deviceLogJsonObj.get("data").isJsonArray()) {
+            for (JsonElement element : deviceLogJsonObj.get("data").getAsJsonArray()) {
+                if (element.isJsonObject()) {
+                    JsonObject dataObject = element.getAsJsonObject();
+                    if (dataObject.has("value")) {
+                        String value = dataObject.get("value").getAsString();
+                        JsonElement val = JsonParser.parseString(value);
+                        if (val.isJsonArray()) {
+                            resultLog.add(JsonParser.parseString(val.getAsString()));
+                        } else {
+                            resultLog.add(val);
+                        }
+                    }
+                }
+            }
+        }
+        return resultLog;
     }
 
     private static JsonElement secondsToHours(JsonElement seconds) throws ClassCastException {
@@ -190,6 +218,8 @@ public class Conversions {
                     return addBrightToHSV(value, deviceVariables);
                 case "BRGBTOHSV":
                     return bRGBtoHSV(value);
+                case "DEVICEDATATAB":
+                    return deviceDataTab(value, deviceVariables);
                 case "GETDIDELEMENT":
                     return getDidElement(value, deviceVariables);
                 default:

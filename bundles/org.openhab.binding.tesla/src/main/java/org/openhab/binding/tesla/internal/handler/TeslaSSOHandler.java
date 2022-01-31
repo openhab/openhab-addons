@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -166,6 +166,7 @@ public class TeslaSSOHandler {
 
             try {
                 Document doc = Jsoup.parse(loginPageResponse.getContentAsString());
+                logger.trace("{}", doc.toString());
                 Element loginForm = doc.getElementsByTag("form").first();
 
                 Iterator<Element> elIt = loginForm.getElementsByTag("input").iterator();

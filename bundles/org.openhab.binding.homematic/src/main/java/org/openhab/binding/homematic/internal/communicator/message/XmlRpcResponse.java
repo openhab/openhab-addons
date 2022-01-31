@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.homematic.internal.communicator.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -43,7 +44,7 @@ public class XmlRpcResponse implements RpcResponse {
     /**
      * Decodes a XML-RPC message from the given InputStream.
      */
-    public XmlRpcResponse(InputStream is, String encoding)
+    public XmlRpcResponse(InputStream is, Charset encoding)
             throws SAXException, ParserConfigurationException, IOException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser saxParser = factory.newSAXParser();
@@ -51,7 +52,7 @@ public class XmlRpcResponse implements RpcResponse {
         saxParser.getXMLReader().setFeature("http://xml.org/sax/features/external-general-entities", false);
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         InputSource inputSource = new InputSource(is);
-        inputSource.setEncoding(encoding);
+        inputSource.setEncoding(encoding.name());
         saxParser.parse(inputSource, new XmlRpcHandler());
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -28,6 +27,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,6 +46,8 @@ import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaApplyResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaEvent;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaLoginResponse;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Error;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaOauth2Reponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaRegisterEventsResponse;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
@@ -213,8 +216,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         reLoginNeeded = false;
 
         try {
-            String urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
-                    + urlEncode(thingConfig.getPassword());
+
+            String urlParameters = "";
+
+            // if cozytouch, must use oauth server
+            if (thingConfig.getCloudPortal().equalsIgnoreCase(COZYTOUCH_PORTAL)) {
+                logger.debug("CozyTouch Oauth2 authentication flow");
+                urlParameters = "jwt=" + loginCozytouch();
+            } else {
+                urlParameters = "userId=" + urlEncode(thingConfig.getEmail()) + "&userPassword="
+                        + urlEncode(thingConfig.getPassword());
+            }
 
             ContentResponse response = sendRequestBuilder("login", HttpMethod.POST)
                     .content(new StringContentProvider(urlParameters),
@@ -251,7 +263,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
             logger.debug("Received invalid data (login)", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Received invalid data (login)");
         } catch (ExecutionException e) {
-            if (isAuthenticationChallenge(e)) {
+            if (isAuthenticationChallenge(e) || isOAuthGrantError(e)) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error logging in (check your credentials)");
                 setTooManyRequests();
@@ -282,11 +294,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     }
 
     private String urlEncode(String text) {
-        try {
-            return URLEncoder.encode(text, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException e) {
-            return text;
-        }
+        return URLEncoder.encode(text, StandardCharsets.UTF_8);
     }
 
     private void enableLogin() {
@@ -651,6 +659,63 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 .agent(TAHOMA_AGENT);
     }
 
+    /**
+     * Performs the login for Cozytouch using OAUTH2 authorization.
+     *
+     * @return JSESSION ID cookie value.
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws JsonSyntaxException
+     */
+    private String loginCozytouch()
+            throws InterruptedException, TimeoutException, ExecutionException, JsonSyntaxException {
+        String authBaseUrl = "https://" + COZYTOUCH_OAUTH2_URL;
+
+        String urlParameters = "grant_type=password&username=" + urlEncode(thingConfig.getEmail()) + "&password="
+                + urlEncode(thingConfig.getPassword());
+
+        ContentResponse response = httpClient.newRequest(authBaseUrl + COZYTOUCH_OAUTH2_TOKEN_URL)
+                .method(HttpMethod.POST).header(HttpHeader.ACCEPT_LANGUAGE, "en-US,en")
+                .header(HttpHeader.ACCEPT_ENCODING, "gzip, deflate").header("X-Requested-With", "XMLHttpRequest")
+                .header(HttpHeader.AUTHORIZATION, "Basic " + COZYTOUCH_OAUTH2_BASICAUTH)
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).agent(TAHOMA_AGENT)
+                .content(new StringContentProvider(urlParameters), "application/x-www-form-urlencoded; charset=UTF-8")
+                .send();
+
+        if (response.getStatus() != 200) {
+            // Login error
+            if (response.getHeaders().getField(HttpHeader.CONTENT_TYPE).getValue()
+                    .equalsIgnoreCase(MediaType.APPLICATION_JSON)) {
+                try {
+                    SomfyTahomaOauth2Error error = gson.fromJson(response.getContentAsString(),
+                            SomfyTahomaOauth2Error.class);
+                    throw new ExecutionException(error.getErrorDescription(), null);
+                } catch (JsonSyntaxException e) {
+
+                }
+            }
+            throw new ExecutionException("Unknown error while attempting to log in.", null);
+        }
+
+        SomfyTahomaOauth2Reponse oauth2response = gson.fromJson(response.getContentAsString(),
+                SomfyTahomaOauth2Reponse.class);
+
+        logger.debug("OAuth2 Access Token: {}", oauth2response.getAccessToken());
+
+        response = httpClient.newRequest(authBaseUrl + COZYTOUCH_OAUTH2_JWT_URL).method(HttpMethod.GET)
+                .header(HttpHeader.AUTHORIZATION, "Bearer " + oauth2response.getAccessToken())
+                .timeout(TAHOMA_TIMEOUT, TimeUnit.SECONDS).send();
+
+        if (response.getStatus() == 200) {
+            String jwt = response.getContentAsString();
+            return jwt.replace("\"", "");
+        } else {
+            throw new ExecutionException(String.format("Failed to retrieve JWT token. ResponseCode=%d, ResponseText=%s",
+                    response.getStatus(), response.getContentAsString()), null);
+        }
+    }
+
     private String getApiFullUrl(String subUrl) {
         return "https://" + thingConfig.getCloudPortal() + API_BASE_URL + subUrl;
     }
@@ -799,6 +864,11 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private boolean isAuthenticationChallenge(Exception ex) {
         String msg = ex.getMessage();
         return msg != null && msg.contains(AUTHENTICATION_CHALLENGE);
+    }
+
+    private boolean isOAuthGrantError(Exception ex) {
+        String msg = ex.getMessage();
+        return msg != null && msg.contains(AUTHENTICATION_OAUTH_GRANT_ERROR);
     }
 
     @Override

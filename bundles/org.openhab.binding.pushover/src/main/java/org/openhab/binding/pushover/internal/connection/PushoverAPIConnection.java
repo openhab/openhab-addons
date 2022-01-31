@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.pushover.internal.connection;
 
+import static org.openhab.binding.pushover.internal.PushoverBindingConstants.*;
+
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -32,13 +33,16 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.pushover.internal.config.PushoverAccountConfiguration;
 import org.openhab.binding.pushover.internal.dto.Sound;
-import org.openhab.core.cache.ExpiringCacheMap;
+import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link PushoverAPIConnection} is responsible for handling the connections to Pushover Messages API.
@@ -48,62 +52,74 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class PushoverAPIConnection {
 
+    private static final String JSON_VALUE_ERRORS = "errors";
+    private static final String JSON_VALUE_RECEIPT = "receipt";
+    private static final String JSON_VALUE_SOUNDS = "sounds";
+    private static final String JSON_VALUE_STATUS = "status";
+
     private final Logger logger = LoggerFactory.getLogger(PushoverAPIConnection.class);
 
     private static final String VALIDATE_URL = "https://api.pushover.net/1/users/validate.json";
     private static final String MESSAGE_URL = "https://api.pushover.net/1/messages.json";
-    private static final String CANCEL_MESSAGE_URL = "https://api.pushover.net/1/receipts/{receipt}/cancel.json";
+    private static final String CANCEL_MESSAGE_URL = "https://api.pushover.net/1/receipts/%s/cancel.json";
     private static final String SOUNDS_URL = "https://api.pushover.net/1/sounds.json";
 
     private final HttpClient httpClient;
     private final PushoverAccountConfiguration config;
 
-    private final ExpiringCacheMap<String, String> cache = new ExpiringCacheMap<>(TimeUnit.DAYS.toMillis(1));
+    private final ExpiringCache<List<Sound>> cache = new ExpiringCache<>(TimeUnit.DAYS.toMillis(1),
+            this::getSoundsFromSource);
 
     public PushoverAPIConnection(HttpClient httpClient, PushoverAccountConfiguration config) {
         this.httpClient = httpClient;
         this.config = config;
     }
 
-    public boolean validateUser() throws PushoverCommunicationException, PushoverConfigurationException {
+    public boolean validateUser() throws CommunicationException, ConfigurationException {
         return getMessageStatus(
                 post(VALIDATE_URL, PushoverMessageBuilder.getInstance(config.apikey, config.user).build()));
     }
 
-    public boolean sendMessage(PushoverMessageBuilder message)
-            throws PushoverCommunicationException, PushoverConfigurationException {
+    public boolean sendMessage(PushoverMessageBuilder message) throws CommunicationException, ConfigurationException {
         return getMessageStatus(post(MESSAGE_URL, message.build()));
     }
 
     public String sendPriorityMessage(PushoverMessageBuilder message)
-            throws PushoverCommunicationException, PushoverConfigurationException {
+            throws CommunicationException, ConfigurationException {
         final JsonObject json = JsonParser.parseString(post(MESSAGE_URL, message.build())).getAsJsonObject();
-        return getMessageStatus(json) && json.has("receipt") ? json.get("receipt").getAsString() : "";
+        return getMessageStatus(json) && json.has(JSON_VALUE_RECEIPT) ? json.get(JSON_VALUE_RECEIPT).getAsString() : "";
     }
 
-    public boolean cancelPriorityMessage(String receipt)
-            throws PushoverCommunicationException, PushoverConfigurationException {
-        return getMessageStatus(post(CANCEL_MESSAGE_URL.replace("{receipt}", receipt),
+    public boolean cancelPriorityMessage(String receipt) throws CommunicationException, ConfigurationException {
+        return getMessageStatus(post(String.format(CANCEL_MESSAGE_URL, receipt),
                 PushoverMessageBuilder.getInstance(config.apikey, config.user).build()));
     }
 
-    public List<Sound> getSounds() throws PushoverCommunicationException, PushoverConfigurationException {
+    public @Nullable List<Sound> getSounds() {
+        return cache.getValue();
+    }
+
+    private List<Sound> getSoundsFromSource() throws CommunicationException, ConfigurationException {
         final String localApikey = config.apikey;
-        if (localApikey == null || localApikey.isEmpty()) {
-            throw new PushoverConfigurationException("@text/offline.conf-error-missing-apikey");
+        if (localApikey == null || localApikey.isBlank()) {
+            throw new ConfigurationException(TEXT_OFFLINE_CONF_ERROR_MISSING_APIKEY);
         }
 
-        final Map<String, String> params = new HashMap<>(1);
-        params.put(PushoverMessageBuilder.MESSAGE_KEY_TOKEN, localApikey);
-
-        // TODO do not cache the response, cache the parsed list of sounds
-        final String content = getFromCache(buildURL(SOUNDS_URL, params));
-        final JsonObject json = content == null ? null : JsonParser.parseString(content).getAsJsonObject();
-        final JsonObject sounds = json == null || !json.has("sounds") ? null : json.get("sounds").getAsJsonObject();
-
-        return sounds == null ? List.of()
-                : sounds.entrySet().stream().map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
+        try {
+            final String content = get(
+                    buildURL(SOUNDS_URL, Map.of(PushoverMessageBuilder.MESSAGE_KEY_TOKEN, localApikey)));
+            final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
+            final JsonObject sounds = json.has(JSON_VALUE_SOUNDS) ? json.get(JSON_VALUE_SOUNDS).getAsJsonObject()
+                    : null;
+            if (sounds != null) {
+                return sounds.entrySet().stream()
+                        .map(entry -> new Sound(entry.getKey(), entry.getValue().getAsString()))
                         .collect(Collectors.toUnmodifiableList());
+            }
+        } catch (JsonSyntaxException e) {
+            // do nothing
+        }
+        return List.of();
     }
 
     private String buildURL(String url, Map<String, String> requestParams) {
@@ -115,21 +131,16 @@ public class PushoverAPIConnection {
         return value == null ? "" : URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 
-    private @Nullable String getFromCache(String url) {
-        return cache.putIfAbsentAndGet(url, () -> get(url));
-    }
-
-    private String get(String url) throws PushoverCommunicationException, PushoverConfigurationException {
+    private String get(String url) throws CommunicationException, ConfigurationException {
         return executeRequest(HttpMethod.GET, url, null);
     }
 
-    private String post(String url, ContentProvider body)
-            throws PushoverCommunicationException, PushoverConfigurationException {
+    private String post(String url, ContentProvider body) throws CommunicationException, ConfigurationException {
         return executeRequest(HttpMethod.POST, url, body);
     }
 
     private synchronized String executeRequest(HttpMethod httpMethod, String url, @Nullable ContentProvider body)
-            throws PushoverCommunicationException, PushoverConfigurationException {
+            throws CommunicationException, ConfigurationException {
         logger.trace("Pushover request: {} - URL = '{}'", httpMethod, url);
         try {
             final Request request = httpClient.newRequest(url).method(httpMethod).timeout(config.timeout,
@@ -152,35 +163,43 @@ public class PushoverAPIConnection {
                     return content;
                 case HttpStatus.BAD_REQUEST_400:
                     logger.debug("Pushover server responded with status code {}: {}", httpStatus, content);
-                    throw new PushoverConfigurationException(getMessageError(content));
+                    throw new ConfigurationException(getMessageError(content));
                 default:
                     logger.debug("Pushover server responded with status code {}: {}", httpStatus, content);
-                    throw new PushoverCommunicationException(content);
+                    throw new CommunicationException(content);
             }
         } catch (ExecutionException e) {
-            logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new PushoverCommunicationException(e.getLocalizedMessage(), e.getCause());
-        } catch (InterruptedException | TimeoutException e) {
-            logger.debug("Exception occurred during execution: {}", e.getLocalizedMessage(), e);
-            throw new PushoverCommunicationException(e.getLocalizedMessage());
+            String message = e.getMessage();
+            logger.debug("ExecutionException occurred during execution: {}", message, e);
+            throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message,
+                    e.getCause());
+        } catch (TimeoutException e) {
+            String message = e.getMessage();
+            logger.debug("TimeoutException occurred during execution: {}", message, e);
+            throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            String message = e.getMessage();
+            logger.debug("InterruptedException occurred during execution: {}", message, e);
+            throw new CommunicationException(message == null ? TEXT_OFFLINE_COMMUNICATION_ERROR : message);
         }
     }
 
     private String getMessageError(String content) {
         final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
-        final JsonElement errorsElement = json.get("errors");
+        final JsonElement errorsElement = json.get(JSON_VALUE_ERRORS);
         if (errorsElement != null && errorsElement.isJsonArray()) {
             return errorsElement.getAsJsonArray().toString();
         }
-        return "@text/offline.conf-error-unknown";
+        return TEXT_OFFLINE_CONF_ERROR_UNKNOWN;
     }
 
     private boolean getMessageStatus(String content) {
         final JsonObject json = JsonParser.parseString(content).getAsJsonObject();
-        return json.has("status") ? json.get("status").getAsInt() == 1 : false;
+        return json.has(JSON_VALUE_STATUS) ? json.get(JSON_VALUE_STATUS).getAsInt() == 1 : false;
     }
 
     private boolean getMessageStatus(JsonObject json) {
-        return json.has("status") ? json.get("status").getAsInt() == 1 : false;
+        return json.has(JSON_VALUE_STATUS) ? json.get(JSON_VALUE_STATUS).getAsInt() == 1 : false;
     }
 }

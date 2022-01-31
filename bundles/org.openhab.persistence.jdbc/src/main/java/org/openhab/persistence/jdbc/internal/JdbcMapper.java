@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.persistence.jdbc.internal;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,12 +20,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.knowm.yank.Yank;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.persistence.PersistenceItemInfo;
+import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.dto.ItemVO;
 import org.openhab.persistence.jdbc.dto.ItemsVO;
 import org.openhab.persistence.jdbc.dto.JdbcPersistenceItemInfo;
@@ -145,15 +148,19 @@ public class JdbcMapper {
         return vo;
     }
 
-    public Item storeItemValue(Item item) {
-        logger.debug("JDBC::storeItemValue: item={}", item);
+    public Item storeItemValue(Item item, State itemState, @Nullable ZonedDateTime date) {
+        logger.debug("JDBC::storeItemValue: item={} state={} date={}", item, itemState, date);
         String tableName = getTable(item);
         if (tableName == null) {
             logger.error("JDBC::store: Unable to store item '{}'.", item.getName());
             return item;
         }
         long timerStart = System.currentTimeMillis();
-        conf.getDBDAO().doStoreItemValue(item, new ItemVO(tableName, null));
+        if (date == null) {
+            conf.getDBDAO().doStoreItemValue(item, itemState, new ItemVO(tableName, null));
+        } else {
+            conf.getDBDAO().doStoreItemValue(item, itemState, new ItemVO(tableName, null), date);
+        }
         logTime("storeItemValue", timerStart, System.currentTimeMillis());
         errCnt = 0;
         return item;
@@ -175,6 +182,22 @@ public class JdbcMapper {
             logger.error("JDBC::getHistItemFilterQuery: TABLE is NULL; cannot get data from non-existent table.");
         }
         return null;
+    }
+
+    @SuppressWarnings("null")
+    public boolean deleteItemValues(FilterCriteria filter, String table) {
+        logger.debug("JDBC::deleteItemValues filter='{}' table='{}' itemName='{}'", (filter != null), table,
+                filter.getItemName());
+        if (table != null) {
+            long timerStart = System.currentTimeMillis();
+            conf.getDBDAO().doDeleteItemValues(filter, table, timeZoneProvider.getTimeZone());
+            logTime("deleteItemValues", timerStart, System.currentTimeMillis());
+            errCnt = 0;
+            return true;
+        } else {
+            logger.error("JDBC::deleteItemValues: TABLE is NULL; cannot delete data from non-existent table.");
+            return false;
+        }
     }
 
     /***********************

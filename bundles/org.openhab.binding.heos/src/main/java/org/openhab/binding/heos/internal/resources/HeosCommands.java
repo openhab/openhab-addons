@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -322,12 +321,8 @@ public class HeosCommands {
     }
 
     private static String urlEncode(String username) {
-        try {
-            String encoded = URLEncoder.encode(username, StandardCharsets.UTF_8.toString());
-            // however it cannot handle escaped @ signs
-            return encoded.replace("%40", "@");
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException("UTF-8 is not supported, bailing out");
-        }
+        String encoded = URLEncoder.encode(username, StandardCharsets.UTF_8);
+        // however it cannot handle escaped @ signs
+        return encoded.replace("%40", "@");
     }
 }

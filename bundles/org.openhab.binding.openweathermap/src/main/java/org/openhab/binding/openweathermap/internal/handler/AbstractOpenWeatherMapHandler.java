@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,9 +25,9 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapLocationConfiguration;
-import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
-import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
+import org.openhab.core.i18n.CommunicationException;
+import org.openhab.core.i18n.ConfigurationException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -137,9 +137,9 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
                 updateChannels();
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (OpenWeatherMapCommunicationException e) {
+        } catch (CommunicationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
-        } catch (OpenWeatherMapConfigurationException e) {
+        } catch (ConfigurationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getLocalizedMessage());
         }
     }
@@ -149,11 +149,11 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
      *
      * @param connection {@link OpenWeatherMapConnection} instance
      * @return true, if the request for the OpenWeatherMap data was successful
-     * @throws OpenWeatherMapCommunicationException if there is a problem retrieving the data
-     * @throws OpenWeatherMapConfigurationException if there is a configuration error
+     * @throws CommunicationException if there is a problem retrieving the data
+     * @throws ConfigurationException if there is a configuration error
      */
     protected abstract boolean requestData(OpenWeatherMapConnection connection)
-            throws OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException;
+            throws CommunicationException, ConfigurationException;
 
     /**
      * Updates all channels of this handler from the latest OpenWeatherMap data retrieved.

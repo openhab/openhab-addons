@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,6 +88,7 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
     protected final Bundle bundle;
     protected final TranslationProvider i18nProvider;
     protected final LocaleProvider localeProvider;
+    protected final Map<Thing, MiIoLumiHandler> childDevices = new ConcurrentHashMap<>();
 
     protected ScheduledExecutorService miIoScheduler = new ScheduledThreadPoolExecutor(3,
             new NamedThreadFactory("binding-" + getThing().getUID().getAsString(), true));
@@ -159,14 +160,17 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
         final MiIoBindingConfiguration configuration = getConfigAs(MiIoBindingConfiguration.class);
         this.configuration = configuration;
-        if (configuration.host.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.config-error-ip");
-            return;
-        }
-        if (!tokenCheckPass(configuration.token)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.config-error-token");
-            return;
+        if (!getThing().getThingTypeUID().equals(THING_TYPE_LUMI)) {
+            if (configuration.host.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-ip");
+                return;
+            }
+            if (!tokenCheckPass(configuration.token)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-token");
+                return;
+            }
         }
         this.cloudServer = configuration.cloudServer;
         this.deviceId = configuration.deviceId;
@@ -303,6 +307,10 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
      */
     protected int sendCommand(String command, String params, String cloudServer, String sender) {
         try {
+            if (!sender.isBlank()) {
+                logger.debug("Received child command from {} : {} - {} (via: {})", sender, command, params,
+                        getThing().getUID());
+            }
             final MiIoAsyncCommunication connection = getConnection();
             return (connection != null) ? connection.queueCommand(command, params, cloudServer, sender) : 0;
         } catch (MiIoCryptoException | IOException e) {
@@ -623,8 +631,25 @@ public abstract class MiIoAbstractHandler extends BaseThingHandler implements Mi
 
     @Override
     public void onMessageReceived(MiIoSendCommand response) {
+        if (!response.getSender().isBlank() && !response.getSender().contentEquals(getThing().getUID().getAsString())) {
+            for (Entry<Thing, MiIoLumiHandler> entry : childDevices.entrySet()) {
+                if (entry.getKey().getUID().getAsString().contentEquals(response.getSender())) {
+                    logger.trace("Submit response to to child {} -> {}", response.getSender(), entry.getKey().getUID());
+                    entry.getValue().onMessageReceived(response);
+                    return;
+                }
+            }
+            logger.debug("{} Could not find match in {} child devices for submitter {}", getThing().getUID(),
+                    childDevices.size(), response.getSender());
+            return;
+        }
+
         logger.debug("Received response for device {} type: {}, result: {}, fullresponse: {}",
-                getThing().getUID().getId(), response.getCommand(), response.getResult(), response.getResponse());
+                getThing().getUID().getId(),
+                MiIoCommand.UNKNOWN.equals(response.getCommand())
+                        ? response.getCommand().toString() + "(" + response.getCommandString() + ")"
+                        : response.getCommand(),
+                response.getResult(), response.getResponse());
         if (response.isError()) {
             logger.debug("Error received for command '{}': {}.", response.getCommandString(),
                     response.getResponse().get("error"));

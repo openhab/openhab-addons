@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,9 @@ import java.util.Hashtable;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewShadeDiscoveryService;
+import org.openhab.binding.hdpowerview.internal.discovery.HDPowerViewDeviceDiscoveryService;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewHubHandler;
+import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewRepeaterHandler;
 import org.openhab.binding.hdpowerview.internal.handler.HDPowerViewShadeHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.i18n.LocaleProvider;
@@ -67,12 +68,14 @@ public class HDPowerViewHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_HUB)) {
+        if (HDPowerViewBindingConstants.THING_TYPE_HUB.equals(thingTypeUID)) {
             HDPowerViewHubHandler handler = new HDPowerViewHubHandler((Bridge) thing, httpClient, translationProvider);
-            registerService(new HDPowerViewShadeDiscoveryService(handler));
+            registerService(new HDPowerViewDeviceDiscoveryService(handler));
             return handler;
-        } else if (thingTypeUID.equals(HDPowerViewBindingConstants.THING_TYPE_SHADE)) {
+        } else if (HDPowerViewBindingConstants.THING_TYPE_SHADE.equals(thingTypeUID)) {
             return new HDPowerViewShadeHandler(thing);
+        } else if (HDPowerViewBindingConstants.THING_TYPE_REPEATER.equals(thingTypeUID)) {
+            return new HDPowerViewRepeaterHandler(thing);
         }
 
         return null;

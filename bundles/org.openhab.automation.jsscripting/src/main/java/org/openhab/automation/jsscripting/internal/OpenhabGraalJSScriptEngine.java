@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ import org.openhab.automation.jsscripting.internal.fs.DelegatingFileSystem;
 import org.openhab.automation.jsscripting.internal.fs.PrefixedSeekableByteChannel;
 import org.openhab.automation.jsscripting.internal.fs.ReadOnlySeekableByteArrayChannel;
 import org.openhab.automation.jsscripting.internal.fs.watch.JSDependencyTracker;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocable;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
 import org.openhab.core.automation.module.script.ScriptExtensionAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,8 @@ import com.oracle.truffle.js.scriptengine.GraalJSScriptEngine;
  * @author Jonathan Gilbert - Initial contribution
  * @author Dan Cunningham - Script injections
  */
-public class OpenhabGraalJSScriptEngine extends InvocationInterceptingScriptEngineWithInvocable<GraalJSScriptEngine> {
+public class OpenhabGraalJSScriptEngine
+        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<GraalJSScriptEngine> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenhabGraalJSScriptEngine.class);
     private static final String GLOBAL_REQUIRE = "require(\"@jsscripting-globals\");";

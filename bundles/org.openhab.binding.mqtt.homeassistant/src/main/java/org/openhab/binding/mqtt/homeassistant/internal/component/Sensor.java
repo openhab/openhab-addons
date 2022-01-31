@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
+import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -71,7 +72,7 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         String uom = channelConfiguration.unitOfMeasurement;
 
         if (uom != null && !uom.isBlank()) {
-            value = new NumberValue(null, null, null, uom);
+            value = new NumberValue(null, null, null, UnitUtils.parseUnit(uom));
         } else {
             value = new TextValue();
         }

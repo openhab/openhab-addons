@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*
 import static org.openhab.binding.magentatv.internal.MagentaTVUtil.substringBetween;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -139,7 +140,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
         } finally {
             // send response
             if (response != null) {
-                response.setCharacterEncoding(UTF_8);
+                response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                 response.getWriter().write("");
             }
         }

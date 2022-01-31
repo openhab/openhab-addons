@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,13 +25,16 @@ import org.openhab.binding.miio.internal.basic.BasicChannelTypeProvider;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
+import org.openhab.binding.miio.internal.handler.MiIoGatewayHandler;
 import org.openhab.binding.miio.internal.handler.MiIoGenericHandler;
+import org.openhab.binding.miio.internal.handler.MiIoLumiHandler;
 import org.openhab.binding.miio.internal.handler.MiIoUnsupportedHandler;
 import org.openhab.binding.miio.internal.handler.MiIoVacuumHandler;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -120,6 +123,14 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         }
         if (thingTypeUID.equals(THING_TYPE_BASIC)) {
             return new MiIoBasicHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
+        }
+        if (thingTypeUID.equals(THING_TYPE_LUMI)) {
+            return new MiIoLumiHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
+                    basicChannelTypeProvider, i18nProvider, localeProvider);
+        }
+        if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
+            return new MiIoGatewayHandler((Bridge) thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry,
                     basicChannelTypeProvider, i18nProvider, localeProvider);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {

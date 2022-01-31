@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.cbus.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,10 +45,10 @@ public class CBusThreadPool extends CGateThreadPool {
     }
 
     public class CBusThreadPoolExecutor extends CGateThreadPoolExecutor {
-        private final ThreadPoolExecutor threadPool;
+        private final ExecutorService threadPool;
 
         public CBusThreadPoolExecutor(@Nullable String poolName) {
-            threadPool = (ThreadPoolExecutor) ThreadPoolManager.getPool("binding.cbus-" + poolName);
+            threadPool = ThreadPoolManager.getPool("binding.cbus-" + poolName);
         }
 
         @Override

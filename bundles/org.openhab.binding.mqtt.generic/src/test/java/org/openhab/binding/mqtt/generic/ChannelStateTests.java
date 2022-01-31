@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,6 +52,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 
 /**
@@ -183,6 +184,36 @@ public class ChannelStateTests {
 
         c.processMessage("state", "INCREASE".getBytes());
         assertThat(value.getChannelState().toString(), is("16.0"));
+    }
+
+    @Test
+    public void receiveDecimalUnitTest() {
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10), Units.WATT);
+        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
+        c.start(connection, mock(ScheduledExecutorService.class), 100);
+
+        c.processMessage("state", "15".getBytes());
+        assertThat(value.getChannelState().toString(), is("15 W"));
+
+        c.processMessage("state", "INCREASE".getBytes());
+        assertThat(value.getChannelState().toString(), is("25 W"));
+
+        c.processMessage("state", "DECREASE".getBytes());
+        assertThat(value.getChannelState().toString(), is("15 W"));
+
+        verify(channelStateUpdateListener, times(3)).updateChannelState(eq(channelUID), any());
+    }
+
+    @Test
+    public void receiveDecimalAsPercentageUnitTest() {
+        NumberValue value = new NumberValue(null, null, new BigDecimal(10), Units.PERCENT);
+        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
+        c.start(connection, mock(ScheduledExecutorService.class), 100);
+
+        c.processMessage("state", "63.7".getBytes());
+        assertThat(value.getChannelState().toString(), is("63.7 %"));
+
+        verify(channelStateUpdateListener, times(1)).updateChannelState(eq(channelUID), any());
     }
 
     @Test
