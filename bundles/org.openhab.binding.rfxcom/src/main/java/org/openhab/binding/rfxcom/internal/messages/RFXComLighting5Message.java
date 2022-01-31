@@ -59,6 +59,7 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         EURODOMEST(9),
         LIVOLO_APPLIANCE(10),
         MDREMOTE_107(12),
+        LEGRAND_CAD(13),
         AVANTEK(14),
         IT(15),
         MDREMOTE_108(16),
@@ -118,7 +119,8 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         TOGGLE_6(0x0B, LIVOLO_APPLIANCE),
         TOGGLE_7(0x06, LIVOLO_APPLIANCE),
         TOGGLE_8(0x0A, LIVOLO_APPLIANCE),
-        TOGGLE_9(0x05, LIVOLO_APPLIANCE);
+        TOGGLE_9(0x05, LIVOLO_APPLIANCE),
+        TOGGLE(0x00, LEGRAND_CAD);
 
         private final int command;
         private final List<SubType> supportedBySubTypes;
@@ -178,9 +180,16 @@ public class RFXComLighting5Message extends RFXComDeviceMessageImpl<RFXComLighti
         subType = fromByte(SubType.class, super.subType);
 
         sensorId = (data[4] & 0xFF) << 16 | (data[5] & 0xFF) << 8 | (data[6] & 0xFF);
-        unitCode = data[7];
 
-        command = fromByte(Commands.class, data[8], subType);
+        switch (subType) {
+            case LEGRAND_CAD:
+                unitCode = 0x01;
+                command = Commands.TOGGLE;
+                break;
+            default:
+                unitCode = data[7];
+                command = fromByte(Commands.class, data[8], subType);
+        }
 
         dimmingLevel = data[9];
         signalLevel = (byte) ((data[10] & 0xF0) >> 4);
