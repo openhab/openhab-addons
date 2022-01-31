@@ -107,4 +107,13 @@ public class MQTTActions implements ThingActions {
             @Nullable Boolean retain) {
         ((MQTTActions) actions).publishMQTT(topic, value, retain);
     }
+
+    public static void publishMQTT(ThingActions actions, @Nullable String topic, byte[] value) {
+        publishMQTT(actions, topic, value, null);
+    }
+
+    public static void publishMQTT(ThingActions actions, @Nullable String topic, byte[] value,
+            @Nullable Boolean retain) {
+        ((MQTTActions) actions).publishMQTT(topic, value, retain);
+    }
 }
