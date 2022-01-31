@@ -37,12 +37,9 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.apache.xbean.finder;version='[4.19.0,4.19.1)',\
 	org.glassfish.hk2.external.javax.inject;version='[2.4.0,2.4.1)',\
 	org.jsr-305;version='[3.0.2,3.0.3)',\
-	org.osgi.service.cm;version='[1.6.0,1.6.1)',\
 	tech.units.indriya;version='[2.1.2,2.1.3)',\
 	uom-lib-common;version='[2.1.0,2.1.1)',\
 	xstream;version='[1.4.18,1.4.19)',\
-	org.openhab.binding.mielecloud;version='[3.2.0,3.2.1)',\
-	org.openhab.binding.mielecloud.tests;version='[3.2.0,3.2.1)',\
 	org.openhab.core;version='[3.2.0,3.2.1)',\
 	org.openhab.core.auth.oauth2client;version='[3.2.0,3.2.1)',\
 	org.openhab.core.binding.xml;version='[3.2.0,3.2.1)',\
@@ -85,4 +82,6 @@ Fragment-Host: org.openhab.binding.mielecloud
 	org.ops4j.pax.web.pax-web-runtime;version='[7.3.23,7.3.24)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.3.23,7.3.24)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
-	org.osgi.util.promise;version='[1.2.0,1.2.1)'
+	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
+	org.openhab.binding.mielecloud;version='[3.2.1,3.2.2)',\
+	org.openhab.binding.mielecloud.tests;version='[3.2.1,3.2.2)'
