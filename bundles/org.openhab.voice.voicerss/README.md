@@ -190,12 +190,7 @@ Arguments: --api-key <key> <cache-dir> <locale> <voice> { <text> | @inputfile } 
 Sample: java org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890 cache en-US default @messages.txt
 ```
 
-In fact, you need to specify the classpath for your addon (jar) in the command.
-So your final command should look like this (with path depending on your openHAB version):
-
-```
-java -cp userdata/tmp/kar/openhab-addons-3.3.0-SNAPSHOT-2694/org/openhab/addons/bundles/org.openhab.voice.voicerss/3.3.0-SNAPSHOT/org.openhab.voice.voicerss-3.3.0-SNAPSHOT.jar org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890 cache en-US default @messages.txt
-```
+You will need to specify the classpath for your addon (jar) in the command line (java -cp <path> ...).
 
 ## Open Issues
 
