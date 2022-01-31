@@ -1,6 +1,10 @@
 # Monoprice Whole House Audio Binding
 
-This binding can be used to control a Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261) & Dayton Audio DAX66, Monoprice 31028, Dayton Audio DAX88 or Xantech MRC88 whole house multi-zone amplifier system.
+This binding can be used to control the following types of whole house multi-zone amplifier systems:
+* Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 and compatible clones
+* Monoprice 31028 or OSD Audio PAM1270
+* Dayton Audio DAX88
+* Xantech MRC88, MX88, MRAUDIO8X8, or CM8X8
 
 The binding supports two different kinds of connections:
 
@@ -15,10 +19,15 @@ Or you can connect it for example to a Raspberry Pi and use [ser2net Linux tool]
 
 ## Supported Things
 
-Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.  
-Monoprice 31028 70V Amplifiers use the `monoprice70v` id. Supports 6 zones per amp with 2 source inputs, not linkable.  
+Monoprice 10761 & 39261 or Dayton Audio DAX66 Amplifiers use the `amplifier` id. Up to 18 zones with 3 linked amps, 6 source inputs.
+Note: Compatible clones (including 4 zone versions) from McLELLAND, Factor, Soundavo, etc. should work as well.  
+
+Monoprice 31028 or OSD Audio PAM1270 70 Volt Amplifiers use the `monoprice70` id. Supports 6 zones per amp with 2 source inputs, not linkable.  
+
 Dayton Audio DAX88 Amplifiers use the `dax88` id. Supports 8 zones (2 un-amplified) per amp with 8 source inputs, not linkable.  
-Xantech MRC88 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs. Note: MRC44 amps do not support serial control.  
+
+Xantech 8x8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs.
+Note: MRC44 amps do not support serial control.  
 
 ## Discovery
 
@@ -99,14 +108,14 @@ monopriceaudio:amplifier:myamp "Monoprice WHA" [ serialPort="COM5", pollingInter
 // Monoprice 10761, 39261 / DAX66 (serial over IP connection)
 monopriceaudio:amplifier:myamp "Monoprice WHA" [ host="192.168.0.10", port=8080, pollingInterval=15, numZones=6, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono" ]
 
-// Monoprice 31028
-monopriceaudio:monoprice70v:myamp "Monoprice 70V" [ serialPort="COM5", pollingInterval=30, numZones=6, inputLabel1="Source 0 - Bus", inputLabel2="Source 1 - Line" ]
+// Monoprice 31028 or OSD Audio PAM1270
+monopriceaudio:monoprice70:myamp "Monoprice WHA" [ serialPort="COM5", pollingInterval=30, numZones=6, inputLabel1="Source 0 - Bus", inputLabel2="Source 1 - Line" ]
 
 // Dayton DAX88
 monopriceaudio:dax88:myamp "Dayton WHA" [ serialPort="COM5", pollingInterval=15, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Streaming" ]
 
 // Xantech MRC88
-monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=15, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Sirius" ]
+monopriceaudio:xantech:myamp "Xantech WHA" [ serialPort="COM5", pollingInterval=30, numZones=8, inputLabel1="Chromecast", inputLabel2="Radio", inputLabel3="CD Player", inputLabel4="Bluetooth Audio", inputLabel5="HTPC", inputLabel6="Phono", inputLabel7="Ipod", inputLabel8="Sirius" ]
 
 ```
 

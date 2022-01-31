@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Monoprice 31028 Amplifier Thing -->
-	<thing-type id="monoprice70v">
+	<!-- Monoprice 31028/PAM1270 Amplifier Thing -->
+	<thing-type id="monoprice70">
 		<label>Monoprice 31028 70V Amplifier</label>
 		<description>
 			A Multi-zone Whole House Amplifier System

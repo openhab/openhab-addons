@@ -482,7 +482,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         try {
                             long prevUpdateTime = lastPollingUpdate;
 
-                            if (amp == AmplifierModel.MONOPRICE70V) {
+                            if (amp == AmplifierModel.MONOPRICE70) {
                                 // for 31028 query treble, bass & balance for all zones once per reconnect
                                 amp.getZoneIds().stream().limit(numZones).forEach((streamZoneId) -> {
                                     try {

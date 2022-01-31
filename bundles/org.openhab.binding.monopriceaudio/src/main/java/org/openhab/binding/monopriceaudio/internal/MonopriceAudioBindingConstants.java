@@ -28,7 +28,7 @@ public class MonopriceAudioBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_MP = new ThingTypeUID(BINDING_ID, "amplifier");
-    public static final ThingTypeUID THING_TYPE_MP70V = new ThingTypeUID(BINDING_ID, "monoprice70v");
+    public static final ThingTypeUID THING_TYPE_MP70 = new ThingTypeUID(BINDING_ID, "monoprice70");
     public static final ThingTypeUID THING_TYPE_DAX88 = new ThingTypeUID(BINDING_ID, "dax88");
     public static final ThingTypeUID THING_TYPE_XT = new ThingTypeUID(BINDING_ID, "xantech");
 

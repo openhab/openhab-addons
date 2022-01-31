@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2021 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,13 +76,13 @@ public enum AmplifierModel {
             return sourceLabels;
         }
     },
-    MONOPRICE70V("!", "+\r", "?", "ZS", "?", "PR", "IS", "VO", "MU", "TR", "BS", "BA", "", 38, -7, 7, 7, -32, 31, 32, 6,
+    MONOPRICE70("!", "+\r", "?", "ZS", "?", "PR", "IS", "VO", "MU", "TR", "BS", "BA", "", 38, -7, 7, 7, -32, 31, 32, 6,
             2, false, Arrays.asList("1", "2", "3", "4", "5", "6")) {
         @Override
         public MonopriceAudioZoneDTO getZoneData(String newZoneData) {
             MonopriceAudioZoneDTO zoneData = new MonopriceAudioZoneDTO();
 
-            Matcher matcher = MONOPRICE70V_PATTERN.matcher(newZoneData);
+            Matcher matcher = MONOPRICE70_PATTERN.matcher(newZoneData);
             if (matcher.find()) {
                 zoneData.setZone(matcher.group(1));
                 zoneData.setVolume(Integer.parseInt(matcher.group(2)));
@@ -92,21 +92,21 @@ public enum AmplifierModel {
                 return zoneData;
             }
 
-            matcher = MONOPRICE70V_TREB_PATTERN.matcher(newZoneData);
+            matcher = MONOPRICE70_TREB_PATTERN.matcher(newZoneData);
             if (matcher.find()) {
                 zoneData.setZone(matcher.group(1));
                 zoneData.setTreble(Integer.parseInt(matcher.group(2)));
                 return zoneData;
             }
 
-            matcher = MONOPRICE70V_BASS_PATTERN.matcher(newZoneData);
+            matcher = MONOPRICE70_BASS_PATTERN.matcher(newZoneData);
             if (matcher.find()) {
                 zoneData.setZone(matcher.group(1));
                 zoneData.setBass(Integer.parseInt(matcher.group(2)));
                 return zoneData;
             }
 
-            matcher = MONOPRICE70V_BALN_PATTERN.matcher(newZoneData);
+            matcher = MONOPRICE70_BALN_PATTERN.matcher(newZoneData);
             if (matcher.find()) {
                 zoneData.setZone(matcher.group(1));
                 zoneData.setBalance(Integer.parseInt(matcher.group(2)));
@@ -187,12 +187,12 @@ public enum AmplifierModel {
     private static final Pattern MONOPRICE_PATTERN = Pattern
             .compile("^#?>(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})(\\d{2})");
 
-    // Monoprice 70v 31028 status string: ?6ZS VO8 PO1 MU0 IS0+ (does not include treble, bass & balance)
-    private static final Pattern MONOPRICE70V_PATTERN = Pattern
+    // Monoprice 31028 / PAM1270 status string: ?6ZS VO8 PO1 MU0 IS0+ (does not include treble, bass & balance)
+    private static final Pattern MONOPRICE70_PATTERN = Pattern
             .compile("^\\?(\\d{1})ZS VO(\\d{1,2}) PO(\\d{1}) MU(\\d{1}) IS(\\d{1})+");
-    private static final Pattern MONOPRICE70V_TREB_PATTERN = Pattern.compile("^\\?(\\d{1})TR(\\d{1,2})+");
-    private static final Pattern MONOPRICE70V_BASS_PATTERN = Pattern.compile("^\\?(\\d{1})BS(\\d{1,2})+");
-    private static final Pattern MONOPRICE70V_BALN_PATTERN = Pattern.compile("^\\?(\\d{1})BA(\\d{1,2})+");
+    private static final Pattern MONOPRICE70_TREB_PATTERN = Pattern.compile("^\\?(\\d{1})TR(\\d{1,2})+");
+    private static final Pattern MONOPRICE70_BASS_PATTERN = Pattern.compile("^\\?(\\d{1})BS(\\d{1,2})+");
+    private static final Pattern MONOPRICE70_BALN_PATTERN = Pattern.compile("^\\?(\\d{1})BA(\\d{1,2})+");
 
     // Xantech status string: #1ZS PR0 SS1 VO0 MU1 TR7 BS7 BA32 LS0 PS0+
     private static final Pattern XANTECH_PATTERN = Pattern.compile(
