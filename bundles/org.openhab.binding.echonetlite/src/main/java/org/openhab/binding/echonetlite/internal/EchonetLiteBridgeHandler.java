@@ -12,54 +12,52 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.DISCOVERY_KEY;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Clock;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
-import org.osgi.service.component.ComponentContext;
-import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Michael Barker - Initial contribution
  */
-@Component(service = EchonetMessengerService.class, immediate = true, configurationPid = "networking.echonetlite")
-public class EchonetMessenger implements EchonetMessengerService {
+public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements EchonetMessengerService {
 
-    private final Logger logger = LoggerFactory.getLogger(EchonetMessenger.class);
+    private final Logger logger = LoggerFactory.getLogger(EchonetLiteBridgeHandler.class);
     private final ArrayBlockingQueue<Message> requests = new ArrayBlockingQueue<>(1024);
     private final Map<InstanceKey, EchonetObject> devicesByKey = new HashMap<>();
     private final EchonetMessageBuilder messageBuilder = new EchonetMessageBuilder();
     private final Thread networkingThread = new Thread(this::poll);
     private final EchonetMessage echonetMessage = new EchonetMessage();
     private final Clock clock = Clock.systemUTC();
+
     private EchonetChannel echonetChannel;
+    private InstanceKey managementControllerKey;
+    private InstanceKey discoveryKey;
 
-    protected void activate(final ComponentContext componentContext) {
-        logger.info("Activating");
-        try {
-            start();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected void deactivate(final ComponentContext componentContext) {
-        dispose();
+    public EchonetLiteBridgeHandler(Bridge bridge) {
+        super(bridge);
     }
 
     public void start() throws IOException {
         logger.info("Binding echonet channel");
-        echonetChannel = new EchonetChannel();
+        echonetChannel = new EchonetChannel(discoveryKey.address);
         logger.info("Starting networking thread");
 
         networkingThread.setName("Echonet Networking");
@@ -134,7 +132,7 @@ public class EchonetMessenger implements EchonetMessengerService {
 
     @Override
     public void startDiscovery(EchonetDiscoveryListener echonetDiscoveryListener) {
-        requests.offer(new StartDiscoveryMessage(echonetDiscoveryListener));
+        requests.offer(new StartDiscoveryMessage(echonetDiscoveryListener, discoveryKey));
     }
 
     public void startDiscoveryInternal(StartDiscoveryMessage startDiscovery) {
@@ -144,7 +142,7 @@ public class EchonetMessenger implements EchonetMessengerService {
 
     @Override
     public void stopDiscovery() {
-        requests.offer(new StopDiscoveryMessage());
+        requests.offer(new StopDiscoveryMessage(discoveryKey));
     }
 
     private void stopDiscoveryInternal(StopDiscoveryMessage stopDiscovery) {
@@ -159,7 +157,8 @@ public class EchonetMessenger implements EchonetMessengerService {
 
     private void pollDevices(long nowMs) {
         for (EchonetObject echonetObject : devicesByKey.values()) {
-            if (echonetObject.buildUpdateMessage(messageBuilder, echonetChannel::nextTid, nowMs)) {
+            if (echonetObject.buildUpdateMessage(messageBuilder, echonetChannel::nextTid, nowMs,
+                    managementControllerKey)) {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
@@ -169,7 +168,8 @@ public class EchonetMessenger implements EchonetMessengerService {
 
             echonetObject.refreshAll(nowMs);
 
-            if (echonetObject.buildPollMessage(messageBuilder, echonetChannel::nextTid, nowMs)) {
+            if (echonetObject.buildPollMessage(messageBuilder, echonetChannel::nextTid, nowMs,
+                    managementControllerKey)) {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
@@ -219,7 +219,7 @@ public class EchonetMessenger implements EchonetMessengerService {
 
         EchonetObject echonetObject = devicesByKey.get(instanceKey);
         if (null == echonetObject) {
-            echonetObject = devicesByKey.get(DISCOVERY_KEY);
+            echonetObject = devicesByKey.get(discoveryKey);
         }
 
         logger.debug("Message {} for: {}", esv, echonetObject);
@@ -235,14 +235,38 @@ public class EchonetMessenger implements EchonetMessengerService {
     }
 
     private void poll() {
-        while (!Thread.currentThread().isInterrupted()) {
-            final long nowMs = clock.millis();
-            pollRequests(nowMs);
-            pollDevices(nowMs);
-            pollNetwork(nowMs);
+        updateStatus(ThingStatus.ONLINE);
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                final long nowMs = clock.millis();
+                pollRequests(nowMs);
+                pollDevices(nowMs);
+                pollNetwork(nowMs);
+            }
+        } catch (Exception e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            logger.error("Poll failed", e);
         }
     }
 
+    @Override
+    public void initialize() {
+        final EchonetBridgeConfig bridgeConfig = getConfigAs(EchonetBridgeConfig.class);
+        managementControllerKey = new InstanceKey(new InetSocketAddress(bridgeConfig.port),
+                EchonetClass.MANAGEMENT_CONTROLLER, (byte) 0x01);
+        discoveryKey = new InstanceKey(new InetSocketAddress(bridgeConfig.multicastAddress, bridgeConfig.port),
+                EchonetClass.NODE_PROFILE, (byte) 0x01);
+
+        updateStatus(ThingStatus.UNKNOWN);
+
+        try {
+            start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void dispose() {
         if (networkingThread.isAlive()) {
             networkingThread.interrupt();
@@ -255,6 +279,15 @@ public class EchonetMessenger implements EchonetMessengerService {
         if (null != echonetChannel) {
             echonetChannel.close();
         }
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(EchonetDiscoveryService.class);
     }
 
     private abstract static class Message {
@@ -303,15 +336,15 @@ public class EchonetMessenger implements EchonetMessengerService {
     private static class StartDiscoveryMessage extends Message {
         private final EchonetDiscoveryListener echonetDiscoveryListener;
 
-        public StartDiscoveryMessage(EchonetDiscoveryListener echonetDiscoveryListener) {
-            super(DISCOVERY_KEY);
+        public StartDiscoveryMessage(EchonetDiscoveryListener echonetDiscoveryListener, InstanceKey discoveryKey) {
+            super(discoveryKey);
             this.echonetDiscoveryListener = echonetDiscoveryListener;
         }
     }
 
     private static class StopDiscoveryMessage extends Message {
-        public StopDiscoveryMessage() {
-            super(DISCOVERY_KEY);
+        public StopDiscoveryMessage(InstanceKey discoveryKey) {
+            super(discoveryKey);
         }
     }
 

@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
  * @author Michael Barker - Initial contribution
  */
 public class EchonetDevice extends EchonetObject {
-    private static final long UPDATE_RESEND_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(1);
 
     private final LinkedHashMap<Epc, State> pendingSets = new LinkedHashMap<>();
     private final HashMap<Epc, State> stateFields = new HashMap<>();
@@ -103,7 +101,7 @@ public class EchonetDevice extends EchonetObject {
     }
 
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tidSupplier,
-            final long nowMs) {
+            final long nowMs, InstanceKey managementControllerKey) {
         if (pendingSets.isEmpty()) {
             return false;
         }
@@ -113,7 +111,7 @@ public class EchonetDevice extends EchonetObject {
         }
 
         final short tid = tidSupplier.getAsShort();
-        messageBuilder.start(tid, EchonetLiteBindingConstants.MANAGEMENT_CONTROLLER_KEY, instanceKey, Esv.SetC);
+        messageBuilder.start(tid, managementControllerKey, instanceKey, Esv.SetC);
 
         pendingSets.forEach((k, v) -> {
             if (null != k.encoder()) {

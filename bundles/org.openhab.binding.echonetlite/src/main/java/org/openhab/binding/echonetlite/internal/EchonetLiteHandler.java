@@ -14,11 +14,13 @@ package org.openhab.binding.echonetlite.internal;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -44,30 +46,61 @@ import org.slf4j.LoggerFactory;
 public class EchonetLiteHandler extends BaseThingHandler implements EchonetDeviceListener {
     private final Logger logger = LoggerFactory.getLogger(EchonetLiteHandler.class);
 
-    private final EchonetMessengerService echonetMessenger;
-
-    private @Nullable EchonetLiteConfiguration config;
+    private @Nullable EchonetDeviceConfig config;
     private @Nullable InstanceKey instanceKey;
+    private final Map<String, State> stateByChannelId = new HashMap<>();
 
-    public EchonetLiteHandler(final Thing thing, final EchonetMessengerService echonetMessenger) {
+    public EchonetLiteHandler(final Thing thing) {
         super(thing);
-        this.echonetMessenger = echonetMessenger;
+    }
+
+    @Nullable
+    private EchonetLiteBridgeHandler bridgeHandler() {
+        @Nullable
+        final Bridge bridge = getBridge();
+        if (null == bridge) {
+            logger.warn("Unable to handle commands if bridge is null");
+            return null;
+        }
+
+        @Nullable
+        final EchonetLiteBridgeHandler handler = (EchonetLiteBridgeHandler) bridge.getHandler();
+        if (null == handler) {
+            logger.warn("Unable to handle commands if bridge handler is null");
+            return null;
+        }
+
+        return handler;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+
+        @Nullable
+        final EchonetLiteBridgeHandler handler = bridgeHandler();
+        if (null == handler) {
+            return;
+        }
+
         if (command instanceof RefreshType) {
             logger.debug("Refreshing: {}", channelUID);
-            echonetMessenger.refreshDevice(instanceKey, channelUID.getId());
+
+            final State currentState = stateByChannelId.get(channelUID.getId());
+            if (null == currentState) {
+                handler.refreshDevice(instanceKey, channelUID.getId());
+            } else {
+                updateState(channelUID, currentState);
+            }
         } else if (command instanceof State) {
             logger.debug("Updating: {} to {}", channelUID, command);
-            echonetMessenger.updateDevice(instanceKey, channelUID.getId(), (State) command);
+
+            handler.updateDevice(instanceKey, channelUID.getId(), (State) command);
         }
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(EchonetLiteConfiguration.class);
+        config = getConfigAs(EchonetDeviceConfig.class);
 
         if (null == config) {
             logger.warn("config is null");
@@ -78,13 +111,20 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        @Nullable
+        final EchonetLiteBridgeHandler bridgeHandler = bridgeHandler();
+        if (null == bridgeHandler) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is null");
+            return;
+        }
+
         try {
             // TOOD: Move DNS lookup out to background
             final InetSocketAddress address = new InetSocketAddress(config.hostname, config.port);
             instanceKey = new InstanceKey(address, EchonetClass.resolve(config.groupCode, config.classCode),
                     config.instance);
             updateProperty("instanceKey", instanceKey.representationProperty());
-            echonetMessenger.newDevice(instanceKey, config.pollIntervalMs, config.pollIntervalMs, this);
+            bridgeHandler.newDevice(instanceKey, config.pollIntervalMs, config.pollIntervalMs, this);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             logger.error("Failed to configure {}", config, e);
@@ -92,7 +132,13 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
     }
 
     public void handleRemoval() {
-        echonetMessenger.removeDevice(instanceKey);
+        @Nullable
+        final EchonetLiteBridgeHandler bridgeHandler = bridgeHandler();
+        if (null == bridgeHandler) {
+            return;
+        }
+
+        bridgeHandler.removeDevice(instanceKey);
     }
 
     @NonNullByDefault
@@ -129,6 +175,9 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
     }
 
     public void onUpdated(final String channelId, final State value) {
+
+        stateByChannelId.put(channelId, value);
+
         if (ThingStatus.ONLINE != getThing().getStatus()) {
             updateStatus(ThingStatus.ONLINE);
         }

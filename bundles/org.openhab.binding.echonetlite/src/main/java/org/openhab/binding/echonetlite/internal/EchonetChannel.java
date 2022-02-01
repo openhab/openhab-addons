@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.DISCOVERY_KEY;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -40,15 +38,15 @@ public class EchonetChannel {
 
     private short tid = 0;
 
-    public EchonetChannel() throws IOException {
+    public EchonetChannel(InetSocketAddress discoveryAddress) throws IOException {
         channel = DatagramChannel.open();
 
-        channel.bind(new InetSocketAddress("0.0.0.0", 3610));
+        channel.bind(new InetSocketAddress("0.0.0.0", discoveryAddress.getPort()));
         final Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
         while (networkInterfaces.hasMoreElements()) {
             final NetworkInterface networkInterface = networkInterfaces.nextElement();
             if (networkInterface.supportsMulticast()) {
-                channel.join(DISCOVERY_KEY.address.getAddress(), networkInterface);
+                channel.join(discoveryAddress.getAddress(), networkInterface);
             }
         }
         channel.configureBlocking(false);

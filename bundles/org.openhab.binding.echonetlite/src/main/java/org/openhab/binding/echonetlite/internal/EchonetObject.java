@@ -50,7 +50,7 @@ public abstract class EchonetObject {
     }
 
     public boolean buildPollMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tidSupplier,
-            long nowMs) {
+            long nowMs, InstanceKey managementControllerKey) {
         if (pendingGets.isEmpty()) {
             return false;
         }
@@ -66,7 +66,7 @@ public abstract class EchonetObject {
         }
 
         final short tid = tidSupplier.getAsShort();
-        messageBuilder.start(tid, EchonetLiteBindingConstants.MANAGEMENT_CONTROLLER_KEY, instanceKey(), Esv.Get);
+        messageBuilder.start(tid, managementControllerKey, instanceKey(), Esv.Get);
 
         for (Epc pendingProperty : pendingGets) {
             messageBuilder.appendEpcRequest(pendingProperty.code());
@@ -92,7 +92,7 @@ public abstract class EchonetObject {
     }
 
     public boolean buildUpdateMessage(final EchonetMessageBuilder messageBuilder, final ShortSupplier tid,
-            final long nowMs) {
+            final long nowMs, InstanceKey managementControllerKey) {
         return false;
     }
 

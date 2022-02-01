@@ -13,11 +13,11 @@
 package org.openhab.binding.echonetlite.internal;
 
 /**
- * The {@link EchonetLiteConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EchonetDeviceConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Barker - Initial contribution
  */
-public class EchonetLiteConfiguration {
+public class EchonetDeviceConfig {
 
     /**
      * Sample configuration parameters. Replace with your own.

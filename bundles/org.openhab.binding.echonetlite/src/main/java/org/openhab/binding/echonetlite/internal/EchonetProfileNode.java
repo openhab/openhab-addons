@@ -60,10 +60,11 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
     }
 
     @Override
-    public boolean buildPollMessage(EchonetMessageBuilder messageBuilder, ShortSupplier tidSupplier, long nowMs) {
+    public boolean buildPollMessage(EchonetMessageBuilder messageBuilder, ShortSupplier tidSupplier, long nowMs,
+            InstanceKey managementControllerKey) {
         boolean result = false;
         if (lastPollMs + pollIntervalMs <= nowMs) {
-            result = super.buildPollMessage(messageBuilder, tidSupplier, nowMs);
+            result = super.buildPollMessage(messageBuilder, tidSupplier, nowMs, managementControllerKey);
 
             if (result) {
                 lastPollMs = nowMs;

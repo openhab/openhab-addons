@@ -4,6 +4,28 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="bridge">
+		<label>Echonet Bridge</label>
+		<description>Virtual bridge to ensure that the a single binding to the echonet port</description>
+
+		<representation-property>port</representation-property>
+
+		<config-description>
+			<parameter name="multicastAddress" type="text" required="true">
+				<context>multicast-address</context>
+				<label>Discovery/Notification Address</label>
+				<description>Address used to discover nodes and receive notifications</description>
+				<default>224.0.23.0</default>
+			</parameter>
+			<parameter name="port" type="integer" required="true">
+				<context>port</context>
+				<label>Echonet Port</label>
+				<description>Port used for echonet messages both outbound and inbound</description>
+				<default>3610</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
 	<thing-type id="device">
 
 		<label>EchonetLite Device</label>

@@ -21,10 +21,9 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +31,13 @@ import org.slf4j.LoggerFactory;
  * @author Michael Barker - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.echonetlite")
-public class EchonetDiscoveryService extends AbstractDiscoveryService implements EchonetDiscoveryListener {
+public class EchonetDiscoveryService extends AbstractDiscoveryService
+        implements EchonetDiscoveryListener, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(EchonetDiscoveryService.class);
-    @Reference
+
     @Nullable
-    private EchonetMessengerService messengerService;
+    private EchonetLiteBridgeHandler bridgeHandler;
 
     public EchonetDiscoveryService() {
         super(Set.of(THING_TYPE_ECHONET_DEVICE), 10);
@@ -46,31 +45,58 @@ public class EchonetDiscoveryService extends AbstractDiscoveryService implements
 
     @Override
     protected void startScan() {
-        logger.debug("startScan: {}", messengerService);
-        if (null != messengerService) {
-            messengerService.startDiscovery(this);
+        logger.debug("startScan: {}", bridgeHandler);
+        if (null != bridgeHandler) {
+            bridgeHandler.startDiscovery(this);
         } else {
-            logger.error("messengerService not initialized");
+            logger.error("bridgeHandler not initialized");
         }
     }
 
     @Override
     protected synchronized void stopScan() {
-        if (null != messengerService) {
-            messengerService.stopDiscovery();
+        if (null != bridgeHandler) {
+            bridgeHandler.stopDiscovery();
         }
     }
 
     @Override
     public void onDeviceFound(String identifier, InstanceKey instanceKey) {
+
+        if (null == bridgeHandler) {
+            return;
+        }
+
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(THING_TYPE_ECHONET_DEVICE, identifier))
+                .create(new ThingUID(THING_TYPE_ECHONET_DEVICE, bridgeHandler.getThing().getUID(), identifier))
                 .withProperty("instanceKey", instanceKey.representationProperty())
                 .withProperty("hostname", instanceKey.address.getAddress().getHostAddress())
                 .withProperty("port", instanceKey.address.getPort())
                 .withProperty("groupCode", instanceKey.klass.groupCode())
                 .withProperty("classCode", instanceKey.klass.classCode()).withProperty("instance", instanceKey.instance)
-                .withRepresentationProperty("instanceKey").build();
+                .withBridge(bridgeHandler.getThing().getUID()).withRepresentationProperty("instanceKey").build();
         thingDiscovered(discoveryResult);
+    }
+
+    @Override
+    public void deactivate() {
+        ThingHandlerService.super.deactivate();
+    }
+
+    @Override
+    public void activate() {
+        ThingHandlerService.super.activate();
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof EchonetLiteBridgeHandler) {
+            this.bridgeHandler = (EchonetLiteBridgeHandler) thingHandler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 }

@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
-import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.THING_TYPE_ECHONET_BRIDGE;
 import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.THING_TYPE_ECHONET_DEVICE;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
@@ -26,7 +27,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +42,8 @@ public class EchonetLiteHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(EchonetLiteHandlerFactory.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ECHONET_DEVICE);
-    @Reference
-    @Nullable
-    public EchonetMessengerService echonetMessenger;
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ECHONET_DEVICE,
+            THING_TYPE_ECHONET_BRIDGE);
 
     protected void activate(final ComponentContext componentContext) {
         logger.info("Activating");
@@ -64,10 +62,12 @@ public class EchonetLiteHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_ECHONET_DEVICE.equals(thingTypeUID)) {
-            return new EchonetLiteHandler(thing, requireNonNull(echonetMessenger));
+            return new EchonetLiteHandler(thing);
+        } else if (THING_TYPE_ECHONET_BRIDGE.equals(thingTypeUID)) {
+            return new EchonetLiteBridgeHandler((Bridge) thing);
         }
 
         return null;
