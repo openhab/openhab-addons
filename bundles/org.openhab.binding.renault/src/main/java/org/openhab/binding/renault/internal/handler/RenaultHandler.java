@@ -120,25 +120,25 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         switch (channelUID.getId()) {
             case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
                 if (!car.isDisableHvac()) {
                     if (command instanceof RefreshType) {
-                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                                car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
+                                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     } else if (command instanceof DecimalType) {
                         car.setHvacTargetTemperature(((DecimalType) command).doubleValue());
-                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                                car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
+                                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     } else if (command instanceof QuantityType) {
-                    	@Nullable
-						QuantityType<Temperature> celsius = ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS);
-                    	if (celsius != null) {
-                    		car.setHvacTargetTemperature(celsius.doubleValue());
-                    	}
-                    	updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                                car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                        @Nullable
+                        QuantityType<Temperature> celsius = ((QuantityType<Temperature>) command)
+                                .toUnit(SIUnits.CELSIUS);
+                        if (celsius != null) {
+                            car.setHvacTargetTemperature(celsius.doubleValue());
+                        }
+                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
+                                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     }
                 }
                 break;
