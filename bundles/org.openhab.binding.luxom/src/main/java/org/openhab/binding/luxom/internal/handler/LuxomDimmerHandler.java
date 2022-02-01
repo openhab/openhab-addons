@@ -71,7 +71,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+        } else if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             if (config != null && config.doesNotReply) {
                 logger.warn("Switch {} will not reply, so always keeping it ONLINE", getAddress());
                 updateStatus(ThingStatus.ONLINE);
@@ -88,13 +88,13 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("dimmer at address {} received command {} for {}", this.getAddress(), command.toFullString(),
                 channelUID);
-        if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)) {
-            if (command.equals(OnOffType.ON)) {
+        if (LuxomBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
+            if (OnOffType.ON.equals(command)) {
                 set();
-            } else if (command.equals(OnOffType.OFF)) {
+            } else if (OnOffType.OFF.equals(command)) {
                 clear();
             }
-        } else if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_BRIGHTNESS) && config != null) {
+        } else if (LuxomBindingConstants.CHANNEL_BRIGHTNESS.equals(channelUID.getId()) && config != null) {
             if (command instanceof Number) {
                 int level = ((Number) command).intValue();
                 logger.trace("dimmer at address {} just setting dimmer level", this.getAddress());
@@ -116,13 +116,13 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
                     logger.trace("dimmer at address {} just increasing dimmer level", this.getAddress());
                     dim(Math.max(newValue, 0));
                 }
-            } else if (command.equals(OnOffType.ON)) {
+            } else if (OnOffType.ON.equals(command)) {
                 if (config.onToLast) {
                     dim(lastLightLevel.get());
                 } else {
                     dim(config.onLevel.intValue());
                 }
-            } else if (command.equals(OnOffType.OFF)) {
+            } else if (OnOffType.OFF.equals(command)) {
                 dim(0);
             }
         }
@@ -151,8 +151,8 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("dimmer at address {} linked to channel {}", getAddress(), channelUID);
-        if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)
-                || channelUID.getId().equals(LuxomBindingConstants.CHANNEL_BRIGHTNESS)) {
+        if (LuxomBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())
+                || LuxomBindingConstants.CHANNEL_BRIGHTNESS.equals(channelUID.getId())) {
             // Refresh state when new item is linked.
             if (this.config != null && !this.config.doesNotReply) {
                 ping();

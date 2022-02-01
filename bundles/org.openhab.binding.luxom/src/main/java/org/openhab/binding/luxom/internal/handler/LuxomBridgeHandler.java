@@ -311,23 +311,23 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
         // Now dispatch update to the proper thing handler
 
-        if (luxomCommand.getAction() == LuxomAction.PASSWORD_REQUEST) {
+        if (LuxomAction.PASSWORD_REQUEST.equals(luxomCommand.getAction())) {
             communication.sendMessage(LuxomAction.REQUEST_FOR_INFORMATION.getCommand()); // direct send, no queue, so
             // no tcp flow constraint
-        } else if (luxomCommand.getAction() == LuxomAction.MODULE_INFORMATION) {
+        } else if (LuxomAction.MODULE_INFORMATION.equals(luxomCommand.getAction())) {
             cmdSystemInfo(luxomCommand.getData());
-            if (this.getThing().getStatus() != ThingStatus.ONLINE) {
+            if (!ThingStatus.ONLINE.equals(this.getThing().getStatus())) {
                 // this all happens before TCP flow controle, when startProcessing is called, TCP flow is activated...
                 startProcessing();
             }
-        } else if (luxomCommand.getAction() == LuxomAction.ACKNOWLEDGE) {
+        } else if (LuxomAction.ACKNOWLEDGE.equals(luxomCommand.getAction())) {
             logger.debug("received acknowledgement");
-        } else if (luxomCommand.getAction() == LuxomAction.DATA
-                || luxomCommand.getAction() == LuxomAction.DATA_RESPONSE) {
+        } else if (LuxomAction.DATA.equals(luxomCommand.getAction())
+                || LuxomAction.DATA_RESPONSE.equals(luxomCommand.getAction())) {
             previousCommand = luxomCommand;
-        } else if (luxomCommand.getAction() != LuxomAction.INVALID_ACTION) {
-            if (luxomCommand.getAction() == LuxomAction.DATA_BYTE
-                    || luxomCommand.getAction() == LuxomAction.DATA_BYTE_RESPONSE) {
+        } else if (!LuxomAction.INVALID_ACTION.equals(luxomCommand.getAction())) {
+            if (LuxomAction.DATA_BYTE.equals(luxomCommand.getAction())
+                    || LuxomAction.DATA_BYTE_RESPONSE.equals(luxomCommand.getAction())) {
                 // data for previous command if it needs it
                 if (previousCommand != null && previousCommand.getAction().isNeedsData()) {
                     previousCommand.setData(luxomCommand.getData());

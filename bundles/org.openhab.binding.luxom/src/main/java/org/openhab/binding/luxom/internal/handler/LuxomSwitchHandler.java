@@ -56,7 +56,7 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
-        } else if (bridge.getStatus() == ThingStatus.ONLINE) {
+        } else if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
             ping(); // handleUpdate() will set thing status to online when response arrives
         } else {
@@ -68,11 +68,11 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("switch at address {} received command {} for {}", this.getAddress(), command.toFullString(),
                 channelUID);
-        if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)) {
-            if (command.equals(OnOffType.ON)) {
+        if (LuxomBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())) {
+            if (OnOffType.ON.equals(command)) {
                 set();
                 ping(); // to make sure we know the current state
-            } else if (command.equals(OnOffType.OFF)) {
+            } else if (OnOffType.OFF.equals(command)) {
                 clear();
                 ping(); // to make sure we know the current state
             }
@@ -81,10 +81,10 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
 
     @Override
     public void handleCommandCommingFromBridge(LuxomCommand command) {
-        if (command.getAction() == LuxomAction.CLEAR_RESPONSE) {
+        if (LuxomAction.CLEAR_RESPONSE.equals(command.getAction())) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.OFF);
             updateStatus(ThingStatus.ONLINE);
-        } else if (command.getAction() == LuxomAction.SET_RESPONSE) {
+        } else if (LuxomAction.SET_RESPONSE.equals(command.getAction())) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
             updateStatus(ThingStatus.ONLINE);
         }
@@ -93,8 +93,8 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("switch at address {} linked to channel {}", getAddress(), channelUID);
-        if (channelUID.getId().equals(LuxomBindingConstants.CHANNEL_SWITCH)
-                || channelUID.getId().equals(LuxomBindingConstants.CHANNEL_BRIGHTNESS)) {
+        if (LuxomBindingConstants.CHANNEL_SWITCH.equals(channelUID.getId())
+                || LuxomBindingConstants.CHANNEL_BRIGHTNESS.equals(channelUID.getId())) {
             // Refresh state when new item is linked.
             ping();
         }
