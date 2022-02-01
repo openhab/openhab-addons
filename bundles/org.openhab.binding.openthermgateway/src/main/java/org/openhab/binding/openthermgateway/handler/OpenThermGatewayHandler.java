@@ -70,11 +70,7 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void initialize() {
         logger.debug("Initializing OpenTherm Gateway handler for uid '{}'", getThing().getUID());
-
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
-
         config = getConfigAs(OpenThermGatewayConfiguration.class);
-
         connect();
     }
 
@@ -126,32 +122,47 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
                     updateState(OpenThermGatewayBindingConstants.CHANNEL_OVERRIDE_CENTRAL_HEATING2_ENABLED,
                             OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
                 }
-            } else {
-                connect();
             }
         }
     }
 
     @Override
     public void connecting() {
+        // decouple threads via a scheduler task
+        scheduler.submit(() -> connectingTask());
+    }
+
+    private void connectingTask() {
         connecting = true;
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Connecting");
     }
 
     @Override
     public void connected() {
+        // decouple threads via a scheduler task
+        scheduler.submit(() -> connectedTask());
+    }
+
+    private void connectedTask() {
         connecting = false;
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void disconnected() {
+        if (!explicitDisconnect) {
+            // decouple threads via a scheduler task
+            scheduler.submit(() -> disconnectedTask());
+        }
+    }
+
+    private void disconnectedTask() {
         @Nullable
         OpenThermGatewayConfiguration conf = config;
 
         connecting = false;
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Disconnected");
+        updateStatus(ThingStatus.OFFLINE);
 
         // retry connection if disconnect is not explicitly requested
         if (!explicitDisconnect && conf != null && conf.connectionRetryInterval > 0) {
@@ -162,6 +173,11 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
 
     @Override
     public void receiveMessage(Message message) {
+        // decouple threads via a scheduler task
+        scheduler.submit(() -> receiveMessageTask(message));
+    }
+
+    private void receiveMessageTask(Message message) {
         if (DataItemGroup.dataItemGroups.containsKey(message.getID())) {
             DataItem[] dataItems = DataItemGroup.dataItemGroups.get(message.getID());
 
@@ -208,13 +224,13 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
     @Override
     public void handleRemoval() {
         logger.debug("Removing OpenTherm Gateway handler");
-        disconnect();
+        disconnect(true);
         super.handleRemoval();
     }
 
     @Override
     public void dispose() {
-        disconnect();
+        disconnect(true);
 
         ScheduledFuture<?> localReconnectTask = reconnectTask;
         if (localReconnectTask != null) {
@@ -229,14 +245,12 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         @Nullable
         OpenThermGatewayConfiguration conf = config;
 
-        explicitDisconnect = false;
-
         if (connecting) {
             logger.debug("OpenTherm Gateway connector is already connecting ...");
             return;
         }
 
-        disconnect();
+        disconnect(false);
 
         if (conf != null) {
             logger.debug("Starting OpenTherm Gateway connector");
@@ -251,11 +265,11 @@ public class OpenThermGatewayHandler extends BaseThingHandler implements OpenThe
         }
     }
 
-    private void disconnect() {
+    private void disconnect(boolean explicit) {
         @Nullable
         OpenThermGatewayConnector conn = connector;
 
-        explicitDisconnect = true;
+        explicitDisconnect = explicit;
 
         if (conn != null) {
             if (conn.isConnected()) {
