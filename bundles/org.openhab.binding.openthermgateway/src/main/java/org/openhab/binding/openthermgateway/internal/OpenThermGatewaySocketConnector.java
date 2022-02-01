@@ -66,12 +66,12 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         stopping = false;
         connected = false;
 
-        logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", this.ipaddress, this.port);
+        logger.debug("Connecting OpenThermGatewaySocketConnector to {}:{}", ipaddress, port);
 
         callback.connecting();
 
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
+            socket.connect(new InetSocketAddress(ipaddress, port), COMMAND_TIMEOUT_MILLISECONDS);
             socket.setSoTimeout(COMMAND_TIMEOUT_MILLISECONDS);
 
             connected = true;
@@ -81,9 +81,9 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             logger.debug("OpenThermGatewaySocketConnector connected");
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    PrintWriter wrt = new PrintWriter(socket.getOutputStream(), true)) {
-                // Make writer accessible on class level
-                writer = wrt;
+                    PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)) {
+                // make local writer accessible on class level
+                this.writer = writer;
 
                 sendCommand(GatewayCommand.parse(GatewayCommandCode.PrintReport, "A"));
                 // Set the OTGW to report every message it receives and transmits
@@ -102,14 +102,17 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 }
 
                 logger.debug("Stopping OpenThermGatewaySocketConnector");
+            } catch (IOException ex) {
+                logger.warn("Error communicating with OpenTherm Gateway.", ex);
             } finally {
-                connected = false;
-
-                logger.debug("OpenThermGatewaySocketConnector disconnected");
-                callback.disconnected();
+                // local writer is being destroyed, so null the class level reference as well
+                this.writer = null;
             }
         } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
+        } finally {
+            connected = false;
+            logger.debug("OpenThermGatewaySocketConnector disconnected");
             callback.disconnected();
         }
     }
@@ -125,21 +128,26 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         return connected;
     }
 
+    /**
+     * public method could be called from either OH main thread or this thread so it has to be synchronized
+     */
     @Override
-    public void sendCommand(GatewayCommand command) {
+    public synchronized void sendCommand(GatewayCommand command) {
         @Nullable
-        PrintWriter wrtr = writer;
+        PrintWriter writer = this.writer;
 
         String msg = command.toFullString();
 
         pendingCommands.put(command.getCode(),
                 new AbstractMap.SimpleImmutableEntry<>(System.currentTimeMillis(), command));
 
-        if (connected) {
+        if (connected && (writer != null)) {
             logger.debug("Sending message: {}", msg);
-            if (wrtr != null) {
-                wrtr.print(msg + "\r\n");
-                wrtr.flush();
+            writer.print(msg + "\r\n");
+            writer.flush();
+            if (writer.checkError()) {
+                logger.warn("Error sending message to OpenTherm Gateway.");
+                stop();
             }
         } else {
             logger.debug("Unable to send message: {}. OpenThermGatewaySocketConnector is not connected.", msg);
@@ -211,11 +219,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
         if (msg.getMessageType() == MessageType.READACK || msg.getMessageType() == MessageType.WRITEDATA
                 || msg.getID() == 0 || msg.getID() == 1) {
-            receiveMessage(msg);
+            callback.receiveMessage(msg);
         }
-    }
-
-    private void receiveMessage(Message message) {
-        callback.receiveMessage(message);
     }
 }
