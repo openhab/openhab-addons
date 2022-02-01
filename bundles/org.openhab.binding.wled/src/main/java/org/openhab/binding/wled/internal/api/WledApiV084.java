@@ -45,7 +45,6 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,20 +77,12 @@ public class WledApiV084 implements WledApi {
     @Override
     public void initialize() throws ApiException {
         state.jsonResponse = getJson();
-        getUpdatedFxList();
-        getUpdatedPaletteList();
-
         @Nullable
         LedInfo localLedInfo = gson.fromJson(state.infoResponse.leds.toString(), LedInfo.class);
         if (localLedInfo != null) {
             state.ledInfo = localLedInfo;
         }
-
         handler.hasWhite = state.ledInfo.rgbw;
-        if (!state.ledInfo.rgbw) {
-            logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
-            handler.removeWhiteChannels();
-        }
     }
 
     @Override
@@ -217,7 +208,8 @@ public class WledApiV084 implements WledApi {
         }
     }
 
-    protected void getUpdatedFxList() {
+    @Override
+    public List<StateOption> getUpdatedFxList() {
         List<StateOption> fxOptions = new ArrayList<>();
         int counter = 0;
         for (String value : state.jsonResponse.effects) {
@@ -226,11 +218,11 @@ public class WledApiV084 implements WledApi {
         if (handler.config.sortEffects) {
             fxOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
         }
-        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_FX),
-                fxOptions);
+        return fxOptions;
     }
 
-    protected void getUpdatedPaletteList() {
+    @Override
+    public List<StateOption> getUpdatedPaletteList() {
         List<StateOption> palleteOptions = new ArrayList<>();
         int counter = 0;
         for (String value : state.jsonResponse.palettes) {
@@ -239,8 +231,7 @@ public class WledApiV084 implements WledApi {
         if (handler.config.sortPalettes) {
             palleteOptions.sort(Comparator.comparing(o -> o.getValue().equals("0") ? "" : o.getLabel()));
         }
-        handler.stateDescriptionProvider.setStateOptions(new ChannelUID(handler.getThing().getUID(), CHANNEL_PALETTES),
-                palleteOptions);
+        return palleteOptions;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
         updateState(channelID, state);
     }
 
-    public void removeWhiteChannels() {
+    private void removeWhiteChannels() {
         ArrayList<Channel> removeChannels = new ArrayList<>();
         Channel channel = getThing().getChannel(CHANNEL_PRIMARY_WHITE);
         if (channel != null) {
@@ -236,10 +236,20 @@ public class WLedSegmentHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(WLedSegmentConfiguration.class);
-        if (this.thing.getBridgeUID() != null) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
+        Bridge bridge = getBridge();
+        if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No bridge is selected.");
+        } else {
+            updateStatus(ThingStatus.ONLINE);
+            WLedBridgeHandler bridgeHandler = (WLedBridgeHandler) bridge.getHandler();
+            bridgeHandler.stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX),
+                    bridgeHandler.api.getUpdatedFxList());
+            bridgeHandler.stateDescriptionProvider.setStateOptions(
+                    new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), bridgeHandler.api.getUpdatedPaletteList());
+            if (!bridgeHandler.hasWhite) {
+                logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
+                removeWhiteChannels();
+            }
         }
     }
 }

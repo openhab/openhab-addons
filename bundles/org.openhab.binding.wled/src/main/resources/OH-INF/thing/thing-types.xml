@@ -91,7 +91,7 @@
 
 	<channel-type id="globalBrightness">
 		<item-type>Dimmer</item-type>
-		<label>Global Controls</label>
+		<label>Global Brightness</label>
 		<description>Allows you to fade and turn all segments ON and OFF at the same time</description>
 		<category>DimmableLight</category>
 	</channel-type>

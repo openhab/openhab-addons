@@ -90,12 +90,6 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
         updateThing(thingBuilder.build());
     }
 
-    public void removeWhiteChannels() {
-        for (WLedSegmentHandler segmentHandler : segmentHandlers.values()) {
-            segmentHandler.removeWhiteChannels();
-        }
-    }
-
     /**
      * Updates a channel with a new state for a child of this bridge using the segmentIndex
      *

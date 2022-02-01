@@ -13,10 +13,12 @@
 package org.openhab.binding.wled.internal.api;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.types.StateOption;
 
 /**
  * The {@link WledApi} is the JSON API methods that can be extended for different firmware versions.
@@ -102,4 +104,8 @@ public interface WledApi {
      *
      */
     public abstract void savePreset(int position, String presetName) throws ApiException;
+
+    public abstract List<StateOption> getUpdatedFxList();
+
+    public abstract List<StateOption> getUpdatedPaletteList();
 }
