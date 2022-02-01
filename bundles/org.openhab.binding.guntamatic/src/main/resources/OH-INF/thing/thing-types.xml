@@ -137,7 +137,7 @@
 	<thing-type id="powerchip">
 
 		<label>Guntamatic Powerchip</label>
-		<description>Guntamatic Powerchip WoodChip Heating System. Untested! Please provide Feedback!</description>
+		<description>Guntamatic Powerchip WoodChip Heating System</description>
 
 		<channels>
 			<channel id="controlBoilerApproval" typeId="controlBoilerApproval">
