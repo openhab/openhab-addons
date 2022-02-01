@@ -109,7 +109,7 @@ public class RenaultHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
-                new QuantityType<Temperature>(car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
 
         // Background initialization:
         ScheduledFuture<?> job = pollingJob;
@@ -120,21 +120,25 @@ public class RenaultHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+
         switch (channelUID.getId()) {
             case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
                 if (!car.isDisableHvac()) {
-                    if (command instanceof RefreshType && !car.isDisableHvac()) {
+                    if (command instanceof RefreshType) {
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                                car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                                car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     } else if (command instanceof DecimalType) {
                         car.setHvacTargetTemperature(((DecimalType) command).doubleValue());
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                                car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
-                    } else if (command instanceof QuantityType && !car.isDisableHvac()) {
-                        double celsius = ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS).doubleValue();
-                        car.setHvacTargetTemperature(celsius);
-                        updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
-                                car.getHvacTargetTemperature().doubleValue(), SIUnits.CELSIUS));
+                                car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                    } else if (command instanceof QuantityType) {
+                    	@Nullable
+						QuantityType<Temperature> celsius = ((QuantityType<Temperature>) command).toUnit(SIUnits.CELSIUS);
+                    	if (celsius != null) {
+                    		car.setHvacTargetTemperature(celsius.doubleValue());
+                    	}
+                    	updateState(CHANNEL_HVAC_TARGET_TEMPERATURE, new QuantityType<Temperature>(
+                                car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     }
                 }
                 break;
@@ -153,10 +157,9 @@ public class RenaultHandler extends BaseThingHandler {
                         }
                         pollingJob = scheduler.scheduleWithFixedDelay(this::getStatus, config.updateDelay,
                                 config.refreshInterval * 60, TimeUnit.SECONDS);
-                        ;
                     } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
                         logger.warn("Error My Renault Http Session.", e);
+                        Thread.currentThread().interrupt();
                     } catch (Exception e) {
                         logger.warn("Error My Renault Http Session.", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -175,10 +178,9 @@ public class RenaultHandler extends BaseThingHandler {
                                 car.setChargeMode(newMode);
                                 updateState(CHANNEL_CHARGING_MODE, new StringType(newMode.toString()));
                             } catch (InterruptedException e) {
-                                Thread.currentThread().interrupt();
                                 logger.warn("Error My Renault Http Session.", e);
+                                Thread.currentThread().interrupt();
                             } catch (Exception e) {
-                                httpSession = null;
                                 logger.warn("Error My Renault Http Session.", e);
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         e.getMessage());
@@ -210,8 +212,8 @@ public class RenaultHandler extends BaseThingHandler {
             httpSession.initSesssion(car);
             updateStatus(ThingStatus.ONLINE);
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             logger.warn("Error My Renault Http Session.", e);
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             httpSession = null;
             logger.warn("Error My Renault Http Session.", e);

@@ -34,9 +34,6 @@ You require your MyRenault credential, locale and VIN for your MyRenault registe
 
 ## Channels
 
-Some channels may not work depending on your car and MyRenault account. 
-The "Advanced" channels are especially likely to cause confusion and problems.
-
 | Channel ID             | Type               | Description                                     | Read Only |
 |------------------------|--------------------|-------------------------------------------------|-----------|
 | batteryavailableEnergy | Number:Energy      | Battery Energy Available                        | Yes       |
@@ -53,6 +50,16 @@ The "Advanced" channels are especially likely to cause confusion and problems.
 | image                  | String             | Image URL of MyRenault                          | Yes       |
 | location               | Location           | The GPS position of the vehicle                 | Yes       |
 | locationupdated        | DateTime           | Timestamp of the last location update           | Yes       |
+
+
+## Limitations
+
+Some channels may not work depending on your car and MyRenault account.
+
+The "externaltemperature" only works on a few cars.
+
+The "hvactargettemperature" is used by the hvacstatus ON command for pre-conditioning the car. 
+This seams to only allow values 19, 20 and 21 or else the pre-conditioning command will not work.
 
 
 ## Example

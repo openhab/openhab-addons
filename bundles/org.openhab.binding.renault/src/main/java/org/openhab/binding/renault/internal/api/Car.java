@@ -60,7 +60,7 @@ public class Car {
     public enum ChargingMode {
         UNKNOWN,
         SCHEDULE_MODE,
-        ALWAYS_CHARGING()
+        ALWAYS_CHARGING
     }
 
     public enum PlugStatus {
@@ -264,11 +264,11 @@ public class Car {
         return batteryAvailableEnergy;
     }
 
-    public Double getHvacTargetTemperature() {
+    public double getHvacTargetTemperature() {
         return hvacTargetTemperature;
     }
 
-    public void setHvacTargetTemperature(Double hvacTargetTemperature) {
+    public void setHvacTargetTemperature(double hvacTargetTemperature) {
         this.hvacTargetTemperature = hvacTargetTemperature;
     }
 
@@ -296,8 +296,6 @@ public class Car {
     public void setChargeMode(ChargingMode mode) {
         switch (mode) {
             case SCHEDULE_MODE:
-                chargingMode = mode;
-                break;
             case ALWAYS_CHARGING:
                 chargingMode = mode;
                 break;

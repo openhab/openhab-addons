@@ -233,7 +233,7 @@ public class MyRenaultHttpSession {
         }
     }
 
-    public void actionHvacOn(Double hvacTargetTemperature)
+    public void actionHvacOn(double hvacTargetTemperature)
             throws RenaultForbiddenException, RenaultNotImplementedException {
         Request request = httpClient
                 .newRequest(this.constants.getKamereonRootUrl() + "/commerce/v1/accounts/" + kamereonaccountId
@@ -261,8 +261,8 @@ public class MyRenaultHttpSession {
                 }
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+            Thread.currentThread().interrupt();
         } catch (JsonParseException | TimeoutException | ExecutionException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
         }
@@ -295,8 +295,8 @@ public class MyRenaultHttpSession {
                 }
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+            Thread.currentThread().interrupt();
         } catch (JsonParseException | TimeoutException | ExecutionException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
         }
@@ -327,8 +327,8 @@ public class MyRenaultHttpSession {
                 }
             }
         } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
+            Thread.currentThread().interrupt();
         } catch (JsonParseException | TimeoutException | ExecutionException e) {
             logger.warn("Kamereon Request: {} threw exception: {} ", request.getURI().toString(), e.getMessage());
         }
