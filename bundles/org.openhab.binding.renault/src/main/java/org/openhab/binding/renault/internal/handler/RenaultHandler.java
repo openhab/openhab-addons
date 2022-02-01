@@ -215,7 +215,6 @@ public class RenaultHandler extends BaseThingHandler {
             logger.warn("Error My Renault Http Session.", e);
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            httpSession = null;
             logger.warn("Error My Renault Http Session.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
