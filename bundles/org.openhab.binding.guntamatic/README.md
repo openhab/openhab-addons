@@ -11,16 +11,16 @@ It should work for all other Guntamatic Heating Systems as well, that support th
 
 Guntamatic Heating Systems supported as Thing Types:
 
-| Name          | Thing Type ID | Heating System Type  | Binding Development Status        |
-|---------------|---------------|----------------------|-----------------------------------|
-| Biostar       | `biostar`     | Pellets              | tested via 15kW, firmware 3.2d    |
-| Biosmart      | `biosmart`    | Logs                 | tested via 22kW, firmware 3.2f    |
-| Powerchip     | `powerchip`   | WoodChips            | untested                          |
-| Powercorn     | `powercorn`   | EnergyGrain          | untested                          |
-| Biocom        | `biocom`      | Pellets              | untested                          |
-| Pro           | `pro`         | Pellets or WoodChips | untested                          |
-| Therm         | `therm`       | Pellets              | untested                          |
-| Generic       | `generic`     | -                    | use, if none from above           |
+| Name          | Thing Type ID | Heating System Type  | Binding Development Status                       |
+|---------------|---------------|----------------------|--------------------------------------------------|
+| Biostar       | `biostar`     | Pellets              | tested via 15kW, firmware 3.2d, German & English |
+| Biosmart      | `biosmart`    | Logs                 | tested via 22kW, firmware 3.2f, German           |
+| Powerchip     | `powerchip`   | WoodChips            | tested via 100kW, firmware 3.2d, French          |
+| Powercorn     | `powercorn`   | EnergyGrain          | untested                                         |
+| Biocom        | `biocom`      | Pellets              | untested                                         |
+| Pro           | `pro`         | Pellets or WoodChips | untested                                         |
+| Therm         | `therm`       | Pellets              | untested                                         |
+| Generic       | `generic`     | -                    | use, if none from above                          |
 
 ### Thing Configuration
 
