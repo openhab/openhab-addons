@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>3.2.1</version>
+    <version>3.2.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bom</groupId>
