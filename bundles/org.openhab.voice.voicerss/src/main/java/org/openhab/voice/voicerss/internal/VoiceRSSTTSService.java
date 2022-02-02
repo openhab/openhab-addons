@@ -170,7 +170,82 @@ public class VoiceRSSTTSService implements TTSService {
      * @return The audio formats of this instance
      */
     private Set<AudioFormat> initAudioFormats() {
-        return voiceRssImpl.getAvailableAudioFormats();
+        Set<AudioFormat> audioFormats = new HashSet<>();
+        for (String codec : voiceRssImpl.getAvailableAudioCodecs()) {
+            switch (codec) {
+                case "MP3":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, 64000,
+                            44_100L));
+                    break;
+                case "OGG":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, 16,
+                            null, 44_100L));
+                    break;
+                case "AAC":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, null, 16, null,
+                            44_100L));
+                    break;
+                case "WAV":
+                    // Consider only mono formats
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 128_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 176_400, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 96_000, 12_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 192_000, 12_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 128_000, 16_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 256_000, 16_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 352_800, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 192_000, 24_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 384_000, 24_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 256_000, 32_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 512_000, 32_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 352_800, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 705_600, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 384_000, 48_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 768_000, 48_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            352_800, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            352_800, 44_100L));
+                    break;
+                default:
+                    logger.debug("Audio codec {} not yet supported", codec);
+                    break;
+            }
+        }
+        return audioFormats;
     }
 
     /**
@@ -221,7 +296,7 @@ public class VoiceRSSTTSService implements TTSService {
     }
 
     private CachedVoiceRSSCloudImpl initVoiceImplementation() throws IllegalStateException {
-        return new CachedVoiceRSSCloudImpl(getCacheFolderName());
+        return new CachedVoiceRSSCloudImpl(getCacheFolderName(), true);
     }
 
     private String getCacheFolderName() {
