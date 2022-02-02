@@ -492,7 +492,6 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
         }
         ZonedDateTime zoned = ZonedDateTime.ofInstant(Instant.ofEpochSecond(value), TimeZone.getDefault().toZoneId());
         State dateTimeState = new DateTimeType(zoned);
-        logger.trace("New attribute brewed '{}' received", dateTimeState);
         return dateTimeState;
     }
 
