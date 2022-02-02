@@ -112,6 +112,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     protected ClimateState climateState;
 
     protected boolean allowWakeUp;
+    protected boolean allowWakeUpForCommands;
     protected boolean enableEvents = false;
     protected long lastTimeStamp;
     protected long apiIntervalTimestamp;
@@ -151,6 +152,7 @@ public class TeslaVehicleHandler extends BaseThingHandler {
         logger.trace("Initializing the Tesla handler for {}", getThing().getUID());
         updateStatus(ThingStatus.UNKNOWN);
         allowWakeUp = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_ALLOWWAKEUP);
+        allowWakeUpForCommands = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_ALLOWWAKEUPFORCOMMANDS);
 
         // the streaming API seems to be broken - let's keep the code, if it comes back one day
         // enableEvents = (boolean) getConfig().get(TeslaBindingConstants.CONFIG_ENABLEEVENTS);
@@ -251,6 +253,11 @@ public class TeslaVehicleHandler extends BaseThingHandler {
             requestAllData();
         } else {
             if (selector != null) {
+                if (!isAwake() && allowWakeUpForCommands) {
+                    logger.debug("Waking vehicle to send command.");
+                    wakeUp();
+                    setActive();
+                }
                 try {
                     switch (selector) {
                         case CHARGE_LIMIT_SOC: {
@@ -449,8 +456,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     public void sendCommand(String command, String payLoad, WebTarget target) {
-        if (command.equals(COMMAND_WAKE_UP) || isAwake()) {
-            Request request = account.newRequest(this, command, payLoad, target);
+        if (command.equals(COMMAND_WAKE_UP) || isAwake() || allowWakeUpForCommands) {
+            Request request = account.newRequest(this, command, payLoad, target, allowWakeUpForCommands);
             if (stateThrottler != null) {
                 stateThrottler.submit(COMMAND_THROTTLE, request);
             }
@@ -462,8 +469,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     public void sendCommand(String command, String payLoad) {
-        if (command.equals(COMMAND_WAKE_UP) || isAwake()) {
-            Request request = account.newRequest(this, command, payLoad, account.commandTarget);
+        if (command.equals(COMMAND_WAKE_UP) || isAwake() || allowWakeUpForCommands) {
+            Request request = account.newRequest(this, command, payLoad, account.commandTarget, allowWakeUpForCommands);
             if (stateThrottler != null) {
                 stateThrottler.submit(COMMAND_THROTTLE, request);
             }
@@ -471,8 +478,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     public void sendCommand(String command, WebTarget target) {
-        if (command.equals(COMMAND_WAKE_UP) || isAwake()) {
-            Request request = account.newRequest(this, command, "{}", target);
+        if (command.equals(COMMAND_WAKE_UP) || isAwake() || allowWakeUpForCommands) {
+            Request request = account.newRequest(this, command, "{}", target, allowWakeUpForCommands);
             if (stateThrottler != null) {
                 stateThrottler.submit(COMMAND_THROTTLE, request);
             }
@@ -480,8 +487,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     public void requestData(String command, String payLoad) {
-        if (command.equals(COMMAND_WAKE_UP) || isAwake()) {
-            Request request = account.newRequest(this, command, payLoad, account.dataRequestTarget);
+        if (command.equals(COMMAND_WAKE_UP) || isAwake() || allowWakeUpForCommands) {
+            Request request = account.newRequest(this, command, payLoad, account.dataRequestTarget, false);
             if (stateThrottler != null) {
                 stateThrottler.submit(DATA_THROTTLE, request);
             }
@@ -731,7 +738,8 @@ public class TeslaVehicleHandler extends BaseThingHandler {
                 Response response = account.vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
                         .header("Authorization", authHeader).get();
 
-                logger.debug("Querying the vehicle : Response : {}:{}", response.getStatus(), response.getStatusInfo());
+                logger.debug("Querying the vehicle, response : {}, {}", response.getStatus(),
+                        response.getStatusInfo().getReasonPhrase());
 
                 if (!checkResponse(response, true)) {
                     logger.error("An error occurred while querying the vehicle");
@@ -965,23 +973,27 @@ public class TeslaVehicleHandler extends BaseThingHandler {
     }
 
     protected Runnable slowStateRunnable = () -> {
-        queryVehicleAndUpdate();
+        try {
+            queryVehicleAndUpdate();
 
-        boolean allowQuery = allowQuery();
+            boolean allowQuery = allowQuery();
 
-        if (allowQuery) {
-            requestData(CHARGE_STATE);
-            requestData(CLIMATE_STATE);
-            requestData(GUI_STATE);
-            queryVehicle(MOBILE_ENABLED_STATE);
-        } else {
-            if (allowWakeUp) {
-                wakeUp();
+            if (allowQuery) {
+                requestData(CHARGE_STATE);
+                requestData(CLIMATE_STATE);
+                requestData(GUI_STATE);
+                queryVehicle(MOBILE_ENABLED_STATE);
             } else {
-                if (isAwake()) {
-                    logger.debug("Vehicle is neither charging nor moving, skipping updates to allow it to sleep");
+                if (allowWakeUp) {
+                    wakeUp();
+                } else {
+                    if (isAwake()) {
+                        logger.debug("Vehicle is neither charging nor moving, skipping updates to allow it to sleep");
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.warn("Exception occurred in slowStateRunnable", e);
         }
     };
 

@@ -109,6 +109,7 @@ public class TeslaBindingConstants {
 
     // thing configurations
     public static final String CONFIG_ALLOWWAKEUP = "allowWakeup";
+    public static final String CONFIG_ALLOWWAKEUPFORCOMMANDS = "allowWakeupForCommands";
     public static final String CONFIG_ENABLEEVENTS = "enableEvents";
     public static final String CONFIG_REFRESHTOKEN = "refreshToken";
     public static final String CONFIG_USERNAME = "username";
