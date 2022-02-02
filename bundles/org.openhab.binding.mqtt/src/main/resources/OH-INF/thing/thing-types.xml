@@ -144,36 +144,6 @@
 		</config-description>
 	</bridge-type>
 
-	<bridge-type id="systemBroker" extensible="publishTrigger">
-		<label>System MQTT Broker</label>
-		<description>A system configured and therefore read-only broker connection. Properties are reflecting the
-			configuration and internal connection status.</description>
-
-		<properties>
-			<property name="url"/>
-			<property name="username"/>
-			<property name="password"/>
-			<property name="qos"/>
-			<property name="retain"/>
-			<property name="lastwill"/>
-			<property name="reconnect_time_ms"/>
-			<property name="keep_alive_time_ms"/>
-		</properties>
-
-		<config-description>
-			<parameter name="brokerid" type="text" required="true">
-				<label>Broker ID</label>
-				<description>Each system wide configured MQTT broker has a unique broker ID.</description>
-			</parameter>
-			<parameter name="enableDiscovery" type="boolean">
-				<label>Enable Discovery</label>
-				<description>If set to true enables this broker for all discovery services.</description>
-				<advanced>true</advanced>
-				<default>true</default>
-			</parameter>
-		</config-description>
-	</bridge-type>
-
 	<channel-type id="publishTrigger">
 		<kind>trigger</kind>
 		<label>Publish Trigger</label>
