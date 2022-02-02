@@ -152,7 +152,7 @@ public class MiCloudConnector {
         Map<String, String> map = new HashMap<String, String>();
         map.put("data", "{\"obj_name\":\"" + vacuumMap + "\"}");
         String mapResponse = request(url, map);
-        logger.trace("response: {}", mapResponse);
+        logger.trace("Response: {}", mapResponse);
         String errorMsg = "";
         try {
             JsonElement response = JsonParser.parseString(mapResponse);
@@ -181,7 +181,6 @@ public class MiCloudConnector {
 
     public String getDeviceStatus(String device, String country) throws MiCloudException {
         final String response = request("/home/device_list", country, "{\"dids\":[\"" + device + "\"]}");
-        logger.debug("response: {}", response);
         return response;
     }
 
@@ -201,7 +200,6 @@ public class MiCloudConnector {
             throw new MiCloudException(err, e);
         }
         final String response = request("/home/rpc/" + id, country, command);
-        logger.debug("response: {}", response);
         return response;
     }
 

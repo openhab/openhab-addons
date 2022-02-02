@@ -17,7 +17,6 @@ MQTT topics. Please check out the available extensions:
 ## Supported Bridges
 
 * Broker: This bridge represents an MQTT Broker connection, configured and managed by this binding.
-* SystemBroker: A system configured broker cannot be changed by this binding and will be listed as read-only system-broker.
 
 ## Bridge Configuration
  

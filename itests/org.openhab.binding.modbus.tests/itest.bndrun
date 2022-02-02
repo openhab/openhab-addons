@@ -60,7 +60,6 @@ Fragment-Host: org.openhab.binding.modbus
 	org.objenesis;version='[3.2.0,3.2.1)',\
 	biz.aQute.tester.junit-platform;version='[6.1.0,6.1.1)',\
 	org.apache.felix.scr;version='[2.1.30,2.1.31)',\
-	org.ops4j.pax.logging.pax-logging-api;version='[2.0.12,2.0.13)',\
 	org.osgi.util.function;version='[1.2.0,1.2.1)',\
 	org.osgi.util.promise;version='[1.2.0,1.2.1)',\
 	org.openhab.binding.modbus;version='[3.3.0,3.3.1)',\
@@ -75,4 +74,5 @@ Fragment-Host: org.openhab.binding.modbus
 	org.openhab.core.test;version='[3.3.0,3.3.1)',\
 	org.openhab.core.thing;version='[3.3.0,3.3.1)',\
 	org.openhab.core.thing.xml;version='[3.3.0,3.3.1)',\
-	org.openhab.core.transform;version='[3.3.0,3.3.1)'
+	org.openhab.core.transform;version='[3.3.0,3.3.1)',\
+	org.ops4j.pax.logging.pax-logging-api;version='[2.0.14,2.0.15)'

@@ -48,8 +48,8 @@ public class ShadeCapabilitiesDatabase {
             new Capabilities(5)          .tiltAnywhere().tilt180()            .text("Tilt Only 180°"),
             new Capabilities(6).primary()                                     .text("Top Down")                 .primaryStateInverted(),
             new Capabilities(7).primary()                         .secondary().text("Top Down Bottom Up"),
-            new Capabilities(8).primary()                                     .text("Duolite Lift"),
-            new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°"),
+            new Capabilities(8).primary()                                     .text("Duolite Lift")             .withBlackoutShade(),
+            new Capabilities(9).primary().tiltAnywhere()                      .text("Duolite Lift and Tilt 90°").withBlackoutShade(),
     // @formatter:on
             new Capabilities()).stream().collect(Collectors.toMap(Capabilities::getValue, Function.identity()));
 
@@ -64,6 +64,7 @@ public class ShadeCapabilitiesDatabase {
             new Type( 7).capabilities(6).text("Top Down"),
             new Type( 8).capabilities(7).text("Duette Top Down Bottom Up"),
             new Type( 9).capabilities(7).text("Duette DuoLite Top Down Bottom Up"),
+            new Type(18).capabilities(1).text("Silhouette"),
             new Type(23).capabilities(1).text("Silhouette"),
             new Type(42).capabilities(0).text("M25T Roller Blind"),
             new Type(43).capabilities(1).text("Facette"),
@@ -75,6 +76,7 @@ public class ShadeCapabilitiesDatabase {
             new Type(55).capabilities(3).text("Vertical Slats Right Stack"),
             new Type(56).capabilities(3).text("Vertical Slats Split Stack"),
             new Type(62).capabilities(2).text("Venetian"),
+            new Type(65).capabilities(8).text("Vignette Duolite"),
             new Type(69).capabilities(3).text("Curtain Left Stack"),
             new Type(70).capabilities(3).text("Curtain Right Stack"),
             new Type(71).capabilities(3).text("Curtain Split Stack"),
@@ -91,7 +93,7 @@ public class ShadeCapabilitiesDatabase {
         protected int intValue = -1;
         protected String text = "-- not in database --";
 
-        protected Integer getValue() {
+        public Integer getValue() {
             return intValue;
         }
 
@@ -146,10 +148,16 @@ public class ShadeCapabilitiesDatabase {
         private boolean supportsSecondary;
         private boolean supportsTiltOnClosed;
         private boolean supportsTiltAnywhere;
+        private boolean supportsBlackoutShade;
         private boolean primaryStateInverted;
         private boolean tilt180Degrees;
 
         public Capabilities() {
+        }
+
+        protected Capabilities withBlackoutShade() {
+            supportsBlackoutShade = true;
+            return this;
         }
 
         protected Capabilities(int capabilities) {
@@ -246,6 +254,15 @@ public class ShadeCapabilitiesDatabase {
          */
         public boolean supportsTilt180() {
             return tilt180Degrees;
+        }
+
+        /**
+         * Check if the Capabilities class instance supports a secondary 'DuoLite' blackout shade.
+         *
+         * @return true if the primary shade supports a secondary blackout shade.
+         */
+        public boolean supportsBlackoutShade() {
+            return supportsBlackoutShade;
         }
     }
 

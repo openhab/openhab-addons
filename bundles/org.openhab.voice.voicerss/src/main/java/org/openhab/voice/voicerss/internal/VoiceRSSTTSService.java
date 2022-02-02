@@ -50,9 +50,23 @@ public class VoiceRSSTTSService implements TTSService {
 
     // API Key comes from ConfigAdmin
     private static final String CONFIG_API_KEY = "apiKey";
-    private String apiKey;
+
+    /**
+     * Map from openHAB AudioFormat Codec to VoiceRSS API Audio Codec
+     */
+    private static final Map<String, String> CODEC_MAP = Map.of(AudioFormat.CODEC_PCM_SIGNED, "WAV",
+            AudioFormat.CODEC_PCM_UNSIGNED, "WAV", AudioFormat.CODEC_PCM_ALAW, "WAV", AudioFormat.CODEC_PCM_ULAW, "WAV",
+            AudioFormat.CODEC_MP3, "MP3", AudioFormat.CODEC_VORBIS, "OGG", AudioFormat.CODEC_AAC, "AAC");
+
+    /**
+     * Map from openHAB AudioFormat Frequency to VoiceRSS API Audio Frequency
+     */
+    private static final Map<Long, String> FREQUENCY_MAP = Map.of(8_000L, "8khz", 11_025L, "11khz", 12_000L, "12khz",
+            16_000L, "16khz", 22_050L, "22khz", 24_000L, "24khz", 32_000L, "32khz", 44_100L, "44khz", 48_000L, "48khz");
 
     private final Logger logger = LoggerFactory.getLogger(VoiceRSSTTSService.class);
+
+    private String apiKey;
 
     /**
      * We need the cached implementation to allow for FixedLengthAudioStream.
@@ -81,7 +95,7 @@ public class VoiceRSSTTSService implements TTSService {
 
             logger.debug("Using VoiceRSS cache folder {}", getCacheFolderName());
         } catch (IllegalStateException e) {
-            logger.error("Failed to activate VoiceRSS: {}", e.getMessage(), e);
+            logger.warn("Failed to activate VoiceRSS: {}", e.getMessage(), e);
         }
     }
 
@@ -121,25 +135,12 @@ public class VoiceRSSTTSService implements TTSService {
         if (!voices.contains(voice)) {
             throw new TTSException("The passed voice is unsupported");
         }
-        boolean isAudioFormatSupported = false;
-        for (AudioFormat currentAudioFormat : audioFormats) {
-            if (currentAudioFormat.isCompatible(requestedFormat)) {
-                isAudioFormatSupported = true;
-                break;
-            }
-        }
-        if (!isAudioFormatSupported) {
-            throw new TTSException("The passed AudioFormat is unsupported");
-        }
 
-        // now create the input stream for given text, locale, format. There is
-        // only a default voice
+        // now create the input stream for given text, locale, voice, codec and format.
         try {
             File cacheAudioFile = voiceRssImpl.getTextToSpeechAsFile(apiKey, trimmedText,
-                    voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioFormat(requestedFormat));
-            if (cacheAudioFile == null) {
-                throw new TTSException("Could not read from VoiceRSS service");
-            }
+                    voice.getLocale().toLanguageTag(), voice.getLabel(), getApiAudioCodec(requestedFormat),
+                    getApiAudioFormat(requestedFormat));
             return new VoiceRSSAudioStream(cacheAudioFile, requestedFormat);
         } catch (AudioException ex) {
             throw new TTSException("Could not create AudioStream: " + ex.getMessage(), ex);
@@ -170,50 +171,132 @@ public class VoiceRSSTTSService implements TTSService {
      */
     private Set<AudioFormat> initAudioFormats() {
         Set<AudioFormat> audioFormats = new HashSet<>();
-        for (String format : voiceRssImpl.getAvailableAudioFormats()) {
-            audioFormats.add(getAudioFormat(format));
+        for (String codec : voiceRssImpl.getAvailableAudioCodecs()) {
+            switch (codec) {
+                case "MP3":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, null, 16, 64000,
+                            44_100L));
+                    break;
+                case "OGG":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, null, 16,
+                            null, 44_100L));
+                    break;
+                case "AAC":
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, null, 16, null,
+                            44_100L));
+                    break;
+                case "WAV":
+                    // Consider only mono formats
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 128_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 176_400, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 96_000, 12_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 192_000, 12_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 128_000, 16_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 256_000, 16_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 352_800, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 192_000, 24_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 384_000, 24_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 256_000, 32_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 512_000, 32_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 352_800, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 705_600, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, false,
+                            8, 384_000, 48_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false,
+                            16, 768_000, 48_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ALAW, null, 8,
+                            352_800, 44_100L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            64_000, 8_000L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            88_200, 11_025L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            176_400, 22_050L));
+                    audioFormats.add(new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_ULAW, null, 8,
+                            352_800, 44_100L));
+                    break;
+                default:
+                    logger.debug("Audio codec {} not yet supported", codec);
+                    break;
+            }
         }
         return audioFormats;
     }
 
-    private AudioFormat getAudioFormat(String apiFormat) {
-        Boolean bigEndian = null;
-        Integer bitDepth = 16;
-        Integer bitRate = null;
-        Long frequency = 44100L;
+    /**
+     * Map {@link AudioFormat#getCodec() codec} to VoiceRSS API codec.
+     *
+     * @throws TTSException if {@code format} is not supported
+     */
+    private String getApiAudioCodec(AudioFormat format) throws TTSException {
+        final String internalCodec = format.getCodec();
+        final String apiCodec = CODEC_MAP.get(internalCodec != null ? internalCodec : AudioFormat.CODEC_PCM_SIGNED);
 
-        if ("MP3".equals(apiFormat)) {
-            // we use by default: MP3, 44khz_16bit_mono with bitrate 64 kbps
-            bitRate = 64000;
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_MP3, bigEndian, bitDepth, bitRate,
-                    frequency);
-        } else if ("OGG".equals(apiFormat)) {
-            // we use by default: OGG, 44khz_16bit_mono
-            return new AudioFormat(AudioFormat.CONTAINER_OGG, AudioFormat.CODEC_VORBIS, bigEndian, bitDepth, bitRate,
-                    frequency);
-        } else if ("AAC".equals(apiFormat)) {
-            // we use by default: AAC, 44khz_16bit_mono
-            return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_AAC, bigEndian, bitDepth, bitRate,
-                    frequency);
-        } else {
-            throw new IllegalArgumentException("Audio format " + apiFormat + " not yet supported");
+        if (apiCodec == null) {
+            throw new TTSException("Unsupported audio format: " + format);
+        }
+
+        return apiCodec;
+    }
+
+    /**
+     * Map {@link AudioFormat#getBitDepth() bit depth} and {@link AudioFormat#getFrequency() frequency} to VoiceRSS API
+     * format.
+     *
+     * @throws TTSException if {@code format} is not supported
+     */
+    private String getApiAudioFormat(AudioFormat format) throws TTSException {
+        final int bitDepth = format.getBitDepth() != null ? format.getBitDepth() : 16;
+        final Long frequency = format.getFrequency() != null ? format.getFrequency() : 44_100L;
+        final String apiFrequency = FREQUENCY_MAP.get(frequency);
+
+        if (apiFrequency == null || (bitDepth != 8 && bitDepth != 16)) {
+            throw new TTSException("Unsupported audio format: " + format);
+        }
+
+        switch (format.getCodec() != null ? format.getCodec() : AudioFormat.CODEC_PCM_SIGNED) {
+            case AudioFormat.CODEC_PCM_ALAW:
+                return "alaw_" + apiFrequency + "_mono";
+            case AudioFormat.CODEC_PCM_ULAW:
+                return "ulaw_" + apiFrequency + "_mono";
+            case AudioFormat.CODEC_PCM_SIGNED:
+            case AudioFormat.CODEC_PCM_UNSIGNED:
+            case AudioFormat.CODEC_MP3:
+            case AudioFormat.CODEC_VORBIS:
+            case AudioFormat.CODEC_AAC:
+                return apiFrequency + "_" + bitDepth + "bit_mono";
+            default:
+                throw new TTSException("Unsupported audio format: " + format);
         }
     }
 
-    private String getApiAudioFormat(AudioFormat format) {
-        if (format.getCodec().equals(AudioFormat.CODEC_MP3)) {
-            return "MP3";
-        } else if (format.getCodec().equals(AudioFormat.CODEC_VORBIS)) {
-            return "OGG";
-        } else if (format.getCodec().equals(AudioFormat.CODEC_AAC)) {
-            return "AAC";
-        } else {
-            throw new IllegalArgumentException("Audio format " + format.getCodec() + " not yet supported");
-        }
-    }
-
-    private CachedVoiceRSSCloudImpl initVoiceImplementation() {
-        return new CachedVoiceRSSCloudImpl(getCacheFolderName());
+    private CachedVoiceRSSCloudImpl initVoiceImplementation() throws IllegalStateException {
+        return new CachedVoiceRSSCloudImpl(getCacheFolderName(), true);
     }
 
     private String getCacheFolderName() {

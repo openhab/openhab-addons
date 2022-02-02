@@ -165,7 +165,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                     stateDescProvider.setDescription(channel.getUID(), description);
                 }
             } catch (IllegalArgumentException e) {
-                logger.warn("Channel configuration error", e);
+                logger.warn("Configuration error for channel '{}'", channel.getUID(), e);
                 configErrors.add(channel.getUID());
             }
         }
