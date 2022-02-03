@@ -19,7 +19,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openthermgateway.internal.*;
+import org.openhab.binding.openthermgateway.internal.ConnectionState;
+import org.openhab.binding.openthermgateway.internal.DataItemGroup;
+import org.openhab.binding.openthermgateway.internal.GatewayCommand;
+import org.openhab.binding.openthermgateway.internal.GatewayCommandCode;
+import org.openhab.binding.openthermgateway.internal.Message;
+import org.openhab.binding.openthermgateway.internal.OpenThermGatewayCallback;
+import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConfiguration;
+import org.openhab.binding.openthermgateway.internal.OpenThermGatewayConnector;
+import org.openhab.binding.openthermgateway.internal.OpenThermGatewaySocketConnector;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
@@ -96,13 +104,13 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
             sendCommand(gatewayCommand);
 
-            if (code.equals(GatewayCommandCode.CONTROLSETPOINT)) {
+            if (GatewayCommandCode.CONTROLSETPOINT.equals(code)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
                     updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_WATER_SETPOINT, UnDefType.UNDEF);
                 }
                 updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING_ENABLED,
                         OnOffType.from(!gatewayCommand.getMessage().equals("0.0")));
-            } else if (code.equals(GatewayCommandCode.CONTROLSETPOINT2)) {
+            } else if (GatewayCommandCode.CONTROLSETPOINT2.equals(code)) {
                 if (gatewayCommand.getMessage().equals("0.0")) {
                     updateState(CHANNEL_OVERRIDE_CENTRAL_HEATING2_WATER_SETPOINT, UnDefType.UNDEF);
                 }
@@ -123,6 +131,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         }
     }
 
+    @Override
     public void receiveMessage(Message message) {
         int msgId = message.getID();
 
@@ -142,6 +151,10 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
     @Override
     public void connectionStateChanged(ConnectionState state) {
+        scheduler.submit(() -> connectionStateChangedTask(state));
+    }
+
+    private void connectionStateChangedTask(ConnectionState state) {
         if (this.state != state) {
             this.state = state;
 
