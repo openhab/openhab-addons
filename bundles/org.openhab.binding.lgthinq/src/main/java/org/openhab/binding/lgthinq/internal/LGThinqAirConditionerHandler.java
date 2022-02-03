@@ -268,7 +268,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
     @Override
     public ACCapability getAcCapabilities() throws LGThinqApiException {
         if (acCapability == null) {
-            acCapability = lgThinqApiClientService.getDeviceCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
+            acCapability = lgThinqApiClientService.getACCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
         }
         return Objects.requireNonNull(acCapability, "Unexpected error. Return ac-capability shouldn't ever be null");
     }

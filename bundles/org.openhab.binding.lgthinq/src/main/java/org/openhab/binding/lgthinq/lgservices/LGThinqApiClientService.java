@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,10 @@ public interface LGThinqApiClientService {
     String startMonitor(String bridgeName, String deviceId)
             throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException;
 
-    ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
+    ACCapability getACCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
+
+    File loadDeviceCapability(String deviceId, String uri, boolean forceRecreate)
+            throws LGThinqApiException, IOException;
 
     void stopMonitor(String bridgeName, String deviceId, String workId) throws LGThinqException, IOException;
 
