@@ -1,6 +1,7 @@
 # Monoprice Whole House Audio Binding
 
 This binding can be used to control the following types of whole house multi-zone amplifier systems:
+
 * Monoprice MPR-SG6Z (10761), Monoprice Passive Matrix (39261), Dayton Audio DAX66 and compatible clones
 * Monoprice 31028 or OSD Audio PAM1270
 * Dayton Audio DAX88
@@ -26,7 +27,7 @@ Monoprice 31028 or OSD Audio PAM1270 70 Volt Amplifiers use the `monoprice70` id
 
 Dayton Audio DAX88 Amplifiers use the `dax88` id. Supports 8 zones (2 un-amplified) per amp with 8 source inputs, not linkable.  
 
-Xantech 8x8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs.
+Xantech MRC88, MX88, MRAUDIO8X8, or CM8X8 Amplifiers use the `xantech` id. Up to 16 zones with 2 linked amps, 8 source inputs.
 Note: MRC44 amps do not support serial control.  
 
 ## Discovery
