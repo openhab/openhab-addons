@@ -133,6 +133,10 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
 
     @Override
     public void receiveMessage(Message message) {
+        scheduler.submit(() -> receiveMessageTask(message));
+    }
+
+    private void receiveMessageTask(Message message) {
         int msgId = message.getID();
 
         if (!DataItemGroup.DATAITEMGROUPS.containsKey(msgId)) {
