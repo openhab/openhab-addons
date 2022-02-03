@@ -12,15 +12,10 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.BASE_CAP_CONFIG_DATA_FILE;
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.V2_CTRL_DEVICE_CONFIG_PATH;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -180,24 +175,16 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
     @Override
     @NonNull
     @SuppressWarnings("ignoring Map type check")
-    public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate)
-            throws LGThinqApiException {
+    public ACCapability getACCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
         try {
-            File regFile = new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
-            ACCapability acCap = new ACCapability();
-            Map<String, Object> mapper;
-            if (regFile.isFile() || forceRecreate) {
-                try (InputStream in = new URL(uri).openStream()) {
-                    Files.copy(in, regFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                }
-            }
-            mapper = objectMapper.readValue(regFile, new TypeReference<>() {
+            File regFile = loadDeviceCapability(deviceId, uri, forceRecreate);
+            Map<String, Object> mapper = objectMapper.readValue(regFile, new TypeReference<>() {
             });
             Map<String, Object> cap = (Map<String, Object>) mapper.get("Value");
             if (cap == null) {
                 throw new LGThinqApiException("Error extracting capabilities supported by the device");
             }
-
+            ACCapability acCap = new ACCapability();
             Map<String, Object> opModes = (Map<String, Object>) cap.get("airState.opMode");
             if (opModes == null) {
                 throw new LGThinqApiException("Error extracting opModes supported by the device");

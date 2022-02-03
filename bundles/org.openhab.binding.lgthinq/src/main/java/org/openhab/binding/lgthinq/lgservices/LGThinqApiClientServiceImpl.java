@@ -14,6 +14,12 @@ package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import javax.ws.rs.core.UriBuilder;
@@ -86,6 +92,21 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
         } catch (Exception e) {
             throw new LGThinqApiException("Erros list account devices from LG Server API", e);
         }
+    }
+
+    @Override
+    public File loadDeviceCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
+        File regFile = new File(String.format(BASE_CAP_CONFIG_DATA_FILE, deviceId));
+        try {
+            if (regFile.isFile() || forceRecreate) {
+                try (InputStream in = new URL(uri).openStream()) {
+                    Files.copy(in, regFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        } catch (IOException e) {
+            throw new LGThinqApiException("Error reading IO interface", e);
+        }
+        return regFile;
     }
 
     /**
