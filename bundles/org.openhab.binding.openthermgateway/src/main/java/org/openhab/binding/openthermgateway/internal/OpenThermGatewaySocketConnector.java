@@ -94,12 +94,18 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                         break;
                     }
                 }
+            } catch (IOException ex) {
+                logger.warn("Error communicating with OpenTherm Gateway.", ex);
             } finally {
-                logger.debug("OpenThermGatewaySocketConnector disconnected");
-                callback.connectionStateChanged(ConnectionState.DISCONNECTED);
+                // local writer is being destroyed, so null the class level reference as well
+                this.writer = null;
             }
         } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
+        } finally {
+            // local socket is being destroyed, so null the class level reference as well
+            this.socket = null;
+            logger.debug("OpenThermGatewaySocketConnector disconnected");
             callback.connectionStateChanged(ConnectionState.DISCONNECTED);
         }
     }
@@ -117,7 +123,7 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
     }
 
     @Override
-    public void sendCommand(GatewayCommand command) {
+    public synchronized void sendCommand(GatewayCommand command) {
         @Nullable
         PrintWriter wrt = writer;
 
@@ -133,6 +139,10 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             logger.debug("Sending message: {}", msg);
             wrt.print(msg + "\r\n");
             wrt.flush();
+            if (wrt.checkError()) {
+                logger.warn("Error sending message to OpenTherm Gateway.");
+                stop();
+            }
         } else {
             logger.debug("Unable to send message: {}. OpenThermGatewaySocketConnector is not connected.", msg);
         }
