@@ -30,19 +30,19 @@ public abstract class DataItem {
     private @Nullable CodeType codeType;
 
     public Msg getMsg() {
-        return this.msg;
+        return msg;
     }
 
     public ByteType getByteType() {
-        return this.byteType;
+        return byteType;
     }
 
     public String getSubject() {
-        return this.subject;
+        return subject;
     }
 
     public @Nullable CodeType getCodeType() {
-        return this.codeType;
+        return codeType;
     }
 
     public DataItem(Msg msg, ByteType byteType, String subject, @Nullable CodeType codeType) {
@@ -62,7 +62,7 @@ public abstract class DataItem {
 
     public String getChannelId(Message message) {
         // Default implementation
-        return this.subject;
+        return subject;
     }
 
     public abstract State createState(Message message);
