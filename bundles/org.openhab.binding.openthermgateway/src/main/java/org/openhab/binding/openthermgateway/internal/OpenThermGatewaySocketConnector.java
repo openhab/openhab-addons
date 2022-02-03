@@ -122,7 +122,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     @Override
     public boolean isConnected() {
-        return (socket != null && socket.isConnected());
+        Socket sck = socket;
+        return (sck != null && sck.isConnected());
     }
 
     @Override

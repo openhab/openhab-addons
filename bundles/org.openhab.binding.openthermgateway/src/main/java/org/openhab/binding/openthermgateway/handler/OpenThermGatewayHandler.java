@@ -70,7 +70,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         logger.debug("Initializing OpenThermGateway handler for uid {}", getThing().getUID());
 
         configuration = getConfigAs(OpenThermGatewayConfiguration.class);
-        logger.info("Using configuration: {}", configuration.toString());
+        logger.info("Using configuration: {}", configuration);
 
         connect();
     }
@@ -162,7 +162,7 @@ public class OpenThermGatewayHandler extends BaseBridgeHandler implements OpenTh
         if (this.state != state) {
             this.state = state;
 
-            switch (this.state) {
+            switch (state) {
                 case INITIALIZING:
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Initializing");
                     break;
