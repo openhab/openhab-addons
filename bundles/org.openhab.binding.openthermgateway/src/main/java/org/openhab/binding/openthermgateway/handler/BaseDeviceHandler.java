@@ -18,14 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.openthermgateway.internal.*;
+import org.openhab.binding.openthermgateway.internal.DataItem;
+import org.openhab.binding.openthermgateway.internal.DataItemGroup;
+import org.openhab.binding.openthermgateway.internal.Message;
+import org.openhab.binding.openthermgateway.internal.TspFhbSizeDataItem;
+import org.openhab.binding.openthermgateway.internal.TspFhbValueDataItem;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelKind;
@@ -57,15 +60,6 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
             bridgeStatusChanged(bridge.getStatusInfo());
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge is missing");
-        }
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (bridgeStatusInfo.getStatus() == ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
     }
 
