@@ -349,14 +349,14 @@
 	</channel-type>
 
 	<channel-type id="chpumphours">
-        <item-type>Number:Time</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Central Heating Pump Hours</label>
 		<description>Central heating pump hours</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="dhwpvhours">
-        <item-type>Number:Time</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Domestic Hot Water Pump/Valve Hours</label>
 		<description>Domestic hot water pump/valve hours</description>
 		<state readOnly="true"/>
