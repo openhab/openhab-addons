@@ -31,7 +31,7 @@ public class FloatDataItem extends DataItem {
     private @Nullable Unit<?> unit;
 
     public @Nullable Unit<?> getUnit() {
-        return this.unit;
+        return unit;
     }
 
     public FloatDataItem(Msg msg, String subject) {
