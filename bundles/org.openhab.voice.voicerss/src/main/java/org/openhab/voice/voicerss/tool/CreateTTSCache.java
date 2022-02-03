@@ -16,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.voice.voicerss.internal.cloudapi.CachedVoiceRSSCloudImpl;
@@ -73,7 +74,10 @@ public class CreateTTSCache {
             File inputFile = new File(inputFileName);
             if (!inputFile.exists()) {
                 usage();
-                System.err.println("File " + inputFileName + " not found");
+                PrintStream printStream = System.err;
+                if (printStream != null) {
+                    printStream.println("File " + inputFileName + " not found");
+                }
                 return RC_INPUT_FILE_NOT_FOUND;
             }
             generateCacheForFile(apiKey, cacheDir, locale, voice, codec, format, inputFileName);
@@ -85,22 +89,26 @@ public class CreateTTSCache {
     }
 
     private void usage() {
-        System.out.println("Usage: java org.openhab.voice.voicerss.tool.CreateTTSCache <args>");
-        System.out.println(
+        PrintStream printStream = System.out;
+        if (printStream == null) {
+            return;
+        }
+        printStream.println("Usage: java org.openhab.voice.voicerss.tool.CreateTTSCache <args>");
+        printStream.println(
                 "Arguments: --api-key <key> <cache-dir> <locale> <voice> { <text> | @inputfile } [ <codec> <format> ]");
-        System.out.println("  key       the VoiceRSS API Key, e.g. \"123456789\"");
-        System.out.println("  cache-dir is directory where the files will be stored, e.g. \"voicerss-cache\"");
-        System.out.println("  locale    the language locale, has to be valid, e.g. \"en-us\", \"de-de\"");
-        System.out.println("  voice     the voice, \"default\" for the default voice");
-        System.out.println("  text      the text to create audio file for, e.g. \"Hello World\"");
-        System.out.println(
+        printStream.println("  key       the VoiceRSS API Key, e.g. \"123456789\"");
+        printStream.println("  cache-dir is directory where the files will be stored, e.g. \"voicerss-cache\"");
+        printStream.println("  locale    the language locale, has to be valid, e.g. \"en-us\", \"de-de\"");
+        printStream.println("  voice     the voice, \"default\" for the default voice");
+        printStream.println("  text      the text to create audio file for, e.g. \"Hello World\"");
+        printStream.println(
                 "  inputfile a name of a file, where all lines will be translatet to text, e.g. \"@message.txt\"");
-        System.out.println("  codec     the audio codec, \"MP3\", \"WAV\", \"OGG\" or \"AAC\", \"MP3\" by default");
-        System.out.println("  format    the audio format, \"44khz_16bit_mono\" by default");
-        System.out.println();
-        System.out.println(
+        printStream.println("  codec     the audio codec, \"MP3\", \"WAV\", \"OGG\" or \"AAC\", \"MP3\" by default");
+        printStream.println("  format    the audio format, \"44khz_16bit_mono\" by default");
+        printStream.println();
+        printStream.println(
                 "Sample: java org.openhab.voice.voicerss.tool.CreateTTSCache --api-key 1234567890 cache en-US default @messages.txt");
-        System.out.println();
+        printStream.println();
     }
 
     private void generateCacheForFile(String apiKey, String cacheDir, String locale, String voice, String codec,
@@ -117,19 +125,29 @@ public class CreateTTSCache {
 
     private void generateCacheForMessage(String apiKey, String cacheDir, String locale, String voice, String codec,
             String format, String msg) throws IOException {
+        PrintStream printStream;
         String trimmedMsg = msg.trim();
         if (trimmedMsg.length() == 0) {
-            System.err.println("Ignore msg=''");
+            printStream = System.err;
+            if (printStream != null) {
+                printStream.println("Ignore msg=''");
+            }
             return;
         }
         try {
             CachedVoiceRSSCloudImpl impl = new CachedVoiceRSSCloudImpl(cacheDir, false);
             File cachedFile = impl.getTextToSpeechAsFile(apiKey, trimmedMsg, locale, voice, codec, format);
-            System.out.println("Created cached audio for locale='" + locale + "', voice='" + voice + "', msg='"
-                    + trimmedMsg + "' to file=" + cachedFile);
+            printStream = System.out;
+            if (printStream != null) {
+                printStream.println("Created cached audio for locale='" + locale + "', voice='" + voice + "', msg='"
+                        + trimmedMsg + "' to file=" + cachedFile);
+            }
         } catch (IllegalStateException | IOException ex) {
-            System.err.println("Failed to create cached audio for locale='" + locale + "', voice='" + voice + "',msg='"
-                    + trimmedMsg + "'");
+            printStream = System.err;
+            if (printStream != null) {
+                printStream.println("Failed to create cached audio for locale='" + locale + "', voice='" + voice
+                        + "',msg='" + trimmedMsg + "'");
+            }
         }
     }
 }
