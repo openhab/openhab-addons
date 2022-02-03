@@ -33,7 +33,7 @@ public class Message {
     private String data;
 
     public CodeType getCodeType() {
-        return this.codeType;
+        return codeType;
     }
 
     public MessageType getMessageType() {
@@ -129,8 +129,7 @@ public class Message {
         // If the message is a Request sent to the boiler or an Answer returned to the
         // thermostat, and it's ID is equal to the previous message, then this is an
         // override sent by the OpenTherm Gateway
-        return other != null && this.getID() == other.getID()
-                && (this.codeType == CodeType.R || this.codeType == CodeType.A);
+        return other != null && this.getID() == other.getID() && (codeType == CodeType.R || codeType == CodeType.A);
     }
 
     @Override
