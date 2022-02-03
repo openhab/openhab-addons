@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgapi;
+package org.openhab.binding.lgthinq.lgservices;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 
@@ -24,7 +24,7 @@ import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.api.TokenResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

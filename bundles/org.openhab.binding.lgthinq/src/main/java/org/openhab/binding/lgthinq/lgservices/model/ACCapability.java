@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgapi.model;
+package org.openhab.binding.lgthinq.lgservices.model;
 
 import java.util.Collections;
 import java.util.List;
