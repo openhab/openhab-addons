@@ -30,11 +30,14 @@ import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
-import org.openhab.binding.lgthinq.lgapi.LGThinqApiClientService;
-import org.openhab.binding.lgthinq.lgapi.LGThinqApiV1ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.LGThinqApiClientService;
+import org.openhab.binding.lgthinq.lgservices.LGThinqApiV1ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ConfigStatusBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
@@ -114,9 +117,8 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
                     try {
                         tokenManager.oauthFirstRegistration(bridgeName, lgthinqConfig.getLanguage(),
                                 lgthinqConfig.getCountry(), lgthinqConfig.getUsername(), lgthinqConfig.getPassword());
-                        if (tokenManager.getValidRegisteredToken(bridgeName) != null) {
-                            logger.debug("Successful getting token from LG API");
-                        }
+                        tokenManager.getValidRegisteredToken(bridgeName);
+                        logger.debug("Successful getting token from LG API");
                     } catch (IOException e) {
                         logger.debug(
                                 "I/O error accessing json token configuration file. Updating Bridge Status to OFFLINE.",

@@ -42,7 +42,7 @@ public class LGDevice {
 
     @JsonIgnore
     public DeviceTypes getDeviceType() {
-        return DeviceTypes.fromDeviceTypeId(deviceTypeId, deviceCode);
+        return DeviceTypes.fromDeviceTypeId(deviceTypeId);
     }
 
     public void setModelName(String modelName) {

@@ -13,10 +13,9 @@
 package org.openhab.binding.lgthinq.internal.api;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lgthinq.internal.api.model.GatewayResult;
 
 /**
  * The {@link LGThinqGateway} hold informations about the LG Gateway
@@ -34,22 +33,27 @@ public class LGThinqGateway implements Serializable {
     private String country = "";
     private String username = "";
     private String password = "";
+    private int accountVersion;
 
     public LGThinqGateway() {
     }
 
-    public LGThinqGateway(Map<String, String> params, String language, String country) {
-        this.apiRootV2 = Objects.requireNonNullElse(params.get("thinq2Uri"), "");
-        this.apiRootV1 = Objects.requireNonNullElse(params.get("thinq1Uri"), "");
-        this.loginBaseUri = Objects.requireNonNullElse(params.get("empSpxUri"), "");
-        this.authBase = Objects.requireNonNullElse(params.get("empUri"), "");
-        this.empBaseUri = Objects.requireNonNullElse(params.get("empTermsUri"), "");
+    public LGThinqGateway(GatewayResult gwResult, String language, String country) {
+        this.apiRootV2 = gwResult.getThinq2Uri();
+        this.apiRootV1 = gwResult.getThinq1Uri();
+        this.loginBaseUri = gwResult.getEmpSpxUri();
+        this.authBase = gwResult.getEmpUri();
+        this.empBaseUri = gwResult.getEmpTermsUri();
         this.language = language;
         this.country = country;
     }
 
     public String getEmpBaseUri() {
         return empBaseUri;
+    }
+
+    public int getAccountVersion() {
+        return accountVersion;
     }
 
     public String getApiRootV2() {

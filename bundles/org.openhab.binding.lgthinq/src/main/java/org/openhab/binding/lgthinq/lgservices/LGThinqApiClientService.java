@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgapi;
+package org.openhab.binding.lgthinq.lgservices;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +23,7 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgapi.model.*;
+import org.openhab.binding.lgthinq.lgservices.model.*;
 
 /**
  * The {@link LGThinqApiClientService}
