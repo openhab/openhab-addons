@@ -63,17 +63,6 @@ In order to assist you with this process the binding expose a simple login form 
 | play-last-by-terms  | String | Add to playback queue as last by terms, works for series, episodes and movies; terms search is explained bellow |
 | browse-by-terms  | String | Browse media by terms, works for series, episodes and movies; terms search is explained bellow |
 
-### Available Play State Commands:
-
-* STOP
-* PAUSE
-* UNPAUSE
-* NEXT_TRACK
-* PREVIOUS_TRACK
-* REWIND
-* FAST_FORWARD
-* PLAY_PAUSE
-
 ### Terms search:
 
 The terms search has a default behavior that can be modified sending some predefined prefixes.

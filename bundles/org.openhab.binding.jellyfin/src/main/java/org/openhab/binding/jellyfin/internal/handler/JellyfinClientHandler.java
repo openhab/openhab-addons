@@ -31,6 +31,7 @@ import static org.openhab.binding.jellyfin.internal.JellyfinBindingConstants.SEN
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -72,7 +73,7 @@ public class JellyfinClientHandler extends BaseThingHandler {
     private final Pattern typeSearchPattern = Pattern.compile("<type:(?<type>movie|series|episode)>\\s?(?<terms>.*)");
     private final Pattern seriesSearchPattern = Pattern
             .compile("(<type:series>)?<season:(?<season>[0-9]*)><episode:(?<episode>[0-9]*)>\\s?(?<terms>.*)");
-
+    private @Nullable ScheduledFuture<?> delayedCommand;
     private String lastSessionId = "";
     private boolean lastPlayingState = false;
     private long lastRunTimeTicks = 0L;
@@ -179,6 +180,19 @@ public class JellyfinClientHandler extends BaseThingHandler {
                     syncCallbackError.getMessage());
         } catch (ApiClientException e) {
             getServerHandler().handleApiException(e);
+        }
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        cancelDelayedCommand();
+    }
+
+    private void cancelDelayedCommand() {
+        var delayedCommand = this.delayedCommand;
+        if (delayedCommand != null) {
+            delayedCommand.cancel(true);
         }
     }
 
@@ -391,7 +405,8 @@ public class JellyfinClientHandler extends BaseThingHandler {
     private void playItem(BaseItemDto item, PlayCommand playCommand, @Nullable Long startPositionTicks)
             throws SyncCallback.SyncCallbackError, ApiClientException {
         if (playCommand.equals(PlayCommand.PLAY_NOW) && stopCurrentPlayback()) {
-            scheduler.schedule(() -> {
+            cancelDelayedCommand();
+            delayedCommand = scheduler.schedule(() -> {
                 try {
                     playItemInternal(item, playCommand, startPositionTicks);
                 } catch (SyncCallback.SyncCallbackError | ApiClientException e) {
@@ -410,7 +425,8 @@ public class JellyfinClientHandler extends BaseThingHandler {
 
     private void browseItem(BaseItemDto item) throws SyncCallback.SyncCallbackError, ApiClientException {
         if (stopCurrentPlayback()) {
-            scheduler.schedule(() -> {
+            cancelDelayedCommand();
+            delayedCommand = scheduler.schedule(() -> {
                 try {
                     browseItemInternal(item);
                 } catch (SyncCallback.SyncCallbackError | ApiClientException e) {
