@@ -94,6 +94,44 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="birthMessage" type="text">
+				<label>Birth Message</label>
+				<description>The message to send to the broker when a connection is established.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="birthTopic" type="text">
+				<label>Birth Topic</label>
+				<description>Defaults to empty and therefore disables the birth message.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="birthRetain" type="boolean">
+				<label>Birth Message Retain</label>
+				<description>True if the birth message should be retained (defaults to true)</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="shutdownMessage" type="text">
+				<label>Shutdown Message</label>
+				<description>The message to send to the broker before the connection terminates.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="shutdownTopic" type="text">
+				<label>Shutdown Topic</label>
+				<description>Defaults to empty and therefore disables the shutdown message.</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="shutdownRetain" type="boolean">
+				<label>Shutdown Message Retain</label>
+				<description>True if the shutdown message should be retained (defaults to true)</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="username" type="text">
 				<label>Username</label>
 				<description>The MQTT username</description>
