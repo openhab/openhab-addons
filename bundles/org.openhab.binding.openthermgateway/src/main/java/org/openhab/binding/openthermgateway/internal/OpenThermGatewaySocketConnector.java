@@ -36,15 +36,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnector {
-    private static final int COMMAND_RESPONSE_TIME_MILLISECONDS = 100;
-    private static final int COMMAND_TIMEOUT_MILLISECONDS = 5000;
-    private static final int READ_TIMEOUT_MILLISECONDS = 60000;
+    private static final int COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS = 100;
+    private static final int COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS = 5000;
 
     private final Logger logger = LoggerFactory.getLogger(OpenThermGatewaySocketConnector.class);
 
     private final OpenThermGatewayCallback callback;
     private final String ipaddress;
     private final int port;
+    private final int connectTimeoutMilliseconds;
+    private final int readTimeoutMilliSeconds;
 
     private @Nullable Socket socket;
     private @Nullable PrintWriter writer;
@@ -53,10 +54,12 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
 
     private Map<String, Entry<Long, GatewayCommand>> pendingCommands = new ConcurrentHashMap<>();
 
-    public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, String ipaddress, int port) {
+    public OpenThermGatewaySocketConnector(OpenThermGatewayCallback callback, OpenThermGatewayConfiguration config) {
         this.callback = callback;
-        this.ipaddress = ipaddress;
-        this.port = port;
+        ipaddress = config.ipaddress;
+        port = config.port;
+        connectTimeoutMilliseconds = config.connectTimeoutSeconds * 1000;
+        readTimeoutMilliSeconds = config.readTimeoutSeconds * 1000;
     }
 
     @Override
@@ -68,8 +71,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
             // Make socket accessible on class level
             this.socket = socket;
 
-            socket.connect(new InetSocketAddress(this.ipaddress, this.port), COMMAND_TIMEOUT_MILLISECONDS);
-            socket.setSoTimeout(READ_TIMEOUT_MILLISECONDS);
+            socket.connect(new InetSocketAddress(ipaddress, port), connectTimeoutMilliseconds);
+            socket.setSoTimeout(readTimeoutMilliSeconds);
 
             logger.debug("OpenThermGatewaySocketConnector connected");
             callback.connectionStateChanged(ConnectionState.CONNECTED);
@@ -98,13 +101,13 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                 logger.warn("Error communicating with OpenTherm Gateway.", ex);
             } finally {
                 // local writer is being destroyed, so null the class level reference as well
-                this.writer = null;
+                writer = null;
             }
         } catch (IOException ex) {
             logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
         } finally {
             // local socket is being destroyed, so null the class level reference as well
-            this.socket = null;
+            socket = null;
             logger.debug("OpenThermGatewaySocketConnector disconnected");
             callback.connectionStateChanged(ConnectionState.DISCONNECTED);
         }
@@ -161,8 +164,8 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
         long currentTime = System.currentTimeMillis();
 
         for (Entry<Long, GatewayCommand> timeAndCommand : pendingCommands.values()) {
-            long responseTime = timeAndCommand.getKey() + COMMAND_RESPONSE_TIME_MILLISECONDS;
-            long timeoutTime = timeAndCommand.getKey() + COMMAND_TIMEOUT_MILLISECONDS;
+            long responseTime = timeAndCommand.getKey() + COMMAND_RESPONSE_MIN_WAIT_TIME_MILLISECONDS;
+            long timeoutTime = timeAndCommand.getKey() + COMMAND_RESPONSE_MAX_WAIT_TIME_MILLISECONDS;
 
             if (currentTime > responseTime && currentTime <= timeoutTime) {
                 logger.debug("Resending command: {}", timeAndCommand.getValue());
