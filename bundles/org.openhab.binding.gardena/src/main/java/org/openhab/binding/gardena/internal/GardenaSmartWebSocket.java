@@ -96,8 +96,6 @@ public class GardenaSmartWebSocket {
             session.close();
         } catch (Exception ex) {
             // ignore
-        } finally {
-
         }
     }
 
