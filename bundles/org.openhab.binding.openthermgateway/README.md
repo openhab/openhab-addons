@@ -17,24 +17,32 @@ The binding does not require any configuration.
 
 The OpenTherm Gateway binding supports three Things:
 
-- `openthermgateway` which is the bridge that handles communication with the OpenTherm Gateway device
-- `boiler` which represents a central heating boiler unit
-- `ventilationheatrecovery` which represents a ventilation / heat recovery unit
+- `openthermgateway` which is the bridge that handles communication with the OpenTherm Gateway device.
+- `boiler` which represents a central heating boiler unit.
+- `ventilationheatrecovery` which represents a ventilation / heat recovery unit.
 
-### Bridge
+## Thing Configuration
 
-#### Configuration
+### Thing Configuration for `openthermgateway`
 
 The `openthermgateway` bridge is designed to support various ways of connecting to the OpenTherm Gateway device, but currently only supports a TCP socket connection.
 The configuration settings for the bridge are Hostname/IP address and Port, which are used to connect to the gateway, and an automatic connection retry interval in case the connection to the OpenTherm Gateway device is lost.
 
-| Parameter                 | Name                      | Description                                                     | Required | Default |
-|---------------------------|---------------------------|-----------------------------------------------------------------|----------|---------|
-| `ipaddress`               | Hostname or IP address    | The hostname or IP address to connect to the OpenTherm Gateway. | yes      |         |
-| `port`                    | Port                      | The port used to connect to the OpenTherm Gateway.              | yes      |         |
-| `connectionRetryInterval` | Connection Retry Interval | The interval in seconds to retry connecting (0 = disabled).     | yes      | 60      |
+| Parameter                 | Name                      | Description                                                                      | Required | Default |
+|---------------------------|---------------------------|----------------------------------------------------------------------------------|----------|---------|
+| `ipaddress`               | Hostname or IP address    | The hostname or IP address to connect to the OpenTherm Gateway.                  | yes      |         |
+| `port`                    | Port                      | The port used to connect to the OpenTherm Gateway.                               | yes      |         |
+| `connectionRetryInterval` | Connection Retry Interval | The interval in seconds to retry connecting (0 = disabled).                      | yes      | 60      |
+| `connectTimeoutSeconds`   | Connect Timeout           | The maximum time (seconds) to wait for establishing a connection to the gateway. | yes      | 5       |
+| `readTimeoutSeconds`      | Read Timeout              | The maximum time (seconds) to wait for reading responses from the gateway.       | yes      | 20      |
 
-#### Channels
+### Thing Configuration for `boiler` and `ventilationheatrecovery`
+
+The `boiler` and `ventilationheatrecovery` things do not require any configuration settings.
+
+## Channels
+
+### Channels for `openthermgateway`
 
 The `openthermgateway` bridge supports the following channels:
 
@@ -42,29 +50,7 @@ The `openthermgateway` bridge supports the following channels:
 |---------------------------|----------------------|----------------------------------------------------------|--------|
 | sendcommand               | Text                 | Channel to send commands to the OpenTherm Gateway device | W      |
 
-#### Example
-
-##### demo.things
-
-```
-Bridge openthermgateway:openthermgateway:1 "OpenTherm Gateway" [ ipaddress="192.168.1.100", port="8000", connectionRetryInterval=60 ] {
-    //
-}
-```
-
-##### demo.items
-
-```
-Text SendCommand "Send command channel" { channel="openthermgateway:openthermgateway:1:sendcommand" }
-```
-
-### Boiler
-
-#### Configuration
-
-The `boiler` thing does not require any configuration settings.
-
-#### Channels
+### Channels for `boiler`
 
 The `boiler` thing supports the following channels:
 
@@ -121,17 +107,99 @@ The `boiler` thing supports the following channels:
 | fhbnumber | Number:Dimensionless | Number of fault history buffer entries | R |
 | fhbentry | Number:Dimensionless | Fault history buffer entry | R |
 
-#### Full demo
+### Channels for `ventilationheatrecovery`
 
-##### demo.things
+The `ventilationheatrecovery` thing supports the following channels:
+
+| Channel ID | Item Type | Description | Access |
+|------------|-----------|-------------|--------|
+| vh_ventilationenable | Switch | Ventilation enabled | R |
+| vh_bypassposition | Number:Dimensionless | Bypass position | R |
+| vh_bypassmode | Number:Dimensionless | Bypass mode | R |
+| vh_freeventilationmode | Switch | Free ventilation mode | R |
+| vh_faultindication | Switch | Fault indication | R |
+| vh_ventilationmode | Switch | Ventilation mode | R |
+| vh_bypassstatus | Switch | Bypass status | R |
+| vh_bypassautomaticstatus | Number:Dimensionless | Bypass automatic status | R |
+| vh_freeventilationstatus | Switch | Free ventilation status | R |
+| vh_filtercheck | Switch | Filter Check enabled | R |
+| vh_diagnosticindication | Switch | Diagnostic indication | R |
+| vh_controlsetpoint | Number:Dimensionless | Control setpoint | R |
+| vh_servicerequest | Switch | Service request | R |
+| vh_exhaustfanfault | Switch | Exhaust fan fault | R |
+| vh_inletfanfault | Switch | Inlet fan fault | R |
+| vh_frostprotection | Switch | Frost protection | R |
+| vh_faultcode | Number:Dimensionless | Fault code | R |
+| vh_diagnosticcode | Number:Dimensionless | Diagnostic code | R |
+| vh_systemtype | Number:Dimensionless | System type | R |
+| vh_bypass | Switch | Bypass | R |
+| vh_speedcontrol | Number:Dimensionless | Speed control | R |
+| vh_memberid | Number:Dimensionless | Member ID | R |
+| vh_openthermversion | Number:Dimensionless | OpenTherm version | R |
+| vh_versiontype | Number:Dimensionless | Version type | R |
+| vh_relativeventilation | Number:Dimensionless | Relative ventilation position | R |
+| vh_relativehumidity | Number:Dimensionless | Relative humidity exhaust air | R |
+| vh_co2level | Number:Dimensionless | CO2 level exhaust air | R |
+| vh_supplyinlettemp | Number:Temperature | Supply inlet temperature | R |
+| vh_supplyoutlettemp | Number:Temperature | Supply outlet temperature | R |
+| vh_exhaustinlettemp | Number:Temperature | Exhaust inlet temperature | R |
+| vh_exhaustoutlettemp | Number:Temperature | Exhaust outlet temperature | R |
+| vh_actualexhaustfanspeed | Number:Dimensionless | Actual exhaust fan speed | R |
+| vh_actualinletfanspeed | Number:Dimensionless | Actual inlet fan speed | R |
+| vh_nominalventenable | Switch | Nominal ventilation value transfer enabled | R |
+| vh_nominalventrw | Number:Dimensionless | Nominal ventilation value | R |
+| vh_nominalventilationvalue | Number:Dimensionless | Nominal ventilation value | R |
+| vh_ventilationsetpoint | Number:Dimensionless | Ventilation setpoint override | R/W |
+| vh_tspnumber | Number:Dimensionless | Number of transparent slave parameter entries | R |
+| vh_tspentry | Number:Dimensionless | Transparent slave parameter entry | R |
+| vh_fhbnumber | Number:Dimensionless | Number of fault history buffer entries | R |
+| vh_fhbentry | Number:Dimensionless | Fault history buffer entry | R |
+
+## Transparent Slave Parameters and Fault History Buffer channels
+
+The transparent slave parameters (TSP) and fault history buffer (FHB) use a variable number of entries.
+The number of entries is determined by a TSP or FHB size message.
+Channels for TSP and FHB entries are automatically created when a TSP or FHB size message is received.
+An index number is added to the base channel name to create a unique channel name for each entry.
+
+For example, if a TSP size message is received for a boiler unit (OpenTherm DATA-ID 10) with value 60, then channels `tspentry_0` through `tspentry_59` will be automatically created and linked to the corresponding TSP entry (OpenTherm DATA-ID 11).
+
+## Using OpenTherm Gateway as a master device
+
+When using OpenTherm with a boiler and a thermostat, the thermostat (master) periodically sends messages to the boiler to request data.
+The boiler (slave) then sends a response message with the requested data which is then used by the OpenTherm Gateway binding to update the channel values in openHAB.
+
+If you have a setup without a master device requesting data, then the slave device may send fewer or even no OpenTherm mesages at all.
+
+In this case, you can make the OpenTherm Gateway act as a master device by sending Priority Message (PM) commands.
+With openHAB rules, you can use the `sendcommand` channel of the `openthermgateway` bridge to periodically send PM commands to the OpenTherm Gateway.
+
+Example:
+
+```
+SendCommand.sendCommand("PM=10")
+```
+
+This will cause the OpenTherm Gateway to send a READ-DATA message to the slave device with DATA-ID 10. If supported, the slave device will respond with a READ-ACK message and the current value.
+
+## Full Example
+
+### demo.things 
 
 ```
 Bridge openthermgateway:openthermgateway:1 "OpenTherm Gateway" [ ipaddress="192.168.1.100", port="8000", connectionRetryInterval=60 ] {
     Thing boiler remeha "Remeha Avanta 28c"
+    Thing ventilationheatrecovery brink "Brink Renovent Excellent 300"
 }
 ```
 
-##### demo.items
+### demo.items for `openthermgateway`
+
+```
+Text SendCommand "Send command channel" { channel="openthermgateway:openthermgateway:1:sendcommand" }
+```
+
+### demo.items for `boiler`
 
 ```
 Number:Temperature RoomTemperature "Room Temperature [%.1f %unit%]" <temperature> { channel="openthermgateway:boiler:1:remeha:roomtemp }
@@ -186,7 +254,53 @@ Number:Dimensionless FaultHistoryBufferNumber "Fault History Buffer Number" { ch
 Number:Dimensionless FaultHistoryBufferEntry "Fault History Buffer Entry" { channel="openthermgateway:boiler:1:remeha:fhbentry }
 ```
 
-##### demo.sitemap
+### demo.items for `ventilationheatrecovery`
+
+```
+Switch VentilationEnabled "Ventilation Enabled" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_ventilationenable }
+Number:Dimensionless BypassPosition "Bypass Position" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassposition }
+Number:Dimensionless BypassMode "Bypass Mode" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassmode }
+Switch FreeVentilationMode "Free Ventilation Mode" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_freeventilationmode }
+Switch FaultIndication "Fault Indication" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_faultindication }
+Switch VentilationMode "Ventilation Mode" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_ventilationmode }
+Switch BypassStatus "Bypass Status" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassstatus }
+Number:Dimensionless BypassAutomaticStatus "Bypass Automatic Status" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassautomaticstatus }
+Switch FreeVentilationStatus "Free Ventilation Status" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_freeventilationstatus }
+Switch FilterCheck "Filter Check" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_filtercheck }
+Switch DiagnosticIndication "Diagnostic Indication" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_diagnosticindication }
+Number:Dimensionless ControlSetpoint "Control Setpoint" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_controlsetpoint }
+Switch ServiceRequest "Service Request" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_servicerequest }
+Switch ExhaustFanFault "Exhaust Fan Fault" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_exhaustfanfault }
+Switch InletFanFault "Inlet Fan Fault" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_inletfanfault }
+Switch FrostProtection "Frost Protection" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_frostprotection }
+Number:Dimensionless FaultCode "Fault Code" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_faultcode }
+Number:Dimensionless DiagnosticCode "Diagnostic Code" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_diagnosticcode }
+Number:Dimensionless SystemType "System Type" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_systemtype }
+Switch Bypass "Bypass" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypass }
+Number:Dimensionless SpeedControl "Speed Control" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_speedcontrol }
+Number:Dimensionless MemberID "Member ID" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_memberid }
+Number:Dimensionless OpenThermVersion "OpenTherm Version" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_openthermversion }
+Number:Dimensionless VersionType "Version Type" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_versiontype }
+Number:Dimensionless RelativeVentilation "Relative Ventilation [%d %%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_relativeventilation }
+Number:Dimensionless RelativeHumidity "Relative Humidity [%d %%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_relativehumidity }
+Number:Dimensionless CO2Level "CO2 Level [%d ppm]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_co2level }
+Number:Temperature SupplyInletTemperature "Supply Inlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_supplyinlettemp }
+Number:Temperature SupplyOutletTemperature "Supply Outlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_supplyoutlettemp }
+Number:Temperature ExhaustInletTemperature "Exhaust Inlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_exhaustinlettemp }
+Number:Temperature ExhaustOutletTemperature "Exhaust Outlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_exhaustoutlettemp }
+Number:Dimensionless ActualExhaustFanSpeed "Actual Exhaust Fan Speed [%d rpm]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_actualexhaustfanspeed }
+Number:Dimensionless ActualInletFanSpeed "Actual Inlet Fan Speed [%d rpm]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_actualinletfanspeed }
+Switch NominalVentilationValueTransfer "Nominal Ventilation Value Transfer" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_nominalventenable }
+Number:Dimensionless NominalVentilationValue "Nominal Ventilation Value" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_nominalventrw }
+Number:Dimensionless NominalVentilationValue "Nominal Ventilation Value [%d %%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_nominalventilationvalue }
+Number:Dimensionless VentilationSetpoint "Ventilation Setpoint" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_ventilationsetpoint }
+Number:Dimensionless TransparentSlaveParameterNumber "Transparent Slave Parameter Number" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_tspnumber }
+Number:Dimensionless TransparentSlaveParameterEntry "Transparent Slave Parameter Entry" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_tspentry }
+Number:Dimensionless FaultHistoryBufferNumber "Fault History Buffer Number" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_fhbnumber }
+Number:Dimensionless FaultHistoryBufferEntry "Fault History Buffer Entry" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_fhbentry }
+```
+
+### demo.sitemap
 
 ```
 sitemap demo label="Main Menu" {
@@ -242,123 +356,7 @@ sitemap demo label="Main Menu" {
         Text item="FaultHistoryBufferNumber" label="Fault History Buffer Number"
         Text item="FaultHistoryBufferEntry" label="Fault History Buffer Entry"
     }
-}
-```
 
-### Ventilation / Heat Recovery
-
-#### Configuration
-
-The `ventilationheatrecovery` thing does not require any configuration settings.
-
-#### Channels
-
-The `ventilationheatrecovery` thing supports the following channels:
-
-| Channel ID | Item Type | Description | Access |
-|------------|-----------|-------------|--------|
-| vh_ventilationenable | Switch | Ventilation enabled | R |
-| vh_bypassposition | Number:Dimensionless | Bypass position | R |
-| vh_bypassmode | Number:Dimensionless | Bypass mode | R |
-| vh_freeventilationmode | Switch | Free ventilation mode | R |
-| vh_faultindication | Switch | Fault indication | R |
-| vh_ventilationmode | Switch | Ventilation mode | R |
-| vh_bypassstatus | Switch | Bypass status | R |
-| vh_bypassautomaticstatus | Number:Dimensionless | Bypass automatic status | R |
-| vh_freeventilationstatus | Switch | Free ventilation status | R |
-| vh_filtercheck | Switch | Filter Check enabled | R |
-| vh_diagnosticindication | Switch | Diagnostic indication | R |
-| vh_controlsetpoint | Number:Dimensionless | Control setpoint | R |
-| vh_servicerequest | Switch | Service request | R |
-| vh_exhaustfanfault | Switch | Exhaust fan fault | R |
-| vh_inletfanfault | Switch | Inlet fan fault | R |
-| vh_frostprotection | Switch | Frost protection | R |
-| vh_faultcode | Number:Dimensionless | Fault code | R |
-| vh_diagnosticcode | Number:Dimensionless | Diagnostic code | R |
-| vh_systemtype | Number:Dimensionless | System type | R |
-| vh_bypass | Switch | Bypass | R |
-| vh_speedcontrol | Number:Dimensionless | Speed control | R |
-| vh_memberid | Number:Dimensionless | Member ID | R |
-| vh_openthermversion | Number:Dimensionless | OpenTherm version | R |
-| vh_versiontype | Number:Dimensionless | Version type | R |
-| vh_relativeventilation | Number:Dimensionless | Relative ventilation position | R |
-| vh_relativehumidity | Number:Dimensionless | Relative humidity exhaust air | R |
-| vh_co2level | Number:Dimensionless | CO2 level exhaust air | R |
-| vh_supplyinlettemp | Number:Temperature | Supply inlet temperature | R |
-| vh_supplyoutlettemp | Number:Temperature | Supply outlet temperature | R |
-| vh_exhaustinlettemp | Number:Temperature | Exhaust inlet temperature | R |
-| vh_exhaustoutlettemp | Number:Temperature | Exhaust outlet temperature | R |
-| vh_actualexhaustfanspeed | Number:Dimensionless | Actual exhaust fan speed | R |
-| vh_actualinletfanspeed | Number:Dimensionless | Actual inlet fan speed | R |
-| vh_nominalventenable | Switch | Nominal ventilation value transfer enabled | R |
-| vh_nominalventrw | Number:Dimensionless | Nominal ventilation value | R |
-| vh_nominalventilationvalue | Number:Dimensionless | Nominal ventilation value | R |
-| vh_ventilationsetpoint | Number:Dimensionless | Ventilation setpoint override | R/W |
-| vh_tspnumber | Number:Dimensionless | Number of transparent slave parameter entries | R |
-| vh_tspentry | Number:Dimensionless | Transparent slave parameter entry | R |
-| vh_fhbnumber | Number:Dimensionless | Number of fault history buffer entries | R |
-| vh_fhbentry | Number:Dimensionless | Fault history buffer entry | R |
-
-#### Full demo
-
-##### demo.things
-
-```
-Bridge openthermgateway:openthermgateway:1 "OpenTherm Gateway" [ ipaddress="192.168.1.100", port="8000", connectionRetryInterval=60 ] {
-    Thing ventilationheatrecovery brink "Brink Renovent Excellent 300"
-}
-```
-
-##### items.things
-
-```
-Switch VentilationEnabled "Ventilation Enabled" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_ventilationenable }
-Number:Dimensionless BypassPosition "Bypass Position" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassposition }
-Number:Dimensionless BypassMode "Bypass Mode" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassmode }
-Switch FreeVentilationMode "Free Ventilation Mode" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_freeventilationmode }
-Switch FaultIndication "Fault Indication" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_faultindication }
-Switch VentilationMode "Ventilation Mode" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_ventilationmode }
-Switch BypassStatus "Bypass Status" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassstatus }
-Number:Dimensionless BypassAutomaticStatus "Bypass Automatic Status" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassautomaticstatus }
-Switch FreeVentilationStatus "Free Ventilation Status" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_freeventilationstatus }
-Switch FilterCheck "Filter Check" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_filtercheck }
-Switch DiagnosticIndication "Diagnostic Indication" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_diagnosticindication }
-Number:Dimensionless ControlSetpoint "Control Setpoint" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_controlsetpoint }
-Switch ServiceRequest "Service Request" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_servicerequest }
-Switch ExhaustFanFault "Exhaust Fan Fault" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_exhaustfanfault }
-Switch InletFanFault "Inlet Fan Fault" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_inletfanfault }
-Switch FrostProtection "Frost Protection" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_frostprotection }
-Number:Dimensionless FaultCode "Fault Code" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_faultcode }
-Number:Dimensionless DiagnosticCode "Diagnostic Code" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_diagnosticcode }
-Number:Dimensionless SystemType "System Type" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_systemtype }
-Switch Bypass "Bypass" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypass }
-Number:Dimensionless SpeedControl "Speed Control" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_speedcontrol }
-Number:Dimensionless MemberID "Member ID" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_memberid }
-Number:Dimensionless OpenThermVersion "OpenTherm Version" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_openthermversion }
-Number:Dimensionless VersionType "Version Type" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_versiontype }
-Number:Dimensionless RelativeVentilation "Relative Ventilation [%d %%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_relativeventilation }
-Number:Dimensionless RelativeHumidity "Relative Humidity [%d %%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_relativehumidity }
-Number:Dimensionless CO2Level "CO2 Level [%d ppm]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_co2level }
-Number:Temperature SupplyInletTemperature "Supply Inlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_supplyinlettemp }
-Number:Temperature SupplyOutletTemperature "Supply Outlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_supplyoutlettemp }
-Number:Temperature ExhaustInletTemperature "Exhaust Inlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_exhaustinlettemp }
-Number:Temperature ExhaustOutletTemperature "Exhaust Outlet Temperature [%.1f %unit%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_exhaustoutlettemp }
-Number:Dimensionless ActualExhaustFanSpeed "Actual Exhaust Fan Speed [%d rpm]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_actualexhaustfanspeed }
-Number:Dimensionless ActualInletFanSpeed "Actual Inlet Fan Speed [%d rpm]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_actualinletfanspeed }
-Switch NominalVentilationValueTransfer "Nominal Ventilation Value Transfer" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_nominalventenable }
-Number:Dimensionless NominalVentilationValue "Nominal Ventilation Value" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_nominalventrw }
-Number:Dimensionless NominalVentilationValue "Nominal Ventilation Value [%d %%]" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_nominalventilationvalue }
-Number:Dimensionless VentilationSetpoint "Ventilation Setpoint" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_ventilationsetpoint }
-Number:Dimensionless TransparentSlaveParameterNumber "Transparent Slave Parameter Number" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_tspnumber }
-Number:Dimensionless TransparentSlaveParameterEntry "Transparent Slave Parameter Entry" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_tspentry }
-Number:Dimensionless FaultHistoryBufferNumber "Fault History Buffer Number" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_fhbnumber }
-Number:Dimensionless FaultHistoryBufferEntry "Fault History Buffer Entry" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_fhbentry }
-```
-
-##### demo.sitemap
-
-```
-sitemap demo label="Main Menu" {
     Frame label="Ventilation / Heat Recovery" {
         Switch item="VentilationEnabled" icon="switch" label="Ventilation Enabled"
         Text item="BypassPosition" label="Bypass Position"
@@ -402,32 +400,5 @@ sitemap demo label="Main Menu" {
         Text item="FaultHistoryBufferNumber" label="Fault History Buffer Number"
         Text item="FaultHistoryBufferEntry" label="Fault History Buffer Entry"
     }
-}
+ }
 ```
-
-## Transparent Slave Parameters and Fault History Buffer channels
-
-The transparent slave parameters (TSP) and fault history buffer (FHB) use a variable number of entries.
-The number of entries is determined by a TSP or FHB size message.
-Channels for TSP and FHB entries are automatically created when a TSP or FHB size message is received.
-An index number is added to the base channel name to create a unique channel name for each entry.
-
-For example, if a TSP size message is received for a boiler unit (OpenTherm DATA-ID 10) with value 60, then channels `tspentry_0` through `tspentry_59` will be automatically created and linked to the corresponding TSP entry (OpenTherm DATA-ID 11).
-
-## Using OpenTherm Gateway as a master device
-
-When using OpenTherm with a boiler and a thermostat, the thermostat (master) periodically sends messages to the boiler to request data.
-The boiler (slave) then sends a response message with the requested data which is then used by the OpenTherm Gateway binding to update the channel values in openHAB.
-
-If you have a setup without a master device requesting data, then the slave device may send fewer or even no OpenTherm mesages at all.
-
-In this case, you can make the OpenTherm Gateway act as a master device by sending Priority Message (PM) commands.
-With openHAB rules, you can use the `sendcommand` channel of the `openthermgateway` bridge to periodically send PM commands to the OpenTherm Gateway.
-
-Example:
-
-```
-SendCommand.sendCommand("PM=10")
-```
-
-This will cause the OpenTherm Gateway to send a READ-DATA message to the slave device with DATA-ID 10. If supported, the slave device will respond with a READ-ACK message and the current value.
