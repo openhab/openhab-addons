@@ -31,7 +31,7 @@ public class UIntDataItem extends DataItem {
     private @Nullable Unit<?> unit;
 
     public @Nullable Unit<?> getUnit() {
-        return this.unit;
+        return unit;
     }
 
     public UIntDataItem(Msg msg, ByteType byteType, String subject) {
@@ -47,7 +47,7 @@ public class UIntDataItem extends DataItem {
     @Override
     public State createState(Message message) {
         @Nullable
-        Unit<?> unit = this.getUnit();
+        Unit<?> unit = getUnit();
         Integer value = message.getUInt(super.getByteType());
         return (unit == null) ? new DecimalType(value) : new QuantityType<>(value, unit);
     }
