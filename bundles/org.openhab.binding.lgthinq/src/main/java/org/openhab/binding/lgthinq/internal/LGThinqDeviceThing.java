@@ -14,8 +14,8 @@ package org.openhab.binding.lgthinq.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.lgapi.model.ACCapability;
-import org.openhab.binding.lgthinq.lgapi.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.model.ACCapability;
+import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 
 /**
  * The {@link LGThinqDeviceThing} is a main interface contract for all LG Thinq things
