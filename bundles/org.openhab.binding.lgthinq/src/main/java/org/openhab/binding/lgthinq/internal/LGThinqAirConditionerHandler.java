@@ -25,10 +25,10 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpired
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler;
-import org.openhab.binding.lgthinq.lgapi.LGThinqApiClientService;
-import org.openhab.binding.lgthinq.lgapi.LGThinqApiV1ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgapi.LGThinqApiV2ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgapi.model.*;
+import org.openhab.binding.lgthinq.lgservices.LGThinqApiClientService;
+import org.openhab.binding.lgthinq.lgservices.LGThinqApiV1ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgservices.LGThinqApiV2ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgservices.model.*;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
