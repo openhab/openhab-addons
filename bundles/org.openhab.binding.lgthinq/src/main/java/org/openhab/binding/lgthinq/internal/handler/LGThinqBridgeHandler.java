@@ -207,7 +207,7 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
                 if (lGDeviceRegister.get(deviceId) == null) {
                     logger.debug("Adding new LG Device to things registry with id:{}", deviceId);
                     if (discoveryService != null) {
-                        discoveryService.addLgDeviceDiscovery(bridgeName, device);
+                        discoveryService.addLgDeviceDiscovery(device);
                     }
                 }
                 lastDevicesDiscovered.put(deviceId, device);

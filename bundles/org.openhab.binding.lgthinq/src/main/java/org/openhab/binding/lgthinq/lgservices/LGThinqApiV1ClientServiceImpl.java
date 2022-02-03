@@ -270,23 +270,13 @@ public class LGThinqApiV1ClientServiceImpl extends LGThinqApiClientServiceImpl {
      */
     @Override
     @NonNull
-    public ACCapability getDeviceCapability(String deviceId, String uri, boolean forceRecreate)
-            throws LGThinqApiException {
+    public ACCapability getACCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
         try {
-            File regFile = getCapFileForDevice(deviceId);
+            File regFile = loadDeviceCapability(deviceId, uri, forceRecreate);
+            Map<String, Object> mapper = objectMapper.readValue(regFile, new TypeReference<>() {
+            });
             ACCapability acCap = new ACCapability();
-            Map<String, Object> mapper;
-            if (regFile.isFile() && !forceRecreate) {
-                // reg exists. Retrieve from it
-                mapper = objectMapper.readValue(regFile, new TypeReference<Map<String, Object>>() {
-                });
-            } else {
-                RestResult res = RestUtils.getCall(uri, null, null);
-                mapper = objectMapper.readValue(res.getJsonResponse(), new TypeReference<Map<String, Object>>() {
-                });
-                // try save file
-                objectMapper.writeValue(getCapFileForDevice(deviceId), mapper);
-            }
+
             Map<String, Object> cap = (Map<String, Object>) mapper.get("Value");
             if (cap == null) {
                 throw new LGThinqApiException("Error extracting capabilities supported by the device");
