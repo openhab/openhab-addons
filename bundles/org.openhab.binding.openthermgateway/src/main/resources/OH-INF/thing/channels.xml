@@ -342,7 +342,7 @@
 	</channel-type>
 
 	<channel-type id="burnerhours">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Burner Hours</label>
 		<description>Burner hours</description>
 		<state readOnly="true"/>
@@ -363,7 +363,7 @@
 	</channel-type>
 
 	<channel-type id="dhwburnerhours">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Domestic Hot Water Burner Hours</label>
 		<description>Domestic hot water burner hours</description>
 		<state readOnly="true"/>
