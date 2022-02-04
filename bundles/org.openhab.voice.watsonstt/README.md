@@ -22,7 +22,7 @@ Use your favorite configuration UI to edit **Settings / Other Services - IBM Wat
 
 ### Speech to Text Configuration
 
-Using your favorite configuration UI to edit **Settings / Other Services - IBM Watson Speech-to-Text**:
+Use your favorite configuration UI to edit **Settings / Other Services - IBM Watson Speech-to-Text**:
 
 * **Background Audio Suppression** - Use the parameter to suppress side conversations or background noise.
 * **Speech Detector Sensitivity** - Use the parameter to suppress word insertions from music, coughing, and other non-speech events.
@@ -34,7 +34,7 @@ Using your favorite configuration UI to edit **Settings / Other Services - IBM W
 
 ### Configuration via a text file
 
-In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `googlestt.cfg`
+In case you would like to setup the service via a text file, create a new file in `$OPENHAB_ROOT/conf/services` named `watsonstt.cfg`
 
 Its contents should look similar to:
 

@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.voice.watsonstt</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: WatsonSTT Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Voice :: IBM Watson Speech to Text</name>
   <properties>
     <bnd.importpackage>!android.*,!dalvik.*,!kotlin.*,sun.security.*;resolution:=optional,org.openjsse.*;resolution:=optional,org.conscrypt.*;resolution:=optional,org.bouncycastle.*;resolution:=optional,okhttp3.logging.*;resolution:=optional,com.google.gson.*;resolution:=optional,io.reactivex;resolution:=optional,okio.*;resolution:=optional,org.apache.commons.*;resolution:=optional,*</bnd.importpackage>
   </properties>

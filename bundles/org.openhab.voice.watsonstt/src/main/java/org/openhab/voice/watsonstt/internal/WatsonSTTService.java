@@ -81,8 +81,7 @@ public class WatsonSTTService implements STTService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        var serviceConfig = new Configuration(config).as(WatsonSTTConfiguration.class);
-        this.config = serviceConfig;
+        this.config = new Configuration(config).as(WatsonSTTConfiguration.class);
     }
 
     @Override
