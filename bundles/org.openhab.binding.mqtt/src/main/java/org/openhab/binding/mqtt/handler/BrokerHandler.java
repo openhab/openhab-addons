@@ -59,19 +59,18 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
     @Override
     public void connectionStateChanged(MqttConnectionState state, @Nullable Throwable error) {
         super.connectionStateChanged(state, error);
-        // Store generated client ID if none was set by the user
         final MqttBrokerConnection connection = this.connection;
-        String clientID = config.clientID;
         if (connection != null && state == MqttConnectionState.CONNECTED) {
+            String clientID = config.clientID;
             if (clientID == null || clientID.isBlank()) {
+                // Store generated client ID if none was set by the user
                 clientID = connection.getClientId();
                 config.clientID = clientID;
                 Configuration editConfig = editConfiguration();
                 editConfig.put("clientid", clientID);
                 updateConfiguration(editConfig);
-            } else {
-                publish(config.birthTopic, config.birthMessage, config.birthRetain);
             }
+            publish(config.birthTopic, config.birthMessage, config.birthRetain);
         }
     }
 

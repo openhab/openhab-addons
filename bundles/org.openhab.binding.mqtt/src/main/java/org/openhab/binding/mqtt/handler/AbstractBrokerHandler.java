@@ -114,8 +114,6 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
         }).thenAccept(v -> {
             if (!v) {
                 connectionStateChanged(MqttConnectionState.DISCONNECTED, new TimeoutException("Timeout"));
-            } else {
-                connectionStateChanged(MqttConnectionState.CONNECTED, null);
             }
         });
         connectionFuture.complete(connection);
