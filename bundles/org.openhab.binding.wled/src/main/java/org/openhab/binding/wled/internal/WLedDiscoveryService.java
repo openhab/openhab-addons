@@ -92,8 +92,6 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
             return null;
         }
         String response = sendGetRequest(address[0], "/json");
-        // LinkedList<String> segmentIndexList = WLedHelper.listOfResults(response, "{\"id\":", ",");
-        // How to create multiple things from the returned list of segments?
         String label = WLedHelper.getValue(response, "\"name\":\"", "\"");
         if (label.isEmpty()) {
             label = "WLED @ " + address[0];
