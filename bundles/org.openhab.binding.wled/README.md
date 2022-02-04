@@ -7,25 +7,29 @@ This binding allows you to auto discover and use LED strings based on the WLED p
 
 | Thing Type ID | Description |
 |-|-|
-| `wled` | Use this for RGB and RGBW strings. |
+| `json` | A bridge to the WLED device using the JSON API. Add this first. |
+| `segment` | A segment is used to turn a LED strip or string, into 1 or more lights. Each segment is like a separate light globe that can have its own color or effect. |
 
 ## Discovery
 
 The auto discovery will find your WLED if your network supports mDNS and the UDP port 5353 is not blocked by a fire wall.
 Before discovering any WLED devices, you may wish to name them by providing a 'Server description' in the WLED web page, CONFIG>User Interface> setup page.
-openHAB will then discover and auto name your WLED to the name provided as the 'Server description'.
-If it fails to find your WLED, you can still manually add a `wled` thing by using the UI or textual methods.
-For multiple segments, the binding will only auto find the first segment.
+openHAB will then discover and auto name your WLED bridge thing to the name provided as the 'Server description'.
 For additional segments, you can add them manually and set the `segmentIndex` config to the correct number shown in the WLED control web page.
 
-## Thing Configuration
+## Bridge Thing Configuration
 
 | Parameter | Description | Required | Default |
 |-|-|-|-|
 | `address`| The full URL to your WLED device. Example is `http://192.168.0.2:80` | Y | |
 | `pollTime`| How often in seconds you want the states of the LED fetched in case you make changes with a non openHAB app, web browser, or the light is auto changing FX or presets. | Y | 10 |
-| `segmentIndex` | The index number to the LED segment you wish these channels to control. Leave on 0 if you do not know what a segment is. | Y | 0 |
 | `saturationThreshold` | Allows you to use a colorpicker control linked to the `masterControls` channel to trigger only using the pure white LEDs instead of creating fake white light from the RGB channels. Try setting the value to 12 or leave this on 0 for RGB strings. | Y | 0 |
+
+## Thing Configuration
+
+| Parameter | Description | Required | Default |
+|-|-|-|-|
+| `segmentIndex` | The index number to the LED segment you wish these channels to control. Leave on 0 if you do not know what a segment is. | Y | 0 |
 
 ## Channels
 
@@ -64,12 +68,12 @@ This binding has two rule Actions `savePreset(int presetNumber)` and `savePreset
 In Xtend rules, you can use the Actions like this.
 
 ```
-getActions("wled", "wled:wled:XmasTree").savePreset(5,"Flashy Preset")
+getActions("wled", "wled:json:XmasTree").savePreset(5,"Flashy Preset")
 ```
 
 ## Sitemap Example
 
-If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the below and just change the name before the underscore to match what you named the `wled` thing when it was added via the Inbox.
+If you use the ADMIN>MODEL>`Create equipment from thing` feature you can use the below and just change the name before the underscore to match what you named the `segment` thing when it was added via the Inbox.
 
 *.sitemap
 
