@@ -17,9 +17,9 @@ import static org.openhab.binding.wled.internal.WLedBindingConstants.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.wled.internal.WLedActions;
 import org.openhab.binding.wled.internal.WLedConfiguration;
+import org.openhab.binding.wled.internal.WLedSegmentDiscoveryService;
 import org.openhab.binding.wled.internal.WledDynamicStateDescriptionProvider;
 import org.openhab.binding.wled.internal.api.ApiException;
 import org.openhab.binding.wled.internal.api.WledApi;
@@ -76,9 +77,10 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
     }
 
     public void savePreset(int position, String presetName) {
+        WledApi localAPI = api;
         try {
-            if (api != null) {
-                api.savePreset(position, presetName);
+            if (localAPI != null) {
+                localAPI.savePreset(position, presetName);
             }
         } catch (ApiException e) {
         }
@@ -195,11 +197,8 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
         WledApi localApi = api;
         try {
             if (localApi == null) {
-                api = apiFactory.getApi(this);
-                api.initialize();
-            }
-            if (localApi == null) {
-                return;
+                api = localApi = apiFactory.getApi(this);
+                localApi.initialize();
             }
             localApi.update();
             updateStatus(ThingStatus.ONLINE);
@@ -231,6 +230,6 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(WLedActions.class);
+        return Set.of(WLedActions.class, WLedSegmentDiscoveryService.class);
     }
 }

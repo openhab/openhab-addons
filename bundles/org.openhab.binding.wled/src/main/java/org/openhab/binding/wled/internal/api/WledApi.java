@@ -108,4 +108,6 @@ public interface WledApi {
     public abstract List<StateOption> getUpdatedFxList();
 
     public abstract List<StateOption> getUpdatedPaletteList();
+
+    public abstract List<String> getSegmentNames();
 }

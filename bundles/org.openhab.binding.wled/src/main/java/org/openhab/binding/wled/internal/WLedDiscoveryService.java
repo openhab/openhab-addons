@@ -100,7 +100,7 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
         }
         String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
         String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
-        ThingTypeUID thingtypeuid = new ThingTypeUID("wled", "json");
+        ThingTypeUID thingtypeuid = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_ID);
         ThingUID thingUID = new ThingUID(thingtypeuid, macAddress);
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);

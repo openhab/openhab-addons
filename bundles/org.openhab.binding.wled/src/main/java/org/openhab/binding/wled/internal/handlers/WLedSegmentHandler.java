@@ -240,15 +240,21 @@ public class WLedSegmentHandler extends BaseThingHandler {
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "No bridge is selected.");
         } else {
-            updateStatus(ThingStatus.ONLINE);
-            WLedBridgeHandler bridgeHandler = (WLedBridgeHandler) bridge.getHandler();
-            bridgeHandler.stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX),
-                    bridgeHandler.api.getUpdatedFxList());
-            bridgeHandler.stateDescriptionProvider.setStateOptions(
-                    new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), bridgeHandler.api.getUpdatedPaletteList());
-            if (!bridgeHandler.hasWhite) {
-                logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
-                removeWhiteChannels();
+            WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
+            if (localBridgeHandler == null) {
+                return;
+            }
+            WledApi localAPI = localBridgeHandler.api;
+            if (localAPI != null) {
+                updateStatus(ThingStatus.ONLINE);
+                localBridgeHandler.stateDescriptionProvider
+                        .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX), localAPI.getUpdatedFxList());
+                localBridgeHandler.stateDescriptionProvider.setStateOptions(
+                        new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), localAPI.getUpdatedPaletteList());
+                if (!localBridgeHandler.hasWhite) {
+                    logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
+                    removeWhiteChannels();
+                }
             }
         }
     }

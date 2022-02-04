@@ -507,4 +507,13 @@ public class WledApiV084 implements WledApi {
     public void setSpacing(int value, int segmentIndex) throws ApiException {
         postState("{\"seg\":[{\"id\":" + segmentIndex + ",\"spc\":" + value + "}]}");
     }
+
+    @Override
+    public List<String> getSegmentNames() {
+        List<String> segmentNames = new ArrayList<>(state.stateResponse.seg.length);
+        for (int count = 0; count < state.stateResponse.seg.length; count++) {
+            segmentNames.add("Segment " + count);
+        }
+        return segmentNames;
+    }
 }
