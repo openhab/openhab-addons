@@ -38,8 +38,4 @@ public class MqttThingID {
     public static ThingUID getThingUID(String host, int port) {
         return new ThingUID(MqttBindingConstants.BRIDGE_TYPE_BROKER, getThingID(host, port));
     }
-
-    public static ThingUID getTextualThingUID(String host, int port) {
-        return new ThingUID(MqttBindingConstants.BRIDGE_TYPE_SYSTEMBROKER, getThingID(host, port));
-    }
 }

@@ -220,6 +220,7 @@ Once this action instance is retrieved, you can invoke the `publishMQTT(String t
 ```
 mqttActions.publishMQTT("mytopic","myvalue", true)
 ```
+Alternatively, `publishMQTT(String topic, byte[] value, Boolean retained)` can publish a byte array data.
 
 The retained argument is optional and if not supplied defaults to `false`.
 
