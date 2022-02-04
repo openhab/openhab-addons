@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mcd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing and Bridge Types -->
+	<bridge-type id="mcdBridge">
+		<label>MCD Bridge</label>
+		<description>C&amp;S Managing Care Digital (MCD) account that is used to send data.</description>
+		<channels>
+			<channel id="login" typeId="loginStatus"/>
+		</channels>
+		<config-description>
+			<parameter name="userEmail" type="text" required="true">
+				<context>email</context>
+				<label>Email</label>
+				<description>Email of your MCD account.</description>
+			</parameter>
+			<parameter name="userPassword" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for your MCD account.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="mcdSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="mcdBridge"/>
+		</supported-bridge-type-refs>
+		<label>MCD Sensor Thing</label>
+		<description>Sends data for one mcdSensor to MCD, the C&amp;S cloud application.</description>
+		<channels>
+			<channel id="lastValue" typeId="lastValue"/>
+			<!--channels that send two event types -->
+			<channel id="bedStatus" typeId="bedStatus"/>
+			<channel id="sitStatus" typeId="sitStatus"/>
+			<channel id="openShut" typeId="openShut"/>
+			<channel id="light" typeId="light"/>
+			<channel id="presence" typeId="presence"/>
+			<!--channels that send only one event type -->
+			<channel id="fall" typeId="fall"/>
+			<channel id="changePosition" typeId="changePosition"/>
+			<channel id="batteryState" typeId="batteryState"/>
+			<channel id="inactivity" typeId="inactivity"/>
+			<channel id="alarm" typeId="alarm"/>
+			<channel id="activity" typeId="activity"/>
+			<channel id="urine" typeId="urine"/>
+			<channel id="gas" typeId="gas"/>
+			<channel id="removedSensor" typeId="removedSensor"/>
+			<channel id="inactivityRoom" typeId="inactivityRoom"/>
+			<channel id="smokeAlarm" typeId="smokeAlarm"/>
+			<channel id="heat" typeId="heat"/>
+			<channel id="cold" typeId="cold"/>
+			<channel id="alarmAir" typeId="alarmAir"/>
+		</channels>
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial number</label>
+				<description>Please enter the serial number of the sensor you want to create. It must match the serial
+					number of this
+					sensor in MCD.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="loginStatus">
+		<item-type>Switch</item-type>
+		<label>Login Status</label>
+		<description>Shows whether a user is successfully logged in or not.</description>
+	</channel-type>
+	<channel-type id="lastValue">
+		<item-type>String</item-type>
+		<label>Last Value</label>
+		<description>Shows time and value of the last sensor event (readonly).</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="bedStatus">
+		<item-type>Switch</item-type>
+		<label>Lying</label>
+		<description>Send data for bed entry and bed exit.</description>
+	</channel-type>
+	<channel-type id="fall">
+		<item-type>Switch</item-type>
+		<label>Fall</label>
+		<description>Send a warning in case of a detected fall.</description>
+	</channel-type>
+	<channel-type id="changePosition">
+		<item-type>Switch</item-type>
+		<label>Position Change</label>
+		<description>Send event for a position change in bed.</description>
+	</channel-type>
+	<channel-type id="batteryState">
+		<item-type>Switch</item-type>
+		<label>Empty battery</label>
+		<description>Send warning for an empty battery.</description>
+	</channel-type>
+	<channel-type id="inactivity">
+		<item-type>Switch</item-type>
+		<label>No activity</label>
+		<description>Send warning for a lack of activity.</description>
+	</channel-type>
+	<channel-type id="alarm">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Send alarm for any type of sensor, if no specific channel is suitable.</description>
+	</channel-type>
+	<channel-type id="openShut">
+		<item-type>Switch</item-type>
+		<label>Open/shut</label>
+		<description>Send event when windows or doors are being opened or shut.</description>
+	</channel-type>
+	<channel-type id="light">
+		<item-type>Switch</item-type>
+		<label>Light</label>
+		<description>Send an event when the light state changes.</description>
+	</channel-type>
+	<channel-type id="activity">
+		<item-type>Switch</item-type>
+		<label>Activity</label>
+		<description>Send an event for any kind of activity.</description>
+	</channel-type>
+	<channel-type id="urine">
+		<item-type>Switch</item-type>
+		<label>Urine</label>
+		<description>Send data from incontinence related sensors.</description>
+	</channel-type>
+	<channel-type id="gas">
+		<item-type>Switch</item-type>
+		<label>Gas</label>
+		<description>Send an event for gas.</description>
+	</channel-type>
+	<!--<channel-type id="vitalValue">
+		<item-type></item-type>
+		<label></label>
+		<description></description>
+		</channel-type> -->
+	<channel-type id="presence">
+		<item-type>Switch</item-type>
+		<label>Presence in room</label>
+		<description>Send data for room entry and room exit.</description>
+	</channel-type>
+	<channel-type id="removedSensor">
+		<item-type>Switch</item-type>
+		<label>Removed sensor</label>
+		<description>Send warning for a removed sensor.</description>
+	</channel-type>
+	<channel-type id="sitStatus">
+		<item-type>Switch</item-type>
+		<label>Sitting</label>
+		<description>Send an event when sitting down or standing up is being detected.</description>
+	</channel-type>
+	<channel-type id="inactivityRoom">
+		<item-type>Switch</item-type>
+		<label>Inactivity room</label>
+		<description>Send warning for a lack of activity in a room.</description>
+	</channel-type>
+	<channel-type id="smokeAlarm">
+		<item-type>Switch</item-type>
+		<label>Smoke alarm</label>
+		<description>Send an alarm in case of smoke detection.</description>
+	</channel-type>
+	<channel-type id="heat">
+		<item-type>Switch</item-type>
+		<label>Heat</label>
+		<description>Send an alarm in case of heat detection.</description>
+	</channel-type>
+	<channel-type id="cold">
+		<item-type>Switch</item-type>
+		<label>Cold</label>
+		<description>Send an alarm in case of too cold temperatures.</description>
+	</channel-type>
+	<!--<channel-type id="qualityAir"> Wert von 1-10 -->
+	<channel-type id="alarmAir">
+		<item-type>Switch</item-type>
+		<label>Smoke</label>
+		<description>Send a warning when bad air quality is detected.</description>
+	</channel-type>
+	<!--<channel-type id="roomTemperature"> Zahlenwert in descr. -->
+	<!--<channel-type id="humidity"> -->
+	<!--<channel-type id="airPressure"> -->
+</thing:thing-descriptions>
