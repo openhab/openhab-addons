@@ -56,9 +56,11 @@ public class CRC8 implements Checksum {
      */
     @Override
     public void update(byte[] buffer, int offset, int len) {
-        for (int i = 0; i < len; i++) {
-            byte data = buffer[offset + i];
-            value = crcTable[value ^ data & 0xff];
+        if (null != buffer) {
+            for (int i = 0; i < len; i++) {
+                byte data = buffer[offset + i];
+                value = crcTable[value ^ data & 0xff];
+            }
         }
     }
 

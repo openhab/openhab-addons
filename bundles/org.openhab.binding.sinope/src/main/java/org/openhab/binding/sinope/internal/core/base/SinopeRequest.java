@@ -35,6 +35,10 @@ public abstract class SinopeRequest extends SinopeFrame {
     /** The Constant logger. */
     private static final Logger logger = LoggerFactory.getLogger(SinopeRequest.class);
 
+    public SinopeRequest() {
+        super(entity);
+    }
+
     /**
      * @see org.openhab.binding.sinope.internal.core.base.SinopeFrame#getPayload()
      */
@@ -80,7 +84,8 @@ public abstract class SinopeRequest extends SinopeFrame {
      */
     @Override
     protected void setInternal_payload(byte[] internal_payload) {
-        logger.debug("Request Frame: {}", ByteUtil.toString(internal_payload));
+        logger.debug("Thread:{} - Request Frame: {}", Thread.currentThread().getId(),
+                ByteUtil.toString(internal_payload));
         super.setInternal_payload(internal_payload);
     }
 }

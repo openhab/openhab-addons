@@ -58,11 +58,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
+    public static final int TIMEOUT = 20000;
     private static final int FIRST_POLL_INTERVAL = 1; // In second
     private final Logger logger = LoggerFactory.getLogger(SinopeGatewayHandler.class);
     private @Nullable ScheduledFuture<?> pollFuture;
     private long refreshInterval; // In seconds
     private final List<SinopeThermostatHandler> thermostatHandlers = new CopyOnWriteArrayList<>();
+    private final List<SinopeDimmerHandler> dimmerHandlers = new CopyOnWriteArrayList<>();
     private int seq = 1;
     private @Nullable Socket clientSocket;
     private boolean searching; // In searching mode..
@@ -132,13 +134,17 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
     }
 
     private synchronized void poll() {
-        if (!thermostatHandlers.isEmpty()) {
+        if (!thermostatHandlers.isEmpty() || !dimmerHandlers.isEmpty()) {
             logger.debug("Polling for state");
             try {
                 if (connectToBridge()) {
                     logger.debug("Connected to bridge");
                     for (SinopeThermostatHandler sinopeThermostatHandler : thermostatHandlers) {
                         sinopeThermostatHandler.update();
+                    }
+
+                    for (SinopeDimmerHandler sinopeDimmerHandler : dimmerHandlers) {
+                        sinopeDimmerHandler.update();
                     }
                 }
             } catch (IOException e) {
@@ -154,6 +160,7 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
         SinopeConfig config = getConfigAs(SinopeConfig.class);
         if (this.clientSocket == null || !this.clientSocket.isConnected() || this.clientSocket.isClosed()) {
             this.clientSocket = new Socket(config.hostname, config.port);
+            this.clientSocket.setSoTimeout(TIMEOUT);
             SinopeApiLoginRequest loginRequest = new SinopeApiLoginRequest(SinopeConfig.convert(config.gatewayId),
                     SinopeConfig.convert(config.apiKey));
             SinopeApiLoginAnswer loginAnswer = (SinopeApiLoginAnswer) execute(loginRequest);
@@ -205,6 +212,14 @@ public class SinopeGatewayHandler extends ConfigStatusBridgeHandler {
 
     public boolean unregisterThermostatHandler(SinopeThermostatHandler thermostatHandler) {
         return thermostatHandlers.remove(thermostatHandler);
+    }
+
+    public boolean registerDimmerHandler(SinopeDimmerHandler dimmerHandler) {
+        return dimmerHandlers.add(dimmerHandler);
+    }
+
+    public boolean unregisterDimmerHandler(SinopeDimmerHandler dimmerHandler) {
+        return dimmerHandlers.remove(dimmerHandler);
     }
 
     @Override

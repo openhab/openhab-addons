@@ -49,6 +49,16 @@ abstract class SinopeFrame {
     /** The internal payload. */
     protected byte[] internal_payload;
 
+    /** The entity */
+    private String entity;
+
+    public SinopeFrame(String entity) {
+        this.entity = entity;
+    }
+
+    private SinopeFrame() {
+    }
+
     /**
      * Gets the command.
      *
