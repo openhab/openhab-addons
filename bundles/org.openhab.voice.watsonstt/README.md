@@ -1,8 +1,8 @@
 # IBM Watson Speech-to-Text
 
 Watson STT Service uses the non-free IBM Watson Speech-to-Text API to transcript audio data to text. 
-Be aware, that using this service may incur cost on your IBM account.
-You can find pricing information on [its page](https://www.ibm.com/cloud/watson-speech-to-text/pricing).
+Be aware that using this service may incur cost on your IBM account.
+You can find pricing information on [this page](https://www.ibm.com/cloud/watson-speech-to-text/pricing).
 
 ## Obtaining Credentials
 
@@ -15,7 +15,7 @@ Before you can use this add-on, you should create a Speech-to-Text instance in t
 
 ### Authentication Configuration
 
-Using your favorite configuration UI to edit **Settings / Other Services - IBM Watson Speech-to-Text** and set:
+Use your favorite configuration UI to edit **Settings / Other Services - IBM Watson Speech-to-Text** and set:
 
 * **Api Key** - Api key for Speech-to-Text instance created on IBM Cloud.
 * **Instance Url** - Url for Speech-to-Text instance created on IBM Cloud.
@@ -45,6 +45,9 @@ org.openhab.voice.watsonstt:backgroundAudioSuppression=0.5
 org.openhab.voice.watsonstt:speechDetectorSensitivity=0.5
 org.openhab.voice.watsonstt:inactivityTimeout=2
 org.openhab.voice.watsonstt:optOutLogging=false
+org.openhab.voice.watsonstt:optOutLogging=false
+org.openhab.voice.watsonstt:smartFormatting=false
+org.openhab.voice.watsonstt:redaction=false
 org.openhab.voice.watsonstt:noResultsMessage="Sorry, I didn't understand you"
 ```
 

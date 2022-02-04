@@ -65,8 +65,8 @@ import okhttp3.WebSocket;
  */
 @NonNullByDefault
 @Component(configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "=" + SERVICE_PID)
-@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME, description_uri = SERVICE_CATEGORY + ":"
-        + SERVICE_ID)
+@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
+        + " Speech-to-Text", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class WatsonSTTService implements STTService {
     private final Logger logger = LoggerFactory.getLogger(WatsonSTTService.class);
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-watsonstt");

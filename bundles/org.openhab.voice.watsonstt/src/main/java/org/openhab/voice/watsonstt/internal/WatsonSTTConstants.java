@@ -25,7 +25,7 @@ public class WatsonSTTConstants {
     /**
      * Service name
      */
-    public static final String SERVICE_NAME = "IBM Watson Speech-to-Text";
+    public static final String SERVICE_NAME = "IBM Watson";
     /**
      * Service id
      */
