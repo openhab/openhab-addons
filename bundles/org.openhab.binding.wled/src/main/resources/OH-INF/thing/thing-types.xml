@@ -294,21 +294,21 @@
 		<category>Time</category>
 		<state min="1" max="255" step="1" readOnly="false">
 			<options>
-				<option value="1 m"/>
-				<option value="5 m"/>
-				<option value="10 m"/>
-				<option value="15 m"/>
-				<option value="20 m"/>
-				<option value="25 m"/>
-				<option value="30 m"/>
-				<option value="35 m"/>
-				<option value="45 m"/>
-				<option value="60 m"/>
-				<option value="80 m"/>
-				<option value="90 m"/>
-				<option value="120 m"/>
-				<option value="180 m"/>
-				<option value="255 m"/>
+				<option value="1 min"/>
+				<option value="5 min"/>
+				<option value="10 min"/>
+				<option value="15 min"/>
+				<option value="20 min"/>
+				<option value="25 min"/>
+				<option value="30 min"/>
+				<option value="35 min"/>
+				<option value="45 min"/>
+				<option value="60 min"/>
+				<option value="80 min"/>
+				<option value="90 min"/>
+				<option value="120 min"/>
+				<option value="180 min"/>
+				<option value="255 min"/>
 			</options>
 		</state>
 	</channel-type>
