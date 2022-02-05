@@ -93,6 +93,7 @@ The `boiler` thing supports the following channels:
 | airpressfault | Switch | Air pressure fault | R |
 | waterovtemp | Switch | Water over-temperature fault | R |
 | oemfaultcode | Number:Dimensionless | OEM fault code | R |
+| diag | Switch | Diagnostics indication | R |
 | unsuccessfulburnerstarts | Number:Dimensionless | Unsuccessful burner starts | R |
 | burnerstarts | Number:Dimensionless | Burner starts | R |
 | chpumpstarts | Number:Dimensionless | Central heating pump starts | R |
