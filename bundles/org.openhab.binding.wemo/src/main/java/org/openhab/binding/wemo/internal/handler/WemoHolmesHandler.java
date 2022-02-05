@@ -68,12 +68,9 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
     private static final int FILTER_LIFE_DAYS = 330;
     private static final int FILTER_LIFE_MINS = FILTER_LIFE_DAYS * 24 * 60;
 
-    private final Object upnpLock = new Object();
     private final Object jobLock = new Object();
 
     private final Map<String, String> stateMap = Collections.synchronizedMap(new HashMap<>());
-
-    private Map<String, Boolean> subscriptionState = new HashMap<>();
 
     private @Nullable ScheduledFuture<?> pollingJob;
 
@@ -85,14 +82,12 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     @Override
     public void initialize() {
+        super.initialize();
         Configuration configuration = getConfig();
 
         if (configuration.get(UDN) != null) {
             logger.debug("Initializing WemoHolmesHandler for UDN '{}'", configuration.get(UDN));
-            UpnpIOService localService = service;
-            if (localService != null) {
-                localService.registerParticipant(this);
-            }
+            addSubscription(BASICEVENT);
             host = getHost();
             pollingJob = scheduler.scheduleWithFixedDelay(this::poll, 0, DEFAULT_REFRESH_INTERVAL_SECONDS,
                     TimeUnit.SECONDS);
@@ -113,7 +108,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             job.cancel(true);
         }
         this.pollingJob = null;
-        removeSubscription();
+        super.dispose();
     }
 
     private void poll() {
@@ -130,14 +125,9 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     logger.debug("UPnP device {} not yet registered", getUDN());
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                             "@text/config-status.pending.device-not-registered [\"" + getUDN() + "\"]");
-                    synchronized (upnpLock) {
-                        subscriptionState = new HashMap<>();
-                    }
                     return;
                 }
-                updateStatus(ThingStatus.ONLINE);
                 updateWemoState();
-                addSubscription();
             } catch (Exception e) {
                 logger.debug("Exception during poll: {}", e.getMessage(), e);
             }
@@ -148,7 +138,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            logger.error("Failed to send command '{}' for device '{}': IP address missing", command,
+            logger.warn("Failed to send command '{}' for device '{}': IP address missing", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-ip");
@@ -156,7 +146,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
         }
         String wemoURL = getWemoURL(localHost, DEVICEACTION);
         if (wemoURL == null) {
-            logger.error("Failed to send command '{}' for device '{}': URL cannot be created", command,
+            logger.debug("Failed to send command '{}' for device '{}': URL cannot be created", command,
                     getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
@@ -269,26 +259,11 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                     + "<attributeList>&lt;attribute&gt;&lt;name&gt;" + attribute + "&lt;/name&gt;&lt;value&gt;" + value
                     + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
                     + "</s:Envelope>";
-            String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null && logger.isTraceEnabled()) {
-                logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-            }
-        } catch (RuntimeException e) {
+            wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
             logger.debug("Failed to send command '{}' for device '{}':", command, getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
-    public void onServiceSubscribed(@Nullable String service, boolean succeeded) {
-        if (service != null) {
-            logger.debug("WeMo {}: Subscription to service {} {}", getUDN(), service,
-                    succeeded ? "succeeded" : "failed");
-            subscriptionState.put(service, succeeded);
         }
     }
 
@@ -303,49 +278,6 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
         }
     }
 
-    private synchronized void addSubscription() {
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    logger.debug("Checking WeMo GENA subscription for '{}'", getThing().getUID());
-
-                    String subscription = BASICEVENT;
-
-                    if (subscriptionState.get(subscription) == null) {
-                        logger.debug("Setting up GENA subscription {}: Subscribing to service {}...", getUDN(),
-                                subscription);
-                        localService.addSubscription(this, subscription, SUBSCRIPTION_DURATION_SECONDS);
-                        subscriptionState.put(subscription, true);
-                    }
-                } else {
-                    logger.debug(
-                            "Setting up WeMo GENA subscription for '{}' FAILED - service.isRegistered(this) is FALSE",
-                            getThing().getUID());
-                }
-            }
-        }
-    }
-
-    private synchronized void removeSubscription() {
-        synchronized (upnpLock) {
-            UpnpIOService localService = service;
-            if (localService != null) {
-                if (localService.isRegistered(this)) {
-                    logger.debug("Removing WeMo GENA subscription for '{}'", getThing().getUID());
-                    String subscription = BASICEVENT;
-
-                    if (subscriptionState.get(subscription) != null) {
-                        logger.debug("WeMo {}: Unsubscribing from service {}...", getUDN(), subscription);
-                        localService.removeSubscription(this, subscription);
-                    }
-                    subscriptionState.remove(subscription);
-                    localService.unregisterParticipant(this);
-                }
-            }
-        }
-    }
-
     /**
      * The {@link updateWemoState} polls the actual state of a WeMo device and
      * calls {@link onValueReceived} to update the statemap and channels..
@@ -354,7 +286,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
     protected void updateWemoState() {
         String localHost = getHost();
         if (localHost.isEmpty()) {
-            logger.error("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
+            logger.warn("Failed to get actual state for device '{}': IP address missing", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-ip");
             return;
@@ -362,7 +294,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
         String actionService = DEVICEACTION;
         String wemoURL = getWemoURL(localHost, actionService);
         if (wemoURL == null) {
-            logger.error("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
+            logger.debug("Failed to get actual state for device '{}': URL cannot be created", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/config-status.error.missing-url");
             return;
@@ -372,153 +304,49 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
             String soapHeader = "\"urn:Belkin:service:" + actionService + ":1#" + action + "\"";
             String content = createStateRequestContent(action, actionService);
             String wemoCallResponse = wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
-            if (wemoCallResponse != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("wemoCall to URL '{}' for device '{}'", wemoURL, getThing().getUID());
-                    logger.trace("wemoCall with soapHeader '{}' for device '{}'", soapHeader, getThing().getUID());
-                    logger.trace("wemoCall with content '{}' for device '{}'", content, getThing().getUID());
-                    logger.trace("wemoCall with response '{}' for device '{}'", wemoCallResponse, getThing().getUID());
-                }
+            String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
 
-                String stringParser = substringBetween(wemoCallResponse, "<attributeList>", "</attributeList>");
+            // Due to Belkins bad response formatting, we need to run this twice.
+            stringParser = unescapeXml(stringParser);
+            stringParser = unescapeXml(stringParser);
 
-                // Due to Belkins bad response formatting, we need to run this twice.
-                stringParser = unescapeXml(stringParser);
-                stringParser = unescapeXml(stringParser);
+            logger.trace("AirPurifier response '{}' for device '{}' received", stringParser, getThing().getUID());
 
-                logger.trace("AirPurifier response '{}' for device '{}' received", stringParser, getThing().getUID());
+            stringParser = "<data>" + stringParser + "</data>";
 
-                stringParser = "<data>" + stringParser + "</data>";
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // see
+            // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+            dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            dbf.setXIncludeAware(false);
+            dbf.setExpandEntityReferences(false);
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            InputSource is = new InputSource();
+            is.setCharacterStream(new StringReader(stringParser));
 
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-                // see
-                // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-                dbf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                dbf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                dbf.setXIncludeAware(false);
-                dbf.setExpandEntityReferences(false);
-                DocumentBuilder db = dbf.newDocumentBuilder();
-                InputSource is = new InputSource();
-                is.setCharacterStream(new StringReader(stringParser));
+            Document doc = db.parse(is);
+            NodeList nodes = doc.getElementsByTagName("attribute");
 
-                Document doc = db.parse(is);
-                NodeList nodes = doc.getElementsByTagName("attribute");
+            // iterate the attributes
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Element element = (Element) nodes.item(i);
 
-                // iterate the attributes
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    Element element = (Element) nodes.item(i);
+                NodeList deviceIndex = element.getElementsByTagName("name");
+                Element line = (Element) deviceIndex.item(0);
+                String attributeName = getCharacterDataFromElement(line);
+                logger.trace("attributeName: {}", attributeName);
 
-                    NodeList deviceIndex = element.getElementsByTagName("name");
-                    Element line = (Element) deviceIndex.item(0);
-                    String attributeName = getCharacterDataFromElement(line);
-                    logger.trace("attributeName: {}", attributeName);
+                NodeList deviceID = element.getElementsByTagName("value");
+                line = (Element) deviceID.item(0);
+                String attributeValue = getCharacterDataFromElement(line);
+                logger.trace("attributeValue: {}", attributeValue);
 
-                    NodeList deviceID = element.getElementsByTagName("value");
-                    line = (Element) deviceID.item(0);
-                    String attributeValue = getCharacterDataFromElement(line);
-                    logger.trace("attributeValue: {}", attributeValue);
-
-                    State newMode = new StringType();
-                    switch (attributeName) {
-                        case "Mode":
-                            if ("purifier".equals(getThing().getThingTypeUID().getId())) {
-                                switch (attributeValue) {
-                                    case "0":
-                                        newMode = new StringType("OFF");
-                                        break;
-                                    case "1":
-                                        newMode = new StringType("LOW");
-                                        break;
-                                    case "2":
-                                        newMode = new StringType("MED");
-                                        break;
-                                    case "3":
-                                        newMode = new StringType("HIGH");
-                                        break;
-                                    case "4":
-                                        newMode = new StringType("AUTO");
-                                        break;
-                                }
-                                updateState(CHANNEL_PURIFIERMODE, newMode);
-                            } else {
-                                switch (attributeValue) {
-                                    case "0":
-                                        newMode = new StringType("OFF");
-                                        break;
-                                    case "1":
-                                        newMode = new StringType("FROSTPROTECT");
-                                        break;
-                                    case "2":
-                                        newMode = new StringType("HIGH");
-                                        break;
-                                    case "3":
-                                        newMode = new StringType("LOW");
-                                        break;
-                                    case "4":
-                                        newMode = new StringType("ECO");
-                                        break;
-                                }
-                                updateState(CHANNEL_HEATERMODE, newMode);
-                            }
-                            break;
-                        case "Ionizer":
-                            switch (attributeValue) {
-                                case "0":
-                                    newMode = OnOffType.OFF;
-                                    break;
-                                case "1":
-                                    newMode = OnOffType.ON;
-                                    break;
-                            }
-                            updateState(CHANNEL_IONIZER, newMode);
-                            break;
-                        case "AirQuality":
-                            switch (attributeValue) {
-                                case "0":
-                                    newMode = new StringType("POOR");
-                                    break;
-                                case "1":
-                                    newMode = new StringType("MODERATE");
-                                    break;
-                                case "2":
-                                    newMode = new StringType("GOOD");
-                                    break;
-                            }
-                            updateState(CHANNEL_AIRQUALITY, newMode);
-                            break;
-                        case "FilterLife":
-                            int filterLife = Integer.valueOf(attributeValue);
-                            if ("purifier".equals(getThing().getThingTypeUID().getId())) {
-                                filterLife = Math.round((filterLife / FILTER_LIFE_MINS) * 100);
-                            } else {
-                                filterLife = Math.round((filterLife / 60480) * 100);
-                            }
-                            updateState(CHANNEL_FILTERLIFE, new PercentType(String.valueOf(filterLife)));
-                            break;
-                        case "ExpiredFilterTime":
-                            switch (attributeValue) {
-                                case "0":
-                                    newMode = OnOffType.OFF;
-                                    break;
-                                case "1":
-                                    newMode = OnOffType.ON;
-                                    break;
-                            }
-                            updateState(CHANNEL_EXPIREDFILTERTIME, newMode);
-                            break;
-                        case "FilterPresent":
-                            switch (attributeValue) {
-                                case "0":
-                                    newMode = OnOffType.OFF;
-                                    break;
-                                case "1":
-                                    newMode = OnOffType.ON;
-                                    break;
-                            }
-                            updateState(CHANNEL_FILTERPRESENT, newMode);
-                            break;
-                        case "FANMode":
+                State newMode = new StringType();
+                switch (attributeName) {
+                    case "Mode":
+                        if ("purifier".equals(getThing().getThingTypeUID().getId())) {
                             switch (attributeValue) {
                                 case "0":
                                     newMode = new StringType("OFF");
@@ -537,54 +365,149 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
                                     break;
                             }
                             updateState(CHANNEL_PURIFIERMODE, newMode);
-                            break;
-                        case "DesiredHumidity":
+                        } else {
                             switch (attributeValue) {
                                 case "0":
-                                    newMode = new PercentType("45");
+                                    newMode = new StringType("OFF");
                                     break;
                                 case "1":
-                                    newMode = new PercentType("50");
+                                    newMode = new StringType("FROSTPROTECT");
                                     break;
                                 case "2":
-                                    newMode = new PercentType("55");
+                                    newMode = new StringType("HIGH");
                                     break;
                                 case "3":
-                                    newMode = new PercentType("60");
+                                    newMode = new StringType("LOW");
                                     break;
                                 case "4":
-                                    newMode = new PercentType("100");
+                                    newMode = new StringType("ECO");
                                     break;
                             }
-                            updateState(CHANNEL_DESIREDHUMIDITY, newMode);
-                            break;
-                        case "CurrentHumidity":
-                            newMode = new StringType(attributeValue);
-                            updateState(CHANNEL_CURRENTHUMIDITY, newMode);
-                            break;
-                        case "Temperature":
-                            newMode = new StringType(attributeValue);
-                            updateState(CHANNEL_CURRENTTEMP, newMode);
-                            break;
-                        case "SetTemperature":
-                            newMode = new StringType(attributeValue);
-                            updateState(CHANNEL_TARGETTEMP, newMode);
-                            break;
-                        case "AutoOffTime":
-                            newMode = new StringType(attributeValue);
-                            updateState(CHANNEL_AUTOOFFTIME, newMode);
-                            break;
-                        case "TimeRemaining":
-                            newMode = new StringType(attributeValue);
-                            updateState(CHANNEL_HEATINGREMAINING, newMode);
-                            break;
-                    }
+                            updateState(CHANNEL_HEATERMODE, newMode);
+                        }
+                        break;
+                    case "Ionizer":
+                        switch (attributeValue) {
+                            case "0":
+                                newMode = OnOffType.OFF;
+                                break;
+                            case "1":
+                                newMode = OnOffType.ON;
+                                break;
+                        }
+                        updateState(CHANNEL_IONIZER, newMode);
+                        break;
+                    case "AirQuality":
+                        switch (attributeValue) {
+                            case "0":
+                                newMode = new StringType("POOR");
+                                break;
+                            case "1":
+                                newMode = new StringType("MODERATE");
+                                break;
+                            case "2":
+                                newMode = new StringType("GOOD");
+                                break;
+                        }
+                        updateState(CHANNEL_AIRQUALITY, newMode);
+                        break;
+                    case "FilterLife":
+                        int filterLife = Integer.valueOf(attributeValue);
+                        if ("purifier".equals(getThing().getThingTypeUID().getId())) {
+                            filterLife = Math.round((filterLife / FILTER_LIFE_MINS) * 100);
+                        } else {
+                            filterLife = Math.round((filterLife / 60480) * 100);
+                        }
+                        updateState(CHANNEL_FILTERLIFE, new PercentType(String.valueOf(filterLife)));
+                        break;
+                    case "ExpiredFilterTime":
+                        switch (attributeValue) {
+                            case "0":
+                                newMode = OnOffType.OFF;
+                                break;
+                            case "1":
+                                newMode = OnOffType.ON;
+                                break;
+                        }
+                        updateState(CHANNEL_EXPIREDFILTERTIME, newMode);
+                        break;
+                    case "FilterPresent":
+                        switch (attributeValue) {
+                            case "0":
+                                newMode = OnOffType.OFF;
+                                break;
+                            case "1":
+                                newMode = OnOffType.ON;
+                                break;
+                        }
+                        updateState(CHANNEL_FILTERPRESENT, newMode);
+                        break;
+                    case "FANMode":
+                        switch (attributeValue) {
+                            case "0":
+                                newMode = new StringType("OFF");
+                                break;
+                            case "1":
+                                newMode = new StringType("LOW");
+                                break;
+                            case "2":
+                                newMode = new StringType("MED");
+                                break;
+                            case "3":
+                                newMode = new StringType("HIGH");
+                                break;
+                            case "4":
+                                newMode = new StringType("AUTO");
+                                break;
+                        }
+                        updateState(CHANNEL_PURIFIERMODE, newMode);
+                        break;
+                    case "DesiredHumidity":
+                        switch (attributeValue) {
+                            case "0":
+                                newMode = new PercentType("45");
+                                break;
+                            case "1":
+                                newMode = new PercentType("50");
+                                break;
+                            case "2":
+                                newMode = new PercentType("55");
+                                break;
+                            case "3":
+                                newMode = new PercentType("60");
+                                break;
+                            case "4":
+                                newMode = new PercentType("100");
+                                break;
+                        }
+                        updateState(CHANNEL_DESIREDHUMIDITY, newMode);
+                        break;
+                    case "CurrentHumidity":
+                        newMode = new StringType(attributeValue);
+                        updateState(CHANNEL_CURRENTHUMIDITY, newMode);
+                        break;
+                    case "Temperature":
+                        newMode = new StringType(attributeValue);
+                        updateState(CHANNEL_CURRENTTEMP, newMode);
+                        break;
+                    case "SetTemperature":
+                        newMode = new StringType(attributeValue);
+                        updateState(CHANNEL_TARGETTEMP, newMode);
+                        break;
+                    case "AutoOffTime":
+                        newMode = new StringType(attributeValue);
+                        updateState(CHANNEL_AUTOOFFTIME, newMode);
+                        break;
+                    case "TimeRemaining":
+                        newMode = new StringType(attributeValue);
+                        updateState(CHANNEL_HEATINGREMAINING, newMode);
+                        break;
                 }
             }
+            updateStatus(ThingStatus.ONLINE);
         } catch (RuntimeException | ParserConfigurationException | SAXException | IOException e) {
             logger.debug("Failed to get actual state for device '{}':", getThing().getUID(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 }
