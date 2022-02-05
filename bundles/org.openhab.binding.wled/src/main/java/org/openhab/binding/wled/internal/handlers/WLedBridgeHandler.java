@@ -155,11 +155,6 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                     break;
                 case CHANNEL_SLEEP_BRIGHTNESS:
                     if (command instanceof PercentType) {
-                        if (PercentType.ZERO.equals(command)) {
-                            // API accepts 1 to 255 as valid
-                            localApi.setSleepTargetBrightness(new PercentType(1));
-                            return;
-                        }
                         localApi.setSleepTargetBrightness((PercentType) command);
                     }
                     break;
