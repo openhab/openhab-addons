@@ -291,8 +291,8 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     }
 
     @Override
-    public void onChanged(final List<CidrAddress> added, final List<CidrAddress> removed) {
-        logger.trace("restarting HomeKit bridge on network interface changes.");
+    public synchronized void onChanged(final List<CidrAddress> added, final List<CidrAddress> removed) {
+        logger.trace("HomeKit bridge reacting on network interface changes.");
         removed.forEach(i -> {
             logger.trace("removed interface {}", i.getAddress().toString());
             if (i.getAddress().equals(networkInterface)) {
