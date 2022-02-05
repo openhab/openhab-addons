@@ -72,6 +72,12 @@ public interface WledApi {
 
     public abstract void setSleep(boolean bool) throws ApiException;
 
+    public abstract void setSleepMode(String value) throws ApiException;
+
+    public abstract void setSleepDuration(BigDecimal time) throws ApiException;
+
+    public abstract void setSleepTargetBrightness(PercentType percent) throws ApiException;
+
     public abstract void setUdpSend(boolean bool) throws ApiException;
 
     public abstract void setUdpRecieve(boolean bool) throws ApiException;

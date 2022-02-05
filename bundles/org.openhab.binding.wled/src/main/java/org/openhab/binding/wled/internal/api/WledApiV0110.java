@@ -31,7 +31,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link WledApiV0130} is the json Api methods for firmware version 0.11.0 and newer
+ * The {@link WledApiV0110} is the json Api methods for firmware version 0.11.0 and newer
  * as newer firmwares come out with breaking changes, extend this class into a newer firmware version class.
  *
  * @author Matthew Skinner - Initial contribution
@@ -88,5 +88,10 @@ public class WledApiV0110 extends WledApiV084 {
             name = "Preset " + position;
         }
         postState("{\"psave\":" + position + ",\"n\":\"" + name + "\",\"ib\":true,\"sb\":true}");
+    }
+
+    @Override
+    public void setSleepMode(String value) throws ApiException {
+        postState("{\"nl\":{\"mode\":" + value + "}}");
     }
 }

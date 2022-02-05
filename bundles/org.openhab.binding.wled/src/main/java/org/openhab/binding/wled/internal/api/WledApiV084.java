@@ -278,6 +278,11 @@ public class WledApiV084 implements WledApi {
         }
         handler.update(CHANNEL_TRANS_TIME, new QuantityType<>(
                 new BigDecimal(state.stateResponse.transition).divide(BigDecimal.TEN), Units.SECOND));
+        handler.update(CHANNEL_SLEEP_DURATION,
+                new QuantityType<>(new BigDecimal(state.nightLightState.dur), Units.MINUTE));
+        handler.update(CHANNEL_SLEEP_BRIGHTNESS, new PercentType(
+                new BigDecimal(state.nightLightState.tbri).divide(BIG_DECIMAL_2_55, RoundingMode.HALF_UP)));
+        handler.update(CHANNEL_SLEEP_MODE, new StringType(Integer.toString(state.nightLightState.mode)));
     }
 
     protected void processState(int segmentIndex) throws ApiException {
@@ -515,5 +520,20 @@ public class WledApiV084 implements WledApi {
             segmentNames.add("Segment " + count);
         }
         return segmentNames;
+    }
+
+    @Override
+    public void setSleepMode(String value) throws ApiException {
+        // Binding requires firmware 0.11.0 and newer
+    }
+
+    @Override
+    public void setSleepDuration(BigDecimal time) throws ApiException {
+        postState("{\"nl\":{\"dur\":" + time + "}}");
+    }
+
+    @Override
+    public void setSleepTargetBrightness(PercentType percent) throws ApiException {
+        postState("{\"nl\":{\"tbri\":" + percent.toBigDecimal().multiply(BIG_DECIMAL_2_55).intValue() + "}}");
     }
 }

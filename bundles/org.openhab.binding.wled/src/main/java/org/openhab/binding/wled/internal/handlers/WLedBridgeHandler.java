@@ -150,6 +150,27 @@ public class WLedBridgeHandler extends BaseBridgeHandler {
                 case CHANNEL_SLEEP:
                     localApi.setSleep(OnOffType.ON.equals(command));
                     break;
+                case CHANNEL_SLEEP_MODE:
+                    localApi.setSleepMode(command.toString());
+                    break;
+                case CHANNEL_SLEEP_BRIGHTNESS:
+                    if (command instanceof PercentType) {
+                        if (PercentType.ZERO.equals(command)) {
+                            // API accepts 1 to 255 as valid
+                            localApi.setSleepTargetBrightness(new PercentType(1));
+                            return;
+                        }
+                        localApi.setSleepTargetBrightness((PercentType) command);
+                    }
+                    break;
+                case CHANNEL_SLEEP_DURATION:
+                    if (command instanceof QuantityType) {
+                        QuantityType<?> minutes = ((QuantityType<?>) command).toUnit(Units.MINUTE);
+                        if (minutes != null) {
+                            localApi.setSleepDuration(new BigDecimal(minutes.intValue()));
+                        }
+                    }
+                    break;
                 case CHANNEL_PLAYLISTS:
                     localApi.setPreset(command.toString());
                     break;

@@ -68,6 +68,9 @@ public class WLedBindingConstants {
     public static final String CHANNEL_SPACING = "spacing";
     public static final String CHANNEL_LIVE_OVERRIDE = "liveOverride";
     public static final String CHANNEL_SLEEP = "sleep";
+    public static final String CHANNEL_SLEEP_MODE = "sleepMode";
+    public static final String CHANNEL_SLEEP_DURATION = "sleepDuration";
+    public static final String CHANNEL_SLEEP_BRIGHTNESS = "sleepTargetBrightness";
     public static final String CHANNEL_SYNC_SEND = "syncSend";
     public static final String CHANNEL_SYNC_RECEIVE = "syncReceive";
 }

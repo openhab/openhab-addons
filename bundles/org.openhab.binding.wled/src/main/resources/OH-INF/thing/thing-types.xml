@@ -16,6 +16,9 @@
 			<channel id="presetCycle" typeId="presetCycle"/>
 			<channel id="liveOverride" typeId="liveOverride"/>
 			<channel id="sleep" typeId="sleep"/>
+			<channel id="sleepMode" typeId="sleepMode"/>
+			<channel id="sleepDuration" typeId="sleepDuration"/>
+			<channel id="sleepTargetBrightness" typeId="sleepTargetBrightness"/>
 			<channel id="syncSend" typeId="syncSend"/>
 			<channel id="syncReceive" typeId="syncReceive"/>
 		</channels>
@@ -268,6 +271,52 @@
 		<label>Sleep Timer</label>
 		<description>Fade the level of light and turn off after set time</description>
 		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="sleepMode" advanced="true">
+		<item-type>String</item-type>
+		<label>Sleep Mode</label>
+		<description>Timed Light Mode selects how the light will fade or increase when the sleep timer is turned ON.</description>
+		<state min="0" max="3" step="1" pattern="%.0f" readOnly="false">
+			<options>
+				<option value="0">Instant</option>
+				<option value="1">Fade</option>
+				<option value="2">Color Fade</option>
+				<option value="3">Sunrise</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sleepDuration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Sleep Duration</label>
+		<description>Time it takes to change/fade to the target brightness.</description>
+		<category>Time</category>
+		<state min="1" max="255" step="1" readOnly="false">
+			<options>
+				<option value="1 m"/>
+				<option value="5 m"/>
+				<option value="10 m"/>
+				<option value="15 m"/>
+				<option value="20 m"/>
+				<option value="25 m"/>
+				<option value="30 m"/>
+				<option value="35 m"/>
+				<option value="45 m"/>
+				<option value="60 m"/>
+				<option value="80 m"/>
+				<option value="90 m"/>
+				<option value="120 m"/>
+				<option value="180 m"/>
+				<option value="255 m"/>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="sleepTargetBrightness">
+		<item-type>Dimmer</item-type>
+		<label>Sleep Target Brightness</label>
+		<description>Sets how bright the light will be after the sleep duration time has expired.</description>
 	</channel-type>
 
 	<channel-type id="presetCycle" advanced="true">
