@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
@@ -32,14 +31,14 @@ import org.openhab.core.audio.AudioStream;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.voice.RecognitionStartEvent;
+import org.openhab.core.voice.RecognitionStopEvent;
 import org.openhab.core.voice.STTException;
 import org.openhab.core.voice.STTListener;
 import org.openhab.core.voice.STTService;
 import org.openhab.core.voice.STTServiceHandle;
 import org.openhab.core.voice.SpeechRecognitionErrorEvent;
 import org.openhab.core.voice.SpeechRecognitionEvent;
-import org.openhab.core.voice.SpeechStartEvent;
-import org.openhab.core.voice.SpeechStopEvent;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -55,7 +54,6 @@ import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResult;
 import com.ibm.watson.speech_to_text.v1.model.SpeechRecognitionResults;
 import com.ibm.watson.speech_to_text.v1.websocket.RecognizeCallback;
 
-import okhttp3.OkHttpClient;
 import okhttp3.WebSocket;
 
 /**
@@ -111,7 +109,6 @@ public class WatsonSTTService implements STTService {
         if (config.apiKey.isBlank() || config.instanceUrl.isBlank()) {
             throw new STTException("service is not correctly configured");
         }
-        java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.ALL);
         String contentType = getContentType(audioStream);
         if (contentType == null) {
             throw new STTException("Unsupported format, unable to resolve audio content type");
@@ -272,7 +269,7 @@ public class WatsonSTTService implements STTService {
         public void onDisconnected() {
             logger.debug("onDisconnected");
             disconnected = true;
-            sttListener.sttEventReceived(new SpeechStopEvent());
+            sttListener.sttEventReceived(new RecognitionStopEvent());
             float averageConfidence = confidenceSum / (float) responseCount;
             String transcript = transcriptBuilder.toString();
             if (!transcript.isBlank()) {
@@ -296,7 +293,7 @@ public class WatsonSTTService implements STTService {
         @Override
         public void onListening() {
             logger.debug("onListening");
-            sttListener.sttEventReceived(new SpeechStartEvent());
+            sttListener.sttEventReceived(new RecognitionStartEvent());
         }
 
         @Override
