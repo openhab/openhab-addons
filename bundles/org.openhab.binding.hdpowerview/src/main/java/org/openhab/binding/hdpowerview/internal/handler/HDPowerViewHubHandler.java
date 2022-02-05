@@ -170,6 +170,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         hardRefreshPositionInterval = config.hardRefresh;
         hardRefreshBatteryLevelInterval = config.hardRefreshBatteryLevel;
         initializeChannels();
+        firmwareVersions = null;
         schedulePoll();
     }
 
@@ -282,8 +283,13 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private synchronized void poll() {
         try {
-            logger.debug("Polling for state");
             updateFirmwareProperties();
+        } catch (HubException e) {
+            logger.warn("Failed to update firmware properties: {}", e.getMessage());
+        }
+
+        try {
+            logger.debug("Polling for state");
             pollShades();
 
             List<Scene> scenes = updateSceneChannels();
