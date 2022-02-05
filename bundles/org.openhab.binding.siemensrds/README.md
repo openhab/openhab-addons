@@ -34,7 +34,13 @@ Before it can connect to the server, the following Configuration Parameters must
 | userEmail               | The e-mail address of the user account on the cloud server; as entered in the Siemens App when first registering a thermostat.                                      |
 | userPassword            | The password of the user account on the cloud server; as entered in the Siemens App.                                                                                |
 | pollingInterval         | Time interval in seconds between polling requests to the cloud server; the value must be between 8..60 seconds; the Default value (recommended) is 60 seconds.      |
-| apiKey                  | The key code needed to access the application program interface on the Siemens Climatix IC cloud server; you can request a key code from Siemens on their web-site. |
+| apiKey                  | The key code needed to access the application program interface on the Siemens Climatix IC cloud server; you can request a key code from Siemens customer support <sup>1)</sup>. |
+
+<sup>1)</sup> The Siemens Climatix IC cloud server exists primarily for supporting Original Equipment Manufacturing (OEM) customers who use the Climatix range of HVACR control products.
+However the Climatix IC cloud server is also used for supporting private customers using the RDS range of residential smart thermostats.
+But Siemens customer support people are often unaware of the latter fact, so when you ask them for the API key for the RDS smart thermostat range, their first reaction might often be to say you are talking nonsense!
+Do not accept that answer!
+You need to insist that you are requesting the Climatix IC cloud server API key _**for the RDS smart thermostat range**_ – it is a <u>different</u> key than those for OEM commercial customers.
 
 Note: You must create ONLY ONE Thing of the type Climatix IC Account; duplicate Climatix IC Account Things risk causing communication errors with the cloud server.   
 
