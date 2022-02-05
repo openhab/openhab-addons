@@ -110,7 +110,7 @@
 		</tags>
 	</channel-type>
 
-	<channel-type id="segmentBrightness" advanced="true">
+	<channel-type id="segmentBrightness">
 		<item-type>Dimmer</item-type>
 		<label>Segment Brightness</label>
 		<description>Changes the brightness of the whole segment</description>
@@ -313,7 +313,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="sleepTargetBrightness">
+	<channel-type id="sleepTargetBrightness" advanced="true">
 		<item-type>Dimmer</item-type>
 		<label>Sleep Target Brightness</label>
 		<description>Sets how bright the light will be after the sleep duration time has expired.</description>
