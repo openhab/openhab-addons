@@ -12,6 +12,8 @@
 			<channel id="state" typeId="state"/>
 		</channels>
 
+		<representation-property>udn</representation-property>
+
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
@@ -32,8 +34,9 @@
 			<channel id="energyTotal" typeId="energyTotal"/>
 			<channel id="standByLimit" typeId="standByLimit"/>
 			<channel id="onStandBy" typeId="onStandBy"/>
-
 		</channels>
+
+		<representation-property>udn</representation-property>
 
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
@@ -46,6 +49,8 @@
 			<channel id="state" typeId="state"/>
 		</channels>
 
+		<representation-property>udn</representation-property>
+
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
@@ -57,6 +62,8 @@
 			<channel id="motionDetection" typeId="motionDetection"/>
 			<channel id="lastMotionDetected" typeId="lastMotionDetected"/>
 		</channels>
+
+		<representation-property>udn</representation-property>
 
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
@@ -97,6 +104,8 @@
 			<channel id="sensor" typeId="sensor"/>
 		</channels>
 
+		<representation-property>udn</representation-property>
+
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
@@ -115,6 +124,8 @@
 			<channel id="brewed" typeId="brewed"/>
 			<channel id="lastCleaned" typeId="lastCleaned"/>
 		</channels>
+
+		<representation-property>udn</representation-property>
 
 		<config-description>
 			<parameter name="udn" type="text" required="true">
@@ -144,6 +155,8 @@
 			<channel id="nightModeBrightness" typeId="nightModeBrightness"/>
 		</channels>
 
+		<representation-property>udn</representation-property>
+
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
@@ -158,6 +171,8 @@
 			<channel id="highCookTime" typeId="highCookTime"/>
 			<channel id="cookedTime" typeId="cookedTime"/>
 		</channels>
+
+		<representation-property>udn</representation-property>
 
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
@@ -175,6 +190,8 @@
 			<channel id="filterPresent" typeId="filterPresent"/>
 		</channels>
 
+		<representation-property>udn</representation-property>
+
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
@@ -191,6 +208,8 @@
 			<channel id="expiredFilterTime" typeId="expiredFilterTime"/>
 		</channels>
 
+		<representation-property>udn</representation-property>
+
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
@@ -205,6 +224,8 @@
 			<channel id="autoOffTime" typeId="autoOffTime"/>
 			<channel id="heatingRemaining" typeId="heatingRemaining"/>
 		</channels>
+
+		<representation-property>udn</representation-property>
 
 		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
