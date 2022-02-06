@@ -158,7 +158,12 @@ public class WebSocketConnection {
 
     @SuppressWarnings("unused")
     @OnWebSocketError
-    public void onError(Session session, Throwable cause) {
+    public void onError(@Nullable Session session, Throwable cause) {
+        if (session == null) {
+            logger.trace("Encountered an error while processing on error without session. Connection state is {}: {}",
+                    connectionState, cause.getMessage());
+            return;
+        }
         if (!session.equals(this.session)) {
             handleWrongSession(session, "Connection error: " + cause.getMessage());
             return;
