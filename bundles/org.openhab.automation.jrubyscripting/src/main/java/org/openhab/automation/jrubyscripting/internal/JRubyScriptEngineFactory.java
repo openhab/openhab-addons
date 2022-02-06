@@ -57,7 +57,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             .concat(factory.getExtensions().stream(), factory.getMimeTypes().stream())
             .collect(Collectors.toUnmodifiableList());
 
-    // Adds @ in front of a set of variables so that Ruby recogonizes them as instance variables
+    // Adds @ in front of a set of variables so that Ruby recognizes them as instance variables
     private static Map.Entry<String, Object> mapInstancePresets(Map.Entry<String, Object> entry) {
         if (INSTANCE_PRESETS.contains(entry.getKey())) {
             return Map.entry("@" + entry.getKey(), entry.getValue());
@@ -66,7 +66,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         }
     }
 
-    // Adds $ in front of a set of variables so that Ruby recogonizes them as global variables
+    // Adds $ in front of a set of variables so that Ruby recognizes them as global variables
     private static Map.Entry<String, Object> mapGlobalPresets(Map.Entry<String, Object> entry) {
         if (GLOBAL_PRESETS.contains(entry.getKey())) {
             return Map.entry("$" + entry.getKey(), entry.getValue());
@@ -111,14 +111,14 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
                         .collect(Collectors.partitioningBy(entry -> (entry.getValue() instanceof Class),
                                 Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
-        importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<String, Object>()));
-        super.scopeValues(scriptEngine, partitionedMap.getOrDefault(false, new HashMap<String, Object>()));
+        importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<>()));
+        super.scopeValues(scriptEngine, partitionedMap.getOrDefault(false, new HashMap<>()));
     }
 
     private void importClassesToRuby(ScriptEngine scriptEngine, Map<String, Object> objects) {
         String import_statements = objects.entrySet() //
                 .stream() //
-                .map(entry -> "java_import " + ((java.lang.Class<?>) entry.getValue()).getName() + " rescue nil") //
+                .map(entry -> "java_import " + ((Class<?>) entry.getValue()).getName() + " rescue nil") //
                 .collect(Collectors.joining("\n"));
         try {
             scriptEngine.eval(import_statements);
