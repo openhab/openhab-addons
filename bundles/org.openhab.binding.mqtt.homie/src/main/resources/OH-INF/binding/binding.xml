@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<binding:binding id="mqtt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
+
+	<!--
+		This file is a crutch to help the i18n:generate-default-translations tool
+		so that it would pick up thing/*.xml
+		https://github.com/openhab/openhab-addons/issues/12220#issuecomment-1030850897
+	-->
+	<name>MQTT Binding for Homie Convention</name>
+	<description>Supports Homie Convention in MQTT</description>
+</binding:binding>
