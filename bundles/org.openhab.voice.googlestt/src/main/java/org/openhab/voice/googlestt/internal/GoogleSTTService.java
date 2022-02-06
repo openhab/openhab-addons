@@ -38,13 +38,13 @@ import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.voice.RecognitionStartEvent;
+import org.openhab.core.voice.RecognitionStopEvent;
 import org.openhab.core.voice.STTListener;
 import org.openhab.core.voice.STTService;
 import org.openhab.core.voice.STTServiceHandle;
 import org.openhab.core.voice.SpeechRecognitionErrorEvent;
 import org.openhab.core.voice.SpeechRecognitionEvent;
-import org.openhab.core.voice.SpeechStartEvent;
-import org.openhab.core.voice.SpeechStopEvent;
 import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
@@ -342,7 +342,7 @@ public class GoogleSTTService implements STTService {
 
         @Override
         public void onStart(@Nullable StreamController controller) {
-            sttListener.sttEventReceived(new SpeechStartEvent());
+            sttListener.sttEventReceived(new RecognitionStartEvent());
             lastInputTime = System.currentTimeMillis();
         }
 
@@ -380,7 +380,7 @@ public class GoogleSTTService implements STTService {
 
         @Override
         public void onComplete() {
-            sttListener.sttEventReceived(new SpeechStopEvent());
+            sttListener.sttEventReceived(new RecognitionStopEvent());
             float averageConfidence = confidenceSum / responseCount;
             String transcript = transcriptBuilder.toString();
             if (!transcript.isBlank()) {
@@ -398,7 +398,7 @@ public class GoogleSTTService implements STTService {
         public void onError(@Nullable Throwable t) {
             logger.warn("Recognition error: ", t);
             completeListener.accept(t);
-            sttListener.sttEventReceived(new SpeechStopEvent());
+            sttListener.sttEventReceived(new RecognitionStopEvent());
             if (!config.errorMessage.isBlank()) {
                 sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             } else {
