@@ -12,12 +12,9 @@
 			<channel id="state" typeId="state"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text" required="true">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="insight">
@@ -37,15 +34,11 @@
 			<channel id="energyTotal" typeId="energyTotal"/>
 			<channel id="standByLimit" typeId="standByLimit"/>
 			<channel id="onStandBy" typeId="onStandBy"/>
-
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text" required="true">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="lightswitch">
@@ -56,12 +49,9 @@
 			<channel id="state" typeId="state"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text" required="true">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="motion">
@@ -73,12 +63,9 @@
 			<channel id="lastMotionDetected" typeId="lastMotionDetected"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text" required="true">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<!-- Standard WeMo Bulb with E27 socket -->
@@ -117,12 +104,9 @@
 			<channel id="sensor" typeId="sensor"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text" required="true">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="CoffeeMaker">
@@ -141,6 +125,8 @@
 			<channel id="lastCleaned" typeId="lastCleaned"/>
 		</channels>
 
+		<representation-property>udn</representation-property>
+
 		<config-description>
 			<parameter name="udn" type="text" required="true">
 				<label>Unique Device Name</label>
@@ -148,8 +134,7 @@
 			</parameter>
 			<parameter name="pollingInterval" type="integer" required="false" min="15" max="180">
 				<label>Polling Interval</label>
-				<description>Interval polling the WeMo Coffee Maker.
-				</description>
+				<description>Interval polling the WeMo Coffee Maker.</description>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -170,12 +155,9 @@
 			<channel id="nightModeBrightness" typeId="nightModeBrightness"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text" required="true">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="Crockpot">
@@ -190,13 +172,9 @@
 			<channel id="cookedTime" typeId="cookedTime"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="Purifier">
@@ -212,13 +190,9 @@
 			<channel id="filterPresent" typeId="filterPresent"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="Humidifier">
@@ -234,13 +208,9 @@
 			<channel id="expiredFilterTime" typeId="expiredFilterTime"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<thing-type id="Heater">
@@ -255,13 +225,9 @@
 			<channel id="heatingRemaining" typeId="heatingRemaining"/>
 		</channels>
 
-		<config-description>
-			<parameter name="udn" type="text">
-				<label>Unique Device Name</label>
-				<description>The UDN identifies the WeMo Device</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<representation-property>udn</representation-property>
+
+		<config-description-ref uri="thing-type:wemo:device"/>
 	</thing-type>
 
 	<channel-type id="state">
