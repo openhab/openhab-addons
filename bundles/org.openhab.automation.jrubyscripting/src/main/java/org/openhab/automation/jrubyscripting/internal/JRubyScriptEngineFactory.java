@@ -12,6 +12,7 @@
  */
 package org.openhab.automation.jrubyscripting.internal;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,7 +57,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
             .concat(factory.getExtensions().stream(), factory.getMimeTypes().stream())
             .collect(Collectors.toUnmodifiableList());
 
-    // Adds @ in front of a set of variables so that Ruby recogonizes them as instance variables
+    // Adds @ in front of a set of variables so that Ruby recognizes them as instance variables
     private static Map.Entry<String, Object> mapInstancePresets(Map.Entry<String, Object> entry) {
         if (INSTANCE_PRESETS.contains(entry.getKey())) {
             return Map.entry("@" + entry.getKey(), entry.getValue());
@@ -64,7 +66,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
         }
     }
 
-    // Adds $ in front of a set of variables so that Ruby recogonizes them as global variables
+    // Adds $ in front of a set of variables so that Ruby recognizes them as global variables
     private static Map.Entry<String, Object> mapGlobalPresets(Map.Entry<String, Object> entry) {
         if (GLOBAL_PRESETS.contains(entry.getKey())) {
             return Map.entry("$" + entry.getKey(), entry.getValue());
@@ -93,6 +95,7 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
     @Override
     public void scopeValues(ScriptEngine scriptEngine, Map<String, Object> scopeValues) {
         // Empty comments prevent the formatter from breaking up the correct streams chaining
+        logger.debug("Scope Values: {}", scopeValues);
         Map<String, Object> filteredScopeValues = //
                 scopeValues //
                         .entrySet() //
@@ -102,7 +105,26 @@ public class JRubyScriptEngineFactory extends AbstractScriptEngineFactory {
                         .map(JRubyScriptEngineFactory::mapGlobalPresets) //
                         .collect(Collectors.toMap(map -> map.getKey(), map -> map.getValue())); //
 
-        super.scopeValues(scriptEngine, filteredScopeValues);
+        Map<Boolean, Map<String, Object>> partitionedMap = //
+                filteredScopeValues.entrySet() //
+                        .stream() //
+                        .collect(Collectors.partitioningBy(entry -> (entry.getValue() instanceof Class),
+                                Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+
+        importClassesToRuby(scriptEngine, partitionedMap.getOrDefault(true, new HashMap<>()));
+        super.scopeValues(scriptEngine, partitionedMap.getOrDefault(false, new HashMap<>()));
+    }
+
+    private void importClassesToRuby(ScriptEngine scriptEngine, Map<String, Object> objects) {
+        String import_statements = objects.entrySet() //
+                .stream() //
+                .map(entry -> "java_import " + ((Class<?>) entry.getValue()).getName() + " rescue nil") //
+                .collect(Collectors.joining("\n"));
+        try {
+            scriptEngine.eval(import_statements);
+        } catch (ScriptException e) {
+            logger.debug("Error importing java classes", e);
+        }
     }
 
     @Override
