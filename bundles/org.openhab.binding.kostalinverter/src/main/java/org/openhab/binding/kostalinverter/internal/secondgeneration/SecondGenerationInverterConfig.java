@@ -25,12 +25,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class SecondGenerationInverterConfig {
-    public static final long REFRESHINTERVAL_SEC = 60;
-
     public String url = "";
     public String username = "";
     public String password = "";
+    public int refreshInterval = 60;
     public String dxsIdConf = "";
     public String valueConf = "";
-    public boolean hasBattery;
+    public boolean hasBattery = false;
 }
