@@ -58,6 +58,7 @@ The following optional parameters can be set for the Thing:
 * __availabilityTopic__: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
 * __payloadAvailable__: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
 * __payloadNotAvailable__: Payload of the `Availability Topic`, when the device is *not* available. Default: `OFF`.
+* __transformationPattern__: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload. Transformations can be chained by separating them with the mathematical intersection character "∩". The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
 
 ## Supported Channels
 
