@@ -338,7 +338,7 @@
 /bundles/org.openhab.binding.weathercompany/ @mhilbush
 /bundles/org.openhab.binding.weatherunderground/ @lolodomo
 /bundles/org.openhab.binding.webthing/ @grro
-/bundles/org.openhab.binding.wemo/ @hmerk
+/bundles/org.openhab.binding.wemo/ @hmerk @jlaur
 /bundles/org.openhab.binding.wifiled/ @rvt @xylo
 /bundles/org.openhab.binding.windcentrale/ @marcelrv
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
