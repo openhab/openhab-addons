@@ -19,6 +19,7 @@
 		<properties>
 			<property name="vendor">Danfoss</property>
 		</properties>
+		<representation-property>host</representation-property>
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<label>Host</label>
