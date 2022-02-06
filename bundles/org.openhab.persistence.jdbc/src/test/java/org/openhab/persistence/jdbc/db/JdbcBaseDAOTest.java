@@ -76,7 +76,7 @@ public class JdbcBaseDAOTest {
     }
 
     @Test
-    public void testObjectAsStateReturnValidState() {
+    public void testObjectAsStateReturnsValidState() {
         State decimalType = jdbcBaseDAO.objectAsState(new NumberItem("testNumberItem"), null, 7.3);
         assertInstanceOf(DecimalType.class, decimalType);
         assertThat(decimalType, is(DecimalType.valueOf("7.3")));
