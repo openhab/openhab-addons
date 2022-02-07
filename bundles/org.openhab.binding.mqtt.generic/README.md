@@ -212,15 +212,16 @@ This binding includes a rule action, which allows one to publish MQTT messages f
 There is a separate instance for each MQTT broker (i.e. bridge), which can be retrieved through
 
 ```
-val mqttActions = getActions("mqtt","mqtt:systemBroker:embedded-mqtt-broker")
+val mqttActions = getActions("mqtt","mqtt:broker:myBroker")
 ```
 
-where the first parameter always has to be `mqtt` and the second (`mqtt:systemBroker:embedded-mqtt-broker`) is the Thing UID of the broker that should be used.
+where the first parameter always has to be `mqtt` and the second (`mqtt:broker:myBroker`) is the Thing UID of the broker that should be used.
 Once this action instance is retrieved, you can invoke the `publishMQTT(String topic, String value, Boolean retained)` method on it:
 
 ```
 mqttActions.publishMQTT("mytopic","myvalue", true)
 ```
+
 Alternatively, `publishMQTT(String topic, byte[] value, Boolean retained)` can publish a byte array data.
 
 The retained argument is optional and if not supplied defaults to `false`.
@@ -231,8 +232,8 @@ The retained argument is optional and if not supplied defaults to `false`.
 
 ```
 mqtt:broker:mySecureBroker [ host="192.168.0.41", secure=true, certificatepin=true, publickeypin=true ]
-mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
-mqtt:broker:myAuthentificatedBroker [ host="192.168.0.43",secure=true, username="user", password="password" ]
+mqtt:broker:myInsecureBroker [ host="192.168.0.42", secure=false ]
+mqtt:broker:myAuthenticatedBroker [ host="192.168.0.43",secure=true, username="user", password="password" ]
 mqtt:broker:pinToPublicKey [ host="192.168.0.44", secure=true , publickeypin=true, publickey="SHA-256:9a6f30e67ae9723579da2575c35daf7da3b370b04ac0bde031f5e1f5e4617eb8" ]
 ```
 
@@ -248,9 +249,9 @@ Files can also be used to create topic things and channels and to combine them w
 *mqtt.things* file:
 
 ```
-Bridge mqtt:broker:myUnsecureBroker [ host="192.168.0.42", secure=false ]
+Bridge mqtt:broker:myInsecureBroker [ host="192.168.0.42", secure=false ]
 
-Thing mqtt:topic:mything "mything" (mqtt:broker:myUnsecureBroker) {
+Thing mqtt:topic:mything "mything" (mqtt:broker:myInsecureBroker) {
     Channels:
     Type switch : lamp "Kitchen Lamp" [ stateTopic="lamp/enabled", commandTopic="lamp/enabled/set" ]
     Type switch : fancylamp "Fancy Lamp" [ stateTopic="fancy/lamp/state", commandTopic="fancy/lamp/command", on="i-am-on", off="i-am-off" ]
@@ -263,7 +264,7 @@ Thing mqtt:topic:mything "mything" (mqtt:broker:myUnsecureBroker) {
 If the availability status is available, it can be configured to set the Thing status:
 
 ```
-Thing mqtt:topic:bedroom1-switch (mqtt:broker:myUnsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
+Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
     Channels:
          Type switch        : power        [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)∩JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
 }
