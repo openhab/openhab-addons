@@ -120,8 +120,16 @@ public class PorcupineKSService implements KSService {
         File localFile = new File(EXTRACTION_FOLDER,
                 relativePath.substring(relativePath.lastIndexOf(File.separator) + 1));
         if (!localFile.exists()) {
+            if (File.separator.equals("\\")) {
+                // bundle requires unix path separator
+                logger.debug("use unix path separator");
+                relativePath = relativePath.replace("\\", "/");
+            }
             URL porcupineResource = bundleContext.getBundle().getEntry(relativePath);
             logger.debug("extracting binary {} from bundle to extraction folder", relativePath);
+            if (porcupineResource == null) {
+                throw new IOException("Missing bundle file: " + relativePath);
+            }
             extractFromBundle(porcupineResource, localFile);
         } else {
             logger.debug("binary {} already extracted", relativePath);
