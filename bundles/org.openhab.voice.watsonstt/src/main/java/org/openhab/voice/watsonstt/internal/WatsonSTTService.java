@@ -42,6 +42,7 @@ import org.openhab.core.voice.SpeechRecognitionEvent;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Modified;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,6 +80,11 @@ public class WatsonSTTService implements STTService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
+        this.config = new Configuration(config).as(WatsonSTTConfiguration.class);
+    }
+
+    @Modified
+    protected void modified(Map<String, Object> config) {
         this.config = new Configuration(config).as(WatsonSTTConfiguration.class);
     }
 

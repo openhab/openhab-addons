@@ -45,7 +45,6 @@ org.openhab.voice.watsonstt:backgroundAudioSuppression=0.5
 org.openhab.voice.watsonstt:speechDetectorSensitivity=0.5
 org.openhab.voice.watsonstt:inactivityTimeout=2
 org.openhab.voice.watsonstt:optOutLogging=false
-org.openhab.voice.watsonstt:optOutLogging=false
 org.openhab.voice.watsonstt:smartFormatting=false
 org.openhab.voice.watsonstt:redaction=false
 org.openhab.voice.watsonstt:noResultsMessage="Sorry, I didn't understand you"

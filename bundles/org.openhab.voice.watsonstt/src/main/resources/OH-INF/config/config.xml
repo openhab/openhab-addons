@@ -36,12 +36,12 @@
 			<label>Inactivity Timeout</label>
 			<description>The time in seconds after which, if only silence (no speech) is detected in the audio, the connection is
 				closed.</description>
-			<unitLabel>s</unitLabel>
 			<default>3</default>
 		</parameter>
 		<parameter name="noResultsMessage" type="text" groupName="stt">
 			<label>No Results Message</label>
 			<description>Message to be told when no transcription is done.</description>
+			<default>No results</default>
 		</parameter>
 		<parameter name="optOutLogging" type="boolean" groupName="stt">
 			<label>Opt Out Logging</label>
