@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="stringType">
+		<item-type>String</item-type>
+		<label>Teleinfo String Type</label>
+		<category>Energy</category>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energyType">
+		<item-type>Number:Energy</item-type>
+		<label>Teleinfo Energy Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentType">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Teleinfo Current Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="potentialType">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Teleinfo Potential Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="powerType">
+		<item-type>Number:Power</item-type>
+		<label>Teleinfo Power Type</label>
+		<category>Energy</category>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="switchType">
+		<item-type>Switch</item-type>
+		<label>Teleinfo Switch Type</label>
+		<category>Energy</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="dateTimeType">
+		<item-type>DateTime</item-type>
+		<label>Teleinfo DateTime Type</label>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+</thing:thing-descriptions>
