@@ -8,7 +8,6 @@
 		extensible="string,number,dimmer,switch,contact,colorRGB,colorHSB,color,datetime,image,location,rollershutter,trigger">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="broker"/>
-			<bridge-type-ref id="systemBroker"/>
 		</supported-bridge-type-refs>
 		<label>Generic MQTT Thing</label>
 		<description>You need a configured Broker first. Dynamically add channels of various types to this Thing. Link
