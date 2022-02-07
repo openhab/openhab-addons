@@ -140,8 +140,6 @@ public class SolarMaxHandler extends BaseThingHandler {
                     State state = convertValueToState(solarMaxData.get(SolarMaxCommandKey.valueOf(channelId)),
                             solarMaxChannel.getUnit());
 
-                    // getAcPhase1Current()
-
                     if (channel != null && state != null) {
                         logger.debug("Update channel state: {} - {}", channelId, state);
                         updateState(channel.getUID(), state);

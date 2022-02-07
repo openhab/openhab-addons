@@ -27,8 +27,6 @@ public enum SolarMaxProperty {
     PROPERTY_SOFTWARE_VERSION(SolarMaxCommandKey.softwareVersion.name()),
     PROPERTY_BUILD_NUMBER(SolarMaxCommandKey.buildNumber.name());
 
-    ;
-
     private final String propertyId;
 
     private SolarMaxProperty(String propertyId) {
