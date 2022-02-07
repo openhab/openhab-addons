@@ -56,10 +56,12 @@ public abstract class BaseDeviceHandler extends BaseThingHandler {
     public void initialize() {
         Bridge bridge = getBridge();
 
-        if (bridge != null) {
-            bridgeStatusChanged(bridge.getStatusInfo());
-        } else {
+        if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Bridge is missing");
+        } else if (bridge.getStatus() != ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        } else {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         }
     }
 
