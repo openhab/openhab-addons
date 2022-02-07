@@ -129,13 +129,25 @@ public abstract class Value {
 
     /**
      * Parses a given command into the proper type for this Value type. This will usually be a State,
-     * but can be a Command still, in which case if it's coming from MQTT, then the channel will
-     * be commanded instead of updated, regardless of postCommand setting.
+     * but can be a Command.
      *
      * @param command The command to parse.
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
     public abstract Command parseCommand(Command command) throws IllegalArgumentException;
+
+    /**
+     * Parses a given command from MQTT into the proper type for this Value type. This will usually
+     * be a State, but can be a non-State Command, in which case the channel will be commanded instead
+     * of updated, regardless of postCommand setting. The default implementation just calls
+     * parseCommand, so that both directions have the same logic.
+     *
+     * @param command The command to parse.
+     * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
+     */
+    public Command parseMessage(Command command) throws IllegalArgumentException {
+        return parseCommand(command);
+    }
 
     /**
      * Updates the internal value state with the given binary payload.
