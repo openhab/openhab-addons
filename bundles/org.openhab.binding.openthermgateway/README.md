@@ -99,10 +99,10 @@ The `boiler` thing supports the following channels:
 | chpumpstarts | Number:Dimensionless | Central heating pump starts | R |
 | dhwpvstarts | Number:Dimensionless | Domestic hot water pump/valve starts | R |
 | dhwburnerstarts | Number:Dimensionless | Domestic hot water burner starts | R |
-| burnerhours | Number:Dimensionless | Burner hours | R |
-| chpumphours | Number:Dimensionless | Central heating pump hours | R |
-| dhwpvhours | Number:Dimensionless | Domestic hot water pump/valve hours | R |
-| dhwburnerhours | Number:Dimensionless | Domestic hot water burner hours | R |
+| burnerhours | Number:Time | Burner hours | R |
+| chpumphours | Number:Time | Central heating pump hours | R |
+| dhwpvhours | Number:Time | Domestic hot water pump/valve hours | R |
+| dhwburnerhours | Number:Time | Domestic hot water burner hours | R |
 | tspnumber | Number:Dimensionless | Number of transparant slave parameter entries | R |
 | tspentry | Number:Dimensionless | Transparent slave parameter entry | R |
 | fhbnumber | Number:Dimensionless | Number of fault history buffer entries | R |
@@ -245,10 +245,10 @@ Number:Dimensionless BurnerStarts "Burner Starts" { channel="openthermgateway:bo
 Number:Dimensionless CentralHeatingPumpStarts "Central Heating Pump Starts" { channel="openthermgateway:boiler:1:remeha:chpumpstarts }
 Number:Dimensionless DomesticHotWaterPump/ValveStarts "Domestic Hot Water Pump/Valve Starts" { channel="openthermgateway:boiler:1:remeha:dhwpvstarts }
 Number:Dimensionless DomesticHotWaterBurnerStarts "Domestic Hot Water Burner Starts" { channel="openthermgateway:boiler:1:remeha:dhwburnerstarts }
-Number:Dimensionless BurnerHours "Burner Hours" { channel="openthermgateway:boiler:1:remeha:burnerhours }
-Number:Dimensionless CentralHeatingPumpHours "Central Heating Pump Hours" { channel="openthermgateway:boiler:1:remeha:chpumphours }
-Number:Dimensionless DomesticHotWaterPump/ValveHours "Domestic Hot Water Pump/Valve Hours" { channel="openthermgateway:boiler:1:remeha:dhwpvhours }
-Number:Dimensionless DomesticHotWaterBurnerHours "Domestic Hot Water Burner Hours" { channel="openthermgateway:boiler:1:remeha:dhwburnerhours }
+Number:Time BurnerHours "Burner Hours" { channel="openthermgateway:boiler:1:remeha:burnerhours }
+Number:Time CentralHeatingPumpHours "Central Heating Pump Hours" { channel="openthermgateway:boiler:1:remeha:chpumphours }
+Number:Time DomesticHotWaterPumpValveHours "Domestic Hot Water Pump/Valve Hours" { channel="openthermgateway:boiler:1:remeha:dhwpvhours }
+Number:Time DomesticHotWaterBurnerHours "Domestic Hot Water Burner Hours" { channel="openthermgateway:boiler:1:remeha:dhwburnerhours }
 Number:Dimensionless TransparentSlaveParameterNumber "Transparent Slave Parameter Number" { channel="openthermgateway:boiler:1:remeha:tspnumber }
 Number:Dimensionless TransparentSlaveParameterEntry "Transparent Slave Parameter Entry" { channel="openthermgateway:boiler:1:remeha:tspentry }
 Number:Dimensionless FaultHistoryBufferNumber "Fault History Buffer Number" { channel="openthermgateway:boiler:1:remeha:fhbnumber }
@@ -350,7 +350,7 @@ sitemap demo label="Main Menu" {
         Text item="DomesticHotWaterBurnerStarts" label="Domestic Hot Water Burner Starts"
         Text item="BurnerHours" label="Burner Hours"
         Text item="CentralHeatingPumpHours" label="Central Heating Pump Hours"
-        Text item="DomesticHotWaterPump/ValveHours" label="Domestic Hot Water Pump/Valve Hours"
+        Text item="DomesticHotWaterPumpValveHours" label="Domestic Hot Water Pump/Valve Hours"
         Text item="DomesticHotWaterBurnerHours" label="Domestic Hot Water Burner Hours"
         Text item="TransparentSlaveParameterNumber" label="Transparent Slave Parameter Number"
         Text item="TransparentSlaveParameterEntry" label="Transparent Slave Parameter Entry"
