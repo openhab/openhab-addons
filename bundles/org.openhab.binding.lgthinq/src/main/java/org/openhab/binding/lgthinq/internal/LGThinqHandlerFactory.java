@@ -58,7 +58,7 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new LGThinqBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_WASHING_MACHINE.equals(thingTypeUID)) {
-            return new LGThinqWasherHandler((Bridge) thing, stateDescriptionProvider);
+            return new LGThinqWasherHandler(thing, stateDescriptionProvider);
         }
         logger.error("Thing not supported by this Factory: {}", thingTypeUID.getId());
         return null;
