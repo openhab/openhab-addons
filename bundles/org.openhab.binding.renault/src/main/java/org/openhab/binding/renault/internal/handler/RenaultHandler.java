@@ -18,8 +18,10 @@ import static org.openhab.core.library.unit.SIUnits.METRE;
 import static org.openhab.core.library.unit.Units.KILOWATT_HOUR;
 import static org.openhab.core.library.unit.Units.MINUTE;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Length;
@@ -34,6 +36,7 @@ import org.openhab.binding.renault.internal.RenaultConfiguration;
 import org.openhab.binding.renault.internal.api.Car;
 import org.openhab.binding.renault.internal.api.Car.ChargingMode;
 import org.openhab.binding.renault.internal.api.MyRenaultHttpSession;
+import org.openhab.binding.renault.internal.api.exceptions.RenaultException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultForbiddenException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultNotImplementedException;
 import org.openhab.binding.renault.internal.api.exceptions.RenaultUpdateException;
@@ -160,7 +163,8 @@ public class RenaultHandler extends BaseThingHandler {
                     } catch (InterruptedException e) {
                         logger.warn("Error My Renault Http Session.", e);
                         Thread.currentThread().interrupt();
-                    } catch (Exception e) {
+                    } catch (RenaultException | RenaultForbiddenException | RenaultUpdateException
+                            | RenaultNotImplementedException | ExecutionException | TimeoutException e) {
                         logger.warn("Error My Renault Http Session.", e);
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     }
@@ -180,7 +184,8 @@ public class RenaultHandler extends BaseThingHandler {
                             } catch (InterruptedException e) {
                                 logger.warn("Error My Renault Http Session.", e);
                                 Thread.currentThread().interrupt();
-                            } catch (Exception e) {
+                            } catch (RenaultException | RenaultForbiddenException | RenaultUpdateException
+                                    | RenaultNotImplementedException | ExecutionException | TimeoutException e) {
                                 logger.warn("Error My Renault Http Session.", e);
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         e.getMessage());
