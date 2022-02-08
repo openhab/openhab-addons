@@ -174,10 +174,6 @@ public class OmnilinkBindingConstants {
     public static final String THING_PROPERTIES_NUMBER = "number";
     public static final String THING_PROPERTIES_AREA = "area";
     public static final String THING_PROPERTIES_AUTO_START = "autostart";
-    public static final String THING_PROPERTIES_MODEL_NUMBER = "modelNumber";
-    public static final String THING_PROPERTIES_MAJOR_VERSION = "majorVersion";
-    public static final String THING_PROPERTIES_MINOR_VERSION = "minorVersion";
-    public static final String THING_PROPERTIES_REVISION = "revision";
     public static final String THING_PROPERTIES_PHONE_NUMBER = "phoneNumber";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OMNI_AREA,
