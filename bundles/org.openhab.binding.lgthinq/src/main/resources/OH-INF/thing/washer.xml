@@ -14,10 +14,6 @@
 		<description>LG Thinq Washing Machine</description>
 
 		<channels>
-			<channel id="target_temperature" typeId="target-temperature"/>
-			<channel id="current_temperature" typeId="current-temperature"/>
-			<channel id="fan_speed" typeId="fan-speed"/>
-			<channel id="op_mode" typeId="operation-mode"/>
 			<channel id="power" typeId="system.power"/>
 		</channels>
 

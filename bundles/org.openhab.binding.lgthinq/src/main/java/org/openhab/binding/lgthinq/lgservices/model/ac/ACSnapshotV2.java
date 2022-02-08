@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model;
+package org.openhab.binding.lgthinq.lgservices.model.ac;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -18,39 +18,39 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link ACSnapShotV1}
+ * The {@link ACSnapshotV2}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class ACSnapShotV1 extends ACSnapShot {
+public class ACSnapshotV2 extends ACSnapshot {
 
     @Override
-    @JsonProperty("WindStrength")
+    @JsonProperty("airState.windStrength")
     public Integer getAirWindStrength() {
         return super.getAirWindStrength();
     }
 
     @Override
-    @JsonProperty("TempCfg")
+    @JsonProperty("airState.tempState.target")
     public Double getTargetTemperature() {
         return super.getTargetTemperature();
     }
 
     @Override
-    @JsonProperty("TempCur")
+    @JsonProperty("airState.tempState.current")
     public Double getCurrentTemperature() {
         return super.getCurrentTemperature();
     }
 
     @Override
-    @JsonProperty("OpMode")
+    @JsonProperty("airState.opMode")
     public Integer getOperationMode() {
         return super.getOperationMode();
     }
 
     @Override
-    @JsonProperty("Operation")
+    @JsonProperty("airState.operation")
     @Nullable
     public Integer getOperation() {
         return super.getOperation();

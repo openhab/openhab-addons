@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal;
 
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THING_TYPE_AIR_CONDITIONER;
-import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,6 +57,8 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
             return new LGThinqAirConditionerHandler(thing, stateDescriptionProvider);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new LGThinqBridgeHandler((Bridge) thing);
+        } else if (THING_TYPE_WASHING_MACHINE.equals(thingTypeUID)) {
+            return new LGThinqWasherHandler((Bridge) thing, stateDescriptionProvider);
         }
         logger.error("Thing not supported by this Factory: {}", thingTypeUID.getId());
         return null;
@@ -69,6 +70,8 @@ public class LGThinqHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, null);
         } else if (LGThinqBindingConstants.THING_TYPE_AIR_CONDITIONER.equals(thingTypeUID)) {
+            return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
+        } else if (LGThinqBindingConstants.THING_TYPE_WASHING_MACHINE.equals(thingTypeUID)) {
             return super.createThing(thingTypeUID, configuration, thingUID, bridgeUID);
         }
         return null;

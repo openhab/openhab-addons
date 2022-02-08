@@ -17,13 +17,13 @@ This Bridge discovery Air Conditioner Things related to the user's account. To f
 
 The binding is represented by a bridge (LG GatewayBridge) and you must configure the following parameters:
 
-| Bridge Parameter           | Description                                                                                                                                                                                        | Constraints                |
-|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
-| User Language              | User language configured for the LG's account. Actually we have an limited number of language values available. If you need some specific, please let me know                                      | en-US, en-GB, pt-BR and ge |
-| User Country               | User country configured for the LG's account. Actually we have an limited number of language values available. If you need some specific, please let me know                                       | US, UK, BR and DE          |
-| LG User name               | The LG user's account (normally an email)                                                                                                                                                          |                            |
-| LG Password                | The LG user's password                                                                                                                                                                             |                            |
-| Pooling Discovery Interval | It the time (in seconds) that the bridge wait to try to fetch de devices registered to the user's account and, if find some new device, will show available to link. Please, choose some long time | greater than 300 seconds   |
+| Bridge Parameter           | Description                                                                                                                                                                                        | Constraints                       |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------|
+| User Language              | User language configured for the LG's account. Actually we have an limited number of language values available. If you need some specific, please let me know                                      | en-US, en-GB, pt-BR, de-DE, da-DK |
+| User Country               | User country configured for the LG's account. Actually we have an limited number of language values available. If you need some specific, please let me know                                       | US, UK, BR, DE and DK             |
+| LG User name               | The LG user's account (normally an email)                                                                                                                                                          |                                   |
+| LG Password                | The LG user's password                                                                                                                                                                             |                                   |
+| Pooling Discovery Interval | It the time (in seconds) that the bridge wait to try to fetch de devices registered to the user's account and, if find some new device, will show available to link. Please, choose some long time | greater than 300 seconds          |
 
 
 

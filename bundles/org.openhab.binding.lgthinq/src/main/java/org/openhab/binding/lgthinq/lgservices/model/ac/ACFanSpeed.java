@@ -10,12 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model;
+package org.openhab.binding.lgthinq.lgservices.model.ac;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ACSnapShot}
+ * The {@link ACSnapshot}
  *
  * @author Nemer Daud - Initial contribution
  */
