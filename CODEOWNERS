@@ -383,6 +383,7 @@
 /bundles/org.openhab.voice.pollytts/ @hillmanr
 /bundles/org.openhab.voice.porcupineks/ @GiviMAD
 /bundles/org.openhab.voice.voicerss/ @JochenHiller @lolodomo
+/bundles/org.openhab.voice.watsonstt/ @GiviMAD
 /itests/org.openhab.binding.astro.tests/ @gerrieg
 /itests/org.openhab.binding.avmfritz.tests/ @cweitkamp
 /itests/org.openhab.binding.feed.tests/ @svilenvul
