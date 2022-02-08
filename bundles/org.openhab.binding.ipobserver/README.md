@@ -19,12 +19,13 @@ There is only one thing that can be added and is called `weatherstation`.
 
 ## Discovery
 
-Auto discovery is supported for the RJ45 models, and the wifi ipobservers will need to be manually added. Discovery may take a while to complete as it scans all IP addresses on your network one by one.
+Auto discovery is supported for the RJ45 models, while the WiFi IP Observer will need to be manually added.
+Discovery may take a while to complete as it scans all IP addresses on your network one by one.
 
 ## Thing Configuration
 
-If the id and password are supplied, the binding will work via the second WU push method, if they are left blank, the binding will work in the scraping mode (RJ45 model only).
-When the id and password is supplied you need to set the custom WU path to be `/weatherstation/updateweatherstation.php` and the port to be the same as openHAB which is port 8080 by default.
+When the id and password are supplied, you need to set the custom WU path to `/weatherstation/updateweatherstation.php` and the port to be the same as openHAB (port 8080 by default).
+If they are left blank, the binding will work in the scraping mode (RJ45 model only).
 
 | Parameter | Required | Description |
 |-|-|-|

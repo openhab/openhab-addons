@@ -155,7 +155,7 @@ public class IpObserverHandler extends BaseThingHandler {
             String matchedUpdate = update.substring(idPass.length() + 1, update.length());
             logger.trace("Update received:{}", matchedUpdate);
             updateState(LAST_UPDATED_TIME, new DateTimeType(ZonedDateTime.now()));
-            Map<String, String> mappedQuery = new HashMap<String, String>();
+            Map<String, String> mappedQuery = new HashMap<>();
             String[] readings = matchedUpdate.split("&");
             for (String pair : readings) {
                 int index = pair.indexOf("=");
@@ -394,13 +394,13 @@ public class IpObserverHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(IpObserverConfiguration.class);
-        updateStatus(ThingStatus.UNKNOWN);
-        if (!config.id.isEmpty() && !config.password.isEmpty()) {
+        if (!config.id.isBlank() && !config.password.isBlank()) {
             updateStatus(ThingStatus.ONLINE);
             idPass = "ID=" + config.id + "&PASSWORD=" + config.password;
             setupServerChannels();
             ipObserverUpdateReceiver.addStation(this);
         } else {
+            updateStatus(ThingStatus.UNKNOWN);
             pollingFuture = scheduler.scheduleWithFixedDelay(this::pollStation, 1, config.pollTime, TimeUnit.SECONDS);
         }
     }

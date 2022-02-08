@@ -16,6 +16,7 @@ import static org.openhab.binding.ipobserver.internal.IpObserverBindingConstants
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,9 +38,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class IpObserverUpdateReceiver extends HttpServlet {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final long serialVersionUID = -234658674L;
-    private ArrayList<IpObserverHandler> listOfHandlers = new ArrayList<>(1);
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private List<IpObserverHandler> listOfHandlers = new ArrayList<>(1);
 
     public IpObserverUpdateReceiver(HttpService httpService) {
         try {
