@@ -284,7 +284,7 @@ The following channels are also writable:
 | channel  | type   | advanced | description                  |
 |----------|--------|----------|------------------------------|
 | temperatureHeatingParallelShift | Number:Temperature |   | Heating temperature (parallel shift) |
-| temperatureHotWaterTarget | Number:Temperature |   | Hot water target temperature |
+| temperatureHotWaterCoverage | Number:Temperature |   | Hot water target temperature |
 | heatingMode | Number |   | Heating mode |
 | hotWaterMode | Number |   | Hot water operating mode |
 | thermalDisinfectionMonday | Switch |  x  | Thermal disinfection (Monday) |
