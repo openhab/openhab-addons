@@ -14,8 +14,6 @@ package org.openhab.binding.guntamatic.internal;
 
 import static org.openhab.binding.guntamatic.internal.GuntamaticBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -49,19 +47,11 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
     private GuntamaticChannelTypeProvider guntamaticChannelTypeProvider;
 
-    private List<String> staticChannelIDs;
-
     @Activate
     public GuntamaticHandlerFactory(@Reference HttpClientFactory httpClientFactory,
             @Reference GuntamaticChannelTypeProvider guntamaticChannelTypeProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.guntamaticChannelTypeProvider = guntamaticChannelTypeProvider;
-        this.staticChannelIDs = new ArrayList<>(Arrays.asList(CHANNEL_CONTROLPROGRAM, CHANNEL_CONTROLHEATCIRCPROGRAM0,
-                CHANNEL_CONTROLHEATCIRCPROGRAM1, CHANNEL_CONTROLHEATCIRCPROGRAM2, CHANNEL_CONTROLHEATCIRCPROGRAM3,
-                CHANNEL_CONTROLHEATCIRCPROGRAM4, CHANNEL_CONTROLHEATCIRCPROGRAM5, CHANNEL_CONTROLHEATCIRCPROGRAM6,
-                CHANNEL_CONTROLHEATCIRCPROGRAM7, CHANNEL_CONTROLHEATCIRCPROGRAM8, CHANNEL_CONTROLWWHEAT0,
-                CHANNEL_CONTROLWWHEAT1, CHANNEL_CONTROLWWHEAT2, CHANNEL_CONTROLEXTRAWWHEAT0,
-                CHANNEL_CONTROLEXTRAWWHEAT1, CHANNEL_CONTROLEXTRAWWHEAT2));
     }
 
     @Override
@@ -72,11 +62,14 @@ public class GuntamaticHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        List<String> staticChannelIDs;
 
-        if ((thingTypeUID == THING_TYPE_BIOSTAR) || (thingTypeUID == THING_TYPE_POWERCHIP)
-                || (thingTypeUID == THING_TYPE_POWERCORN) || (thingTypeUID == THING_TYPE_BIOCOM)
-                || (thingTypeUID == THING_TYPE_PRO) || (thingTypeUID == THING_TYPE_THERM)) {
-            staticChannelIDs.add(CHANNEL_CONTROLBOILERAPPROVAL);
+        if (THING_TYPE_BIOSTAR.equals(thingTypeUID) || THING_TYPE_POWERCHIP.equals(thingTypeUID)
+                || THING_TYPE_POWERCORN.equals(thingTypeUID) || THING_TYPE_BIOCOM.equals(thingTypeUID)
+                || THING_TYPE_PRO.equals(thingTypeUID) || THING_TYPE_THERM.equals(thingTypeUID)) {
+            staticChannelIDs = STATIC_CHANNEL_IDS;
+        } else {
+            staticChannelIDs = STATIC_CHANNEL_IDS_WOBOILERAPP;
         }
 
         if (supportsThingType(thingTypeUID)) {

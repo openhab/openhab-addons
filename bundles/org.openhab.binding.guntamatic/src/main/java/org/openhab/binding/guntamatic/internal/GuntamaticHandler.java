@@ -130,9 +130,9 @@ public class GuntamaticHandler extends BaseThingHandler {
                         param = getThing().getProperties().get(PARAMETER_PROGRAM);
                         ThingTypeUID thingTypeUID = getThing().getThingTypeUID();
 
-                        if ((thingTypeUID == THING_TYPE_BIOSTAR) || (thingTypeUID == THING_TYPE_POWERCHIP)
-                                || (thingTypeUID == THING_TYPE_POWERCORN) || (thingTypeUID == THING_TYPE_BIOCOM)
-                                || (thingTypeUID == THING_TYPE_PRO) || (thingTypeUID == THING_TYPE_THERM)) {
+                        if (THING_TYPE_BIOSTAR.equals(thingTypeUID) || THING_TYPE_POWERCHIP.equals(thingTypeUID)
+                                || THING_TYPE_POWERCORN.equals(thingTypeUID) || THING_TYPE_BIOCOM.equals(thingTypeUID)
+                                || THING_TYPE_PRO.equals(thingTypeUID) || THING_TYPE_THERM.equals(thingTypeUID)) {
                             map = MAP_COMMAND_PARAM_PROG;
                         } else {
                             map = MAP_COMMAND_PARAM_PROG_WOMANU;
