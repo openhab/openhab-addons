@@ -15,25 +15,25 @@ package org.openhab.binding.luxom.internal.protocol;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.luxom.internal.handler.util.PercentageConvertor;
+import org.openhab.binding.luxom.internal.handler.util.PercentageConverter;
 
 /**
  *
  * @author Kris Jespers - Initial contribution
  */
-class PercentageConvertorTest {
+class PercentageConverterTest {
     @Test
     void hexToPercentage() {
-        assertEquals(34, PercentageConvertor.getPercentage("057"));
+        assertEquals(34, PercentageConverter.getPercentage("057"));
     }
 
     @Test
     void hexToPercentage100() {
-        assertEquals(100, PercentageConvertor.getPercentage("0FF"));
+        assertEquals(100, PercentageConverter.getPercentage("0FF"));
     }
 
     @Test
     void percentageToHex() {
-        assertEquals("57", PercentageConvertor.getHexRepresentation(34));
+        assertEquals("57", PercentageConverter.getHexRepresentation(34));
     }
 }

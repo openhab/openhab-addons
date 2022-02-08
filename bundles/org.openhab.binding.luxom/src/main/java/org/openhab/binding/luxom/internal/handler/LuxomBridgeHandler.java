@@ -48,6 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LuxomBridgeHandler extends BaseBridgeHandler {
+    public static final int HEARTBEAT_INTERVAL_SECONDS = 50;
     private final LuxomSystemInfo systemInfo;
 
     private static final int DEFAULT_RECONNECT_INTERVAL_IN_MINUTES = 1;
@@ -145,8 +146,8 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         messageSender = new Thread(this::sendCommandsThread, "Luxom sender");
         messageSender.start();
 
-        logger.debug("Starting heartbeat job with interval 50 (seconds)");
-        heartBeat = scheduler.scheduleWithFixedDelay(this::sendHeartBeat, 10, 50, TimeUnit.SECONDS);
+        logger.debug("Starting heartbeat job with interval {} (seconds)", HEARTBEAT_INTERVAL_SECONDS);
+        heartBeat = scheduler.scheduleWithFixedDelay(this::sendHeartBeat, 10, HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     private void sendCommandsThread() {
@@ -161,7 +162,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                         communication.sendMessage(commandExecutionSpecification.getCommand());
                     }
                 } catch (IOException e) {
-                    logger.error("Communication error while sending, will try to reconnect. Error: {}", e.getMessage());
+                    logger.warn("Communication error while sending, will try to reconnect. Error: {}", e.getMessage());
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 
                     reconnect();
@@ -201,7 +202,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
     private synchronized void reconnect(boolean timeout) {
         if (timeout) {
-            logger.error("Keepalive timeout, attempting to reconnect to the bridge");
+            logger.warn("Keepalive timeout, attempting to reconnect to the bridge");
         } else {
             logger.debug("Connection problem, attempting to reconnect to the bridge");
         }
@@ -273,7 +274,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     }
 
     public void handleCommunicationError(IOException e) {
-        logger.error("Communication error while reading, will try to reconnect. Error: {}", e.getMessage());
+        logger.warn("Communication error while reading, will try to reconnect. Error: {}", e.getMessage());
         reconnect();
     }
 
