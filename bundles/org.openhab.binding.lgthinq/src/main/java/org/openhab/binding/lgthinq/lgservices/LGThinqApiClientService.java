@@ -25,6 +25,7 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpired
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACTargetTmp;
 
 /**
  * The {@link LGThinqApiClientService}
@@ -46,7 +47,7 @@ public interface LGThinqApiClientService {
      * @throws LGThinqApiException if some error interacting with LG API Server occur.
      */
     @Nullable
-    ACSnapShot getAcDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException;
+    Snapshot getDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException;
 
     void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) throws LGThinqApiException;
 
@@ -60,7 +61,7 @@ public interface LGThinqApiClientService {
     String startMonitor(String bridgeName, String deviceId)
             throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException;
 
-    ACCapability getACCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
+    Capability getCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException;
 
     File loadDeviceCapability(String deviceId, String uri, boolean forceRecreate)
             throws LGThinqApiException, IOException;
@@ -68,6 +69,6 @@ public interface LGThinqApiClientService {
     void stopMonitor(String bridgeName, String deviceId, String workId) throws LGThinqException, IOException;
 
     @Nullable
-    ACSnapShot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workerId)
+    Snapshot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workerId)
             throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException;
 }
