@@ -44,7 +44,7 @@ public class ShadePositionTest {
 
         assertTrue(db.getCapabilities(0).supportsPrimary());
         assertTrue(db.getCapabilities(0).supportsTiltOnClosed());
-        assertTrue(db.getCapabilities(1).supportsTiltAnywhere());
+        assertTrue(db.getCapabilities(1).supportsTiltOnClosed());
         assertTrue(db.getCapabilities(2).supportsTilt180());
         assertTrue(db.getCapabilities(3).supportsTiltOnClosed());
         assertTrue(db.getCapabilities(4).supportsTilt180());
