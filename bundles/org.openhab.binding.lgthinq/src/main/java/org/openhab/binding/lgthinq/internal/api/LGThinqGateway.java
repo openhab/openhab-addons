@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.lgthinq.internal.api;
 
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.V2_EMP_SESS_PATH;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.V2_EMP_SESS_URL;
+
 import java.io.Serializable;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.api.model.GatewayResult;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The {@link LGThinqGateway} hold informations about the LG Gateway
@@ -33,12 +38,13 @@ public class LGThinqGateway implements Serializable {
     private String country = "";
     private String username = "";
     private String password = "";
+    private String alternativeEmpServer = "";
     private int accountVersion;
 
     public LGThinqGateway() {
     }
 
-    public LGThinqGateway(GatewayResult gwResult, String language, String country) {
+    public LGThinqGateway(GatewayResult gwResult, String language, String country, String alternativeEmpServer) {
         this.apiRootV2 = gwResult.getThinq2Uri();
         this.apiRootV1 = gwResult.getThinq1Uri();
         this.loginBaseUri = gwResult.getEmpSpxUri();
@@ -46,6 +52,12 @@ public class LGThinqGateway implements Serializable {
         this.empBaseUri = gwResult.getEmpTermsUri();
         this.language = language;
         this.country = country;
+        this.alternativeEmpServer = alternativeEmpServer;
+    }
+
+    @JsonIgnore
+    public String getTokenSessionEmpUrl() {
+        return alternativeEmpServer.isBlank() ? V2_EMP_SESS_URL : alternativeEmpServer + V2_EMP_SESS_PATH;
     }
 
     public String getEmpBaseUri() {
