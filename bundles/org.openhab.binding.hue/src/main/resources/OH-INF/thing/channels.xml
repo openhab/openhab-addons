@@ -15,6 +15,10 @@
 		<item-type>Number:Illuminance</item-type>
 		<label>Illuminance</label>
 		<description>Current illuminance.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -22,6 +26,10 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Light</tag>
+		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
@@ -125,6 +133,10 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -133,6 +145,10 @@
 		<item-type>String</item-type>
 		<label>Alert</label>
 		<description>The alert channel allows a temporary change to the bulb’s state.</description>
+		<tags>
+			<tag>Control</tag>
+			<tag>Alarm</tag>
+		</tags>
 		<state>
 			<options>
 				<option value="NONE">None</option>
