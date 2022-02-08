@@ -16,8 +16,6 @@ import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.V2_CT
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
@@ -25,6 +23,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lgthinq.internal.LGThinqBindingConstants;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
@@ -33,7 +32,10 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
+import org.openhab.binding.lgthinq.lgservices.model.SnapshotFactory;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACTargetTmp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,12 +87,25 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
      */
     @Override
     @Nullable
-    public ACSnapShot getAcDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException {
+    public Snapshot getDeviceData(@NonNull String bridgeName, @NonNull String deviceId) throws LGThinqApiException {
         Map<String, Object> deviceSettings = getDeviceSettings(bridgeName, deviceId);
         if (deviceSettings.get("snapshot") != null) {
             Map<String, Object> snapMap = (Map<String, Object>) deviceSettings.get("snapshot");
+            if (logger.isDebugEnabled()) {
+                try {
+                    objectMapper.writeValue(new File(String.format(
+                            LGThinqBindingConstants.THINQ_USER_DATA_FOLDER + File.separator + "thinq-%s-datatrace.json",
+                            deviceId)), deviceSettings);
+                } catch (IOException e) {
+                    logger.error("Error saving data trace", e);
+                }
+            }
+            if (snapMap == null) {
+                // No snapshot value provided
+                return null;
+            }
 
-            ACSnapShot shot = objectMapper.convertValue(snapMap, ACSnapShotV2.class);
+            Snapshot shot = SnapshotFactory.getInstance().create(deviceSettings);
             shot.setOnline((Boolean) snapMap.get("online"));
             return shot;
         }
@@ -172,55 +187,6 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 
-    @Override
-    @NonNull
-    @SuppressWarnings("ignoring Map type check")
-    public ACCapability getACCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
-        try {
-            File regFile = loadDeviceCapability(deviceId, uri, forceRecreate);
-            Map<String, Object> mapper = objectMapper.readValue(regFile, new TypeReference<>() {
-            });
-            Map<String, Object> cap = (Map<String, Object>) mapper.get("Value");
-            if (cap == null) {
-                throw new LGThinqApiException("Error extracting capabilities supported by the device");
-            }
-            ACCapability acCap = new ACCapability();
-            Map<String, Object> opModes = (Map<String, Object>) cap.get("airState.opMode");
-            if (opModes == null) {
-                throw new LGThinqApiException("Error extracting opModes supported by the device");
-            } else {
-                Map<String, String> modes = new HashMap<String, String>();
-                ((Map<String, String>) opModes.get("value_mapping")).forEach((k, v) -> {
-                    modes.put(v, k);
-                });
-                acCap.setOpMod(modes);
-            }
-            Map<String, Object> fanSpeed = (Map<String, Object>) cap.get("airState.windStrength");
-            if (fanSpeed == null) {
-                throw new LGThinqApiException("Error extracting fanSpeed supported by the device");
-            } else {
-                Map<String, String> fanModes = new HashMap<String, String>();
-                ((Map<String, String>) fanSpeed.get("value_mapping")).forEach((k, v) -> {
-                    fanModes.put(v, k);
-                });
-                acCap.setFanSpeed(fanModes);
-
-            }
-            // Set supported modes for the device
-            Map<String, Map<String, String>> supOpModes = (Map<String, Map<String, String>>) cap
-                    .get("support.airState.opMode");
-            acCap.setSupportedOpMode(new ArrayList<>(supOpModes.get("value_mapping").values()));
-            acCap.getSupportedOpMode().remove("@NON");
-            Map<String, Map<String, String>> supFanSpeeds = (Map<String, Map<String, String>>) cap
-                    .get("support.airState.windStrength");
-            acCap.setSupportedFanSpeed(new ArrayList<>(supFanSpeeds.get("value_mapping").values()));
-            acCap.getSupportedFanSpeed().remove("@NON");
-            return acCap;
-        } catch (IOException e) {
-            throw new LGThinqApiException("Error reading IO interface", e);
-        }
-    }
-
     private void handleV2GenericErrorResult(@Nullable RestResult resp) throws LGThinqApiException {
         Map<String, Object> metaResult;
         if (resp == null) {
@@ -257,9 +223,8 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
     }
 
     @Override
-    @Nullable
-    public ACSnapShot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workId)
-            throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException {
+    public @Nullable Snapshot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId,
+            @NonNull String workId) throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException {
         throw new UnsupportedOperationException("Not supported in V2 API.");
     }
 }

@@ -10,22 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model;
+package org.openhab.binding.lgthinq.lgservices.model.ac;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
- * The {@link ACSnapShot}
+ * The {@link ACSnapshot}
  *
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class ACSnapShot {
+public abstract class ACSnapshot implements Snapshot {
 
     private int airWindStrength;
 
@@ -40,8 +42,13 @@ public abstract class ACSnapShot {
     private boolean online;
 
     @JsonIgnore
-    public DevicePowerState getAcPowerStatus() {
+    public DevicePowerState getPowerStatus() {
         return operation == null ? DevicePowerState.DV_POWER_UNK : DevicePowerState.statusOf(operation);
+    }
+
+    @JsonIgnore
+    public void setPowerStatus(DevicePowerState value) {
+        operation = (int) value.getValue();
     }
 
     @JsonIgnore
@@ -103,7 +110,7 @@ public abstract class ACSnapShot {
     public String toString() {
         return "ACSnapShot{" + "airWindStrength=" + airWindStrength + ", targetTemperature=" + targetTemperature
                 + ", currentTemperature=" + currentTemperature + ", operationMode=" + operationMode + ", operation="
-                + operation + ", acPowerStatus=" + getAcPowerStatus() + ", acFanSpeed=" + getAcFanSpeed()
-                + ", acOpMode=" + ", online=" + isOnline() + " }";
+                + operation + ", acPowerStatus=" + getPowerStatus() + ", acFanSpeed=" + getAcFanSpeed() + ", acOpMode="
+                + ", online=" + isOnline() + " }";
     }
 }
