@@ -59,7 +59,7 @@ public class ExecWhitelistWatchService extends AbstractWatchService {
     }
 
     @Override
-    protected Kind<?>[] getWatchEventKinds(@Nullable Path directory) {
+    protected Kind<?> @Nullable [] getWatchEventKinds(@Nullable Path directory) {
         return new Kind<?>[] { ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY };
     }
 
