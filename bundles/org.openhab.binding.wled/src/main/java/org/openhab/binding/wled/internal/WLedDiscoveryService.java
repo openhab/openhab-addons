@@ -97,14 +97,16 @@ public class WLedDiscoveryService implements MDNSDiscoveryParticipant {
             label = "WLED @ " + address[0];
         }
         String macAddress = WLedHelper.getValue(response, "\"mac\":\"", "\"");
-        String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
-        ThingTypeUID thingtypeuid = new ThingTypeUID(BINDING_ID, BRIDGE_TYPE_ID);
-        ThingUID thingUID = new ThingUID(thingtypeuid, macAddress);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
-        return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0]).withLabel(label)
-                .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+        if (!macAddress.isBlank()) {
+            String firmware = WLedHelper.getValue(response, "\"ver\":\"", "\"");
+            ThingUID thingUID = new ThingUID(THING_TYPE_JSON, macAddress);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, macAddress);
+            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmware);
+            return DiscoveryResultBuilder.create(thingUID).withProperty(CONFIG_ADDRESS, address[0]).withLabel(label)
+                    .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
+        }
+        return null;
     }
 
     @Override
