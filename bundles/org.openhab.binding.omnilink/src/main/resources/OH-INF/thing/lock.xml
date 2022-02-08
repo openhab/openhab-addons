@@ -14,10 +14,6 @@
 		<channels>
 			<channel id="switch" typeId="lock_switch"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-			<property name="area"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
@@ -33,6 +29,9 @@
 		<label>Lock/Unlock</label>
 		<description>Lock or unlock this lock.</description>
 		<category>Switch</category>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>
