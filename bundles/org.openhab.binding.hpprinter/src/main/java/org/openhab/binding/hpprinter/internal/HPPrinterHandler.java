@@ -155,7 +155,7 @@ public class HPPrinterHandler extends BaseThingHandler {
     }
 
     @Override
-    protected void updateProperties(final Map<String, String> properties) {
+    protected void updateProperties(final @Nullable Map<String, String> properties) {
         super.updateProperties(properties);
     }
 
