@@ -65,7 +65,7 @@ public abstract class SurePetcareBaseObjectHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateProperties(Map<String, String> properties) {
+    public void updateProperties(@Nullable Map<String, String> properties) {
         super.updateProperties(properties);
     }
 
