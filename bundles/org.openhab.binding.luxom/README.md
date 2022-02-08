@@ -37,8 +37,8 @@ Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
 
 ### Devices
 
-- Each device has an address on the Luxom bus, his adres must be specified in the 'address' parameter. You will have to look it up in your documentation or in the 'Luxom Plusconfig' software.
-- Sometimes a devices does not send back a confirmation over the bus having set the correct state. I've encountered it with one dimmer, the dimmer does do the dimming, but does not send back the set brightness level. To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately set's the items state and does not wait for confirmation.
+- Each device has an address on the Luxom bus, this address must be specified in the 'address' parameter. You will have to look it up in your documentation or in the 'Luxom Plusconfig' software.
+- Sometimes a device does not send back a confirmation over the bus having set the correct state. I've encountered it with one dimmer, the dimmer does do the dimming, but does not send back the set brightness level. To be able to use these devices, you can add the `doesNotReply=true` parameter so that the binding immediately set's the items state and does not wait for confirmation.
   
 #### Dimmers
 
@@ -78,7 +78,7 @@ Thing switch switchLiving1 [address="A,02"]
 
 ## Full Example
 
-demo.Things:
+demo.things:
 ```
 Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
     Thing switch switchLiving1 "Switch 1" @ "living room" [address="1,01"]
@@ -87,7 +87,7 @@ Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
 }
 ```
 
-demo.Items:
+demo.items:
 ```
 Dimmer          FF_Living_Lights             "Living light"   <light>            (FF_Living, gLight)      ["Lighting"] {channel="luxom:dimmer:myhouse:dimmerLightKitchen1:brightness", ga="Light", homekit="Lighting, Lighting.Brightness"}
 Switch          FF_Living_PowerOutlet1       "Living Power Outlet 1"   <poweroutlet>            (FF_Living, gPower)            ["Switchable"] {channel="luxom:switch:elsenmario:switchLiving1:switch", ga="Outlet"}

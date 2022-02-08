@@ -51,8 +51,4 @@ public class LuxomHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-    }
 }
