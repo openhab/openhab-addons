@@ -70,7 +70,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         @Nullable
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
             if (config != null && config.doesNotReply) {
                 logger.warn("Switch {} will not reply, so always keeping it ONLINE", getAddress());

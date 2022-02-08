@@ -179,7 +179,7 @@ public class LuxomCommunication {
             }
             logger.trace("Luxom: stopped listening to events");
         } catch (IOException e) {
-            logger.error("Luxom: listening to events - IO exception", e);
+            logger.warn("Luxom: listening to events - IO exception", e);
             if (!listenerStopped) {
                 stillListeningToEvents = false;
                 // this is a socket error, not a communication stop triggered from outside this runnable

@@ -45,9 +45,6 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with the main Luxom IP access module.
  *
  * @author Kris Jespers - Initial contribution
- *
- *         1.00 :
- *         - initial public version
  */
 @NonNullByDefault
 public class LuxomBridgeHandler extends BaseBridgeHandler {
@@ -81,7 +78,6 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
 
         this.systemInfo = new LuxomSystemInfo();
         this.communication = new LuxomCommunication(this);
-        logger.info("luxom bridge 1.00 started");
     }
 
     @Override
