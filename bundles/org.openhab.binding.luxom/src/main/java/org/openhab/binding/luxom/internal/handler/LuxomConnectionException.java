@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LuxomConnectionException extends Exception {
+    private static final long serialVersionUID = 654654L;
+
     public LuxomConnectionException(Throwable cause) {
         super(cause);
     }

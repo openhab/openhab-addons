@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.luxom.internal.handler.config;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
+import java.util.Objects;
 
 /**
  * {@link LuxomBridgeConfig} is the general config class for Luxom Bridges.
@@ -40,7 +41,7 @@ public class LuxomBridgeConfig {
     public boolean useFastReconnect = false;
 
     public boolean sameConnectionParameters(LuxomBridgeConfig config) {
-        return StringUtils.equals(ipAddress, config.ipAddress) && config.port == port
+        return Objects.equals(ipAddress, config.ipAddress) && config.port == port
                 && (reconnectInterval == config.reconnectInterval) && (aliveCheckInterval == config.aliveCheckInterval);
     }
 }

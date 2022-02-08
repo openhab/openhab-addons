@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.LuxomBindingConstants;
 import org.openhab.binding.luxom.internal.handler.config.LuxomThingDimmerConfig;
-import org.openhab.binding.luxom.internal.handler.util.PercentageConvertor;
+import org.openhab.binding.luxom.internal.handler.util.PercentageConverter;
 import org.openhab.binding.luxom.internal.protocol.LuxomAction;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommand;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -136,7 +136,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         } else if (LuxomAction.SET_RESPONSE.equals(command.getAction())) {
             updateState(LuxomBindingConstants.CHANNEL_SWITCH, OnOffType.ON);
         } else if (LuxomAction.DATA_RESPONSE.equals(command.getAction())) {
-            int percentage = PercentageConvertor.getPercentage(command.getData());
+            int percentage = PercentageConverter.getPercentage(command.getData());
 
             lastLightLevel.set(percentage);
             updateState(LuxomBindingConstants.CHANNEL_BRIGHTNESS, new PercentType(percentage));
@@ -168,7 +168,7 @@ public class LuxomDimmerHandler extends LuxomThingHandler {
         }
         commands.add(new CommandExecutionSpecification(LuxomAction.DATA.getCommand() + ",0," + getAddress()));
         commands.add(new CommandExecutionSpecification(
-                LuxomAction.DATA_BYTE.getCommand() + ",0" + PercentageConvertor.getHexRepresentation(percentage)));
+                LuxomAction.DATA_BYTE.getCommand() + ",0" + PercentageConverter.getHexRepresentation(percentage)));
 
         sendCommands(commands);
     }

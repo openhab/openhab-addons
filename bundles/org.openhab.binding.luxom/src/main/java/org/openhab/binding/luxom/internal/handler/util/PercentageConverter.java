@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Kris Jespers - Initial contribution
  */
 @NonNullByDefault
-public class PercentageConvertor {
+public class PercentageConverter {
     /**
      * @param hexRepresentation
      * @return if hexRepresentation == null return -1, otherwise return percentage
