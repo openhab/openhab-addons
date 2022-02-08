@@ -15,7 +15,7 @@ package org.openhab.voice.voskstt.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VoskSTTConfiguration} class contains Vosk STT Service.
+ * The {@link VoskSTTConfiguration} class contains Vosk STT Service configuration.
  *
  * @author Miguel Álvarez - Initial contribution
  */

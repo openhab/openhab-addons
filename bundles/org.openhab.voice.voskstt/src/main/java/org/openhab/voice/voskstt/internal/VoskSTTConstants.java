@@ -15,8 +15,7 @@ package org.openhab.voice.voskstt.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VoskSTTConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link VoskSTTConstants} class defines common constants.
  *
  * @author Miguel Álvarez - Initial contribution
  */
