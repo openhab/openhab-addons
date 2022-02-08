@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_CONNECTION_DATA_FILE;
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.THINQ_USER_DATA_FOLDER;
 
 import java.io.File;
@@ -113,7 +114,8 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
                 } else {
                     try {
                         tokenManager.oauthFirstRegistration(bridgeName, lgthinqConfig.getLanguage(),
-                                lgthinqConfig.getCountry(), lgthinqConfig.getUsername(), lgthinqConfig.getPassword());
+                                lgthinqConfig.getCountry(), lgthinqConfig.getUsername(), lgthinqConfig.getPassword(),
+                                lgthinqConfig.getAlternativeServer());
                         tokenManager.getValidRegisteredToken(bridgeName);
                         logger.debug("Successful getting token from LG API");
                     } catch (IOException e) {
@@ -284,6 +286,19 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
             updateStatus(ThingStatus.UNKNOWN);
             startLGThinqDevicePolling();
         }
+    }
+
+    @Override
+    public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
+        logger.debug("Bridge Configuration was updated. Cleaning the token registry file");
+        File f = new File(String.format(THINQ_CONNECTION_DATA_FILE, getThing().getUID().getId()));
+        if (f.isFile()) {
+            // file exists. Delete it
+            if (!f.delete()) {
+                logger.error("Error deleting file:{}", f.getAbsolutePath());
+            }
+        }
+        super.handleConfigurationUpdate(configurationParameters);
     }
 
     private void startLGThinqDevicePolling() {

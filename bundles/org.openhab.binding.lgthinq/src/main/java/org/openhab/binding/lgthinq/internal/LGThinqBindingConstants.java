@@ -63,7 +63,7 @@ public class LGThinqBindingConstants {
     public static final String OAUTH_SEARCH_KEY_PATH = "/searchKey";
     public static final String GATEWAY_SERVICE_PATH_V2 = "/v1/service/application/gateway-uri";
     public static final String GATEWAY_SERVICE_PATH_V1 = "/api/common/gatewayUriList";
-    public static String GATEWAY_URL_V2 = "https://route.lgthinq.com:46030" + GATEWAY_SERVICE_PATH_V2;
+    public static final String GATEWAY_URL_V2 = "https://route.lgthinq.com:46030" + GATEWAY_SERVICE_PATH_V2;
     public static final String PRE_LOGIN_PATH = "/preLogin";
     public static final String SECURITY_KEY = "nuts_securitykey";
     public static final String APP_KEY = "wideq";
@@ -78,7 +78,8 @@ public class LGThinqBindingConstants {
     public static final String DEFAULT_COUNTRY = "US";
     public static final String DEFAULT_LANGUAGE = "en-US";
     public static final String APPLICATION_KEY = "6V1V8H2BN5P9ZQGOI5DAQ92YZBDO3EK9";
-    public static String V2_EMP_SESS_URL = "https://emp-oauth.lgecloud.com/emp/oauth2/token/empsession";
+    public static final String V2_EMP_SESS_PATH = "/emp/oauth2/token/empsession";
+    public static final String V2_EMP_SESS_URL = "https://emp-oauth.lgecloud.com" + V2_EMP_SESS_PATH;
     public static final String API_KEY_V2 = "VGhpblEyLjAgU0VSVklDRQ==";
 
     public static final String API_KEY_V1 = "wideq";
@@ -98,7 +99,7 @@ public class LGThinqBindingConstants {
     public static final String DEVICE_ID = "device_id";
     public static final String MODEL_NAME = "model_name";
     public static final String DEVICE_ALIAS = "device_alias";
-    public static final String MODEL_URL_INFO = "model_url_indo";
+    public static final String MODEL_URL_INFO = "model_url_info";
     public static final String PLATFORM_TYPE = "platform_type";
     public static final String PLATFORM_TYPE_V1 = "thinq1";
     public static final String PLATFORM_TYPE_V2 = "thinq2";

@@ -29,17 +29,19 @@ public class LGThinqConfiguration {
     public String country = "";
     public String language = "";
     public Integer pollingIntervalSec = 0;
+    public String alternativeServer = "";
 
     public LGThinqConfiguration() {
     }
 
     public LGThinqConfiguration(String username, String password, String country, String language,
-            Integer pollingIntervalSec) {
+            Integer pollingIntervalSec, String alternativeServer) {
         this.username = username;
         this.password = password;
         this.country = country;
         this.language = language;
         this.pollingIntervalSec = pollingIntervalSec;
+        this.alternativeServer = alternativeServer;
     }
 
     public String getUsername() {
@@ -80,5 +82,13 @@ public class LGThinqConfiguration {
 
     public void setPollingIntervalSec(Integer pollingIntervalSec) {
         this.pollingIntervalSec = pollingIntervalSec;
+    }
+
+    public String getAlternativeServer() {
+        return alternativeServer;
+    }
+
+    public void setAlternativeServer(String alternativeServer) {
+        this.alternativeServer = alternativeServer;
     }
 }
