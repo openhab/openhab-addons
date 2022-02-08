@@ -142,7 +142,6 @@
 		<label>Alert</label>
 		<description>The alert channel allows a temporary change to the bulb’s state.</description>
 		<tags>
-			<tag>Control</tag>
 			<tag>Alarm</tag>
 		</tags>
 		<state>
