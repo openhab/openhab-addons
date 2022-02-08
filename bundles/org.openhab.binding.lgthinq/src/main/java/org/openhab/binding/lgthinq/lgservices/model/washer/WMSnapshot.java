@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.washer;
 
+import static org.openhab.binding.lgthinq.lgservices.model.washer.ControlWifi.EMPTY_CONTROL_WIFI;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The {@link WMSnapshot}
@@ -25,6 +29,17 @@ import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 public class WMSnapshot implements Snapshot {
     private DevicePowerState powerState = DevicePowerState.DV_POWER_UNK;
     private String course = "";
+
+    @JsonProperty("ControlWifi")
+    private ControlWifi controlWifi = EMPTY_CONTROL_WIFI;
+
+    public void setControlWifi(ControlWifi controlWifi) {
+        this.controlWifi = controlWifi;
+    }
+
+    public ControlWifi getControlWifi() {
+        return controlWifi;
+    }
 
     @Override
     public DevicePowerState getPowerStatus() {
