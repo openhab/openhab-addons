@@ -89,6 +89,9 @@
 			<channel id="powerrealphase3" typeId="meter_powerreal">
 				<label>Real Power Phase 3</label>
 			</channel>
+			<channel id="powerrealsum" typeId="meter_powerreal">
+				<label>Real Power Sum</label>
+			</channel>
 			<channel id="powerfactorphase1" typeId="meter_powerfactor">
 				<label>Power Factor Phase 1</label>
 			</channel>
@@ -106,10 +109,30 @@
 			</channel>
 		</channels>
 
-		<properties>
-			<property name="model"/>
-			<property name="serial"/>
-		</properties>
+		<config-description>
+			<parameter name="deviceId" type="integer">
+				<label>Device ID</label>
+				<description>Specific device identifier</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Ohmpilot Thing Type -->
+	<thing-type id="ohmpilot">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+		<label>Fronius Ohmpilot</label>
+		<description>Fronius Ohmpilot</description>
+
+		<channels>
+			<channel id="powerrealsum" typeId="ohmpilot_powerreal"/>
+			<channel id="energyrealsumconsumed" typeId="ohmpilot_energy"/>
+			<channel id="temperaturechannel1" typeId="ohmpilot_temperature"/>
+			<channel id="statecode" typeId="devicestatus_statuscode"/>
+			<channel id="errorcode" typeId="devicestatus_errorcode"/>
+		</channels>
 
 		<config-description>
 			<parameter name="deviceId" type="integer">
@@ -244,32 +267,48 @@
 	<channel-type id="meter_ac_current">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>AC Current</label>
-		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_ac_voltage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>AC Voltage</label>
-		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_powerreal">
 		<item-type>Number:Power</item-type>
 		<label>Power</label>
-		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_powerfactor">
 		<item-type>Number</item-type>
 		<label>Power Factor</label>
-		<description></description>
 		<state pattern="%.2f" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="meter_energy">
 		<item-type>Number:Energy</item-type>
 		<label>Energy</label>
-		<description></description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
+
+	<channel-type id="ohmpilot_powerreal">
+		<item-type>Number:Power</item-type>
+		<label>Real Power Sum</label>
+		<description>Actual power consumption [W]</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ohmpilot_energy">
+		<item-type>Number:Energy</item-type>
+		<label>Real Energy Consumed</label>
+		<description>Total consumed energy [Wh]</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="ohmpilot_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature of the PT1000</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+
 
 </thing:thing-descriptions>
