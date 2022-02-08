@@ -19,6 +19,7 @@ import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.OhmpilotRealtimeBodyDataDTO;
 import org.openhab.binding.fronius.internal.api.OhmpilotRealtimeResponseDTO;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
@@ -83,9 +84,9 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
             case FroniusBindingConstants.OHMPILOT_ENERGY_SENSOR_TEMPERATURE_CHANNEL_1:
                 return new QuantityType<>(ohmpilotRealtimeBodyData.getTemperatureChannel1(), Units.KELVIN);
             case FroniusBindingConstants.OHMPILOT_STATE_CODE:
-                return new QuantityType<>(ohmpilotRealtimeBodyData.getStateCode(), Units.ONE);
+                return new DecimalType(ohmpilotRealtimeBodyData.getStateCode());
             case FroniusBindingConstants.OHMPILOT_ERROR_CODE:
-                return new QuantityType<>(ohmpilotRealtimeBodyData.getErrorCode(), Units.ONE);
+                return new DecimalType(ohmpilotRealtimeBodyData.getErrorCode());
 
             default:
                 break;
@@ -101,8 +102,8 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
 
         Map<String, String> properties = editProperties();
 
-        properties.put(FroniusBindingConstants.OHMPILOT_MODEL, ohmpilotRealtimeBodyData.getDetails().getModel());
-        properties.put(FroniusBindingConstants.OHMPILOT_SERIAL, ohmpilotRealtimeBodyData.getDetails().getSerial());
+        properties.put(Thing.PROPERTY_MODEL_ID, ohmpilotRealtimeBodyData.getDetails().getModel());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, ohmpilotRealtimeBodyData.getDetails().getSerial());
 
         updateProperties(properties);
     }

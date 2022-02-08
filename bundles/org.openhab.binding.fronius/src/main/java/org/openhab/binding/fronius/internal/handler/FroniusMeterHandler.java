@@ -125,8 +125,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
         Map<String, String> properties = editProperties();
 
-        properties.put(FroniusBindingConstants.METER_MODEL, meterRealtimeBodyData.getDetails().getModel());
-        properties.put(FroniusBindingConstants.METER_SERIAL, meterRealtimeBodyData.getDetails().getSerial());
+        properties.put(Thing.PROPERTY_MODEL_ID, meterRealtimeBodyData.getDetails().getModel());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, meterRealtimeBodyData.getDetails().getSerial());
 
         updateProperties(properties);
     }

@@ -51,8 +51,6 @@ public class FroniusBindingConstants {
     public static final String POWER_FLOW_P_LOAD = "powerflowchannelpload";
     public static final String POWER_FLOW_P_AKKU = "powerflowchannelpakku";
     public static final String POWER_FLOW_P_PV = "powerflowchannelppv";
-    public static final String METER_MODEL = "model";
-    public static final String METER_SERIAL = "serial";
     public static final String METER_ENABLE = "enable";
     public static final String METER_LOCATION = "location";
     public static final String METER_CURRENT_AC_PHASE_1 = "currentacphase1";
@@ -70,13 +68,11 @@ public class FroniusBindingConstants {
     public static final String METER_POWER_FACTOR_PHASE_3 = "powerfactorphase3";
     public static final String METER_ENERGY_REAL_SUM_CONSUMED = "energyrealsumconsumed";
     public static final String METER_ENERGY_REAL_SUM_PRODUCED = "energyrealsumproduced";
-    public static final String OHMPILOT_MODEL = "model";
-    public static final String OHMPILOT_SERIAL = "serial";
-    public static final String OHMPILOT_POWER_REAL_SUM = "ohmpilotpowerrealsum";
-    public static final String OHMPILOT_ENERGY_REAL_SUM_CONSUMED = "ohmpilotenergyrealsumconsumed";
-    public static final String OHMPILOT_ENERGY_SENSOR_TEMPERATURE_CHANNEL_1 = "ohmpilottemperaturechannel1";
-    public static final String OHMPILOT_ERROR_CODE = "ohmpiloterrorcode";
-    public static final String OHMPILOT_STATE_CODE = "ohmpilotstatecode";
+    public static final String OHMPILOT_POWER_REAL_SUM = "powerrealsum";
+    public static final String OHMPILOT_ENERGY_REAL_SUM_CONSUMED = "energyrealsumconsumed";
+    public static final String OHMPILOT_ENERGY_SENSOR_TEMPERATURE_CHANNEL_1 = "temperaturechannel1";
+    public static final String OHMPILOT_ERROR_CODE = "errorcode";
+    public static final String OHMPILOT_STATE_CODE = "statecode";
 
     /*
      * part of POWERFLOW_REALTIME_DATA using Symo Gen24

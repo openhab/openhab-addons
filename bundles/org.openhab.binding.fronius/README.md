@@ -98,22 +98,29 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 | Channel ID              | Item Type                | Description                                                                                                                                                                                                              |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ohmpilotenergyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
-| `ohmpilotpowerrealsum` | Number:Power            | Real Power                                                                                                                                                                                                     |
-| `ohmpilottemperaturechannel1` | Number:Temperature            | Temperature                                                                                                                                                                                                     |
-| `ohmpiloterrorcode`  | Number    | Device error code                                                                                                 |
-| `ohmpilotstatecode` | Number    | Device state code<br />`0` up and running <br />`1` keep minimum temperature <br />`2` legionella protection <br />`3` critical fault<br />`4` fault<br />`5` boost mode |
+| `energyrealsumconsumed` | Number:Energy            | Real Energy consumed                                                                                                                                                                                                     |
+| `powerrealsum` | Number:Power            | Real Power                                                                                                                                                                                                     |
+| `temperaturechannel1` | Number:Temperature            | Temperature                                                                                                                                                                                                     |
+| `errorcode`  | Number    | Device error code                                                                                                 |
+| `statecode` | Number    | Device state code<br />`0` up and running <br />`1` keep minimum temperature <br />`2` legionella protection <br />`3` critical fault<br />`4` fault<br />`5` boost mode |
 |                         |
 
 
 ## Properties
 
-The `meter` thing has the following properties:
+### The `meter` thing has the following properties:
 
 | Property | Description                    |
 | -------- | ------------------------------ |
-| `model`  | The model name of the meter    |
-| `serial` | The serial number of the meter |
+| `modelId`  | The model name of the meter    |
+| `serialNumber` | The serial number of the meter |
+
+### The `ohmpilot` thing has the following property:
+
+| Property | Description                    |
+| -------- | ------------------------------ |
+| `modelId`  | The model name of the ohmpilot    |
+| `serialNumber` | The serial number of the ohmpilot |
 
 ## Full Example
 
@@ -163,10 +170,10 @@ Number Meter_PowerFactorPhase3 { channel="fronius:meter:mybridge:mymeter:powerfa
 Number:Energy Meter_EnergyConsumed { channel="fronius:meter:mybridge:mymeter:energyrealsumconsumed" }
 Number:Energy Meter_EnergyProduced { channel="fronius:meter:mybridge:mymeter:energyrealsumproduced" }
 
-Number:Energy Ohmpilot_EnergyConsumed { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilotenergyrealsumconsumed" }
-Number:Power Ohmpilot_PowerSum { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilotpowerrealsum" }
-Number:Temperature Ohmpilot_Temperature { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilottemperaturechannel1" }
-Number Ohmpilot_State { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpilotstatecode" }
-Number Ohmpilot_Errorcode { channel="fronius:ohmpilot:mybridge:myohmpilot:ohmpiloterrorcode" }
+Number:Energy Ohmpilot_EnergyConsumed { channel="fronius:ohmpilot:mybridge:myohmpilot:energyrealsumconsumed" }
+Number:Power Ohmpilot_PowerSum { channel="fronius:ohmpilot:mybridge:myohmpilot:powerrealsum" }
+Number:Temperature Ohmpilot_Temperature { channel="fronius:ohmpilot:mybridge:myohmpilot:temperaturechannel1" }
+Number Ohmpilot_State { channel="fronius:ohmpilot:mybridge:myohmpilot:statecode" }
+Number Ohmpilot_Errorcode { channel="fronius:ohmpilot:mybridge:myohmpilot:errorcode" }
 
 ```
