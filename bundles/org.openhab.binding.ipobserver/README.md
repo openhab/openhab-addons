@@ -6,6 +6,7 @@ Some of the brands include Aercus (433mhz), Ambient Weather (915mhz), Frogitt, M
 Whilst Ambient Weather has it own cloud based binding, the other brands will not work with that binding and Ambient Weather do not sell outside of the United States.
 
 This binding works fully offline and can work via one of two methods:
+
 1. Local scraping of the weather station's `livedata` webpage at 12 second resolution (non WiFi models only).
 2. Both WiFi and RJ45 models can be setup to push the data directly to the openHAB (default 8080) server directly and the binding can parse the data from the weather underground data.
 
