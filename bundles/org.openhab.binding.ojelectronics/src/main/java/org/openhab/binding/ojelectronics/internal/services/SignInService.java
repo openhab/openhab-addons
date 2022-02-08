@@ -73,17 +73,19 @@ public class SignInService {
                     connectionLosed.run();
                     return;
                 }
-                if (result.getResponse().getStatus() != 200) {
-                    unauthorized.run();
+                if (result.getResponse().getStatus() == 200) {
+                    PostSignInResponseModel signInModel = gson.fromJson(getContentAsString(),
+                            PostSignInResponseModel.class);
+                    if (signInModel == null || signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
+                        unauthorized.run();
+                        return;
+                    }
+                    signInDone.accept(signInModel.sessionId);
                     return;
                 }
-                PostSignInResponseModel signInModel = gson.fromJson(getContentAsString(),
-                        PostSignInResponseModel.class);
-                if (signInModel == null || signInModel.errorCode != 0 || signInModel.sessionId.equals("")) {
-                    unauthorized.run();
-                    return;
-                }
-                signInDone.accept(signInModel.sessionId);
+
+                connectionLosed.run();
+                return;
             }
         });
     }

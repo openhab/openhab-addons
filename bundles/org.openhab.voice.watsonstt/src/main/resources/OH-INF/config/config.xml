@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="voice:watsonstt">
+		<parameter-group name="authentication">
+			<label>Authentication</label>
+			<description>Information for connection to your Watson Speech-to-Text instance.</description>
+		</parameter-group>
+		<parameter-group name="stt">
+			<label>STT Configuration</label>
+			<description>Parameters for Watson Speech-to-Text API.</description>
+		</parameter-group>
+		<parameter name="apiKey" type="text" required="true" groupName="authentication">
+			<label>Api Key</label>
+			<description>Api key for Speech-to-Text instance created on IBM Cloud.</description>
+		</parameter>
+		<parameter name="instanceUrl" type="text" required="true" groupName="authentication">
+			<label>Instance Url</label>
+			<description>Url for Speech-to-Text instance created on IBM Cloud.</description>
+		</parameter>
+		<parameter name="backgroundAudioSuppression" type="decimal" min="0" max="1" step="0.1" groupName="stt">
+			<label>Background Audio Suppression</label>
+			<description>Use the parameter to suppress side conversations or background noise.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="speechDetectorSensitivity" type="decimal" min="0" max="1" step="0.1" groupName="stt">
+			<label>Speech Detector Sensitivity</label>
+			<description>Use the parameter to suppress word insertions from music, coughing, and other non-speech events.</description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="inactivityTimeout" type="integer" unit="s" groupName="stt">
+			<label>Inactivity Timeout</label>
+			<description>The time in seconds after which, if only silence (no speech) is detected in the audio, the connection is
+				closed.</description>
+			<default>3</default>
+		</parameter>
+		<parameter name="noResultsMessage" type="text" groupName="stt">
+			<label>No Results Message</label>
+			<description>Message to be told when no transcription is done.</description>
+			<default>No results</default>
+		</parameter>
+		<parameter name="optOutLogging" type="boolean" groupName="stt">
+			<label>Opt Out Logging</label>
+			<description>By default, all IBM Watson™ services log requests and their results. Logging is done only to improve the
+				services for future users. The logged data is not shared or made public.</description>
+			<default>true</default>
+		</parameter>
+		<parameter name="smartFormatting" type="boolean" groupName="stt">
+			<label>Smart Formatting</label>
+			<description>If true, the service converts dates, times, series of digits and numbers, phone numbers, currency
+				values, and internet addresses into more readable. (Not available for all locales)</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="redaction" type="boolean" groupName="stt">
+			<label>Redaction</label>
+			<description>If true, the service redacts, or masks, numeric data from final transcripts. (Not available for all
+				locales)</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

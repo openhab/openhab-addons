@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpChannel;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpCoolingOperationMode;
 import org.openhab.binding.luxtronikheatpump.internal.enums.HeatpumpOperationMode;
@@ -75,7 +76,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
     }
 
     @Override
-    public void updateProperty(String name, String value) {
+    public void updateProperty(String name, @Nullable String value) {
         super.updateProperty(name, value);
     }
 
