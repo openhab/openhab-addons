@@ -30,7 +30,10 @@ import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.api.TokenResult;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
+import org.openhab.binding.lgthinq.lgservices.model.Capability;
+import org.openhab.binding.lgthinq.lgservices.model.CapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACCapability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,5 +193,24 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
         }
 
         return devices;
+    }
+
+    /**
+     * Get capability em registry/cache on file for next consult
+     *
+     * @param deviceId ID of the device
+     * @param uri URI of the config capability
+     * @return return simplified capability
+     * @throws LGThinqApiException If some error occurr
+     */
+    public Capability getCapability(String deviceId, String uri, boolean forceRecreate) throws LGThinqApiException {
+        try {
+            File regFile = loadDeviceCapability(deviceId, uri, forceRecreate);
+            Map<String, Object> mapper = objectMapper.readValue(regFile, new TypeReference<>() {
+            });
+            return CapabilityFactory.getInstance().create(mapper, ACCapability.class);
+        } catch (IOException e) {
+            throw new LGThinqApiException("Error reading IO interface", e);
+        }
     }
 }

@@ -10,13 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lgthinq.lgservices.model;
+package org.openhab.binding.lgthinq.lgservices.model.ac;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lgthinq.lgservices.model.Capability;
 
 /**
  * The {@link ACCapability}
@@ -24,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class ACCapability {
+public class ACCapability extends Capability {
 
     private Map<String, String> opMod = Collections.emptyMap();
     private Map<String, String> fanSpeed = Collections.emptyMap();

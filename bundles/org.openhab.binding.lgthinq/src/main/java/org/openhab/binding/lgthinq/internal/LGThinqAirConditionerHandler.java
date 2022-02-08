@@ -24,16 +24,18 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.internal.handler.LGThinqBridgeHandler;
 import org.openhab.binding.lgthinq.lgservices.LGThinqApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinqApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.LGThinqApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACCapability;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshotV1;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACTargetTmp;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.*;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -48,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class LGThinqAirConditionerHandler extends BaseThingHandler implements LGThinqDeviceThing {
+public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
 
     private final LGThinqDeviceDynStateDescriptionProvider stateDescriptionProvider;
     private final ChannelUID opModeChannelUID;
@@ -110,53 +112,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
     }
 
     @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
-        initializeThing(bridgeStatusInfo.getStatus());
-    }
-
-    private void initializeThing(@Nullable ThingStatus bridgeStatus) {
-        logger.debug("initializeThing LQ Thinq {}. Bridge status {}", getThing().getUID(), bridgeStatus);
-        String deviceId = getThing().getUID().getId();
-        if (!SUPPORTED_LG_PLATFORMS.contains(lgPlatfomType)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "LG Platform [" + lgPlatfomType + "] not supported for this thing");
-            return;
-        }
-        Bridge bridge = getBridge();
-        if (!deviceId.isBlank()) {
-            try {
-                updateChannelDynStateDescription();
-            } catch (LGThinqApiException e) {
-                logger.error(
-                        "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.");
-            }
-            if (bridge != null) {
-                LGThinqBridgeHandler handler = (LGThinqBridgeHandler) bridge.getHandler();
-                // registry this thing to the bridge
-                if (handler == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-                } else {
-                    handler.registryListenerThing(this);
-                    if (bridgeStatus == ThingStatus.ONLINE) {
-                        updateStatus(ThingStatus.ONLINE);
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-                    }
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.conf-error-no-device-id");
-        }
-        // finally, start command queue, regardless os the thing state, as we can still try to send commands without
-        // property ONLINE (the successful result from command request can put the thing in ONLINE status).
-        startCommandExecutorQueueJob();
-    }
-
-    private void startCommandExecutorQueueJob() {
+    protected void startCommandExecutorQueueJob() {
         if (commandExecutorQueueJob == null || commandExecutorQueueJob.isDone()) {
             commandExecutorQueueJob = getExecutorService().submit(queuedCommandExecutor);
         }
@@ -181,7 +137,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
 
     private void updateThingStateFromLG() {
         try {
-            ACSnapShot shot = getSnapshotDeviceAdapter(getDeviceId());
+            ACSnapshot shot = getSnapshotDeviceAdapter(getDeviceId());
             if (shot == null) {
                 // no data to update. Maybe, the monitor stopped, then it gonna be restarted next try.
                 return;
@@ -190,15 +146,15 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                 if (getThing().getStatus() != ThingStatus.OFFLINE) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
                     updateState(CHANNEL_POWER_ID,
-                            OnOffType.from(shot.getAcPowerStatus() == DevicePowerState.DV_POWER_OFF));
+                            OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_OFF));
                 }
                 return;
             }
             if (shot.getOperationMode() != null) {
                 updateState(CHANNEL_MOD_OP_ID, new DecimalType(shot.getOperationMode()));
             }
-            if (shot.getAcPowerStatus() != null) {
-                updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getAcPowerStatus() == DevicePowerState.DV_POWER_ON));
+            if (shot.getPowerStatus() != null) {
+                updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_ON));
                 // TODO - validate if is needed to change the status of the thing from OFFLINE to ONLINE (as
                 // soon as LG WebOs do)
             }
@@ -212,7 +168,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                 updateState(CHANNEL_TARGET_TEMP_ID, new DecimalType(shot.getTargetTemperature()));
             }
             updateStatus(ThingStatus.ONLINE);
-        } catch (LGThinqException e) {
+        } catch (Exception e) {
             logger.error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry.",
                     getDeviceAlias(), getDeviceId(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -250,34 +206,40 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
 
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
-        ACCapability acCap = getAcCapabilities();
+        ACCapability acCap = getCapabilities();
         if (isLinked(opModeChannelUID)) {
             List<StateOption> options = new ArrayList<>();
             acCap.getSupportedOpMode().forEach((v) -> options
-                    .add(new StateOption(emptyIfNull(acCap.getOpMod().get(v)), emptyIfNull(CAP_OP_MODE.get(v)))));
+                    .add(new StateOption(emptyIfNull(acCap.getOpMod().get(v)), emptyIfNull(CAP_AC_OP_MODE.get(v)))));
             stateDescriptionProvider.setStateOptions(opModeChannelUID, options);
         }
         if (isLinked(opModeFanSpeedUID)) {
             List<StateOption> options = new ArrayList<>();
-            acCap.getSupportedFanSpeed().forEach((v) -> options
-                    .add(new StateOption(emptyIfNull(acCap.getFanSpeed().get(v)), emptyIfNull(CAP_FAN_SPEED.get(v)))));
+            acCap.getSupportedFanSpeed().forEach((v) -> options.add(
+                    new StateOption(emptyIfNull(acCap.getFanSpeed().get(v)), emptyIfNull(CAP_AC_FAN_SPEED.get(v)))));
             stateDescriptionProvider.setStateOptions(opModeFanSpeedUID, options);
         }
     }
 
     @Override
-    public ACCapability getAcCapabilities() throws LGThinqApiException {
+    public ACCapability getCapabilities() throws LGThinqApiException {
         if (acCapability == null) {
-            acCapability = lgThinqApiClientService.getACCapability(getDeviceId(), getDeviceUriJsonConfig(), false);
+            acCapability = (ACCapability) lgThinqApiClientService.getCapability(getDeviceId(), getDeviceUriJsonConfig(),
+                    false);
         }
         return Objects.requireNonNull(acCapability, "Unexpected error. Return ac-capability shouldn't ever be null");
     }
 
+    @Override
+    protected Logger getLogger() {
+        return logger;
+    }
+
     @Nullable
-    private ACSnapShot getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException {
+    private ACSnapshot getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException {
         // analise de platform version
         if (PLATFORM_TYPE_V2.equals(lgPlatfomType)) {
-            return lgThinqApiClientService.getAcDeviceData(getBridgeId(), getDeviceId());
+            return (ACSnapshot) lgThinqApiClientService.getDeviceData(getBridgeId(), getDeviceId());
         } else {
             try {
                 if (!monitorV1Began) {
@@ -286,7 +248,7 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                 }
             } catch (LGThinqDeviceV1OfflineException e) {
                 forceStopDeviceV1Monitor(deviceId);
-                ACSnapShot shot = new ACSnapShotV1();
+                ACSnapshot shot = new ACSnapshotV1();
                 shot.setOnline(false);
                 return shot;
             } catch (Exception e) {
@@ -294,11 +256,11 @@ public class LGThinqAirConditionerHandler extends BaseThingHandler implements LG
                 throw new LGThinqApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
             }
             int retries = 10;
-            ACSnapShot shot;
+            ACSnapshot shot;
             while (retries > 0) {
                 // try to get monitoring data result 3 times.
                 try {
-                    shot = lgThinqApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId);
+                    shot = (ACSnapshot) lgThinqApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId);
                     if (shot != null) {
                         return shot;
                     }
