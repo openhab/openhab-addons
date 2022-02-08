@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2022 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,21 +13,10 @@
 package org.openhab.binding.lgthinq.lgservices.model;
 
 /**
- * The {@link LGAPIVerion}
+ * The {@link Capability}
  *
  * @author Nemer Daud - Initial contribution
  */
-public enum LGAPIVerion {
-    V1_0(1.0),
-    V2_0(2.0);
+public abstract class Capability {
 
-    private final double version;
-
-    LGAPIVerion(double v) {
-        version = v;
-    }
-
-    public double getValue() {
-        return version;
-    }
 }
