@@ -30,7 +30,7 @@
 		<description>Lock or unlock this lock.</description>
 		<category>Switch</category>
 		<tags>
-			<tag>Control</tag>
+			<tag>OpenState</tag>
 		</tags>
 	</channel-type>
 
