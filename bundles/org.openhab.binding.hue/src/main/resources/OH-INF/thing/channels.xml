@@ -26,10 +26,6 @@
 		<item-type>Number</item-type>
 		<label>Light Level</label>
 		<description>Current light level.</description>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Light</tag>
-		</tags>
 		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
