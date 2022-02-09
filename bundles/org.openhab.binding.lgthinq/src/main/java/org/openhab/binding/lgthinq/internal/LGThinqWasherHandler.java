@@ -14,9 +14,7 @@ package org.openhab.binding.lgthinq.internal;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.*;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -32,12 +30,14 @@ import org.openhab.binding.lgthinq.lgservices.LGThinqApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.washer.WMCapability;
-import org.openhab.binding.lgthinq.lgservices.model.washer.WMSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.washer.WasherDryerSnapshot;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.StateOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +53,7 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
     private final LGThinqDeviceDynStateDescriptionProvider stateDescriptionProvider;
     @Nullable
     private WMCapability wmCapability;
+    private final ChannelUID stateChannelUUID;
     private final String lgPlatfomType;
     private final Logger logger = LoggerFactory.getLogger(LGThinqWasherHandler.class);
     @NonNullByDefault
@@ -80,6 +81,7 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
         lgPlatfomType = "" + thing.getProperties().get(PLATFORM_TYPE);
         lgThinqApiClientService = lgPlatfomType.equals(PLATFORM_TYPE_V1) ? LGThinqApiV1ClientServiceImpl.getInstance()
                 : LGThinqApiV2ClientServiceImpl.getInstance();
+        stateChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_STATE_ID);
     }
 
     static class AsyncCommandParams {
@@ -130,7 +132,7 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
 
     private void updateThingStateFromLG() {
         try {
-            WMSnapshot shot = getSnapshotDeviceAdapter(getDeviceId());
+            WasherDryerSnapshot shot = getSnapshotDeviceAdapter(getDeviceId());
             if (shot == null) {
                 // no data to update. Maybe, the monitor stopped, then it gonna be restarted next try.
                 return;
@@ -145,6 +147,7 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
             }
 
             updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_ON));
+            updateState(WM_CHANNEL_STATE_ID, new StringType(shot.getState()));
 
             updateStatus(ThingStatus.ONLINE);
         } catch (LGThinqException e) {
@@ -185,7 +188,13 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
 
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
-        // not dynamic state channel in this device
+        WMCapability wmCap = getCapabilities();
+        if (isLinked(stateChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            // invert key/value
+            wmCap.getState().forEach((k, v) -> options.add(new StateOption(v, emptyIfNull(CAP_WP_STATE.get(k)))));
+            stateDescriptionProvider.setStateOptions(stateChannelUUID, options);
+        }
     }
 
     @Override
@@ -203,10 +212,10 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
     }
 
     @Nullable
-    private WMSnapshot getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException {
+    private WasherDryerSnapshot getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException {
         // analise de platform version
         if (PLATFORM_TYPE_V2.equals(lgPlatfomType)) {
-            return (WMSnapshot) lgThinqApiClientService.getDeviceData(getBridgeId(), getDeviceId());
+            return (WasherDryerSnapshot) lgThinqApiClientService.getDeviceData(getBridgeId(), getDeviceId());
         } else {
             try {
                 if (!monitorV1Began) {
@@ -215,7 +224,7 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
                 }
             } catch (LGThinqDeviceV1OfflineException e) {
                 forceStopDeviceV1Monitor(deviceId);
-                WMSnapshot shot = new WMSnapshot();
+                WasherDryerSnapshot shot = new WasherDryerSnapshot();
                 shot.setOnline(false);
                 return shot;
             } catch (Exception e) {
@@ -223,11 +232,12 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
                 throw new LGThinqApiException("Error starting device monitor in LG API for the device:" + deviceId, e);
             }
             int retries = 10;
-            WMSnapshot shot;
+            WasherDryerSnapshot shot;
             while (retries > 0) {
                 // try to get monitoring data result 3 times.
                 try {
-                    shot = (WMSnapshot) lgThinqApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId);
+                    shot = (WasherDryerSnapshot) lgThinqApiClientService.getMonitorData(getBridgeId(), deviceId,
+                            monitorWorkId);
                     if (shot != null) {
                         return shot;
                     }

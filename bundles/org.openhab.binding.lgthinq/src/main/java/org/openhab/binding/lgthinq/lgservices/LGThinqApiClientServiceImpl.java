@@ -33,7 +33,6 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.Capability;
 import org.openhab.binding.lgthinq.lgservices.model.CapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
-import org.openhab.binding.lgthinq.lgservices.model.ac.ACCapability;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,7 +207,7 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
             File regFile = loadDeviceCapability(deviceId, uri, forceRecreate);
             Map<String, Object> mapper = objectMapper.readValue(regFile, new TypeReference<>() {
             });
-            return CapabilityFactory.getInstance().create(mapper, ACCapability.class);
+            return CapabilityFactory.getInstance().create(mapper);
         } catch (IOException e) {
             throw new LGThinqApiException("Error reading IO interface", e);
         }
