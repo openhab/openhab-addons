@@ -425,7 +425,7 @@
 		<item-type>String</item-type>
 		<label>Washer Course</label>
 		<description>Washer Course</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="COTTON">Cotton</option>
 				<option value="EASYCARE">Easy Care</option>
@@ -447,7 +447,7 @@
 		<item-type>String</item-type>
 		<label>Washer Smart Course</label>
 		<description>Washer Smart Course</description>
-		<state>
+		<state readOnly="true">
 			<options>
 				<option value="COTTON">Cotton</option>
 				<option value="EASYCARE">Easy Care</option>
