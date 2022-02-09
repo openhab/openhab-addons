@@ -147,7 +147,8 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         messageSender.start();
 
         logger.debug("Starting heartbeat job with interval {} (seconds)", HEARTBEAT_INTERVAL_SECONDS);
-        heartBeat = scheduler.scheduleWithFixedDelay(this::sendHeartBeat, 10, HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
+        heartBeat = scheduler.scheduleWithFixedDelay(this::sendHeartBeat, 10, HEARTBEAT_INTERVAL_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     private void sendCommandsThread() {

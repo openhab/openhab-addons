@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.luxom.internal.handler.config;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-
-import java.util.Objects;
 
 /**
  * {@link LuxomBridgeConfig} is the general config class for Luxom Bridges.
