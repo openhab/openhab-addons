@@ -196,7 +196,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="battery-q-type">
+	<channel-type id="battery-health-type">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Health</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
