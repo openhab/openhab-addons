@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SMSModemActions} expose some actions
+ * The {@link SMSModemActions} exposes some actions
  *
  * @author Gwendal ROULLEAU - Initial contribution
  */

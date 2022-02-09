@@ -2,7 +2,7 @@
 
 This binding connects to a USB serial GSM modem (or a network exposed one, see ser2net) and allows openHAB to send and receive SMS through it.
 
-Serial modem should all use the same communication protocol (AT message) and therefore this binding _should_ be compatible with every dongle. However, ther is a gap between theory and reality and success may vary. The protocol stack is based on the no longer supported smslib project (more precisely a v4 fork), and all modems supported by this library should be OK. The following devices have been reported functional :
+Serial modem should all use the same communication protocol (AT message) and therefore this binding _should_ be compatible with every dongle. However, there is a gap between theory and reality and success may vary. The protocol stack is based on the no longer supported smslib project (more precisely a v4 fork), and all modems supported by this library should be OK. The following devices have been reported functional :
 
 -  Huawei E180
 

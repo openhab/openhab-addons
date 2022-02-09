@@ -31,18 +31,6 @@ import org.openhab.binding.smsmodem.internal.SMSConversationDiscoveryService;
 import org.openhab.binding.smsmodem.internal.SMSModemBindingConstants;
 import org.openhab.binding.smsmodem.internal.SMSModemBridgeConfiguration;
 import org.openhab.binding.smsmodem.internal.actions.SMSModemActions;
-import org.openhab.binding.smsmodem.internal.smslib.callback.IDeviceInformationListener;
-import org.openhab.binding.smsmodem.internal.smslib.callback.IInboundOutboundMessageListener;
-import org.openhab.binding.smsmodem.internal.smslib.callback.IModemStatusListener;
-import org.openhab.binding.smsmodem.internal.smslib.message.DeliveryReportMessage;
-import org.openhab.binding.smsmodem.internal.smslib.message.InboundMessage;
-import org.openhab.binding.smsmodem.internal.smslib.message.MsIsdn;
-import org.openhab.binding.smsmodem.internal.smslib.message.OutboundMessage;
-import org.openhab.binding.smsmodem.internal.smslib.message.Payload;
-import org.openhab.binding.smsmodem.internal.smslib.message.Payload.Type;
-import org.openhab.binding.smsmodem.internal.smslib.modem.Modem;
-import org.openhab.binding.smsmodem.internal.smslib.modem.Modem.Status;
-import org.openhab.binding.smsmodem.internal.smslib.modem.driver.CommunicationException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.serial.SerialPortIdentifier;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -58,6 +46,18 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smslib.CommunicationException;
+import org.smslib.Modem;
+import org.smslib.Modem.Status;
+import org.smslib.callback.IDeviceInformationListener;
+import org.smslib.callback.IInboundOutboundMessageListener;
+import org.smslib.callback.IModemStatusListener;
+import org.smslib.message.DeliveryReportMessage;
+import org.smslib.message.InboundMessage;
+import org.smslib.message.MsIsdn;
+import org.smslib.message.OutboundMessage;
+import org.smslib.message.Payload;
+import org.smslib.message.Payload.Type;
 
 /**
  * The {@link SMSModemBridgeHandler} is responsible for handling

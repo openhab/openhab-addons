@@ -12,8 +12,13 @@ https://www.eclipse.org/legal/epl-2.0/.
 
 https://github.com/openhab/openhab-addons
 
-== External library inclusion
+== Third-party Content
+This binding includes code (under the org.smslib package) from the SMSlib project
+The code have been slighly modified to use the serial library provided by the openHAB runtime (amongst small other fixes, and code compliance for openHAB)  
 
-This binding includes code (under the org.smslib package) from the SMSlib project (under Apache licence)
-More precisely the v4 fork here : https://github.com/tdelenikas/smslib
-The code have been slighly modified to use the serial library provided by the openHAB runtime (amongst small other fixes)  
+smslib
+* license Apache 2.0 License
+* https://github.com/tdelenikas/smslib
+
+PduUtils Library
+* license Apache 2.0 License
