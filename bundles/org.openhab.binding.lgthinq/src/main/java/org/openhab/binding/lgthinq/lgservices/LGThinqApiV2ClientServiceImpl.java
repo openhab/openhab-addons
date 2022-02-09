@@ -201,6 +201,7 @@ public class LGThinqApiV2ClientServiceImpl extends LGThinqApiClientServiceImpl {
                 metaResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<Map<String, Object>>() {
                 });
                 if (!"0000".equals(metaResult.get("resultCode"))) {
+                    logErrorResultCodeMessage((String) metaResult.get("resultCode"));
                     throw new LGThinqApiException(
                             String.format("Status error executing endpoint. resultCode must be 0000, but was:%s",
                                     metaResult.get("resultCode")));
