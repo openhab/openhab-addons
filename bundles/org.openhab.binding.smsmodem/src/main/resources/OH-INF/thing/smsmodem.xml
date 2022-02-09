@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smsmodem"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="smsmodembridge">
+		<label>SMSModem Bridge</label>
+		<description>This bridge represents a modem.</description>
+
+		<channels>
+			<channel id="receivetrigger" typeId="smsmodemreceivetrigger"/>
+		</channels>
+
+		<config-description>
+			<parameter name="serialPortOrIP" type="text" required="true">
+				<label>Address</label>
+				<description>Serial port of the modem, or the IP address if it is a network one.</description>
+				<default></default>
+			</parameter>
+			<parameter name="baudOrNetworkPort" type="integer" required="true">
+				<label>Baud Or Network Port</label>
+				<description>Baud rate, in case of a serial modem, or network port if it is on another machine.</description>
+				<default>9800</default>
+			</parameter>
+			<parameter name="simPin" type="text" required="false">
+				<label>Pin Code</label>
+				<description>The pin (if set) for the sim card.</description>
+				<default></default>
+			</parameter>
+			<parameter name="pollingInterval" type="integer">
+				<advanced>true</advanced>
+				<default>15</default>
+				<description>Delay between polling for new messages (in seconds).</description>
+			</parameter>
+			<parameter name="delayBetweenSend" type="integer">
+				<advanced>true</advanced>
+				<default>100</default>
+				<description>Delay between two messages (in milliseconds). Useful for slow modem.</description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<channel-type id="smsmodemreceivetrigger">
+		<kind>trigger</kind>
+		<label>Message Received</label>
+		<description>Triggered when a message is received, in the form "&lt;msisdn_sender&gt;|&lt;text&gt;"</description>
+		<event>
+		</event>
+	</channel-type>
+
+</thing:thing-descriptions>
