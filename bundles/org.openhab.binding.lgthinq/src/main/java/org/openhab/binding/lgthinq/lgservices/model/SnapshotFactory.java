@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model;
 
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE;
+
 import java.util.Map;
 import java.util.Objects;
 
@@ -19,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshotV1;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshotV2;
-import org.openhab.binding.lgthinq.lgservices.model.washer.WMSnapshot;
+import org.openhab.binding.lgthinq.lgservices.model.washer.WasherDryerSnapshot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -51,10 +53,10 @@ public class SnapshotFactory {
             case AIR_CONDITIONER:
                 switch (version) {
                     case V1_0: {
-                        return objectMapper.convertValue(deviceSettings, ACSnapshotV2.class);
+                        return objectMapper.convertValue(snapMap, ACSnapshotV2.class);
                     }
                     case V2_0: {
-                        return objectMapper.convertValue(deviceSettings, ACSnapshotV1.class);
+                        return objectMapper.convertValue(snapMap, ACSnapshotV1.class);
                     }
                 }
             case WASHING_MACHINE:
@@ -63,7 +65,10 @@ public class SnapshotFactory {
                         throw new IllegalArgumentException("Version 1.0 for Washer is not supported yet.");
                     }
                     case V2_0: {
-                        return objectMapper.convertValue(deviceSettings, WMSnapshot.class);
+                        Map<String, String> washerDryerMap = Objects.requireNonNull(
+                                (Map<String, String>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE),
+                                "washerDryer node must be present in the snapshot");
+                        return objectMapper.convertValue(washerDryerMap, WasherDryerSnapshot.class);
                     }
                 }
 

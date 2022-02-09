@@ -27,7 +27,8 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.LGThinqApiClientService;
 import org.openhab.binding.lgthinq.lgservices.LGThinqApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.LGThinqApiV2ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgservices.model.*;
+import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACCapability;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshotV1;
@@ -150,23 +151,14 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
                 }
                 return;
             }
-            if (shot.getOperationMode() != null) {
-                updateState(CHANNEL_MOD_OP_ID, new DecimalType(shot.getOperationMode()));
-            }
-            if (shot.getPowerStatus() != null) {
-                updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_ON));
-                // TODO - validate if is needed to change the status of the thing from OFFLINE to ONLINE (as
-                // soon as LG WebOs do)
-            }
-            if (shot.getAcFanSpeed() != null) {
-                updateState(CHANNEL_FAN_SPEED_ID, new DecimalType(shot.getAirWindStrength()));
-            }
-            if (shot.getCurrentTemperature() != null) {
-                updateState(CHANNEL_CURRENT_TEMP_ID, new DecimalType(shot.getCurrentTemperature()));
-            }
-            if (shot.getTargetTemperature() != null) {
-                updateState(CHANNEL_TARGET_TEMP_ID, new DecimalType(shot.getTargetTemperature()));
-            }
+
+            updateState(CHANNEL_MOD_OP_ID, new DecimalType(shot.getOperationMode()));
+            updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_ON));
+            // TODO - validate if is needed to change the status of the thing from OFFLINE to ONLINE (as
+            // soon as LG WebOs do)
+            updateState(CHANNEL_FAN_SPEED_ID, new DecimalType(shot.getAirWindStrength()));
+            updateState(CHANNEL_CURRENT_TEMP_ID, new DecimalType(shot.getCurrentTemperature()));
+            updateState(CHANNEL_TARGET_TEMP_ID, new DecimalType(shot.getTargetTemperature()));
             updateStatus(ThingStatus.ONLINE);
         } catch (Exception e) {
             logger.error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry.",

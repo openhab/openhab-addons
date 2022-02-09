@@ -15,6 +15,7 @@
 
 		<channels>
 			<channel id="power" typeId="system.power"/>
+			<channel id="state" typeId="washer-state"/>
 		</channels>
 
 	</thing-type>

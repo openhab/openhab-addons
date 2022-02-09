@@ -12,34 +12,30 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.washer;
 
-import static org.openhab.binding.lgthinq.lgservices.model.washer.ControlWifi.EMPTY_CONTROL_WIFI;
+import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.WM_POWER_OFF_VALUE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The {@link WMSnapshot}
- *
+ * The {@link WasherDryerSnapshot}
+ * This map the snapshot result from Washing Machine devices
+ * This json payload come with path: snapshot->washerDryer, but this POJO expects
+ * to map field below washerDryer
+ * 
  * @author Nemer Daud - Initial contribution
  */
 @NonNullByDefault
-public class WMSnapshot implements Snapshot {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class WasherDryerSnapshot implements Snapshot {
     private DevicePowerState powerState = DevicePowerState.DV_POWER_UNK;
-    private String course = "";
-
-    @JsonProperty("ControlWifi")
-    private ControlWifi controlWifi = EMPTY_CONTROL_WIFI;
-
-    public void setControlWifi(ControlWifi controlWifi) {
-        this.controlWifi = controlWifi;
-    }
-
-    public ControlWifi getControlWifi() {
-        return controlWifi;
-    }
+    private String state = "";
+    private boolean online;
 
     @Override
     public DevicePowerState getPowerStatus() {
@@ -48,23 +44,31 @@ public class WMSnapshot implements Snapshot {
 
     @Override
     public void setPowerStatus(DevicePowerState value) {
-        this.powerState = value;
-    }
-
-    public String getCourse() {
-        return course;
-    }
-
-    public void setCourse(String course) {
-        this.course = course;
+        throw new IllegalArgumentException("This method must not be accessed.");
     }
 
     @Override
     public boolean isOnline() {
-        return false;
+        return online;
     }
 
     @Override
     public void setOnline(boolean online) {
+        this.online = online;
+    }
+
+    @JsonProperty("state")
+    @JsonGetter
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+        if (state.equals(WM_POWER_OFF_VALUE)) {
+            powerState = DevicePowerState.DV_POWER_OFF;
+        } else {
+            powerState = DevicePowerState.DV_POWER_ON;
+        }
     }
 }
