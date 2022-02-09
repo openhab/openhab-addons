@@ -16,10 +16,6 @@
 			<channel id="low_setpoint" typeId="sensor_temp_low_setpoint"/>
 			<channel id="high_setpoint" typeId="sensor_temp_high_setpoint"/>
 		</channels>
-		<properties>
-			<property name="name"/>
-			<property name="area"/>
-		</properties>
 		<representation-property>number</representation-property>
 		<config-description>
 			<parameter name="number" type="integer" required="true">
@@ -35,6 +31,10 @@
 		<label>Temperature</label>
 		<description>The current temperature at this temperature sensor.</description>
 		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
