@@ -108,6 +108,37 @@ public class LGThinqBindingConstants {
     public static final int SEARCH_TIME = 20;
     // delay between each devices's scan for state changes (in seconds)
     public static final int DEFAULT_STATE_POLLING_UPDATE_DELAY = 30;
+
+    public static final Map<String, String> ERROR_CODE_RESPONSE = Map.ofEntries(Map.entry("0000", "OK"),
+            Map.entry("0001", "PARTIAL_OK"), Map.entry("0103", "OPERATION_IN_PROGRESS_DEVICE"),
+            Map.entry("0007", "PORTAL_INTERWORKING_ERROR"), Map.entry("0104", "PROCESSING_REFRIGERATOR"),
+            Map.entry("0111", "RESPONSE_DELAY_DEVICE"), Map.entry("8107", "SERVICE_SERVER_ERROR"),
+            Map.entry("8102", "SSP_ERROR"), Map.entry("9020", "TIME_OUT"), Map.entry("8104", "WRONG_XML_OR_URI"),
+            Map.entry("9000", "AWS_IOT_ERROR"), Map.entry("8105", "AWS_S3_ERROR"), Map.entry("8106", "AWS_SQS_ERROR"),
+            Map.entry("9002", "BASE64_DECODING_ERROR"), Map.entry("9001", "BASE64_ENCODING_ERROR"),
+            Map.entry("8103", "CLIP_ERROR"), Map.entry("0105", "CONTROL_ERROR_REFRIGERATOR"),
+            Map.entry("9003", "CREATE_SESSION_FAIL"), Map.entry("9004", "DB_PROCESSING_FAIL"),
+            Map.entry("8101", "DM_ERROR"), Map.entry("0013", "DUPLICATED_ALIAS"), Map.entry("0008", "DUPLICATED_DATA"),
+            Map.entry("0004", "DUPLICATED_LOGIN"), Map.entry("0102", "EMP_AUTHENTICATION_FAILED"),
+            Map.entry("8900", "ETC_COMMUNICATION_ERROR"), Map.entry("9999", "ETC_ERROR"),
+            Map.entry("0112", "EXCEEDING_LIMIT"), Map.entry("0119", "EXPIRED_CUSTOMER_NUMBER"),
+            Map.entry("9005", "EXPIRES_SESSION_BY_WITHDRAWAL"), Map.entry("0100", "FAIL"),
+            Map.entry("8001", "INACTIVE_API"), Map.entry("0107", "INSUFFICIENT_STORAGE_SPACE"),
+            Map.entry("9010", "INVAILD_CSR"), Map.entry("0002", "INVALID_BODY"),
+            Map.entry("0118", "INVALID_CUSTOMER_NUMBER"), Map.entry("0003", "INVALID_HEADER"),
+            Map.entry("0301", "INVALID_PUSH_TOKEN"), Map.entry("0116", "INVALID_REQUEST_DATA_FOR_DIAGNOSIS"),
+            Map.entry("0014", "MISMATCH_DEVICE_GROUP"), Map.entry("0114", "MISMATCH_LOGIN_SESSION"),
+            Map.entry("0006", "MISMATCH_NONCE"), Map.entry("0115", "MISMATCH_REGISTRED_DEVICE"),
+            Map.entry("0110", "NOT_AGREED_TERMS"), Map.entry("0106", "NOT_CONNECTED_DEVICE"),
+            Map.entry("0120", "NOT_CONTRACT_CUSTOMER_NUMBER"), Map.entry("0010", "NOT_EXIST_DATA"),
+            Map.entry("0009", "NOT_EXIST_DEVICE"), Map.entry("0117", "NOT_EXIST_MODEL_JSON"),
+            Map.entry("0121", "NOT_REGISTERED_SMART_CARE"), Map.entry("0012", "NOT_SUPPORTED_COMMAND"),
+            Map.entry("8000", "NOT_SUPPORTED_COUNTRY"), Map.entry("0005", "NOT_SUPPORTED_SERVICE"),
+            Map.entry("0109", "NO_INFORMATION_DR"), Map.entry("0108", "NO_INFORMATION_SLEEP_MODE"),
+            Map.entry("0011", "NO_PERMISSION"), Map.entry("0113", "NO_PERMISION_MODIFY_RECIPE"),
+            Map.entry("0101", "NO_REGISTERED_DEVICE"), Map.entry("9006", "NO_USER_INFORMATION"));
+
+    // ====================== AIR CONDITIONER DEVICE CONSTANTS =============================
     // CHANNEL IDS
     public static final String CHANNEL_MOD_OP_ID = "op_mode";
     public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
@@ -140,6 +171,9 @@ public class LGThinqBindingConstants {
     public static final String WM_POWER_OFF_VALUE = "POWEROFF";
     public static final String WM_SNAPSHOT_WASHER_DRYER_NODE = "washerDryer";
     public static final String WM_CHANNEL_STATE_ID = "state";
+    public static final String WM_CHANNEL_COURSE_ID = "course";
+    public static final String WM_CHANNEL_SMART_COURSE_ID = "smart-course";
+
     public static final Map<String, String> CAP_WP_STATE = Map.ofEntries(Map.entry("@WM_STATE_POWER_OFF_W", "Off"),
             Map.entry("@WM_STATE_INITIAL_W", "Initial"), Map.entry("@WM_STATE_PAUSE_W", "Pause"),
             Map.entry("@WM_STATE_RESERVE_W", "Reverse"), Map.entry("@WM_STATE_DETECTING_W", "Detecting"),
@@ -149,5 +183,6 @@ public class LGThinqBindingConstants {
             Map.entry("@WM_STATE_STEAMSOFTENING_W", "Steam Softening"), Map.entry("@WM_STATE_END_W", "End"),
             Map.entry("@WM_STATE_DRYING_W", "Drying"), Map.entry("@WM_STATE_DEMO_W", "Demonstration"),
             Map.entry("@WM_STATE_ERROR_W", "Error"));
+
     // ==============================================================================
 }

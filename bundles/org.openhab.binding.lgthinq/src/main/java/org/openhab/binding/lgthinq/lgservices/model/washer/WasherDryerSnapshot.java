@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -36,6 +36,18 @@ public class WasherDryerSnapshot implements Snapshot {
     private DevicePowerState powerState = DevicePowerState.DV_POWER_UNK;
     private String state = "";
     private boolean online;
+    private String course = "";
+    private String smartCourse = "";
+
+    @JsonAlias({ "Course", "courseFL24inchBaseTitan" })
+    @JsonProperty("courseFL24inchBaseTitan")
+    public String getCourse() {
+        return course;
+    }
+
+    public void setCourse(String course) {
+        this.course = course;
+    }
 
     @Override
     public DevicePowerState getPowerStatus() {
@@ -58,9 +70,19 @@ public class WasherDryerSnapshot implements Snapshot {
     }
 
     @JsonProperty("state")
-    @JsonGetter
+    @JsonAlias({ "state", "State" })
     public String getState() {
         return state;
+    }
+
+    @JsonProperty("smartCourseFL24inchBaseTitan")
+    @JsonAlias({ "smartCourseFL24inchBaseTitan", "SmartCourse" })
+    public String getSmartCourse() {
+        return smartCourse;
+    }
+
+    public void setSmartCourse(String smartCourse) {
+        this.smartCourse = smartCourse;
     }
 
     public void setState(String state) {

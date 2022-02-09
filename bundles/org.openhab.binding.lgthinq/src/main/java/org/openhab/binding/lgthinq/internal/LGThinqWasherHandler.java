@@ -54,6 +54,8 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
     @Nullable
     private WMCapability wmCapability;
     private final ChannelUID stateChannelUUID;
+    private final ChannelUID courseChannelUUID;
+    private final ChannelUID smartCourseChannelUUID;
     private final String lgPlatfomType;
     private final Logger logger = LoggerFactory.getLogger(LGThinqWasherHandler.class);
     @NonNullByDefault
@@ -82,6 +84,8 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
         lgThinqApiClientService = lgPlatfomType.equals(PLATFORM_TYPE_V1) ? LGThinqApiV1ClientServiceImpl.getInstance()
                 : LGThinqApiV2ClientServiceImpl.getInstance();
         stateChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_STATE_ID);
+        courseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_COURSE_ID);
+        smartCourseChannelUUID = new ChannelUID(getThing().getUID(), WM_CHANNEL_SMART_COURSE_ID);
     }
 
     static class AsyncCommandParams {
@@ -148,6 +152,8 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
 
             updateState(CHANNEL_POWER_ID, OnOffType.from(shot.getPowerStatus() == DevicePowerState.DV_POWER_ON));
             updateState(WM_CHANNEL_STATE_ID, new StringType(shot.getState()));
+            updateState(WM_CHANNEL_COURSE_ID, new StringType(shot.getCourse()));
+            updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType(shot.getSmartCourse()));
 
             updateStatus(ThingStatus.ONLINE);
         } catch (LGThinqException e) {
@@ -194,6 +200,16 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
             // invert key/value
             wmCap.getState().forEach((k, v) -> options.add(new StateOption(v, emptyIfNull(CAP_WP_STATE.get(k)))));
             stateDescriptionProvider.setStateOptions(stateChannelUUID, options);
+        }
+        if (isLinked(courseChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            wmCap.getCourses().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(v))));
+            stateDescriptionProvider.setStateOptions(courseChannelUUID, options);
+        }
+        if (isLinked(smartCourseChannelUUID)) {
+            List<StateOption> options = new ArrayList<>();
+            wmCap.getSmartCourses().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(v))));
+            stateDescriptionProvider.setStateOptions(smartCourseChannelUUID, options);
         }
     }
 

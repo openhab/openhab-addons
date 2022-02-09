@@ -189,6 +189,7 @@ public class LGThinqApiV1ClientServiceImpl extends LGThinqApiClientServiceImpl {
                     throw new LGThinqApiException(String.format(
                             "Unexpected json body returned (without root node lgedmRoot): %s", resp.getJsonResponse()));
                 } else if (!"0000".equals(envelope.get("returnCd"))) {
+                    logErrorResultCodeMessage((String) envelope.get("returnCd"));
                     if ("0106".equals(envelope.get("returnCd")) || "D".equals(envelope.get("deviceState"))) {
                         // Disconnected Device
                         throw new LGThinqDeviceV1OfflineException("Device is offline. No data available");
@@ -242,6 +243,7 @@ public class LGThinqApiV1ClientServiceImpl extends LGThinqApiClientServiceImpl {
                 && ((Map<String, Object>) envelop.get("workList")).get("returnData") != null) {
             Map<String, Object> workList = ((Map<String, Object>) envelop.get("workList"));
             if (!"0000".equals(workList.get("returnCode"))) {
+                logErrorResultCodeMessage((String) workList.get("resultCode"));
                 LGThinqDeviceV1MonitorExpiredException e = new LGThinqDeviceV1MonitorExpiredException(
                         String.format("Monitor for device %s has expired. Please, refresh the monitor.", deviceId));
                 logger.warn("{}", e.getMessage());
