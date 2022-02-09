@@ -142,7 +142,7 @@ public class LGThinqBindingConstants {
     // CHANNEL IDS
     public static final String CHANNEL_MOD_OP_ID = "op_mode";
     public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
-    public static final String CHANNEL_POWER_ID = "startThingStatePolling";
+    public static final String CHANNEL_POWER_ID = "power";
     public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
     public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
 
