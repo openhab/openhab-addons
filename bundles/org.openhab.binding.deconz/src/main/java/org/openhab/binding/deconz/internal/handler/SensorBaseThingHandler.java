@@ -116,7 +116,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler {
 
         // Add some information about the sensor
         if (!sensorConfig.reachable) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
             return;
         }
 
