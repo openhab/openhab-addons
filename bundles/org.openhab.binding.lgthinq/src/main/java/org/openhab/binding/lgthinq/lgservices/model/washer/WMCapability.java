@@ -56,12 +56,22 @@ public class WMCapability extends Capability {
     private MonitoringValue monitoringValue = new MonitoringValue();
     private Map<String, String> courses = new LinkedHashMap<String, String>();
 
+    private Map<String, String> smartCourses = new LinkedHashMap<String, String>();
+
     public Map<String, String> getCourses() {
         return courses;
     }
 
+    public Map<String, String> getSmartCourses() {
+        return smartCourses;
+    }
+
     public void addCourse(String courseLabel, String courseName) {
         courses.put(courseLabel, courseName);
+    }
+
+    public void addSmartCourse(String courseLabel, String courseName) {
+        smartCourses.put(courseLabel, courseName);
     }
 
     public Map<String, String> getState() {
