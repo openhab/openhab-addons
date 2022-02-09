@@ -31,8 +31,8 @@ import org.openhab.binding.lgthinq.internal.api.TokenManager;
 import org.openhab.binding.lgthinq.internal.discovery.LGThinqDiscoveryService;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.internal.errors.RefreshTokenException;
+import org.openhab.binding.lgthinq.lgservices.LGThinqACApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.LGThinqApiClientService;
-import org.openhab.binding.lgthinq.lgservices.LGThinqApiV1ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.*;
@@ -74,7 +74,7 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
     public LGThinqBridgeHandler(Bridge bridge) {
         super(bridge);
         tokenManager = TokenManager.getInstance();
-        lgApiClient = LGThinqApiV1ClientServiceImpl.getInstance();
+        lgApiClient = LGThinqACApiV1ClientServiceImpl.getInstance();
         lgDevicePollingRunnable = new LGDevicePollingRunnable(bridge.getUID().getId());
     }
 

@@ -25,7 +25,6 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpired
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.*;
-import org.openhab.binding.lgthinq.lgservices.model.ac.ACTargetTmp;
 
 /**
  * The {@link LGThinqApiClientService}
@@ -51,13 +50,6 @@ public interface LGThinqApiClientService {
 
     void turnDevicePower(String bridgeName, String deviceId, DevicePowerState newPowerState) throws LGThinqApiException;
 
-    void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGThinqApiException;
-
-    void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGThinqApiException;
-
-    void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
-            throws LGThinqApiException;
-
     String startMonitor(String bridgeName, String deviceId)
             throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException;
 
@@ -69,6 +61,6 @@ public interface LGThinqApiClientService {
     void stopMonitor(String bridgeName, String deviceId, String workId) throws LGThinqException, IOException;
 
     @Nullable
-    Snapshot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workerId)
-            throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException;
+    Snapshot getMonitorData(@NonNull String bridgeName, @NonNull String deviceId, @NonNull String workerId,
+            DeviceTypes deviceType) throws LGThinqApiException, LGThinqDeviceV1MonitorExpiredException, IOException;
 }
