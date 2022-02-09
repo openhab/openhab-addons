@@ -14,6 +14,7 @@ package org.openhab.binding.luxom.internal.protocol;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.luxom.internal.handler.util.PercentageConverter;
 
@@ -21,6 +22,7 @@ import org.openhab.binding.luxom.internal.handler.util.PercentageConverter;
  *
  * @author Kris Jespers - Initial contribution
  */
+@NonNullByDefault
 class PercentageConverterTest {
     @Test
     void hexToPercentage() {

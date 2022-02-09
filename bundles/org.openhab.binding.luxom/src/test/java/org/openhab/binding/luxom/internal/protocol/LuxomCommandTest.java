@@ -14,12 +14,14 @@ package org.openhab.binding.luxom.internal.protocol;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author Kris Jespers - Initial contribution
  */
+@NonNullByDefault
 class LuxomCommandTest {
 
     @Test

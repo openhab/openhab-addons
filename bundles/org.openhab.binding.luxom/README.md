@@ -79,6 +79,7 @@ Thing switch switchLiving1 [address="A,02"]
 ## Full Example
 
 demo.things:
+
 ```
 Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
     Thing switch switchLiving1 "Switch 1" @ "living room" [address="1,01"]
@@ -88,6 +89,7 @@ Bridge luxom:bridge:myhouse [ ipAddress="192.168.0.50", port="2300"] {
 ```
 
 demo.items:
+
 ```
 Dimmer          FF_Living_Lights             "Living light"   <light>            (FF_Living, gLight)      ["Lighting"] {channel="luxom:dimmer:myhouse:dimmerLightKitchen1:brightness", ga="Light", homekit="Lighting, Lighting.Brightness"}
 Switch          FF_Living_PowerOutlet1       "Living Power Outlet 1"   <poweroutlet>            (FF_Living, gPower)            ["Switchable"] {channel="luxom:switch:elsenmario:switchLiving1:switch", ga="Outlet"}
