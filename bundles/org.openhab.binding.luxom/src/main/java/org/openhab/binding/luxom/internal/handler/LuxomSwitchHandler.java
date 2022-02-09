@@ -14,6 +14,7 @@ package org.openhab.binding.luxom.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.luxom.internal.LuxomBindingConstants;
+import org.openhab.binding.luxom.internal.handler.util.LocalizationService;
 import org.openhab.binding.luxom.internal.protocol.LuxomAction;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommand;
 import org.openhab.core.library.types.OnOffType;
@@ -34,11 +35,10 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LuxomSwitchHandler extends LuxomThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(LuxomSwitchHandler.class);
 
-    public LuxomSwitchHandler(Thing thing) {
-        super(thing);
+    public LuxomSwitchHandler(Thing thing, LocalizationService localizationService) {
+        super(thing, localizationService);
     }
 
     @Override
@@ -55,9 +55,10 @@ public class LuxomSwitchHandler extends LuxomThingHandler {
         logger.debug("Initializing device state for Switch {}", getAddress());
         Bridge bridge = getBridge();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         } else if (ThingStatus.ONLINE.equals(bridge.getStatus())) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                    localizationService.getText("status.awaiting-initial-response", "Awaiting initial response"));
             ping(); // handleUpdate() will set thing status to online when response arrives
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
