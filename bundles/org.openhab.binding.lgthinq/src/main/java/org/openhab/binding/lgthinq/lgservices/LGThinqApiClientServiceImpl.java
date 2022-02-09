@@ -25,6 +25,7 @@ import java.util.*;
 import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.api.RestResult;
 import org.openhab.binding.lgthinq.internal.api.RestUtils;
 import org.openhab.binding.lgthinq.internal.api.TokenManager;
@@ -151,6 +152,7 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
                 deviceSettings = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 if (!"0000".equals(deviceSettings.get("resultCode"))) {
+                    logErrorResultCodeMessage((String) deviceSettings.get("resultCode"));
                     throw new LGThinqApiException(
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
                                     deviceSettings.get("resultCode")));
@@ -177,6 +179,7 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
                 devicesResult = objectMapper.readValue(resp.getJsonResponse(), new TypeReference<>() {
                 });
                 if (!"0000".equals(devicesResult.get("resultCode"))) {
+                    logErrorResultCodeMessage((String) devicesResult.get("resultCode"));
                     throw new LGThinqApiException(
                             String.format("Status error getting device list. resultCode must be 0000, but was:%s",
                                     devicesResult.get("resultCode")));
@@ -192,6 +195,15 @@ public abstract class LGThinqApiClientServiceImpl implements LGThinqApiClientSer
         }
 
         return devices;
+    }
+
+    protected static void logErrorResultCodeMessage(@Nullable String resultCode) {
+        if (resultCode == null) {
+            return;
+        }
+        String errMessage = ERROR_CODE_RESPONSE.get(resultCode.trim());
+        logger.error("LG API report error processing the request -> resultCode=[{}], message=[{}]", resultCode,
+                errMessage == null ? "UNKNOW ERROR MESSAGE" : errMessage);
     }
 
     /**

@@ -16,6 +16,8 @@
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="state" typeId="washer-state"/>
+			<channel id="course" typeId="washer-course"/>
+			<channel id="smart-course" typeId="washer-smart-course"/>
 		</channels>
 
 	</thing-type>
