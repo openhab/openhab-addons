@@ -107,7 +107,7 @@ public class LGThinqBindingConstants {
 
     public static final int SEARCH_TIME = 20;
     // delay between each devices's scan for state changes (in seconds)
-    public static final int DEFAULT_STATE_POLLING_UPDATE_DELAY = 30;
+    public static final int DEFAULT_STATE_POLLING_UPDATE_DELAY = 10;
 
     public static final Map<String, String> ERROR_CODE_RESPONSE = Map.ofEntries(Map.entry("0000", "OK"),
             Map.entry("0001", "PARTIAL_OK"), Map.entry("0103", "OPERATION_IN_PROGRESS_DEVICE"),
@@ -173,6 +173,8 @@ public class LGThinqBindingConstants {
     public static final String WM_CHANNEL_STATE_ID = "state";
     public static final String WM_CHANNEL_COURSE_ID = "course";
     public static final String WM_CHANNEL_SMART_COURSE_ID = "smart-course";
+    public static final String WM_CHANNEL_TEMP_LEVEL_ID = "temperature-level";
+    public static final String WM_CHANNEL_DOOR_LOCK_ID = "door-lock";
 
     public static final Map<String, String> CAP_WP_STATE = Map.ofEntries(Map.entry("@WM_STATE_POWER_OFF_W", "Off"),
             Map.entry("@WM_STATE_INITIAL_W", "Initial"), Map.entry("@WM_STATE_PAUSE_W", "Pause"),
