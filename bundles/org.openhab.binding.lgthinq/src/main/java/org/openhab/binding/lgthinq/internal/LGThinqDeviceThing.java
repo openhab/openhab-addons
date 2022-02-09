@@ -52,7 +52,7 @@ public abstract class LGThinqDeviceThing extends BaseThingHandler {
 
     public abstract void updateChannelDynStateDescription() throws LGThinqApiException;
 
-    public abstract <T extends Capability> T getCapabilities() throws LGThinqApiException;
+    public abstract Capability getCapabilities() throws LGThinqApiException;
 
     protected abstract Logger getLogger();
 
@@ -68,7 +68,8 @@ public abstract class LGThinqDeviceThing extends BaseThingHandler {
                 updateChannelDynStateDescription();
             } catch (LGThinqApiException e) {
                 getLogger().error(
-                        "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.");
+                        "Error updating channels dynamic options descriptions based on capabilities of the device. Fallback to default values.",
+                        e);
             }
             if (bridge != null) {
                 LGThinqBridgeHandler handler = (LGThinqBridgeHandler) bridge.getHandler();
