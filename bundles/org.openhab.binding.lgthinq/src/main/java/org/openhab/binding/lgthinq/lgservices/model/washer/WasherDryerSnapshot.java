@@ -38,6 +38,8 @@ public class WasherDryerSnapshot implements Snapshot {
     private boolean online;
     private String course = "";
     private String smartCourse = "";
+    private String temperatureLevel = "";
+    private String doorLock = "";
 
     @JsonAlias({ "Course", "courseFL24inchBaseTitan" })
     @JsonProperty("courseFL24inchBaseTitan")
@@ -83,6 +85,24 @@ public class WasherDryerSnapshot implements Snapshot {
 
     public void setSmartCourse(String smartCourse) {
         this.smartCourse = smartCourse;
+    }
+
+    @JsonProperty("temp")
+    public String getTemperatureLevel() {
+        return temperatureLevel;
+    }
+
+    public void setTemperatureLevel(String temperatureLevel) {
+        this.temperatureLevel = temperatureLevel;
+    }
+
+    @JsonProperty("doorLock")
+    public String getDoorLock() {
+        return doorLock;
+    }
+
+    public void setDoorLock(String doorLock) {
+        this.doorLock = doorLock;
     }
 
     public void setState(String state) {

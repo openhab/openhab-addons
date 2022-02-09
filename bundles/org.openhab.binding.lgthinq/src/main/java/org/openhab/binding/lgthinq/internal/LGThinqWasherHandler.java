@@ -154,7 +154,8 @@ public class LGThinqWasherHandler extends LGThinqDeviceThing {
             updateState(WM_CHANNEL_STATE_ID, new StringType(shot.getState()));
             updateState(WM_CHANNEL_COURSE_ID, new StringType(shot.getCourse()));
             updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType(shot.getSmartCourse()));
-
+            updateState(WM_CHANNEL_TEMP_LEVEL_ID, new StringType(shot.getTemperatureLevel()));
+            updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType(shot.getDoorLock()));
             updateStatus(ThingStatus.ONLINE);
         } catch (LGThinqException e) {
             logger.error("Error updating thing {}/{} from LG API. Thing goes OFFLINE until next retry.",
