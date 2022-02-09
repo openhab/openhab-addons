@@ -1476,7 +1476,7 @@
       <artifactId>org.openhab.binding.smhi</artifactId>
       <version>${project.version}</version>
     </dependency>
-	<dependency>
+    <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.smsmodem</artifactId>
       <version>${project.version}</version>
