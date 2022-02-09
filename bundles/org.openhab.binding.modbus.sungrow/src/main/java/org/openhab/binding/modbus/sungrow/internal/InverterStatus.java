@@ -12,12 +12,19 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Possible values for an inverter's status field
  *
  * @author Nagy Attila Gábor - Initial contribution
  * @author Ferdinand Schwenk - reused for sungrow bundle
  */
+@NonNullByDefault
 public enum InverterStatus {
 
     OFF(1),
@@ -25,26 +32,26 @@ public enum InverterStatus {
     ON(4),
     UNKNOWN(-1);
 
-    private final int code;
+    private static final Map<Integer, InverterStatus> inverterStatusCodesIndex = new HashMap<>();
 
-    InverterStatus(int code) {
+    static {
+        for (InverterStatus code : InverterStatus.values()) {
+            inverterStatusCodesIndex.put(code.getCode(), code);
+        }
+    }
+
+    private int code;
+
+    private InverterStatus(int code) {
         this.code = code;
     }
 
-    public int code() {
+    public int getCode() {
         return this.code;
     }
 
+    @Nullable
     public static InverterStatus getByCode(int code) {
-        switch (code) {
-            case 1:
-                return InverterStatus.OFF;
-            case 2:
-                return InverterStatus.SLEEP;
-            case 4:
-                return InverterStatus.ON;
-            default:
-                return InverterStatus.UNKNOWN;
-        }
+        return inverterStatusCodesIndex.get(code);
     }
 }

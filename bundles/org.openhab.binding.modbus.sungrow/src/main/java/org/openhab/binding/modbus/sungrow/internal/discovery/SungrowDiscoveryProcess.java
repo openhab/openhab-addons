@@ -299,7 +299,7 @@ public class SungrowDiscoveryProcess {
         logger.trace("Got device type data: {}", registers);
         SungrowDeviceType deviceType = SungrowDeviceType.getByCode(registers.getRegister(0));
         logger.debug("Found device: {}", deviceType);
-        if (deviceType != SungrowDeviceType.UNKNOWN) {
+        if (deviceType != null && deviceType != SungrowDeviceType.UNKNOWN) {
             createDiscoveryResult(deviceType);
         } else {
             logger.debug("Device Type {} is not supported", registers.getRegister(0));

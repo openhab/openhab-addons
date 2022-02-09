@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Possible values for an inverter's system state field
  *
  * @author Ferdinand Schwenk - initial contribution
  */
+@NonNullByDefault
 public enum SungrowSystemState {
 
     STOP(0x0002),
@@ -32,42 +39,26 @@ public enum SungrowSystemState {
     RUNNING_EXTERNALEMS(0x4000),
     UNKNOWN(-1);
 
+    private static final Map<Integer, SungrowSystemState> sungrowSystemStateIndex = new HashMap<>();
+
+    static {
+        for (SungrowSystemState code : SungrowSystemState.values()) {
+            sungrowSystemStateIndex.put(code.getCode(), code);
+        }
+    }
+
     private final int code;
 
     SungrowSystemState(int code) {
         this.code = code;
     }
 
-    public int code() {
+    public int getCode() {
         return this.code;
     }
 
+    @Nullable
     public static SungrowSystemState getByCode(int code) {
-        switch (code) {
-            case 0x0002:
-                return SungrowSystemState.STOP;
-            case 0x0008:
-                return SungrowSystemState.STANDBY;
-            case 0x0010:
-                return SungrowSystemState.INITIALSTANDBY;
-            case 0x0020:
-                return SungrowSystemState.STARTUP;
-            case 0x0040:
-                return SungrowSystemState.RUNNING;
-            case 0x0100:
-                return SungrowSystemState.FAULT;
-            case 0x0400:
-                return SungrowSystemState.RUNNING_MAINTAIN;
-            case 0x0800:
-                return SungrowSystemState.RUNNING_FORCED;
-            case 0x1000:
-                return SungrowSystemState.RUNNING_OFFGRID;
-            case 0x2501:
-                return SungrowSystemState.RESTARTING;
-            case 0x4000:
-                return SungrowSystemState.RUNNING_EXTERNALEMS;
-            default:
-                return SungrowSystemState.UNKNOWN;
-        }
+        return sungrowSystemStateIndex.get(code);
     }
 }

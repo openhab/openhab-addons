@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.modbus.sungrow.internal;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Possible values for an inverter's device type field
  *
  * @author Ferdinand Schwenk - initial contribution
  */
+@NonNullByDefault
 public enum SungrowDeviceType {
 
     SH5K20(0xD09),
@@ -36,50 +43,26 @@ public enum SungrowDeviceType {
     SH50RT(0xE00),
     UNKNOWN(-1);
 
+    private static final Map<Integer, SungrowDeviceType> sungrowDeviceTypeIndex = new HashMap<>();
+
+    static {
+        for (SungrowDeviceType code : SungrowDeviceType.values()) {
+            sungrowDeviceTypeIndex.put(code.getCode(), code);
+        }
+    }
+
     private final int code;
 
     SungrowDeviceType(int code) {
         this.code = code;
     }
 
-    public int code() {
+    public int getCode() {
         return this.code;
     }
 
+    @Nullable
     public static SungrowDeviceType getByCode(int code) {
-        switch (code) {
-            case 0xD09:
-                return SungrowDeviceType.SH5K20;
-            case 0xD06:
-                return SungrowDeviceType.SH3K6;
-            case 0xD07:
-                return SungrowDeviceType.SH4K6;
-            case 0xD03:
-                return SungrowDeviceType.SH5KV13;
-            case 0xD0C:
-                return SungrowDeviceType.SH5K30;
-            case 0xD0A:
-                return SungrowDeviceType.SH3K630;
-            case 0xD0B:
-                return SungrowDeviceType.SH4K630;
-            case 0xD0F:
-                return SungrowDeviceType.SH50RS;
-            case 0xD0D:
-                return SungrowDeviceType.SH36RS;
-            case 0xD0E:
-                return SungrowDeviceType.SH46RS;
-            case 0xD10:
-                return SungrowDeviceType.SH60RS;
-            case 0xE03:
-                return SungrowDeviceType.SH10RT;
-            case 0xE02:
-                return SungrowDeviceType.SH80RT;
-            case 0xE01:
-                return SungrowDeviceType.SH60RT;
-            case 0xE00:
-                return SungrowDeviceType.SH50RT;
-            default:
-                return SungrowDeviceType.UNKNOWN;
-        }
+        return sungrowDeviceTypeIndex.get(code);
     }
 }
