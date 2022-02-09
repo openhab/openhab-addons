@@ -14,15 +14,17 @@ package org.openhab.binding.lgthinq.lgservices.model;
 
 import static org.openhab.binding.lgthinq.internal.LGThinqBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
-import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshotV1;
-import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshotV2;
+import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshot;
 import org.openhab.binding.lgthinq.lgservices.model.washer.WasherDryerSnapshot;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -42,23 +44,37 @@ public class SnapshotFactory {
         return instance;
     }
 
+    /**
+     * Create a Snapshot result based on snapshotData collected from LG API (V1/C2)
+     * 
+     * @param snapshotDataJson V1: decoded returnedData; V2: snapshot body
+     * @param deviceType device type
+     * @return returns Snapshot implementation based on device type provided
+     * @throws LGThinqApiException any error.
+     */
+    public Snapshot create(String snapshotDataJson, DeviceTypes deviceType) throws LGThinqApiException {
+        try {
+            Map<String, Object> snapshotMap = objectMapper.readValue(snapshotDataJson, new TypeReference<>() {
+            });
+            Map<String, Object> deviceSetting = new HashMap<>();
+            deviceSetting.put("deviceType", deviceType.deviceTypeId());
+            deviceSetting.put("snapshot", snapshotMap);
+            return create(deviceSetting);
+        } catch (JsonProcessingException e) {
+            throw new LGThinqApiException("Unexpected Error unmarshalling json to map", e);
+        }
+    }
+
     public Snapshot create(Map<String, Object> deviceSettings) throws LGThinqApiException {
         DeviceTypes type = getDeviceType(deviceSettings);
-        Map<String, Object> snapMap = (Map<String, Object>) deviceSettings.get("snapshot");
+        Map<String, Object> snapMap = ((Map<String, Object>) deviceSettings.get("snapshot"));
         if (snapMap == null) {
             throw new LGThinqApiException("snapshot node not present in device monitoring result.");
         }
         LGAPIVerion version = discoveryAPIVersion(snapMap, type);
         switch (type) {
             case AIR_CONDITIONER:
-                switch (version) {
-                    case V1_0: {
-                        return objectMapper.convertValue(snapMap, ACSnapshotV2.class);
-                    }
-                    case V2_0: {
-                        return objectMapper.convertValue(snapMap, ACSnapshotV1.class);
-                    }
-                }
+                return objectMapper.convertValue(snapMap, ACSnapshot.class);
             case WASHING_MACHINE:
                 switch (version) {
                     case V1_0: {
