@@ -26,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.handler.config.LuxomBridgeConfig;
+import org.openhab.binding.luxom.internal.handler.util.LocalizationService;
 import org.openhab.binding.luxom.internal.protocol.LuxomAction;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommand;
 import org.openhab.binding.luxom.internal.protocol.LuxomCommunication;
@@ -54,6 +55,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
     private static final long HEARTBEAT_ACK_TIMEOUT_SECONDS = 20;
 
     private final Logger logger = LoggerFactory.getLogger(LuxomBridgeHandler.class);
+    private final LocalizationService localizationService;
 
     private @Nullable LuxomBridgeConfig config;
     private final AtomicInteger nrOfSendPermits = new AtomicInteger(0);
@@ -73,9 +75,10 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
         return config;
     }
 
-    public LuxomBridgeHandler(Bridge bridge) {
+    public LuxomBridgeHandler(Bridge bridge, LocalizationService localizationService) {
         super(bridge);
-
+        logger.info("{}", localizationService.getText("status.bridge-initializing", "Luxom bridge init"));
+        this.localizationService = localizationService;
         this.systemInfo = new LuxomSystemInfo();
         this.communication = new LuxomCommunication(this);
     }
@@ -93,20 +96,23 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             reconnectInterval = (config.reconnectInterval > 0) ? config.reconnectInterval
                     : DEFAULT_RECONNECT_INTERVAL_IN_MINUTES;
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Connecting");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+                    localizationService.getText("status.connecting", "Connecting"));
             scheduler.submit(this::connect); // start the async connect task
         }
     }
 
     private boolean validConfiguration(@Nullable LuxomBridgeConfig config) {
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge configuration missing");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    localizationService.getText("status.bridge-configuration-missing", "bridge configuration missing"));
 
             return false;
         }
 
         if (config.ipAddress == null || config.ipAddress.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    localizationService.getText("status.bridge-address-missing", "bridge address not specified"));
 
             return false;
         }
@@ -316,12 +322,17 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
                 }
             }
 
-            LuxomThingHandler handler = findThingHandler(luxomCommand.getAddress());
+            if (luxomCommand != null) {
+                LuxomThingHandler handler = findThingHandler(luxomCommand.getAddress());
 
-            if (handler != null) {
-                handler.handleCommandCommingFromBridge(luxomCommand);
+                if (handler != null) {
+                    handler.handleCommandCommingFromBridge(luxomCommand);
+                } else {
+                    logger.warn("No handler found command {} for address : {}", luxomMessage,
+                            luxomCommand.getAddress());
+                }
             } else {
-                logger.warn("No handler found command {} for address : {}", luxomMessage, luxomCommand.getAddress());
+                logger.warn("Something was wrong with the order of incomming commands, resulting command is null");
             }
         } else {
             logger.debug("Luxom: not handled {}", luxomMessage);

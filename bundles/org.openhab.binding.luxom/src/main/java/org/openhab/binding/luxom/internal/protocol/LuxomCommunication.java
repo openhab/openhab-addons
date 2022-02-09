@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.handler.LuxomBridgeHandler;
 import org.openhab.binding.luxom.internal.handler.LuxomConnectionException;
+import org.openhab.binding.luxom.internal.handler.config.LuxomBridgeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,9 +88,10 @@ public class LuxomCommunication {
     }
 
     private void initializeSocket() throws IOException {
-        if (bridgeHandler.getIPBridgeConfig() != null) {
-            InetAddress addr = InetAddress.getByName(bridgeHandler.getIPBridgeConfig().ipAddress);
-            int port = bridgeHandler.getIPBridgeConfig().port;
+        LuxomBridgeConfig luxomBridgeConfig = bridgeHandler.getIPBridgeConfig();
+        if (luxomBridgeConfig != null) {
+            InetAddress addr = InetAddress.getByName(luxomBridgeConfig.ipAddress);
+            int port = luxomBridgeConfig.port;
 
             luxomSocket = new Socket(addr, port);
             luxomSocket.setReuseAddress(true);
@@ -147,8 +149,8 @@ public class LuxomCommunication {
                 int nextChar = luxomIn.read();
                 if (nextChar == -1) {
                     logger.trace("Luxom: stream ends unexpectedly...");
-                    if (mayUseFastReconnect && this.bridgeHandler.getIPBridgeConfig() != null
-                            && this.bridgeHandler.getIPBridgeConfig().useFastReconnect) {
+                    LuxomBridgeConfig luxomBridgeConfig = this.bridgeHandler.getIPBridgeConfig();
+                    if (mayUseFastReconnect && luxomBridgeConfig != null && luxomBridgeConfig.useFastReconnect) {
                         // we stay in the loop and just reinitialize socket
                         mayUseFastReconnect = false; // just once use fast reconnect
                         this.closeSocket();
