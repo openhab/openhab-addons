@@ -111,7 +111,7 @@ public class LGThinqBindingConstants {
     // CHANNEL IDS
     public static final String CHANNEL_MOD_OP_ID = "op_mode";
     public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
-    public static final String CHANNEL_POWER_ID = "power";
+    public static final String CHANNEL_POWER_ID = "startThingStatePolling";
     public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
     public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
 
@@ -135,4 +135,19 @@ public class LGThinqBindingConstants {
             Map.entry("@AC_MAIN_WIND_STRENGTH_LOW_LEFT_W", "Left Low"),
             Map.entry("@AC_MAIN_WIND_STRENGTH_MID_LEFT_W", "Left Mid"),
             Map.entry("@AC_MAIN_WIND_STRENGTH_HIGH_LEFT_W", "Left High"));
+
+    // ====================== WASHING MACHINE CONSTANTS =============================
+    public static final String WM_POWER_OFF_VALUE = "POWEROFF";
+    public static final String WM_SNAPSHOT_WASHER_DRYER_NODE = "washerDryer";
+    public static final String WM_CHANNEL_STATE_ID = "state";
+    public static final Map<String, String> CAP_WP_STATE = Map.ofEntries(Map.entry("@WM_STATE_POWER_OFF_W", "Off"),
+            Map.entry("@WM_STATE_INITIAL_W", "Initial"), Map.entry("@WM_STATE_PAUSE_W", "Pause"),
+            Map.entry("@WM_STATE_RESERVE_W", "Reverse"), Map.entry("@WM_STATE_DETECTING_W", "Detecting"),
+            Map.entry("@WM_STATE_RUNNING_W", "Running"), Map.entry("@WM_STATE_RINSING_W", "Rinsing"),
+            Map.entry("@WM_STATE_SPINNING_W", "Spinning"), Map.entry("@WM_STATE_COOLDOWN_W", "Cool Down"),
+            Map.entry("@WM_STATE_RINSEHOLD_W", "Rinse Hold"), Map.entry("@WM_STATE_WASH_REFRESHING_W", "Refreshing"),
+            Map.entry("@WM_STATE_STEAMSOFTENING_W", "Steam Softening"), Map.entry("@WM_STATE_END_W", "End"),
+            Map.entry("@WM_STATE_DRYING_W", "Drying"), Map.entry("@WM_STATE_DEMO_W", "Demonstration"),
+            Map.entry("@WM_STATE_ERROR_W", "Error"));
+    // ==============================================================================
 }
