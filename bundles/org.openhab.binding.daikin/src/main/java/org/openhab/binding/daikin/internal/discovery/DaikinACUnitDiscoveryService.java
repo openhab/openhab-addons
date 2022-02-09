@@ -77,7 +77,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        logger.debug("Starting background discovery");
+        logger.trace("Starting background discovery");
 
         if (backgroundFuture != null && !backgroundFuture.isDone()) {
             backgroundFuture.cancel(true);
@@ -100,7 +100,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
         return () -> {
             long timestampOfLastScan = getTimestampOfLastScan();
             for (InetAddress broadcastAddress : getBroadcastAddresses()) {
-                logger.debug("Starting broadcast for {}", broadcastAddress.toString());
+                logger.trace("Starting broadcast for {}", broadcastAddress.toString());
 
                 try (DatagramSocket socket = new DatagramSocket()) {
                     socket.setBroadcast(true);
@@ -133,7 +133,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
             String host = incomingPacket.getAddress().toString().substring(1);
             String data = new String(incomingPacket.getData(), 0, incomingPacket.getLength(), "US-ASCII");
-            logger.debug("Received packet from {}: {}", host, data);
+            logger.trace("Received packet from {}: {}", host, data);
 
             Map<String, String> parsedData = InfoParser.parse(data);
             Boolean secure = "1".equals(parsedData.get("en_secure"));
@@ -165,7 +165,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                 }
                 DiscoveryResult result = resultBuilder.build();
 
-                logger.debug("Successfully discovered host {}", host);
+                logger.trace("Successfully discovered host {}", host);
                 thingDiscovered(result);
                 return true;
             }
@@ -176,7 +176,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
                         .withProperty(DaikinConfiguration.HOST, host).withLabel("Daikin Airbase AC Unit (" + host + ")")
                         .withRepresentationProperty(DaikinConfiguration.HOST).build();
 
-                logger.debug("Successfully discovered host {}", host);
+                logger.trace("Successfully discovered host {}", host);
                 thingDiscovered(result);
                 return true;
             }
