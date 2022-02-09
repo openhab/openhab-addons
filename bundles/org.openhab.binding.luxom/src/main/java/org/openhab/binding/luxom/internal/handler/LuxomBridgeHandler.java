@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.luxom.internal.handler.config.LuxomBridgeConfig;
@@ -106,7 +105,7 @@ public class LuxomBridgeHandler extends BaseBridgeHandler {
             return false;
         }
 
-        if (StringUtils.isEmpty(config.ipAddress)) {
+        if (config.ipAddress == null || config.ipAddress.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "bridge address not specified");
 
             return false;
