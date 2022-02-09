@@ -130,7 +130,7 @@ public class WebSocketConnection {
 
             WebSocketMessageListener listener = listeners.get(getListenerId(changedMessage.r, changedMessage.id));
             if (listener == null) {
-                logger.debug(
+                logger.trace(
                         "Couldn't find listener for id {} with resource type {}. Either no thing for this id has been defined or this is a bug.",
                         changedMessage.id, changedMessage.r);
                 return;
