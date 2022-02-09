@@ -24,14 +24,14 @@ import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1MonitorExpiredException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqDeviceV1OfflineException;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgservices.LGThinqApiClientService;
-import org.openhab.binding.lgthinq.lgservices.LGThinqApiV1ClientServiceImpl;
-import org.openhab.binding.lgthinq.lgservices.LGThinqApiV2ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgservices.LGThinqACApiClientService;
+import org.openhab.binding.lgthinq.lgservices.LGThinqACApiV1ClientServiceImpl;
+import org.openhab.binding.lgthinq.lgservices.LGThinqACApiV2ClientServiceImpl;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
+import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACCapability;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshot;
-import org.openhab.binding.lgthinq.lgservices.model.ac.ACSnapshotV1;
 import org.openhab.binding.lgthinq.lgservices.model.ac.ACTargetTmp;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -61,7 +61,7 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
     private final String lgPlatfomType;
     private final Logger logger = LoggerFactory.getLogger(LGThinqAirConditionerHandler.class);
     @NonNullByDefault
-    private final LGThinqApiClientService lgThinqApiClientService;
+    private final LGThinqACApiClientService lgThinqACApiClientService;
     private ThingStatus lastThingStatus = ThingStatus.UNKNOWN;
     // Bridges status that this thing must top scanning for state change
     private static final Set<ThingStatusDetail> BRIDGE_STATUS_DETAIL_ERROR = Set.of(ThingStatusDetail.BRIDGE_OFFLINE,
@@ -84,8 +84,9 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         lgPlatfomType = "" + thing.getProperties().get(PLATFORM_TYPE);
-        lgThinqApiClientService = lgPlatfomType.equals(PLATFORM_TYPE_V1) ? LGThinqApiV1ClientServiceImpl.getInstance()
-                : LGThinqApiV2ClientServiceImpl.getInstance();
+        lgThinqACApiClientService = lgPlatfomType.equals(PLATFORM_TYPE_V1)
+                ? LGThinqACApiV1ClientServiceImpl.getInstance()
+                : LGThinqACApiV2ClientServiceImpl.getInstance();
         opModeChannelUID = new ChannelUID(getThing().getUID(), CHANNEL_MOD_OP_ID);
         opModeFanSpeedUID = new ChannelUID(getThing().getUID(), CHANNEL_FAN_SPEED_ID);
     }
@@ -185,7 +186,7 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
     private void forceStopDeviceV1Monitor(String deviceId) {
         try {
             monitorV1Began = false;
-            lgThinqApiClientService.stopMonitor(getBridgeId(), deviceId, monitorWorkId);
+            lgThinqACApiClientService.stopMonitor(getBridgeId(), deviceId, monitorWorkId);
         } catch (Exception e) {
             logger.error("Error stopping LG Device monitor", e);
         }
@@ -216,8 +217,8 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
     @Override
     public ACCapability getCapabilities() throws LGThinqApiException {
         if (acCapability == null) {
-            acCapability = (ACCapability) lgThinqApiClientService.getCapability(getDeviceId(), getDeviceUriJsonConfig(),
-                    false);
+            acCapability = (ACCapability) lgThinqACApiClientService.getCapability(getDeviceId(),
+                    getDeviceUriJsonConfig(), false);
         }
         return Objects.requireNonNull(acCapability, "Unexpected error. Return ac-capability shouldn't ever be null");
     }
@@ -231,16 +232,16 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
     private ACSnapshot getSnapshotDeviceAdapter(String deviceId) throws LGThinqApiException {
         // analise de platform version
         if (PLATFORM_TYPE_V2.equals(lgPlatfomType)) {
-            return (ACSnapshot) lgThinqApiClientService.getDeviceData(getBridgeId(), getDeviceId());
+            return (ACSnapshot) lgThinqACApiClientService.getDeviceData(getBridgeId(), getDeviceId());
         } else {
             try {
                 if (!monitorV1Began) {
-                    monitorWorkId = lgThinqApiClientService.startMonitor(getBridgeId(), getDeviceId());
+                    monitorWorkId = lgThinqACApiClientService.startMonitor(getBridgeId(), getDeviceId());
                     monitorV1Began = true;
                 }
             } catch (LGThinqDeviceV1OfflineException e) {
                 forceStopDeviceV1Monitor(deviceId);
-                ACSnapshot shot = new ACSnapshotV1();
+                ACSnapshot shot = new ACSnapshot();
                 shot.setOnline(false);
                 return shot;
             } catch (Exception e) {
@@ -252,7 +253,8 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
             while (retries > 0) {
                 // try to get monitoring data result 3 times.
                 try {
-                    shot = (ACSnapshot) lgThinqApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId);
+                    shot = (ACSnapshot) lgThinqACApiClientService.getMonitorData(getBridgeId(), deviceId, monitorWorkId,
+                            DeviceTypes.AIR_CONDITIONER);
                     if (shot != null) {
                         return shot;
                     }
@@ -394,7 +396,7 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
                     switch (params.channelUID) {
                         case CHANNEL_MOD_OP_ID: {
                             if (params.command instanceof DecimalType) {
-                                lgThinqApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
+                                lgThinqACApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
                                         ((DecimalType) command).intValue());
                             } else {
                                 logger.warn("Received command different of Numeric in Mod Operation. Ignoring");
@@ -403,7 +405,7 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
                         }
                         case CHANNEL_FAN_SPEED_ID: {
                             if (command instanceof DecimalType) {
-                                lgThinqApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
+                                lgThinqACApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
                                         ((DecimalType) command).intValue());
                             } else {
                                 logger.warn("Received command different of Numeric in FanSpeed Channel. Ignoring");
@@ -412,7 +414,7 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
                         }
                         case CHANNEL_POWER_ID: {
                             if (command instanceof OnOffType) {
-                                lgThinqApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
+                                lgThinqACApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
                                         command == OnOffType.ON ? DevicePowerState.DV_POWER_ON
                                                 : DevicePowerState.DV_POWER_OFF);
                             } else {
@@ -430,7 +432,7 @@ public class LGThinqAirConditionerHandler extends LGThinqDeviceThing {
                                 logger.warn("Received command different of Numeric in TargetTemp Channel. Ignoring");
                                 break;
                             }
-                            lgThinqApiClientService.changeTargetTemperature(getBridgeId(), getDeviceId(),
+                            lgThinqACApiClientService.changeTargetTemperature(getBridgeId(), getDeviceId(),
                                     ACTargetTmp.statusOf(targetTemp));
                             break;
                         }

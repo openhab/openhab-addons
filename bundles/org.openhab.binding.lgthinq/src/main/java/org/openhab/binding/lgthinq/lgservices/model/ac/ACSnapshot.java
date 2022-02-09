@@ -17,8 +17,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.lgservices.model.DevicePowerState;
 import org.openhab.binding.lgthinq.lgservices.model.Snapshot;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The {@link ACSnapshot}
@@ -27,7 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @NonNullByDefault
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class ACSnapshot implements Snapshot {
+public class ACSnapshot implements Snapshot {
 
     private int airWindStrength;
 
@@ -56,6 +58,8 @@ public abstract class ACSnapshot implements Snapshot {
         return ACFanSpeed.statusOf(airWindStrength);
     }
 
+    @JsonProperty("airState.windStrength")
+    @JsonAlias("WindStrength")
     public Integer getAirWindStrength() {
         return airWindStrength;
     }
@@ -64,6 +68,8 @@ public abstract class ACSnapshot implements Snapshot {
         this.airWindStrength = airWindStrength;
     }
 
+    @JsonProperty("airState.tempState.target")
+    @JsonAlias("TempCfg")
     public Double getTargetTemperature() {
         return targetTemperature;
     }
@@ -72,6 +78,8 @@ public abstract class ACSnapshot implements Snapshot {
         this.targetTemperature = targetTemperature;
     }
 
+    @JsonProperty("airState.tempState.current")
+    @JsonAlias("TempCur")
     public Double getCurrentTemperature() {
         return currentTemperature;
     }
@@ -80,6 +88,8 @@ public abstract class ACSnapshot implements Snapshot {
         this.currentTemperature = currentTemperature;
     }
 
+    @JsonProperty("airState.opMode")
+    @JsonAlias("OpMode")
     public Integer getOperationMode() {
         return operationMode;
     }
@@ -89,6 +99,8 @@ public abstract class ACSnapshot implements Snapshot {
     }
 
     @Nullable
+    @JsonProperty("airState.operation")
+    @JsonAlias("Operation")
     public Integer getOperation() {
         return operation;
     }
