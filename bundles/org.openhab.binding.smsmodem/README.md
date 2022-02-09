@@ -21,7 +21,7 @@ A *smsconversation* thing will be discovered and added to the inbox everytime th
 ## Thing Configuration
 
 The *smsmodembridge* thing requires at least two parameters to work properly (serialPortOrIP, baudOrNetworkPort).
-Depending on the nature of the connection (direct serial modem, or serial over network), this two field will be used differently :
+Depending on the nature of the connection (direct serial modem, or serial over network), this two fields will be used differently :
 
 | field | direct serial modem   | serial over network                  |
 |-------|--------------------------|-----------------------------------|
@@ -31,10 +31,10 @@ Depending on the nature of the connection (direct serial modem, or serial over n
 The other parameters are optional :
 
 | field | description     |
-|-------|--------------------------|-----------------------------------|
+|-------|--------------------------------------|
 |simPin          |If your sim card is protected, fill this field with the PIN code|
 |pollingInterval| Delay between two checks for new message|
-|delayBetweenSend|Delay to wait between two messages sent (could be necessary for slow modem)|
+|delayBetweenSend|Delay to wait between two messages post (could be necessary for slow modem)|
 
 ```
 Bridge smsmodem:smsmodembridge:adonglename [ serialPortOrIP="/dev/ttyUSB0", baudOrNetworkPort="19200", enableAutoDiscovery="true" ]
