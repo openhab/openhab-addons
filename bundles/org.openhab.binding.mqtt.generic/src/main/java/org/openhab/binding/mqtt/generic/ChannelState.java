@@ -267,7 +267,7 @@ public class ChannelState implements MqttMessageSubscriber {
     }
 
     private void internalStop() {
-        logger.debug("Unsubscribed channel {} form topic: {}", this.channelUID, config.stateTopic);
+        logger.debug("Unsubscribed channel {} from topic: {}", this.channelUID, config.stateTopic);
         this.connection = null;
         this.channelStateUpdateListener = null;
         hasSubscribed = false;
