@@ -18,6 +18,8 @@
 			<channel id="state" typeId="washer-state"/>
 			<channel id="course" typeId="washer-course"/>
 			<channel id="smart-course" typeId="washer-smart-course"/>
+			<channel id="temperature-level" typeId="washer-temp-level"/>
+			<channel id="door-lock" typeId="washer-door-lock"/>
 		</channels>
 
 	</thing-type>
