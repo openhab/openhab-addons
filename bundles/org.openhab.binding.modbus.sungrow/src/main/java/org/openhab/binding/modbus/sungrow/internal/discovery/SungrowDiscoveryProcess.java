@@ -135,7 +135,6 @@ public class SungrowDiscoveryProcess {
         commonBlockParser = new CommonModelParser();
         possibleAddresses = new ConcurrentLinkedQueue<>();
         // Preferred and alternate base registers
-        // copied from SunSpec
         possibleAddresses.add(40000);
     }
 
@@ -146,7 +145,6 @@ public class SungrowDiscoveryProcess {
      * @throws EndpointNotInitializedException
      */
     public void detectModel() {
-
         if (possibleAddresses.isEmpty()) {
             parsingFinished();
             return;
@@ -182,13 +180,13 @@ public class SungrowDiscoveryProcess {
         logger.trace("Header looks correct");
         baseAddress += SUNGROW_ID_SIZE;
 
-        lookForSunSpecBlock();
+        lookForModelBlock();
     }
 
     /**
      * Look for a valid model block at the current base address
      */
-    private void lookForSunSpecBlock() {
+    private void lookForModelBlock() {
 
         ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(slaveId,
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, baseAddress, // Start address
@@ -261,8 +259,11 @@ public class SungrowDiscoveryProcess {
         logger.trace("Got common block data: {}", registers);
         lastCommonBlock = commonBlockParser.parse(registers);
         CommonModelBlock commonBlock = lastCommonBlock;
+        if (commonBlock == null) {
+            parsingFinished();
+            return;
+        }
         logger.debug("Found common block:\n{}", commonBlock.toString());
-        logger.debug("SUPPORTED_THING_TYPES_UIDS:\n{}", SUPPORTED_THING_TYPES_UIDS.keySet().toString());
         logger.debug("SUPPORTED_THING_TYPES_UIDS:\n{}", SUPPORTED_THING_TYPES_UIDS.keySet().toString());
         logger.debug("commonBlock.manufacturer: '{}'", commonBlock.manufacturer);
         logger.debug("commonBlock.manufacturer.equals('SUNGROW'): {}", commonBlock.manufacturer.equals("SUNGROW"));

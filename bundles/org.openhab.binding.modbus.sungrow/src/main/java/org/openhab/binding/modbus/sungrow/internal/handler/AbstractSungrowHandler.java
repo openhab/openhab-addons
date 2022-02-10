@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.modbus.sungrow.internal.handler;
 
-import static org.openhab.binding.modbus.sungrow.internal.SungrowConstants.*;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -112,11 +110,9 @@ public abstract class AbstractSungrowHandler extends BaseThingHandler {
     }
 
     /**
-     * This method should handle incoming poll data, and update the channels
+     * This methodes should handle incoming poll data, and update the channels
      * with the values received
      */
-    protected abstract void handlePolledData(ModbusRegisterArray registers);
-
     protected abstract void handlePolled5kData(ModbusRegisterArray registers);
 
     protected abstract void handlePolled13kData(ModbusRegisterArray registers);

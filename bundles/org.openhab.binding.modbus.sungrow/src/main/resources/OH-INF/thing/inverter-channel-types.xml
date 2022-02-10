@@ -60,13 +60,13 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="ac-apparent-power-type" advanced="true">
+	<channel-type id="ac-apparent-power-type">
 		<item-type>Number:Power</item-type>
 		<label>AC Apparent Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="ac-reactive-power-type" advanced="true">
+	<channel-type id="ac-reactive-power-type">
 		<item-type>Number:Power</item-type>
 		<label>AC Reactive Power Value</label>
 		<state readOnly="true" pattern="%d %unit%"/>
@@ -118,12 +118,6 @@
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
 		<state readOnly="true" pattern="%d %unit%"/>
-	</channel-type>
-
-	<channel-type id="cabinet-temperature-type">
-		<item-type>Number:Temperature</item-type>
-		<label>Cabinet Temperature</label>
-		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="inside-temperature-type">

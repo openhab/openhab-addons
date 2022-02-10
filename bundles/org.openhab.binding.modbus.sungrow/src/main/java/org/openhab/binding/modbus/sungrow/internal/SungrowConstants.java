@@ -70,7 +70,6 @@ public class SungrowConstants {
     public static final String CHANNEL_DEVICE_TYPE = "device-type";
     public static final String CHANNEL_OUTPUT_TYPE = "output-type";
     public static final String CHANNEL_PHASE_CONFIGURATION = "phase-configuration";
-    public static final String CHANNEL_CABINET_TEMPERATURE = "cabinet-temperature";
     public static final String CHANNEL_INSIDE_TEMPERATURE = "inside-temperature";
     public static final String CHANNEL_NOMINAL_OUTPUT_POWER = "nominal-output-power";
     public static final String CHANNEL_STATUS = "status";

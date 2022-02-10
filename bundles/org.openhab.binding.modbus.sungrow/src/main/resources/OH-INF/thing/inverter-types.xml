@@ -14,7 +14,7 @@
 		<category>Inverter</category>
 
 		<channel-groups>
-			<channel-group id="deviceInformation" typeId="device-information"/>
+			<channel-group id="deviceInformation" typeId="sungrow-device-information"/>
 			<channel-group id="acGeneral" typeId="ac-general"/>
 			<channel-group id="acPhaseA" typeId="ac-phase">
 				<label>AC Phase A (L1)</label>

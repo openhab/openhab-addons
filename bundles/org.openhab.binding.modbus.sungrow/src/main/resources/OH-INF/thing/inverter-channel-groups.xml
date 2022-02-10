@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-group-type id="device-information">
-		<label>Device Information</label>
+	<channel-group-type id="sungrow-device-information">
+		<label>Sungrow Device Information</label>
 		<channels>
 			<channel id="device-type" typeId="device-type-type"/>
 			<channel id="output-type" typeId="output-type-type"/>
