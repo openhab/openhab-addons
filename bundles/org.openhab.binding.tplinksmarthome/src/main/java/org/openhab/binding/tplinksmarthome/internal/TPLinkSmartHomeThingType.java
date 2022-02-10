@@ -49,6 +49,10 @@ public enum TPLinkSmartHomeThingType {
     KL130("kl130", DeviceType.BULB, ColorScales.K_2500_9000),
     KL135("kl135", DeviceType.BULB, ColorScales.K_2500_6500),
 
+    // Light String thing Type UIDs.
+    KL400("kl400", DeviceType.LIGHT_STRIP, ColorScales.K_2500_9000),
+    KL430("kl430", DeviceType.LIGHT_STRIP, ColorScales.K_2500_9000),
+
     // Plug Thing Type UIDs
     EP10("ep10", DeviceType.PLUG),
     HS100("hs100", DeviceType.PLUG),
@@ -175,6 +179,10 @@ public enum TPLinkSmartHomeThingType {
          * Dimmer device.
          */
         DIMMER,
+        /**
+         * Light Strip device.
+         */
+        LIGHT_STRIP,
         /**
          * Plug device.
          */
