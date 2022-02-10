@@ -109,7 +109,12 @@ public class HDPowerViewShadeHandler extends AbstractHubbedThingHandler {
                     "@text/offline.conf-error.invalid-bridge-handler");
             return;
         }
-        updateStatus(ThingStatus.UNKNOWN);
+        ThingStatus bridgeStatus = bridge.getStatus();
+        if (bridgeStatus == ThingStatus.ONLINE) {
+            updateStatus(ThingStatus.UNKNOWN);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
     }
 
     @Override
