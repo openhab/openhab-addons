@@ -1,0 +1,19 @@
+{
+	"smartlife.iot.lightStrip": {
+		"set_light_state": {
+			"on_off": 1,
+			"mode": "normal",
+			"groups": [
+				[
+					0,
+					31,
+					0,
+					0,
+					73,
+					4970
+				]
+			],
+			"err_code": 0
+		}
+	}
+}
