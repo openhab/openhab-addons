@@ -98,13 +98,13 @@ public class OpenThermGatewaySocketConnector implements OpenThermGatewayConnecto
                     }
                 }
             } catch (IOException ex) {
-                logger.warn("Error communicating with OpenTherm Gateway.", ex);
+                logger.warn("Error communicating with OpenTherm Gateway: '{}'", ex.getMessage());
             } finally {
                 // local writer is being destroyed, so null the class level reference as well
                 writer = null;
             }
         } catch (IOException ex) {
-            logger.warn("Unable to connect to the OpenTherm Gateway.", ex);
+            logger.warn("Unable to connect to the OpenTherm Gateway: '{}'", ex.getMessage());
         } finally {
             // local socket is being destroyed, so null the class level reference as well
             socket = null;
