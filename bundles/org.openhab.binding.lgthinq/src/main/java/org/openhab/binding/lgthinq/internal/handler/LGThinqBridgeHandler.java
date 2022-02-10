@@ -202,8 +202,8 @@ public class LGThinqBridgeHandler extends ConfigStatusBridgeHandler implements L
             Map<String, LGDevice> lastDevicesDiscoveredCopy = new HashMap<>(lastDevicesDiscovered);
             for (final LGDevice device : lgApiClient.listAccountDevices(bridgeName)) {
                 String deviceId = device.getDeviceId();
-
-                if (lGDeviceRegister.get(deviceId) == null) {
+                // if not registered yet, and not discovered before, then add to discovery list.
+                if (lGDeviceRegister.get(deviceId) == null && !lastDevicesDiscovered.containsKey(deviceId)) {
                     logger.debug("Adding new LG Device to things registry with id:{}", deviceId);
                     if (discoveryService != null) {
                         discoveryService.addLgDeviceDiscovery(device);
