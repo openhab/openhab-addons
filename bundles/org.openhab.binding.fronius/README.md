@@ -2,7 +2,12 @@
 
 This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/photovoltaics/products/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from Fronius devices.
 
-It supports Fronius inverters and Fronius Smart Meter. Tested with a Fronius Symo 8.2-3-M and Fronius Smart Meter 63A.
+It supports Fronius inverters and Fronius Smart Meter. Supports:
+* Fronius Symo
+* Fronius Symo Gen24
+* Fronius Smart Meter 63A
+* Fronius Smart Meter TS 65A-3
+* Fronius Ohmpilot
 
 ## Supported Things
 
