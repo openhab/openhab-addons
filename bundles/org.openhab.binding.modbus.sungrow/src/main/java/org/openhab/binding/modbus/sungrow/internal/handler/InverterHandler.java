@@ -18,6 +18,7 @@ import static org.openhab.core.library.unit.Units.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.sungrow.internal.SungrowDeviceType;
+import org.openhab.binding.modbus.sungrow.internal.SungrowOutputType;
 import org.openhab.binding.modbus.sungrow.internal.SungrowSystemState;
 import org.openhab.binding.modbus.sungrow.internal.dto.InverterModelBlock13k;
 import org.openhab.binding.modbus.sungrow.internal.dto.InverterModelBlock5k;
@@ -89,7 +90,9 @@ public class InverterHandler extends AbstractSungrowHandler {
         updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_NOMINAL_OUTPUT_POWER),
                 getScaled(block.nominalOutputPower, scaleTimes100, WATT));
 
-        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_OUTPUT_TYPE), getScaled(block.outputType, scaleBy1, ONE));
+        SungrowOutputType outputType = SungrowOutputType.getByCode(block.outputType);
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_OUTPUT_TYPE),
+                outputType == null ? UnDefType.UNDEF : new StringType(outputType.name()));
 
         // AC General group
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_FREQUENCY), getScaled(block.acFrequency, scaleBy10, HERTZ));
@@ -149,7 +152,8 @@ public class InverterHandler extends AbstractSungrowHandler {
         updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_SYSTEM_STATE),
                 systemState == null ? UnDefType.UNDEF : new StringType(systemState.name()));
 
-        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_RUNNING_STATE), getScaled(block.runningState, scaleBy1, ONE));
+        updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_RUNNING_STATE),
+                new StringType(String.format("0x%02X", block.runningState)));
 
         // AC General group
         StringType gridState = new StringType(String.format("0x%02X", block.gridState));

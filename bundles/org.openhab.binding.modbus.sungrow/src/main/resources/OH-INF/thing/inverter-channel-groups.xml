@@ -12,7 +12,7 @@
 			<channel id="running-state" typeId="running-state-type"/>
 			<channel id="nominal-output-power" typeId="nominal-output-power-type"/>
 			<channel id="inside-temperature" typeId="inside-temperature-type"/>
-			<channel id="status" typeId="status-type"/>
+			<channel id="system-state" typeId="system-state-type"/>
 		</channels>
 	</channel-group-type>
 

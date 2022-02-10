@@ -126,17 +126,11 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="status-type">
+	<channel-type id="system-state-type">
 		<item-type>String</item-type>
-		<label>Status</label>
-		<description>Device status</description>
-		<state readOnly="true">
-			<options>
-				<option value="OFF">Off</option>
-				<option value="SLEEP">Sleeping / Night mode</option>
-				<option value="ON">On - producing power</option>
-			</options>
-		</state>
+		<label>System State</label>
+		<description>System State</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="device-type-type">
@@ -152,14 +146,14 @@
 		<description>Output Type</description>
 		<state readOnly="true">
 			<options>
-				<option value="0">Single Phase</option>
-				<option value="1">3P4L</option>
-				<option value="2">3P3L</option>
+				<option value="OUTPUT_SINGLEPHASE">Single Phase</option>
+				<option value="OUTPUT_3P4L">3P4L</option>
+				<option value="OUTPUT_3P3L">3P3L</option>
 			</options>
 		</state>
 	</channel-type>
 
-	<channel-type id="running-state-type">
+	<channel-type id="running-state-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Running State</label>
 		<description>Running state of the inverter</description>
