@@ -18,16 +18,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link E3DCConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Björn Brings - Initial contribution
+ * @author Marco Loose - Extended parameters
  */
 @NonNullByDefault
 public class E3DCConfiguration {
 
+    private static final int RSPC_PW_MIN_LENGTH = 6;
     private String ip = "";
-    private int updateinterval;
     private int port;
+
     private String webusername = "";
     private String webpassword = "";
     private String rscppassword = "";
+
+    private int updateinterval;
+
+    private int powerMeterCount;
+    private int trackerCount;
+    private int wallboxCount;
 
     public String getIp() {
         return ip;
@@ -43,14 +51,6 @@ public class E3DCConfiguration {
 
     public void setPort(int port) {
         this.port = port;
-    }
-
-    public int getUpdateinterval() {
-        return updateinterval;
-    }
-
-    public void setUpdateinterval(int updateinterval) {
-        this.updateinterval = updateinterval;
     }
 
     public String getWebusername() {
@@ -75,5 +75,43 @@ public class E3DCConfiguration {
 
     public void setRscppassword(String rscppassword) {
         this.rscppassword = rscppassword;
+    }
+
+    public int getUpdateinterval() {
+        return updateinterval;
+    }
+
+    public void setUpdateinterval(int updateinterval) {
+        this.updateinterval = updateinterval;
+    }
+
+    public boolean isConfigComplete() {
+        return (!ip.isBlank() && // port >0 &&
+                !webusername.isBlank() && !webpassword.isEmpty() && // spacy password allowed
+                rscppassword.length() >= RSPC_PW_MIN_LENGTH);
+    }
+
+    public int getpowerMeterCount() {
+        return powerMeterCount;
+    }
+
+    public void setpowerMeterCount(int powerMeterCount) {
+        this.powerMeterCount = powerMeterCount;
+    }
+
+    public int getTrackerCount() {
+        return trackerCount;
+    }
+
+    public void setTrackerCount(int trackerCount) {
+        this.trackerCount = trackerCount;
+    }
+
+    public int getWallboxCount() {
+        return wallboxCount;
+    }
+
+    public void setWallboxCount(int wallboxCount) {
+        this.wallboxCount = wallboxCount;
     }
 }

@@ -18,7 +18,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.e3dc.internal.rscp.RSCPData;
 import org.openhab.binding.e3dc.internal.rscp.RSCPDataType;
 import org.openhab.binding.e3dc.internal.rscp.RSCPFrame;
@@ -29,22 +30,26 @@ import org.slf4j.LoggerFactory;
  * The {@link FrameLoggerHelper} is responsible for supporting the output of frames
  *
  * @author Brendon Votteler - Initial Contribution
+ * @author Marco Loose - Minor changes
  */
+@NonNullByDefault
 public class FrameLoggerHelper {
     private static final Logger logger = LoggerFactory.getLogger(FrameLoggerHelper.class);
     private static final DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
             .withZone(ZoneId.from(ZoneOffset.UTC));
-    private static final String dataPattern = "Data with Tag: %s; Type: %s ; %s";
+    private static final String dataPattern = "Data with Tag: %s (%s); Type: %s ; %s";
 
-    public static void logFrame(RSCPFrame frame) {
-        if (frame == null) {
+    public static void logFrame(@Nullable RSCPFrame frame) {
+        if (!logger.isTraceEnabled())
+            return;
+
+        if (frame == null || !logger.isTraceEnabled()) {
             logger.error("Frame is null, nothing logged!");
             return;
         }
 
         Instant timestamp = frame.getTimestamp();
-
-        logger.warn("Frame with timestamp: {} ; data follows below", isoFormatter.format(timestamp));
+        logger.trace("Frame with timestamp: {} ; data follows below", isoFormatter.format(timestamp));
 
         List<RSCPData> dataList = frame.getData();
         for (RSCPData data : dataList) {
@@ -64,12 +69,14 @@ public class FrameLoggerHelper {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append(StringUtils.leftPad("", indentation, "-")) // prepend '-' character times the indentation
-                .append(" ")
-                .append(String.format(dataPattern, data.getDataTag().name(), data.getDataType().name(), value));
+        for (int toPrepend = 0; toPrepend < indentation; toPrepend++) { // prepend '-' character times the indentation
+            sb.append('-');
+        }
 
+        sb.append(" ").append(String.format(dataPattern, data.getDataTag().name(), data.getDataTag().getValue(),
+                data.getDataType().name(), value));
         String out = sb.toString();
-        logger.warn(out);
+        logger.trace(out);
 
         if (data.getDataType() == RSCPDataType.CONTAINER) {
             // log data inside

@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Brendon Votteler - Initial Contribution
  * @author Björn Brings - Minor updates
+ * @author Marco Loose - Added namespace
  */
 public class RSCPData {
     private static final Logger logger = LoggerFactory.getLogger(RSCPData.class);
@@ -60,12 +61,14 @@ public class RSCPData {
 
     private final RSCPTag dataTag;
     private final RSCPDataType dataType;
+    private final RSCPNamespace namespace;
     private final short dataLength;
     private final byte[] value; // unknown size
 
-    RSCPData(RSCPTag dataTag, RSCPDataType dataType, byte[] value) {
+    RSCPData(RSCPTag dataTag, RSCPDataType dataType, byte[] value, RSCPNamespace namespace) {
         this.dataTag = dataTag;
         this.dataType = dataType;
+        this.namespace = namespace;
         this.value = value;
         this.dataLength = (short) value.length;
     }
@@ -80,6 +83,10 @@ public class RSCPData {
 
     public RSCPDataType getDataType() {
         return dataType;
+    }
+
+    public RSCPNamespace getDataNamespace() {
+        return namespace;
     }
 
     public byte[] getValueAsByteArray() {
@@ -328,6 +335,7 @@ public class RSCPData {
 
     public static class Builder {
         private RSCPTag dataTag;
+        private RSCPNamespace namespace;
         private RSCPDataType dataType;
         private byte[] value;
 
@@ -348,19 +356,30 @@ public class RSCPData {
          * @return A list of constructed {@link RSCPData} instances.
          */
         public List<RSCPData> buildFromRawBytes(byte[] bytes) {
-            if (bytes == null || bytes.length < offsetData) {
-                logger.warn("Not enough bytes to form RSCPData instance(s), returning empty list (data truncated?).");
+            if (bytes == null) {
+                logger.warn("No bytes to form RSCPData instance(s), returning empty list (data truncated?).");
+                return Collections.emptyList();
+            }
+            if (bytes.length < offsetData) {
+                logger.warn(
+                        "Not enough bytes to form RSCPData instance(s), returning empty list. received: {} - offset: {}",
+                        bytes.length, offsetData);
                 return Collections.emptyList();
             }
 
             List<RSCPData> rscpDataList = new ArrayList<>();
 
-            byte[] tagNameBytes = ByteUtils.copyBytesIntoNewArray(bytes, offsetDataTag, sizeDataTag);
-            RSCPTag tag = RSCPTag.getTagForBytes(ByteUtils.reverseByteArray(tagNameBytes));
+            byte[] tagNameBytes = ByteUtils
+                    .reverseByteArray(ByteUtils.copyBytesIntoNewArray(bytes, offsetDataTag, sizeDataTag));
+            RSCPTag tag = RSCPTag.getTagForBytes(tagNameBytes);
+            RSCPNamespace namespace = RSCPNamespace.getForBytes(Arrays.copyOfRange(tagNameBytes, 0, 1));
+
             if (tag == null) {
-                logger.warn("Tag could not be matched: {}", ByteUtils.byteArrayToHexString(tagNameBytes));
-                tag = RSCPTag.getTagForBytes(
-                        ByteUtils.reverseByteArray(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF }));
+                logger.warn("Tag could not be matched: {}", tagNameBytes);
+                tag = RSCPTag.getTagForBytes(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
+            }
+            if (namespace == null) {
+                namespace = RSCPNamespace.getForBytes(new byte[] { (byte) 0xF });
             }
 
             // single byte, no need to reverse
@@ -377,7 +396,7 @@ public class RSCPData {
 
             byte[] data = ByteUtils.copyBytesIntoNewArray(bytes, offsetData, dataLength);
 
-            RSCPData rscpData = RSCPData.builder().tag(tag).valueOfType(dataType, data).build();
+            RSCPData rscpData = RSCPData.builder().tag(tag).namespace(namespace).valueOfType(dataType, data).build();
 
             rscpDataList.add(rscpData);
 
@@ -399,6 +418,17 @@ public class RSCPData {
          */
         public Builder tag(RSCPTag tag) {
             this.dataTag = tag;
+            return this;
+        }
+
+        /**
+         * Define the tag for this instance. See {@link RSCPTag}.
+         *
+         * @param tag The tag to set.
+         * @return The builder.
+         */
+        public Builder namespace(RSCPNamespace ns) {
+            this.namespace = ns;
             return this;
         }
 
@@ -641,7 +671,7 @@ public class RSCPData {
 
         public RSCPData build() {
             validate();
-            return new RSCPData(dataTag, dataType, value);
+            return new RSCPData(dataTag, dataType, value, namespace);
         }
 
         private ByteBuffer getLittleEndianByteBuffer(int capacity) {

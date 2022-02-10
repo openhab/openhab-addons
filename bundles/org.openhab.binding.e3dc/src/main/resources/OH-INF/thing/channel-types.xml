@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="e3dc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+
+	<!-- EMS -->
+	<channel-type id="CurrentPowerPV">
+		<item-type>Number:Power</item-type>
+		<label>Current Power PV</label>
+		<description>Current power from photovoltaics</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="CurrentPowerBat">
+		<item-type>Number:Power</item-type>
+		<label>Current Power Battery</label>
+		<description>Current power exchange with battery</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="CurrentPowerHome">
+		<item-type>Number:Power</item-type>
+		<label>Current Power Home</label>
+		<description>Current power consumption</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="CurrentPowerGrid">
+		<item-type>Number:Power</item-type>
+		<label>Current Power Grid</label>
+		<description>Current power exchange with the grid</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="CurrentPowerAdd">
+		<item-type>Number:Power</item-type>
+		<label>Current Power additional connection</label>
+		<description>Current power exchange with an additionally connected external device</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="BatterySOC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery load</label>
+		<description>Battery load</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="SelfConsumption">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Self consumption</label>
+		<description>Share of PV energy that is self consumed</description>
+		<state readOnly="true" pattern="%.2f %%"/>
+	</channel-type>
+	<channel-type id="Autarky">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Autarky</label>
+		<description>Share of consumed energy that is self generated</description>
+		<state readOnly="true" pattern="%.2f %%"/>
+	</channel-type>
+	<channel-type id="PowerLimitsUsed">
+		<item-type>Switch</item-type>
+		<label>Power Limits used</label>
+		<description>Indicates if manual power limits are used</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="MaxDischarge">
+		<item-type>Number:Power</item-type>
+		<label>Max Discharge</label>
+		<description>Manual limit for maximum battery discharge power</description>
+		<state pattern="%.0f %unit%" min="100" max="3000" step="10" readOnly="false"/>
+	</channel-type>
+	<channel-type id="MaxCharge">
+		<item-type>Number:Power</item-type>
+		<label>Max Charge</label>
+		<description>Manual limit for maximum battery charge power</description>
+		<state pattern="%.0f %unit%" min="100" max="3000" step="10" readOnly="false"/>
+	</channel-type>
+	<channel-type id="DischargeStart">
+		<item-type>Number:Power</item-type>
+		<label>Discharge Start Value</label>
+		<description>Manual limit for lower charge/discharge threshold</description>
+		<state pattern="%.0f %unit%" min="0" max="50" step="5" readOnly="false"/>
+	</channel-type>
+	<channel-type id="WeatherRegulatedCharge">
+		<item-type>Switch</item-type>
+		<label>Weather Regulated Charge</label>
+		<description>Auto charging controlled by weather forecast to lower max power to grid</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="PowerSave">
+		<item-type>Switch</item-type>
+		<label>Power Save</label>
+		<description>Power save mode when battery is idle</description>
+		<state readOnly="false"/>
+	</channel-type>
+	<channel-type id="EmergencyPowerStatus">
+		<item-type>Number</item-type>
+		<label>Emergency Power Status</label>
+		<description>Emergency Power ready or island</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="-1">Error</option>
+				<option value="0">Not supported</option>
+				<option value="1">Active</option>
+				<option value="2">Inactive</option>
+				<option value="3">n/a</option>
+				<option value="4">Motor switch misaligned</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="StartManualCharge" advanced="true">
+		<item-type>String</item-type>
+		<label>Start Manual Charge - no function yet (i18n me)</label>
+		<description>Starts the manual battery charge (limited to once a day by E3DC) (Not implemented yet)</description>
+		<category>Status</category>
+		<command>
+			<options>
+				<option value="START_MAN_CHARGE">Start</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="StartEmergencyPowerTest" advanced="true">
+		<item-type>String</item-type>
+		<label>Start Emergency Power Test - no function yet (i18n me)</label>
+		<description>Starts the Emergency Power Test (Not implemented yet/ever?)</description>
+		<category>Status</category>
+		<command>
+			<options>
+				<option value="START_EP">Start</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<!-- PVI -->
+	<channel-type id="pviDummy" advanced="true">
+		<item-type>String</item-type>
+		<label>PVI Dummy channel</label>
+		<description>PVI Dummy channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<!-- BAT -->
+	<channel-type id="batteryDummy" advanced="true">
+		<item-type>String</item-type>
+		<label>Battery Dummy channel</label>
+		<description> Battery Dummy channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- DCDC -->
+	<channel-type id="dcdcDummy" advanced="true">
+		<item-type>String</item-type>
+		<label>DCDC Dummy channel</label>
+		<description>DCDC Dummy channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- PM -->
+	<channel-type id="PMCurrentEngergy">
+		<item-type>Number:Energy</item-type>
+		<label>Phase Energy</label>
+		<description>Consumed net energy on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="PMCurrentPower">
+		<item-type>Number:Power</item-type>
+		<label>Phase Power</label>
+		<description>Current net power on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="PMCurrentVoltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Phase Voltage</label>
+		<description>Current voltage on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="PMMode">
+		<item-type>Number</item-type>
+		<label>PM Mode</label>
+		<description>PM Mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="PMPhaseActive">
+		<item-type>Switch</item-type>
+		<label>PM Phase active</label>
+		<description>Indicates if phase is switched on</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="PMType">
+		<item-type>Number</item-type>
+		<label>Powermeter Type</label>
+		<description>Powermeter is configured as this type</description>		
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="-1">---</option>
+				<option value="0">Undefined</option>
+				<option value="1">Root</option>
+				<option value="2">Additional</option>
+				<option value="3">Additional Production</option>
+				<option value="4">Additional Consumption</option>
+				<option value="5">Farm</option>
+				<option value="6">Unused</option>
+				<option value="7">Wallbox</option>
+				<option value="8">Farm Additional</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- SRV -->
+	<channel-type id="ServerDummy" advanced="true">
+		<item-type>String</item-type>
+		<label>Server Dummy channel</label>
+		<description>Server Dummy channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<!-- HA -->
+	<channel-type id="homeAutomationDummy" advanced="true">
+		<item-type>String</item-type>
+		<label>Home Automation Dummy channel</label>
+		<description>Home Automation Dummy channel</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- INFO -->
+	<channel-type id="SerialNumber">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>Serial Number</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ProductionDate">
+		<item-type>String</item-type>
+		<label>Production Date</label>
+		<description>Production Date</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="IPAddress">
+		<item-type>String</item-type>
+		<label>IP Address</label>
+		<description>IP Address</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SubnetMask">
+		<item-type>String</item-type>
+		<label>Subnet Mask</label>
+		<description>Subnet Mask</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="MACAddress">
+		<item-type>String</item-type>
+		<label>MAC Address</label>
+		<description>MAC Address</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Gateway">
+		<item-type>String</item-type>
+		<label>Gateway Address</label>
+		<description>Gateway IP Address</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="DNS">
+		<item-type>String</item-type>
+		<label>DNS Address</label>
+		<description>DNS Server IP Address</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="DHCP">
+		<item-type>Switch</item-type>
+		<label>DHCP active</label>
+		<description>DHCP is used for IP address assignment</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="Time">
+		<item-type>DateTime</item-type>
+		<label>Time</label>
+		<description>System Time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="UTCTime">
+		<item-type>DateTime</item-type>
+		<label>UTC Time</label>
+		<description>System UTC Time</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="TimeZone">
+		<item-type>String</item-type>
+		<label>Time Zone</label>
+		<description>Time Zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="SWRelease">
+		<item-type>String</item-type>
+		<label>Software Release</label>
+		<description>Version of main software release</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<!-- EP -->
+	<channel-type id="IsReadyForSwitch">
+		<item-type>Switch</item-type>
+		<label>Ready for switch</label>
+		<description>Is ready for switching to emergency power</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="IsGridConnected">
+		<item-type>Switch</item-type>
+		<label>Grid Connected</label>
+		<description>Connected to grid</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="IsIslandGrid">
+		<item-type>Switch</item-type>
+		<label>Island Grid</label>
+		<description>Is in island grid mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="IsInvalidState">
+		<item-type>Switch</item-type>
+		<label>Invalid state</label>
+		<description>Emergency power is in an invalid state</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="IsPossible">
+		<item-type>Switch</item-type>
+		<label>Emergency Power possible</label>
+		<description>Switiching to Emergency Power is possible</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<!-- UM -->
+	<channel-type id="updateStatus" advanced="true">
+		<item-type>Number</item-type>
+		<label>Update status</label>
+		<description>Current state of the update manager (INT or HEX?)</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="-1">Error</option>
+				<option value="0">Idle</option>
+				<option value="1">Update check running</option>
+				<option value="2">Updating modules and files</option>
+				<option value="3">Updating hardware</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<!-- WB -->
+	<channel-type id="WBEnergyAll">
+		<item-type>Number:Energy</item-type>
+		<label>Energy All</label>
+		<description>Energy All</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="WBEnergySolar">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Solar</label>
+		<description>Energy Solar</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="WBSOC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Load Car??</label>
+		<description>Battery Load Car??</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="WBEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>Phase Energy Wallbox</label>
+		<description>Consumed wallbox energy on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="WBPower">
+		<item-type>Number:Power</item-type>
+		<label>Phase Power Wallbox</label>
+		<description>Current wallbox power on Phase</description>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="WBMode">
+		<item-type>Number</item-type>
+		<label>Mode Wallbox</label>
+		<description>Mode Wallbox</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="WBPhaseActive">
+		<item-type>Switch</item-type>
+		<label>Phase active Wallbox</label>
+		<description>Indicates if Wallbox phase is switched on</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- SYS -->
+	<channel-type id="isSystemRebooting">
+		<item-type>Switch</item-type>
+		<label>System Rebooting</label>
+		<description>Indicates if the S10 is rebooting currently - does this qury work during reboot?!</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- MBS -->
+	<channel-type id="isModbusEnabled" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Modbus Enabled</label>
+		<description>Indicates if the Modbus connection enabled</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- DEBUG -->
+
+	<channel-type id="DebugQuery">
+		<item-type>Switch</item-type>
+		<label>Debug Query</label>
+		<description>Request all available data - If logging level is set to TRACE all available data gets written to the log
+			- Resets after one reuest</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+</thing:thing-descriptions>

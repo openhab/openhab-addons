@@ -166,9 +166,13 @@ public class RSCPFrame {
         return result;
     }
 
-    private static void validateBytesCanBeFrameElseThrow(byte[] bytes) {
+    private static void validateBytesCanBeFrameElseThrow(byte[] bytes) throws IllegalArgumentException {
         if (bytes == null || bytes.length < offsetData) {
-            throw new IllegalArgumentException("Byte array is null, or too small to be a frame.");
+            throw new IllegalArgumentException("Byte array is null.");
+        }
+
+        if (bytes.length < offsetData) {
+            throw new IllegalArgumentException("Byte array istoo small to be a frame.");
         }
 
         byte[] frameMagicBytes = ByteUtils.copyBytesIntoNewArray(bytes, offsetMagic, sizeMagic);
@@ -224,7 +228,7 @@ public class RSCPFrame {
          * @return A constructed {@link RSCPFrame}. Throws {@link IllegalArgumentException} if the provided bytes are
          *         misformed. Throws {@link IllegalStateException} when validation during construction fails.
          */
-        public RSCPFrame buildFromRawBytes(byte[] bytes) {
+        public RSCPFrame buildFromRawBytes(byte[] bytes) throws IllegalArgumentException {
             validateBytesCanBeFrameElseThrow(bytes);
             ByteBuffer byteBuffer = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN);
             byteBuffer.rewind();

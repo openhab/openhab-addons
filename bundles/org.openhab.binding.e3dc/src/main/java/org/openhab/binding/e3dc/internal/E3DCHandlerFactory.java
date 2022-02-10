@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.e3dc.internal;
 
-import static org.openhab.binding.e3dc.internal.E3DCBindingConstants.THING_TYPE_E3DC;
+import static org.openhab.binding.e3dc.internal.E3DCBindingConstants.THING_TYPE_S10;
 
 import java.util.Set;
 
@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.e3dc", service = ThingHandlerFactory.class)
 public class E3DCHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_E3DC);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_S10);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,7 +46,7 @@ public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_E3DC.equals(thingTypeUID)) {
+        if (THING_TYPE_S10.equals(thingTypeUID)) {
             return new E3DCHandler(thing);
         }
 
