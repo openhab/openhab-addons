@@ -105,10 +105,17 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
     private void initializeApi() {
         scheduler.execute(() -> {
             EcovacsApiConfiguration config = getConfigAs(EcovacsApiConfiguration.class);
+            String country = localeProvider.getLocale().getCountry();
+            if (country.isEmpty()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.config-error-no-country");
+                return;
+            }
+
             org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration apiConfig = new org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration(
-                    config.installId, config.email, config.password, config.continent,
-                    localeProvider.getLocale().getCountry(), "EN", ClientKeys.CLIENT_KEY, ClientKeys.CLIENT_SECRET,
-                    ClientKeys.AUTH_CLIENT_KEY, ClientKeys.AUTH_CLIENT_SECRET);
+                    config.installId, config.email, config.password, config.continent, country, "EN",
+                    ClientKeys.CLIENT_KEY, ClientKeys.CLIENT_SECRET, ClientKeys.AUTH_CLIENT_KEY,
+                    ClientKeys.AUTH_CLIENT_SECRET);
 
             EcovacsApi api = EcovacsApi.create(httpClientFactory.getCommonHttpClient(), apiConfig);
             try {
