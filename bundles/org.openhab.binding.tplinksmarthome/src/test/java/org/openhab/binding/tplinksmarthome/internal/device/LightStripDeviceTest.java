@@ -22,7 +22,7 @@ import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.C
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_ENERGY_POWER;
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_OTHER;
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_SWITCH;
-import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.LB130;
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.KL430;
 
 import java.io.IOException;
 
@@ -44,43 +44,47 @@ import org.openhab.core.types.UnDefType;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
+public class LightStripDeviceTest extends DeviceTestBase<LightStripDevice> {
 
     private static final String DEVICE_OFF = "bulb_get_sysinfo_response_off";
 
-    public BulbDeviceTest() throws IOException {
-        super(new BulbDevice(LB130), "bulb_get_sysinfo_response_on");
+    public LightStripDeviceTest() throws IOException {
+        super(new LightStripDevice(KL430), "bulb_get_sysinfo_response_on");
     }
 
     @BeforeEach
     @Override
     public void setUp() throws IOException {
         super.setUp();
-        setSocketReturnAssert("bulb_transition_light_state_response");
     }
 
     @Test
     public void testHandleCommandBrightness() throws IOException {
-        assertInput("bulb_transition_light_state_brightness");
-        assertTrue(device.handleCommand(CHANNEL_UID_BRIGHTNESS, new PercentType(33)),
+        assertInput("kl430_set_brightness");
+        setSocketReturnAssert("kl430_set_brightness_response");
+        assertTrue(device.handleCommand(CHANNEL_UID_BRIGHTNESS, new PercentType(73)),
                 "Brightness channel should be handled");
     }
 
     @Test
     public void testHandleCommandBrightnessOnOff() throws IOException {
-        assertInput("bulb_transition_light_state_on");
+        assertInput("kl430_set_on");
+        setSocketReturnAssert("kl430_set_brightness_response");
         assertTrue(device.handleCommand(CHANNEL_UID_BRIGHTNESS, OnOffType.ON),
                 "Brightness channel with OnOff state should be handled");
     }
 
     @Test
     public void testHandleCommandColor() throws IOException {
-        assertInput("bulb_transition_light_state_color");
-        assertTrue(device.handleCommand(CHANNEL_UID_COLOR, new HSBType("55,44,33")), "Color channel should be handled");
+        assertInput("kl430_set_color");
+        setSocketReturnAssert("kl430_set_color_response");
+        assertTrue(device.handleCommand(CHANNEL_UID_COLOR, new HSBType("115,75,73")),
+                "Color channel should be handled");
     }
 
     public void testHandleCommandColorBrightness() throws IOException {
-        assertInput("bulb_transition_light_state_brightness");
+        assertInput("kl430_set_brightness");
+        setSocketReturnAssert("kl430_set_brightness_response");
         assertTrue(device.handleCommand(CHANNEL_UID_COLOR, new PercentType(33)),
                 "Color channel with Percentage state (=brightness) should be handled");
     }
@@ -93,30 +97,29 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
 
     @Test
     public void testHandleCommandColorTemperature() throws IOException {
-        assertInput("bulb_transition_light_state_color_temp");
+        assertInput("kl430_set_colortemperature");
+        setSocketReturnAssert("kl430_set_colortemperature_response");
         assertTrue(device.handleCommand(CHANNEL_UID_COLOR_TEMPERATURE, new PercentType(40)),
                 "Color temperature channel should be handled");
     }
 
     @Test
     public void testHandleCommandColorTemperatureAbs() throws IOException {
-        assertInput("bulb_transition_light_state_color_temp");
+        assertInput("kl430_set_colortemperature");
+        setSocketReturnAssert("kl430_set_colortemperature_response");
         assertTrue(device.handleCommand(CHANNEL_UID_COLOR_TEMPERATURE_ABS, new DecimalType(5100)),
                 "Color temperature channel should be handled");
     }
 
     @Test
     public void testHandleCommandColorTemperatureOnOff() throws IOException {
-        assertInput("bulb_transition_light_state_on");
+        assertInput("kl430_set_on");
+        setSocketReturnAssert("kl430_set_colortemperature_response");
         assertTrue(device.handleCommand(CHANNEL_UID_COLOR_TEMPERATURE, OnOffType.ON),
                 "Color temperature channel with OnOff state should be handled");
     }
 
-    @Test
-    public void testHandleCommandSwitch() throws IOException {
-        assertInput("bulb_transition_light_state_on");
-        assertTrue(device.handleCommand(CHANNEL_UID_SWITCH, OnOffType.ON), "Switch channel should be handled");
-    }
+    // ---- Update ----
 
     @Test
     public void testUpdateChannelBrightnessOn() {
@@ -156,13 +159,15 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
     }
 
     @Test
-    public void testUpdateChannelColorTemperature() {
+    public void testUpdateChannelColorTemperature() throws IOException {
+        assertInput("kl430_set_colortemperature");
         assertEquals(new PercentType(2), device.updateChannel(CHANNEL_UID_COLOR_TEMPERATURE, deviceState),
                 "Color temperature should be set");
     }
 
     @Test
-    public void testUpdateChannelColorTemperatureAbs() {
+    public void testUpdateChannelColorTemperatureAbs() throws IOException {
+        assertInput("kl430_set_colortemperature");
         assertEquals(new DecimalType(2630), device.updateChannel(CHANNEL_UID_COLOR_TEMPERATURE_ABS, deviceState),
                 "Color temperature should be set");
     }
