@@ -111,23 +111,27 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
     }
 
     private synchronized void execute() {
-        ConnectionState connectionState = device.getConnectionState();
-        logger.debug("Device {} state is {}, serviceState {}, readState {}", address, connectionState, serviceState,
-                readState);
+        try {
+            ConnectionState connectionState = device.getConnectionState();
+            logger.debug("Device {} state is {}, serviceState {}, readState {}", address, connectionState, serviceState,
+                    readState);
 
-        switch (connectionState) {
-            case DISCOVERING:
-            case DISCOVERED:
-            case DISCONNECTED:
-                if (isTimeToRead()) {
-                    connect();
-                }
-                break;
-            case CONNECTED:
-                read();
-                break;
-            default:
-                break;
+            switch (connectionState) {
+                case DISCOVERING:
+                case DISCOVERED:
+                case DISCONNECTED:
+                    if (isTimeToRead()) {
+                        connect();
+                    }
+                    break;
+                case CONNECTED:
+                    read();
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {  // catch all to avoid scheduleWithFixedDelay being suppressed
+            logger.warn("Failed to read Airthings device", e);
         }
     }
 
