@@ -87,10 +87,6 @@
 		<label>Wind Chill Temperature</label>
 		<description>Wind Chill Temperature Outdoors</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperatureDewPoint" advanced="true">
@@ -98,10 +94,6 @@
 		<label>Dew Point Temperature</label>
 		<description>Dew Point Temperature Outdoors</description>
 		<category>Temperature</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Temperature</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="humidityIndoor">
@@ -208,10 +200,6 @@
 		<label>Wind Max Gust</label>
 		<description>Max wind gust for today</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainHourlyRate">
@@ -241,10 +229,6 @@
 		<label>Rain for Week</label>
 		<description>Weekly Rain</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForMonth" advanced="true">
@@ -252,10 +236,6 @@
 		<label>Rain for Month</label>
 		<description>Rain since 12:00 on the 1st of this month</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForYear">
@@ -263,10 +243,6 @@
 		<label>Rain for Year</label>
 		<description>Total rain since 12:00 on 1st Jan</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastUpdatedTime" advanced="true">
