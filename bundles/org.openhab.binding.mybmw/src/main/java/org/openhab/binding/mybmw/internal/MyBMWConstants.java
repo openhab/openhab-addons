@@ -124,6 +124,7 @@ public class MyBMWConstants {
     public static final String PLUG_CONNECTION = "plug-connection";
     public static final String CHARGE_STATUS = "charge";
     public static final String CHARGE_INFO = "charge-info";
+    public static final String MOTION = "motion";
     public static final String LAST_UPDATE = "last-update";
     public static final String RAW = "raw";
 

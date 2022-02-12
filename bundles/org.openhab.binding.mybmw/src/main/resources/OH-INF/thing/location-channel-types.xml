@@ -12,8 +12,8 @@
 		<label>Heading Angle</label>
 		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
-    <channel-type id="address-channel">
-        <item-type>String</item-type>
-        <label>Address</label>
-    </channel-type>
+	<channel-type id="address-channel">
+		<item-type>String</item-type>
+		<label>Address</label>
+	</channel-type>
 </thing:thing-descriptions>

@@ -30,6 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mybmw.internal.MyBMWConstants;
 import org.openhab.binding.mybmw.internal.dto.charge.Time;
+import org.openhab.binding.mybmw.internal.dto.properties.Address;
 import org.openhab.binding.mybmw.internal.dto.properties.Coordinates;
 import org.openhab.binding.mybmw.internal.dto.properties.Distance;
 import org.openhab.binding.mybmw.internal.dto.properties.Location;
@@ -241,6 +242,8 @@ public class Converter {
             v.properties.vehicleLocation.coordinates = new Coordinates();
             v.properties.vehicleLocation.coordinates.latitude = -1.234;
             v.properties.vehicleLocation.coordinates.longitude = -9.876;
+            v.properties.vehicleLocation.address = new Address();
+            v.properties.vehicleLocation.address.formatted = Constants.UNDEF;
         }
         return v;
     }

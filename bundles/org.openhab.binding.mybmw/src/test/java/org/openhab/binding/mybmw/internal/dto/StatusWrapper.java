@@ -31,6 +31,7 @@ import org.openhab.binding.mybmw.internal.utils.Constants;
 import org.openhab.binding.mybmw.internal.utils.Converter;
 import org.openhab.binding.mybmw.internal.utils.VehicleStatusUtils;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -105,6 +106,7 @@ public class StatusWrapper {
         StringType wanted;
         DateTimeType dtt;
         PointType pt;
+        OnOffType oot;
         Unit<Length> wantedUnit;
         switch (cUid) {
             case MILEAGE:
@@ -555,6 +557,21 @@ public class StatusWrapper {
                 } else {
                     assertTrue(state.equals(UnDefType.UNDEF));
                 }
+                break;
+            case MOTION:
+                assertTrue(state instanceof OnOffType);
+                oot = (OnOffType) state;
+                if (vehicle.properties.inMotion) {
+                    assertEquals(oot.toFullString(), OnOffType.ON.toFullString(), "Vehicle Driving");
+                } else {
+                    assertEquals(oot.toFullString(), OnOffType.OFF.toFullString(), "Vehicle Stationary");
+                }
+                break;
+            case ADDRESS:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                assertEquals(st.toFullString(), vehicle.properties.vehicleLocation.address.formatted,
+                        "Location Address");
                 break;
             case RAW:
                 // don't assert raw channel

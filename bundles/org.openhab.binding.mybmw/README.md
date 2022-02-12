@@ -172,6 +172,7 @@ Reflects overall status of the vehicle.
 | Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
 | Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
 | Charging Information      | charge-info         | String        | Information regarding current charging session |      |  X   |    X    |  X  |
+| Motion Status             | motion              | Switch        | Driving state - depends on vehicle hardware    |  X   |  X   |    X    |  X  |
 | Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
 
 Overall Door Status values

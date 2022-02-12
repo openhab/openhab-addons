@@ -170,6 +170,7 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
                 VehicleStatusUtils.getNextServiceMileage(v.properties.serviceRequired));
         updateChannel(CHANNEL_GROUP_STATUS, CHECK_CONTROL,
                 StringType.valueOf(v.status.checkControlMessagesGeneralState));
+        updateChannel(CHANNEL_GROUP_STATUS, MOTION, OnOffType.from(v.properties.inMotion));
         updateChannel(CHANNEL_GROUP_STATUS, LAST_UPDATE,
                 DateTimeType.valueOf(Converter.zonedToLocalDateTime(v.properties.lastUpdatedAt)));
         updateChannel(CHANNEL_GROUP_STATUS, DOORS, Converter.getClosedState(v.properties.areDoorsClosed));
@@ -450,6 +451,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_LOCATION, GPS, PointType
                 .valueOf(Double.toString(pos.coordinates.latitude) + "," + Double.toString(pos.coordinates.longitude)));
         updateChannel(CHANNEL_GROUP_LOCATION, HEADING, QuantityType.valueOf(pos.heading, Units.DEGREE_ANGLE));
-        updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, pos.address.formatted);
+        updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, StringType.valueOf(pos.address.formatted));
     }
 }

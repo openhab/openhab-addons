@@ -43,8 +43,6 @@ public class Constants {
     public static final String UNLOCKED = "Unlocked";
     public static final String CONNECTED = "Connected";
     public static final String UNCONNECTED = "Not connected";
-    public static final String DRIVING = "Driving";
-    public static final String STATIONARY = "Stationary";
     public static final String UNDEF = UnDefType.UNDEF.toFullString();
     public static final String NULL_TIME = "00:00";
     public static final String KILOMETERS_JSON = "KILOMETERS";
