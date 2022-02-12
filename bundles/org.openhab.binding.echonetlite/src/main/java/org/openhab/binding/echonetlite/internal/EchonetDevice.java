@@ -65,7 +65,8 @@ public class EchonetDevice extends EchonetObject {
                     epcByChannelId.put(epc.channelId(), epc);
                 }
 
-                @Nullable State pendingState = pendingSets.get(epc);
+                @Nullable
+                State pendingState = pendingSets.get(epc);
                 if (null != pendingState && pendingState.equals(state)) {
                     logger.debug("pendingSet - removing: {} {}", epc, state);
                     pendingSets.remove(epc);

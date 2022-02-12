@@ -197,7 +197,8 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
     }
 
     private void pollRequests(long nowMs) {
-        @Nullable Message message;
+        @Nullable
+        Message message;
         while (null != (message = requests.poll())) {
             logger.info("Received request: {}", message);
             if (message instanceof NewDeviceMessage) {
@@ -218,7 +219,8 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
 
     private void pollNetwork(long nowMs, EchonetChannel echonetChannel) {
         try {
-            echonetChannel.pollMessages(echonetMessage, this::onMessage, EchonetLiteBindingConstants.NETWORK_WAIT_TIMEOUT);
+            echonetChannel.pollMessages(echonetMessage, this::onMessage,
+                    EchonetLiteBindingConstants.NETWORK_WAIT_TIMEOUT);
         } catch (IOException e) {
             logger.error("Failed to poll for messages", e);
         }
