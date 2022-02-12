@@ -14,11 +14,13 @@ package org.openhab.binding.echonetlite.internal;
 
 import java.nio.ByteBuffer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.State;
 
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public interface StateDecode {
     State decodeState(final ByteBuffer edt);
 

@@ -23,12 +23,16 @@ import java.nio.channels.Selector;
 import java.util.Enumeration;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Wraps a Datagram channel for sending/receiving data to/from echonet lite devices.
+ *
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class EchonetChannel {
 
     private final Logger logger = LoggerFactory.getLogger(EchonetChannel.class);
@@ -55,14 +59,10 @@ public class EchonetChannel {
 
     public void close() {
         try {
-            if (null != selector) {
-                logger.info("closing selector");
-                selector.close();
-            }
-            if (null != channel) {
-                logger.info("closing channel");
-                channel.close();
-            }
+            logger.info("closing selector");
+            selector.close();
+            logger.info("closing channel");
+            channel.close();
         } catch (IOException e) {
             logger.error("Failed to close selector/channel", e);
         }
@@ -87,7 +87,13 @@ public class EchonetChannel {
 
                 echonetMessage.sourceAddress(address);
                 buffer.flip();
+                long t0 = System.currentTimeMillis();
                 consumer.accept(echonetMessage);
+                long t1 = System.currentTimeMillis();
+                final long processingTimeMs = t1 - t0;
+                if (500 < processingTimeMs) {
+                    logger.info("Message took {}ms to process", processingTimeMs);
+                }
             } catch (IOException e) {
                 logger.error("Unable to select", e);
             }

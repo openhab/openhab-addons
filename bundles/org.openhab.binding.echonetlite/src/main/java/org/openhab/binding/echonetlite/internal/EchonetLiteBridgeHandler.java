@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -23,6 +25,8 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -35,9 +39,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Bridge handler for echonet lite devices. By default all messages (inbound and outbound) happen on port 3610, so
+ * we can only have a single listener for echonet lite messages. Hence using a bridge model to handle communications
+ * and discovery.
+ *
  * @author Michael Barker - Initial contribution
  */
-public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements EchonetMessengerService {
+@NonNullByDefault
+public class EchonetLiteBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(EchonetLiteBridgeHandler.class);
     private final ArrayBlockingQueue<Message> requests = new ArrayBlockingQueue<>(1024);
@@ -47,8 +56,13 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
     private final EchonetMessage echonetMessage = new EchonetMessage();
     private final Clock clock = Clock.systemUTC();
 
+    @Nullable
     private EchonetChannel echonetChannel;
+
+    @Nullable
     private InstanceKey managementControllerKey;
+
+    @Nullable
     private InstanceKey discoveryKey;
 
     public EchonetLiteBridgeHandler(Bridge bridge) {
@@ -56,8 +70,14 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
     }
 
     public void start() throws IOException {
+
+        if (null == discoveryKey) {
+            logger.error("Discovery key is null, unable to start");
+            return;
+        }
+
         logger.info("Binding echonet channel");
-        echonetChannel = new EchonetChannel(discoveryKey.address);
+        echonetChannel = new EchonetChannel(requireNonNull(discoveryKey).address);
         logger.info("Starting networking thread");
 
         networkingThread.setName("Echonet Networking");
@@ -65,8 +85,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
         networkingThread.start();
     }
 
-    @Override
-    public void newDevice(final InstanceKey instanceKey, long pollIntervalMs, long retryTimeoutMs,
+    public void newDevice(InstanceKey instanceKey, long pollIntervalMs, long retryTimeoutMs,
             final EchonetDeviceListener echonetDeviceListener) {
         requests.add(new NewDeviceMessage(instanceKey, pollIntervalMs, retryTimeoutMs, echonetDeviceListener));
     }
@@ -90,17 +109,17 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
         }
     }
 
-    @Override
     public void refreshDevice(final InstanceKey instanceKey, final String channelId) {
         requests.add(new RefreshMessage(instanceKey, channelId));
     }
 
     private void refreshDeviceInternal(final RefreshMessage refreshMessage, long nowMs) {
         final EchonetObject item = devicesByKey.get(refreshMessage.instanceKey);
-        item.refresh(refreshMessage.channelId);
+        if (null != item) {
+            item.refresh(refreshMessage.channelId);
+        }
     }
 
-    @Override
     public void removeDevice(final InstanceKey instanceKey) {
         requests.add(new RemoveDevice(instanceKey));
     }
@@ -114,7 +133,6 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
         }
     }
 
-    @Override
     public void updateDevice(final InstanceKey instanceKey, final String id, final State command) {
         requests.add(new UpdateDevice(instanceKey, id, command));
     }
@@ -130,9 +148,8 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
         echonetObject.update(updateDevice.channelId, updateDevice.state);
     }
 
-    @Override
     public void startDiscovery(EchonetDiscoveryListener echonetDiscoveryListener) {
-        requests.offer(new StartDiscoveryMessage(echonetDiscoveryListener, discoveryKey));
+        requests.offer(new StartDiscoveryMessage(echonetDiscoveryListener, requireNonNull(discoveryKey)));
     }
 
     public void startDiscoveryInternal(StartDiscoveryMessage startDiscovery) {
@@ -140,9 +157,8 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
                 this::onDiscoveredInstanceKey, startDiscovery.echonetDiscoveryListener));
     }
 
-    @Override
     public void stopDiscovery() {
-        requests.offer(new StopDiscoveryMessage(discoveryKey));
+        requests.offer(new StopDiscoveryMessage(requireNonNull(discoveryKey)));
     }
 
     private void stopDiscoveryInternal(StopDiscoveryMessage stopDiscovery) {
@@ -155,10 +171,11 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
         }
     }
 
-    private void pollDevices(long nowMs) {
+    private void pollDevices(long nowMs, EchonetChannel echonetChannel) {
+
         for (EchonetObject echonetObject : devicesByKey.values()) {
             if (echonetObject.buildUpdateMessage(messageBuilder, echonetChannel::nextTid, nowMs,
-                    managementControllerKey)) {
+                    requireNonNull(managementControllerKey))) {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
@@ -169,7 +186,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
             echonetObject.refreshAll(nowMs);
 
             if (echonetObject.buildPollMessage(messageBuilder, echonetChannel::nextTid, nowMs,
-                    managementControllerKey)) {
+                    requireNonNull(managementControllerKey))) {
                 try {
                     echonetChannel.sendMessage(messageBuilder);
                 } catch (IOException e) {
@@ -180,7 +197,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
     }
 
     private void pollRequests(long nowMs) {
-        Message message;
+        @Nullable Message message;
         while (null != (message = requests.poll())) {
             logger.info("Received request: {}", message);
             if (message instanceof NewDeviceMessage) {
@@ -199,9 +216,9 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
         }
     }
 
-    private void pollNetwork(long nowMs) {
+    private void pollNetwork(long nowMs, EchonetChannel echonetChannel) {
         try {
-            echonetChannel.pollMessages(echonetMessage, this::onMessage, 250);
+            echonetChannel.pollMessages(echonetMessage, this::onMessage, EchonetLiteBindingConstants.NETWORK_WAIT_TIMEOUT);
         } catch (IOException e) {
             logger.error("Failed to poll for messages", e);
         }
@@ -235,13 +252,14 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
     }
 
     private void poll() {
+
         updateStatus(ThingStatus.ONLINE);
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 final long nowMs = clock.millis();
                 pollRequests(nowMs);
-                pollDevices(nowMs);
-                pollNetwork(nowMs);
+                pollDevices(nowMs, requireNonNull(echonetChannel));
+                pollNetwork(nowMs, requireNonNull(echonetChannel));
             }
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
@@ -252,9 +270,11 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
     @Override
     public void initialize() {
         final EchonetBridgeConfig bridgeConfig = getConfigAs(EchonetBridgeConfig.class);
+
         managementControllerKey = new InstanceKey(new InetSocketAddress(bridgeConfig.port),
                 EchonetClass.MANAGEMENT_CONTROLLER, (byte) 0x01);
-        discoveryKey = new InstanceKey(new InetSocketAddress(bridgeConfig.multicastAddress, bridgeConfig.port),
+        discoveryKey = new InstanceKey(
+                new InetSocketAddress(requireNonNull(bridgeConfig.multicastAddress), bridgeConfig.port),
                 EchonetClass.NODE_PROFILE, (byte) 0x01);
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -319,7 +339,7 @@ public class EchonetLiteBridgeHandler extends BaseBridgeHandler implements Echon
     }
 
     private static class RefreshMessage extends Message {
-        private String channelId;
+        private final String channelId;
 
         public RefreshMessage(InstanceKey instanceKey, String channelId) {
             super(instanceKey);

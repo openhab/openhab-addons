@@ -12,16 +12,21 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link EchonetDeviceConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class EchonetDeviceConfig {
 
     /**
      * Sample configuration parameters. Replace with your own.
      */
+    @Nullable
     public String hostname;
     public int port;
     public int groupCode;

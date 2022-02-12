@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public enum EchonetClass {
     AIRCON_HOMEAC(0x01, 0x30, Epc.Device.values(), Epc.AcGroup.values(), Epc.HomeAc.values()),
     MANAGEMENT_CONTROLLER(0x05, 0xFF, new Epc[0], new Epc[0], new Epc[0]),

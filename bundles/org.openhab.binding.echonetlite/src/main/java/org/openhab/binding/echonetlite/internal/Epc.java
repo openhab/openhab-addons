@@ -15,17 +15,21 @@ package org.openhab.binding.echonetlite.internal;
 import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.ON_OFF_CODEC_0x30_0x31;
 import static org.openhab.binding.echonetlite.internal.EchonetLiteBindingConstants.ON_OFF_CODEC_0x41_0x42;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.echonetlite.internal.StateCodec.Option;
 import org.openhab.binding.echonetlite.internal.StateCodec.OptionCodec;
 
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public interface Epc {
     int code();
 
     String name();
 
+    @Nullable
     default String type() {
         return null;
     }
@@ -34,10 +38,12 @@ public interface Epc {
         return LangUtil.constantToVariable(name());
     }
 
+    @Nullable
     default StateDecode decoder() {
         return null;
     }
 
+    @Nullable
     default StateEncode encoder() {
         return null;
     }
@@ -209,14 +215,16 @@ public interface Epc {
         // @formatter:on
 
         public final int code;
+        @Nullable
         public final StateDecode stateDecode;
+        @Nullable
         public final StateEncode stateEncode;
 
         Device(int code) {
             this(code, null, null);
         }
 
-        Device(int code, StateDecode stateDecode, StateEncode stateEncode) {
+        Device(int code, @Nullable StateDecode stateDecode, @Nullable StateEncode stateEncode) {
             this.code = code;
             this.stateDecode = stateDecode;
             this.stateEncode = stateEncode;
@@ -230,10 +238,12 @@ public interface Epc {
             return code;
         }
 
+        @Nullable
         public StateDecode decoder() {
             return stateDecode;
         }
 
+        @Nullable
         public StateEncode encoder() {
             return stateEncode;
         }
@@ -333,14 +343,17 @@ public interface Epc {
 
         public final int code;
 
+        @Nullable
         public final StateDecode stateDecode;
+
+        @Nullable
         public final StateEncode stateEncode;
 
         AcGroup(int code) {
             this(code, null, null);
         }
 
-        AcGroup(int code, StateDecode stateDecode, StateEncode stateEncode) {
+        AcGroup(int code, @Nullable StateDecode stateDecode, @Nullable StateEncode stateEncode) {
             this.code = code;
             this.stateDecode = stateDecode;
             this.stateEncode = stateEncode;
@@ -354,10 +367,12 @@ public interface Epc {
             return code;
         }
 
+        @Nullable
         public StateDecode decoder() {
             return stateDecode;
         }
 
+        @Nullable
         public StateEncode encoder() {
             return stateEncode;
         }
@@ -387,14 +402,16 @@ public interface Epc {
 
         public final int code;
 
+        @Nullable
         public final StateDecode stateDecode;
+        @Nullable
         public final StateEncode stateEncode;
 
         Profile(int code) {
             this(code, null, null);
         }
 
-        Profile(int code, StateDecode stateDecode, StateEncode stateEncode) {
+        Profile(int code, @Nullable StateDecode stateDecode, @Nullable StateEncode stateEncode) {
             this.code = code;
             this.stateDecode = stateDecode;
             this.stateEncode = stateEncode;
@@ -408,10 +425,12 @@ public interface Epc {
             return code;
         }
 
+        @Nullable
         public StateDecode decoder() {
             return stateDecode;
         }
 
+        @Nullable
         public StateEncode encoder() {
             return stateEncode;
         }

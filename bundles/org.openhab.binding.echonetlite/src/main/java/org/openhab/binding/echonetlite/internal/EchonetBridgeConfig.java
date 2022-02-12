@@ -12,13 +12,18 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link EchonetBridgeConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class EchonetBridgeConfig {
 
+    @Nullable
     public String multicastAddress;
     public int port;
 

@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class EchonetProfileNode extends EchonetObject implements EchonetDeviceListener {
 
     private final Consumer<EchonetDevice> newDeviceListener;
@@ -75,7 +76,6 @@ public class EchonetProfileNode extends EchonetObject implements EchonetDeviceLi
     }
 
     @Override
-    @NonNullByDefault
     public void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {
         echonetDiscoveryListener.onDeviceFound(identifier, instanceKey);
     }

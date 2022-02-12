@@ -24,16 +24,15 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class EchonetLiteBindingConstants {
 
-    public static final StateCodec.OnOffCodec ON_OFF_CODEC_0x30_0x31 = new StateCodec.OnOffCodec(0x30, 0x31);
-    public static final StateCodec.OnOffCodec ON_OFF_CODEC_0x41_0x42 = new StateCodec.OnOffCodec(0x41, 0x42);
-    private static final String BINDING_ID = "echonetlite";
     public static final long DEFAULT_POLL_INTERVAL_MS = 30_000;
     public static final long DEFAULT_RETRY_TIMEOUT_MS = 1_000;
+    public static final int NETWORK_WAIT_TIMEOUT = 250;
 
     // List of all Thing Type UIDs
+    private static final String BINDING_ID = "echonetlite";
     public static final ThingTypeUID THING_TYPE_ECHONET_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_ECHONET_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    // public static final InstanceKey MANAGEMENT_CONTROLLER_KEY = new InstanceKey(new InetSocketAddress(ECHONET_PORT),
-    // EchonetClass.MANAGEMENT_CONTROLLER, (byte) 0x01);
+    public static final StateCodec.OnOffCodec ON_OFF_CODEC_0x30_0x31 = new StateCodec.OnOffCodec(0x30, 0x31);
+    public static final StateCodec.OnOffCodec ON_OFF_CODEC_0x41_0x42 = new StateCodec.OnOffCodec(0x41, 0x42);
 }

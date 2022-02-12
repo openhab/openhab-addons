@@ -20,6 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +29,15 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public class EchonetDevice extends EchonetObject {
 
     private final LinkedHashMap<Epc, State> pendingSets = new LinkedHashMap<>();
     private final HashMap<Epc, State> stateFields = new HashMap<>();
     private final HashMap<String, Epc> epcByChannelId = new HashMap<>();
     private final Logger logger = LoggerFactory.getLogger(EchonetDevice.class);
-    private EchonetPropertyMap getPropertyMap = null;
+    @Nullable
+    private EchonetPropertyMap getPropertyMap;
     private EchonetDeviceListener listener;
     private boolean initialised = false;
 
@@ -61,7 +65,7 @@ public class EchonetDevice extends EchonetObject {
                     epcByChannelId.put(epc.channelId(), epc);
                 }
 
-                final State pendingState = pendingSets.get(epc);
+                @Nullable State pendingState = pendingSets.get(epc);
                 if (null != pendingState && pendingState.equals(state)) {
                     logger.debug("pendingSet - removing: {} {}", epc, state);
                     pendingSets.remove(epc);

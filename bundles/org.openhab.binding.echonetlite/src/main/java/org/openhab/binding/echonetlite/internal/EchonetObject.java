@@ -17,6 +17,8 @@ import java.time.Clock;
 import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public abstract class EchonetObject {
 
     private final Logger logger = LoggerFactory.getLogger(EchonetObject.class);
@@ -31,8 +34,11 @@ public abstract class EchonetObject {
     protected final InstanceKey instanceKey;
     protected final HashSet<Epc> pendingGets = new HashSet<>();
 
+    @Nullable
     protected InflightRequest inflightGetRequest;
+    @Nullable
     protected InflightRequest inflightSetRequest;
+
     protected long pollIntervalMs;
     protected long retryTimeoutMs;
 
@@ -77,8 +83,8 @@ public abstract class EchonetObject {
         return true;
     }
 
-    protected boolean hasInflight(long nowMs, InflightRequest inflightGetRequest) {
-        if (inflightGetRequest.isInflight()) {
+    protected boolean hasInflight(long nowMs, @Nullable InflightRequest inflightGetRequest) {
+        if (null != inflightGetRequest && inflightGetRequest.isInflight()) {
             return !inflightGetRequest.hasTimedOut(nowMs);
         }
         return false;
@@ -113,14 +119,14 @@ public abstract class EchonetObject {
     }
 
     public void applyHeader(Esv esv, short tid) {
-        if (esv == Esv.Get_Res || esv == Esv.Get_SNA) {
+        if ((esv == Esv.Get_Res || esv == Esv.Get_SNA) && null != inflightGetRequest) {
             final long sentTimestampMs = inflightGetRequest.timestampMs;
             if (inflightGetRequest.responseReceived(tid)) {
                 logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
             } else {
                 logger.warn("Unexpected {} response: {}", esv, tid);
             }
-        } else if (esv == Esv.Set_Res || esv == Esv.SetC_SNA) {
+        } else if ((esv == Esv.Set_Res || esv == Esv.SetC_SNA) && null != inflightSetRequest) {
             final long sentTimestampMs = inflightSetRequest.timestampMs;
             if (inflightSetRequest.responseReceived(tid)) {
                 logger.debug("{} response time: {}ms", esv, Clock.systemUTC().millis() - sentTimestampMs);
@@ -132,14 +138,17 @@ public abstract class EchonetObject {
 
     protected static class InflightRequest {
         private static final long NULL_TIMESTAMP = -1;
+
         private final Logger logger = LoggerFactory.getLogger(InflightRequest.class);
         private final long timeoutMs;
         private final String name;
+
         private short tid;
         private long timestampMs = NULL_TIMESTAMP;
+        @SuppressWarnings("unused")
         private int timeoutCount = 0;
 
-        InflightRequest(long timeoutMs, InflightRequest existing, String name) {
+        InflightRequest(long timeoutMs, @Nullable InflightRequest existing, String name) {
             this.timeoutMs = timeoutMs;
             this.name = name;
             if (null != existing) {

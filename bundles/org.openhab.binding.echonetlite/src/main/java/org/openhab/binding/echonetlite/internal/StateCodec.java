@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Michael Barker - Initial contribution
  */
+@NonNullByDefault
 public interface StateCodec extends StateEncode, StateDecode {
 
     class OnOffCodec implements StateCodec {
@@ -91,12 +93,11 @@ public interface StateCodec extends StateEncode, StateDecode {
         INSTANCE;
 
         public State decodeState(final ByteBuffer edt) {
-            final int b0 = edt.get() & 0xFF;
-            long time = 0;
-
             // Specification isn't explicit about byte order, but seems to be work with testing.
             edt.order(ByteOrder.BIG_ENDIAN);
-            time = edt.getInt() & 0xFFFFFFFFL;
+
+            final int b0 = edt.get() & 0xFF;
+            final long time = edt.getInt() & 0xFFFFFFFFL;
 
             final TimeUnit timeUnit;
             switch (b0) {

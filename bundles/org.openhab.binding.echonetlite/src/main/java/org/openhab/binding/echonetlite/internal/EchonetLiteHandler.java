@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.echonetlite.internal;
 
+import static java.util.Objects.requireNonNull;
+
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +48,6 @@ import org.slf4j.LoggerFactory;
 public class EchonetLiteHandler extends BaseThingHandler implements EchonetDeviceListener {
     private final Logger logger = LoggerFactory.getLogger(EchonetLiteHandler.class);
 
-    private @Nullable EchonetDeviceConfig config;
     private @Nullable InstanceKey instanceKey;
     private final Map<String, State> stateByChannelId = new HashMap<>();
 
@@ -87,25 +88,20 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
 
             final State currentState = stateByChannelId.get(channelUID.getId());
             if (null == currentState) {
-                handler.refreshDevice(instanceKey, channelUID.getId());
+                handler.refreshDevice(requireNonNull(instanceKey), channelUID.getId());
             } else {
                 updateState(channelUID, currentState);
             }
         } else if (command instanceof State) {
             logger.debug("Updating: {} to {}", channelUID, command);
 
-            handler.updateDevice(instanceKey, channelUID.getId(), (State) command);
+            handler.updateDevice(requireNonNull(instanceKey), channelUID.getId(), (State) command);
         }
     }
 
     @Override
     public void initialize() {
-        config = getConfigAs(EchonetDeviceConfig.class);
-
-        if (null == config) {
-            logger.warn("config is null");
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
-        }
+        final EchonetDeviceConfig config = getConfigAs(EchonetDeviceConfig.class);
 
         logger.info("Initialising: {}", config);
 
@@ -120,9 +116,11 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
 
         try {
             // TOOD: Move DNS lookup out to background
-            final InetSocketAddress address = new InetSocketAddress(config.hostname, config.port);
-            instanceKey = new InstanceKey(address, EchonetClass.resolve(config.groupCode, config.classCode),
-                    config.instance);
+            final InetSocketAddress address = new InetSocketAddress(requireNonNull(config.hostname), config.port);
+            final InstanceKey instanceKey = new InstanceKey(address,
+                    EchonetClass.resolve(config.groupCode, config.classCode), config.instance);
+            this.instanceKey = instanceKey;
+
             updateProperty("instanceKey", instanceKey.representationProperty());
             bridgeHandler.newDevice(instanceKey, config.pollIntervalMs, config.pollIntervalMs, this);
         } catch (Exception e) {
@@ -138,10 +136,9 @@ public class EchonetLiteHandler extends BaseThingHandler implements EchonetDevic
             return;
         }
 
-        bridgeHandler.removeDevice(instanceKey);
+        bridgeHandler.removeDevice(requireNonNull(instanceKey));
     }
 
-    @NonNullByDefault
     public void onInitialised(String identifier, InstanceKey instanceKey, Map<String, String> channelIdAndType) {
 
         logger.debug("Initialised Channels: {}", channelIdAndType);
