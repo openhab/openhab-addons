@@ -175,8 +175,8 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
     private void startBridge() throws IOException {
         final @Nullable HomekitServer homekitServer = this.homekitServer;
         if (homekitServer != null && bridge == null) {
-            final HomekitRoot bridge = homekitServer.createBridge(authInfo, settings.name, HomekitSettings.MANUFACTURER,
-                    HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
+            final HomekitRoot bridge = homekitServer.createBridge(authInfo, HomekitAccessoryCategory.BRIDGE,
+                    settings.name, HomekitSettings.MANUFACTURER, HomekitSettings.MODEL, HomekitSettings.SERIAL_NUMBER,
                     FrameworkUtil.getBundle(getClass()).getVersion().toString(), HomekitSettings.HARDWARE_REVISION);
             changeListener.setBridge(bridge);
             this.bridge = bridge;
@@ -297,7 +297,7 @@ public class HomekitImpl implements Homekit, NetworkAddressChangeListener {
             logger.trace("removed interface {}", i.getAddress().toString());
             if (i.getAddress().equals(networkInterface)) {
                 final @Nullable HomekitRoot bridge = this.bridge;
-                if (this.bridge != null) {
+                if (bridge != null) {
                     bridge.stop();
                     this.bridge = null;
                 }
