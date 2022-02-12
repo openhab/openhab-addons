@@ -450,5 +450,6 @@ public abstract class VehicleChannelHandler extends BaseThingHandler {
         updateChannel(CHANNEL_GROUP_LOCATION, GPS, PointType
                 .valueOf(Double.toString(pos.coordinates.latitude) + "," + Double.toString(pos.coordinates.longitude)));
         updateChannel(CHANNEL_GROUP_LOCATION, HEADING, QuantityType.valueOf(pos.heading, Units.DEGREE_ANGLE));
+        updateChannel(CHANNEL_GROUP_LOCATION, ADDRESS, pos.address.formatted);
     }
 }

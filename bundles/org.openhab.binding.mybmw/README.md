@@ -342,6 +342,7 @@ GPS location and heading of the vehicle.
 |-----------------|---------------------|--------------|
 | GPS Coordinates | gps                 | Location     | 
 | Heading         | heading             | Number:Angle | 
+| Address         | address             | String       | 
 
 
 #### Remote Services
