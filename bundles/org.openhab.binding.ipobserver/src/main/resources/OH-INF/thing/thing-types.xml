@@ -10,6 +10,8 @@
 		<channels>
 			<channel id="temperatureIndoor" typeId="temperatureIndoor"/>
 			<channel id="temperatureOutdoor" typeId="system.outdoor-temperature"/>
+			<channel id="temperatureWindChill" typeId="temperatureWindChill"/>
+			<channel id="temperatureDewPoint" typeId="temperatureDewPoint"/>
 			<channel id="humidityIndoor" typeId="humidityIndoor"/>
 			<channel id="humidityOutdoor" typeId="system.atmospheric-humidity"/>
 			<channel id="pressureAbsolute" typeId="pressureAbsolute"/>
@@ -51,6 +53,16 @@
 					feature allowing you to manually trigger or use a rule to handle the reboots</description>
 				<default>2000</default>
 			</parameter>
+			<parameter name="id" type="text">
+				<label>Station ID</label>
+				<description>The station ID used to connect to WeatherUnderGround. Leave blank if you wish to poll the livedata.</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Station Password</label>
+				<description>The station password used to connect to WeatherUnderGround. Leave blank if you wish to poll the
+					livedata.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 	<channel-type id="responseTime" advanced="true">
@@ -68,6 +80,20 @@
 			<tag>Measurement</tag>
 			<tag>Temperature</tag>
 		</tags>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureWindChill" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Wind Chill Temperature</label>
+		<description>Wind Chill Temperature Outdoors</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperatureDewPoint" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Dew Point Temperature</label>
+		<description>Dew Point Temperature Outdoors</description>
+		<category>Temperature</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="humidityIndoor">
@@ -174,10 +200,6 @@
 		<label>Wind Max Gust</label>
 		<description>Max wind gust for today</description>
 		<category>Wind</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Wind</tag>
-		</tags>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainHourlyRate">
@@ -207,10 +229,6 @@
 		<label>Rain for Week</label>
 		<description>Weekly Rain</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForMonth" advanced="true">
@@ -218,10 +236,6 @@
 		<label>Rain for Month</label>
 		<description>Rain since 12:00 on the 1st of this month</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="rainForYear">
@@ -229,10 +243,6 @@
 		<label>Rain for Year</label>
 		<description>Total rain since 12:00 on 1st Jan</description>
 		<category>Rain</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Rain</tag>
-		</tags>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="lastUpdatedTime" advanced="true">
