@@ -649,8 +649,14 @@ public class HomekitCharacteristicFactory {
 
     private static RotationSpeedCharacteristic createRotationSpeedCharacteristic(HomekitTaggedItem item,
             HomekitAccessoryUpdater updater) {
-        return new RotationSpeedCharacteristic(getIntSupplier(item, 0), setPercentConsumer(item),
-                getSubscriber(item, ROTATION_SPEED, updater), getUnsubscriber(item, ROTATION_SPEED, updater));
+        return new RotationSpeedCharacteristic(
+                item.getConfigurationAsDouble(HomekitTaggedItem.MIN_VALUE,
+                        RotationSpeedCharacteristic.DEFAULT_MIN_VALUE),
+                item.getConfigurationAsDouble(HomekitTaggedItem.MAX_VALUE,
+                        RotationSpeedCharacteristic.DEFAULT_MAX_VALUE),
+                item.getConfigurationAsDouble(HomekitTaggedItem.STEP, RotationSpeedCharacteristic.DEFAULT_STEP),
+                getDoubleSupplier(item, 0), setDoubleConsumer(item), getSubscriber(item, ROTATION_SPEED, updater),
+                getUnsubscriber(item, ROTATION_SPEED, updater));
     }
 
     private static SetDurationCharacteristic createDurationCharacteristic(HomekitTaggedItem taggedItem,
