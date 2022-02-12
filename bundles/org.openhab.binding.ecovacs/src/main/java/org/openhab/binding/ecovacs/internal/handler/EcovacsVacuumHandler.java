@@ -111,7 +111,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
     private @Nullable Boolean lastWasCharging;
     private @Nullable CleanMode lastCleanMode;
     private @Nullable CleanMode lastActiveCleanMode;
-    private Optional<String> lastCleanMapUrl = Optional.empty();
+    private Optional<String> lastDownloadedCleanMapUrl = Optional.empty();
     private long lastSuccessfulPollTimestamp;
 
     public EcovacsVacuumHandler(Thing thing, TranslationProvider i18Provider, LocaleProvider localeProvider,
@@ -483,24 +483,29 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             List<CleanLogRecord> cleanLogRecords = device.getCleanLogs();
             if (!cleanLogRecords.isEmpty()) {
                 CleanLogRecord record = cleanLogRecords.get(0);
+
                 updateState(CHANNEL_ID_LAST_CLEAN_START,
                         new DateTimeType(record.timestamp.toInstant().atZone(ZoneId.systemDefault())));
                 updateState(CHANNEL_ID_LAST_CLEAN_DURATION, new QuantityType<>(record.cleaningDuration, Units.SECOND));
                 updateState(CHANNEL_ID_LAST_CLEAN_AREA, new QuantityType<>(record.cleanedArea, SIUnits.SQUARE_METRE));
                 StateOptionEntry<CleanMode> mode = CLEAN_MODE_MAPPING.get(record.mode);
                 updateState(CHANNEL_ID_LAST_CLEAN_MODE, mode != null ? new StringType(mode.value) : UnDefType.NULL);
-                if (device.hasCapability(DeviceCapability.MAPPING) && !lastCleanMapUrl.equals(record.mapImageUrl)) {
-                    // HttpUtil expects the server to return the correct MIME type, but Ecovacs' server doesn't obey
-                    State mapState = record.mapImageUrl.flatMap(url -> {
+
+                if (device.hasCapability(DeviceCapability.MAPPING)
+                        && !lastDownloadedCleanMapUrl.equals(record.mapImageUrl)) {
+                    updateState(CHANNEL_ID_LAST_CLEAN_MAP, record.mapImageUrl.flatMap(url -> {
+                        // HttpUtil expects the server to return the correct MIME type, but Ecovacs' server sends
+                        // 'application/octet-stream', so we have to set the correct MIME type by ourselves
                         @Nullable
-                        RawType mapData = HttpUtil.downloadData(record.mapImageUrl.get(), null, false, -1);
+                        RawType mapData = HttpUtil.downloadData(url, null, false, -1);
                         if (mapData != null) {
                             mapData = new RawType(mapData.getBytes(), "image/png");
+                            lastDownloadedCleanMapUrl = record.mapImageUrl;
+                        } else {
+                            logger.debug("{}: Downloading cleaning map {} failed", getDeviceSerial(), url);
                         }
                         return Optional.ofNullable((State) mapData);
-                    }).orElse(UnDefType.NULL);
-                    updateState(CHANNEL_ID_LAST_CLEAN_MAP, mapState);
-                    lastCleanMapUrl = record.mapImageUrl;
+                    }).orElse(UnDefType.NULL));
                 }
             }
 
