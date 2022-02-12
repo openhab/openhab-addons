@@ -130,7 +130,7 @@ abstract public class AbstractAirthingsHandler extends BeaconBluetoothHandler {
                 default:
                     break;
             }
-        } catch (Exception e) {  // catch all to avoid scheduleWithFixedDelay being suppressed
+        } catch (Exception e) { // catch all to avoid scheduleWithFixedDelay being suppressed
             logger.warn("Failed to read Airthings device", e);
         }
     }
