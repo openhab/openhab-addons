@@ -80,7 +80,7 @@
 				<label>Calculated Room Temperature</label>
 				<description>Calculated Room Temperature</description>
 			</channel>
-			<channel id="outdoor_temp" typeId="temperature">
+			<channel id="outdoor_temp" typeId="system.outdoor-temperature">
 				<label>Outdoor Temperature</label>
 				<description>Temperature of the air outside</description>
 			</channel>
@@ -89,7 +89,8 @@
 	<channel-group-type id="humidity">
 		<label>Humidity</label>
 		<channels>
-			<channel id="humidity" typeId="humidity">
+			<channel id="humidity" typeId="system.atmospheric-humidity">
+				<label>Humidity</label>
 				<description>Current relative humidity measured by the air unit</description>
 			</channel>
 		</channels>
@@ -199,17 +200,6 @@
 		<label>Percentage</label>
 		<description>Read only percentage</description>
 		<state pattern="%.0f %%" readOnly="true" min="0" max="100"/>
-	</channel-type>
-	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<category>Humidity</category>
-		<tags>
-			<tag>Measurement</tag>
-			<tag>Humidity</tag>
-		</tags>
-		<state pattern="%.0f %%" readOnly="true" min="0" max="100">
-		</state>
 	</channel-type>
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
