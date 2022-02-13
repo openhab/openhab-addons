@@ -42,4 +42,8 @@ public class VoskSTTConfiguration {
      * Message to be told when an error has happened.
      */
     public String errorMessage = "";
+    /**
+     * Keep language model loaded
+     */
+    public boolean preloadModel = true;
 }

@@ -18,7 +18,8 @@ You should unzip the container folder into '\<openHAB userdata\>/vosk/' and rena
 
 Using your favorite configuration UI to edit **Settings / Other Services - Vosk Speech-to-Text**:
 
-* **Single Utterance Mode** - When enabled recognition stops listening after a single utterance..
+* **Preload Model** - Keep language model loaded.
+* **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.
 * **Max Transcription Seconds** - Max seconds to wait to force stop the transcription.
 * **Max Silence Seconds** - Only works when singleUtteranceMode is disabled, max seconds without getting new transcriptions to stop listening.
 

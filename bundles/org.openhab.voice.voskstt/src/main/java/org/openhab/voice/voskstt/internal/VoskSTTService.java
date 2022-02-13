@@ -45,6 +45,7 @@ import org.openhab.core.voice.SpeechRecognitionEvent;
 import org.osgi.framework.Constants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -68,6 +69,7 @@ public class VoskSTTService implements STTService {
     private final ScheduledExecutorService executor = ThreadPoolManager.getScheduledPool("OH-voice-voskstt");
     private final LocaleService localeService;
     private VoskSTTConfiguration config = new VoskSTTConfiguration();
+    private @Nullable Model model;
     private static final String VOSK_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "vosk").toString();
     private static final String MODEL_PATH = Path.of(VOSK_FOLDER, "model").toString();
     static {
@@ -87,12 +89,33 @@ public class VoskSTTService implements STTService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        this.config = new Configuration(config).as(VoskSTTConfiguration.class);
+        configChange(config);
     }
 
     @Modified
     protected void modified(Map<String, Object> config) {
+        configChange(config);
+    }
+
+    @Deactivate
+    protected void deactivate(Map<String, Object> config) {
+        var model = this.model;
+        if (model != null) {
+            model.close();
+            logger.debug("Unloading model");
+            this.model = null;
+        }
+    }
+
+    private void configChange(Map<String, Object> config) {
         this.config = new Configuration(config).as(VoskSTTConfiguration.class);
+        if (this.config.preloadModel) {
+            try {
+                loadModel();
+            } catch (IOException e) {
+                logger.warn("IOException loading model: {}", e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -126,10 +149,7 @@ public class VoskSTTService implements STTService {
             if (frequency == null) {
                 throw new IOException("missing audio stream frequency");
             }
-            var modelFile = new File(MODEL_PATH);
-            if (!modelFile.exists() && modelFile.isDirectory()) {
-                throw new IOException("missing model dir: " + MODEL_PATH);
-            }
+
             task = backgroundRecognize(sttListener, audioStream, frequency, keepStreaming);
         } catch (IOException e) {
             throw new STTException(e);
@@ -142,6 +162,34 @@ public class VoskSTTService implements STTService {
         };
     }
 
+    private Model getModel() throws IOException {
+        var model = this.model;
+        if (model != null) {
+            return model;
+        }
+        return loadModel();
+    }
+
+    private Model loadModel() throws IOException {
+        var model = this.model;
+        if (model != null) {
+            // unload previous model
+            logger.debug("unloading model");
+            model.close();
+            this.model = null;
+        }
+        var modelFile = new File(MODEL_PATH);
+        if (!modelFile.exists() || !modelFile.isDirectory()) {
+            throw new IOException("missing model dir: " + MODEL_PATH);
+        }
+        logger.debug("loading model");
+        model = new Model(MODEL_PATH);
+        if (config.preloadModel) {
+            this.model = model;
+        }
+        return model;
+    }
+
     private Future<?> backgroundRecognize(STTListener sttListener, InputStream audioStream, long frequency,
             AtomicBoolean keepStreaming) {
         StringBuilder transcriptBuilder = new StringBuilder();
@@ -149,7 +197,11 @@ public class VoskSTTService implements STTService {
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
         long startTime = System.currentTimeMillis();
         return executor.submit(() -> {
-            try (Model model = new Model(MODEL_PATH); Recognizer recognizer = new Recognizer(model, frequency)) {
+            Recognizer recognizer = null;
+            Model model = null;
+            try {
+                model = getModel();
+                recognizer = new Recognizer(model, frequency);
                 long lastInputTime = System.currentTimeMillis();
                 int nbytes;
                 byte[] b = new byte[4096];
@@ -203,6 +255,13 @@ public class VoskSTTService implements STTService {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
                 } else if (!config.errorMessage.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+                }
+            } finally {
+                if (recognizer != null) {
+                    recognizer.close();
+                }
+                if (!config.preloadModel && model != null) {
+                    model.close();
                 }
             }
             try {
