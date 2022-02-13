@@ -99,11 +99,10 @@ public class VoskSTTService implements STTService {
 
     @Deactivate
     protected void deactivate(Map<String, Object> config) {
-        var model = this.model;
-        if (model != null) {
-            model.close();
-            logger.debug("Unloading model");
-            this.model = null;
+        try {
+            unloadModel();
+        } catch (IOException e) {
+            logger.warn("IOException unloading model: {}", e.getMessage());
         }
     }
 
@@ -114,6 +113,12 @@ public class VoskSTTService implements STTService {
                 loadModel();
             } catch (IOException e) {
                 logger.warn("IOException loading model: {}", e.getMessage());
+            }
+        } else {
+            try {
+                unloadModel();
+            } catch (IOException e) {
+                logger.warn("IOException unloading model: {}", e.getMessage());
             }
         }
     }
@@ -171,23 +176,26 @@ public class VoskSTTService implements STTService {
     }
 
     private Model loadModel() throws IOException {
-        var model = this.model;
-        if (model != null) {
-            // unload previous model
-            logger.debug("unloading model");
-            model.close();
-            this.model = null;
-        }
+        unloadModel();
         var modelFile = new File(MODEL_PATH);
         if (!modelFile.exists() || !modelFile.isDirectory()) {
             throw new IOException("missing model dir: " + MODEL_PATH);
         }
         logger.debug("loading model");
-        model = new Model(MODEL_PATH);
+        var model = new Model(MODEL_PATH);
         if (config.preloadModel) {
             this.model = model;
         }
         return model;
+    }
+
+    private void unloadModel() throws IOException {
+        var model = this.model;
+        if (model != null) {
+            logger.debug("unloading model");
+            model.close();
+            this.model = null;
+        }
     }
 
     private Future<?> backgroundRecognize(STTListener sttListener, InputStream audioStream, long frequency,
